@@ -15,9 +15,10 @@ interface ReviewSubmitProps {
   data?: PropertyListingData;
   onBack?: () => void;
   onSubmit?: (data: Partial<PropertyListingData>) => void;
+  onEditStep?: (step: number) => void;
 }
 
-export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps) {
+export function ReviewSubmit({ data = {}, onBack, onSubmit, onEditStep }: ReviewSubmitProps) {
   const [publishOption, setPublishOption] = useState<'immediate' | 'schedule' | 'draft'>('immediate');
   const [scheduleDate, setScheduleDate] = useState('');
 
@@ -40,6 +41,13 @@ export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps)
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
     return 'text-orange-600';
+  };
+
+  const getScoreLabel = (score: number) => {
+    if (score >= 85) return 'Excellent!';
+    if (score >= 70) return 'Great';
+    if (score >= 55) return 'Good';
+    return 'Needs improvement';
   };
 
   const getImprovements = () => {
@@ -70,49 +78,49 @@ export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps)
   return (
     <div className="space-y-8">
       <div>
-        <h3 className="mb-2">Review & Submit</h3>
-        <p className="text-gray-600">
-          Review your property details before publishing
-        </p>
+        <h3 className="mb-2">Review Your Listing</h3>
+        <p className="text-gray-600">Make sure all details are correct before publishing</p>
       </div>
 
-      {/* Property Score */}
+      {/* Property Score with quick improvements */}
       <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h4>Property Score</h4>
-            <p className="text-sm text-gray-600">Based on completeness and quality</p>
-          </div>
-          <div className={`text-right ${getScoreColor(score)}`}>
-            <div className="text-3xl">{score}/100</div>
-          </div>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="w-full h-3 bg-gray-200 rounded-full mb-4">
-          <div 
-            className={`h-full rounded-full transition-all ${
-              score >= 80 ? 'bg-green-600' : score >= 60 ? 'bg-yellow-600' : 'bg-orange-600'
-            }`}
-            style={{ width: `${score}%` }}
-          />
-        </div>
-
-        {/* Improvements */}
-        {improvements.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-sm">Improve your listing:</p>
-            {improvements.map((imp, idx) => (
-              <div key={idx} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded">
-                <span className="text-gray-700">{imp.text}</span>
-                <span className="text-green-600 flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" />
-                  {imp.impact} visibility
-                </span>
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="md:col-span-2">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <h4>Property Score</h4>
+                <p className="text-sm text-gray-600">{getScoreLabel(score)}</p>
               </div>
-            ))}
+              <div className={`text-right ${getScoreColor(score)}`}>
+                <div className="text-3xl font-semibold">{score}</div>
+              </div>
+            </div>
+            <div className="w-full h-3 bg-gray-200 rounded-full">
+              <div
+                className={`h-full rounded-full transition-all ${score >= 80 ? 'bg-green-600' : score >= 60 ? 'bg-yellow-600' : 'bg-orange-600'}`}
+                style={{ width: `${score}%` }}
+              />
+            </div>
           </div>
-        )}
+
+          <div>
+            <div className="text-sm text-gray-700 mb-2">Quick Improvements</div>
+            <div className="space-y-2">
+              {improvements.length === 0 && (
+                <div className="text-sm text-gray-600">All set. Great job!</div>
+              )}
+              {improvements.map((imp, idx) => (
+                <div key={idx} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded">
+                  <span className="text-gray-700">{imp.text}</span>
+                  <span className="bg-green-50 text-green-700 px-1.5 py-0.5 rounded-sm text-xs inline-flex items-center gap-1">
+                    <TrendingUp className="w-3 h-3" />
+                    {imp.impact} visibility
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </Card>
 
       {/* Property Preview Card */}
@@ -178,7 +186,7 @@ export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps)
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
             <p>Basic Details</p>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => onEditStep?.(1)}>
               <Edit className="w-4 h-4" />
             </Button>
           </div>
@@ -192,7 +200,7 @@ export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps)
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
             <p>Location</p>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => onEditStep?.(2)}>
               <Edit className="w-4 h-4" />
             </Button>
           </div>
@@ -206,7 +214,7 @@ export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps)
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
             <p>Property Details</p>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => onEditStep?.(3)}>
               <Edit className="w-4 h-4" />
             </Button>
           </div>
@@ -220,7 +228,7 @@ export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps)
         <Card className="p-4">
           <div className="flex items-center justify-between mb-2">
             <p>Pricing</p>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => onEditStep?.(5)}>
               <Edit className="w-4 h-4" />
             </Button>
           </div>
@@ -230,6 +238,18 @@ export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps)
             {data.negotiable && <Badge variant="outline" className="text-xs">Negotiable</Badge>}
           </div>
         </Card>
+        <Card className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <p>Photos & Videos</p>
+            <Button variant="ghost" size="sm" onClick={() => onEditStep?.(4)}>
+              <Edit className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="space-y-1 text-sm text-gray-600">
+            <p>Photos: {data.photos?.length ? data.photos.length : 'Not specified'}</p>
+            <p>Video: {data.video ? 'Added' : 'Not specified'}</p>
+          </div>
+        </Card>
       </div>
 
       {/* Amenities Summary */}
@@ -237,7 +257,7 @@ export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps)
         <Card className="p-4">
           <div className="flex items-center justify-between mb-3">
             <p>Amenities & Features</p>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => onEditStep?.(6)}>
               <Edit className="w-4 h-4" />
             </Button>
           </div>
@@ -261,9 +281,16 @@ export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps)
         </Card>
       ) : null}
 
-      {/* Publishing Options */}
+      {data.description && (
+        <Card className="p-4">
+          <p className="text-sm font-medium mb-2">Property Description</p>
+          <p className="text-gray-700 text-sm leading-6">{data.description}</p>
+        </Card>
+      )}
+
+      {/* Visibility Settings */}
       <div className="space-y-4">
-        <h4>When do you want to publish?</h4>
+        <h4>Visibility Settings</h4>
         
         <RadioGroup value={publishOption} onValueChange={(value: any) => setPublishOption(value)}>
           <div className="space-y-3">
@@ -350,7 +377,7 @@ export function ReviewSubmit({ data = {}, onBack, onSubmit }: ReviewSubmitProps)
         </Button>
         <div className="flex gap-3">
           {publishOption !== 'draft' && (
-            <Button onClick={() => onSubmit({ publishOption: 'draft' })} variant="outline" size="lg">
+            <Button onClick={() => onSubmit?.({ publishOption: 'draft' })} variant="outline" size="lg">
               Save as Draft
             </Button>
           )}

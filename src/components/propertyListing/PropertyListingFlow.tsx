@@ -31,6 +31,10 @@ export const PropertyListingFlow: React.FC = () => {
     alert('Property listing prepared. Submission flow can now integrate API.');
   };
 
+  const handleEditStep = (step: number) => {
+    setCurrentStep(Math.min(Math.max(step, 1), 7));
+  };
+
   return (
     <div>
       <Stepper currentStep={currentStep} />
@@ -54,7 +58,12 @@ export const PropertyListingFlow: React.FC = () => {
           <AmenitiesFeatures data={data} onNext={handleNext} onBack={handleBack} />
         )}
         {currentStep === 7 && (
-          <ReviewSubmit data={data} onBack={handleBack} onSubmit={handleSubmit} />
+          <ReviewSubmit
+            data={data}
+            onBack={handleBack}
+            onSubmit={handleSubmit}
+            onEditStep={handleEditStep}
+          />
         )}
       </div>
     </div>
@@ -62,4 +71,3 @@ export const PropertyListingFlow: React.FC = () => {
 };
 
 PropertyListingFlow.displayName = 'PropertyListingFlow';
-

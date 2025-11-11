@@ -16,7 +16,9 @@ interface PricingDetailsProps {
 }
 
 export function PricingDetails({ data = {}, onNext, onBack }: PricingDetailsProps) {
-  const [ownershipType, setOwnershipType] = useState(data.ownershipType || 'freehold');
+  const ownershipOptions = ['freehold', 'leasehold', 'co-op', 'power-of-attorney'] as const;
+  type OwnershipOption = typeof ownershipOptions[number];
+  const [ownershipType, setOwnershipType] = useState<OwnershipOption>((data.ownershipType as OwnershipOption) || 'freehold');
   const [expectedPrice, setExpectedPrice] = useState((data.expectedPrice as any) || '');
   const [areaBasis, setAreaBasis] = useState<'carpet' | 'builtup' | 'superbuiltup'>(data.areaBasis || 'carpet');
   const [pricePerSqft, setPricePerSqft] = useState(data.pricePerSqft || 0);
@@ -24,7 +26,9 @@ export function PricingDetails({ data = {}, onNext, onBack }: PricingDetailsProp
   const [taxExcluded, setTaxExcluded] = useState(!!data.taxExcluded);
   const [negotiable, setNegotiable] = useState(!!data.negotiable);
   const [maintenance, setMaintenance] = useState((data.maintenance as any) || '');
-  const [maintenanceFrequency, setMaintenanceFrequency] = useState(data.maintenanceFrequency || 'monthly');
+  const [maintenanceFrequency, setMaintenanceFrequency] = useState<'monthly' | 'quarterly' | 'yearly'>(
+    (data.maintenanceFrequency as 'monthly' | 'quarterly' | 'yearly') || 'monthly'
+  );
   const [bookingAmount, setBookingAmount] = useState((data.bookingAmount as any) || '');
   const [annualDues, setAnnualDues] = useState((data.annualDues as any) || '');
   const [membershipCharges, setMembershipCharges] = useState((data.membershipCharges as any) || '');
@@ -88,7 +92,7 @@ export function PricingDetails({ data = {}, onNext, onBack }: PricingDetailsProp
       <div className="space-y-4">
         <Label>Ownership Type</Label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {['freehold', 'leasehold', 'co-op', 'power-of-attorney'].map((type) => (
+          {ownershipOptions.map((type) => (
             <div
               key={type}
               className={`
@@ -201,7 +205,7 @@ export function PricingDetails({ data = {}, onNext, onBack }: PricingDetailsProp
                 placeholder="5000"
                 className="flex-1"
               />
-              <Select value={maintenanceFrequency} onValueChange={setMaintenanceFrequency}>
+              <Select value={maintenanceFrequency} onValueChange={(v) => setMaintenanceFrequency(v as 'monthly' | 'quarterly' | 'yearly')}>
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
