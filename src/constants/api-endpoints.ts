@@ -1,0 +1,35 @@
+export const API_ENDPOINTS = {
+  AUTH: {
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register',
+    LOGOUT: '/auth/logout',
+    REFRESH: '/auth/refresh',
+    ME: '/auth/me',
+    PROFILE: '/auth/profile',
+    CHANGE_PASSWORD: '/auth/change-password',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
+  },
+  PROPERTIES: {
+    LIST: '/properties',
+    DETAIL: '/properties/:id',
+    SEARCH: '/properties/search',
+    FILTER: '/properties/filter',
+    CREATE: '/properties',
+    UPDATE: '/properties/:id',
+    DELETE: '/properties/:id',
+    UPLOAD_IMAGE: '/properties/:id/images',
+  },
+  USERS: {
+    PROFILE: '/users/profile',
+    UPDATE: '/users/:id',
+    FAVORITES: '/users/favorites',
+    ADD_FAVORITE: '/users/favorites',
+    REMOVE_FAVORITE: '/users/favorites/:id',
+  },
+  AGENTS: {
+    LIST: '/agents',
+    DETAIL: '/agents/:id',
+    CONTACT: '/agents/:id/contact',
+  },
+} as const;
