@@ -1,3 +1,4 @@
+@import "tailwindcss";
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -117,6 +118,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* Map font variables injected by next/font */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 @layer base {
@@ -125,7 +129,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }
 
@@ -187,3 +191,10 @@
 html {
   font-size: var(--font-size);
 }
+
+/* Utility: hide horizontal scrollbar for stepper while keeping scrollability */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* Slightly stronger heading weights to match modern look */
+h1, h2, h3 { font-weight: 600; }
