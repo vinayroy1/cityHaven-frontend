@@ -12,12 +12,13 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { Sparkles, MapPin, Building2, Home, Building, Camera, ShieldCheck, Coins, Gauge } from "lucide-react";
+import { Sparkles, Building2, Home, Building } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/components/ui/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { initialPropertyListingFormValues, resetDraft, saveDraft, submitProperty } from "@/store/propertyListingSlice";
+import { initialPropertyListingFormValues, resetDraft, saveDraft } from "@/store/propertyListingSlice";
 import { selectPropertyListing } from "@/store/store";
+import { useSubmitPropertyMutation } from "@/store/propertyListingApi";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 
 type StepProps = { form: UseFormReturn<PropertyListingFormValues> };
@@ -196,6 +197,7 @@ const NumberInput = ({
 export const PropertyListingFlow: React.FC = () => {
   const dispatch = useAppDispatch();
   const { draft, status } = useAppSelector(selectPropertyListing);
+  const [submitProperty, { isLoading: submitting, isSuccess: submitted }] = useSubmitPropertyMutation();
   const [currentStep, setCurrentStep] = useState(1);
 
   const form = useForm<PropertyListingFormValues>({
@@ -263,7 +265,7 @@ export const PropertyListingFlow: React.FC = () => {
     const values = form.getValues();
     dispatch(saveDraft(values));
     try {
-      await dispatch(submitProperty(values)).unwrap();
+      await submitProperty(values).unwrap();
       toast.success("Listing payload staged for submission.");
       setCurrentStep(stepList.length);
     } catch {
@@ -295,10 +297,10 @@ export const PropertyListingFlow: React.FC = () => {
             <div className="flex items-center gap-2 text-sm text-slate-600">
               <ShieldCheck className="h-4 w-4 text-emerald-600" />
               <span>
-                {status === "submitted"
-                  ? "Payload ready to ship to API."
-                  : status === "submitting"
+                {submitting
                   ? "Submitting to API..."
+                  : submitted
+                  ? "Payload submitted to API."
                   : "Progress auto-saves as draft."}
               </span>
             </div>

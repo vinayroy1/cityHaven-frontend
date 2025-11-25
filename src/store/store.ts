@@ -2,12 +2,16 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import propertyListingReducer from "./propertyListingSlice";
+import { propertyListingApi } from "./propertyListingApi";
 
 export const makeStore = () =>
   configureStore({
     reducer: {
       propertyListing: propertyListingReducer,
+      [propertyListingApi.reducerPath]: propertyListingApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(propertyListingApi.middleware),
     devTools: true,
   });
 
