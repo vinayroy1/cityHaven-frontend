@@ -1,8 +1,7 @@
 "use client";
 
 import { configureStore } from "@reduxjs/toolkit";
-import propertyListingReducer from "./propertyListingSlice";
-import { propertyListingApi } from "./propertyListingApi";
+import { propertyListingReducer, propertyListingApi } from "@/features/propertyListing";
 
 export const makeStore = () =>
   configureStore({
