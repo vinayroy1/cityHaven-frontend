@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -208,7 +207,7 @@ export const PropertyListingFlow: React.FC = () => {
   const propertyTypeId = form.watch("context.propertyTypeId");
 
   const selectedPropertyType = useMemo(
-    () => propertyTypeCatalog.find((p) => p.id === propertyTypeId),
+    () => propertyTypeCatalog.find((p) => p.id === propertyTypeId) ?? propertyTypeCatalog[0],
     [propertyTypeId],
   );
 
@@ -292,7 +291,7 @@ export const PropertyListingFlow: React.FC = () => {
           {currentStep === 5 && <AmenitiesLegalStep form={form} />}
           {currentStep === 6 && <MediaReviewStep form={form} />}
 
-          <div className="flex flex-col gap-3 border-t border-dashed border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 border-t border-dashed border-slate-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2 text-sm text-slate-600">
               <ShieldCheck className="h-4 w-4 text-emerald-600" />
               <span>
@@ -349,30 +348,9 @@ function BasicContextStep({ form }: StepProps) {
   const selectedSubType = selectedPropertyType?.subTypes.find((s) => s.id === propertySubTypeId);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.2fr]">
-      <Card className="border-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white shadow-xl">
-        <div className="flex flex-col gap-2 p-6">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-200/70">Step 1</p>
-          <p className="text-2xl font-semibold">Basic & Context</p>
-          <p className="text-slate-200/80">
-            Decide what you are listing, who is posting, and how the property is classified. These answers ripple through later steps.
-          </p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <Badge variant="outline" className="border-white/30 bg-white/10 text-white">
-              Fast-track wizard
-            </Badge>
-            <Badge variant="outline" className="border-white/30 bg-white/10 text-white">
-              Context aware rules
-            </Badge>
-            <Badge variant="outline" className="border-white/30 bg-white/10 text-white">
-              PG/Commercial ready
-            </Badge>
-          </div>
-        </div>
-      </Card>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-5 shadow-lg backdrop-blur">
+    <div className="space-y-5">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="space-y-5 rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm">
           <FieldShell title="Listing type" description="Rent, sell, or PG/Co-living" icon={Sparkles} />
           <FormField
             control={form.control}
@@ -399,7 +377,7 @@ function BasicContextStep({ form }: StepProps) {
                     <label
                       key={option}
                       className={cn(
-                        "cursor-pointer rounded-2xl border p-4 shadow-sm transition-all",
+                        "cursor-pointer rounded-2xl border p-3 shadow-sm transition-all",
                         field.value === option ? "border-sky-500 bg-sky-50 shadow-sky-100" : "border-slate-200 hover:border-sky-200",
                       )}
                     >
@@ -443,7 +421,7 @@ function BasicContextStep({ form }: StepProps) {
           />
         </div>
 
-        <div className="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-5 shadow-lg backdrop-blur">
+        <div className="space-y-5 rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm">
           <FieldShell title="Property classification" description="Type, sub-type, and building context" icon={Building2} />
 
           <FormField
@@ -452,7 +430,7 @@ function BasicContextStep({ form }: StepProps) {
             rules={{ required: "Pick a property type" }}
             render={({ field }) => (
               <FormItem>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {filteredPropertyTypes.map((type) => {
                     const Icon = type.icon;
                     const isActive = field.value === type.id;
@@ -467,7 +445,7 @@ function BasicContextStep({ form }: StepProps) {
                           form.setValue("context.locatedInsideId", "");
                         }}
                         className={cn(
-                          "flex items-center gap-3 rounded-2xl border p-4 text-left transition-all",
+                          "flex items-center gap-3 rounded-2xl border p-3 text-left transition-all",
                           isActive ? "border-sky-500 bg-sky-50 shadow-sky-100" : "border-slate-200 hover:border-sky-200",
                         )}
                       >
@@ -495,7 +473,7 @@ function BasicContextStep({ form }: StepProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Property sub-type</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""} disabled={!selectedPropertyType}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Apartment, Office, Retail..." />
@@ -598,7 +576,6 @@ function LocationProjectStep({ form }: StepProps) {
 
   return (
     <div className="space-y-6">
-      <FieldShell title="Location & Project" description="Pinpoint your property and map to master data" icon={MapPin} />
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="border-0 bg-white/80 p-5 shadow-xl">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -745,7 +722,7 @@ function LocationProjectStep({ form }: StepProps) {
           </div>
         </Card>
 
-        <Card className="border-0 bg-slate-900/90 p-5 text-white shadow-xl">
+        <Card className="border border-slate-100 bg-gradient-to-br from-white via-slate-50 to-white p-5 text-slate-900 shadow-xl">
           <FieldShell title="Projects & societies" description="Map to a known project or add your own society label" icon={Building2} />
           <FormField
             control={form.control}
@@ -755,11 +732,11 @@ function LocationProjectStep({ form }: StepProps) {
                 <FormLabel>Project (from master)</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value ?? ""} disabled={!cityId}>
                   <FormControl>
-                    <SelectTrigger className="bg-white/10 text-white">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select project" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="text-slate-900">
+                  <SelectContent>
                     {filteredProjects.map((proj) => (
                       <SelectItem key={proj.id} value={proj.id}>
                         {proj.label}
@@ -771,7 +748,7 @@ function LocationProjectStep({ form }: StepProps) {
             )}
           />
 
-          <Separator className="my-4 border-white/10" />
+          <Separator className="my-4 border-slate-200" />
 
           <FormField
             control={form.control}
@@ -780,12 +757,12 @@ function LocationProjectStep({ form }: StepProps) {
               <FormItem>
                 <FormLabel>Society / Project name (free text)</FormLabel>
                 <Input
-                  className="bg-white/10 text-white placeholder:text-slate-300"
+                  className="bg-white text-slate-900 placeholder:text-slate-400"
                   value={field.value ?? ""}
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder="Green View Residency"
                 />
-                <FormDescription className="text-xs text-slate-200/70">
+                <FormDescription className="text-xs text-slate-500">
                   Required if no project is selected from master.
                 </FormDescription>
               </FormItem>
@@ -793,15 +770,15 @@ function LocationProjectStep({ form }: StepProps) {
           />
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm text-slate-200">Locality integrity</p>
-              <p className="text-lg font-semibold text-white">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="text-sm text-slate-600">Locality integrity</p>
+              <p className="text-lg font-semibold text-slate-900">
                 {cityId ? `${currentLocalities.length} areas found` : "Select city"}
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm text-slate-200">Project match</p>
-              <p className="text-lg font-semibold text-white">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="text-sm text-slate-600">Project match</p>
+              <p className="text-lg font-semibold text-slate-900">
                 {filteredProjects.length ? `${filteredProjects.length} matches` : "Add society name"}
               </p>
             </div>
@@ -818,7 +795,6 @@ function PropertyDetailsStep({ form }: StepProps) {
 
   return (
     <div className="space-y-6">
-      <FieldShell title="Property Details (Structure)" description="Dimensions, configuration, and fitment" icon={Gauge} />
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="border-0 bg-white/85 p-5 shadow-xl">
           <p className="mb-3 text-sm font-semibold text-slate-700">Dimensions</p>
@@ -904,8 +880,8 @@ function PropertyDetailsStep({ form }: StepProps) {
           </div>
         </Card>
 
-        <Card className="border-0 bg-slate-900/90 p-5 text-white shadow-xl">
-          <p className="mb-3 text-sm font-semibold text-slate-200">Configuration</p>
+        <Card className="border border-slate-100 bg-gradient-to-br from-white via-slate-50 to-white p-5 text-slate-900 shadow-xl">
+          <p className="mb-3 text-sm font-semibold text-slate-800">Configuration</p>
           <div className="grid gap-3 sm:grid-cols-2">
             {resCom === "RESIDENTIAL" && listingType !== "PG" && (
               <>
@@ -1050,11 +1026,11 @@ function PropertyDetailsStep({ form }: StepProps) {
               control={form.control}
               name="details.lift"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-white/10 bg-white/5 p-3">
+                <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-slate-200 bg-white p-3">
                   <FormControl>
                     <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
-                  <FormLabel className="text-sm text-white">Lift available</FormLabel>
+                  <FormLabel className="text-sm text-slate-800">Lift available</FormLabel>
                 </FormItem>
               )}
             />
@@ -1101,7 +1077,6 @@ function PricingAvailabilityStep({ form }: StepProps) {
   const listingType = form.watch("context.listingType");
   return (
     <div className="space-y-6">
-      <FieldShell title="Price & Availability" description="Financials + when the space is ready" icon={Coins} />
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="border-0 bg-white p-5 shadow-xl">
           <p className="mb-3 text-sm font-semibold text-slate-700">Pricing & Financials</p>
@@ -1222,8 +1197,8 @@ function PricingAvailabilityStep({ form }: StepProps) {
           </div>
         </Card>
 
-        <Card className="border-0 bg-slate-900/90 p-5 text-white shadow-xl">
-          <p className="mb-3 text-sm font-semibold text-slate-200">Availability & possession</p>
+        <Card className="border border-slate-100 bg-gradient-to-br from-white via-slate-50 to-white p-5 text-slate-900 shadow-xl">
+          <p className="mb-3 text-sm font-semibold text-slate-800">Availability & possession</p>
           <div className="grid gap-3 sm:grid-cols-2">
             <FormField
               control={form.control}
@@ -1234,11 +1209,11 @@ function PricingAvailabilityStep({ form }: StepProps) {
                   <FormLabel>Availability</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value ?? ""}>
                     <FormControl>
-                      <SelectTrigger className="bg-white/10 text-white">
+                      <SelectTrigger>
                         <SelectValue placeholder="Ready, UC, soon" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="text-slate-900">
+                    <SelectContent>
                       <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
                       <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
                       <SelectItem value="POSSESSION_SOON">Possession soon</SelectItem>
@@ -1255,7 +1230,7 @@ function PricingAvailabilityStep({ form }: StepProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Available from</FormLabel>
-                  <Input type="date" value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} className="bg-white/10 text-white" />
+                  <Input type="date" value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} />
                 </FormItem>
               )}
             />
@@ -1270,11 +1245,11 @@ function PricingAvailabilityStep({ form }: StepProps) {
                   <FormLabel>Possession status</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value ?? ""}>
                     <FormControl>
-                      <SelectTrigger className="bg-white/10 text-white">
+                      <SelectTrigger>
                         <SelectValue placeholder="Ready / UC / Launch" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="text-slate-900">
+                    <SelectContent>
                       <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
                       <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
                       <SelectItem value="LAUNCH">Launch</SelectItem>
@@ -1287,17 +1262,17 @@ function PricingAvailabilityStep({ form }: StepProps) {
               control={form.control}
               name="availability.constructionDone"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-white/10 bg-white/5 p-3">
+                <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-slate-200 bg-white p-3">
                   <FormControl>
                     <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
-                  <FormLabel className="text-sm text-white">Construction complete</FormLabel>
+                  <FormLabel className="text-sm text-slate-800">Construction complete</FormLabel>
                 </FormItem>
               )}
             />
           </div>
 
-          <Separator className="my-4 border-white/10" />
+          <Separator className="my-4 border-slate-200" />
           <FormField
             control={form.control}
             name="availability.possessionBy"
@@ -1305,7 +1280,7 @@ function PricingAvailabilityStep({ form }: StepProps) {
               <FormItem>
                 <FormLabel>Possession timeline</FormLabel>
                 <Input
-                  className="bg-white/10 text-white"
+                  className="bg-white text-slate-900"
                   value={field.value ?? ""}
                   onChange={(e) => field.onChange(e.target.value)}
                   placeholder="Within 3 months / 2025-Q2"
@@ -1336,7 +1311,6 @@ function AmenitiesLegalStep({ form }: StepProps) {
 
   return (
     <div className="space-y-6">
-      <FieldShell title="Amenities, Features & Legal" description="Furnishing, facilities, parking, and approvals" icon={ShieldCheck} />
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="border-0 bg-white p-5 shadow-xl">
           <p className="mb-3 text-sm font-semibold text-slate-700">Furnishing & Facilities</p>
@@ -1415,8 +1389,8 @@ function AmenitiesLegalStep({ form }: StepProps) {
           </div>
         </Card>
 
-        <Card className="border-0 bg-slate-900/90 p-5 text-white shadow-xl">
-          <p className="mb-3 text-sm font-semibold text-slate-200">Ownership & Legal</p>
+        <Card className="border border-slate-100 bg-gradient-to-br from-white via-slate-50 to-white p-5 text-slate-900 shadow-xl">
+          <p className="mb-3 text-sm font-semibold text-slate-800">Ownership & Legal</p>
           <FormField
             control={form.control}
             name="amenities.ownershipType"
@@ -1426,11 +1400,11 @@ function AmenitiesLegalStep({ form }: StepProps) {
                 <FormLabel>Ownership type</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value ?? ""}>
                   <FormControl>
-                    <SelectTrigger className="bg-white/10 text-white">
+                    <SelectTrigger>
                       <SelectValue placeholder="Freehold / Leasehold / Co-operative" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="text-slate-900">
+                  <SelectContent>
                     <SelectItem value="FREEHOLD">Freehold</SelectItem>
                     <SelectItem value="LEASEHOLD">Leasehold</SelectItem>
                     <SelectItem value="CO_OPERATIVE">Co-operative</SelectItem>
@@ -1445,27 +1419,27 @@ function AmenitiesLegalStep({ form }: StepProps) {
             {authorityOptions.map((authority) => (
               <FormItem
                 key={authority.id}
-                className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-white/10 bg-white/5 p-3"
+                className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-slate-200 bg-white p-3"
               >
                 <FormControl>
                   <Checkbox checked={authorityIds.includes(authority.id)} onCheckedChange={() => toggleAuthority(authority.id)} />
                 </FormControl>
-                <FormLabel className="text-sm text-white">{authority.label}</FormLabel>
+                <FormLabel className="text-sm text-slate-800">{authority.label}</FormLabel>
               </FormItem>
             ))}
           </div>
 
-          <Separator className="my-4 border-white/10" />
+          <Separator className="my-4 border-slate-200" />
           <div className="grid gap-3 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="amenities.boundaryWall"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-white/10 bg-white/5 p-3">
+                <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-slate-200 bg-white p-3">
                   <FormControl>
                     <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
                   </FormControl>
-                  <FormLabel className="text-sm text-white">Boundary wall</FormLabel>
+                  <FormLabel className="text-sm text-slate-800">Boundary wall</FormLabel>
                 </FormItem>
               )}
             />
@@ -1473,11 +1447,11 @@ function AmenitiesLegalStep({ form }: StepProps) {
               control={form.control}
               name="amenities.fireNoc"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-white/10 bg-white/5 p-3">
+                <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-slate-200 bg-white p-3">
                   <FormControl>
                     <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
                   </FormControl>
-                  <FormLabel className="text-sm text-white">Fire NOC</FormLabel>
+                  <FormLabel className="text-sm text-slate-800">Fire NOC</FormLabel>
                 </FormItem>
               )}
             />
@@ -1505,7 +1479,6 @@ function MediaReviewStep({ form }: StepProps) {
 
   return (
     <div className="space-y-6">
-      <FieldShell title="Photos, Media, Title & Review" description="Upload references and craft the story" icon={Camera} />
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="border-0 bg-white p-5 shadow-xl">
           <p className="mb-3 text-sm font-semibold text-slate-700">Media</p>
@@ -1571,8 +1544,8 @@ function MediaReviewStep({ form }: StepProps) {
           />
         </Card>
 
-        <Card className="border-0 bg-slate-900/90 p-5 text-white shadow-xl">
-          <p className="mb-3 text-sm font-semibold text-slate-200">Publish options & quick review</p>
+        <Card className="border border-slate-100 bg-gradient-to-br from-white via-slate-50 to-white p-5 text-slate-900 shadow-xl">
+          <p className="mb-3 text-sm font-semibold text-slate-800">Publish options & quick review</p>
           <div className="grid gap-3 sm:grid-cols-2">
             <FormField
               control={form.control}
@@ -1582,11 +1555,11 @@ function MediaReviewStep({ form }: StepProps) {
                   <FormLabel>Publish status</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value ?? ""}>
                     <FormControl>
-                      <SelectTrigger className="bg-white/10 text-white">
+                      <SelectTrigger>
                         <SelectValue placeholder="Draft / Active" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="text-slate-900">
+                    <SelectContent>
                       <SelectItem value="DRAFT">Draft</SelectItem>
                       <SelectItem value="ACTIVE">Active</SelectItem>
                     </SelectContent>
@@ -1598,17 +1571,17 @@ function MediaReviewStep({ form }: StepProps) {
               control={form.control}
               name="publishOptions.qcRequired"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-white/10 bg-white/5 p-3">
+                <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-2xl border border-slate-200 bg-white p-3">
                   <FormControl>
                     <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
-                  <FormLabel className="text-sm text-white">QC required</FormLabel>
+                  <FormLabel className="text-sm text-slate-800">QC required</FormLabel>
                 </FormItem>
               )}
             />
           </div>
 
-          <Separator className="my-4 border-white/10" />
+          <Separator className="my-4 border-slate-200" />
 
           <div className="space-y-3">
             <ReviewRow label="Listing type" value={`${summary.context.listingType} · ${summary.context.resCom}`} />
@@ -1624,8 +1597,8 @@ function MediaReviewStep({ form }: StepProps) {
 }
 
 const ReviewRow = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
-    <span className="text-xs uppercase tracking-[0.2em] text-slate-200/70">{label}</span>
-    <span className="text-sm font-semibold text-white">{value}</span>
+  <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
+    <span className="text-xs uppercase tracking-[0.2em] text-slate-500">{label}</span>
+    <span className="text-sm font-semibold text-slate-900">{value}</span>
   </div>
 );
