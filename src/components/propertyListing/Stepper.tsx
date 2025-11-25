@@ -1,91 +1,96 @@
 "use client";
-import React from 'react';
-import * as Progress from '@radix-ui/react-progress';
 
-interface StepperProps {
-  currentStep: number; // 1..7
+import React from "react";
+import { cn } from "@/components/ui/utils";
+
+export interface StepDescriptor {
+  id: number;
+  label: string;
+  caption?: string;
 }
 
-const steps = [
-  { id: 1, label: 'Basic Details' },
-  { id: 2, label: 'Location' },
-  { id: 3, label: 'Property Profile' },
-  { id: 4, label: 'Photos & Videos' },
-  { id: 5, label: 'Pricing' },
-  { id: 6, label: 'Amenities' },
-  { id: 7, label: 'Review' },
-];
+interface StepperProps {
+  steps: StepDescriptor[];
+  currentStep: number; // 1-based
+  onNavigate?: (stepId: number) => void;
+}
 
-export const Stepper: React.FC<StepperProps> = ({ currentStep }) => {
-  const percent = Math.round(((currentStep - 1) / steps.length) * 100);
+export const Stepper: React.FC<StepperProps> = ({ steps, currentStep, onNavigate }) => {
+  const percent = Math.round(((currentStep - 1) / Math.max(steps.length - 1, 1)) * 100);
 
   return (
-    <div className="w-full">
-      {/* Mobile: sticky, compact segmented indicator */}
-      <div className="sm:hidden sticky top-0 z-40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="flex items-center justify-between px-3 py-2">
-          <span className="text-xs text-muted-foreground">Step {currentStep} of {steps.length}</span>
-          <span className="inline-flex items-center rounded-full bg-blue-50 text-blue-700 text-[11px] px-2 py-1">
-            {percent}%
-          </span>
+    <div className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-800 text-white shadow-2xl">
+      <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.25),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(56,189,248,0.3),transparent_32%)]" />
+      <div className="relative px-4 py-3 sm:px-6 sm:py-5 flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-200/80">Property Launchpad</p>
+            <p className="text-base font-semibold">Step {currentStep} of {steps.length}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-200/80">Progress</span>
+            <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-sm font-semibold shadow-inner">
+              {percent}%
+            </span>
+          </div>
         </div>
-        <div className="px-3 pb-2">
-          <div className="grid grid-cols-7 gap-1" aria-label="Progress through steps">
-            {steps.map((s) => {
-              const filled = s.id <= currentStep;
-              const isCurrent = s.id === currentStep;
+
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+            {steps.map((step) => {
+              const isActive = step.id === currentStep;
+              const isDone = step.id < currentStep;
               return (
-                <div
-                  key={s.id}
-                  className={`h-1.5 rounded-full ${filled ? 'bg-blue-600' : 'bg-gray-300'} ${isCurrent ? 'shadow-[0_0_0_2px_rgba(37,99,235,0.3)]' : ''}`}
-                  aria-current={isCurrent ? 'step' : undefined}
-                />
+                <button
+                  key={step.id}
+                  type="button"
+                  onClick={() => onNavigate?.(step.id)}
+                  className={cn(
+                    "group relative flex h-full min-h-[64px] flex-col items-start justify-center rounded-2xl border px-3 py-2 text-left transition-all",
+                    "backdrop-blur bg-white/5 hover:bg-white/10",
+                    isActive && "border-white/70 shadow-lg shadow-blue-500/20 ring-1 ring-white/80",
+                    isDone && !isActive && "border-white/20 text-slate-100/80"
+                  )}
+                  aria-current={isActive ? "step" : undefined}
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={cn(
+                        "flex h-8 w-8 items-center justify-center rounded-full border text-sm font-bold transition-all",
+                        isActive
+                          ? "border-white bg-white text-slate-900"
+                          : isDone
+                          ? "border-white/60 text-white"
+                          : "border-white/40 text-slate-200"
+                      )}
+                    >
+                      {isDone ? "✓" : step.id}
+                    </span>
+                    <div>
+                      <p className={cn("text-sm font-semibold", isActive ? "text-white" : "text-slate-100")}>
+                        {step.label}
+                      </p>
+                      {step.caption && <p className="text-[11px] text-slate-200/80">{step.caption}</p>}
+                    </div>
+                  </div>
+                </button>
               );
             })}
           </div>
-          <div className="mt-2 text-center text-[11px] text-muted-foreground">
-            {steps.find(s => s.id === currentStep)?.label}
+          <div className="h-2 w-full overflow-hidden rounded-full bg-white/15">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-300 transition-all"
+              style={{ width: `${percent}%` }}
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={percent}
+            />
           </div>
         </div>
-      </div>
-
-      {/* Desktop: full step chips with progress bar */}
-      <div className="hidden sm:block">
-        <div className="flex items-center justify-between mb-3">
-          <div className="text-sm text-gray-600 font-medium">List Your Property</div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500">Step {currentStep} of {steps.length}</span>
-            <span className="inline-flex items-center rounded-full bg-blue-50 text-blue-700 text-xs px-2 py-1">{percent}% Complete</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 flex-wrap">
-          {steps.map((step) => {
-            const isActive = step.id === currentStep;
-            return (
-              <div key={step.id} className="flex items-center gap-2">
-                <div
-                  className={
-                    `flex items-center justify-center h-8 w-8 rounded-full border ${
-                      isActive ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'
-                    }`
-                  }
-                >
-                  {step.id}
-                </div>
-                <span className={`text-xs ${isActive ? 'text-blue-700 font-medium' : 'text-gray-500'}`}>{step.label}</span>
-              </div>
-            );
-          })}
-        </div>
-        <Progress.Root className="relative h-2 w-full overflow-hidden rounded-full bg-gray-200 mt-4" value={percent}>
-          <Progress.Indicator
-            className="h-full w-full flex-1 bg-blue-600"
-            style={{ transform: `translateX(-${100 - percent}%)` }}
-          />
-        </Progress.Root>
       </div>
     </div>
   );
 };
 
-Stepper.displayName = 'Stepper';
+Stepper.displayName = "Stepper";
