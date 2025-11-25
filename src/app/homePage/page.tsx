@@ -1,12 +1,27 @@
-import React from 'react';
+import React from "react";
+import { HeaderNav } from "./components/HeaderNav";
+import { HeroSearch } from "./components/HeroSearch";
+import { QuickActions } from "./components/QuickActions";
+import { ListingSection } from "./components/ListingSection";
+import { AppPromo } from "./components/AppPromo";
+import { InspirationGrid } from "./components/InspirationGrid";
+import { FooterLinks } from "./components/FooterLinks";
+import { popularListings, weekendGetaways, cityCollections, inspirationLinks } from "./data";
 
 export default function HomePage() {
   return (
-    <main style={{ padding: '2rem' }}>
-      <h1 style={{ fontSize: '2rem', fontWeight: 600 }}>Home Page</h1>
-      <p style={{ marginTop: '0.75rem' }}>
-        Welcome to CityHaven — this is your new homePage route.
-      </p>
+    <main className="min-h-screen bg-white text-slate-900">
+      <HeaderNav />
+      <HeroSearch />
+      <QuickActions />
+      <ListingSection title="Popular homes in Gurgaon District" listings={popularListings} cta="View all" />
+      <ListingSection title="Available this weekend" listings={weekendGetaways} cta="See more" />
+      {cityCollections.map((block) => (
+        <ListingSection key={block.heading} title={block.heading} listings={block.listings} cta="View more" />
+      ))}
+      <AppPromo />
+      <InspirationGrid groups={inspirationLinks} />
+      <FooterLinks />
     </main>
   );
 }
