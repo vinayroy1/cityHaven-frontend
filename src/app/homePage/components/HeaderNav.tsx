@@ -63,7 +63,7 @@ export function HeaderNav() {
   const activeConfig = navMenus.find((m) => m.key === activeMenu);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur" onMouseLeave={closeMenu}>
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:px-6 flex-nowrap">
         <div className="flex items-center gap-2 whitespace-nowrap">
           <Link href="/homePage" className="flex items-center gap-2 text-lg font-semibold">
@@ -78,10 +78,7 @@ export function HeaderNav() {
           </Link>
         </div>
 
-        <nav
-          className="hidden items-center gap-1 text-sm font-semibold text-slate-800 md:flex flex-nowrap overflow-x-auto no-scrollbar"
-          onMouseLeave={closeMenu}
-        >
+        <nav className="hidden items-center gap-1 text-sm font-semibold text-slate-800 md:flex flex-nowrap overflow-x-auto no-scrollbar">
           {navMenus.map((item) => (
             <button
               key={item.key}
