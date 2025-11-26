@@ -12,7 +12,7 @@ const actions = [
 
 export function QuickActions() {
   return (
-    <section className="mx-auto mt-8 max-w-6xl px-6">
+    <section className="mx-auto mt-8 hidden max-w-6xl px-6 md:block">
       <div className="grid gap-3 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-5">
         {actions.map((item) => (
           <Link
