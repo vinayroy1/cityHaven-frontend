@@ -209,10 +209,10 @@ export default function LoginPage() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           <div>© {year} CityHaven</div>
           <nav className="flex flex-wrap items-center gap-4">
-            <Link href="#">Sitemap</Link>
-            <Link href="#">About Us</Link>
-            <Link href="#">Terms & Conditions</Link>
-            <Link href="#">Privacy Policy</Link>
+            <Link href="/homePage">Home</Link>
+            <Link href="/about">About Us</Link>
+            <Link href="/terms">Terms & Conditions</Link>
+            <Link href="/privacy">Privacy Policy</Link>
           </nav>
         </div>
       </footer>

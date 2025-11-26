@@ -100,6 +100,12 @@ export function HeaderNav() {
             Post property <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-xs text-white">FREE</span>
           </Link>
           <Link
+            href="/about"
+            className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 sm:flex whitespace-nowrap"
+          >
+            About
+          </Link>
+          <Link
             href="/contact"
             className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:flex"
           >

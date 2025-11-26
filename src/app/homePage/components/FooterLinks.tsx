@@ -9,6 +9,8 @@ const columns = [
       { label: "Safety information", href: "/policies" },
       { label: "Cancellation options", href: "/policies#cancellation" },
       { label: "Report concern", href: "/contact" },
+      { label: "Privacy policy", href: "/privacy" },
+      { label: "Terms & conditions", href: "/terms" },
     ],
   },
   {
@@ -23,7 +25,7 @@ const columns = [
   {
     title: "CityHaven",
     links: [
-      { label: "Careers", href: "/about" },
+      { label: "About us", href: "/about" },
       { label: "Newsroom", href: "/about" },
       { label: "Investors", href: "/about" },
       { label: "Emergency stays", href: "/homePage" },
