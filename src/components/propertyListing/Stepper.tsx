@@ -19,8 +19,8 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep, onNavigate
   const percent = Math.round(((currentStep - 1) / Math.max(steps.length - 1, 1)) * 100);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-sky-50 via-indigo-50 to-white text-slate-900 shadow-2xl">
-      <div className="absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.25),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(99,102,241,0.25),transparent_32%)]" />
+    <div className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-rose-50 via-white to-indigo-50 text-slate-900 shadow-2xl">
+      <div className="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_20%_20%,rgba(244,63,94,0.14),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(79,70,229,0.18),transparent_32%)]" />
       <div className="relative px-4 py-3 sm:px-6 sm:py-5 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
@@ -58,7 +58,7 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep, onNavigate
                       className={cn(
                         "flex h-8 w-8 items-center justify-center rounded-full border text-sm font-bold transition-all",
                         isActive
-                          ? "border-indigo-500 bg-indigo-500 text-white"
+                          ? "border-rose-400 bg-gradient-to-br from-rose-500 to-orange-500 text-white"
                           : isDone
                           ? "border-emerald-500 bg-emerald-500 text-white"
                           : "border-slate-300 bg-white text-slate-700"
@@ -79,7 +79,7 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep, onNavigate
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200/70">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400 transition-all"
+              className="h-full rounded-full bg-gradient-to-r from-rose-500 via-orange-400 to-indigo-400 transition-all"
               style={{ width: `${percent}%` }}
               role="progressbar"
               aria-valuemin={0}

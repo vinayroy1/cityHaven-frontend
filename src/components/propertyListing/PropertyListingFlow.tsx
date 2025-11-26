@@ -27,8 +27,8 @@ import { PricingAvailabilityStep } from "./steps/PricingAvailabilityStep";
 import { PropertyDetailsStep } from "./steps/PropertyDetailsStep";
 
 const GlassPanel = ({ children }: { children: ReactNode }) => (
-  <div className="relative overflow-hidden rounded-[28px] border border-slate-200/70 bg-white/80 p-6 shadow-2xl shadow-sky-100 backdrop-blur">
-    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(14,165,233,0.12),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(94,234,212,0.16),transparent_32%)]" />
+  <div className="relative overflow-hidden rounded-[28px] border border-slate-200/70 bg-white/90 p-6 shadow-2xl shadow-red-100/70 backdrop-blur">
+    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(244,63,94,0.14),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(79,70,229,0.16),transparent_32%)]" />
     <div className="relative">{children}</div>
   </div>
 );

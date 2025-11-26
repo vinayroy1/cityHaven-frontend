@@ -4,6 +4,10 @@
   --background: #ffffff;
   --foreground: #171717;
   --brand-blue: #2563eb; /* Tailwind blue-600 */
+  --brand-from: #ef4444; /* red-500 */
+  --brand-to: #f97316; /* orange-500 */
+  --brand-soft-from: #fff1f2;
+  --brand-soft-to: #fff7ed;
 }
 
 @theme inline {
