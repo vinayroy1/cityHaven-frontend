@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Calendar, MapPin, User, Search, Home, Briefcase } from "lucide-react";
 
 export function HeroSearch() {
@@ -45,9 +46,12 @@ export function HeroSearch() {
             <option>3 BHK</option>
             <option>4+ BHK</option>
           </select>
-          <button className="flex items-center justify-center gap-2 rounded-full bg-red-500 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-red-200 transition hover:-translate-y-0.5">
+          <Link
+            href="/propertySearch"
+            className="flex items-center justify-center gap-2 rounded-full bg-red-500 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-red-200 transition hover:-translate-y-0.5"
+          >
             <Search className="h-4 w-4" /> Search
-          </button>
+          </Link>
         </div>
       </div>
     </section>

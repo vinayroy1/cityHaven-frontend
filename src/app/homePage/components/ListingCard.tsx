@@ -1,7 +1,9 @@
 import React from "react";
+import Link from "next/link";
 import { Heart, ShieldCheck } from "lucide-react";
 
 type Props = {
+  id?: string;
   title: string;
   location: string;
   price: string;
@@ -9,9 +11,11 @@ type Props = {
   image: string;
 };
 
-export function ListingCard({ title, location, price, badge, image }: Props) {
+export function ListingCard({ id, title, location, price, badge, image }: Props) {
+  const href = id ? `/properties/${id}` : "/propertySearch";
+
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+    <Link href={href} className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
       <div className="relative">
         <img src={image} alt={title} className="h-44 w-full object-cover transition duration-500 group-hover:scale-105" />
         {badge && (
@@ -32,6 +36,6 @@ export function ListingCard({ title, location, price, badge, image }: Props) {
         <p className="text-sm text-slate-600">{location}</p>
         <p className="text-sm font-semibold text-slate-900">{price}</p>
       </div>
-    </article>
+    </Link>
   );
 }

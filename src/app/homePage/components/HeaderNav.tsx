@@ -1,5 +1,6 @@
- "use client";
+"use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import { ChevronDown, Globe, Phone, User, Bell, CircleHelp } from "lucide-react";
 
 const navMenus = [
@@ -65,13 +66,16 @@ export function HeaderNav() {
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:px-6 flex-nowrap">
         <div className="flex items-center gap-2 whitespace-nowrap">
-          <div className="flex items-center gap-2 text-lg font-semibold">
+          <Link href="/homePage" className="flex items-center gap-2 text-lg font-semibold">
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-200">CH</span>
             <span className="tracking-tight">CityHaven</span>
-          </div>
-          <button className="hidden items-center gap-1 rounded-full border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-slate-300 sm:flex whitespace-nowrap">
+          </Link>
+          <Link
+            href="/propertySearch"
+            className="hidden items-center gap-1 rounded-full border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-slate-300 sm:flex whitespace-nowrap"
+          >
             All India <ChevronDown className="h-4 w-4" />
-          </button>
+          </Link>
         </div>
 
         <nav
@@ -92,24 +96,42 @@ export function HeaderNav() {
         </nav>
 
         <div className="flex items-center gap-2 flex-nowrap">
-          <button className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 shadow-sm transition hover:-translate-y-0.5 sm:flex whitespace-nowrap">
+          <Link
+            href="/propertyListing"
+            className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 shadow-sm transition hover:-translate-y-0.5 sm:flex whitespace-nowrap"
+          >
             Post property <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-xs text-white">FREE</span>
-          </button>
-          <button className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:flex">
+          </Link>
+          <Link
+            href="/contact"
+            className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:flex"
+          >
             <Phone className="h-5 w-5" />
-          </button>
-          <button className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:flex">
+          </Link>
+          <Link
+            href="/dashboard"
+            className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:flex"
+          >
             <Bell className="h-5 w-5" />
-          </button>
-          <button className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:flex">
+          </Link>
+          <Link
+            href="/contact"
+            className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:flex"
+          >
             <CircleHelp className="h-5 w-5" />
-          </button>
-          <button className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-900 text-white shadow-sm transition hover:-translate-y-0.5">
+          </Link>
+          <Link
+            href="/login"
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-900 text-white shadow-sm transition hover:-translate-y-0.5"
+          >
             <User className="h-5 w-5" />
-          </button>
-          <button className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:hidden">
+          </Link>
+          <Link
+            href="/homePage"
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:hidden"
+          >
             <Globe className="h-5 w-5" />
-          </button>
+          </Link>
         </div>
       </div>
 

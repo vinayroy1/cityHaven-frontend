@@ -1,9 +1,34 @@
 import React from "react";
+import Link from "next/link";
 
 const columns = [
-  { title: "Support", links: ["Help Centre", "Safety information", "Cancellation options", "Report concern"] },
-  { title: "Hosting", links: ["List your home", "Host resources", "Community forum", "Responsible hosting"] },
-  { title: "CityHaven", links: ["Careers", "Newsroom", "Investors", "Emergency stays"] },
+  {
+    title: "Support",
+    links: [
+      { label: "Help Centre", href: "/contact" },
+      { label: "Safety information", href: "/policies" },
+      { label: "Cancellation options", href: "/policies#cancellation" },
+      { label: "Report concern", href: "/contact" },
+    ],
+  },
+  {
+    title: "Hosting",
+    links: [
+      { label: "List your home", href: "/propertyListing" },
+      { label: "Host resources", href: "/dashboard" },
+      { label: "Community forum", href: "/community" },
+      { label: "Responsible hosting", href: "/policies#hosting" },
+    ],
+  },
+  {
+    title: "CityHaven",
+    links: [
+      { label: "Careers", href: "/about" },
+      { label: "Newsroom", href: "/about" },
+      { label: "Investors", href: "/about" },
+      { label: "Emergency stays", href: "/homePage" },
+    ],
+  },
 ];
 
 export function FooterLinks() {
@@ -22,9 +47,9 @@ export function FooterLinks() {
             <p className="text-sm font-semibold text-slate-900">{col.title}</p>
             <div className="mt-3 flex flex-col gap-2 text-sm text-slate-600">
               {col.links.map((link) => (
-                <a key={link} className="hover:text-red-500" href="#">
-                  {link}
-                </a>
+                <Link key={link.label} className="hover:text-red-500" href={link.href}>
+                  {link.label}
+                </Link>
               ))}
             </div>
           </div>
