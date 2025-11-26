@@ -74,11 +74,16 @@ export function HeaderNav() {
           </button>
         </div>
 
-        <nav className="hidden items-center gap-1 text-sm font-semibold text-slate-800 md:flex flex-nowrap overflow-x-auto no-scrollbar">
+        <nav
+          className="hidden items-center gap-1 text-sm font-semibold text-slate-800 md:flex flex-nowrap overflow-x-auto no-scrollbar"
+          onMouseLeave={closeMenu}
+        >
           {navMenus.map((item) => (
             <button
               key={item.key}
               onClick={() => openMenu(item.key)}
+              onMouseEnter={() => setActiveMenu(item.key)}
+              onFocus={() => setActiveMenu(item.key)}
               className={`whitespace-nowrap rounded-full px-3 py-2 transition ${activeMenu === item.key ? "bg-slate-100 text-slate-900 shadow-inner" : "hover:bg-slate-100"}`}
             >
               {item.label}
