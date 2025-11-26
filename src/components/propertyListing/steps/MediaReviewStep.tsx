@@ -1,11 +1,12 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { MediaSelector } from "../MediaSelector";
 import type { StepProps } from "./StepCommon";
 
 export function MediaReviewStep({ form }: StepProps) {
@@ -26,41 +27,10 @@ export function MediaReviewStep({ form }: StepProps) {
   return (
     <div className="space-y-6">
       <div className="grid gap-5 lg:grid-cols-2">
-        <Card className="border-0 bg-white p-5 shadow-xl">
-          <p className="mb-3 text-sm font-semibold text-slate-700">Media</p>
-          <div className="grid gap-4">
-            <FormField
-              control={form.control}
-              name="media.mediaIds"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Image IDs</FormLabel>
-                  <Input
-                    value={mediaIds.join(", ")}
-                    onChange={(e) => updateNumberArray(e.target.value, "media.mediaIds")}
-                    placeholder="101, 102, 103"
-                  />
-                  <FormDescription className="text-xs text-slate-500">Require at least one image before publish.</FormDescription>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="media.documentIds"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Document IDs (floorplans, agreements)</FormLabel>
-                  <Input
-                    value={documentIds.join(", ")}
-                    onChange={(e) => updateNumberArray(e.target.value, "media.documentIds")}
-                    placeholder="201, 202"
-                  />
-                </FormItem>
-              )}
-            />
-          </div>
+        <MediaSelector form={form} />
 
-          <Separator className="my-4" />
+        <Card className="border border-slate-100 bg-gradient-to-br from-white via-slate-50 to-white p-5 text-slate-900 shadow-xl">
+          <p className="mb-3 text-sm font-semibold text-slate-800">Publish options & quick review</p>
           <FormField
             control={form.control}
             name="meta.title"
@@ -88,10 +58,6 @@ export function MediaReviewStep({ form }: StepProps) {
               </FormItem>
             )}
           />
-        </Card>
-
-        <Card className="border border-slate-100 bg-gradient-to-br from-white via-slate-50 to-white p-5 text-slate-900 shadow-xl">
-          <p className="mb-3 text-sm font-semibold text-slate-800">Publish options & quick review</p>
           <div className="grid gap-3 sm:grid-cols-2">
             <FormField
               control={form.control}
