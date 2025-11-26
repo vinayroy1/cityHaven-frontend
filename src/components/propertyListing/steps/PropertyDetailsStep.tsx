@@ -4,8 +4,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { NumberInput } from "./StepCommon";
 import type { StepProps } from "./StepCommon";
+import { MediaSelector } from "../MediaSelector";
 
 export function PropertyDetailsStep({ form }: StepProps) {
   const listingType = form.watch("context.listingType");
@@ -13,6 +15,37 @@ export function PropertyDetailsStep({ form }: StepProps) {
 
   return (
     <div className="space-y-6">
+      <Card className="border border-slate-100 bg-white p-5 shadow-xl">
+        <p className="mb-3 text-sm font-semibold text-slate-800">Story & title</p>
+        <FormField
+          control={form.control}
+          name="meta.title"
+          rules={{ required: "Title required" }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Listing title</FormLabel>
+              <Input value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} placeholder="2 BHK Apartment in HSR Layout" />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="meta.description"
+          render={({ field }) => (
+            <FormItem className="mt-3">
+              <FormLabel>Description</FormLabel>
+              <Textarea
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value)}
+                placeholder="Tell buyers/tenants about layout, light, connectivity, and recent upgrades."
+                rows={3}
+              />
+            </FormItem>
+          )}
+        />
+      </Card>
+
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="border-0 bg-white/85 p-5 shadow-xl">
           <p className="mb-3 text-sm font-semibold text-slate-700">Dimensions</p>
@@ -287,6 +320,11 @@ export function PropertyDetailsStep({ form }: StepProps) {
           </div>
         </Card>
       </div>
+
+      <Card className="border border-slate-100 bg-white p-5 shadow-xl">
+        <p className="mb-3 text-sm font-semibold text-slate-800">Photos & videos</p>
+        <MediaSelector form={form} />
+      </Card>
     </div>
   );
 }
