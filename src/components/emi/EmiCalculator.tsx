@@ -4,10 +4,20 @@ import { Calculator, Info, Percent, Sparkles, TrendingUp, Wallet } from "lucide-
 
 type TenureUnit = "years" | "months";
 
+const MAX_AMOUNT = 100_000_000; // Cap to keep UI readable (₹10 Cr)
+const MIN_AMOUNT = 100_000;
+
 function toNumber(value: string | number) {
   const numeric = typeof value === "number" ? value : Number(String(value).replace(/[^\d.]/g, ""));
   return Number.isFinite(numeric) ? numeric : 0;
 }
+
+function clampAmount(value: number) {
+  return Math.min(Math.max(value, MIN_AMOUNT), MAX_AMOUNT);
+}
+
+const formatINR = (value: number) =>
+  new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(Math.round(value));
 
 export function EmiCalculator() {
   const [amount, setAmount] = useState<number>(3000000);
@@ -70,18 +80,18 @@ export function EmiCalculator() {
                 <input
                   type="text"
                   inputMode="numeric"
-                  value={amount.toLocaleString("en-IN")}
-                  onChange={(e) => setAmount(toNumber(e.target.value))}
+                  value={formatINR(amount)}
+                  onChange={(e) => setAmount(clampAmount(toNumber(e.target.value)))}
                   className="w-full bg-transparent text-base font-semibold text-slate-900 outline-none"
                 />
               </div>
               <input
                 type="range"
-                min={100000}
-                max={20000000}
+                min={MIN_AMOUNT}
+                max={MAX_AMOUNT}
                 step={50000}
                 value={amount}
-                onChange={(e) => setAmount(Number(e.target.value))}
+                onChange={(e) => setAmount(clampAmount(Number(e.target.value)))}
                 className="w-full accent-red-500"
               />
             </label>
@@ -164,10 +174,10 @@ export function EmiCalculator() {
                 className="flex h-44 w-44 items-center justify-center rounded-full bg-white/10 shadow-inner ring-2 ring-white/10 sm:h-48 sm:w-48"
                 style={{ background: pieBackground }}
               >
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white text-center text-xs font-semibold text-slate-900 shadow">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white text-center text-[11px] font-semibold text-slate-900 shadow leading-tight">
                   EMI
                   <br />
-                  ₹{Math.round(emi).toLocaleString("en-IN")}
+                  ₹{formatINR(emi)}
                 </div>
               </div>
             </div>
@@ -176,20 +186,20 @@ export function EmiCalculator() {
                 <span className="h-3 w-3 rounded-sm bg-[#0f172a]" />
                 <div>
                   <p className="text-xs text-slate-300">Principal</p>
-                  <p className="text-sm font-semibold text-white">₹{amount.toLocaleString("en-IN")}</p>
+                  <p className="text-sm font-semibold text-white break-words">₹{formatINR(amount)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-sm bg-[#2dd4bf]" />
                 <div>
                   <p className="text-xs text-slate-300">Interest</p>
-                  <p className="text-sm font-semibold text-white">₹{Math.round(totalInterest).toLocaleString("en-IN")}</p>
+                  <p className="text-sm font-semibold text-white break-words">₹{formatINR(totalInterest)}</p>
                 </div>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/10 p-3 text-sm backdrop-blur">
                 <p className="text-xs uppercase tracking-wide text-slate-200">Monthly EMI</p>
-                <p className="text-xl font-bold text-white">₹{Math.round(emi).toLocaleString("en-IN")}</p>
-                <p className="mt-2 text-xs text-slate-200">Total Payable: ₹{Math.round(totalPayable).toLocaleString("en-IN")}</p>
+                <p className="text-xl font-bold text-white break-words">₹{formatINR(emi)}</p>
+                <p className="mt-2 text-xs text-slate-200">Total Payable: ₹{formatINR(totalPayable)}</p>
               </div>
               <button className="w-full rounded-xl bg-gradient-to-r from-red-500 to-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5">
                 Get instant loan offers

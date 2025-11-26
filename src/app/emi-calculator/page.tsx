@@ -13,14 +13,14 @@ export default function EmiCalculatorPage() {
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <HeaderNav />
-      <div className="relative isolate overflow-hidden bg-gradient-to-r from-red-600 via-red-500 to-orange-400">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.14),transparent_25%)]" />
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-10 sm:px-6 relative">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-white shadow-lg shadow-red-500/30">EMI</div>
+      <div className="relative isolate overflow-hidden bg-gradient-to-r from-rose-100 via-orange-100 to-amber-50">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(244,63,94,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(249,115,22,0.12),transparent_25%)]" />
+        <div className="relative mx-auto flex max-w-6xl items-center gap-4 px-4 py-10 sm:px-6">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-rose-500 shadow-lg shadow-amber-200/60">EMI</div>
           <div className="space-y-1">
-            <p className="text-xs uppercase tracking-[0.25em] text-amber-100">Plan your finance</p>
-            <h1 className="text-2xl font-semibold text-white sm:text-3xl">EMI Calculator for your loan</h1>
-            <p className="text-sm text-amber-50">Adjust amount, rate, and tenure to see repayments instantly.</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-rose-500">Plan your finance</p>
+            <h1 className="text-2xl font-semibold text-slate-900 sm:text-3xl">EMI Calculator for your loan</h1>
+            <p className="text-sm text-slate-600">Adjust amount, rate, and tenure to see repayments instantly.</p>
           </div>
         </div>
       </div>
