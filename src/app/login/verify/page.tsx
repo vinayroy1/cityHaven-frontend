@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Phone, Lock } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Phone, Lock, Loader2 } from "lucide-react";
+import { APP_CONFIG } from "@/constants/app-config";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { apiClient } from "@/lib/services/api/client";
 
 export default function VerifyOtpPage() {
   const router = useRouter();
@@ -11,6 +14,8 @@ export default function VerifyOtpPage() {
   const [otpCode, setOtpCode] = useState<string | null>(null);
   const [otpInput, setOtpInput] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const [verifying, setVerifying] = useState(false);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     try {
@@ -27,28 +32,48 @@ export default function VerifyOtpPage() {
 
   const validOtp = useMemo(() => /^\d{6}$/.test(otpInput.trim()), [otpInput]);
 
-  function handleVerify(e: React.FormEvent) {
+  async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
-    if (!otpCode) {
+    if (!mobile) {
       setMessage('No OTP found. Request again.');
       return;
     }
-    if (otpInput.trim() === otpCode) {
-      setMessage('Login successful!');
-      // TODO: Navigate to dashboard/home on real integration
-    } else {
-      setMessage('Invalid OTP. Please try again.');
+    if (!validOtp) {
+      setMessage('Enter a valid 6-digit OTP.');
+      return;
+    }
+    setVerifying(true);
+    try {
+      const response = await apiClient.post<{ data?: { accessToken?: string; refreshToken?: string; user?: unknown } }>(
+        API_ENDPOINTS.auth.verifyOtp,
+        { mobileNumber: mobile.replace(/\D/g, ""), otp: otpInput.trim() },
+      );
+      const tokens = response.data ?? {};
+      if (tokens.accessToken) localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, tokens.accessToken);
+      if (tokens.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, tokens.refreshToken);
+      if (tokens.user) localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(tokens.user));
+      setMessage('Login successful! Redirecting...');
+      router.push('/homePage');
+    } catch (err: any) {
+      setMessage(err?.message || 'Invalid OTP. Please try again.');
+    } finally {
+      setVerifying(false);
     }
   }
 
-  function resend() {
-    const code = String(Math.floor(100000 + Math.random() * 900000));
+  async function resend() {
+    if (!mobile) {
+      setMessage('Enter mobile on previous step.');
+      return;
+    }
+    setSending(true);
     try {
-      sessionStorage.setItem('cityhaven_otp_code', code);
-      setOtpCode(code);
+      await apiClient.post(API_ENDPOINTS.auth.requestOtp, { mobileNumber: mobile.replace(/\D/g, "") });
       setMessage('New OTP sent to your mobile.');
-    } catch {
-      setMessage('Could not store new OTP.');
+    } catch (err: any) {
+      setMessage(err?.message || 'Could not resend OTP.');
+    } finally {
+      setSending(false);
     }
   }
 
@@ -91,17 +116,18 @@ export default function VerifyOtpPage() {
               <div className="flex items-center gap-3">
                 <button
                   type="submit"
-                  disabled={!validOtp}
+                  disabled={!validOtp || verifying}
                   className="flex-1 rounded-lg bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 px-4 py-2 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-transform hover:scale-[1.02] focus:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600/40 disabled:opacity-60 disabled:hover:scale-100"
                 >
-                  Verify & Login
+                  {verifying ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Verifying</span> : "Verify & Login"}
                 </button>
                 <button
                   type="button"
                   onClick={resend}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-600 hover:bg-slate-50"
+                  disabled={sending}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-600 hover:bg-slate-50 disabled:opacity-60"
                 >
-                  Resend
+                  {sending ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Sending</span> : "Resend"}
                 </button>
               </div>
             </form>
@@ -120,4 +146,3 @@ export default function VerifyOtpPage() {
     </div>
   );
 }
-

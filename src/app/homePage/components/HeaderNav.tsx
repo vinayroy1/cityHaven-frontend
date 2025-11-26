@@ -70,12 +70,6 @@ export function HeaderNav() {
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-200">CH</span>
             <span className="tracking-tight">CityHaven</span>
           </Link>
-          <Link
-            href="/propertySearch"
-            className="hidden items-center gap-1 rounded-full border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-slate-300 sm:flex whitespace-nowrap"
-          >
-            All India <ChevronDown className="h-4 w-4" />
-          </Link>
         </div>
 
         <nav className="hidden items-center gap-1 text-sm font-semibold text-slate-800 md:flex flex-nowrap overflow-x-auto no-scrollbar">

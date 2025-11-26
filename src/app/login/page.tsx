@@ -2,7 +2,11 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Phone, Lock, ShieldCheck, RefreshCw, KeyRound } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Phone, Lock, ShieldCheck, RefreshCw, KeyRound, Loader2 } from "lucide-react";
+import { APP_CONFIG } from "@/constants/app-config";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { apiClient } from "@/lib/services/api/client";
 
 function makeCode(len = 5) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -13,6 +17,7 @@ function makeCode(len = 5) {
 
 export default function LoginPage() {
   const year = new Date().getFullYear();
+  const router = useRouter();
 
   const [mobile, setMobile] = useState("");
   const [captcha, setCaptcha] = useState("");
@@ -21,6 +26,8 @@ export default function LoginPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [otpRequested, setOtpRequested] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
 
   useEffect(() => {
     // Generate CAPTCHA on client after hydration to avoid SSR mismatch
@@ -35,7 +42,7 @@ export default function LoginPage() {
     setMessage(null);
   }
 
-  function handleSendOtp(e: React.FormEvent) {
+  async function handleSendOtp(e: React.FormEvent) {
     e.preventDefault();
     setMessage(null);
     if (!validMobile) {
@@ -46,29 +53,48 @@ export default function LoginPage() {
       setMessage('CAPTCHA does not match.');
       return;
     }
-    const code = String(Math.floor(100000 + Math.random() * 900000));
-    setOtpCode(code);
+    setSendingOtp(true);
+    const cleanMobile = mobile.replace(/\D/g, "");
     try {
-      sessionStorage.setItem('cityhaven_mobile', mobile);
-      sessionStorage.setItem('cityhaven_otp_code', code);
-    } catch {}
-    setOtpRequested(true);
-    setMessage('OTP sent to your mobile. Enter it below to continue.');
+      await apiClient.post(API_ENDPOINTS.auth.requestOtp, { mobileNumber: cleanMobile });
+      try {
+        sessionStorage.setItem('cityhaven_mobile', cleanMobile);
+      } catch {}
+      setOtpRequested(true);
+      setMessage('OTP sent to your mobile. Enter it below to continue.');
+    } catch (err: any) {
+      setMessage(err?.message || 'Unable to send OTP right now.');
+    } finally {
+      setSendingOtp(false);
+    }
   }
 
-  function handleVerifyOtp(e: React.FormEvent) {
+  async function handleVerifyOtp(e: React.FormEvent) {
     e.preventDefault();
     setMessage(null);
     if (!otpRequested) return;
-    if (otpInput.trim() !== otpCode) {
-      setMessage('Incorrect OTP. Please try again.');
+    const cleanMobile = mobile.replace(/\D/g, "");
+    if (!/^\d{6}$/.test(otpInput.trim())) {
+      setMessage('Enter a valid 6-digit OTP.');
       return;
     }
-    setMessage('Verified! Redirecting...');
-    // Replace with actual navigation when backend is ready
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 800);
+    setVerifyingOtp(true);
+    try {
+      const response = await apiClient.post<{ data?: { accessToken?: string; refreshToken?: string; user?: unknown } }>(
+        API_ENDPOINTS.auth.verifyOtp,
+        { mobileNumber: cleanMobile, otp: otpInput.trim() },
+      );
+      const tokens = response.data ?? {};
+      if (tokens.accessToken) localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, tokens.accessToken);
+      if (tokens.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, tokens.refreshToken);
+      if (tokens.user) localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(tokens.user));
+      setMessage('Verified! Redirecting...');
+      router.push('/homePage');
+    } catch (err: any) {
+      setMessage(err?.message || 'Incorrect OTP. Please try again.');
+    } finally {
+      setVerifyingOtp(false);
+    }
   }
 
   return (
@@ -138,9 +164,10 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
-                  className="w-full rounded-xl bg-slate-900 px-4 py-3 text-white text-sm font-semibold shadow-[0_18px_50px_-24px_rgba(15,23,42,0.8)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_60px_-28px_rgba(15,23,42,0.9)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/40"
+                  disabled={sendingOtp}
+                  className="w-full rounded-xl bg-slate-900 px-4 py-3 text-white text-sm font-semibold shadow-[0_18px_50px_-24px_rgba(15,23,42,0.8)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_60px_-28px_rgba(15,23,42,0.9)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/40 disabled:opacity-60"
                 >
-                  Send OTP
+                  {sendingOtp ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Sending...</span> : "Send OTP"}
                 </button>
 
                 <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
@@ -166,9 +193,10 @@ export default function LoginPage() {
                   />
                   <button
                     type="submit"
-                    className="w-full rounded-xl border border-emerald-500 bg-emerald-500/90 px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_38px_-24px_rgba(16,185,129,0.8)] transition hover:-translate-y-0.5 hover:bg-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+                    disabled={verifyingOtp}
+                    className="w-full rounded-xl border border-emerald-500 bg-emerald-500/90 px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_38px_-24px_rgba(16,185,129,0.8)] transition hover:-translate-y-0.5 hover:bg-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:opacity-60"
                   >
-                    Verify OTP
+                    {verifyingOtp ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Verifying...</span> : "Verify OTP"}
                   </button>
                 </form>
               )}
