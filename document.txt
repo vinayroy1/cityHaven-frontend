@@ -1,0 +1,110 @@
+✅ PROPERTY DETAILS — FINAL REQUIREMENT
+1️⃣ Property Title & Description
+Field	Key	Visible When	UI Element
+Property Title	title	Always	Text Input
+Property Description	description	Always	Multiline Textarea
+2️⃣ Size & Area Details
+Field	Key	Visible When	UI Element
+Built-up Area	builtUpArea	Residential / Commercial	Number Input
+Carpet Area	carpetArea	Residential / Commercial	Number Input
+Plot Area	plotArea	PropertySubType = Plot / Land	Number Input
+Area Unit	areaUnit	If any area field is shown	Dropdown (sqft, sqyd, acre, sqm)
+Built-up Area Unit	builtUpAreaUnit	If builtUpArea visible	Dropdown
+Carpet Area Unit	carpetAreaUnit	If carpetArea visible	Dropdown
+Plot Area Unit	plotAreaUnit	If plotArea visible	Dropdown
+Super Built-up Area	superBuiltUpArea	Residential / Apartment	Number Input
+Super Built-up Area Unit	superBuiltUpAreaUnit	If superBuiltUpArea visible	Dropdown
+3️⃣ Rooms & Layout Details
+Field	Key	Visible When	UI Element
+Bedrooms	bedrooms	Residential / PG	Stepper (+/-)
+Bathrooms	bathrooms	Residential / PG	Stepper (+/-)
+Balconies	balconies	Residential	Stepper (+/-)
+Kitchen Type	kitchenType	Residential	Dropdown (Modular/Semi/Normal)
+Floor Number	floorNumber	Residential / Commercial	Number Input
+Total Floors	totalFloors	Residential / Commercial	Number Input
+Floors Allowed	floorsAllowed	Residential / Commercial	Number Input
+Multi-Floor Select	multiFloorSelect	Residential / Commercial	Toggle
+Multi-Floor Num	multiFloorNum	If multiFloorSelect = true	Number Input
+Open Sides	openSides	Residential / Commercial	Number Input
+Staircases	staircases	Residential / Commercial	Number Input
+Ceiling Width	ceilingWidth	Commercial / Residential	Number Input
+Ceiling Width Unit	ceilingWidthUnit	If ceilingWidth visible	Dropdown
+Entrance Width	entranceWidth	Commercial / Residential	Number Input
+Entrance Width Unit	entranceWidthUnit	If entranceWidth visible	Dropdown
+Property Facing	propertyFacing	Residential / Commercial	Dropdown
+Width of Facing Road	widthOfFacingRoad	Residential / Commercial	Number Input
+Width Unit	widthUnit	If widthOfFacingRoad visible	Dropdown
+4️⃣ Furnishing & Interior
+Field	Key	Visible When	UI Element
+Furnishing Status	furnishing	Always	Dropdown (Unfurnished / Semi-Furnished / Fully Furnished)
+Furnishing Details (All items with stepper)	furnishingDetails	If furnishing = Semi / Fully	Stepper (+/-)
+
+Furnishing Items (Quantity Stepper + Visibility)
+
+Wardrobe → semi + full
+
+Bed → semi + full
+
+Sofa → full only
+
+Dining Table → full only
+
+TV → full only
+
+Refrigerator → semi + full
+
+Washing Machine → full only
+
+Geyser → semi + full
+
+Modular Kitchen → semi + full
+
+Chimney → semi + full
+
+Curtains → full only
+
+Exhaust Fan → semi + full
+
+Lights → semi + full
+
+Fans → semi + full
+
+AC → semi + full
+
+Logic: Only show stepper for items allowed by furnishing type. Default = 0, min = 0, max = reasonable.
+
+5️⃣ Construction & Legal
+Field	Key	Visible When	UI Element
+Construction Done	constructionDone	Residential / Commercial	Toggle
+Construction Type	constructionType	Residential / Commercial	Dropdown
+Boundary Wall	boundaryWall	Residential	Toggle
+Age of Property	ageOfProperty	Residential / Commercial	Dropdown (0–1, 1–5, 5–10, 10+)
+Ownership Type	ownershipType	Always	Dropdown (Freehold, Leasehold, etc.)
+Approved By	approvedBy	Residential / Commercial	Dropdown (Authority List)
+Fire Safety	fireSafety	Commercial	Multi-select
+Fire NOC	fireNoc	Commercial	Toggle
+Approved For Business Type	suitableForBussinessType	Commercial	Dropdown (IT / Retail / Clinic / Warehouse etc.)
+6️⃣ PG-Specific Fields (only if listingType = pg)
+Field	Key	Visible When	UI Element
+Allowed For	pgFor	PG only	Radio (Boys / Girls / Unisex)
+Food Included	foodIncluded	PG only	Toggle
+Meal Type	mealType	foodIncluded = true	Dropdown (Breakfast / Dinner / Both)
+Sharing Type	sharingType	PG only	Dropdown (1 / 2 / 3 / 4 Sharing)
+Security Deposit	securityDeposit	PG only	Number Input
+7️⃣ Commercial-Specific Fields (only if propertyType = Commercial)
+Field	Key	Visible When	UI Element
+Office Type	officeType	Commercial Office only	Dropdown
+Cabin Count	cabinCount	Office only	Stepper (+/-)
+Workstations	workstations	Office only	Stepper (+/-)
+Washroom Type	washroomType	Commercial	Dropdown
+Pantry Type	pantryType	Commercial	Dropdown
+Ceiling Height	ceilingHeight	Commercial	Number Input
+Fire Safety	fireSafety	Commercial	Multi-select
+Approved For Business	businessApproval	Commercial	Dropdown
+8️⃣ Society / Project Details (if locatedInside = society/complex)
+Field	Key	Visible When	UI Element
+Project / Society Name	societyOrProjectName	society/complex	Text Input / Autocomplete
+Total Towers	totalTowers	Apartments / Flats	Number Input
+Total Units	totalUnits	Apartments / Flats	Number Input
+Construction Status	constructionStatus	Always	Dropdown (Ready / Under Construction)
+Possession Date	possessionDate	constructionStatus = underConstruction	Date Picker

@@ -78,6 +78,10 @@ export interface PropertyLocationBlock {
   plotNumber?: string;
   latitude?: number | null;
   longitude?: number | null;
+  totalTowers?: number | null;
+  totalUnits?: number | null;
+  constructionStatus?: string;
+  possessionDate?: string;
 }
 
 export interface PropertyDetailsBlock {
@@ -99,20 +103,28 @@ export interface PropertyDetailsBlock {
   entranceWidthUnit?: string;
   ceilingWidth?: number | null;
   ceilingWidthUnit?: string;
+  ceilingHeight?: number | null;
+  ceilingHeightUnit?: string;
   bedrooms?: number | null;
   bathrooms?: number | null;
   balconies?: number | null;
   otherRooms?: Record<string, boolean>;
   totalFloors?: number | null;
-  floorNumber?: string;
+  floorNumber?: string | number | null;
+  floorsAllowed?: number | null;
   lift?: boolean;
   ageOfProperty?: string;
   propertyFacing?: string;
+  kitchenType?: string;
   roomType?: string;
   sharingCapacity?: number | null;
   totalBeds?: number | null;
   availableBeds?: number | null;
   foodIncluded?: boolean;
+  pgFor?: string;
+  mealType?: string;
+  sharingType?: string;
+  securityDeposit?: number | null;
   acAvailable?: boolean;
   attachedBathroom?: boolean;
   attachedBalcony?: boolean;
@@ -126,12 +138,17 @@ export interface PropertyDetailsBlock {
   meetingRooms?: number | null;
   cabins?: number | null;
   washrooms?: number | null;
+  washroomType?: string;
+  officeType?: string;
+  cabinCount?: number | null;
+  workstations?: number | null;
   multiFloorSelect?: boolean;
   multiFloorNum?: number | null;
   openSides?: number | null;
   staircases?: number | null;
   zoneType?: string;
-  suitableForBussinessType?: Record<string, boolean>;
+  suitableForBussinessType?: string;
+  businessApproval?: string;
 }
 
 export interface PricingFinancialsBlock {
@@ -174,7 +191,7 @@ export interface AvailabilityBlock {
 
 export interface AmenitiesLegalBlock {
   furnishing?: string;
-  furnishingDetails?: Record<string, boolean>;
+  furnishingDetails?: Record<string, number>;
   pantryType?: string;
   pantrySize?: number | null;
   pantryUnit?: string;

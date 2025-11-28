@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/components/ui/utils";
-import { amenityOptions, authorityOptions, furnishingItems } from "@/features/propertyListing";
+import { amenityOptions, authorityOptions } from "@/features/propertyListing";
 import type { StepProps } from "./StepCommon";
 
 export function AmenitiesLegalStep({ form }: StepProps) {
@@ -63,24 +63,6 @@ export function AmenitiesLegalStep({ form }: StepProps) {
                 </FormItem>
               )}
             />
-          </div>
-
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {furnishingItems.map((item) => (
-              <FormField
-                key={item}
-                control={form.control}
-                name={`amenities.furnishingDetails.${item}` as const}
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-2 space-y-0 rounded-xl border border-slate-200 p-3">
-                    <FormControl>
-                      <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
-                    </FormControl>
-                    <FormLabel className="text-sm text-slate-800">{item}</FormLabel>
-                  </FormItem>
-                )}
-              />
-            ))}
           </div>
 
           <Separator className="my-4" />
