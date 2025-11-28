@@ -1,26 +1,61 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Building2, Sparkles } from "lucide-react";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/components/ui/utils";
-import { propertyTypeCatalog } from "@/features/propertyListing";
+import { getAllowedPropertyTypes, getSubTypesForSelection, propertyTypes } from "@/features/propertyListing";
 import { FieldShell } from "./StepCommon";
 import type { StepProps } from "./StepCommon";
 
 export function BasicContextStep({ form }: StepProps) {
   const listingType = form.watch("context.listingType");
-  const propertyTypeId = form.watch("context.propertyTypeId");
-  const propertySubTypeId = form.watch("context.propertySubTypeId");
+  const propertyTypeId = `${form.watch("context.propertyTypeId") ?? ""}`;
+  const propertySubTypeId = `${form.watch("context.propertySubTypeId") ?? ""}`;
 
-  const filteredPropertyTypes = useMemo(() => {
-    if (listingType === "PG") return propertyTypeCatalog.filter((t) => t.id === "pg");
-    return propertyTypeCatalog.filter((t) => t.id !== "pg");
-  }, [listingType]);
+  const allowedPropertyTypes = useMemo(() => getAllowedPropertyTypes(listingType), [listingType]);
 
-  const selectedPropertyType = filteredPropertyTypes.find((p) => p.id === propertyTypeId);
-  const selectedSubType = selectedPropertyType?.subTypes.find((s) => s.id === propertySubTypeId);
+  const selectedPropertyType = allowedPropertyTypes.find((p) => p.id === propertyTypeId);
+
+  const availableSubTypes = useMemo(
+    () => (selectedPropertyType ? getSubTypesForSelection(listingType, selectedPropertyType.id) : []),
+    [listingType, selectedPropertyType?.id],
+  );
+  const selectedSubType = availableSubTypes.find((s) => s.id === propertySubTypeId);
+  const showSubCategory = selectedPropertyType?.resCom === "COMMERCIAL" && Boolean(selectedSubType?.categories?.length);
+  const showLocatedInside =
+    selectedPropertyType?.resCom === "COMMERCIAL" &&
+    (selectedSubType?.slug === "office" || selectedSubType?.slug === "retail") &&
+    Boolean(selectedSubType?.locatedInsideOptions?.length);
+  const subTypeGridCols = showSubCategory ? "sm:grid-cols-2" : "sm:grid-cols-1";
+  const locatedGridCols = showLocatedInside ? "sm:grid-cols-2" : "sm:grid-cols-1";
+
+  useEffect(() => {
+    if (listingType === "PG") {
+      if (propertyTypeId !== "1") {
+        form.setValue("context.propertyTypeId", "1");
+        form.setValue("context.resCom", "RESIDENTIAL");
+        form.setValue("context.propertySubTypeId", "");
+        form.setValue("context.propertySubCategoryId", "");
+        form.setValue("context.locatedInsideId", "");
+      }
+      return;
+    }
+    if (propertyTypeId === "3") {
+      form.setValue("context.propertyTypeId", "");
+      form.setValue("context.propertySubTypeId", "");
+      form.setValue("context.propertySubCategoryId", "");
+      form.setValue("context.locatedInsideId", "");
+      form.setValue("context.resCom", "RESIDENTIAL");
+    }
+  }, [form, listingType, propertyTypeId]);
+
+  useEffect(() => {
+    if (selectedPropertyType) {
+      form.setValue("context.resCom", selectedPropertyType.resCom);
+    }
+  }, [form, selectedPropertyType]);
 
   return (
     <div className="space-y-5">
@@ -38,13 +73,21 @@ export function BasicContextStep({ form }: StepProps) {
                   value={field.value}
                   onValueChange={(value) => {
                     field.onChange(value);
+                    const nextAllowedTypes = getAllowedPropertyTypes(value);
+                    const currentAllowed = nextAllowedTypes.find((t) => t.id === propertyTypeId);
+                    const nextType = currentAllowed ?? nextAllowedTypes[0];
                     if (value === "PG") {
-                      form.setValue("context.propertyTypeId", "pg");
+                      form.setValue("context.propertyTypeId", nextType?.id ?? "");
                       form.setValue("context.propertySubTypeId", "");
+                      form.setValue("context.propertySubCategoryId", "");
+                      form.setValue("context.locatedInsideId", "");
                       form.setValue("context.resCom", "RESIDENTIAL");
-                    } else if (!form.getValues("context.propertyTypeId") || form.getValues("context.propertyTypeId") === "pg") {
-                      form.setValue("context.propertyTypeId", "residential");
-                      form.setValue("context.resCom", "RESIDENTIAL");
+                    } else {
+                      form.setValue("context.propertyTypeId", nextType?.id ?? "");
+                      form.setValue("context.propertySubTypeId", "");
+                      form.setValue("context.propertySubCategoryId", "");
+                      form.setValue("context.locatedInsideId", "");
+                      form.setValue("context.resCom", nextType?.resCom ?? "RESIDENTIAL");
                     }
                   }}
                 >
@@ -96,7 +139,7 @@ export function BasicContextStep({ form }: StepProps) {
           />
         </div>
 
-        <div className="space-y-5 rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm">
+          <div className="space-y-5 rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm">
           <FieldShell title="Property classification" description="Type, sub-type, and building context" icon={Building2} />
 
           <FormField
@@ -106,9 +149,9 @@ export function BasicContextStep({ form }: StepProps) {
             render={({ field }) => (
               <FormItem>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {filteredPropertyTypes.map((type) => {
+                  {allowedPropertyTypes.map((type) => {
                     const Icon = type.icon;
-                    const isActive = field.value === type.id;
+                    const isActive = `${field.value ?? ""}` === type.id;
                     return (
                       <button
                         key={type.id}
@@ -118,6 +161,7 @@ export function BasicContextStep({ form }: StepProps) {
                           form.setValue("context.propertySubTypeId", "");
                           form.setValue("context.propertySubCategoryId", "");
                           form.setValue("context.locatedInsideId", "");
+                          form.setValue("context.resCom", type.resCom);
                         }}
                         className={cn(
                           "flex items-center gap-3 rounded-2xl border p-3 text-left transition-all",
@@ -140,7 +184,7 @@ export function BasicContextStep({ form }: StepProps) {
             )}
           />
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className={cn("grid gap-4", subTypeGridCols)}>
             <FormField
               control={form.control}
               name="context.propertySubTypeId"
@@ -148,15 +192,23 @@ export function BasicContextStep({ form }: StepProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Property sub-type</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""} disabled={!selectedPropertyType}>
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      form.setValue("context.propertySubCategoryId", "");
+                      form.setValue("context.locatedInsideId", "");
+                    }}
+                    value={field.value ?? ""}
+                    disabled={!selectedPropertyType || !availableSubTypes.length}
+                  >
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Apartment, Office, Retail..." />
+                      <SelectTrigger data-testid="property-sub-type-trigger">
+                        <SelectValue placeholder="Apartment, Office, Retail, PG beds..." />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {selectedPropertyType?.subTypes.map((sub) => (
-                        <SelectItem key={sub.id} value={sub.id}>
+                      {availableSubTypes.map((sub) => (
+                        <SelectItem key={sub.slug} value={sub.id}>
                           {sub.label}
                         </SelectItem>
                       ))}
@@ -166,64 +218,59 @@ export function BasicContextStep({ form }: StepProps) {
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="context.propertySubCategoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sub-category (if any)</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value ?? ""}
-                    disabled={!selectedSubType?.categories?.length}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Ready to move, bare shell..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {(selectedSubType?.categories ?? []).map((cat) => (
-                        <SelectItem key={cat} value={cat}>
-                          {cat}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+            {showSubCategory && (
+              <FormField
+                control={form.control}
+                name="context.propertySubCategoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Property sub-category</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value ?? ""} disabled={!showSubCategory}>
+                      <FormControl>
+                        <SelectTrigger data-testid="property-sub-category-trigger">
+                          <SelectValue placeholder="Ready to move, bare shell..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {(selectedSubType?.categories ?? []).map((cat) => (
+                          <SelectItem key={cat.slug} value={cat.id}>
+                            {cat.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="context.locatedInsideId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Located inside</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value ?? ""}
-                    disabled={!selectedSubType?.locatedInsideOptions?.length}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Mall, Tech Park, Business tower" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {(selectedSubType?.locatedInsideOptions ?? []).map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+          <div className={cn("grid gap-4", locatedGridCols)}>
+            {showLocatedInside && (
+              <FormField
+                control={form.control}
+                name="context.locatedInsideId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Located inside</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value ?? ""} disabled={!showLocatedInside}>
+                      <FormControl>
+                        <SelectTrigger data-testid="located-inside-trigger">
+                          <SelectValue placeholder="Mall, Tech Park, Business tower" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {(selectedSubType?.locatedInsideOptions ?? []).map((option) => (
+                          <SelectItem key={option.slug} value={option.id}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}

@@ -1,0 +1,164 @@
+INAL BASIC DETAILS PAGE PROMPT (FULL LOGIC + FIELD VISIBILITY RULES)
+🧱 Basic Details Page – Form Requirements
+1. Listing Type (required)
+
+Field: listingType
+Options:
+
+rent
+
+sell
+
+pg
+
+2. Property Type (required)
+
+Field: propertyTypeId
+
+Rules:
+
+If listingType = rent or sell → show propertyType = Residential or Commercial
+
+If listingType = pg → force propertyType = Residential only (hide Commercial)
+
+Values:
+Residential (id = 1)
+Commercial (id = 2)
+PG (id = 3) (auto-selected only for PG listing)
+3. Property Sub-Type (required based on type)
+
+Field: propertySubTypeId
+
+Residential Sub-Types (propertyTypeId = 1)
+
+Show only if propertyType = Residential
+
+id	name
+1	Apartment
+2	Independent House / Villa
+3	Independent / Builder Floor
+4	1 RK / Studio Apartment
+5	Serviced Apartment
+6	Plot / Land
+7	Farmhouse
+8	Other
+Commercial Sub-Types (propertyTypeId = 2)
+
+Show only if propertyType = Commercial
+
+id	name
+9	Office
+10	Retail
+11	Plot / Land
+12	Storage
+13	Industry
+14	Hospitality
+15	Other
+PG Sub-Types (propertyTypeId = 3)
+
+Show if listingType = pg (propertyType = Residential auto-selected)
+
+id	name
+16	Private Room
+17	Shared Room
+18	Bed / Dormitory
+⭐ 4. Property Sub-Category (only for Commercial)
+
+Field: propertySubCategoryId
+Visibility:
+
+Show only if propertyType = Commercial
+
+Mapping:
+🏢 Office (9)
+id	name
+1	Ready to move office space
+2	Bare shell office space
+3	Co-working office space
+🛍 Retail (10)
+id	name
+4	Commercial Shops
+5	Commercial Showrooms
+📍 Plot / Land (11)
+id	name
+6	Commercial Land / Inst. Land
+7	Agricultural / Farm Land
+8	Industrial Lands / Plots
+🏬 Storage (12)
+id	name
+9	Warehouse
+10	Cold Storage
+11	Godown
+🏭 Industry (13)
+id	name
+12	Factory
+13	Manufacturing
+🏨 Hospitality (14)
+id	name
+14	Hotel / Resorts
+15	Guest-House / Banquet-Halls
+⭐ 5. Located Inside (only for Office + Retail)
+
+Field: locatedInsideId
+Visibility:
+
+Show only if propertyType = Commercial
+
+And propertySubTypeId = 9 (Office) OR 10 (Retail)
+
+Office (9)
+id	name
+11	Mall
+12	Commercial Project
+13	Retail Complex/Building
+14	Market / High Street
+15	IT Park
+16	Business Park
+17	Business Center
+18	Corporate Tower
+19	Commercial Complex
+20	Others
+Retail (10)
+id	name
+1	Mall
+2	Commercial Project
+3	Retail Complex/Building
+4	Market / High Street
+5	IT Park
+6	Business Park
+7	Business Center
+8	Corporate Tower
+9	Commercial Complex
+10	Others
+🎯 FINAL FORM LOGIC SUMMARY (very important)
+IF listingType = PG →
+
+propertyType = Residential (autofilled)
+
+show only PG sub-types (16,17,18)
+
+hide:
+
+propertySubCategory
+
+locatedInside
+
+IF propertyType = Residential →
+
+Show only Residential property sub-types
+
+Hide:
+
+propertySubCategory
+
+locatedInside
+
+IF propertyType = Commercial →
+
+Show only Commercial property sub-types
+
+Show propertySubCategory
+
+If sub-type = Office or Retail → show locatedInside
+
+If sub-type = Plot/Land, Storage, Industry, Hospitality → hide locatedInside

@@ -1,65 +1,162 @@
 import { Home, Building, Building2 } from "lucide-react";
-import type { PropertyListingFormValues } from "@/types/propertyListing.types";
+import type { PropertyListingFormValues, ListingType } from "@/types/propertyListing.types";
+
+export type OptionItem = {
+  id: string;
+  slug: string;
+  label: string;
+};
 
 export type SubTypeOption = {
   id: string;
+  slug: string;
   label: string;
-  categories?: string[];
-  locatedInsideOptions?: string[];
+  categories?: OptionItem[];
+  locatedInsideOptions?: OptionItem[];
 };
 
 export type PropertyTypeOption = {
   id: string;
+  slug: string;
   label: string;
   resCom: "RESIDENTIAL" | "COMMERCIAL";
   icon: typeof Home;
   accent: string;
-  subTypes: SubTypeOption[];
+  subTypeGroupSlug: string;
 };
 
-export const propertyTypeCatalog: PropertyTypeOption[] = [
+export type ListingTypeOption = {
+  value: ListingType;
+  label: string;
+  allowedPropertyTypeSlugs: string[];
+  forcedSubTypeGroupSlug?: string;
+};
+
+export const listingTypeOptions: ListingTypeOption[] = [
+  { value: "SELL", label: "Sell", allowedPropertyTypeSlugs: ["residential", "commercial"] },
+  { value: "RENT", label: "Rent", allowedPropertyTypeSlugs: ["residential", "commercial"] },
+  { value: "PG", label: "PG / Co-living", allowedPropertyTypeSlugs: ["residential"], forcedSubTypeGroupSlug: "pg" },
+];
+
+export const propertyTypes: PropertyTypeOption[] = [
   {
-    id: "residential",
+    id: "1",
+    slug: "residential",
     label: "Residential",
     resCom: "RESIDENTIAL",
     icon: Home,
     accent: "from-emerald-400 to-teal-500",
-    subTypes: [
-      { id: "apartment", label: "Apartment" },
-      { id: "independent-house", label: "Independent House" },
-      { id: "villa", label: "Villa" },
-      { id: "builder-floor", label: "Builder Floor" },
-      { id: "plot-res", label: "Plot / Land (Res)", categories: ["Corner", "Gated", "Developer plot"] },
-    ],
+    subTypeGroupSlug: "residential",
   },
   {
-    id: "commercial",
+    id: "2",
+    slug: "commercial",
     label: "Commercial",
     resCom: "COMMERCIAL",
     icon: Building,
     accent: "from-amber-500 to-orange-400",
-    subTypes: [
-      { id: "office", label: "Office", categories: ["Ready to move", "Bare shell", "Co-working"], locatedInsideOptions: ["Business park", "Tech park", "Standalone tower"] },
-      { id: "retail", label: "Retail / Showroom", categories: ["Shop", "Showroom"], locatedInsideOptions: ["Mall", "High street", "Retail hub"] },
-      { id: "warehouse", label: "Storage / Warehouse" },
-      { id: "industry", label: "Industry / Factory" },
-      { id: "hospitality", label: "Hospitality" },
-      { id: "plot-commercial", label: "Plot / Land (Com)", categories: ["Commercial Land", "Industrial", "Agricultural (Com)"] },
-    ],
+    subTypeGroupSlug: "commercial",
   },
   {
-    id: "pg",
+    id: "3",
+    slug: "pg",
     label: "PG / Co-living",
     resCom: "RESIDENTIAL",
     icon: Building2,
     accent: "from-sky-500 to-indigo-400",
-    subTypes: [
-      { id: "private-room", label: "Private Room" },
-      { id: "shared-room", label: "Shared Room" },
-      { id: "bed", label: "Bed" },
-    ],
+    subTypeGroupSlug: "pg",
   },
 ];
+
+export const propertySubTypeCatalog: Record<string, SubTypeOption[]> = {
+  residential: [
+    { id: "1", slug: "apartment", label: "Apartment" },
+    { id: "2", slug: "independent-house-villa", label: "Independent House / Villa" },
+    { id: "3", slug: "independent-builder-floor", label: "Independent / Builder Floor" },
+    { id: "4", slug: "1rk-studio", label: "1 RK / Studio Apartment" },
+    { id: "5", slug: "serviced-apartment", label: "Serviced Apartment" },
+    { id: "6", slug: "res-plot-land", label: "Plot / Land" },
+    { id: "7", slug: "farmhouse", label: "Farmhouse" },
+    { id: "8", slug: "res-other", label: "Other" },
+  ],
+  commercial: [
+    {
+      id: "9",
+      slug: "office",
+      label: "Office",
+      categories: [
+        { id: "1", slug: "ready-to-move-office-space", label: "Ready to move office space" },
+        { id: "2", slug: "bare-shell-office-space", label: "Bare shell office space" },
+        { id: "3", slug: "co-working-office-space", label: "Co-working office space" },
+      ],
+      locatedInsideOptions: [
+        { id: "11", slug: "mall", label: "Mall" },
+        { id: "12", slug: "commercial-project", label: "Commercial Project" },
+        { id: "13", slug: "retail-complex", label: "Retail Complex/Building" },
+        { id: "14", slug: "market-high-street", label: "Market / High Street" },
+        { id: "15", slug: "it-park", label: "IT Park" },
+        { id: "16", slug: "business-park", label: "Business Park" },
+        { id: "17", slug: "business-center", label: "Business Center" },
+        { id: "18", slug: "corporate-tower", label: "Corporate Tower" },
+        { id: "19", slug: "commercial-complex", label: "Commercial Complex" },
+        { id: "20", slug: "others", label: "Others" },
+      ],
+    },
+    {
+      id: "10",
+      slug: "retail",
+      label: "Retail",
+      categories: [
+        { id: "4", slug: "commercial-shops", label: "Commercial Shops" },
+        { id: "5", slug: "commercial-showrooms", label: "Commercial Showrooms" },
+      ],
+      locatedInsideOptions: [
+        { id: "1", slug: "mall", label: "Mall" },
+        { id: "2", slug: "commercial-project", label: "Commercial Project" },
+        { id: "3", slug: "retail-complex", label: "Retail Complex/Building" },
+        { id: "4", slug: "market-high-street", label: "Market / High Street" },
+        { id: "5", slug: "it-park", label: "IT Park" },
+        { id: "6", slug: "business-park", label: "Business Park" },
+        { id: "7", slug: "business-center", label: "Business Center" },
+        { id: "8", slug: "corporate-tower", label: "Corporate Tower" },
+        { id: "9", slug: "commercial-complex", label: "Commercial Complex" },
+        { id: "10", slug: "others", label: "Others" },
+      ],
+    },
+    { id: "11", slug: "commercial-plot-land", label: "Plot / Land" },
+    { id: "12", slug: "storage", label: "Storage" },
+    { id: "13", slug: "industry", label: "Industry" },
+    { id: "14", slug: "hospitality", label: "Hospitality" },
+    { id: "15", slug: "commercial-other", label: "Other" },
+  ],
+  pg: [
+    { id: "16", slug: "pg-private-room", label: "Private Room" },
+    { id: "17", slug: "pg-shared-room", label: "Shared Room" },
+    { id: "18", slug: "pg-bed", label: "Bed / Dormitory" },
+  ],
+};
+
+export const propertyTypeCatalog: (PropertyTypeOption & { subTypes: SubTypeOption[] })[] = propertyTypes.map((type) => ({
+  ...type,
+  subTypes: propertySubTypeCatalog[type.subTypeGroupSlug] ?? [],
+}));
+
+export const getListingConfig = (listingType?: ListingType) =>
+  listingTypeOptions.find((option) => option.value === listingType) ?? listingTypeOptions[0];
+
+export const getPropertyTypeById = (id?: string) => propertyTypes.find((p) => p.id === id);
+
+export const getAllowedPropertyTypes = (listingType?: ListingType) => {
+  const config = getListingConfig(listingType);
+  return propertyTypes.filter((type) => config.allowedPropertyTypeSlugs.includes(type.slug));
+};
+
+export const getSubTypesForSelection = (listingType?: ListingType, propertyTypeId?: string) => {
+  const config = getListingConfig(listingType);
+  const propertyType = getPropertyTypeById(propertyTypeId);
+  const subTypeGroup = config.forcedSubTypeGroupSlug ?? propertyType?.subTypeGroupSlug;
+  return subTypeGroup ? propertySubTypeCatalog[subTypeGroup] ?? [] : [];
+};
 
 export const cityOptions = [
   { id: "1", name: "Bengaluru" },

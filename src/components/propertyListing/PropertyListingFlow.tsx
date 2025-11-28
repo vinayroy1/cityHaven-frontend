@@ -45,24 +45,24 @@ export const PropertyListingFlow: React.FC = () => {
   });
 
   const listingType = form.watch("context.listingType");
-  const propertyTypeId = form.watch("context.propertyTypeId");
+  const propertyTypeId = `${form.watch("context.propertyTypeId") ?? ""}`;
 
-  const selectedPropertyType = useMemo(
-    () => propertyTypeCatalog.find((p) => p.id === propertyTypeId) ?? propertyTypeCatalog[0],
-    [propertyTypeId],
-  );
+  const selectedPropertyType = useMemo(() => propertyTypeCatalog.find((p) => p.id === propertyTypeId), [propertyTypeId]);
 
   useEffect(() => {
     if (listingType === "PG") {
-      form.setValue("context.propertyTypeId", "pg");
+      form.setValue("context.propertyTypeId", "1");
       form.setValue("context.resCom", "RESIDENTIAL");
       form.setValue("context.propertySubTypeId", "");
+      form.setValue("context.propertySubCategoryId", "");
+      form.setValue("context.locatedInsideId", "");
       return;
     }
 
-    // Default to residential for Sell/Rent when nothing selected to avoid empty dropdowns.
-    if (!form.getValues("context.propertyTypeId")) {
-      form.setValue("context.propertyTypeId", "residential");
+    const currentType = `${form.getValues("context.propertyTypeId") ?? ""}`;
+    // Clear out PG type when switching back to Rent/Sell to avoid mismatched options.
+    if (currentType === "3") {
+      form.setValue("context.propertyTypeId", "");
       form.setValue("context.resCom", "RESIDENTIAL");
     }
   }, [listingType, form]);
