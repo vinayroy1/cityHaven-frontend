@@ -195,22 +195,73 @@ export const projectOptions = [
 ];
 
 export const amenityOptions = [
-  { id: 1, label: "Gym", group: "Society" },
-  { id: 2, label: "Pool", group: "Society" },
-  { id: 3, label: "Clubhouse", group: "Society" },
-  { id: 4, label: "Power Backup", group: "Safety" },
-  { id: 5, label: "24x7 Security", group: "Safety" },
-  { id: 6, label: "CCTV", group: "Safety" },
-  { id: 7, label: "Garden", group: "Lifestyle" },
-  { id: 8, label: "Play Area", group: "Lifestyle" },
-  { id: 9, label: "Lift", group: "Convenience" },
-  { id: 10, label: "EV Charging", group: "Convenience" },
+  // 1: Amenities
+  { id: 1, slug: "gym", label: "Gym", categoryId: 1 },
+  { id: 2, slug: "pool", label: "Pool", categoryId: 1 },
+  { id: 3, slug: "kids-play-area", label: "Kids Play Area", categoryId: 1 },
+  { id: 4, slug: "jogging-track", label: "Jogging Track", categoryId: 1 },
+  // 2: Property Features
+  { id: 5, slug: "security-24x7", label: "24x7 Security", categoryId: 2 },
+  { id: 6, slug: "cctv", label: "CCTV", categoryId: 2 },
+  { id: 7, slug: "intercom", label: "Intercom", categoryId: 2 },
+  { id: 8, slug: "visitor-parking", label: "Visitor Parking", categoryId: 2 },
+  // 3: Society/Building Features
+  { id: 9, slug: "clubhouse", label: "Clubhouse", categoryId: 3 },
+  { id: 10, slug: "lift", label: "Lift", categoryId: 3 },
+  { id: 11, slug: "community-hall", label: "Community Hall", categoryId: 3 },
+  { id: 12, slug: "garden", label: "Garden", categoryId: 3 },
+  // 4: Additional Features
+  { id: 13, slug: "ev-charging", label: "EV Charging", categoryId: 4 },
+  { id: 14, slug: "waste-disposal", label: "Waste Disposal", categoryId: 4 },
+  // 5: Water Source
+  { id: 15, slug: "water-municipal", label: "Municipal", categoryId: 5 },
+  { id: 16, slug: "water-borewell", label: "Borewell", categoryId: 5 },
+  { id: 17, slug: "water-both", label: "Both", categoryId: 5 },
+  // 6: Overlooking
+  { id: 18, slug: "overlooking-garden", label: "Garden Facing", categoryId: 6 },
+  { id: 19, slug: "overlooking-pool", label: "Pool Facing", categoryId: 6 },
+  { id: 20, slug: "overlooking-road", label: "Main Road", categoryId: 6 },
+  // 7: Other Features
+  { id: 21, slug: "wheelchair-access", label: "Wheelchair Access", categoryId: 7 },
+  { id: 22, slug: "pet-friendly", label: "Pet Friendly", categoryId: 7 },
+  // 8: Power Backup
+  { id: 23, slug: "power-backup-full", label: "Full Backup", categoryId: 8 },
+  { id: 24, slug: "power-backup-partial", label: "Partial Backup", categoryId: 8 },
+  // 9: Property Facing
+  { id: 25, slug: "facing-east", label: "East", categoryId: 9 },
+  { id: 26, slug: "facing-west", label: "West", categoryId: 9 },
+  { id: 27, slug: "facing-north", label: "North", categoryId: 9 },
+  { id: 28, slug: "facing-south", label: "South", categoryId: 9 },
+  // 10: Flooring
+  { id: 29, slug: "flooring-vitrified", label: "Vitrified", categoryId: 10 },
+  { id: 30, slug: "flooring-marble", label: "Marble", categoryId: 10 },
+  { id: 31, slug: "flooring-wooden", label: "Wooden", categoryId: 10 },
+  // 11: Width of Facing Road (heading only) - no options
+  // 12: Location Advantages
+  { id: 32, slug: "near-metro", label: "Near Metro", categoryId: 12 },
+  { id: 33, slug: "near-school", label: "Near School", categoryId: 12 },
+  { id: 34, slug: "near-hospital", label: "Near Hospital", categoryId: 12 },
 ];
 
 export const authorityOptions = [
   { id: 1, label: "RERA" },
   { id: 2, label: "Development Authority" },
   { id: 3, label: "Fire NOC" },
+];
+
+export const amenityCategories = [
+  { id: 1, name: "Amenities", description: "Basic amenities and facilities available" },
+  { id: 2, name: "Property Features", description: "Specific features of the property unit" },
+  { id: 3, name: "Society/Building Features", description: "Amenities provided by the society or building" },
+  { id: 4, name: "Additional Features", description: "Extra features and advantages" },
+  { id: 5, name: "Water Source", description: "Water supply sources available" },
+  { id: 6, name: "Overlooking", description: "Views from the property" },
+  { id: 7, name: "Other Features", description: "Additional property characteristics" },
+  { id: 8, name: "Power Back up", description: "Power backup availability" },
+  { id: 9, name: "Property Facing", description: "Direction the property faces" },
+  { id: 10, name: "Type of Flooring", description: "Flooring material type" },
+  { id: 11, name: "Width of Facing Road", description: "Numeric field section" },
+  { id: 12, name: "Location Advantages", description: "Nearby landmarks and location benefits" },
 ];
 
 export const furnishingItems = ["Wardrobe", "Geyser", "Modular Kitchen", "Air Conditioning", "Fans & Lights"];

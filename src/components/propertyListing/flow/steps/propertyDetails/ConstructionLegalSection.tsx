@@ -1,9 +1,11 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/components/ui/utils";
+import { authorityOptions } from "@/features/propertyListing";
 import type { StepProps } from "../StepCommon";
 import { fireSafetyOptions, businessUseOptions } from "./constants";
 
@@ -137,33 +139,37 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
       )}
 
       {(isResidential || isCommercial) && (
-        <FormField
-          control={form.control}
-          name="amenities.approvedBy"
-          render={() => (
-            <FormItem className="mt-3">
-              <FormLabel>Approved by</FormLabel>
-              <Select
-                onValueChange={(value) => {
-                  const selected = value ? { [value]: true } : {};
-                  form.setValue("amenities.approvedBy", selected);
-                }}
-                value={Object.keys(form.watch("amenities.approvedBy") ?? {})[0] ?? ""}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Authority" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="RERA">RERA</SelectItem>
-                  <SelectItem value="LOCAL_AUTHORITY">Local authority</SelectItem>
-                  <SelectItem value="FIRE_DEPARTMENT">Fire department</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
+        <>
+          <FormField
+            control={form.control}
+            name="amenities.authorityIds"
+            render={() => {
+              const selected = form.watch("amenities.authorityIds") ?? [];
+              const toggle = (id: number) => {
+                const next = selected.includes(id) ? selected.filter((a) => a !== id) : [...selected, id];
+                form.setValue("amenities.authorityIds", next);
+              };
+              return (
+                <FormItem className="mt-3">
+                  <FormLabel>Approved by</FormLabel>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    {authorityOptions.map((authority) => (
+                      <label
+                        key={authority.id}
+                        className="flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
+                      >
+                        <FormControl>
+                          <Checkbox checked={selected.includes(authority.id)} onCheckedChange={() => toggle(authority.id)} />
+                        </FormControl>
+                        <span>{authority.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </FormItem>
+              );
+            }}
+          />
+        </>
       )}
 
       {isCommercial && (
