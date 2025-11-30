@@ -101,10 +101,10 @@ export function PropertyDetailsStep({ form }: StepProps) {
   const isApartment = propertySubType?.slug === "apartment";
   const isOffice = propertySubType?.slug === "office";
 
-  const showBuiltUp = (isResidential || isCommercial) && !isPG;
-  const showCarpet = (isResidential || isCommercial) && !isPG;
+  const showBuiltUp = (isResidential || isCommercial) && !isPG && !isPlot;
+  const showCarpet = (isResidential || isCommercial) && !isPG && !isPlot;
   const showPlotArea = isPlot;
-  const showSuperBuiltUp = isResidential && !isPG && !isPlot;
+  const showSuperBuiltUp = isResidential && isApartment && !isPG && !isPlot;
   const showSocietyDetails = Boolean(locatedInsideId || form.watch("location.projectId") || form.watch("location.societyOrProjectName"));
   const showPossessionDate = constructionStatus === "UNDER_CONSTRUCTION";
 
@@ -312,7 +312,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
         <Card className="border border-slate-100 bg-gradient-to-br from-white via-slate-50 to-white p-5 text-slate-900 shadow-xl">
           <p className="mb-3 text-sm font-semibold text-slate-800">Rooms & layout</p>
           <div className="grid gap-3 sm:grid-cols-2">
-            {(isResidential || isPG) && (
+            {(isResidential || isPG) && !isPlot && (
               <>
                 <FormField
                   control={form.control}
@@ -340,7 +340,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
                 />
               </>
             )}
-            {isResidential && !isPG && (
+            {isResidential && !isPG && !isPlot && (
               <FormField
                 control={form.control}
                 name="details.balconies"
@@ -352,7 +352,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
                 )}
               />
             )}
-            {isResidential && !isPG && (
+            {isResidential && !isPG && !isPlot && (
               <FormField
                 control={form.control}
                 name="details.kitchenType"
@@ -375,7 +375,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
                 )}
               />
             )}
-            {(isResidential || isCommercial) && (
+            {(isResidential || isCommercial) && !isPlot && (
               <>
                 <FormField
                   control={form.control}
@@ -409,7 +409,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
                 />
               </>
             )}
-            {(isResidential || isCommercial) && (
+            {(isResidential || isCommercial) && !isPlot && (
               <>
                 <FormField
                   control={form.control}
@@ -437,7 +437,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
                 )}
               </>
             )}
-            {(isResidential || isCommercial) && (
+            {(isResidential || isCommercial) && !isPlot && (
               <>
                 <FormField
                   control={form.control}
@@ -461,7 +461,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
                 />
               </>
             )}
-            {(isResidential || isCommercial) && (
+            {(isResidential || isCommercial) && !isPlot && (
               <>
                 <FormField
                   control={form.control}
@@ -539,7 +539,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
                 />
               </>
             )}
-            {(isResidential || isCommercial) && (
+            {(isResidential || isCommercial) && !isPlot && (
               <>
                 <FormField
                   control={form.control}
@@ -600,67 +600,70 @@ export function PropertyDetailsStep({ form }: StepProps) {
         </Card>
       </div>
 
-      <Card className="border border-slate-100 bg-white p-5 shadow-xl">
-        <p className="mb-3 text-sm font-semibold text-slate-800">Furnishing & interior</p>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <FormField
-            control={form.control}
-            name="amenities.furnishing"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Furnishing status</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Unfurnished / Semi / Full" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="UNFURNISHED">Unfurnished</SelectItem>
-                    <SelectItem value="SEMI_FURNISHED">Semi-furnished</SelectItem>
-                    <SelectItem value="FULLY_FURNISHED">Fully furnished</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="amenities.furnishingDetails"
-            render={() => (
-              <FormItem>
-                <FormLabel className="text-sm text-slate-700">Furnishing items</FormLabel>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {furnishingItems.map((item) => {
-                    const isAllowed = item.modes.includes(furnishingMode);
-                    return (
-                      <FormField
-                        key={item.key}
-                        control={form.control}
-                        name={`amenities.furnishingDetails.${item.key}` as const}
-                        render={({ field }) => (
-                          <FormItem className={cn("flex flex-col gap-2 rounded-2xl border p-3", isAllowed ? "border-slate-200" : "border-dashed border-slate-200/70")}>
-                            <div className="flex items-center justify-between">
-                              <FormLabel className="text-sm text-slate-800">{item.label}</FormLabel>
-                              {!isAllowed && <span className="text-xs text-slate-400">Only for Semi/Full</span>}
-                            </div>
-                            <StepperInput field={field} min={0} max={10} disabled={!isAllowed || furnishingMode === "UNFURNISHED"} />
-                          </FormItem>
-                        )}
-                      />
-                    );
-                  })}
-                </div>
-              </FormItem>
-            )}
-          />
-        </div>
-      </Card>
+      {!isPlot && (
+        <Card className="border border-slate-100 bg-white p-5 shadow-xl">
+          <p className="mb-3 text-sm font-semibold text-slate-800">Furnishing & interior</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="amenities.furnishing"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Furnishing status</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Unfurnished / Semi / Full" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="UNFURNISHED">Unfurnished</SelectItem>
+                      <SelectItem value="SEMI_FURNISHED">Semi-furnished</SelectItem>
+                      <SelectItem value="FULLY_FURNISHED">Fully furnished</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="amenities.furnishingDetails"
+              render={() => (
+                <FormItem>
+                  <FormLabel className="text-sm text-slate-700">Furnishing items</FormLabel>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {furnishingItems.map((item) => {
+                      const isAllowed = item.modes.includes(furnishingMode);
+                      const disabled = !isAllowed || furnishingMode === "UNFURNISHED";
+                      return (
+                        <FormField
+                          key={item.key}
+                          control={form.control}
+                          name={`amenities.furnishingDetails.${item.key}` as const}
+                          render={({ field }) => (
+                            <FormItem className={cn("flex flex-col gap-2 rounded-2xl border p-3", isAllowed ? "border-slate-200" : "border-dashed border-slate-200/70")}>
+                              <div className="flex items-center justify-between">
+                                <FormLabel className="text-sm text-slate-800">{item.label}</FormLabel>
+                                {!isAllowed && <span className="text-xs text-slate-400">Semi / Full only</span>}
+                              </div>
+                              <StepperInput field={field} min={0} max={10} disabled={disabled} />
+                            </FormItem>
+                          )}
+                        />
+                      );
+                    })}
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
+        </Card>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="border border-slate-100 bg-white p-5 shadow-xl">
           <p className="mb-3 text-sm font-semibold text-slate-800">Construction & legal</p>
-          {(isResidential || isCommercial) && (
+          {(isResidential || isCommercial) && !isPlot && (
             <div className="grid gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
@@ -714,7 +717,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
             />
           )}
 
-          {(isResidential || isCommercial) && (
+          {(isResidential || isCommercial) && !isPlot && (
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <FormField
                 control={form.control}
@@ -766,7 +769,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
             </div>
           )}
 
-          {(isResidential || isCommercial) && (
+          {(isResidential || isCommercial) && !isPlot && (
             <FormField
               control={form.control}
               name="amenities.approvedBy"
@@ -796,10 +799,10 @@ export function PropertyDetailsStep({ form }: StepProps) {
             />
           )}
 
-          {isCommercial && (
-            <>
-              <div className="mt-4">
-                <p className="text-sm font-semibold text-slate-800">Fire safety</p>
+        {isCommercial && !isPlot && (
+          <>
+            <div className="mt-4">
+              <p className="text-sm font-semibold text-slate-800">Fire safety</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {fireSafetyOptions.map((option) => {
                     const current = form.watch("amenities.fireSafety") ?? {};
@@ -959,7 +962,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
           </Card>
         )}
 
-        {isCommercial && (
+        {isCommercial && !isPlot && (
           <Card className="border border-slate-100 bg-white p-5 shadow-xl">
             <p className="mb-3 text-sm font-semibold text-slate-800">Commercial specifics</p>
             <div className="grid gap-3 sm:grid-cols-2">
