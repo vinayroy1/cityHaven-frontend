@@ -105,7 +105,6 @@ export function PropertyDetailsStep({ form }: StepProps) {
   const showCarpet = (isResidential || isCommercial) && !isPG;
   const showPlotArea = isPlot;
   const showSuperBuiltUp = isResidential && !isPG && !isPlot;
-  const showAreaUnit = showBuiltUp || showCarpet || showPlotArea || showSuperBuiltUp;
   const showSocietyDetails = Boolean(locatedInsideId || form.watch("location.projectId") || form.watch("location.societyOrProjectName"));
   const showPossessionDate = constructionStatus === "UNDER_CONSTRUCTION";
 
@@ -306,31 +305,6 @@ export function PropertyDetailsStep({ form }: StepProps) {
                   )}
                 />
               </>
-            )}
-            {showAreaUnit && (
-              <FormField
-                control={form.control}
-                name="details.areaUnit"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Area unit (default)</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sq.ft / Sq.yd / Acre / Sq.m" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {areaUnitOptions.map((unit) => (
-                          <SelectItem key={unit.value} value={unit.value}>
-                            {unit.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
             )}
           </div>
         </Card>
