@@ -65,9 +65,9 @@ export function PropertyDetailsStep({ form }: StepProps) {
 
       {!isPlot && <FurnishingSection form={form} furnishingMode={furnishingMode} allowedItems={allowedFurnishingItems} />}
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className={isPG ? "grid gap-5 lg:grid-cols-2" : "grid gap-5"}>
         <ConstructionLegalSection form={form} isResidential={isResidential} isCommercial={isCommercial} isPlot={isPlot} />
-        <PgSection form={form} isPG={isPG} />
+        {isPG && <PgSection form={form} isPG={isPG} />}
       </div>
 
       <CommercialSection form={form} isCommercial={isCommercial} isPlot={isPlot} isOffice={isOffice} />

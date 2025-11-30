@@ -15,9 +15,9 @@ type RoomsLayoutSectionProps = StepProps & {
 };
 
 export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, isResidential, isCommercial, isPG, isPlot }) => (
-  <Card className="border border-slate-100 bg-gradient-to-br from-white via-slate-50 to-white p-5 text-slate-900 shadow-xl">
+  <Card className="border border-slate-100 bg-white p-5 shadow-xl">
     <p className="mb-3 text-sm font-semibold text-slate-800">Rooms & layout</p>
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-4 md:grid-cols-2">
       {(isResidential || isPG) && !isPlot && (
         <>
           <FormField

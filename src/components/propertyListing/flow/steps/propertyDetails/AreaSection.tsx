@@ -22,9 +22,9 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
   showSuperBuiltUp,
   showAreaUnit,
 }) => (
-  <Card className="border-0 bg-white/85 p-5 shadow-xl">
+  <Card className="border border-slate-100 bg-white p-5 shadow-xl">
     <p className="mb-3 text-sm font-semibold text-slate-700">Size & area details</p>
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-4 sm:grid-cols-2">
       {showBuiltUp && (
         <>
           <FormField

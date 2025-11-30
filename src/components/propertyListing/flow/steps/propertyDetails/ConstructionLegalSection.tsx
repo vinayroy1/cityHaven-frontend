@@ -31,10 +31,10 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
   if (isPlot) return null;
 
   return (
-    <Card className="border border-slate-100 bg-white p-5 shadow-xl">
+    <Card className="w-full border border-slate-200 bg-white p-6 shadow-xl">
       <p className="mb-3 text-sm font-semibold text-slate-800">Construction & legal</p>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         <FormField
           control={form.control}
           name="availability.availabilityStatus"
@@ -71,7 +71,7 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
         />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         <FormField
           control={form.control}
           name="availability.possessionStatus"
@@ -107,7 +107,7 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
         />
       </div>
 
-      <div className="mt-3">
+      <div className="mt-4">
         <FormField
           control={form.control}
           name="availability.possessionBy"
@@ -126,7 +126,7 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
       </div>
 
       {(isResidential || isCommercial) && (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
             name="availability.constructionDone"
@@ -180,7 +180,7 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
       )}
 
       {(isResidential || isCommercial) && (
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="mt-3 grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
             name="details.ageOfProperty"
