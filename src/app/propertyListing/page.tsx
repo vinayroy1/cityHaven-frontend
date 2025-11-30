@@ -1,5 +1,5 @@
 import React from 'react';
-import { PropertyListingFlow } from '@/components/propertyListing/PropertyListingFlow';
+import { PropertyListingFlow } from '@/components/propertyListing/flow/PropertyListingFlow';
 import { Toaster } from '@/components/ui/sonner';
 
 export default function PropertyListingPage() {

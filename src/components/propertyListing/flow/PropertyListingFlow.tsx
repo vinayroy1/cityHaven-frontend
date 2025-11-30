@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { ShieldCheck } from "lucide-react";
-import { Stepper } from "@/components/propertyListing/Stepper";
+import { Stepper } from "@/components/propertyListing/flow/Stepper";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
