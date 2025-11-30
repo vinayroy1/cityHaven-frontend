@@ -17,7 +17,7 @@ export function AmenitiesLegalStep({ form }: StepProps) {
 
   return (
     <div className="space-y-4">
-      <Card className="border border-slate-200 bg-white p-5 shadow-xl">
+      <Card className="mx-auto w-full max-w-5xl border border-slate-200 bg-white p-5 shadow-xl">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-slate-800">Amenities</p>
         </div>

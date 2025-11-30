@@ -2,6 +2,7 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/components/ui/utils";
@@ -32,6 +33,98 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
   return (
     <Card className="border border-slate-100 bg-white p-5 shadow-xl">
       <p className="mb-3 text-sm font-semibold text-slate-800">Construction & legal</p>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <FormField
+          control={form.control}
+          name="availability.availabilityStatus"
+          rules={{ required: "Availability required" }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Availability</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Ready, UC, soon" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
+                  <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
+                  <SelectItem value="POSSESSION_SOON">Possession soon</SelectItem>
+                  <SelectItem value="NEW_LAUNCH">New launch</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="availability.availableFrom"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Available from</FormLabel>
+              <Input type="date" value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <FormField
+          control={form.control}
+          name="availability.possessionStatus"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Possession status</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Ready / UC / Launch" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
+                  <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
+                  <SelectItem value="LAUNCH">Launch</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="availability.constructionDone"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
+              <FormLabel className="text-sm text-slate-800">Construction complete</FormLabel>
+              <FormControl>
+                <Switch checked={!!field.value} onCheckedChange={field.onChange} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <div className="mt-3">
+        <FormField
+          control={form.control}
+          name="availability.possessionBy"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Possession timeline</FormLabel>
+              <Input
+                className="bg-white text-slate-900"
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value)}
+                placeholder="Within 3 months / 2025-Q2"
+              />
+            </FormItem>
+          )}
+        />
+      </div>
+
       {(isResidential || isCommercial) && (
         <div className="grid gap-3 sm:grid-cols-2">
           <FormField
@@ -174,6 +267,97 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
 
       {isCommercial && (
         <>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="availability.availabilityStatus"
+              rules={{ required: "Availability required" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Availability</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Ready, UC, soon" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
+                      <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
+                      <SelectItem value="POSSESSION_SOON">Possession soon</SelectItem>
+                      <SelectItem value="NEW_LAUNCH">New launch</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="availability.availableFrom"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Available from</FormLabel>
+                  <Input type="date" value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="availability.possessionStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Possession status</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Ready / UC / Launch" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
+                      <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
+                      <SelectItem value="LAUNCH">Launch</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="availability.constructionDone"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
+                  <FormLabel className="text-sm text-slate-800">Construction complete</FormLabel>
+                  <FormControl>
+                    <Switch checked={!!field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="mt-3">
+            <FormField
+              control={form.control}
+              name="availability.possessionBy"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Possession timeline</FormLabel>
+                  <Input
+                    className="bg-white text-slate-900"
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    placeholder="Within 3 months / 2025-Q2"
+                  />
+                </FormItem>
+              )}
+            />
+          </div>
+
           <div className="mt-4">
             <p className="text-sm font-semibold text-slate-800">Fire safety</p>
             <div className="mt-2 flex flex-wrap gap-2">
