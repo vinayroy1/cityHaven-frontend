@@ -104,7 +104,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
   const showBuiltUp = (isResidential || isCommercial) && !isPG;
   const showCarpet = (isResidential || isCommercial) && !isPG;
   const showPlotArea = isPlot;
-  const showSuperBuiltUp = isResidential && isApartment && !isPG;
+  const showSuperBuiltUp = isResidential && !isPG && !isPlot;
   const showAreaUnit = showBuiltUp || showCarpet || showPlotArea || showSuperBuiltUp;
   const showSocietyDetails = Boolean(locatedInsideId || form.watch("location.projectId") || form.watch("location.societyOrProjectName"));
   const showPossessionDate = constructionStatus === "UNDER_CONSTRUCTION";
