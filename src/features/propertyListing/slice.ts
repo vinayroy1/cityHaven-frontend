@@ -133,6 +133,8 @@ export const initialPropertyListingFormValues: PropertyListingFormValues = {
     deposit: null,
     maintenance: null,
     maintenancePaymentPeriod: "",
+    pricePerUnitArea: null,
+    pricePerUnitAreaUnit: "",
     allInclusivePrice: false,
     taxAndGovtExcluded: false,
     inclusive: "",

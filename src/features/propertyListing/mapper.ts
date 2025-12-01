@@ -122,6 +122,8 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     price: pricing.price ?? undefined,
     priceType: pricing.priceType || undefined,
     pricePerSqFt: pricing.pricePerSqFt ?? undefined,
+    pricePerUnitArea: pricing.pricePerUnitArea ?? undefined,
+    pricePerUnitAreaUnit: pricing.pricePerUnitAreaUnit || undefined,
     priceNegotiable: pricing.priceNegotiable ?? undefined,
     priceInWords: pricing.priceInWords || undefined,
     priceRangeText: pricing.priceRangeText || undefined,

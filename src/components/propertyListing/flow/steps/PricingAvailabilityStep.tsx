@@ -3,8 +3,24 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { NumberInput } from "./StepCommon";
 import type { StepProps } from "./StepCommon";
+
+const areaUnitOptions = [
+  { value: "SQ_FT", label: "Sq.ft" },
+  { value: "SQ_M", label: "Sq.m" },
+  { value: "BIGHA", label: "Bigha" },
+  { value: "KOTTAH", label: "Kottah" },
+  { value: "GROUNDS", label: "Grounds" },
+  { value: "ARES", label: "Ares" },
+  { value: "BISWA", label: "Biswa" },
+  { value: "GUNTHA", label: "Guntha" },
+  { value: "AANKADAM", label: "Aankadam" },
+  { value: "HECTARES", label: "Hectares" },
+  { value: "CENTS", label: "Cents" },
+  { value: "PERCH", label: "Perch" },
+];
 
 export function PricingAvailabilityStep({ form }: StepProps) {
   const listingType = form.watch("context.listingType");
@@ -56,11 +72,30 @@ export function PricingAvailabilityStep({ form }: StepProps) {
           {isSell && (
             <FormField
               control={form.control}
-              name="pricing.pricePerSqFt"
+              name="pricing.pricePerUnitArea"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price per sq.ft</FormLabel>
-                  <NumberInput field={field} placeholder="4000" />
+                  <FormLabel>Price per area unit</FormLabel>
+                  <div className="flex flex-col gap-2">
+                    <Select
+                      value={form.watch("pricing.pricePerUnitAreaUnit") ?? ""}
+                      onValueChange={(val) => form.setValue("pricing.pricePerUnitAreaUnit", val)}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select unit" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {areaUnitOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <NumberInput field={field} placeholder="4000" />
+                  </div>
                 </FormItem>
               )}
             />
@@ -138,15 +173,28 @@ export function PricingAvailabilityStep({ form }: StepProps) {
                 )}
               />
               <FormField
-                control={form.control}
-                name="pricing.maintenancePaymentPeriod"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Maintenance frequency</FormLabel>
-                    <Input value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} placeholder="Monthly / Quarterly" />
-                  </FormItem>
-                )}
-              />
+              control={form.control}
+              name="pricing.maintenancePaymentPeriod"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Maintenance frequency</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Monthly / Quarterly" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="ONE_TIME">One Time</SelectItem>
+                      <SelectItem value="MONTHLY">Monthly</SelectItem>
+                      <SelectItem value="QUARTERLY">Quarterly</SelectItem>
+                      <SelectItem value="HALF_YEARLY">Half Yearly</SelectItem>
+                      <SelectItem value="ANNUALLY">Annually</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
               <FormField
                 control={form.control}
                 name="pricing.priceNegotiable"
@@ -221,16 +269,26 @@ export function PricingAvailabilityStep({ form }: StepProps) {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="pricing.brokerageType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Brokerage type</FormLabel>
-                    <Input value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} placeholder="Percentage / Fixed" />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="pricing.brokerageType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Brokerage type</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Percentage / Fixed" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="PERCENTAGE">Percentage</SelectItem>
+                    <SelectItem value="FIXED">Fixed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
               <FormField
                 control={form.control}
                 name="pricing.brokerageNegotiable"

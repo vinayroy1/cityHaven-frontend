@@ -155,6 +155,8 @@ export interface PricingFinancialsBlock {
   price?: number | null;
   priceType?: string;
   pricePerSqFt?: number | null;
+  pricePerUnitArea?: number | null;
+  pricePerUnitAreaUnit?: string;
   priceNegotiable?: boolean;
   priceInWords?: string;
   priceRangeText?: string;
