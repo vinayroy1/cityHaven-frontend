@@ -28,6 +28,8 @@ export default function LoginPage() {
   const [otpCode, setOtpCode] = useState("");
   const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [attemptsLeft, setAttemptsLeft] = useState(3);
+  const [showOtpAfterFailure, setShowOtpAfterFailure] = useState(false);
 
   useEffect(() => {
     // Generate CAPTCHA on client after hydration to avoid SSR mismatch
@@ -49,18 +51,13 @@ export default function LoginPage() {
       setMessage('Please enter a valid 10-digit mobile number.');
       return;
     }
-    if (captchaInput.trim().toUpperCase() !== captcha) {
-      setMessage('CAPTCHA does not match.');
-      return;
-    }
     setSendingOtp(true);
     const cleanMobile = mobile.replace(/\D/g, "");
     try {
       await apiClient.post(API_ENDPOINTS.auth.requestOtp, { mobileNumber: cleanMobile });
-      try {
-        sessionStorage.setItem('cityhaven_mobile', cleanMobile);
-      } catch {}
       setOtpRequested(true);
+      setAttemptsLeft(3);
+      setOtpInput("");
       setMessage('OTP sent to your mobile. Enter it below to continue.');
     } catch (err: any) {
       setMessage(err?.message || 'Unable to send OTP right now.');
@@ -74,13 +71,15 @@ export default function LoginPage() {
     setMessage(null);
     if (!otpRequested) return;
     const cleanMobile = mobile.replace(/\D/g, "");
+    const currentOtp = otpInput; // preserve user input on error
+    const currentMobile = mobile;
     if (!/^\d{6}$/.test(otpInput.trim())) {
       setMessage('Enter a valid 6-digit OTP.');
       return;
     }
     setVerifyingOtp(true);
     try {
-      const response = await apiClient.post<{ data?: { accessToken?: string; refreshToken?: string; user?: unknown } }>(
+      const response = await apiClient.post<{ accessToken?: string; refreshToken?: string; user?: unknown }>(
         API_ENDPOINTS.auth.verifyOtp,
         { mobileNumber: cleanMobile, otp: otpInput.trim() },
       );
@@ -91,6 +90,10 @@ export default function LoginPage() {
       setMessage('Verified! Redirecting...');
       router.push('/homePage');
     } catch (err: any) {
+      setOtpRequested(true); // keep OTP box visible
+      setShowOtpAfterFailure(true);
+      setMobile(currentMobile); // keep mobile intact on failure
+      setOtpInput(currentOtp); // keep OTP input intact on failure
       setMessage(err?.message || 'Incorrect OTP. Please try again.');
     } finally {
       setVerifyingOtp(false);
@@ -137,31 +140,6 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-sm font-semibold text-slate-800">CAPTCHA</label>
-                  <div className="mt-2 flex items-center gap-3">
-                    <div className="select-none tracking-widest rounded-xl bg-slate-900 text-white px-3 py-2 text-sm font-bold shadow-sm shadow-slate-900/20">
-                      {captcha}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={refreshCaptcha}
-                      className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-rose-200 hover:text-rose-600"
-                      aria-label="Refresh CAPTCHA"
-                    >
-                      <RefreshCw className="h-3.5 w-3.5" />
-                      Refresh
-                    </button>
-                  </div>
-                  <input
-                    aria-label="Enter CAPTCHA"
-                    className="mt-2 h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-base font-semibold outline-none transition-colors focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                    placeholder="Enter the code above"
-                    value={captchaInput}
-                    onChange={(e) => setCaptchaInput(e.target.value)}
-                  />
-                </div>
-
                 <button
                   type="submit"
                   disabled={sendingOtp}
@@ -176,7 +154,7 @@ export default function LoginPage() {
                 </div>
               </form>
 
-              {otpRequested && (
+              {(otpRequested || showOtpAfterFailure) && (
                 <form className="mt-6 space-y-3 border-t border-slate-100 pt-5" onSubmit={handleVerifyOtp}>
                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
                     <KeyRound className="h-4 w-4 text-rose-500" />
@@ -191,6 +169,7 @@ export default function LoginPage() {
                     value={otpInput}
                     onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
                   />
+                  <p className="text-xs text-slate-500">Attempts left: {attemptsLeft}</p>
                   <button
                     type="submit"
                     disabled={verifyingOtp}

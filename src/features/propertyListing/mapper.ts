@@ -11,17 +11,20 @@ const stripEmpty = <T extends Record<string, unknown>>(obj: T): T => {
   Object.entries(obj).forEach(([key, value]) => {
     if (value === undefined || value === null) return;
     if (typeof value === "string" && value.trim() === "") return;
+    if (typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0) return;
     cleaned[key] = value;
   });
   return cleaned as T;
 };
 
 export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
-  const { context, location, details, pricing, availability, amenities, meta, media, publishOptions } = form;
+  const { context, location, details, pricing, availability, amenities, meta, publishOptions } = form;
+
+  const baseTitle = meta.title?.trim() || location.societyOrProjectName || location.address || "Property listing";
 
   const base = {
-    title: meta.title,
-    description: meta.description,
+    title: baseTitle,
+    description: meta.description?.trim() || undefined,
     listingType: context.listingType,
     resCom: context.resCom,
     postedAs: context.postedAs,
@@ -45,13 +48,8 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     address: location.address || undefined,
     houseNumber: location.houseNumber || undefined,
     plotNumber: location.plotNumber || undefined,
-    pincode: location.pincode || undefined,
     latitude: location.latitude ?? undefined,
     longitude: location.longitude ?? undefined,
-    totalTowers: location.totalTowers ?? undefined,
-    totalUnits: location.totalUnits ?? undefined,
-    constructionStatus: location.constructionStatus || undefined,
-    possessionDate: location.possessionDate || undefined,
 
     // details (structure)
     areaSize: details.areaSize ?? undefined,
@@ -72,8 +70,6 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     entranceWidthUnit: details.entranceWidthUnit || undefined,
     ceilingWidth: details.ceilingWidth ?? undefined,
     ceilingWidthUnit: details.ceilingWidthUnit || undefined,
-    ceilingHeight: details.ceilingHeight ?? undefined,
-    ceilingHeightUnit: details.ceilingHeightUnit || undefined,
     bedrooms: details.bedrooms ?? undefined,
     bathrooms: details.bathrooms ?? undefined,
     balconies: details.balconies ?? undefined,
@@ -82,18 +78,12 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     floorNumber: details.floorNumber || undefined,
     floorsAllowed: details.floorsAllowed ?? undefined,
     lift: details.lift ?? undefined,
-    ageOfProperty: details.ageOfProperty || undefined,
     propertyFacing: details.propertyFacing || undefined,
-    kitchenType: details.kitchenType || undefined,
     roomType: details.roomType || undefined,
     sharingCapacity: details.sharingCapacity ?? undefined,
     totalBeds: details.totalBeds ?? undefined,
     availableBeds: details.availableBeds ?? undefined,
     foodIncluded: details.foodIncluded ?? undefined,
-    pgFor: details.pgFor || undefined,
-    mealType: details.mealType || undefined,
-    sharingType: details.sharingType || undefined,
-    securityDeposit: details.securityDeposit ?? undefined,
     acAvailable: details.acAvailable ?? undefined,
     attachedBathroom: details.attachedBathroom ?? undefined,
     attachedBalcony: details.attachedBalcony ?? undefined,
@@ -107,17 +97,12 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     meetingRooms: details.meetingRooms ?? undefined,
     cabins: details.cabins ?? undefined,
     washrooms: details.washrooms ?? undefined,
-    washroomType: details.washroomType || undefined,
-    officeType: details.officeType || undefined,
-    cabinCount: details.cabinCount ?? undefined,
-    workstations: details.workstations ?? undefined,
     multiFloorSelect: details.multiFloorSelect ?? undefined,
     multiFloorNum: details.multiFloorNum ?? undefined,
     openSides: details.openSides ?? undefined,
     staircases: details.staircases ?? undefined,
     zoneType: details.zoneType || undefined,
-    suitableForBussinessType: details.suitableForBussinessType,
-    businessApproval: details.businessApproval || undefined,
+    suitableForBussinessType: undefined,
 
     // pricing
     price: pricing.price ?? undefined,
@@ -125,17 +110,14 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     pricePerSqFt: pricing.pricePerSqFt ?? undefined,
     pricePerUnitArea: pricing.pricePerUnitArea ?? undefined,
     pricePerUnitAreaUnit: pricing.pricePerUnitAreaUnit || undefined,
-    priceNegotiable: pricing.priceNegotiable ?? undefined,
+    priceNegotiable: typeof pricing.priceNegotiable === "boolean" ? pricing.priceNegotiable : undefined,
     priceInWords: pricing.priceInWords || undefined,
-    priceRangeText: pricing.priceRangeText || undefined,
-    minPrice: pricing.minPrice ?? undefined,
-    maxPrice: pricing.maxPrice ?? undefined,
     deposit: pricing.deposit ?? undefined,
     maintenance: pricing.maintenance ?? undefined,
     maintenancePaymentPeriod: pricing.maintenancePaymentPeriod || undefined,
-    allInclusivePrice: pricing.allInclusivePrice ?? undefined,
-    taxAndGovtExcluded: pricing.taxAndGovtExcluded ?? undefined,
-    inclusive: pricing.inclusive || undefined,
+    allInclusivePrice: typeof pricing.allInclusivePrice === "boolean" ? pricing.allInclusivePrice : undefined,
+    taxAndGovtExcluded: typeof pricing.taxAndGovtExcluded === "boolean" ? pricing.taxAndGovtExcluded : undefined,
+    inclusive: typeof pricing.inclusive === "boolean" ? pricing.inclusive : undefined,
     bookingAmount: pricing.bookingAmount ?? undefined,
     membershipCharge: pricing.membershipCharge ?? undefined,
     annualDuesPayable: pricing.annualDuesPayable ?? undefined,
@@ -180,12 +162,8 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     reservedParking: amenities.reservedParking,
 
     status: publishOptions.status,
-    qcRequired: publishOptions.qcRequired,
     aiMetadata: meta.aiMetadata ?? undefined,
     draftState: meta.draftState ?? undefined,
-    amenityIds: amenities.amenityIds,
-    mediaIds: media.mediaIds,
-    documentIds: media.documentIds,
   };
 
   // API expects amenity objects; convert if present

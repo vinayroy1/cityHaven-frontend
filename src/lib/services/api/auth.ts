@@ -6,7 +6,7 @@ import { APP_CONFIG } from '@/constants/app-config';
 export const authService = {
   // Login user
   async login(credentials: LoginCredentials): Promise<AuthUser> {
-    const response = await apiClient.post<AuthUser>(API_ENDPOINTS.AUTH.LOGIN, credentials);
+    const response = await apiClient.post<AuthUser>(API_ENDPOINTS.auth.login, credentials);
     
     if (response.data.accessToken && typeof window !== 'undefined') {
       localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, response.data.accessToken);
@@ -20,7 +20,7 @@ export const authService = {
 
   // Register new user
   async register(data: RegisterData): Promise<AuthUser> {
-    const response = await apiClient.post<AuthUser>(API_ENDPOINTS.AUTH.REGISTER, data);
+    const response = await apiClient.post<AuthUser>(API_ENDPOINTS.auth.register, data);
     
     if (response.data.accessToken && typeof window !== 'undefined') {
       localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, response.data.accessToken);
@@ -34,7 +34,7 @@ export const authService = {
   // Logout user
   async logout(): Promise<void> {
     try {
-      await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+      await apiClient.post(API_ENDPOINTS.auth.logout);
     } finally {
       this.clearAuthData();
     }
@@ -48,7 +48,7 @@ export const authService = {
     }
 
     const response = await apiClient.post<{ accessToken: string }>(
-      API_ENDPOINTS.AUTH.REFRESH,
+      API_ENDPOINTS.auth.refreshToken,
       { refreshToken }
     );
 
@@ -61,13 +61,13 @@ export const authService = {
 
   // Get current user
   async getCurrentUser(): Promise<User> {
-    const response = await apiClient.get<User>(API_ENDPOINTS.AUTH.ME);
+    const response = await apiClient.get<User>(API_ENDPOINTS.auth.me);
     return response.data;
   },
 
   // Update user profile
   async updateProfile(data: Partial<User>): Promise<User> {
-    const response = await apiClient.put<User>(API_ENDPOINTS.AUTH.PROFILE, data);
+    const response = await apiClient.put<User>(API_ENDPOINTS.auth.profile, data);
     
     if (typeof window !== 'undefined') {
       // Update the stored user data with the new profile data
@@ -81,7 +81,7 @@ export const authService = {
 
   // Change password
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
-    await apiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, {
+    await apiClient.post(API_ENDPOINTS.auth.changePassword, {
       currentPassword,
       newPassword,
     });
@@ -89,12 +89,12 @@ export const authService = {
 
   // Forgot password
   async forgotPassword(email: string): Promise<void> {
-    await apiClient.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
+    await apiClient.post(API_ENDPOINTS.auth.forgotPassword, { email });
   },
 
   // Reset password
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    await apiClient.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, {
+    await apiClient.post(API_ENDPOINTS.auth.resetPassword, {
       token,
       newPassword,
     });
@@ -135,3 +135,5 @@ export const authService = {
     }
   },
 };
+
+export default authService;

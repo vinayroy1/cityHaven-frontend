@@ -8,7 +8,7 @@
     "dev:qa": "dotenv -e .env.qa -- next dev",
     "dev:uat": "dotenv -e .env.uat -- next dev",
     "dev:prod": "dotenv -e .env.production -- next dev",
-    "build": "next build",
+    "build": "tsc --noEmit && next build",
     "build:sit": "dotenv -e .env.sit -- next build",
     "build:qa": "dotenv -e .env.qa -- next build",
     "build:uat": "dotenv -e .env.uat -- next build",

@@ -3,11 +3,11 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 
-const mergeDraft = <T extends Record<string, unknown>>(target: T, source: Partial<T>): T => {
-  const output: Record<string, unknown> = Array.isArray(target) ? [...(target as unknown[])] : { ...target };
+const mergeDraft = <T>(target: T, source: Partial<T>): T => {
+  const output: any = Array.isArray(target) ? [...(target as any[])] : { ...(target as any) };
   Object.entries(source).forEach(([key, value]) => {
     if (value === undefined) return;
-    const current = (output as Record<string, unknown>)[key];
+    const current = output[key];
     if (
       current &&
       typeof current === "object" &&
@@ -15,9 +15,9 @@ const mergeDraft = <T extends Record<string, unknown>>(target: T, source: Partia
       typeof value === "object" &&
       !Array.isArray(value)
     ) {
-      (output as Record<string, unknown>)[key] = mergeDraft(current as Record<string, unknown>, value as Record<string, unknown>);
+      output[key] = mergeDraft(current as any, value as any);
     } else {
-      (output as Record<string, unknown>)[key] = value as unknown;
+      output[key] = value as any;
     }
   });
   return output as T;

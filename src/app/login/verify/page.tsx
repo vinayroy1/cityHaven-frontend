@@ -44,7 +44,7 @@ export default function VerifyOtpPage() {
     }
     setVerifying(true);
     try {
-      const response = await apiClient.post<{ data?: { accessToken?: string; refreshToken?: string; user?: unknown } }>(
+      const response = await apiClient.post<{ accessToken?: string; refreshToken?: string; user?: unknown }>(
         API_ENDPOINTS.auth.verifyOtp,
         { mobileNumber: mobile.replace(/\D/g, ""), otp: otpInput.trim() },
       );

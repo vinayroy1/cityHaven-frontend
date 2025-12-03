@@ -65,6 +65,7 @@ export type PropertyDetailsVisibility = {
     showMeetingRooms: boolean;
     showCabins: boolean;
     showWorkstations: boolean;
+    showBusinessApproval: boolean;
   };
   pg: {
     showSection: boolean;
@@ -197,6 +198,7 @@ export const derivePropertyDetailsVisibility = ({
       showMeetingRooms: isOffice,
       showCabins: isOffice,
       showWorkstations: isOffice,
+      showBusinessApproval,
     },
     pg: {
       showSection: isPG,

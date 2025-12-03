@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/components/ui/utils";
 import { getAllowedPropertyTypes, getSubTypesForSelection, propertyTypes } from "@/features/propertyListing";
 import { FieldShell } from "./StepCommon";
+import type { ListingType } from "@/types/propertyListing.types";
 import type { StepProps } from "./StepCommon";
 
 export function BasicContextStep({ form }: StepProps) {
@@ -72,8 +73,8 @@ export function BasicContextStep({ form }: StepProps) {
                   className="grid gap-3 sm:grid-cols-3"
                   value={field.value}
                   onValueChange={(value) => {
-                    field.onChange(value);
-                    const nextAllowedTypes = getAllowedPropertyTypes(value);
+                    field.onChange(value as ListingType);
+                    const nextAllowedTypes = getAllowedPropertyTypes(value as ListingType);
                     const currentAllowed = nextAllowedTypes.find((t) => t.id === propertyTypeId);
                     const nextType = currentAllowed ?? nextAllowedTypes[0];
                     if (value === "PG") {
