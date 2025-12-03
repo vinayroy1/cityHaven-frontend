@@ -1,4 +1,5 @@
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
+import { propertyTypes, propertySubTypeCatalog } from "./constants";
 
 const toNumber = (value?: string | number | null) => {
   if (value === null || value === undefined || value === "") return undefined;
@@ -17,10 +18,46 @@ const stripEmpty = <T extends Record<string, unknown>>(obj: T): T => {
   return cleaned as T;
 };
 
+const floorEnumFromValue = (value?: string | number | null) => {
+  if (value === null || value === undefined || value === "") return undefined;
+  const allowed = [
+    "LOWER_BASEMENT",
+    "BASEMENT",
+    "LOWER_GROUND",
+    "GROUND",
+    "ROOFTOP_TERRACE",
+    ...Array.from({ length: 20 }, (_, i) => `FLOOR_${i + 1}`),
+  ];
+  const asString = typeof value === "number" ? value.toString() : `${value}`.toUpperCase();
+  if (asString.startsWith("FLOOR_") && allowed.includes(asString)) return asString;
+  const num = Number(asString.replace(/[^0-9]/g, ""));
+  if (Number.isFinite(num) && allowed.includes(`FLOOR_${num}`)) return `FLOOR_${num}`;
+  if (allowed.includes(asString)) return asString;
+  return undefined;
+};
+
 export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
   const { context, location, details, pricing, availability, amenities, meta, publishOptions } = form;
 
   const baseTitle = meta.title?.trim() || location.societyOrProjectName || location.address || "Property listing";
+
+  const selectedType = propertyTypes.find((p) => p.id === `${context.propertyTypeId ?? ""}`);
+  const selectedSubType = selectedType
+    ? (propertySubTypeCatalog[selectedType.subTypeGroupSlug] ?? []).find((s) => s.id === `${context.propertySubTypeId ?? ""}`)
+    : undefined;
+  const selectedSubCategory = selectedSubType?.categories?.find((c) => c.id === `${context.propertySubCategoryId ?? ""}`);
+  const selectedLocatedInside = selectedSubType?.locatedInsideOptions?.find((l) => l.id === `${context.locatedInsideId ?? ""}`);
+
+  const safeConstructionType =
+    availability.constructionType && typeof availability.constructionType === "object" ? availability.constructionType : undefined;
+  const safeApprovedBy = amenities.approvedBy && typeof amenities.approvedBy === "object" ? amenities.approvedBy : undefined;
+  const safeFireSafety = amenities.fireSafety && typeof amenities.fireSafety === "object" ? amenities.fireSafety : undefined;
+  const safeFacilities = amenities.facilities && typeof amenities.facilities === "object" ? amenities.facilities : undefined;
+  const safeSocietyFeatures =
+    amenities.societyFeatures && typeof amenities.societyFeatures === "object" ? amenities.societyFeatures : undefined;
+  const safeReservedParking =
+    amenities.reservedParking && typeof amenities.reservedParking === "object" ? amenities.reservedParking : undefined;
+  const safeOtherRooms = details.otherRooms && typeof details.otherRooms === "object" ? details.otherRooms : undefined;
 
   const base = {
     title: baseTitle,
@@ -28,10 +65,10 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     listingType: context.listingType,
     resCom: context.resCom,
     postedAs: context.postedAs,
-    propertyTypeId: toNumber(context.propertyTypeId),
-    propertySubTypeId: toNumber(context.propertySubTypeId),
-    propertySubCategoryId: toNumber(context.propertySubCategoryId),
-    locatedInsideId: toNumber(context.locatedInsideId),
+    propertyTypeSlug: selectedType?.slug,
+    propertySubTypeSlug: selectedSubType?.slug,
+    propertySubCategorySlug: selectedSubCategory?.slug,
+    locatedInsideSlug: selectedLocatedInside?.slug,
     organizationId: toNumber(context.organizationId),
     ownerId: context.ownerId ?? undefined,
     createdById: context.createdById ?? undefined,
@@ -73,9 +110,9 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     bedrooms: details.bedrooms ?? undefined,
     bathrooms: details.bathrooms ?? undefined,
     balconies: details.balconies ?? undefined,
-    otherRooms: details.otherRooms,
+    otherRooms: safeOtherRooms,
     totalFloors: details.totalFloors ?? undefined,
-    floorNumber: details.floorNumber || undefined,
+    floorNumber: floorEnumFromValue(details.floorNumber),
     floorsAllowed: details.floorsAllowed ?? undefined,
     lift: details.lift ?? undefined,
     propertyFacing: details.propertyFacing || undefined,
@@ -136,14 +173,13 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     possessionBy: availability.possessionBy || undefined,
     possessionByMonth: availability.possessionByMonth ?? undefined,
     constructionDone: availability.constructionDone ?? undefined,
-    constructionType: availability.constructionType || undefined,
+    constructionType: safeConstructionType,
     ownershipType: amenities.ownershipType || undefined,
-    approvedBy: amenities.approvedBy,
+    approvedBy: safeApprovedBy,
     boundaryWall: amenities.boundaryWall ?? undefined,
     fireNoc: amenities.fireNoc ?? undefined,
     authorityIds: amenities.authorityIds?.length ? amenities.authorityIds : undefined,
     ageOfProperty: availability.ageOfProperty || undefined,
-
     furnishing: amenities.furnishing || undefined,
     furnishingDetails: amenities.furnishingDetails,
     pantryType: amenities.pantryType || undefined,
@@ -151,19 +187,23 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     pantryUnit: amenities.pantryUnit || undefined,
     conferenceRoom: amenities.conferenceRoom ?? undefined,
     receptionArea: amenities.receptionArea ?? undefined,
-    fireSafety: amenities.fireSafety,
-    facilities: amenities.facilities,
-    societyFeatures: amenities.societyFeatures,
+    fireSafety: safeFireSafety,
+    facilities: safeFacilities,
+    societyFeatures: safeSocietyFeatures,
     parkingAvailable: amenities.parkingAvailable ?? undefined,
     privateParkingBasement: amenities.privateParkingBasement ?? undefined,
     privateParkingOutside: amenities.privateParkingOutside ?? undefined,
     publicParking: amenities.publicParking ?? undefined,
     noOfParkings: amenities.noOfParkings ?? undefined,
-    reservedParking: amenities.reservedParking,
+    reservedParking: safeReservedParking,
 
     status: publishOptions.status,
     aiMetadata: meta.aiMetadata ?? undefined,
     draftState: meta.draftState ?? undefined,
+    structure: stripEmpty({
+      furnishing: amenities.furnishing || undefined,
+      furnishingDetails: amenities.furnishingDetails,
+    }),
   };
 
   // API expects amenity objects; convert if present

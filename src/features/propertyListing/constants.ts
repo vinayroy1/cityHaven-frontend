@@ -1,4 +1,5 @@
 import { Home, Building, Building2 } from "lucide-react";
+import { BACKEND_ENUMS, PROPERTY_TYPES, PROPERTY_SUBTYPES, PROPERTY_SUBCATEGORIES, LOCATED_INSIDE_OPTIONS } from "@/constants/backend-schema";
 import type { PropertyListingFormValues, ListingType } from "@/types/propertyListing.types";
 
 export type OptionItem = {
@@ -32,108 +33,58 @@ export type ListingTypeOption = {
   forcedSubTypeGroupSlug?: string;
 };
 
-export const listingTypeOptions: ListingTypeOption[] = [
-  { value: "SELL", label: "Sell", allowedPropertyTypeSlugs: ["residential", "commercial"] },
-  { value: "RENT", label: "Rent", allowedPropertyTypeSlugs: ["residential", "commercial"] },
-  { value: "PG", label: "PG / Co-living", allowedPropertyTypeSlugs: ["residential"], forcedSubTypeGroupSlug: "pg" },
-];
+export const listingTypeOptions: ListingTypeOption[] = BACKEND_ENUMS.ListingType.map((lt) => {
+  if (lt === "PG") return { value: lt, label: "PG / Co-living", allowedPropertyTypeSlugs: ["pg"], forcedSubTypeGroupSlug: "pg" };
+  if (lt === "SELL") return { value: lt, label: "Sell", allowedPropertyTypeSlugs: ["residential", "commercial"] };
+  return { value: lt, label: "Rent", allowedPropertyTypeSlugs: ["residential", "commercial"] };
+});
 
-export const propertyTypes: PropertyTypeOption[] = [
-  {
-    id: "1",
-    slug: "residential",
-    label: "Residential",
-    resCom: "RESIDENTIAL",
-    icon: Home,
-    accent: "from-emerald-400 to-teal-500",
-    subTypeGroupSlug: "residential",
-  },
-  {
-    id: "2",
-    slug: "commercial",
-    label: "Commercial",
-    resCom: "COMMERCIAL",
-    icon: Building,
-    accent: "from-amber-500 to-orange-400",
-    subTypeGroupSlug: "commercial",
-  },
-  {
-    id: "3",
-    slug: "pg",
-    label: "PG / Co-living",
-    resCom: "RESIDENTIAL",
-    icon: Building2,
-    accent: "from-sky-500 to-indigo-400",
-    subTypeGroupSlug: "pg",
-  },
-];
+const typeIcon: Record<string, typeof Home> = {
+  residential: Home,
+  commercial: Building,
+  pg: Building2,
+};
+
+const typeAccent: Record<string, string> = {
+  residential: "from-emerald-400 to-teal-500",
+  commercial: "from-amber-500 to-orange-400",
+  pg: "from-sky-500 to-indigo-400",
+};
+
+export const propertyTypes: PropertyTypeOption[] = PROPERTY_TYPES.map((t, idx) => ({
+  id: String(idx + 1),
+  slug: t.slug,
+  label: t.name,
+  resCom: t.resCom,
+  icon: typeIcon[t.slug] ?? Home,
+  accent: typeAccent[t.slug] ?? "from-emerald-400 to-teal-500",
+  subTypeGroupSlug: t.slug,
+}));
 
 export const propertySubTypeCatalog: Record<string, SubTypeOption[]> = {
-  residential: [
-    { id: "1", slug: "apartment", label: "Apartment" },
-    { id: "2", slug: "independent-house-villa", label: "Independent House / Villa" },
-    { id: "3", slug: "independent-builder-floor", label: "Independent / Builder Floor" },
-    { id: "4", slug: "1rk-studio", label: "1 RK / Studio Apartment" },
-    { id: "5", slug: "serviced-apartment", label: "Serviced Apartment" },
-    { id: "6", slug: "res-plot-land", label: "Plot / Land" },
-    { id: "7", slug: "farmhouse", label: "Farmhouse" },
-    { id: "8", slug: "res-other", label: "Other" },
-  ],
-  commercial: [
-    {
-      id: "9",
-      slug: "office",
-      label: "Office",
-      categories: [
-        { id: "1", slug: "ready-to-move-office-space", label: "Ready to move office space" },
-        { id: "2", slug: "bare-shell-office-space", label: "Bare shell office space" },
-        { id: "3", slug: "co-working-office-space", label: "Co-working office space" },
-      ],
-      locatedInsideOptions: [
-        { id: "11", slug: "mall", label: "Mall" },
-        { id: "12", slug: "commercial-project", label: "Commercial Project" },
-        { id: "13", slug: "retail-complex", label: "Retail Complex/Building" },
-        { id: "14", slug: "market-high-street", label: "Market / High Street" },
-        { id: "15", slug: "it-park", label: "IT Park" },
-        { id: "16", slug: "business-park", label: "Business Park" },
-        { id: "17", slug: "business-center", label: "Business Center" },
-        { id: "18", slug: "corporate-tower", label: "Corporate Tower" },
-        { id: "19", slug: "commercial-complex", label: "Commercial Complex" },
-        { id: "20", slug: "others", label: "Others" },
-      ],
-    },
-    {
-      id: "10",
-      slug: "retail",
-      label: "Retail",
-      categories: [
-        { id: "4", slug: "commercial-shops", label: "Commercial Shops" },
-        { id: "5", slug: "commercial-showrooms", label: "Commercial Showrooms" },
-      ],
-      locatedInsideOptions: [
-        { id: "1", slug: "mall", label: "Mall" },
-        { id: "2", slug: "commercial-project", label: "Commercial Project" },
-        { id: "3", slug: "retail-complex", label: "Retail Complex/Building" },
-        { id: "4", slug: "market-high-street", label: "Market / High Street" },
-        { id: "5", slug: "it-park", label: "IT Park" },
-        { id: "6", slug: "business-park", label: "Business Park" },
-        { id: "7", slug: "business-center", label: "Business Center" },
-        { id: "8", slug: "corporate-tower", label: "Corporate Tower" },
-        { id: "9", slug: "commercial-complex", label: "Commercial Complex" },
-        { id: "10", slug: "others", label: "Others" },
-      ],
-    },
-    { id: "11", slug: "commercial-plot-land", label: "Plot / Land" },
-    { id: "12", slug: "storage", label: "Storage" },
-    { id: "13", slug: "industry", label: "Industry" },
-    { id: "14", slug: "hospitality", label: "Hospitality" },
-    { id: "15", slug: "commercial-other", label: "Other" },
-  ],
-  pg: [
-    { id: "16", slug: "pg-private-room", label: "Private Room" },
-    { id: "17", slug: "pg-shared-room", label: "Shared Room" },
-    { id: "18", slug: "pg-bed", label: "Bed / Dormitory" },
-  ],
+  ...PROPERTY_TYPES.reduce<Record<string, SubTypeOption[]>>((acc, t) => {
+    const subtypes = PROPERTY_SUBTYPES.filter((s) => s.propertyTypeSlug === t.slug).map((s, idx) => {
+      const subCats = PROPERTY_SUBCATEGORIES.filter((c) => c.propertySubTypeSlug === s.slug).map((c, cidx) => ({
+        id: `${idx + 1}-${cidx + 1}`,
+        slug: c.slug,
+        label: c.name,
+      }));
+      const locatedInside = LOCATED_INSIDE_OPTIONS.filter((li) => li.propertySubTypeSlug === s.slug).map((li, lidx) => ({
+        id: `${idx + 1}-L${lidx + 1}`,
+        slug: li.slug,
+        label: li.name,
+      }));
+      return {
+        id: `${idx + 1}`,
+        slug: s.slug,
+        label: s.name,
+        categories: subCats.length ? subCats : undefined,
+        locatedInsideOptions: locatedInside.length ? locatedInside : undefined,
+      };
+    });
+    acc[t.slug] = subtypes;
+    return acc;
+  }, {}),
 };
 
 export const propertyTypeCatalog: (PropertyTypeOption & { subTypes: SubTypeOption[] })[] = propertyTypes.map((type) => ({
