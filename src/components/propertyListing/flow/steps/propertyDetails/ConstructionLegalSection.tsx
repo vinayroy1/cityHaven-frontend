@@ -9,14 +9,13 @@ import { cn } from "@/components/ui/utils";
 import { authorityOptions } from "@/features/propertyListing";
 import type { StepProps } from "../StepCommon";
 import { fireSafetyOptions, businessUseOptions } from "./constants";
+import type { PropertyDetailsVisibility } from "./visibility";
 
 type ConstructionLegalSectionProps = StepProps & {
-  isResidential: boolean;
-  isCommercial: boolean;
-  isPlot: boolean;
+  visibility: PropertyDetailsVisibility["legal"];
 };
 
-export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> = ({ form, isResidential, isCommercial, isPlot }) => {
+export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> = ({ form, visibility }) => {
   const toggleRecord = (path: "amenities.fireSafety", key: string) => {
     const current = form.getValues(path) ?? {};
     const next = { ...current };
@@ -28,104 +27,96 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
     form.setValue(path, next);
   };
 
-  if (isPlot) return null;
+  if (!visibility.showSection) return null;
 
   return (
     <Card className="w-full border border-slate-200 bg-white p-6 shadow-xl">
       <p className="mb-3 text-sm font-semibold text-slate-800">Construction & legal</p>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <FormField
-          control={form.control}
-          name="availability.availabilityStatus"
-          rules={{ required: "Availability required" }}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Availability</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Ready, UC, soon" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
-                  <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
-                  <SelectItem value="POSSESSION_SOON">Possession soon</SelectItem>
-                  <SelectItem value="NEW_LAUNCH">New launch</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="availability.availableFrom"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Available from</FormLabel>
-              <Input type="date" value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} />
-            </FormItem>
-          )}
-        />
-      </div>
+      {visibility.showAvailability && (
+        <>
+          <div className="grid gap-4 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="availability.availabilityStatus"
+              rules={{ required: "Availability required" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Availability</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Ready, UC, soon" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
+                      <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
+                      <SelectItem value="POSSESSION_SOON">Possession soon</SelectItem>
+                      <SelectItem value="NEW_LAUNCH">New launch</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="availability.availableFrom"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Available from</FormLabel>
+                  <Input type="date" value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} />
+                </FormItem>
+              )}
+            />
+          </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <FormField
-          control={form.control}
-          name="availability.possessionStatus"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Possession status</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Ready / UC / Launch" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
-                  <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
-                  <SelectItem value="LAUNCH">Launch</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="availability.constructionDone"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
-              <FormLabel className="text-sm text-slate-800">Construction complete</FormLabel>
-              <FormControl>
-                <Switch checked={!!field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-      </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="availability.possessionStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Possession status</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Ready / UC / Launch" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
+                      <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
+                      <SelectItem value="LAUNCH">Launch</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </div>
 
-      <div className="mt-4">
-        <FormField
-          control={form.control}
-          name="availability.possessionBy"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Possession timeline</FormLabel>
-              <Input
-                className="bg-white text-slate-900"
-                value={field.value ?? ""}
-                onChange={(e) => field.onChange(e.target.value)}
-                placeholder="Within 3 months / 2025-Q2"
-              />
-            </FormItem>
-          )}
-        />
-      </div>
+          <div className="mt-4">
+            <FormField
+              control={form.control}
+              name="availability.possessionBy"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Possession timeline</FormLabel>
+                  <Input
+                    className="bg-white text-slate-900"
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    placeholder="Within 3 months / 2025-Q2"
+                  />
+                </FormItem>
+              )}
+            />
+          </div>
+        </>
+      )}
 
-      {(isResidential || isCommercial) && (
+      {visibility.showConstructionType && (
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
@@ -164,7 +155,95 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
         </div>
       )}
 
-      {isResidential && (
+      {(visibility.showAgeOfProperty || visibility.showOwnershipType) && (
+        <div className="mt-3 grid gap-4 md:grid-cols-2">
+          {visibility.showAgeOfProperty && (
+            <FormField
+              control={form.control}
+              name="details.ageOfProperty"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Age of property</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select age" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="0_1">0-1 year</SelectItem>
+                      <SelectItem value="1_5">1-5 years</SelectItem>
+                      <SelectItem value="5_10">5-10 years</SelectItem>
+                      <SelectItem value="10_PLUS">10+ years</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          )}
+
+          {visibility.showOwnershipType && (
+            <FormField
+              control={form.control}
+              name="amenities.ownershipType"
+              rules={{ required: "Ownership required" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ownership type</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Freehold / Leasehold / Co-op" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="FREEHOLD">Freehold</SelectItem>
+                      <SelectItem value="LEASEHOLD">Leasehold</SelectItem>
+                      <SelectItem value="CO_OPERATIVE">Co-operative</SelectItem>
+                      <SelectItem value="POWER_OF_ATTORNEY">Power of Attorney</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+        </div>
+      )}
+
+      {visibility.showAuthority && (
+        <FormField
+          control={form.control}
+          name="amenities.authorityIds"
+          render={() => {
+            const selected = form.watch("amenities.authorityIds") ?? [];
+            const toggle = (id: number) => {
+              const next = selected.includes(id) ? selected.filter((a) => a !== id) : [...selected, id];
+              form.setValue("amenities.authorityIds", next);
+            };
+            return (
+              <FormItem className="mt-3">
+                <FormLabel>Approved by</FormLabel>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  {authorityOptions.map((authority) => (
+                    <label
+                      key={authority.id}
+                      className="flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
+                    >
+                      <FormControl>
+                        <Checkbox checked={selected.includes(authority.id)} onCheckedChange={() => toggle(authority.id)} />
+                      </FormControl>
+                      <span>{authority.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </FormItem>
+            );
+          }}
+        />
+      )}
+
+      {visibility.showBoundaryWall && (
         <FormField
           control={form.control}
           name="amenities.boundaryWall"
@@ -179,185 +258,8 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
         />
       )}
 
-      {(isResidential || isCommercial) && (
-        <div className="mt-3 grid gap-4 md:grid-cols-2">
-          <FormField
-            control={form.control}
-            name="details.ageOfProperty"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Age of property</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select age" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="0_1">0-1 year</SelectItem>
-                    <SelectItem value="1_5">1-5 years</SelectItem>
-                    <SelectItem value="5_10">5-10 years</SelectItem>
-                    <SelectItem value="10_PLUS">10+ years</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="amenities.ownershipType"
-            rules={{ required: "Ownership required" }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Ownership type</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Freehold / Leasehold / Co-op" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="FREEHOLD">Freehold</SelectItem>
-                    <SelectItem value="LEASEHOLD">Leasehold</SelectItem>
-                    <SelectItem value="CO_OPERATIVE">Co-operative</SelectItem>
-                    <SelectItem value="POWER_OF_ATTORNEY">Power of Attorney</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      )}
-
-      {(isResidential || isCommercial) && (
+      {visibility.showFireSafety && (
         <>
-          <FormField
-            control={form.control}
-            name="amenities.authorityIds"
-            render={() => {
-              const selected = form.watch("amenities.authorityIds") ?? [];
-              const toggle = (id: number) => {
-                const next = selected.includes(id) ? selected.filter((a) => a !== id) : [...selected, id];
-                form.setValue("amenities.authorityIds", next);
-              };
-              return (
-                <FormItem className="mt-3">
-                  <FormLabel>Approved by</FormLabel>
-                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                    {authorityOptions.map((authority) => (
-                      <label
-                        key={authority.id}
-                        className="flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
-                      >
-                        <FormControl>
-                          <Checkbox checked={selected.includes(authority.id)} onCheckedChange={() => toggle(authority.id)} />
-                        </FormControl>
-                        <span>{authority.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </FormItem>
-              );
-            }}
-          />
-        </>
-      )}
-
-      {isCommercial && (
-        <>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="availability.availabilityStatus"
-              rules={{ required: "Availability required" }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Availability</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Ready, UC, soon" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
-                      <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
-                      <SelectItem value="POSSESSION_SOON">Possession soon</SelectItem>
-                      <SelectItem value="NEW_LAUNCH">New launch</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="availability.availableFrom"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Available from</FormLabel>
-                  <Input type="date" value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="availability.possessionStatus"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Possession status</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Ready / UC / Launch" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="READY_TO_MOVE">Ready to move</SelectItem>
-                      <SelectItem value="UNDER_CONSTRUCTION">Under construction</SelectItem>
-                      <SelectItem value="LAUNCH">Launch</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="availability.constructionDone"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
-                  <FormLabel className="text-sm text-slate-800">Construction complete</FormLabel>
-                  <FormControl>
-                    <Switch checked={!!field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="mt-3">
-            <FormField
-              control={form.control}
-              name="availability.possessionBy"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Possession timeline</FormLabel>
-                  <Input
-                    className="bg-white text-slate-900"
-                    value={field.value ?? ""}
-                    onChange={(e) => field.onChange(e.target.value)}
-                    placeholder="Within 3 months / 2025-Q2"
-                  />
-                </FormItem>
-              )}
-            />
-          </div>
-
           <div className="mt-4">
             <p className="text-sm font-semibold text-slate-800">Fire safety</p>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -381,41 +283,45 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
             </div>
           </div>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="amenities.fireNoc"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
-                  <FormLabel className="text-sm text-slate-800">Fire NOC</FormLabel>
-                  <FormControl>
-                    <Switch checked={!!field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="details.suitableForBussinessType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Approved for business type</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+            {visibility.showFireNoc && (
+              <FormField
+                control={form.control}
+                name="amenities.fireNoc"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
+                    <FormLabel className="text-sm text-slate-800">Fire NOC</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select use case" />
-                      </SelectTrigger>
+                      <Switch checked={!!field.value} onCheckedChange={field.onChange} />
                     </FormControl>
-                    <SelectContent>
-                      {businessUseOptions.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+                  </FormItem>
+                )}
+              />
+            )}
+            {visibility.showBusinessApproval && (
+              <FormField
+                control={form.control}
+                name="details.suitableForBussinessType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Approved for business type</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select use case" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {businessUseOptions.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
         </>
       )}

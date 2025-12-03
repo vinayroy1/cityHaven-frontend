@@ -7,54 +7,60 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/components/ui/utils";
 import { NumberInput } from "../StepCommon";
 import type { StepProps } from "../StepCommon";
+import { StepperInput } from "./StepperInput";
+import type { PropertyDetailsVisibility } from "./visibility";
 
 type PgSectionProps = StepProps & {
-  isPG: boolean;
+  visibility: PropertyDetailsVisibility["pg"];
 };
 
-export const PgSection: React.FC<PgSectionProps> = ({ form, isPG }) => {
-  if (!isPG) return null;
+export const PgSection: React.FC<PgSectionProps> = ({ form, visibility }) => {
+  if (!visibility.showSection) return null;
 
   return (
     <Card className="border border-slate-100 bg-white p-5 shadow-xl">
       <p className="mb-3 text-sm font-semibold text-slate-800">PG specific</p>
       <div className="grid gap-3 sm:grid-cols-2">
-        <FormField
-          control={form.control}
-          name="details.pgFor"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Allowed for</FormLabel>
-              <RadioGroup className="flex flex-wrap gap-3" value={field.value ?? ""} onValueChange={field.onChange}>
-                {["BOYS", "GIRLS", "UNISEX"].map((option) => (
-                  <label
-                    key={option}
-                    className={cn(
-                      "flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm",
-                      field.value === option ? "border-sky-500 bg-sky-50 text-sky-700" : "border-slate-200 text-slate-700",
-                    )}
-                  >
-                    <RadioGroupItem value={option} />
-                    {option}
-                  </label>
-                ))}
-              </RadioGroup>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="details.foodIncluded"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
-              <FormLabel className="text-sm text-slate-800">Food included</FormLabel>
-              <FormControl>
-                <Switch checked={!!field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        {form.watch("details.foodIncluded") && (
+        {visibility.showAvailableFor && (
+          <FormField
+            control={form.control}
+            name="details.pgFor"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Available for</FormLabel>
+                <RadioGroup className="flex flex-wrap gap-3" value={field.value ?? ""} onValueChange={field.onChange}>
+                  {["BOYS", "GIRLS", "UNISEX"].map((option) => (
+                    <label
+                      key={option}
+                      className={cn(
+                        "flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm",
+                        field.value === option ? "border-sky-500 bg-sky-50 text-sky-700" : "border-slate-200 text-slate-700",
+                      )}
+                    >
+                      <RadioGroupItem value={option} />
+                      {option}
+                    </label>
+                  ))}
+                </RadioGroup>
+              </FormItem>
+            )}
+          />
+        )}
+        {visibility.showFood && (
+          <FormField
+            control={form.control}
+            name="details.foodIncluded"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
+                <FormLabel className="text-sm text-slate-800">Food included</FormLabel>
+                <FormControl>
+                  <Switch checked={!!field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
+        {visibility.showFood && form.watch("details.foodIncluded") && (
           <FormField
             control={form.control}
             name="details.mealType"
@@ -99,6 +105,18 @@ export const PgSection: React.FC<PgSectionProps> = ({ form, isPG }) => {
             </FormItem>
           )}
         />
+        {visibility.showBeds && (
+          <FormField
+            control={form.control}
+            name="details.totalBeds"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Beds</FormLabel>
+                <StepperInput field={field} min={0} max={50} />
+              </FormItem>
+            )}
+          />
+        )}
         <FormField
           control={form.control}
           name="details.securityDeposit"
@@ -109,6 +127,48 @@ export const PgSection: React.FC<PgSectionProps> = ({ form, isPG }) => {
             </FormItem>
           )}
         />
+        {visibility.showAc && (
+          <FormField
+            control={form.control}
+            name="details.acAvailable"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
+                <FormLabel className="text-sm text-slate-800">AC available</FormLabel>
+                <FormControl>
+                  <Switch checked={!!field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
+        {visibility.showAttachedBathroom && (
+          <FormField
+            control={form.control}
+            name="details.attachedBathroom"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
+                <FormLabel className="text-sm text-slate-800">Attached bathroom</FormLabel>
+                <FormControl>
+                  <Switch checked={!!field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
+        {visibility.showAttachedBalcony && (
+          <FormField
+            control={form.control}
+            name="details.attachedBalcony"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-2">
+                <FormLabel className="text-sm text-slate-800">Attached balcony</FormLabel>
+                <FormControl>
+                  <Switch checked={!!field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
       </div>
     </Card>
   );

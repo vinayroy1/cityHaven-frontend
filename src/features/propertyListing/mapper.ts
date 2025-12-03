@@ -45,6 +45,7 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     address: location.address || undefined,
     houseNumber: location.houseNumber || undefined,
     plotNumber: location.plotNumber || undefined,
+    pincode: location.pincode || undefined,
     latitude: location.latitude ?? undefined,
     longitude: location.longitude ?? undefined,
     totalTowers: location.totalTowers ?? undefined,

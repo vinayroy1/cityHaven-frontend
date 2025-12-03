@@ -9,7 +9,10 @@ import { areaUnitOptions } from "./constants";
 type AreaSectionProps = StepProps & {
   showBuiltUp: boolean;
   showCarpet: boolean;
+  carpetAreaRequired: boolean;
   showPlotArea: boolean;
+  showPlotLength: boolean;
+  showPlotBreadth: boolean;
   showSuperBuiltUp: boolean;
   showAreaUnit: boolean;
 };
@@ -18,7 +21,10 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
   form,
   showBuiltUp,
   showCarpet,
+  carpetAreaRequired,
   showPlotArea,
+  showPlotLength,
+  showPlotBreadth,
   showSuperBuiltUp,
   showAreaUnit,
 }) => (
@@ -67,7 +73,7 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
           <FormField
             control={form.control}
             name="details.carpetArea"
-            rules={showCarpet ? { required: "Enter carpet area" } : undefined}
+            rules={carpetAreaRequired ? { required: "Enter carpet area" } : undefined}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Carpet area</FormLabel>
@@ -103,6 +109,30 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
       )}
       {showPlotArea && (
         <>
+          {showPlotLength && (
+            <FormField
+              control={form.control}
+              name="details.plotLength"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plot length</FormLabel>
+                  <NumberInput field={field} placeholder="60" />
+                </FormItem>
+              )}
+            />
+          )}
+          {showPlotBreadth && (
+            <FormField
+              control={form.control}
+              name="details.plotBreadth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plot breadth</FormLabel>
+                  <NumberInput field={field} placeholder="40" />
+                </FormItem>
+              )}
+            />
+          )}
           <FormField
             control={form.control}
             name="details.plotArea"

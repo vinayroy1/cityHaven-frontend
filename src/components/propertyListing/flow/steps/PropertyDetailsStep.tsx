@@ -12,6 +12,7 @@ import { PgSection } from "./propertyDetails/PgSection";
 import { CommercialSection } from "./propertyDetails/CommercialSection";
 import { SocietySection } from "./propertyDetails/SocietySection";
 import { furnishingItems } from "./propertyDetails/constants";
+import { derivePropertyDetailsVisibility } from "./propertyDetails/visibility";
 import { Card } from "@/components/ui/card";
 
 export function PropertyDetailsStep({ form }: StepProps) {
@@ -23,6 +24,7 @@ export function PropertyDetailsStep({ form }: StepProps) {
   const projectId = useWatch({ control: form.control, name: "location.projectId" });
   const societyName = useWatch({ control: form.control, name: "location.societyOrProjectName" });
   const constructionStatus = useWatch({ control: form.control, name: "location.constructionStatus" });
+  const floorsAllowed = useWatch({ control: form.control, name: "details.floorsAllowed" });
   const furnishingMode = useWatch({ control: form.control, name: "amenities.furnishing" }) ?? "UNFURNISHED";
 
   const propertyType = useMemo(() => propertyTypeCatalog.find((p) => p.id === propertyTypeId), [propertyTypeId]);
@@ -31,21 +33,21 @@ export function PropertyDetailsStep({ form }: StepProps) {
     [propertyType, propertySubTypeId],
   );
 
-  const isResidential = resCom === "RESIDENTIAL";
-  const isCommercial = resCom === "COMMERCIAL";
-  const isPG = listingType === "PG";
-  const isPlot = Boolean(propertySubType?.slug?.includes("plot-land"));
-  const isApartment = propertySubType?.slug === "apartment";
-  const isOffice = propertySubType?.slug === "office";
-
-  const showBuiltUp = (isResidential || isCommercial) && !isPG && !isPlot;
-  const showCarpet = (isResidential || isCommercial) && !isPG && !isPlot;
-  const showPlotArea = isPlot;
-  const showSuperBuiltUp = isResidential && !isPG && !isPlot;
-  const showAreaUnit = showBuiltUp || showCarpet || showPlotArea || showSuperBuiltUp;
-  const showSocietyDetails = Boolean(locatedInsideId || projectId || societyName);
   const showPossessionDate = constructionStatus === "UNDER_CONSTRUCTION";
   const allowedFurnishingItems = useMemo(() => furnishingItems.filter((item) => item.modes.includes(furnishingMode)), [furnishingMode]);
+  const visibility = useMemo(
+    () =>
+      derivePropertyDetailsVisibility({
+        listingType,
+        resCom,
+        propertySubTypeSlug: propertySubType?.slug,
+        locatedInsideId,
+        projectId,
+        societyName,
+      }),
+    [listingType, locatedInsideId, projectId, propertySubType?.slug, resCom, societyName],
+  );
+  const canShowMultiFloorSelect = visibility.rooms.allowMultiFloorSelect && Number(floorsAllowed ?? 0) > 1;
 
   return (
     <div className="space-y-6">
@@ -54,25 +56,30 @@ export function PropertyDetailsStep({ form }: StepProps) {
       <div className="grid gap-5 lg:grid-cols-2">
         <AreaSection
           form={form}
-          showBuiltUp={showBuiltUp}
-          showCarpet={showCarpet}
-          showPlotArea={showPlotArea}
-          showSuperBuiltUp={showSuperBuiltUp}
-          showAreaUnit={showAreaUnit}
+          showBuiltUp={visibility.area.showBuiltUp}
+          showCarpet={visibility.area.showCarpet}
+          carpetAreaRequired={visibility.area.carpetRequired}
+          showPlotArea={visibility.area.showPlotArea}
+          showPlotLength={visibility.area.showPlotLength}
+          showPlotBreadth={visibility.area.showPlotBreadth}
+          showSuperBuiltUp={visibility.area.showSuperBuiltUp}
+          showAreaUnit={visibility.area.showAreaUnit}
         />
-        <RoomsLayoutSection form={form} isResidential={isResidential} isCommercial={isCommercial} isPG={isPG} isPlot={isPlot} />
+        <RoomsLayoutSection form={form} visibility={visibility.rooms} canShowMultiFloorSelect={canShowMultiFloorSelect} />
       </div>
 
-      {!isPlot && <FurnishingSection form={form} furnishingMode={furnishingMode} allowedItems={allowedFurnishingItems} />}
+      {visibility.furnishing.showSection && (
+        <FurnishingSection form={form} furnishingMode={furnishingMode} allowedItems={allowedFurnishingItems} />
+      )}
 
-      <div className={isPG ? "grid gap-5 lg:grid-cols-2" : "grid gap-5"}>
-        <ConstructionLegalSection form={form} isResidential={isResidential} isCommercial={isCommercial} isPlot={isPlot} />
-        {isPG && <PgSection form={form} isPG={isPG} />}
+      <div className={visibility.pg.showSection ? "grid gap-5 lg:grid-cols-2" : "grid gap-5"}>
+        <ConstructionLegalSection form={form} visibility={visibility.legal} />
+        {visibility.pg.showSection && <PgSection form={form} visibility={visibility.pg} />}
       </div>
 
-      <CommercialSection form={form} isCommercial={isCommercial} isPlot={isPlot} isOffice={isOffice} />
+      <CommercialSection form={form} visibility={visibility.commercial} />
 
-      <SocietySection form={form} showSocietyDetails={showSocietyDetails} showPossessionDate={showPossessionDate} />
+      <SocietySection form={form} showSocietyDetails={visibility.society.showSocietyDetails} showPossessionDate={showPossessionDate} />
 
       <Card className="border border-slate-100 bg-white p-5 shadow-xl">
         <p className="mb-3 text-sm font-semibold text-slate-800">Photos & videos</p>

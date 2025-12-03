@@ -48,6 +48,7 @@ export const initialPropertyListingFormValues: PropertyListingFormValues = {
     address: "",
     houseNumber: "",
     plotNumber: "",
+    pincode: "",
     latitude: null,
     longitude: null,
     totalTowers: null,

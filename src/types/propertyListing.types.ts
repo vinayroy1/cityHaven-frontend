@@ -76,6 +76,7 @@ export interface PropertyLocationBlock {
   address?: string;
   houseNumber?: string;
   plotNumber?: string;
+  pincode?: string;
   latitude?: number | null;
   longitude?: number | null;
   totalTowers?: number | null;

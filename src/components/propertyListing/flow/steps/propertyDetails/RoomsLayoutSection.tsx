@@ -6,48 +6,51 @@ import { Switch } from "@/components/ui/switch";
 import { NumberInput } from "../StepCommon";
 import type { StepProps } from "../StepCommon";
 import { StepperInput } from "./StepperInput";
+import type { PropertyDetailsVisibility } from "./visibility";
 
 type RoomsLayoutSectionProps = StepProps & {
-  isResidential: boolean;
-  isCommercial: boolean;
-  isPG: boolean;
-  isPlot: boolean;
+  visibility: PropertyDetailsVisibility["rooms"];
+  canShowMultiFloorSelect: boolean;
 };
 
-export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, isResidential, isCommercial, isPG, isPlot }) => (
+export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, visibility, canShowMultiFloorSelect }) => (
   <Card className="border border-slate-100 bg-white p-5 shadow-xl">
     <p className="mb-3 text-sm font-semibold text-slate-800">Rooms & layout</p>
     <div className="grid gap-4 md:grid-cols-2">
-      {(isResidential || isPG) && !isPlot && (
+      {(visibility.showBedrooms || visibility.showBathrooms) && (
         <>
-          <FormField
-            control={form.control}
-            name="details.bedrooms"
-            rules={{ required: "Bedrooms required" }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bedrooms</FormLabel>
-                <StepperInput field={field} min={0} max={12} />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="details.bathrooms"
-            rules={{ required: "Bathrooms required" }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bathrooms</FormLabel>
-                <StepperInput field={field} min={0} max={12} />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {visibility.showBedrooms && (
+            <FormField
+              control={form.control}
+              name="details.bedrooms"
+              rules={{ required: "Bedrooms required" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bedrooms</FormLabel>
+                  <StepperInput field={field} min={0} max={12} />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+          {visibility.showBathrooms && (
+            <FormField
+              control={form.control}
+              name="details.bathrooms"
+              rules={{ required: "Bathrooms required" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bathrooms</FormLabel>
+                  <StepperInput field={field} min={0} max={12} />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </>
       )}
 
-      {isResidential && !isPG && !isPlot && (
+      {visibility.showBalconies && (
         <FormField
           control={form.control}
           name="details.balconies"
@@ -60,7 +63,7 @@ export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, is
         />
       )}
 
-      {isResidential && !isPG && !isPlot && (
+      {visibility.showKitchenType && (
         <FormField
           control={form.control}
           name="details.kitchenType"
@@ -84,42 +87,49 @@ export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, is
         />
       )}
 
-      {(isResidential || isCommercial) && !isPlot && (
+      {visibility.showFloorNumber && (
         <>
           <FormField
             control={form.control}
             name="details.floorNumber"
+            rules={visibility.floorNumberRequired ? { required: "Floor number required" } : undefined}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Floor number</FormLabel>
                 <NumberInput field={{ value: field.value ? Number(field.value) : null, onChange: (val) => field.onChange(val) }} placeholder="2" />
+                <FormMessage />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
             name="details.totalFloors"
+            rules={visibility.totalFloorsRequired ? { required: "Total floors required" } : undefined}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Total floors</FormLabel>
                 <NumberInput field={field} placeholder="5" />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="details.floorsAllowed"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Floors allowed</FormLabel>
-                <NumberInput field={field} placeholder="3" />
+                <FormMessage />
               </FormItem>
             )}
           />
         </>
       )}
 
-      {(isResidential || isCommercial) && !isPlot && (
+      {visibility.showFloorsAllowed && (
+        <FormField
+          control={form.control}
+          name="details.floorsAllowed"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Floors allowed</FormLabel>
+              <NumberInput field={field} placeholder="3" />
+            </FormItem>
+          )}
+        />
+      )}
+
+      {visibility.allowMultiFloorSelect && canShowMultiFloorSelect && (
         <>
           <FormField
             control={form.control}
@@ -133,7 +143,7 @@ export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, is
               </FormItem>
             )}
           />
-          {form.watch("details.multiFloorSelect") && (
+          {form.watch("details.multiFloorSelect") && canShowMultiFloorSelect && (
             <FormField
               control={form.control}
               name="details.multiFloorNum"
@@ -148,28 +158,36 @@ export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, is
         </>
       )}
 
-      {(isResidential || isCommercial) && !isPlot && (
+      {visibility.showOpenSides && (
         <>
           <FormField
             control={form.control}
             name="details.openSides"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Open sides</FormLabel>
-                <NumberInput field={field} placeholder="2" />
-              </FormItem>
-            )}
+              <FormLabel>Open sides</FormLabel>
+              <NumberInput field={field} placeholder="2" />
+            </FormItem>
+          )}
           />
-          <FormField
-            control={form.control}
-            name="details.staircases"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Staircases</FormLabel>
-                <NumberInput field={field} placeholder="1" />
-              </FormItem>
-            )}
-          />
+        </>
+      )}
+
+      {visibility.showStaircases && (
+        <FormField
+          control={form.control}
+          name="details.staircases"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Staircases</FormLabel>
+              <NumberInput field={field} placeholder="1" />
+            </FormItem>
+          )}
+        />
+      )}
+
+      {visibility.showCeilingWidth && (
+        <>
           <FormField
             control={form.control}
             name="details.ceilingWidth"
@@ -200,6 +218,11 @@ export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, is
               </FormItem>
             )}
           />
+        </>
+      )}
+
+      {visibility.showEntranceWidth && (
+        <>
           <FormField
             control={form.control}
             name="details.entranceWidth"
@@ -230,29 +253,37 @@ export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, is
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="details.propertyFacing"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Property facing</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Direction" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {["EAST", "WEST", "NORTH", "SOUTH", "NORTH_EAST", "NORTH_WEST", "SOUTH_EAST", "SOUTH_WEST"].map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option.replace("_", " ")}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
+        </>
+      )}
+
+      {visibility.showPropertyFacing && (
+        <FormField
+          control={form.control}
+          name="details.propertyFacing"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Property facing</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Direction" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {["EAST", "WEST", "NORTH", "SOUTH", "NORTH_EAST", "NORTH_WEST", "SOUTH_EAST", "SOUTH_WEST"].map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option.replace("_", " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormItem>
+          )}
+        />
+      )}
+
+      {visibility.showWidthOfFacingRoad && (
+        <>
           <FormField
             control={form.control}
             name="details.widthOfFacingRoad"
