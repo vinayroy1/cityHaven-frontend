@@ -1,5 +1,6 @@
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import { propertyTypes, propertySubTypeCatalog } from "./constants";
+import { toIsoStringOrUndefined } from "@/lib/date";
 
 const toNumber = (value?: string | number | null) => {
   if (value === null || value === undefined || value === "") return undefined;
@@ -168,7 +169,7 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
 
     // availability / legal
     availabilityStatus: availability.availabilityStatus || undefined,
-    availableFrom: availability.availableFrom || undefined,
+    availableFrom: toIsoStringOrUndefined(availability.availableFrom),
     possessionStatus: availability.possessionStatus || undefined,
     possessionType: availability.possessionType || undefined,
     possessionBy: availability.possessionBy || undefined,
