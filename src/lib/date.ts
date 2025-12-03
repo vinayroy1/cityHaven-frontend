@@ -6,7 +6,16 @@ import moment from "moment";
  */
 export const toIsoStringOrUndefined = (value?: string | Date | null) => {
   if (!value) return undefined;
+  if (typeof value === "object" && !(value instanceof Date)) return undefined;
   if (typeof value === "string" && !value.trim()) return undefined;
   const m = moment(value);
   return m.isValid() ? m.toISOString() : undefined;
+};
+
+export const toIsoStringOrNull = (value?: string | Date | null) => {
+  if (!value) return null;
+  if (typeof value === "object" && !(value instanceof Date)) return null;
+  if (typeof value === "string" && !value.trim()) return null;
+  const m = moment(value);
+  return m.isValid() ? m.toISOString() : null;
 };

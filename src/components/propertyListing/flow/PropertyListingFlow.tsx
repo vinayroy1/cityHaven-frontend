@@ -9,6 +9,7 @@ import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
+  hydrateDraft,
   initialPropertyListingFormValues,
   propertyTypeCatalog,
   resetDraft,
@@ -19,6 +20,7 @@ import {
 } from "@/features/propertyListing";
 import { selectPropertyListing } from "@/store/store";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
+import { loadPersistedDraft, persistDraft, clearPersistedDraft } from "@/features/propertyListing/storage";
 import { AmenitiesLegalStep } from "./steps/AmenitiesLegalStep";
 import { BasicContextStep } from "./steps/BasicContextStep";
 import { LocationProjectStep } from "./steps/LocationProjectStep";
@@ -38,6 +40,8 @@ export const PropertyListingFlow: React.FC = () => {
   const { draft, status } = useAppSelector(selectPropertyListing);
   const [submitProperty, { isLoading: submitting, isSuccess: submitted }] = useSubmitPropertyMutation();
   const [currentStep, setCurrentStep] = useState(1);
+  const [resumeDraft, setResumeDraft] = useState<null | { form: PropertyListingFormValues; step?: number }>(null);
+  const [showResumePrompt, setShowResumePrompt] = useState(false);
 
   const form = useForm<PropertyListingFormValues>({
     mode: "onChange",
@@ -76,6 +80,37 @@ export const PropertyListingFlow: React.FC = () => {
   useEffect(() => {
     form.reset(draft ?? initialPropertyListingFormValues);
   }, [draft, form]);
+
+  useEffect(() => {
+    const persisted = loadPersistedDraft();
+    if (persisted?.form) {
+      setResumeDraft(persisted);
+      setShowResumePrompt(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      persistDraft({ form: values as PropertyListingFormValues, step: currentStep });
+    });
+    return () => subscription.unsubscribe();
+  }, [form, currentStep]);
+
+  const handleResume = () => {
+    if (resumeDraft?.form) {
+      dispatch(hydrateDraft(resumeDraft.form));
+      form.reset(resumeDraft.form);
+      setCurrentStep(resumeDraft.step && resumeDraft.step > 0 ? resumeDraft.step : 1);
+    }
+    setShowResumePrompt(false);
+  };
+
+  const handleStartFresh = () => {
+    form.reset(initialPropertyListingFormValues);
+    setCurrentStep(1);
+    setShowResumePrompt(false);
+    clearPersistedDraft();
+  };
 
   const handleNext = async () => {
     const fields = stepValidations[currentStep];
@@ -121,6 +156,19 @@ export const PropertyListingFlow: React.FC = () => {
 
   return (
     <GlassPanel>
+      {showResumePrompt && (
+        <div className="mb-3 flex flex-col gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+          <span>We found a saved property draft. Continue where you left off?</span>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={handleStartFresh}>
+              Start fresh
+            </Button>
+            <Button type="button" size="sm" onClick={handleResume}>
+              Resume draft
+            </Button>
+          </div>
+        </div>
+      )}
       <Stepper steps={stepList} currentStep={currentStep} onNavigate={(step) => setCurrentStep(step)} />
 
       <Form {...form}>
