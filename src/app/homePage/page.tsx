@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import { HeaderNav } from "./components/HeaderNav";
 import { HeroSearch } from "./components/HeroSearch";
 import { QuickActions } from "./components/QuickActions";
@@ -7,6 +8,19 @@ import { AppPromo } from "./components/AppPromo";
 import { InspirationGrid } from "./components/InspirationGrid";
 import { FooterLinks } from "./components/FooterLinks";
 import { popularListings, weekendGetaways, cityCollections, inspirationLinks } from "./data";
+import { seoDefaults, buildCanonical } from "@/constants/seo";
+
+export const metadata: Metadata = {
+  title: seoDefaults.title,
+  description: seoDefaults.description,
+  alternates: { canonical: buildCanonical("/homePage") },
+  openGraph: {
+    title: seoDefaults.title,
+    description: seoDefaults.description,
+    url: buildCanonical("/homePage"),
+    type: "website",
+  },
+};
 
 export default function HomePage() {
   return (

@@ -1,6 +1,20 @@
 import React from "react";
+import type { Metadata } from "next";
+import { buildCanonical } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { EmiCalculator } from "@/components/emi/EmiCalculator";
+
+export const metadata: Metadata = {
+  title: "EMI Calculator - CityHaven",
+  description: "Calculate home loan EMIs instantly with CityHaven's EMI calculator.",
+  alternates: { canonical: buildCanonical("/emi-calculator") },
+  openGraph: {
+    title: "EMI Calculator - CityHaven",
+    description: "Calculate home loan EMIs instantly with CityHaven's EMI calculator.",
+    url: buildCanonical("/emi-calculator"),
+    type: "website",
+  },
+};
 
 const faqs = [
   { q: "What is an EMI?", a: "Equated Monthly Installment — a fixed payment combining principal and interest over your tenure." },

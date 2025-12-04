@@ -1,5 +1,19 @@
 import React from "react";
+import type { Metadata } from "next";
+import { buildCanonical } from "@/constants/seo";
 import { ShieldCheck, Sparkles, Users, Building2, Leaf, Compass } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "About CityHaven",
+  description: "Learn how CityHaven blends verified listings, human guidance, and locality insights for faster, safer moves.",
+  alternates: { canonical: buildCanonical("/about") },
+  openGraph: {
+    title: "About CityHaven",
+    description: "Learn how CityHaven blends verified listings, human guidance, and locality insights for faster, safer moves.",
+    url: buildCanonical("/about"),
+    type: "website",
+  },
+};
 
 const pillars = [
   { title: "Trust-first listings", description: "Every home is vetted with verification, safety checks, and host guidance so you can book with confidence.", icon: ShieldCheck },

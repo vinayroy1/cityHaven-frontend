@@ -1,5 +1,19 @@
 import React from "react";
+import type { Metadata } from "next";
+import { buildCanonical } from "@/constants/seo";
 import { Mail, Phone, MessageSquare, MapPin, Clock, ShieldCheck, Send } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Contact CityHaven Support",
+  description: "Call, email, or chat with CityHaven support for bookings, listings, safety, or account queries.",
+  alternates: { canonical: buildCanonical("/contact") },
+  openGraph: {
+    title: "Contact CityHaven Support",
+    description: "Reach CityHaven for property bookings, listings, safety, or account help.",
+    url: buildCanonical("/contact"),
+    type: "website",
+  },
+};
 
 const contacts = [
   { title: "Call support", value: "1800 41 99099", description: "9AM - 11PM IST, 7 days a week", icon: Phone, accent: "text-emerald-600 bg-emerald-50 border-emerald-100" },

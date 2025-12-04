@@ -1,5 +1,19 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { buildCanonical } from "@/constants/seo";
+
+export const metadata: Metadata = {
+  title: "New Projects - CityHaven",
+  description: "Discover new and RERA-approved projects across top cities.",
+  alternates: { canonical: buildCanonical("/new-projects") },
+  openGraph: {
+    title: "New Projects - CityHaven",
+    description: "Discover new and RERA-approved projects across top cities.",
+    url: buildCanonical("/new-projects"),
+    type: "website",
+  },
+};
 
 export default function NewProjectsPage() {
   return (

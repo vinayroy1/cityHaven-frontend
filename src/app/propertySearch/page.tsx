@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import type { Metadata } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { HeaderNav } from "../homePage/components/HeaderNav";
 import { SearchToolbar } from "./components/SearchToolbar";
@@ -10,6 +11,19 @@ import { AppliedFilters } from "./components/AppliedFilters";
 import { appliedFilters } from "./data";
 import { requestLocationPermissionOnce } from "@/lib/permissions";
 import { fetchReverseGeocode } from "@/lib/googlePlaces";
+import { buildCanonical } from "@/constants/seo";
+
+export const metadata: Metadata = {
+  title: "Search properties - CityHaven",
+  description: "Discover rental, PG, and sale listings by city and locality on CityHaven.",
+  alternates: { canonical: buildCanonical("/propertySearch") },
+  openGraph: {
+    title: "Search properties - CityHaven",
+    description: "Discover rental, PG, and sale listings by city and locality on CityHaven.",
+    url: buildCanonical("/propertySearch"),
+    type: "website",
+  },
+};
 
 export default function PropertySearchPage() {
   const [showMobileFilters, setShowMobileFilters] = useState(false);

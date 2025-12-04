@@ -1,6 +1,20 @@
-import React from 'react';
-import { PropertyListingFlow } from '@/components/propertyListing/flow/PropertyListingFlow';
-import { Toaster } from '@/components/ui/sonner';
+import React from "react";
+import type { Metadata } from "next";
+import { PropertyListingFlow } from "@/components/propertyListing/flow/PropertyListingFlow";
+import { Toaster } from "@/components/ui/sonner";
+import { buildCanonical } from "@/constants/seo";
+
+export const metadata: Metadata = {
+  title: "Post your property - CityHaven",
+  description: "List your property for rent or sale on CityHaven and reach verified buyers and tenants.",
+  alternates: { canonical: buildCanonical("/propertyListing") },
+  openGraph: {
+    title: "Post your property - CityHaven",
+    description: "List your property for rent or sale on CityHaven and reach verified buyers and tenants.",
+    url: buildCanonical("/propertyListing"),
+    type: "website",
+  },
+};
 
 export default function PropertyListingPage() {
   return (

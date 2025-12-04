@@ -1,5 +1,19 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { buildCanonical } from "@/constants/seo";
+
+export const metadata: Metadata = {
+  title: "Home Loans - CityHaven",
+  description: "Compare home loan options and start your property journey with CityHaven.",
+  alternates: { canonical: buildCanonical("/home-loans") },
+  openGraph: {
+    title: "Home Loans - CityHaven",
+    description: "Compare home loan options and start your property journey with CityHaven.",
+    url: buildCanonical("/home-loans"),
+    type: "website",
+  },
+};
 
 export default function HomeLoansPage() {
   return (
