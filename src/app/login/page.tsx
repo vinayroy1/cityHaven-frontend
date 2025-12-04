@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Phone, Lock, ShieldCheck, RefreshCw, KeyRound, Loader2 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
@@ -18,6 +18,8 @@ function makeCode(len = 5) {
 export default function LoginPage() {
   const year = new Date().getFullYear();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/homePage";
 
   const [mobile, setMobile] = useState("");
   const [captcha, setCaptcha] = useState("");
@@ -88,7 +90,7 @@ export default function LoginPage() {
       if (tokens.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, tokens.refreshToken);
       if (tokens.user) localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(tokens.user));
       setMessage('Verified! Redirecting...');
-      router.push('/homePage');
+      router.push(redirectTo);
     } catch (err: any) {
       setOtpRequested(true); // keep OTP box visible
       setShowOtpAfterFailure(true);

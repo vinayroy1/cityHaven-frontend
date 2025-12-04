@@ -1,13 +1,13 @@
 import React from "react";
 import { Heart, ImageIcon, Phone } from "lucide-react";
 
-type Props = { title: string; subtitle: string; price: string; area: string; age: string; owner: string; image: string };
+type Props = { title?: string; subtitle?: string; price?: string; area?: string; age?: string; owner?: string; image?: string };
 
 export function ResultCard({ title, subtitle, price, area, age, owner, image }: Props) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg md:flex-row">
       <div className="relative w-full md:w-56">
-        <img src={image} alt={title} className="h-48 w-full object-cover md:h-full" />
+        <img src={image || "/placeholder.png"} alt={title || "property"} className="h-48 w-full object-cover md:h-full" />
         <button className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow">
           <Heart className="h-4 w-4" />
         </button>

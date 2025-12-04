@@ -1,7 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, Globe, Phone, User, Bell, CircleHelp } from "lucide-react";
+import { APP_CONFIG } from "@/constants/app-config";
 
 const navMenus = [
   {
@@ -56,9 +58,27 @@ const navMenus = [
 
 export function HeaderNav() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isAuthed, setIsAuthed] = useState(false);
+  const loginHref = `/login?redirect=${encodeURIComponent(pathname || "/homePage")}`;
 
   const openMenu = (key: string) => setActiveMenu((prev) => (prev === key ? null : key));
   const closeMenu = () => setActiveMenu(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
+    setIsAuthed(!!token);
+  }, []);
+
+  const handleUserClick = () => {
+    if (isAuthed) {
+      router.push("/dashboard");
+    } else {
+      router.push(loginHref);
+    }
+  };
 
   const activeConfig = navMenus.find((m) => m.key === activeMenu);
 
@@ -117,12 +137,13 @@ export function HeaderNav() {
           >
             <CircleHelp className="h-5 w-5" />
           </Link>
-          <Link
-            href="/login"
+          <button
+            type="button"
+            onClick={handleUserClick}
             className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-900 text-white shadow-sm transition hover:-translate-y-0.5"
           >
             <User className="h-5 w-5" />
-          </Link>
+          </button>
           <Link
             href="/homePage"
             className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:hidden"
