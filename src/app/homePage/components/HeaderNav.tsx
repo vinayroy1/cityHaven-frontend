@@ -1,8 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, Globe, Phone, User, Bell, CircleHelp } from "lucide-react";
+import { Phone, User, Bell, CircleHelp, Menu, X } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 
 const navMenus = [
@@ -58,18 +59,22 @@ const navMenus = [
 
 export function HeaderNav() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const [isAuthed, setIsAuthed] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const loginHref = `/login?redirect=${encodeURIComponent(pathname || "/homePage")}`;
 
   const openMenu = (key: string) => setActiveMenu((prev) => (prev === key ? null : key));
   const closeMenu = () => setActiveMenu(null);
+  const toggleMobile = () => setMobileOpen((prev) => !prev);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
     setIsAuthed(!!token);
+    setMounted(true);
   }, []);
 
   const handleUserClick = () => {
@@ -144,14 +149,95 @@ export function HeaderNav() {
           >
             <User className="h-5 w-5" />
           </button>
-          <Link
-            href="/homePage"
+          <button
+            type="button"
             className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:hidden"
+            onClick={toggleMobile}
+            aria-label="Open menu"
           >
-            <Globe className="h-5 w-5" />
-          </Link>
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu sheet */}
+      {mounted &&
+        mobileOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-[80] bg-slate-900/70 backdrop-blur-sm sm:hidden" onClick={toggleMobile}>
+            <div
+              className="absolute left-0 top-0 flex h-full w-72 max-w-full flex-col overflow-y-auto bg-white p-4 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-red-500 text-white shadow">CH</span>
+                  <span className="text-base font-semibold text-slate-900">CityHaven</span>
+                </div>
+                <button type="button" onClick={toggleMobile} className="rounded-full p-2 text-slate-600 hover:bg-slate-100" aria-label="Close menu">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-sm font-semibold text-slate-900">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleUserClick();
+                    toggleMobile();
+                  }}
+                  className="flex w-full items-center justify-between rounded-xl border border-slate-200 px-3 py-2 text-left shadow-sm hover:border-slate-300"
+                >
+                  <span>{isAuthed ? "Go to dashboard" : "Login / Signup"}</span>
+                  <User className="h-4 w-4" />
+                </button>
+
+                <Link
+                  href="/propertyListing"
+                  onClick={toggleMobile}
+                  className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700 shadow-sm"
+                >
+                  <span>Post property</span>
+                  <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[11px] font-semibold text-white">FREE</span>
+                </Link>
+
+                <div className="space-y-2 rounded-xl border border-slate-200 p-3 shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">Browse</p>
+                  <Link href="/propertySearch" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                    Search properties
+                  </Link>
+                  <Link href="/price-trends" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                    Price trends
+                  </Link>
+                  <Link href="/policies" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                    Policies & safety
+                  </Link>
+                </div>
+
+                <div className="space-y-2 rounded-xl border border-slate-200 p-3 shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">Company</p>
+                  <Link href="/about" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                    About CityHaven
+                  </Link>
+                  <Link href="/contact" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                    Contact & support
+                  </Link>
+                  <Link href="/privacy" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                    Privacy
+                  </Link>
+                  <Link href="/terms" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                    Terms
+                  </Link>
+                </div>
+
+                <div className="pt-2 text-xs font-normal text-slate-600">
+                  Call us at <span className="font-semibold text-slate-900">1800 41 99099</span> (9AM-11PM IST)
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
 
       {activeConfig && (
         <div className="absolute left-1/2 z-20 w-full max-w-5xl -translate-x-1/2 px-4">
