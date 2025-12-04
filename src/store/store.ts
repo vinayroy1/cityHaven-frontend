@@ -2,15 +2,17 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { propertyListingReducer, propertyListingApi } from "@/features/propertyListing";
+import { authApi } from "@/features/auth/api";
 
 export const makeStore = () =>
   configureStore({
     reducer: {
       propertyListing: propertyListingReducer,
       [propertyListingApi.reducerPath]: propertyListingApi.reducer,
+      [authApi.reducerPath]: authApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(propertyListingApi.middleware),
+      getDefaultMiddleware().concat(propertyListingApi.middleware, authApi.middleware),
     devTools: true,
   });
 

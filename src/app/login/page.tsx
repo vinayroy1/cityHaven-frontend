@@ -5,8 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Phone, Lock, ShieldCheck, RefreshCw, KeyRound, Loader2 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { apiClient } from "@/lib/services/api/client";
+import { useRequestOtpMutation, useVerifyOtpMutation } from "@/features/auth/api";
 
 function makeCode(len = 5) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -32,6 +31,8 @@ export default function LoginPage() {
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [attemptsLeft, setAttemptsLeft] = useState(3);
   const [showOtpAfterFailure, setShowOtpAfterFailure] = useState(false);
+  const [requestOtp] = useRequestOtpMutation();
+  const [verifyOtp] = useVerifyOtpMutation();
 
   useEffect(() => {
     // Generate CAPTCHA on client after hydration to avoid SSR mismatch
@@ -56,7 +57,7 @@ export default function LoginPage() {
     setSendingOtp(true);
     const cleanMobile = mobile.replace(/\D/g, "");
     try {
-      await apiClient.post(API_ENDPOINTS.auth.requestOtp, { mobileNumber: cleanMobile });
+      await requestOtp({ mobileNumber: cleanMobile }).unwrap();
       setOtpRequested(true);
       setAttemptsLeft(3);
       setOtpInput("");
@@ -81,17 +82,13 @@ export default function LoginPage() {
     }
     setVerifyingOtp(true);
     try {
-      const response = await apiClient.post<{ accessToken?: string; refreshToken?: string; user?: unknown }>(
-        API_ENDPOINTS.auth.verifyOtp,
-        { mobileNumber: cleanMobile, otp: otpInput.trim() },
-      );
-      const tokens = response.data ?? {};
-      if (tokens.accessToken) localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, tokens.accessToken);
-      if (tokens.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, tokens.refreshToken);
-      if (tokens.user) localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(tokens.user));
-      setMessage('Verified! Redirecting...');
-      router.push(redirectTo);
-    } catch (err: any) {
+      const tokens = await verifyOtp({ mobileNumber: cleanMobile, otp: otpInput.trim() }).unwrap();
+      if (tokens?.accessToken) localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, tokens.accessToken);
+      if (tokens?.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, tokens.refreshToken);
+      if (tokens?.user) localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(tokens.user));
+    setMessage('Verified! Redirecting...');
+    router.push(redirectTo);
+  } catch (err: any) {
       setOtpRequested(true); // keep OTP box visible
       setShowOtpAfterFailure(true);
       setMobile(currentMobile); // keep mobile intact on failure

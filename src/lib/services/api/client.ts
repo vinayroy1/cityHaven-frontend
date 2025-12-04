@@ -1,9 +1,11 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
-import { ApiResponse, ApiError } from '@/types/api.types';
-import { APP_CONFIG } from '@/constants/app-config';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
+import { ApiResponse, ApiError } from "@/types/api.types";
+import { APP_CONFIG } from "@/constants/app-config";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 class ApiClient {
   private client: AxiosInstance;
+  private refreshPromise: Promise<string | null> | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -34,13 +36,26 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       async (error: AxiosError<ApiError>) => {
-        if (error.response?.status === 401) {
-          // Handle token refresh or redirect to login
+        const originalRequest = error.config;
+        const status = error.response?.status;
+        const isRefreshCall = originalRequest?.url?.includes(API_ENDPOINTS.auth.refreshToken);
+
+        if (status === 401 && !isRefreshCall) {
+          try {
+            const newToken = await this.refreshAccessToken();
+            if (newToken && originalRequest) {
+              originalRequest.headers = originalRequest.headers ?? {};
+              originalRequest.headers.Authorization = `Bearer ${newToken}`;
+              return this.client(originalRequest);
+            }
+          } catch (err) {
+            // fall through to clear/redirect
+          }
           this.clearTokens();
-          window.location.href = '/auth/login';
+          window.location.href = "/login";
         }
         return Promise.reject(this.handleError(error));
-      }
+      },
     );
   }
 
@@ -56,14 +71,43 @@ class ApiClient {
   }
 
   private getAccessToken(): string | null {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       return localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
     }
     return null;
   }
 
+  private getRefreshToken(): string | null {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY);
+    }
+    return null;
+  }
+
+  private async refreshAccessToken(): Promise<string | null> {
+    if (this.refreshPromise) return this.refreshPromise;
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) return null;
+    this.refreshPromise = this.client
+      .post<{ data?: { accessToken?: string; refreshToken?: string } }>(API_ENDPOINTS.auth.refreshToken, { refreshToken })
+      .then((res) => {
+        const tokens = res.data?.data;
+        if (tokens?.accessToken) {
+          localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, tokens.accessToken);
+          if (tokens.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, tokens.refreshToken);
+          return tokens.accessToken;
+        }
+        return null;
+      })
+      .catch(() => null)
+      .finally(() => {
+        this.refreshPromise = null;
+      });
+    return this.refreshPromise;
+  }
+
   private clearTokens() {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
       localStorage.removeItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY);
     }
