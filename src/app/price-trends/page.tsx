@@ -1,5 +1,19 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { buildCanonical } from "@/constants/seo";
+
+export const metadata: Metadata = {
+  title: "Price trends | CityHaven",
+  description: "Track property price trends, absorption, and time-on-market across top localities.",
+  alternates: { canonical: buildCanonical("/price-trends") },
+  openGraph: {
+    title: "Price trends | CityHaven",
+    description: "See locality-level price movements and market signals on CityHaven.",
+    url: buildCanonical("/price-trends"),
+    type: "website",
+  },
+};
 
 export default function PriceTrendsPage() {
   return (

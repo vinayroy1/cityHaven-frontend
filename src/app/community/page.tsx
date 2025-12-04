@@ -1,5 +1,19 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { buildCanonical, seoDefaults } from "@/constants/seo";
+
+export const metadata: Metadata = {
+  title: "Community forum | CityHaven",
+  description: "Join the CityHaven community to swap tips, learn from other owners, and get help from our team.",
+  alternates: { canonical: buildCanonical("/community") },
+  openGraph: {
+    title: "Community forum | CityHaven",
+    description: "Discuss hosting, renting, and buying with the CityHaven community.",
+    url: buildCanonical("/community"),
+    type: "website",
+  },
+};
 
 export default function CommunityPage() {
   return (

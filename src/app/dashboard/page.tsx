@@ -1,9 +1,23 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Bell, FileText, HandCoins, IdCard, MessageSquare, NotebookTabs, RouteIcon, ShieldCheck, Users } from "lucide-react";
 import { PageHeader } from "./components/PageHeader";
 import { SectionCard } from "./components/SectionCard";
 import { StatPill } from "./components/StatPill";
+import { buildCanonical } from "@/constants/seo";
+
+export const metadata: Metadata = {
+  title: "Dashboard | CityHaven",
+  description: "Monitor listings, leads, KYC, and payouts from your CityHaven control center.",
+  alternates: { canonical: buildCanonical("/dashboard") },
+  openGraph: {
+    title: "Dashboard | CityHaven",
+    description: "Manage CityHaven listings, leads, compliance, and payouts in one place.",
+    url: buildCanonical("/dashboard"),
+    type: "website",
+  },
+};
 
 export default function DashboardPage() {
   const quickLinks = [
