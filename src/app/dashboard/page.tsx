@@ -48,6 +48,47 @@ export default function DashboardPage() {
           }
         />
 
+        {/* Role switcher: Buyer vs Seller entry points */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Link
+            href="/dashboard/properties"
+            className="group flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm transition hover:-translate-y-1 hover:border-rose-100"
+          >
+            <div className="flex items-center gap-2">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 shadow-inner shadow-emerald-100/80">
+                <NotebookTabs className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">My listings</p>
+                <p className="text-xs text-slate-600">Drafts, active, under review</p>
+              </div>
+            </div>
+            <p className="text-xs text-slate-600">View and edit your properties, publish, or archive.</p>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-rose-500 group-hover:translate-x-0.5 transition">
+              Manage listings
+            </span>
+          </Link>
+
+          <Link
+            href="/dashboard"
+            className="group flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm transition hover:-translate-y-1 hover:border-sky-100"
+          >
+            <div className="flex items-center gap-2">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-50 text-sky-700 shadow-inner shadow-sky-100/80">
+                <Users className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Saved & enquiries</p>
+                <p className="text-xs text-slate-600">Buyer / tenant workspace</p>
+              </div>
+            </div>
+            <p className="text-xs text-slate-600">See saved homes, enquiries, visits, and messages.</p>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-sky-600 group-hover:translate-x-0.5 transition">
+              Open workspace
+            </span>
+          </Link>
+        </div>
+
         <SectionCard>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <StatPill label="Active listings" value="12" hint="4 boosting this week" tone="rose" />

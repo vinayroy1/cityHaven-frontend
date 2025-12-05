@@ -142,13 +142,25 @@ export function HeaderNav() {
           >
             <CircleHelp className="h-5 w-5" />
           </Link>
-          <button
-            type="button"
-            onClick={handleUserClick}
-            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-900 text-white shadow-sm transition hover:-translate-y-0.5"
-          >
-            <User className="h-5 w-5" />
-          </button>
+          {isAuthed ? (
+            <button
+              type="button"
+              onClick={handleUserClick}
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-900 text-white shadow-sm transition hover:-translate-y-0.5"
+              aria-label="Account"
+            >
+              <User className="h-5 w-5" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleUserClick}
+              className="flex flex-shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm transition hover:-translate-y-0.5"
+            >
+              <User className="h-4 w-4" />
+              Login
+            </button>
+          )}
           <button
             type="button"
             className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:hidden"
@@ -160,6 +172,7 @@ export function HeaderNav() {
         </div>
       </div>
 
+      {/* User intent chooser (buyer/seller) */}
       {/* Mobile menu sheet */}
       {mounted &&
         mobileOpen &&
