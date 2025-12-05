@@ -14,7 +14,8 @@ export const API_ENDPOINTS = {
     forgotPassword: `${BASE}/auth/forgot-password`,
     resetPassword: `${BASE}/auth/reset-password`,
     me: `${BASE}/auth/me`,
-    profile: `${BASE}/auth/profile`,
+    // Use users/me for profile updates
+    profile: `${BASE}/users/me`,
   },
   propertyListing: {
     create: `${BASE}/propertyListing`,

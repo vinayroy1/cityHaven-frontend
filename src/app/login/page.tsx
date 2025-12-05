@@ -3,9 +3,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Phone, Lock, ShieldCheck, RefreshCw, KeyRound, Loader2 } from "lucide-react";
+import { Phone, Lock, RefreshCw, KeyRound, Loader2, ShieldCheck } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
-import { useRequestOtpMutation, useVerifyOtpMutation } from "@/features/auth/api";
+import { useRequestOtpMutation, useVerifyOtpMutation, useUpdateProfileMutation } from "@/features/auth/api";
+import { ProfileCompletion } from "./ProfileCompletion";
 
 function makeCode(len = 5) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -31,8 +32,13 @@ export default function LoginPage() {
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [attemptsLeft, setAttemptsLeft] = useState(3);
   const [showOtpAfterFailure, setShowOtpAfterFailure] = useState(false);
+  const [needsProfile, setNeedsProfile] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
+  const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [requestOtp] = useRequestOtpMutation();
   const [verifyOtp] = useVerifyOtpMutation();
+  const [updateProfile, { isLoading: updatingProfile }] = useUpdateProfileMutation();
 
   useEffect(() => {
     // Generate CAPTCHA on client after hydration to avoid SSR mismatch
@@ -83,12 +89,22 @@ export default function LoginPage() {
     setVerifyingOtp(true);
     try {
       const tokens = await verifyOtp({ mobileNumber: cleanMobile, otp: otpInput.trim() }).unwrap();
+      const userObj = tokens?.user as any;
       if (tokens?.accessToken) localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, tokens.accessToken);
       if (tokens?.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, tokens.refreshToken);
       if (tokens?.user) localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(tokens.user));
-    setMessage('Verified! Redirecting...');
-    router.push(redirectTo);
-  } catch (err: any) {
+
+      const needsDetails = Boolean(tokens?.isNewUser);
+      if (needsDetails) {
+        setNeedsProfile(true);
+        setProfileName(userObj?.name ?? "");
+        setProfileEmail(userObj?.email ?? "");
+        setMessage("Verified! Add your details to finish sign in.");
+      } else {
+        setMessage("Verified! Redirecting...");
+        router.push(redirectTo);
+      }
+    } catch (err: any) {
       setOtpRequested(true); // keep OTP box visible
       setShowOtpAfterFailure(true);
       setMobile(currentMobile); // keep mobile intact on failure
@@ -99,12 +115,28 @@ export default function LoginPage() {
     }
   }
 
+  async function handleCompleteProfile(e: React.FormEvent) {
+    e.preventDefault();
+    setProfileMessage(null);
+    if (!profileName.trim() || !profileEmail.trim()) {
+      setProfileMessage("Please enter name and email.");
+      return;
+    }
+    try {
+      const res = await updateProfile({ name: profileName.trim(), email: profileEmail.trim() }).unwrap();
+      if (res?.user) localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(res.user));
+      router.push(redirectTo);
+    } catch (err: any) {
+      setProfileMessage(err?.message || "Unable to save profile right now.");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-amber-50 text-[#0f172a]">
       {/* Main */}
       <main className="min-h-screen md:grid md:grid-cols-[1.05fr_0.95fr]">
         {/* Login Form — mobile-first */}
-        <section className="flex items-center justify-center p-4 sm:p-6 md:p-10">
+        <section className="flex min-h-screen items-center justify-center p-4 sm:p-6 md:p-10">
           <div className="w-full max-w-sm sm:max-w-md rounded-2xl bg-white/90 backdrop-blur-xl shadow-[0_30px_80px_-40px_rgba(15,23,42,0.5)] border border-white/70">
             <div className="p-5 sm:p-7">
               {/* Mobile brand */}
@@ -115,8 +147,10 @@ export default function LoginPage() {
                   <p className="text-base font-semibold text-slate-900">Welcome back</p>
                 </div>
               </div>
-              <h2 className="text-xl sm:text-2xl font-semibold text-slate-900">Sign in with mobile</h2>
-              <p className="mt-1 text-sm text-slate-600">Enter your number and captcha to get a one-time password.</p>
+              {!needsProfile ? (
+                <>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-slate-900">Sign in with mobile</h2>
+                  <p className="mt-1 text-sm text-slate-600">Enter your number and captcha to get a one-time password.</p>
 
               {/* Mobile + CAPTCHA */}
               <form className="mt-6 space-y-4" onSubmit={handleSendOtp} aria-label="Mobile OTP login form">
@@ -181,6 +215,22 @@ export default function LoginPage() {
 
               {message && (
                 <p className="mt-4 text-sm text-rose-600" aria-live="polite">{message}</p>
+              )}
+                </>
+              ) : (
+                <>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-slate-900">Complete your profile</h2>
+                  <p className="mt-1 text-sm text-slate-600">Add your details to finish signing in.</p>
+                  <ProfileCompletion
+                    name={profileName}
+                    email={profileEmail}
+                    onChangeName={setProfileName}
+                    onChangeEmail={setProfileEmail}
+                    onSubmit={handleCompleteProfile}
+                    isSaving={updatingProfile}
+                    message={profileMessage}
+                  />
+                </>
               )}
             </div>
           </div>

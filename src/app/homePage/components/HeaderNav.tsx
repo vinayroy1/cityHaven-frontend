@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Phone, User, Bell, CircleHelp, Menu, X } from "lucide-react";
+import { Phone, User, Bell, CircleHelp, Menu, X, LogOut } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 
 const navMenus = [
@@ -60,6 +60,7 @@ const navMenus = [
 export function HeaderNav() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const [isAuthed, setIsAuthed] = useState(false);
@@ -79,13 +80,23 @@ export function HeaderNav() {
 
   const handleUserClick = () => {
     if (isAuthed) {
-      router.push("/dashboard");
+      setUserMenuOpen((prev) => !prev);
     } else {
       router.push(loginHref);
     }
   };
 
   const activeConfig = navMenus.find((m) => m.key === activeMenu);
+
+  const handleLogout = () => {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
+    localStorage.removeItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY);
+    localStorage.removeItem(APP_CONFIG.AUTH.USER_KEY);
+    setIsAuthed(false);
+    setUserMenuOpen(false);
+    router.push("/homePage");
+  };
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur" onMouseLeave={closeMenu}>
@@ -111,7 +122,7 @@ export function HeaderNav() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2 flex-nowrap">
+        <div className="relative flex items-center gap-2 flex-nowrap">
           <Link
             href="/propertyListing"
             className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 shadow-sm transition hover:-translate-y-0.5 sm:flex whitespace-nowrap"
@@ -169,6 +180,28 @@ export function HeaderNav() {
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
+
+          {isAuthed && userMenuOpen && (
+            <div className="absolute right-0 top-14 z-50 w-48 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
+              <button
+                type="button"
+                onClick={() => {
+                  router.push("/dashboard");
+                  setUserMenuOpen(false);
+                }}
+                className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+              >
+                Dashboard
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="mt-1 flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50"
+              >
+                Logout <LogOut className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -227,27 +260,40 @@ export function HeaderNav() {
                   </Link>
                 </div>
 
-                <div className="space-y-2 rounded-xl border border-slate-200 p-3 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">Company</p>
-                  <Link href="/about" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
-                    About CityHaven
-                  </Link>
-                  <Link href="/contact" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
-                    Contact & support
-                  </Link>
-                  <Link href="/privacy" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
-                    Privacy
-                  </Link>
-                  <Link href="/terms" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
-                    Terms
-                  </Link>
-                </div>
+              <div className="space-y-2 rounded-xl border border-slate-200 p-3 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">Company</p>
+                <Link href="/about" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                  About CityHaven
+                </Link>
+                <Link href="/contact" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                  Contact & support
+                </Link>
+                <Link href="/privacy" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                  Privacy
+                </Link>
+                <Link href="/terms" onClick={toggleMobile} className="block rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                  Terms
+                </Link>
+              </div>
 
-                <div className="pt-2 text-xs font-normal text-slate-600">
-                  Call us at <span className="font-semibold text-slate-900">1800 41 99099</span> (9AM-11PM IST)
-                </div>
+              {isAuthed && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleLogout();
+                    toggleMobile();
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 shadow-sm"
+                >
+                  <LogOut className="h-4 w-4" /> Logout
+                </button>
+              )}
+
+              <div className="pt-2 text-xs font-normal text-slate-600">
+                Call us at <span className="font-semibold text-slate-900">1800 41 99099</span> (9AM-11PM IST)
               </div>
             </div>
+          </div>
           </div>,
           document.body,
         )}

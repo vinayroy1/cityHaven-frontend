@@ -4,7 +4,8 @@ import { baseQueryWithReauth } from "@/lib/api/baseQueryWithReauth";
 
 export type RequestOtpPayload = { mobileNumber: string };
 export type VerifyOtpPayload = { mobileNumber: string; otp: string };
-export type TokenResponse = { accessToken?: string; refreshToken?: string; user?: unknown };
+export type TokenResponse = { accessToken?: string; refreshToken?: string; user?: unknown; isNewUser?: boolean };
+export type UpdateProfilePayload = { name?: string; email?: string };
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -32,7 +33,15 @@ export const authApi = createApi({
       }),
       transformResponse: (response: { data?: TokenResponse }) => response.data ?? {},
     }),
+    updateProfile: builder.mutation<{ success?: boolean; user?: any }, UpdateProfilePayload>({
+      query: (body) => ({
+        url: API_ENDPOINTS.auth.profile,
+        method: "PUT",
+        body,
+      }),
+      transformResponse: (response: { data?: any }) => response.data ?? {},
+    }),
   }),
 });
 
-export const { useRequestOtpMutation, useVerifyOtpMutation, useMeQuery, useLazyMeQuery } = authApi;
+export const { useRequestOtpMutation, useVerifyOtpMutation, useUpdateProfileMutation, useMeQuery, useLazyMeQuery } = authApi;
