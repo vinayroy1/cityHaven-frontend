@@ -21,6 +21,10 @@ export const API_ENDPOINTS = {
     update: (id: number | string) => `${BASE}/propertyListing/${id}`,
     search: `${BASE}/propertyListing/search`,
     my: `${BASE}/propertyListing/my`,
+    org: `${BASE}/propertyListing/org`,
+    favorites: `${BASE}/propertyListing/me/favorites`,
+    enquiries: `${BASE}/propertyListing/me/enquiries`,
+    visits: `${BASE}/propertyListing/me/visits`,
   },
   properties: {
     list: `${BASE}/properties`,

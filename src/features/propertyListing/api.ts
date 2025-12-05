@@ -7,6 +7,12 @@ import type { PropertySearchParams, PropertySearchResponse } from "@/types/prope
 import { mapFormToApiPayload } from "./mapper";
 import { baseQueryWithReauth } from "@/lib/api/baseQueryWithReauth";
 
+type PaginatedResponse<T> = {
+  items: T[];
+  nextCursor?: number | null;
+  hasMore?: boolean;
+};
+
 export const propertyListingApi = createApi({
   reducerPath: "propertyListingApi",
   baseQuery: baseQueryWithReauth,
@@ -60,6 +66,42 @@ export const propertyListingApi = createApi({
       transformResponse: (response: { data?: PropertySearchResponse }) => response.data as PropertySearchResponse,
       providesTags: ["Property"],
     }),
+    orgListings: builder.query<PaginatedResponse<any>, { orgId?: number | string; assignedToMe?: boolean; cursor?: number; pageSize?: number }>({
+      query: (params) => ({
+        url: API_ENDPOINTS.propertyListing.org,
+        method: "GET",
+        params,
+      }),
+      transformResponse: (response: { data?: PaginatedResponse<any> }) => response.data ?? { items: [] },
+      providesTags: ["Property"],
+    }),
+    myFavorites: builder.query<PaginatedResponse<any>, { cursor?: number; pageSize?: number }>({
+      query: (params) => ({
+        url: API_ENDPOINTS.propertyListing.favorites,
+        method: "GET",
+        params,
+      }),
+      transformResponse: (response: { data?: PaginatedResponse<any> }) => response.data ?? { items: [] },
+      providesTags: ["Property"],
+    }),
+    myEnquiries: builder.query<PaginatedResponse<any>, { cursor?: number; pageSize?: number }>({
+      query: (params) => ({
+        url: API_ENDPOINTS.propertyListing.enquiries,
+        method: "GET",
+        params,
+      }),
+      transformResponse: (response: { data?: PaginatedResponse<any> }) => response.data ?? { items: [] },
+      providesTags: ["Property"],
+    }),
+    myVisits: builder.query<PaginatedResponse<any>, { cursor?: number; pageSize?: number }>({
+      query: (params) => ({
+        url: API_ENDPOINTS.propertyListing.visits,
+        method: "GET",
+        params,
+      }),
+      transformResponse: (response: { data?: PaginatedResponse<any> }) => response.data ?? { items: [] },
+      providesTags: ["Property"],
+    }),
   }),
 });
 
@@ -69,6 +111,10 @@ export const {
   useDeletePropertyMutation,
   useGetPropertyQuery,
   useMyPropertiesQuery,
+  useOrgListingsQuery,
+  useMyFavoritesQuery,
+  useMyEnquiriesQuery,
+  useMyVisitsQuery,
   useSearchPropertiesQuery,
   useLazySearchPropertiesQuery,
 } = propertyListingApi;

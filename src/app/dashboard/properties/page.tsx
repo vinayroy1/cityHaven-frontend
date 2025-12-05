@@ -2,9 +2,10 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { MapPin, RefreshCw, Trash2, Edit3, Eye, Plus } from "lucide-react";
 import { useDeletePropertyMutation, useMyPropertiesQuery } from "@/features/propertyListing/api";
+import { useOrgListingsInfinite } from "@/features/propertyListing/useQueries";
 
 type ListingStatus = "ACTIVE" | "DRAFT" | "UNDER_REVIEW" | "REJECTED" | string;
 
@@ -22,21 +23,35 @@ const statusColors: Record<ListingStatus, string> = {
   REJECTED: "bg-rose-50 text-rose-700 border-rose-200",
 };
 
+const mockOrgListings = [
+  { id: 201, title: "Grade A office - MG Road", cityName: "Bengaluru", price: 125000000, status: "UNDER_REVIEW", updatedAt: "2024-11-12" },
+  { id: 202, title: "Retail - Cyberhub", cityName: "Gurugram", price: 78000000, status: "ACTIVE", updatedAt: "2024-11-20" },
+];
+
 export default function DashboardPropertiesPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const scope = searchParams.get("scope") || "my";
   const { data: listings = [], isFetching, refetch } = useMyPropertiesQuery();
+  const orgQuery = useOrgListingsInfinite({ assignedToMe: true });
   const [deleteProperty] = useDeletePropertyMutation();
   const [statusFilter, setStatusFilter] = useState<ListingStatus | "ALL">("ALL");
 
+  const sourceData = scope === "org" ? orgQuery.items : listings;
+
   const filtered = useMemo(() => {
-    if (statusFilter === "ALL") return listings;
-    return listings.filter((item: any) => item.status === statusFilter);
-  }, [listings, statusFilter]);
+    if (statusFilter === "ALL") return sourceData;
+    return sourceData.filter((item: any) => item.status === statusFilter);
+  }, [sourceData, statusFilter]);
 
   const handleDelete = async (id: number | string) => {
     if (!confirm("Are you sure you want to delete this listing?")) return;
     await deleteProperty(id);
-    refetch();
+    if (scope === "org") {
+      orgQuery.refetch();
+    } else {
+      refetch();
+    }
   };
 
   return (
@@ -44,8 +59,8 @@ export default function DashboardPropertiesPage() {
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">My listings</p>
-            <h1 className="text-2xl font-semibold">Manage properties</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{scope === "org" ? "Org listings" : "My listings"}</p>
+            <h1 className="text-2xl font-semibold">{scope === "org" ? "Assigned / team properties" : "Manage properties"}</h1>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -80,7 +95,7 @@ export default function DashboardPropertiesPage() {
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-          {isFetching ? (
+          {((isFetching && scope !== "org") || (orgQuery.isFetching && scope === "org")) ? (
             <div className="p-6 text-sm text-slate-600">Loading your listings…</div>
           ) : filtered.length === 0 ? (
             <div className="p-6 text-sm text-slate-600">No listings found. Create your first property to get started.</div>
@@ -123,13 +138,15 @@ export default function DashboardPropertiesPage() {
                       >
                         <Edit3 className="h-4 w-4" /> Edit
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(item.id)}
-                        className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-rose-700 transition hover:-translate-y-0.5"
-                      >
-                        <Trash2 className="h-4 w-4" /> Delete
-                      </button>
+                      {scope !== "org" && (
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(item.id)}
+                          className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-rose-700 transition hover:-translate-y-0.5"
+                        >
+                          <Trash2 className="h-4 w-4" /> Delete
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
