@@ -1,17 +1,15 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { ResultCard } from "./ResultCard";
-import { useLazySearchPropertiesQuery } from "@/features/propertyListing/api";
+import { usePropertySearchInfinite } from "@/features/propertyListing/useQueries";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 
 export function ResultsList() {
   const searchParams = useSearchParams();
-  const [items, setItems] = useState<PropertySearchItem[]>([]);
-  const [cursor, setCursor] = useState<number | null>(null);
-  const [trigger, { data, isFetching, isError }] = useLazySearchPropertiesQuery();
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const filters = useMemo(() => {
     return {
@@ -22,21 +20,27 @@ export function ResultsList() {
       priceMin: searchParams.get("priceMin") || undefined,
       priceMax: searchParams.get("priceMax") || undefined,
       sort: searchParams.get("sort") || undefined,
+      pageSize: 10,
     };
   }, [searchParams]);
 
-  useEffect(() => {
-    setItems([]);
-    setCursor(null);
-    void trigger({ ...filters, pageSize: 10, cursor: null });
-  }, [filters, trigger]);
+  const { items, isFetching, isFetchingNextPage, hasNextPage, fetchNextPage, isError, refetch } = usePropertySearchInfinite(filters);
 
   useEffect(() => {
-    if (data?.items) {
-      setItems((prev) => (cursor ? [...prev, ...data.items] : data.items));
-      setCursor(data.nextCursor ?? null);
-    }
-  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          void fetchNextPage();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const showNoResults = !isFetching && !items.length && !isError;
 
@@ -63,7 +67,7 @@ export function ResultsList() {
 
       {!!items.length && (
         <div className="space-y-3">
-          {items.map((item) => (
+          {items.map((item: PropertySearchItem) => (
             <ResultCard
               key={item.id}
               title={item.title}
@@ -84,15 +88,21 @@ export function ResultsList() {
         </div>
       )}
 
-      {cursor && (
-        <button
-          type="button"
-          onClick={() => trigger({ ...filters, pageSize: 10, cursor })}
-          disabled={isFetching}
-          className="w-full rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:-translate-y-0.5 disabled:opacity-60"
-        >
-          {isFetching ? "Loading..." : "Load more"}
-        </button>
+      <div ref={sentinelRef} className="h-1 w-full" />
+
+      {isFetchingNextPage && (
+        <div className="flex items-center justify-center gap-2 text-xs text-slate-600">
+          <Loader2 className="h-4 w-4 animate-spin text-sky-500" />
+          Loading more...
+        </div>
+      )}
+      {isError && (
+        <div className="text-xs text-rose-600">
+          Something went wrong.{" "}
+          <button type="button" onClick={() => refetch()} className="font-semibold underline">
+            Retry
+          </button>
+        </div>
       )}
     </div>
   );

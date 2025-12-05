@@ -71,3 +71,17 @@ export function useVisitsInfinite(params?: { pageSize?: number }) {
   });
   return { ...query, items: flattenPages(query.data?.pages as CursorPage<any>[] | undefined) };
 }
+
+export function usePropertySearchInfinite(params?: Record<string, any>) {
+  const query = useInfiniteQuery<CursorPage<any>, Error>({
+    queryKey: ["propertySearch", params],
+    queryFn: ({ pageParam }) =>
+      apiFetch<CursorPage<any>>({
+        url: API_ENDPOINTS.propertyListing.search,
+        params: { ...(params || {}), cursor: pageParam },
+      }),
+    initialPageParam: null,
+    getNextPageParam: (last) => (last && "nextCursor" in last ? (last as CursorPage<any>).nextCursor ?? undefined : undefined),
+  });
+  return { ...query, items: flattenPages(query.data?.pages as CursorPage<any>[] | undefined) };
+}
