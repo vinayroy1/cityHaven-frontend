@@ -20,7 +20,6 @@ export type PropertyDetailsVisibility = {
     showPlotArea: boolean;
     showPlotLength: boolean;
     showPlotBreadth: boolean;
-    showAreaUnit: boolean;
     plotAreaRequired: boolean;
     plotUnitRequired: boolean;
   };
@@ -191,7 +190,6 @@ export const derivePropertyDetailsVisibility = ({
       showPlotArea,
       showPlotLength: isPlot,
       showPlotBreadth: isPlot,
-      showAreaUnit,
       plotAreaRequired,
       plotUnitRequired,
     },

@@ -72,7 +72,6 @@ export function PropertyDetailsStep({ form }: StepProps) {
           showPlotLength={visibility.area.showPlotLength}
           showPlotBreadth={visibility.area.showPlotBreadth}
           showSuperBuiltUp={visibility.area.showSuperBuiltUp}
-          showAreaUnit={visibility.area.showAreaUnit}
           plotAreaRequired={visibility.area.plotAreaRequired}
           plotUnitRequired={visibility.area.plotUnitRequired}
         />

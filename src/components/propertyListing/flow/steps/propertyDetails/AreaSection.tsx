@@ -15,7 +15,6 @@ type AreaSectionProps = StepProps & {
   showPlotLength: boolean;
   showPlotBreadth: boolean;
   showSuperBuiltUp: boolean;
-  showAreaUnit: boolean;
   plotAreaRequired: boolean;
   plotUnitRequired: boolean;
 };
@@ -30,7 +29,6 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
   showPlotLength,
   showPlotBreadth,
   showSuperBuiltUp,
-  showAreaUnit,
   plotAreaRequired,
   plotUnitRequired,
 }) => (
@@ -122,7 +120,7 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
               name="details.plotLength"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Plot length</FormLabel>
+                  <FormLabel>Plot length (ft)</FormLabel>
                   <NumberInput field={field} placeholder="60" />
                 </FormItem>
               )}
@@ -134,7 +132,7 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
               name="details.plotBreadth"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Plot breadth</FormLabel>
+                  <FormLabel>Plot breadth (ft)</FormLabel>
                   <NumberInput field={field} placeholder="40" />
                 </FormItem>
               )}
@@ -213,31 +211,6 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
             )}
           />
         </>
-      )}
-      {showAreaUnit && (
-        <FormField
-          control={form.control}
-          name="details.areaUnit"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Area unit (default)</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sq.ft / Sq.yd / Acre / Sq.m" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {areaUnitOptions.map((unit) => (
-                    <SelectItem key={unit.value} value={unit.value}>
-                      {unit.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
       )}
     </div>
   </Card>
