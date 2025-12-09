@@ -4,6 +4,7 @@ type VisibilityInput = {
   listingType?: ListingType;
   resCom?: ResComType;
   propertySubTypeSlug?: string;
+  propertySubCategorySlug?: string;
   locatedInsideId?: string | null;
   projectId?: string | null;
   societyName?: string | null;
@@ -37,9 +38,11 @@ export type PropertyDetailsVisibility = {
     showWidthOfFacingRoad: boolean;
     showEntranceWidth: boolean;
     showCeilingWidth: boolean;
+    showOtherRooms: boolean;
   };
   furnishing: {
     showSection: boolean;
+    showOfficeFurnishing: boolean;
   };
   legal: {
     showSection: boolean;
@@ -66,6 +69,18 @@ export type PropertyDetailsVisibility = {
     showCabins: boolean;
     showWorkstations: boolean;
     showBusinessApproval: boolean;
+    showOfficeSeats: boolean;
+    showOfficeReception: boolean;
+    showOfficeWashroomAvailability: boolean;
+    showRetailWashroomType: boolean;
+    showRetailLocatedNear: boolean;
+    showRetailBusinessType: boolean;
+    showShopFacade: boolean;
+    showRetailEntranceWidth: boolean;
+    showRetailCeilingHeight: boolean;
+    showWarehouseWashrooms: boolean;
+    showHospitalityQualityRating: boolean;
+    showOfficeFacilities: boolean;
   };
   pg: {
     showSection: boolean;
@@ -79,12 +94,21 @@ export type PropertyDetailsVisibility = {
   society: {
     showSocietyDetails: boolean;
   };
+  building: {
+    showSection: boolean;
+    showParking: boolean;
+    showParkingBreakdown: boolean;
+    showMultilevelParking: boolean;
+    showLifts: boolean;
+    showLiftCounts: boolean;
+  };
 };
 
 export const derivePropertyDetailsVisibility = ({
   listingType,
   resCom,
   propertySubTypeSlug,
+  propertySubCategorySlug,
   locatedInsideId,
   projectId,
   societyName,
@@ -98,35 +122,36 @@ export const derivePropertyDetailsVisibility = ({
   const isOffice = propertySubTypeSlug === "office";
   const isRetail = propertySubTypeSlug === "retail";
   const isWarehouse = propertySubTypeSlug === "storage";
+  const isHospitality = propertySubTypeSlug === "hospitality";
+  const isShopCategory = isRetail && propertySubCategorySlug === "commercial-shops";
   const insideComplex = Boolean(locatedInsideId);
 
-  const showBuiltUp = (isResidential || isCommercial) && !isPG && !isPlot;
-  const showCarpet = (isResidential || isCommercial) && !isPG && !isPlot;
-  const showPlotArea = isPlot;
-  const showSuperBuiltUp = isResidential && !isPG && !isPlot;
+  const showBuiltUp = (isResidential || isCommercial || isHospitality || isPG) && !isPlot && !isWarehouse;
+  const showCarpet = (isResidential || isCommercial || isHospitality || isPG) && !isPlot;
+  const showPlotArea = isPlot || isWarehouse;
+  const showSuperBuiltUp = (isResidential || isHospitality || isCommercial) && !isPG && !isPlot && !isWarehouse;
   const showAreaUnit = showBuiltUp || showCarpet || showPlotArea || showSuperBuiltUp;
 
-  const showBedrooms = isResidential && !isPlot && !isPG;
-  const showBathrooms = isResidential && !isPlot && !isPG;
-  const showBalconies = isResidential && !isPlot && !isPG;
+  const showBedrooms = (isResidential || isHospitality || isPG) && !isPlot;
+  const showBathrooms = (isResidential || isHospitality || isPG) && !isPlot;
+  const showBalconies = (isResidential || isHospitality || isPG) && !isPlot;
   const showKitchenType = isResidential && !isPlot && !isPG;
-  const showFlooringMeta = (isResidential || isCommercial) && !isPlot && !isPG;
+  const showFlooringMeta = (isResidential || isCommercial || isHospitality || isPG) && !isPlot;
   const floorNumberRequired = isApartmentOrBuilder;
   const totalFloorsRequired = isApartmentOrBuilder;
 
   const showOpenSides = isPlot || isVilla || isRetail;
-  const showPropertyFacing = (isResidential && !isPG) || isPlot;
+  const showPropertyFacing = (isResidential || isHospitality || isPG) || isPlot;
   const showWidthOfFacingRoad = isPlot || isRetail;
-  const showEntranceWidth = isCommercial && (isRetail || isOffice);
   const showSocietyDetails =
     !isPG &&
     !isPlot &&
     (isResidential ? Boolean(insideComplex || projectId || societyName) : isCommercial ? insideComplex : false);
   const showAvailability = !isPlot;
-  const showConstructionType = (isResidential || isCommercial) && !isPlot && !isPG;
-  const showAgeOfProperty = (isResidential || isCommercial) && !isPlot && !isPG;
-  const showOwnershipType = (isResidential || isCommercial) && !isPlot;
-  const showAuthority = (isResidential || isCommercial) && !isPlot;
+  const showConstructionType = (isResidential || isCommercial || isPG || isHospitality) && !isPlot;
+  const showAgeOfProperty = (isResidential || isCommercial || isPG || isHospitality) && !isPlot;
+  const showOwnershipType = (isResidential || isCommercial || isHospitality || isPG) && !isPlot;
+  const showAuthority = (isResidential || isCommercial || isHospitality) && !isPlot;
   const showBoundaryWall = isPlot;
   const showFireSafety = isCommercial;
   const showFireNoc = isCommercial;
@@ -142,11 +167,15 @@ export const derivePropertyDetailsVisibility = ({
     showFireNoc ||
     showBusinessApproval;
 
+  const carpetAreaRequired = showCarpet && (isOffice || isRetail);
+  const showParking = !isPlot;
+  const showLiftCounts = isApartmentOrBuilder || isOffice || isRetail || isHospitality;
+
   return {
     area: {
       showBuiltUp,
       showCarpet,
-      carpetRequired: showCarpet && !(isCommercial && isOffice),
+      carpetRequired: carpetAreaRequired,
       showSuperBuiltUp,
       showPlotArea,
       showPlotLength: isPlot,
@@ -168,11 +197,13 @@ export const derivePropertyDetailsVisibility = ({
       showOpenSides,
       showPropertyFacing,
       showWidthOfFacingRoad,
-      showEntranceWidth,
-      showCeilingWidth: isCommercial && isWarehouse,
+      showEntranceWidth: false,
+      showCeilingWidth: false,
+      showOtherRooms: (isResidential || isHospitality || isPG) && !isPlot,
     },
     furnishing: {
-      showSection: isResidential && !isPlot && !isPG,
+      showSection: (isResidential || isHospitality || isPG) && !isPlot,
+      showOfficeFurnishing: isOffice,
     },
     legal: {
       showSection: showLegalSection,
@@ -191,14 +222,26 @@ export const derivePropertyDetailsVisibility = ({
       showOfficeFields: isOffice,
       showRetailFields: isRetail,
       showWarehouseFields: isWarehouse,
-      showPantry: isCommercial && !isRetail,
-      showCeilingHeight: isCommercial,
+      showPantry: isOffice,
+      showCeilingHeight: isCommercial && !isPlot,
       showConferenceRoom: isOffice,
-      showTotalRooms: isCommercial,
+      showTotalRooms: isHospitality,
       showMeetingRooms: isOffice,
       showCabins: isOffice,
       showWorkstations: isOffice,
       showBusinessApproval,
+      showOfficeSeats: isOffice,
+      showOfficeReception: isOffice,
+      showOfficeWashroomAvailability: isOffice,
+      showRetailWashroomType: isRetail,
+      showRetailLocatedNear: isRetail,
+      showRetailBusinessType: isShopCategory,
+      showShopFacade: isShopCategory,
+      showRetailEntranceWidth: isRetail,
+      showRetailCeilingHeight: isRetail,
+      showWarehouseWashrooms: isWarehouse,
+      showHospitalityQualityRating: isHospitality,
+      showOfficeFacilities: isOffice,
     },
     pg: {
       showSection: isPG,
@@ -211,6 +254,14 @@ export const derivePropertyDetailsVisibility = ({
     },
     society: {
       showSocietyDetails,
+    },
+    building: {
+      showSection: showParking || showLiftCounts,
+      showParking,
+      showParkingBreakdown: showParking,
+      showMultilevelParking: isShopCategory,
+      showLifts: !isPlot,
+      showLiftCounts,
     },
   };
 };

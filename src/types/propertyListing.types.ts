@@ -148,8 +148,14 @@ export interface PropertyDetailsBlock {
   openSides?: number | null;
   staircases?: number | null;
   zoneType?: string;
-  suitableForBussinessType?: string;
+  suitableForBussinessType?: string[];
   businessApproval?: string;
+  shopFacadeSize?: number | null;
+  shopFacadeSizeUnit?: string;
+  locatedNear?: string[];
+  passengerLifts?: number | null;
+  serviceLifts?: number | null;
+  qualityRating?: string;
 }
 
 export interface PricingFinancialsBlock {
@@ -215,6 +221,10 @@ export interface AmenitiesLegalBlock {
   boundaryWall?: boolean;
   fireNoc?: boolean;
   amenityIds?: number[];
+  centralAirConditioning?: boolean;
+  oxygenDuct?: boolean;
+  ups?: boolean;
+  multilevelParking?: boolean;
 }
 
 export interface MetaBlock {

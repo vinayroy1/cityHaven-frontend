@@ -25,5 +25,9 @@ export const furnishingItems = [
   { key: "ac", label: "AC", modes: ["SEMI_FURNISHED", "FULLY_FURNISHED"] },
 ];
 
-export const fireSafetyOptions = ["Sprinklers", "Smoke Detectors", "Fire Alarm", "Extinguishers"];
+export const fireSafetyOptions = ["Fire Extinguisher", "Fire Sensors", "Sprinklers", "Fire Hose"];
 export const businessUseOptions = ["IT", "Retail", "Clinic", "Warehouse", "Cafe", "Other"];
+
+export const shopBusinessTypes = ["ATM", "Bakery", "Boutique", "Clinic", "Restaurant", "Salon", "Grocery", "Other"];
+
+export const locatedNearOptions = ["Entrance", "Elevator", "Stairs"];

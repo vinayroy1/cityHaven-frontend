@@ -13,9 +13,10 @@ import type { PropertyDetailsVisibility } from "./visibility";
 
 type ConstructionLegalSectionProps = StepProps & {
   visibility: PropertyDetailsVisibility["legal"];
+  useDateForPossession?: boolean;
 };
 
-export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> = ({ form, visibility }) => {
+export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> = ({ form, visibility, useDateForPossession }) => {
   const toggleRecord = (path: "amenities.fireSafety", key: string) => {
     const current = form.getValues(path) ?? {};
     const next = { ...current };
@@ -105,9 +106,10 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
                   <FormLabel>Possession timeline</FormLabel>
                   <Input
                     className="bg-white text-slate-900"
+                    type={useDateForPossession ? "date" : "text"}
                     value={field.value ?? ""}
                     onChange={(e) => field.onChange(e.target.value)}
-                    placeholder="Within 3 months / 2025-Q2"
+                    placeholder={useDateForPossession ? undefined : "Within 3 months / 2025-Q2"}
                   />
                 </FormItem>
               )}
@@ -300,7 +302,7 @@ export const ConstructionLegalSection: React.FC<ConstructionLegalSectionProps> =
             {visibility.showBusinessApproval && (
               <FormField
                 control={form.control}
-                name="details.suitableForBussinessType"
+                name="details.businessApproval"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Approved for business type</FormLabel>

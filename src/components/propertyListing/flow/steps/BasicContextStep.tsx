@@ -30,27 +30,25 @@ export function BasicContextStep({ form }: StepProps) {
     (selectedSubType?.slug === "office" || selectedSubType?.slug === "retail") &&
     Boolean(selectedSubType?.locatedInsideOptions?.length);
   const subTypeGridCols = showSubCategory ? "sm:grid-cols-2" : "sm:grid-cols-1";
-  const locatedGridCols = showLocatedInside ? "sm:grid-cols-2" : "sm:grid-cols-1";
+  const locatedGridCols = showLocatedInside
+    ? "sm:grid-cols-2"
+    : "sm:grid-cols-1";
+useEffect(() => {
+  // ensure propertyTypeId is always one of the allowedPropertyTypes
+  if (!allowedPropertyTypes.length) return;
 
-  useEffect(() => {
-    if (listingType === "PG") {
-      if (propertyTypeId !== "1") {
-        form.setValue("context.propertyTypeId", "1");
-        form.setValue("context.resCom", "RESIDENTIAL");
-        form.setValue("context.propertySubTypeId", "");
-        form.setValue("context.propertySubCategoryId", "");
-        form.setValue("context.locatedInsideId", "");
-      }
-      return;
-    }
-    if (propertyTypeId === "3") {
-      form.setValue("context.propertyTypeId", "");
-      form.setValue("context.propertySubTypeId", "");
-      form.setValue("context.propertySubCategoryId", "");
-      form.setValue("context.locatedInsideId", "");
-      form.setValue("context.resCom", "RESIDENTIAL");
-    }
-  }, [form, listingType, propertyTypeId]);
+  const current = allowedPropertyTypes.find((t) => t.id === propertyTypeId);
+  if (current) return;
+
+  // if current is not allowed (e.g. switched SELL/RENT ↔ PG), pick first allowed
+  const fallback = allowedPropertyTypes[0];
+
+  form.setValue("context.propertyTypeId", fallback.id);
+  form.setValue("context.propertySubTypeId", "");
+  form.setValue("context.propertySubCategoryId", "");
+  form.setValue("context.locatedInsideId", "");
+  form.setValue("context.resCom", fallback.resCom ?? "RESIDENTIAL");
+}, [form, listingType, propertyTypeId, allowedPropertyTypes]);
 
   useEffect(() => {
     if (selectedPropertyType) {

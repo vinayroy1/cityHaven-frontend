@@ -30,13 +30,24 @@ export const basicDetailsStep: StepConfig = {
           type: "chip-radio",
           required: true,
           options: [
-            { value: "residential", label: "Residential", icon: "home" },
+            {
+              value: "residential",
+              label: "Residential",
+              icon: "home",
+              visibleWhen: { field: "listingType", notEquals: "PG" },
+            },
             {
               value: "commercial",
               label: "Commercial",
               icon: "office-building",
+              visibleWhen: { field: "listingType", notEquals: "PG" },
             },
-            { value: "pg", label: "PG / Hostel", icon: "hostel" },
+            {
+              value: "pg",
+              label: "PG / Hostel",
+              icon: "hostel",
+              visibleWhen: { field: "listingType", equals: "PG" },
+            },
           ],
         },
 
@@ -102,7 +113,13 @@ export const basicDetailsStep: StepConfig = {
           id: "pgType",
           label: "What kind of PG / Hostel do you have?",
           type: "chip-radio",
-          visibleWhen: { field: "propertyUsage", equals: "pg" },
+          visibleWhen: {
+            or: [
+              { field: "propertyUsage", equals: "pg" },
+              { field: "listingType", equals: "PG" },
+            ],
+          },
+          requiredWhen: { field: "listingType", equals: "PG" },
           options: [
             {
               value: "pg-private-room",

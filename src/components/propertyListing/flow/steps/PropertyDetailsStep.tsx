@@ -6,6 +6,7 @@ import type { StepProps } from "./StepCommon";
 import { TitleDescriptionSection } from "./propertyDetails/TitleDescriptionSection";
 import { AreaSection } from "./propertyDetails/AreaSection";
 import { RoomsLayoutSection } from "./propertyDetails/RoomsLayoutSection";
+import { OtherRoomsSection } from "./propertyDetails/OtherRoomsSection";
 import { FurnishingSection } from "./propertyDetails/FurnishingSection";
 import { ConstructionLegalSection } from "./propertyDetails/ConstructionLegalSection";
 import { PgSection } from "./propertyDetails/PgSection";
@@ -14,12 +15,14 @@ import { SocietySection } from "./propertyDetails/SocietySection";
 import { furnishingItems } from "./propertyDetails/constants";
 import { derivePropertyDetailsVisibility } from "./propertyDetails/visibility";
 import { Card } from "@/components/ui/card";
+import { LiftsParkingSection } from "./propertyDetails/LiftsParkingSection";
 
 export function PropertyDetailsStep({ form }: StepProps) {
   const listingType = useWatch({ control: form.control, name: "context.listingType" });
   const resCom = useWatch({ control: form.control, name: "context.resCom" });
   const propertyTypeId = `${useWatch({ control: form.control, name: "context.propertyTypeId" }) ?? ""}`;
   const propertySubTypeId = `${useWatch({ control: form.control, name: "context.propertySubTypeId" }) ?? ""}`;
+  const propertySubCategoryId = `${useWatch({ control: form.control, name: "context.propertySubCategoryId" }) ?? ""}`;
   const locatedInsideId = useWatch({ control: form.control, name: "context.locatedInsideId" });
   const projectId = useWatch({ control: form.control, name: "location.projectId" });
   const societyName = useWatch({ control: form.control, name: "location.societyOrProjectName" });
@@ -32,6 +35,10 @@ export function PropertyDetailsStep({ form }: StepProps) {
     () => propertyType?.subTypes.find((s) => s.id === propertySubTypeId),
     [propertyType, propertySubTypeId],
   );
+  const propertySubCategory = useMemo(
+    () => propertySubType?.categories?.find((c) => c.id === propertySubCategoryId),
+    [propertySubCategoryId, propertySubType?.categories],
+  );
 
   const showPossessionDate = constructionStatus === "UNDER_CONSTRUCTION";
   const allowedFurnishingItems = useMemo(() => furnishingItems.filter((item) => item.modes.includes(furnishingMode)), [furnishingMode]);
@@ -41,11 +48,12 @@ export function PropertyDetailsStep({ form }: StepProps) {
         listingType,
         resCom,
         propertySubTypeSlug: propertySubType?.slug,
+        propertySubCategorySlug: propertySubCategory?.slug,
         locatedInsideId,
         projectId,
         societyName,
       }),
-    [listingType, locatedInsideId, projectId, propertySubType?.slug, resCom, societyName],
+    [listingType, locatedInsideId, projectId, propertySubCategory?.slug, propertySubType?.slug, resCom, societyName],
   );
   const canShowMultiFloorSelect = visibility.rooms.allowMultiFloorSelect && Number(floorsAllowed ?? 0) > 1;
 
@@ -68,16 +76,20 @@ export function PropertyDetailsStep({ form }: StepProps) {
         <RoomsLayoutSection form={form} visibility={visibility.rooms} canShowMultiFloorSelect={canShowMultiFloorSelect} />
       </div>
 
+      <OtherRoomsSection form={form} show={visibility.rooms.showOtherRooms} />
+
       {visibility.furnishing.showSection && (
         <FurnishingSection form={form} furnishingMode={furnishingMode} allowedItems={allowedFurnishingItems} />
       )}
 
       <div className={visibility.pg.showSection ? "grid gap-5 lg:grid-cols-2" : "grid gap-5"}>
-        <ConstructionLegalSection form={form} visibility={visibility.legal} />
+        <ConstructionLegalSection form={form} visibility={visibility.legal} useDateForPossession={propertySubType?.slug === "hospitality"} />
         {visibility.pg.showSection && <PgSection form={form} visibility={visibility.pg} />}
       </div>
 
       <CommercialSection form={form} visibility={visibility.commercial} />
+
+      <LiftsParkingSection form={form} visibility={visibility.building} />
 
       <SocietySection form={form} showSocietyDetails={visibility.society.showSocietyDetails} showPossessionDate={showPossessionDate} />
 
