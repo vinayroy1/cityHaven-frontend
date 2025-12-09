@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, type ReactNode } from "react";
+import React, { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { ShieldCheck } from "lucide-react";
 import { Stepper } from "@/components/propertyListing/flow/Stepper";
@@ -11,7 +11,6 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   hydrateDraft,
   initialPropertyListingFormValues,
-  propertyTypeCatalog,
   resetDraft,
   saveDraft,
   stepList,
@@ -20,7 +19,11 @@ import {
 } from "@/features/propertyListing";
 import { selectPropertyListing } from "@/store/store";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
-import { loadPersistedDraft, persistDraft, clearPersistedDraft } from "@/features/propertyListing/storage";
+import {
+  loadPersistedDraft,
+  persistDraft,
+  clearPersistedDraft,
+} from "@/features/propertyListing/storage";
 import { AmenitiesLegalStep } from "./steps/AmenitiesLegalStep";
 import { BasicContextStep } from "./steps/BasicContextStep";
 import { LocationProjectStep } from "./steps/LocationProjectStep";
@@ -38,9 +41,13 @@ const GlassPanel = ({ children }: { children: ReactNode }) => (
 export const PropertyListingFlow: React.FC = () => {
   const dispatch = useAppDispatch();
   const { draft, status } = useAppSelector(selectPropertyListing);
-  const [submitProperty, { isLoading: submitting, isSuccess: submitted }] = useSubmitPropertyMutation();
+  const [submitProperty, { isLoading: submitting, isSuccess: submitted }] =
+    useSubmitPropertyMutation();
   const [currentStep, setCurrentStep] = useState(1);
-  const [resumeDraft, setResumeDraft] = useState<null | { form: PropertyListingFormValues; step?: number }>(null);
+  const [resumeDraft, setResumeDraft] = useState<null | {
+    form: PropertyListingFormValues;
+    step?: number;
+  }>(null);
   const [showResumePrompt, setShowResumePrompt] = useState(false);
 
   const form = useForm<PropertyListingFormValues>({
@@ -48,39 +55,12 @@ export const PropertyListingFlow: React.FC = () => {
     defaultValues: draft ?? initialPropertyListingFormValues,
   });
 
-  const listingType = form.watch("context.listingType");
-  const propertyTypeId = `${form.watch("context.propertyTypeId") ?? ""}`;
-
-  const selectedPropertyType = useMemo(() => propertyTypeCatalog.find((p) => p.id === propertyTypeId), [propertyTypeId]);
-
-  useEffect(() => {
-    if (listingType === "PG") {
-      form.setValue("context.propertyTypeId", "1");
-      form.setValue("context.resCom", "RESIDENTIAL");
-      form.setValue("context.propertySubTypeId", "");
-      form.setValue("context.propertySubCategoryId", "");
-      form.setValue("context.locatedInsideId", "");
-      return;
-    }
-
-    const currentType = `${form.getValues("context.propertyTypeId") ?? ""}`;
-    // Clear out PG type when switching back to Rent/Sell to avoid mismatched options.
-    if (currentType === "3") {
-      form.setValue("context.propertyTypeId", "");
-      form.setValue("context.resCom", "RESIDENTIAL");
-    }
-  }, [listingType, form]);
-
-  useEffect(() => {
-    if (selectedPropertyType) {
-      form.setValue("context.resCom", selectedPropertyType.resCom);
-    }
-  }, [selectedPropertyType, form]);
-
+  // Hydrate from Redux draft
   useEffect(() => {
     form.reset(draft ?? initialPropertyListingFormValues);
   }, [draft, form]);
 
+  // Load persisted localStorage draft (resume banner)
   useEffect(() => {
     const persisted = loadPersistedDraft();
     if (persisted?.form) {
@@ -89,9 +69,13 @@ export const PropertyListingFlow: React.FC = () => {
     }
   }, []);
 
+  // Persist every change to localStorage
   useEffect(() => {
     const subscription = form.watch((values) => {
-      persistDraft({ form: values as PropertyListingFormValues, step: currentStep });
+      persistDraft({
+        form: values as PropertyListingFormValues,
+        step: currentStep,
+      });
     });
     return () => subscription.unsubscribe();
   }, [form, currentStep]);
@@ -100,7 +84,9 @@ export const PropertyListingFlow: React.FC = () => {
     if (resumeDraft?.form) {
       dispatch(hydrateDraft(resumeDraft.form));
       form.reset(resumeDraft.form);
-      setCurrentStep(resumeDraft.step && resumeDraft.step > 0 ? resumeDraft.step : 1);
+      setCurrentStep(
+        resumeDraft.step && resumeDraft.step > 0 ? resumeDraft.step : 1
+      );
     }
     setShowResumePrompt(false);
   };
@@ -115,11 +101,15 @@ export const PropertyListingFlow: React.FC = () => {
   const handleNext = async () => {
     const fields = stepValidations[currentStep];
     const triggerTargets = fields as Parameters<typeof form.trigger>[0];
-    const valid = fields ? await form.trigger(triggerTargets, { shouldFocus: true }) : true;
+    const valid = fields
+      ? await form.trigger(triggerTargets, { shouldFocus: true })
+      : true;
+
     if (!valid) {
       toast.error("Complete the highlighted fields to continue.");
       return;
     }
+
     dispatch(saveDraft(form.getValues()));
     setCurrentStep((s) => Math.min(stepList.length, s + 1));
     toast.success("Draft captured for this step.");
@@ -136,8 +126,10 @@ export const PropertyListingFlow: React.FC = () => {
       toast.error("Fix validation issues before publishing.");
       return;
     }
+
     const values = form.getValues();
     dispatch(saveDraft(values));
+
     try {
       await submitProperty(values).unwrap();
       toast.success("Listing payload staged for submission.");
@@ -158,9 +150,16 @@ export const PropertyListingFlow: React.FC = () => {
     <GlassPanel>
       {showResumePrompt && (
         <div className="mb-3 flex flex-col gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
-          <span>We found a saved property draft. Continue where you left off?</span>
+          <span>
+            We found a saved property draft. Continue where you left off?
+          </span>
           <div className="flex gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={handleStartFresh}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleStartFresh}
+            >
               Start fresh
             </Button>
             <Button type="button" size="sm" onClick={handleResume}>
@@ -169,7 +168,12 @@ export const PropertyListingFlow: React.FC = () => {
           </div>
         </div>
       )}
-      <Stepper steps={stepList} currentStep={currentStep} onNavigate={(step) => setCurrentStep(step)} />
+
+      <Stepper
+        steps={stepList}
+        currentStep={currentStep}
+        onNavigate={(step) => setCurrentStep(step)}
+      />
 
       <Form {...form}>
         <form onSubmit={(e) => e.preventDefault()} className="mt-6 space-y-6">
@@ -192,12 +196,17 @@ export const PropertyListingFlow: React.FC = () => {
               </span>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="ghost" onClick={handleReset}>
-                Reset
-              </Button>
-              <Button type="button" variant="outline" onClick={() => dispatch(saveDraft(form.getValues()))}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => dispatch(saveDraft(form.getValues()))}
+              >
                 Save Draft
               </Button>
+              {/* Optional: hook handleReset to a button if you want a visible reset */}
+              {/* <Button type="button" variant="outline" onClick={handleReset}>
+                Reset
+              </Button> */}
               {currentStep > 1 && (
                 <Button type="button" variant="outline" onClick={handleBack}>
                   Back
@@ -209,7 +218,12 @@ export const PropertyListingFlow: React.FC = () => {
                 </Button>
               )}
               {currentStep === stepList.length && (
-                <Button type="button" className="bg-gradient-to-r from-sky-600 to-indigo-600 text-white" onClick={handlePublish} disabled={status === "submitting"}>
+                <Button
+                  type="button"
+                  className="bg-gradient-to-r from-sky-600 to-indigo-600 text-white"
+                  onClick={handlePublish}
+                  disabled={status === "submitting"}
+                >
                   Publish / Submit
                 </Button>
               )}
