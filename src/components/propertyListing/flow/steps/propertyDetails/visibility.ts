@@ -15,15 +15,20 @@ export type PropertyDetailsVisibility = {
     showBuiltUp: boolean;
     showCarpet: boolean;
     carpetRequired: boolean;
+    carpetUnitRequired: boolean;
     showSuperBuiltUp: boolean;
     showPlotArea: boolean;
     showPlotLength: boolean;
     showPlotBreadth: boolean;
     showAreaUnit: boolean;
+    plotAreaRequired: boolean;
+    plotUnitRequired: boolean;
   };
   rooms: {
     showBedrooms: boolean;
+    bedroomsRequired: boolean;
     showBathrooms: boolean;
+    bathroomsRequired: boolean;
     showBalconies: boolean;
     showKitchenType: boolean;
     showFloorNumber: boolean;
@@ -115,10 +120,17 @@ export const derivePropertyDetailsVisibility = ({
 }: VisibilityInput): PropertyDetailsVisibility => {
   const isPG = listingType === "PG";
   const isPlot = !!propertySubTypeSlug?.includes("plot-land");
-  const isResidential = resCom === "RESIDENTIAL" && !isPlot && !isPG;
+  const isResidentialSubType = [
+    "apartment",
+    "independent-house-villa",
+    "independent-builder-floor",
+    "1rk-studio-apartment",
+    "serviced-apartment",
+    "farmhouse",
+    "residential-other",
+  ].includes(propertySubTypeSlug ?? "");
+  const isHospitality = propertySubTypeSlug === "hospitality";
   const isCommercial = resCom === "COMMERCIAL" && !isPlot;
-  const isApartmentOrBuilder = propertySubTypeSlug === "apartment" || propertySubTypeSlug === "independent-builder-floor";
-  const isVilla = propertySubTypeSlug === "independent-house-villa";
   const isOffice = propertySubTypeSlug === "office";
   const isRetail = propertySubTypeSlug === "retail";
   const isWarehouse = propertySubTypeSlug === "storage";
@@ -144,7 +156,6 @@ export const derivePropertyDetailsVisibility = ({
   const showPropertyFacing = (isResidential || isHospitality || isPG) || isPlot;
   const showWidthOfFacingRoad = isPlot || isRetail;
   const showSocietyDetails =
-    !isPG &&
     !isPlot &&
     (isResidential ? Boolean(insideComplex || projectId || societyName) : isCommercial ? insideComplex : false);
   const showAvailability = !isPlot;
@@ -181,19 +192,23 @@ export const derivePropertyDetailsVisibility = ({
       showPlotLength: isPlot,
       showPlotBreadth: isPlot,
       showAreaUnit,
+      plotAreaRequired,
+      plotUnitRequired,
     },
     rooms: {
       showBedrooms,
+      bedroomsRequired,
       showBathrooms,
+      bathroomsRequired,
       showBalconies,
       showKitchenType,
       showFloorNumber: showFlooringMeta,
       floorNumberRequired,
       showTotalFloors: showFlooringMeta,
       totalFloorsRequired,
-      showFloorsAllowed: isApartmentOrBuilder,
-      allowMultiFloorSelect: isApartmentOrBuilder,
-      showStaircases: isVilla,
+      showFloorsAllowed: isPlot,
+      allowMultiFloorSelect: false,
+      showStaircases: isOffice,
       showOpenSides,
       showPropertyFacing,
       showWidthOfFacingRoad,

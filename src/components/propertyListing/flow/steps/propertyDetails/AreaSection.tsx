@@ -10,11 +10,14 @@ type AreaSectionProps = StepProps & {
   showBuiltUp: boolean;
   showCarpet: boolean;
   carpetAreaRequired: boolean;
+  carpetUnitRequired: boolean;
   showPlotArea: boolean;
   showPlotLength: boolean;
   showPlotBreadth: boolean;
   showSuperBuiltUp: boolean;
   showAreaUnit: boolean;
+  plotAreaRequired: boolean;
+  plotUnitRequired: boolean;
 };
 
 export const AreaSection: React.FC<AreaSectionProps> = ({
@@ -22,11 +25,14 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
   showBuiltUp,
   showCarpet,
   carpetAreaRequired,
+  carpetUnitRequired,
   showPlotArea,
   showPlotLength,
   showPlotBreadth,
   showSuperBuiltUp,
   showAreaUnit,
+  plotAreaRequired,
+  plotUnitRequired,
 }) => (
   <Card className="border border-slate-100 bg-white p-5 shadow-xl">
     <p className="mb-3 text-sm font-semibold text-slate-700">Size & area details</p>
@@ -85,6 +91,7 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
           <FormField
             control={form.control}
             name="details.carpetAreaUnit"
+            rules={carpetUnitRequired ? { required: "Select area unit" } : undefined}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Carpet area unit</FormLabel>
@@ -136,6 +143,7 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
           <FormField
             control={form.control}
             name="details.plotArea"
+            rules={plotAreaRequired ? { required: "Enter plot area" } : undefined}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Plot area</FormLabel>
@@ -146,6 +154,7 @@ export const AreaSection: React.FC<AreaSectionProps> = ({
           <FormField
             control={form.control}
             name="details.plotAreaUnit"
+            rules={plotUnitRequired ? { required: "Select area unit" } : undefined}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Plot area unit</FormLabel>

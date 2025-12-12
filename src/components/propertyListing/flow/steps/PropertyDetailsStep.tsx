@@ -67,11 +67,14 @@ export function PropertyDetailsStep({ form }: StepProps) {
           showBuiltUp={visibility.area.showBuiltUp}
           showCarpet={visibility.area.showCarpet}
           carpetAreaRequired={visibility.area.carpetRequired}
+          carpetUnitRequired={visibility.area.carpetUnitRequired}
           showPlotArea={visibility.area.showPlotArea}
           showPlotLength={visibility.area.showPlotLength}
           showPlotBreadth={visibility.area.showPlotBreadth}
           showSuperBuiltUp={visibility.area.showSuperBuiltUp}
           showAreaUnit={visibility.area.showAreaUnit}
+          plotAreaRequired={visibility.area.plotAreaRequired}
+          plotUnitRequired={visibility.area.plotUnitRequired}
         />
         <RoomsLayoutSection form={form} visibility={visibility.rooms} canShowMultiFloorSelect={canShowMultiFloorSelect} />
       </div>

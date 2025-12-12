@@ -23,7 +23,7 @@ export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, vi
             <FormField
               control={form.control}
               name="details.bedrooms"
-              rules={{ required: "Bedrooms required" }}
+              rules={visibility.bedroomsRequired ? { required: "Bedrooms required" } : undefined}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bedrooms</FormLabel>
@@ -37,7 +37,7 @@ export const RoomsLayoutSection: React.FC<RoomsLayoutSectionProps> = ({ form, vi
             <FormField
               control={form.control}
               name="details.bathrooms"
-              rules={{ required: "Bathrooms required" }}
+              rules={visibility.bathroomsRequired ? { required: "Bathrooms required" } : undefined}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bathrooms</FormLabel>
