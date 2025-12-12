@@ -119,17 +119,19 @@ export const derivePropertyDetailsVisibility = ({
 }: VisibilityInput): PropertyDetailsVisibility => {
   const isPG = listingType === "PG";
   const isPlot = !!propertySubTypeSlug?.includes("plot-land");
-  const isResidentialSubType = [
-    "apartment",
-    "independent-house-villa",
-    "independent-builder-floor",
-    "1rk-studio-apartment",
-    "serviced-apartment",
-    "farmhouse",
-    "residential-other",
-  ].includes(propertySubTypeSlug ?? "");
-  const isHospitality = propertySubTypeSlug === "hospitality";
-  const isCommercial = resCom === "COMMERCIAL" && !isPlot;
+  const isResidential =
+    [
+      "apartment",
+      "independent-house-villa",
+      "independent-builder-floor",
+      "1rk-studio-apartment",
+      "serviced-apartment",
+      "farmhouse",
+      "residential-other",
+    ].includes(propertySubTypeSlug ?? "") && resCom !== "COMMERCIAL" && !isPG && !isPlot;
+  const isCommercial = resCom === "COMMERCIAL" && !isPlot && !isPG;
+  const isApartmentOrBuilder = propertySubTypeSlug === "apartment" || propertySubTypeSlug === "independent-builder-floor";
+  const isVilla = propertySubTypeSlug === "independent-house-villa";
   const isOffice = propertySubTypeSlug === "office";
   const isRetail = propertySubTypeSlug === "retail";
   const isWarehouse = propertySubTypeSlug === "storage";
@@ -178,6 +180,11 @@ export const derivePropertyDetailsVisibility = ({
     showBusinessApproval;
 
   const carpetAreaRequired = showCarpet && (isOffice || isRetail);
+  const carpetUnitRequired = showCarpet;
+  const plotAreaRequired = isPlot;
+  const plotUnitRequired = showPlotArea && isPlot;
+  const bedroomsRequired = showBedrooms && isResidential;
+  const bathroomsRequired = showBathrooms && isResidential;
   const showParking = !isPlot;
   const showLiftCounts = isApartmentOrBuilder || isOffice || isRetail || isHospitality;
 
@@ -186,6 +193,7 @@ export const derivePropertyDetailsVisibility = ({
       showBuiltUp,
       showCarpet,
       carpetRequired: carpetAreaRequired,
+      carpetUnitRequired,
       showSuperBuiltUp,
       showPlotArea,
       showPlotLength: isPlot,
@@ -204,8 +212,8 @@ export const derivePropertyDetailsVisibility = ({
       floorNumberRequired,
       showTotalFloors: showFlooringMeta,
       totalFloorsRequired,
-      showFloorsAllowed: isPlot,
-      allowMultiFloorSelect: false,
+      showFloorsAllowed: isApartmentOrBuilder,
+      allowMultiFloorSelect: isApartmentOrBuilder,
       showStaircases: isOffice,
       showOpenSides,
       showPropertyFacing,

@@ -37,10 +37,17 @@ export function FieldRenderer({ field, form, values }: Props) {
             <div className="space-y-1">
               <label className="text-sm font-semibold text-slate-800">{field.label}</label>
               <Input
-                {...rhf}
                 type={field.type === "number" ? "number" : "text"}
                 placeholder={field.placeholder}
                 disabled={disabledField}
+                value={rhf.value === undefined || rhf.value === null ? "" : String(rhf.value)}
+                onChange={(e) => {
+                  const val = field.type === "number" ? (e.target.value === "" ? "" : Number(e.target.value)) : e.target.value;
+                  rhf.onChange(val);
+                }}
+                onBlur={rhf.onBlur}
+                name={rhf.name}
+                ref={rhf.ref}
               />
               {error && <p className="text-xs text-destructive">{error}</p>}
               {field.helpText && <p className="text-xs text-slate-500">{field.helpText}</p>}
@@ -56,7 +63,15 @@ export function FieldRenderer({ field, form, values }: Props) {
           render={({ field: rhf }) => (
             <div className="space-y-1">
               <label className="text-sm font-semibold text-slate-800">{field.label}</label>
-              <Textarea {...rhf} placeholder={field.placeholder} disabled={disabledField} />
+              <Textarea
+                placeholder={field.placeholder}
+                disabled={disabledField}
+                value={rhf.value === undefined || rhf.value === null ? "" : String(rhf.value)}
+                onChange={(e) => rhf.onChange(e.target.value)}
+                onBlur={rhf.onBlur}
+                name={rhf.name}
+                ref={rhf.ref}
+              />
               {error && <p className="text-xs text-destructive">{error}</p>}
               {field.helpText && <p className="text-xs text-slate-500">{field.helpText}</p>}
             </div>
@@ -71,7 +86,7 @@ export function FieldRenderer({ field, form, values }: Props) {
           render={({ field: rhf }) => (
             <div className="space-y-1">
               <label className="text-sm font-semibold text-slate-800">{field.label}</label>
-              <Select onValueChange={rhf.onChange} value={rhf.value ?? ""} disabled={disabledField}>
+              <Select onValueChange={rhf.onChange} value={`${rhf.value ?? ""}`} disabled={disabledField}>
                 <SelectTrigger>
                   <SelectValue placeholder={field.placeholder ?? "Select"} />
                 </SelectTrigger>
@@ -102,7 +117,7 @@ export function FieldRenderer({ field, form, values }: Props) {
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-800">{field.label}</label>
               {field.type === "radio" ? (
-                <RadioGroup className="grid gap-2 sm:grid-cols-3" value={rhf.value ?? ""} onValueChange={rhf.onChange}>
+                <RadioGroup className="grid gap-2 sm:grid-cols-3" value={`${rhf.value ?? ""}`} onValueChange={rhf.onChange}>
                   {options.map((opt) => (
                     <label key={`${field.id}-${String(opt.value)}`} className="flex items-center gap-2">
                       <RadioGroupItem value={String(opt.value)} />
@@ -222,6 +237,8 @@ export function FieldRenderer({ field, form, values }: Props) {
             const dec = () => rhf.onChange(Math.max(min, value - step));
             const inc = () => rhf.onChange(Math.min(max, value + step));
             const label = field.meta?.showZeroAsLabel && value === 0 ? field.meta.showZeroAsLabel : value;
+            const displayLabel =
+              typeof label === "string" || typeof label === "number" ? label : String(label ?? value);
 
             return (
               <div className="space-y-1">
@@ -230,7 +247,7 @@ export function FieldRenderer({ field, form, values }: Props) {
                   <Button type="button" variant="outline" size="sm" className="h-8 w-8 rounded-full" onClick={dec}>
                     -
                   </Button>
-                  <span className="min-w-[40px] text-center text-sm font-semibold text-slate-900">{label}</span>
+                  <span className="min-w-[40px] text-center text-sm font-semibold text-slate-900">{displayLabel}</span>
                   <Button type="button" variant="outline" size="sm" className="h-8 w-8 rounded-full" onClick={inc}>
                     +
                   </Button>

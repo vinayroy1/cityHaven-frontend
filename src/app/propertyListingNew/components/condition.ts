@@ -10,7 +10,7 @@ export function evaluateCondition(values: FormValues, condition?: Condition): bo
     return getValue(values, condition.field) !== condition.notEquals;
   }
   if ("field" in condition && "in" in condition) {
-    return condition.in.includes(getValue(values, condition.field));
+    return condition.in.includes(getValue(values, condition.field) as any);
   }
   if ("and" in condition) {
     return condition.and.every((c) => evaluateCondition(values, c));
