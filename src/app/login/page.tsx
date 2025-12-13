@@ -20,6 +20,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/homePage";
+  const [redirectingSession, setRedirectingSession] = useState(true);
 
   const [mobile, setMobile] = useState("");
   const [captcha, setCaptcha] = useState("");
@@ -44,6 +45,16 @@ export default function LoginPage() {
     // Generate CAPTCHA on client after hydration to avoid SSR mismatch
     setCaptcha(makeCode());
   }, []);
+
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
+    if (token) {
+      setRedirectingSession(true);
+      router.replace(redirectTo);
+    } else {
+      setRedirectingSession(false);
+    }
+  }, [redirectTo, router]);
 
   const validMobile = useMemo(() => /^\d{10}$/.test(mobile.replace(/\D/g, "")), [mobile]);
 
@@ -129,6 +140,10 @@ export default function LoginPage() {
     } catch (err: any) {
       setProfileMessage(err?.message || "Unable to save profile right now.");
     }
+  }
+
+  if (redirectingSession) {
+    return null;
   }
 
   return (
