@@ -40,4 +40,7 @@ export const API_ENDPOINTS = {
   notifications: {
     list: `${BASE}/notifications`,
   },
+  contact: {
+    submit: `${BASE}/contact`,
+  },
 };
