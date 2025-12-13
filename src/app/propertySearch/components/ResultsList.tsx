@@ -2,7 +2,8 @@
 
 import React, { useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ResultCard } from "./ResultCard";
 import { usePropertySearchInfinite } from "@/features/propertyListing/useQueries";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
@@ -44,16 +45,31 @@ export function ResultsList() {
 
   const showNoResults = !isFetching && !items.length && !isError;
 
-  return (
-    <div className="flex-1 space-y-4">
-      {isFetching && !items.length && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-            <Loader2 className="h-4 w-4 animate-spin text-sky-500" />
-            Loading properties...
+  const renderSkeletonCards = (count = 3) => (
+    <div className="space-y-3">
+      {Array.from({ length: count }).map((_, idx) => (
+        <div key={idx} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-44" />
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+            <Skeleton className="h-20 w-28 rounded-xl" />
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {Array.from({ length: 3 }).map((_, pillIdx) => (
+              <Skeleton key={pillIdx} className="h-6 w-20 rounded-full" />
+            ))}
           </div>
         </div>
-      )}
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="flex-1 space-y-4">
+      {isFetching && !items.length && renderSkeletonCards(4)}
 
       {showNoResults && (
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -91,9 +107,9 @@ export function ResultsList() {
       <div ref={sentinelRef} className="h-1 w-full" />
 
       {isFetchingNextPage && (
-        <div className="flex items-center justify-center gap-2 text-xs text-slate-600">
-          <Loader2 className="h-4 w-4 animate-spin text-sky-500" />
-          Loading more...
+        <div className="space-y-2">
+          <Skeleton className="h-3 w-24 rounded-full" />
+          {renderSkeletonCards(2)}
         </div>
       )}
       {isError && (

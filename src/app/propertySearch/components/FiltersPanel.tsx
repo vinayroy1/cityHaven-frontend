@@ -55,32 +55,7 @@ export function FiltersPanel({ asDrawer }: { asDrawer?: boolean }) {
           </div>
         </FilterBlock>
 
-        <FilterBlock title="Investment Type" defaultOpen>
-          <div className="space-y-2 text-sm text-slate-700">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" className="accent-sky-600" defaultChecked /> Assured Returns
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" className="accent-sky-600" /> Rental Yield
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" className="accent-sky-600" /> Lease Guarantee
-            </label>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" className="accent-sky-600" /> ROI
-            </label>
-          </div>
-        </FilterBlock>
-
-        <FilterBlock title="Localities" action="Clear">
-          <div className="space-y-1 text-sm text-slate-700">
-            {filterOptions.localities.map((item) => (
-              <label key={item} className="flex items-center gap-2">
-                <input type="checkbox" className="accent-sky-600" /> {item}
-              </label>
-            ))}
-          </div>
-        </FilterBlock>
+        {/* Investment Type and Localities filters intentionally removed */}
       </div>
     </aside>
   );

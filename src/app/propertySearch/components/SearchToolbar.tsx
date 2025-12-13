@@ -1,15 +1,43 @@
 import React from "react";
-import { Search, MapPin, SlidersHorizontal } from "lucide-react";
-import { AppliedFilters } from "./AppliedFilters";
-import { appliedFilters } from "../data";
+import { Search, SlidersHorizontal } from "lucide-react";
 
-export function SearchToolbar({ onOpenFilters, onOpenMap }: { onOpenFilters?: () => void; onOpenMap?: () => void }) {
+export function SearchToolbar({
+  onOpenFilters,
+  onSearchSubmit,
+  initialQuery = "",
+}: {
+  onOpenFilters?: () => void;
+  onSearchSubmit?: (query: string) => void;
+  initialQuery?: string;
+}) {
+  const [query, setQuery] = React.useState(initialQuery);
+
+  React.useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearchSubmit?.(query.trim());
+  };
+
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="flex flex-1 items-center rounded-full border border-slate-200 px-3 py-2 shadow-sm min-w-[220px]">
+      <form className="flex flex-wrap items-center gap-3" onSubmit={handleSubmit}>
+        <div className="flex flex-1 items-center gap-2 rounded-full border border-slate-200 px-3 py-2 shadow-sm min-w-[220px]">
           <Search className="h-4 w-4 text-slate-500" />
-          <input className="w-full bg-transparent px-2 text-sm outline-none" placeholder='Search by locality, project, builder...' />
+          <input
+            className="w-full bg-transparent px-1 text-sm outline-none"
+            placeholder='Search by locality, project, builder...'
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="inline-flex items-center justify-center gap-1 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:-translate-y-0.5"
+          >
+            <Search className="h-3 w-3" /> Search
+          </button>
         </div>
         <button
           className="flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 lg:hidden"
@@ -18,17 +46,7 @@ export function SearchToolbar({ onOpenFilters, onOpenMap }: { onOpenFilters?: ()
         >
           <SlidersHorizontal className="h-4 w-4 text-slate-500" /> Filters
         </button>
-        <button
-          className="flex items-center justify-center gap-2 rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5"
-          type="button"
-          onClick={onOpenMap}
-        >
-          <MapPin className="h-4 w-4" /> Map
-        </button>
-      </div>
-      <div className="mt-3">
-        <AppliedFilters filters={appliedFilters} />
-      </div>
+      </form>
     </div>
   );
 }

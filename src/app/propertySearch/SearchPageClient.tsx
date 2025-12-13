@@ -8,14 +8,40 @@ import { FiltersPanel } from "./components/FiltersPanel";
 import { ResultsList } from "./components/ResultsList";
 import { AppliedFilters } from "./components/AppliedFilters";
 import { appliedFilters } from "./data";
-import { requestLocationPermissionOnce } from "@/lib/permissions";
-import { fetchReverseGeocode } from "@/lib/googlePlaces";
+
+const ResultsSkeleton = () => (
+  <div className="flex-1 space-y-3">
+    <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+      <div className="h-10 w-full animate-pulse rounded-md bg-slate-100" />
+      <div className="mt-3 flex flex-wrap gap-2">
+        {Array.from({ length: 4 }).map((_, idx) => (
+          <div key={idx} className="h-8 w-24 animate-pulse rounded-full bg-slate-100" />
+        ))}
+      </div>
+    </div>
+    {Array.from({ length: 5 }).map((_, idx) => (
+      <div key={idx} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="space-y-2">
+            <div className="h-5 w-44 animate-pulse rounded bg-slate-100" />
+            <div className="h-4 w-32 animate-pulse rounded bg-slate-100" />
+            <div className="h-3 w-24 animate-pulse rounded bg-slate-100" />
+          </div>
+          <div className="h-20 w-28 animate-pulse rounded-xl bg-slate-100" />
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {Array.from({ length: 3 }).map((_, pillIdx) => (
+            <div key={pillIdx} className="h-6 w-20 animate-pulse rounded-full bg-slate-100" />
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+);
 
 export function SearchPageClient() {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [showMap, setShowMap] = useState(false);
-  const [locating, setLocating] = useState(false);
-  const [locationError, setLocationError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -25,6 +51,7 @@ export function SearchPageClient() {
   }, [searchParams]);
 
   const updateSearchParams = (next: Record<string, string | number | null | undefined>) => {
+    setIsLoading(true);
     const params = new URLSearchParams();
     Object.entries(currentParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== "") params.set(key, value);
@@ -37,87 +64,35 @@ export function SearchPageClient() {
       }
     });
     router.push(`/propertySearch?${params.toString()}`);
+    setTimeout(() => setIsLoading(false), 600);
   };
 
-  const handleUseLocation = async () => {
-    setLocationError(null);
-    setLocating(true);
-    const { position, error } = await requestLocationPermissionOnce({ storageKey: "propertySearchLocationPermission" });
-    if (!position || error) {
-      setLocating(false);
-      if (error) setLocationError(error);
-      return;
-    }
-    const details = await fetchReverseGeocode(position.coords.latitude, position.coords.longitude);
-    setLocating(false);
-    if (!details) {
-      setLocationError("Could not fetch your location. Try again.");
-      return;
-    }
-    const locality = details.locality || details.subLocality || "";
-    const subLocality = details.subLocality || details.locality || "";
-    const city = details.city || "";
-    updateSearchParams({
-      q: locality || city,
-      cityName: city,
-      locality: locality,
-      subLocality,
-      lat: details.location.lat ?? undefined,
-      lng: details.location.lng ?? undefined,
-    });
-    setShowMap(false);
+  const handleSearchSubmit = (query: string) => {
+    updateSearchParams({ q: query || null });
   };
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <HeaderNav />
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 sm:px-6">
-        <nav className="text-xs text-slate-500">Home › Commercial Property in T.N.H.B.Phase 1 Vellore for Sale</nav>
-        <h1 className="text-xl font-semibold text-slate-900">Commercial Property in T.N.H.B.Phase 1 Vellore for Sale</h1>
-        <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm lg:hidden">
+        <nav className="text-xs text-slate-500">Home › Commercial Property</nav>
+        <h1 className="text-xl font-semibold text-slate-900">Commercial Property</h1>
+        <SearchToolbar
+          onOpenFilters={() => setShowMobileFilters(true)}
+          onSearchSubmit={handleSearchSubmit}
+          initialQuery={(currentParams.q as string) || ""}
+        />
+        <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
           <AppliedFilters filters={appliedFilters} />
         </div>
-        <SearchToolbar onOpenFilters={() => setShowMobileFilters(true)} onOpenMap={() => setShowMap(true)} />
 
         <div className="flex flex-col gap-4 lg:flex-row">
           <div className="hidden lg:block">
             <FiltersPanel />
           </div>
-          <ResultsList />
+          {isLoading ? <ResultsSkeleton /> : <ResultsList />}
         </div>
 
-        {showMap && (
-          <div className="fixed inset-0 z-40 flex items-end justify-center px-3">
-            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowMap(false)} />
-            <div className="relative w-full max-w-5xl overflow-hidden rounded-t-3xl border border-slate-200 bg-white shadow-2xl">
-              <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-                <p className="text-sm font-semibold text-slate-900">Map view</p>
-                <button
-                  type="button"
-                  className="text-xs font-semibold text-sky-600 hover:text-indigo-600"
-                  onClick={() => setShowMap(false)}
-                >
-                  Close
-                </button>
-              </div>
-              <div className="h-[70vh] w-full bg-gradient-to-br from-sky-100 via-white to-emerald-50">
-                <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center">
-                  <p className="text-sm font-semibold text-slate-800">Use your current location to search nearby properties</p>
-                  <p className="text-xs text-slate-600">We’ll fetch your city/locality and apply it to the search filters.</p>
-                  <button
-                    type="button"
-                    onClick={handleUseLocation}
-                    disabled={locating}
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 disabled:opacity-60"
-                  >
-                    {locating ? "Locating..." : "Use my location"}
-                  </button>
-                  {locationError && <p className="text-xs text-rose-600">{locationError}</p>}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
       {showMobileFilters && (
         <div className="fixed inset-0 z-50 flex items-end justify-center px-3">
