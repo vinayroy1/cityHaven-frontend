@@ -28,13 +28,13 @@ export function ResultCard({ title, subtitle, price, area, age, owner, images = 
   }, [safeImages.length]);
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-100/80 bg-gradient-to-r from-white to-slate-50/80 shadow-xl shadow-slate-200/70 transition hover:-translate-y-1.5 hover:shadow-rose-100 md:flex-row">
+    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-100/80 bg-gradient-to-r from-white to-slate-50/80 shadow-xl shadow-slate-200/70 transition hover:-translate-y-1.5 hover:shadow-rose-100">
       <div className="absolute inset-0 pointer-events-none opacity-70" aria-hidden>
         <div className="h-full w-full bg-[radial-gradient(circle_at_10%_20%,rgba(244,63,94,0.06),transparent_28%),radial-gradient(circle_at_90%_15%,rgba(56,189,248,0.08),transparent_32%),radial-gradient(circle_at_50%_90%,rgba(16,185,129,0.08),transparent_30%)]" />
       </div>
-      <div className="relative w-full md:w-64 md:min-h-[240px]">
+      <div className="relative w-full">
         <div className="flex h-full overflow-hidden rounded-2xl p-3">
-          <div className="relative h-[200px] w-full overflow-hidden rounded-2xl bg-slate-100 md:h-full">
+          <div className="relative h-[200px] w-full overflow-hidden rounded-2xl bg-slate-100">
             <img
               src={displayedImage}
               alt={title || "property"}

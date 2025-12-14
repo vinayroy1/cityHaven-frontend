@@ -45,8 +45,8 @@ export function ResultsList() {
 
   const showNoResults = !isFetching && !items.length && !isError;
 
-  const renderSkeletonCards = (count = 3) => (
-    <div className="space-y-3">
+  const renderSkeletonCards = (count = 4) => (
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: count }).map((_, idx) => (
         <div key={idx} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -82,7 +82,7 @@ export function ResultsList() {
       )}
 
       {!!items.length && (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {items.map((item: PropertySearchItem) => (
             <ResultCard
               key={item.id}

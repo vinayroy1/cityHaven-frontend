@@ -14,6 +14,8 @@ type HeroSearchProps = {
   variant?: "default" | "embedded";
   eyebrowText?: string | null;
   className?: string;
+  trailingActionDesktop?: React.ReactNode;
+  trailingActionMobile?: React.ReactNode;
 };
 
 const TABS: { key: ListingType; label: string }[] = [
@@ -30,6 +32,8 @@ export function HeroSearch({
   variant = "default",
   eyebrowText = "Find your perfect home, PG, land or workspace in your city",
   className = "",
+  trailingActionDesktop,
+  trailingActionMobile,
 }: HeroSearchProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = React.useState<ListingType>(initialListingType);
@@ -121,29 +125,37 @@ export function HeroSearch({
               <label className="relative flex w-full items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 shadow-[0_15px_35px_-25px_rgba(15,23,42,0.4)] transition hover:-translate-y-0.5 hover:border-rose-200">
                 <Building2 className="h-4 w-4 text-rose-500" />
                 <input
-                  className="w-full bg-transparent pr-10 md:pr-0 text-sm font-semibold text-slate-900 outline-none placeholder:font-normal placeholder:text-slate-400"
+                  className="w-full bg-transparent pr-20 md:pr-0 text-sm font-semibold text-slate-900 outline-none placeholder:font-normal placeholder:text-slate-400"
                   placeholder="Search locality, project, builder or landmark"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   aria-label="Search locality, project, builder or landmark"
                 />
-                <button
-                  type="submit"
-                  className="absolute right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow md:hidden"
-                  aria-label="Search"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
+                <div className="absolute right-2 flex items-center gap-2 md:hidden">
+                  <button
+                    type="submit"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow"
+                    aria-label="Search"
+                  >
+                    <Search className="h-4 w-4" />
+                  </button>
+                  {trailingActionMobile}
+                </div>
               </label>
 
-              <button
-                type="submit"
-                className="hidden items-center justify-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_45px_-20px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-22px_rgba(15,23,42,0.6)] md:inline-flex"
-              >
-                <Search className="h-4 w-4" />
-                <span className="hidden md:inline">Search</span>
-              </button>
+              <div className="hidden items-center gap-2 md:flex">
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_45px_-20px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-22px_rgba(15,23,42,0.6)]"
+                >
+                  <Search className="h-4 w-4" />
+                  <span className="hidden md:inline">Search</span>
+                </button>
+                {trailingActionDesktop}
+              </div>
             </div>
+
+            {trailingActionMobile && <div className="hidden md:block">{trailingActionMobile}</div>}
           </form>
         </div>
       </div>

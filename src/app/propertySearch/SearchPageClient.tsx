@@ -7,7 +7,6 @@ import { HeaderNav } from "../homePage/components/HeaderNav";
 import { HeroSearch, type ListingType } from "../homePage/components/HeroSearch";
 import { FiltersPanel } from "./components/FiltersPanel";
 import { ResultsList } from "./components/ResultsList";
-import { AppliedFilters } from "./components/AppliedFilters";
 import { listingFilterConfigs } from "./data";
 
 const ResultsSkeleton = () => (
@@ -92,6 +91,7 @@ export function SearchPageClient() {
     PG: "PG / Co-living",
   };
   const filterConfig = listingFilterConfigs[activeListingType] ?? listingFilterConfigs.SELL;
+  const selectedFiltersCount = filterConfig.appliedFilters.length;
 
   return (
     <main className="relative min-h-screen bg-gradient-to-b from-rose-50/80 via-white to-emerald-50/60 text-slate-900">
@@ -112,33 +112,47 @@ export function SearchPageClient() {
                 Home <span className="text-rose-500">›</span> {breadcrumbLabels[activeListingType]}
               </nav>
               <h1 className="text-xl font-semibold text-slate-900">{listingTitles[activeListingType]}</h1>
-              <HeroSearch
-                variant="embedded"
-                eyebrowText="Switch between Buy, Rent, or PG and update your search instantly"
-                initialLocation={(currentParams.q as string) || ""}
-                initialListingType={activeListingType}
-                onListingTypeChange={setActiveListingType}
-                onSearch={({ location, listingType }) => handleHeroSearch({ location, listingType })}
-                className="mt-1"
-              />
-              <div className="flex lg:hidden">
-                <button
-                  type="button"
-                  onClick={() => setShowMobileFilters(true)}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5"
-                >
-                  <SlidersHorizontal className="h-4 w-4 text-slate-500" />
-                  Filters
-                </button>
+              <div className="relative flex flex-col gap-2 md:gap-3">
+                <HeroSearch
+                  variant="embedded"
+                  eyebrowText="Switch between Buy, Rent, or PG and update your search instantly"
+                  initialLocation={(currentParams.q as string) || ""}
+                  initialListingType={activeListingType}
+                  onListingTypeChange={setActiveListingType}
+                  onSearch={({ location, listingType }) => handleHeroSearch({ location, listingType })}
+                  className="mt-1"
+                  trailingActionMobile={
+                    <button
+                      type="button"
+                      onClick={() => setShowMobileFilters(true)}
+                      className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white shadow-md shadow-slate-300 transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                    >
+                      <SlidersHorizontal className="h-4 w-4" />
+                      {selectedFiltersCount > 0 && (
+                        <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-400 px-1 text-[11px] font-semibold text-slate-900 shadow-sm">
+                          {selectedFiltersCount}
+                        </span>
+                      )}
+                    </button>
+                  }
+                  trailingActionDesktop={
+                    <button
+                      type="button"
+                      onClick={() => setShowMobileFilters(true)}
+                      className="relative inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5"
+                    >
+                      <SlidersHorizontal className="h-4 w-4 text-slate-500" />
+                      Filters
+                      {selectedFiltersCount > 0 && (
+                        <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-400 px-1 text-[11px] font-semibold text-slate-900 shadow-sm">
+                          {selectedFiltersCount}
+                        </span>
+                      )}
+                    </button>
+                  }
+                />
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm lg:hidden">
-                <AppliedFilters filters={filterConfig.appliedFilters} />
-              </div>
-
               <div className="flex flex-col gap-4 lg:flex-row">
-                <div className="hidden lg:block">
-                  <FiltersPanel listingType={activeListingType} />
-                </div>
                 {isLoading ? <ResultsSkeleton /> : <ResultsList />}
               </div>
             </div>
@@ -146,9 +160,9 @@ export function SearchPageClient() {
         </div>
       </div>
       {showMobileFilters && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center px-3">
+        <div className="fixed inset-0 z-50 flex items-end justify-center px-3 md:items-center">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowMobileFilters(false)} />
-          <div className="relative w-full max-w-xl rounded-t-3xl border border-slate-200 bg-white p-4 shadow-2xl">
+          <div className="relative w-full max-w-xl rounded-t-3xl border border-slate-200 bg-white p-4 shadow-2xl md:max-w-4xl md:rounded-3xl">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-sm font-semibold text-slate-900">Filters</p>
               <button
