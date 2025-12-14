@@ -155,7 +155,6 @@ export function HeroSearch({
               </div>
             </div>
 
-            {trailingActionMobile && <div className="hidden md:block">{trailingActionMobile}</div>}
           </form>
         </div>
       </div>
