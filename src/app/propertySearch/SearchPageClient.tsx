@@ -2,12 +2,13 @@
 
 import React, { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { SlidersHorizontal } from "lucide-react";
 import { HeaderNav } from "../homePage/components/HeaderNav";
-import { SearchToolbar } from "./components/SearchToolbar";
+import { HeroSearch, type ListingType } from "../homePage/components/HeroSearch";
 import { FiltersPanel } from "./components/FiltersPanel";
 import { ResultsList } from "./components/ResultsList";
 import { AppliedFilters } from "./components/AppliedFilters";
-import { appliedFilters } from "./data";
+import { listingFilterConfigs } from "./data";
 
 const ResultsSkeleton = () => (
   <div className="flex-1 space-y-3">
@@ -67,32 +68,82 @@ export function SearchPageClient() {
     setTimeout(() => setIsLoading(false), 600);
   };
 
-  const handleSearchSubmit = (query: string) => {
-    updateSearchParams({ q: query || null });
+  const selectedListingType = ((["SELL", "RENT", "PG"] as ListingType[]).includes(currentParams.listingType as ListingType)
+    ? (currentParams.listingType as ListingType)
+    : "SELL") as ListingType;
+  const [activeListingType, setActiveListingType] = useState<ListingType>(selectedListingType);
+
+  React.useEffect(() => {
+    setActiveListingType(selectedListingType);
+  }, [selectedListingType]);
+
+  const handleHeroSearch = (params: { location: string; listingType: ListingType }) => {
+    updateSearchParams({ q: params.location || null, listingType: params.listingType });
   };
 
+  const listingTitles: Record<ListingType, string> = {
+    SELL: "Browse properties for sale",
+    RENT: "Search homes and offices for rent",
+    PG: "Discover PG / co-living stays",
+  };
+  const breadcrumbLabels: Record<ListingType, string> = {
+    SELL: "Buy property",
+    RENT: "Rentals",
+    PG: "PG / Co-living",
+  };
+  const filterConfig = listingFilterConfigs[activeListingType] ?? listingFilterConfigs.SELL;
+
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
+    <main className="relative min-h-screen bg-gradient-to-b from-rose-50/80 via-white to-emerald-50/60 text-slate-900">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-rose-200/70 via-rose-50/40 to-emerald-100/20"
+        aria-hidden
+      />
       <HeaderNav />
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 sm:px-6">
-        <nav className="text-xs text-slate-500">Home › Commercial Property</nav>
-        <h1 className="text-xl font-semibold text-slate-900">Commercial Property</h1>
-        <SearchToolbar
-          onOpenFilters={() => setShowMobileFilters(true)}
-          onSearchSubmit={handleSearchSubmit}
-          initialQuery={(currentParams.q as string) || ""}
-        />
-        <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-          <AppliedFilters filters={appliedFilters} />
-        </div>
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+        <div className="relative rounded-[32px] bg-gradient-to-r from-rose-200/80 via-amber-100/70 to-emerald-200/80 p-[1.5px] shadow-[0_28px_80px_-40px_rgba(244,63,94,0.35)]">
+          <div className="relative flex flex-col gap-4 overflow-hidden rounded-[30px] border border-white/70 bg-white px-4 py-5 shadow-[0_26px_65px_-46px_rgba(15,23,42,0.45)] sm:px-6 sm:py-6">
+            <div
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(244,63,94,0.08),transparent_32%),radial-gradient(circle_at_85%_12%,rgba(16,185,129,0.08),transparent_30%)]"
+              aria-hidden
+            />
+            <div className="relative flex flex-col gap-4">
+              <nav className="inline-flex items-center gap-2 self-start rounded-full border border-rose-100 bg-white/80 px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm">
+                Home <span className="text-rose-500">›</span> {breadcrumbLabels[activeListingType]}
+              </nav>
+              <h1 className="text-xl font-semibold text-slate-900">{listingTitles[activeListingType]}</h1>
+              <HeroSearch
+                variant="embedded"
+                eyebrowText="Switch between Buy, Rent, or PG and update your search instantly"
+                initialLocation={(currentParams.q as string) || ""}
+                initialListingType={activeListingType}
+                onListingTypeChange={setActiveListingType}
+                onSearch={({ location, listingType }) => handleHeroSearch({ location, listingType })}
+                className="mt-1"
+              />
+              <div className="flex lg:hidden">
+                <button
+                  type="button"
+                  onClick={() => setShowMobileFilters(true)}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5"
+                >
+                  <SlidersHorizontal className="h-4 w-4 text-slate-500" />
+                  Filters
+                </button>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm lg:hidden">
+                <AppliedFilters filters={filterConfig.appliedFilters} />
+              </div>
 
-        <div className="flex flex-col gap-4 lg:flex-row">
-          <div className="hidden lg:block">
-            <FiltersPanel />
+              <div className="flex flex-col gap-4 lg:flex-row">
+                <div className="hidden lg:block">
+                  <FiltersPanel listingType={activeListingType} />
+                </div>
+                {isLoading ? <ResultsSkeleton /> : <ResultsList />}
+              </div>
+            </div>
           </div>
-          {isLoading ? <ResultsSkeleton /> : <ResultsList />}
         </div>
-
       </div>
       {showMobileFilters && (
         <div className="fixed inset-0 z-50 flex items-end justify-center px-3">
@@ -109,7 +160,7 @@ export function SearchPageClient() {
               </button>
             </div>
             <div className="max-h-[70vh] overflow-y-auto">
-              <FiltersPanel asDrawer />
+              <FiltersPanel asDrawer listingType={activeListingType} />
             </div>
             <div className="mt-3 flex gap-2">
               <button

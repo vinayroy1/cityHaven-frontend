@@ -98,7 +98,7 @@ export function ResultsList() {
               }
               age={item.createdAt ? new Date(item.createdAt).toDateString() : "New"}
               owner={item.listingType || "Listing"}
-              image={item.media?.[0]?.url ?? "/placeholder.png"}
+              images={item.media?.map((media) => media.url).filter(Boolean) ?? []}
             />
           ))}
         </div>
