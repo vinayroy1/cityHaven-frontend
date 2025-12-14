@@ -1,20 +1,32 @@
 import React from "react";
 import { X } from "lucide-react";
 
-type Props = { filters: string[]; onClearAll?: () => void };
+type Props = { filters: string[]; onClearAll?: () => void; onRemove?: (filter: string) => void };
 
-export function AppliedFilters({ filters, onClearAll }: Props) {
+export function AppliedFilters({ filters, onClearAll, onRemove }: Props) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {filters.map((filter) => (
-        <span key={filter} className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+        <span
+          key={filter}
+          className="group flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-800 shadow-[0_10px_28px_-20px_rgba(15,23,42,0.35)]"
+        >
           {filter}
-          <button aria-label={`Remove ${filter}`} className="text-slate-500 hover:text-slate-700">
+          <button
+            type="button"
+            aria-label={`Remove ${filter}`}
+            className="text-slate-400 transition hover:text-slate-700"
+            onClick={() => onRemove?.(filter)}
+          >
             <X className="h-3 w-3" />
           </button>
         </span>
       ))}
-      <button className="text-xs font-semibold text-sky-600 hover:text-indigo-600" onClick={onClearAll}>
+      <button
+        type="button"
+        className="text-xs font-semibold text-slate-700 underline-offset-4 hover:text-slate-900"
+        onClick={onClearAll}
+      >
         Clear all filters
       </button>
     </div>

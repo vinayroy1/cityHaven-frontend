@@ -1,10 +1,29 @@
 import React from "react";
-import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import {
+  BedDouble,
+  Building2,
+  Home,
+  Hotel,
+  House,
+  TreePine,
+  Warehouse,
+  ChevronDown,
+  SlidersHorizontal,
+  UserRound,
+  Users,
+} from "lucide-react";
 import { listingFilterConfigs, propertySubTypes, propertyTypes, type ListingFilterConfig } from "../data";
 import type { ListingType } from "../../homePage/components/HeroSearch";
 import { AppliedFilters } from "./AppliedFilters";
 
-export function FiltersPanel({ asDrawer, listingType = "SELL" }: { asDrawer?: boolean; listingType?: ListingType }) {
+type FiltersPanelProps = {
+  asDrawer?: boolean;
+  listingType?: ListingType;
+  appliedFilters?: string[];
+  onFiltersChange?: (filters: string[]) => void;
+};
+
+export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, onFiltersChange }: FiltersPanelProps) {
   const config: ListingFilterConfig = listingFilterConfigs[listingType] ?? listingFilterConfigs.SELL;
   const allowedCategories = React.useMemo(
     () => propertyTypes.filter((type) => config.propertyCategorySlugs.includes(type.slug)),
@@ -14,61 +33,102 @@ export function FiltersPanel({ asDrawer, listingType = "SELL" }: { asDrawer?: bo
   const [selectedCategory, setSelectedCategory] = React.useState(defaultCategory);
   const budgetOptions =
     config.sections.find((section) => section.key === "budget" && section.type === "dual-select")?.options ?? [];
-  const budgetMaxIndex = Math.max(budgetOptions.length - 1, 1);
-  const [budgetRange, setBudgetRange] = React.useState({ min: 0, max: budgetMaxIndex });
+  const [budgetValues, setBudgetValues] = React.useState({ min: "", max: "" });
+
+  const categoryIcons: Record<string, React.ReactNode> = {
+    residential: <Home className="h-4 w-4" />,
+    commercial: <Building2 className="h-4 w-4" />,
+    pg: <UserRound className="h-4 w-4" />,
+  };
+
+  const propertyIcons: Record<string, React.ReactNode> = {
+    apartment: <Building2 className="h-4 w-4" />,
+    "independent-house-villa": <House className="h-4 w-4" />,
+    "independent-builder-floor": <Home className="h-4 w-4" />,
+    "1rk-studio-apartment": <BedDouble className="h-4 w-4" />,
+    "serviced-apartment": <Hotel className="h-4 w-4" />,
+    "plot-land-res": <TreePine className="h-4 w-4" />,
+    farmhouse: <TreePine className="h-4 w-4" />,
+    office: <Building2 className="h-4 w-4" />,
+    retail: <Building2 className="h-4 w-4" />,
+    "plot-land-com": <TreePine className="h-4 w-4" />,
+    storage: <Warehouse className="h-4 w-4" />,
+    industry: <Warehouse className="h-4 w-4" />,
+    hospitality: <Hotel className="h-4 w-4" />,
+    "pg-private-room": <BedDouble className="h-4 w-4" />,
+    "pg-shared-room": <Users className="h-4 w-4" />,
+    "pg-bed": <BedDouble className="h-4 w-4" />,
+  };
 
   React.useEffect(() => {
     setSelectedCategory(defaultCategory);
   }, [defaultCategory]);
 
   React.useEffect(() => {
-    setBudgetRange({ min: 0, max: Math.max(budgetOptions.length - 1, 1) });
+    setBudgetValues({ min: "", max: "" });
   }, [budgetOptions.join("|")]);
+
+  const activeFilters = appliedFilters ?? config.appliedFilters;
+  const toggleFilter = (label: string, checked: boolean) => {
+    if (!onFiltersChange) return;
+    const normalized = label.trim();
+    const withoutLabel = activeFilters.filter((item) => item !== normalized);
+    const nextFilters = checked ? [...withoutLabel, normalized] : withoutLabel;
+    onFiltersChange(Array.from(new Set(nextFilters)));
+  };
 
   return (
     <aside
-      className={`relative w-full overflow-hidden rounded-3xl border border-slate-100/70 bg-white/80 p-4 shadow-xl shadow-rose-100/60 backdrop-blur ${
-        asDrawer ? "" : "lg:w-80"
+      className={`relative w-full overflow-hidden rounded-[28px] border border-slate-200 bg-white/95 p-5 shadow-[0_26px_70px_-38px_rgba(15,23,42,0.35)] ${
+        asDrawer ? "" : "lg:w-[380px]"
       }`}
     >
-      <div
-        className="pointer-events-none absolute inset-0 opacity-90"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 12% 18%, rgba(244,63,94,0.06), transparent 32%), radial-gradient(circle at 85% 12%, rgba(56,189,248,0.09), transparent 30%), radial-gradient(circle at 50% 90%, rgba(16,185,129,0.06), transparent 32%)",
-        }}
-        aria-hidden
-      />
-      <div className="relative flex items-center justify-between rounded-2xl bg-white/90 px-3 py-2 shadow-sm shadow-rose-100/50">
-        <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-rose-500/80 to-amber-400/80 text-white shadow">
-            <SlidersHorizontal className="h-4 w-4" />
+      <div className="relative flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-800 shadow-sm">
+            <SlidersHorizontal className="h-5 w-5" />
           </span>
-          Filters
+          <div className="space-y-0.5">
+            <p className="text-base font-semibold text-slate-900">Filters</p>
+            <p className="text-xs text-slate-500">Tune results to match your taste</p>
+          </div>
         </div>
-        <button className="text-xs font-semibold text-rose-600 transition hover:text-rose-700">Clear All</button>
+        <button
+          type="button"
+          className="text-sm font-semibold text-slate-700 underline-offset-4 transition hover:text-slate-900"
+          onClick={() => onFiltersChange?.([])}
+        >
+          Clear all
+        </button>
       </div>
 
-      <div className="relative mt-3">
-        <AppliedFilters filters={config.appliedFilters} />
+      <div className="relative mt-4">
+        <AppliedFilters
+          filters={activeFilters}
+          onClearAll={() => onFiltersChange?.([])}
+          onRemove={(filter) => toggleFilter(filter, false)}
+        />
       </div>
 
-      <div className="relative mt-4 space-y-3">
+      <div className="relative mt-5 space-y-4">
         <FilterBlock title="Property category">
-          <div className="flex flex-wrap gap-2 text-sm text-slate-700">
+          <div className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
             {allowedCategories.map((category) => (
               <label
                 key={category.slug}
-                className={`flex items-center gap-2 rounded-full border px-3 py-2 transition ${
+                className={`flex items-center gap-2 rounded-full border px-4 py-2 transition ${
                   selectedCategory === category.slug
-                    ? "border-rose-200 bg-rose-50 text-rose-700 shadow-sm"
-                    : "border-slate-200 bg-white/80 text-slate-700 hover:border-rose-100"
+                    ? "border-slate-900 bg-slate-900/5 text-slate-900 shadow-md shadow-slate-900/10"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                 }`}
               >
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-700">
+                  {categoryIcons[category.slug] ?? <Home className="h-4 w-4" />}
+                </span>
                 <input
                   type="radio"
                   name={`property-category-${listingType}`}
-                  className="accent-rose-500"
+                  className="accent-slate-900"
                   checked={selectedCategory === category.slug}
                   onChange={() => setSelectedCategory(category.slug)}
                 />
@@ -79,15 +139,23 @@ export function FiltersPanel({ asDrawer, listingType = "SELL" }: { asDrawer?: bo
         </FilterBlock>
 
         <FilterBlock title="Property type">
-          <div key={selectedCategory} className="flex flex-wrap gap-2 text-sm text-slate-700">
+          <div key={selectedCategory} className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
             {propertySubTypes
               .filter((item) => item.propertyTypeSlug === selectedCategory)
               .map((item) => (
                 <label
                   key={item.slug}
-                  className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-2 shadow-sm transition hover:-translate-y-0.5 hover:border-rose-100"
+                  className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 shadow-[0_12px_32px_-26px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 hover:border-slate-300"
                 >
-                  <input type="checkbox" className="accent-emerald-500" />
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-700">
+                    {propertyIcons[item.slug] ?? <Building2 className="h-4 w-4" />}
+                  </span>
+                  <input
+                    type="checkbox"
+                    className="accent-slate-900"
+                    checked={activeFilters.includes(item.name)}
+                    onChange={(e) => toggleFilter(item.name, e.target.checked)}
+                  />
                   {item.name}
                 </label>
               ))}
@@ -97,72 +165,66 @@ export function FiltersPanel({ asDrawer, listingType = "SELL" }: { asDrawer?: bo
         {config.sections.map((section) => (
           <FilterBlock key={section.key} title={section.title}>
             {section.type === "dual-select" && section.key === "budget" ? (
-              <div className="space-y-3 rounded-2xl bg-white/90 px-2 py-2">
-                <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-slate-700">
-                  <span>Min</span>
-                  <span>Max</span>
+              <div className="space-y-4 rounded-2xl border border-slate-200 bg-white px-3 py-4 shadow-[0_14px_36px_-28px_rgba(15,23,42,0.35)]">
+                <div className="h-2 rounded-full bg-slate-100">
+                  <div className="h-full w-full rounded-full bg-gradient-to-r from-rose-400 via-amber-400 to-emerald-400" />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <select
-                    className="w-full rounded-lg border border-rose-100 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none shadow-sm shadow-rose-50"
-                    value={budgetRange.min}
-                    onChange={(e) => {
-                      const nextMin = Number(e.target.value);
-                      setBudgetRange((prev) => ({
-                        min: nextMin,
-                        max: Math.max(prev.max, nextMin),
-                      }));
-                    }}
-                  >
-                    {budgetOptions.map((item, idx) => (
-                      <option key={item} value={idx}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    className="w-full rounded-lg border border-emerald-100 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none shadow-sm shadow-emerald-50"
-                    value={budgetRange.max}
-                    onChange={(e) => {
-                      const nextMax = Number(e.target.value);
-                      setBudgetRange((prev) => ({
-                        min: Math.min(prev.min, nextMax),
-                        max: nextMax,
-                      }));
-                    }}
-                  >
-                    {budgetOptions.map((item, idx) => (
-                      <option key={item} value={idx}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                    Minimum
+                    <div className="flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-3 py-2 shadow-sm transition focus-within:border-slate-400">
+                      <span className="text-sm text-slate-500">₹</span>
+                      <input
+                        type="text"
+                        className="w-full bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:font-normal placeholder:text-slate-400"
+                        placeholder={budgetOptions[0] ?? "No min"}
+                        value={budgetValues.min}
+                        onChange={(e) => setBudgetValues((prev) => ({ ...prev, min: e.target.value }))}
+                      />
+                    </div>
+                  </label>
+                  <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                    Maximum
+                    <div className="flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-3 py-2 shadow-sm transition focus-within:border-slate-400">
+                      <span className="text-sm text-slate-500">₹</span>
+                      <input
+                        type="text"
+                        className="w-full bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:font-normal placeholder:text-slate-400"
+                        placeholder={budgetOptions[budgetOptions.length - 1] ?? "No max"}
+                        value={budgetValues.max}
+                        onChange={(e) => setBudgetValues((prev) => ({ ...prev, max: e.target.value }))}
+                      />
+                    </div>
+                  </label>
                 </div>
-                <p className="text-xs text-slate-500">
-                  Choose your preferred price band.
-                </p>
+                <p className="text-xs text-slate-500">Set a comfortable range for your budget.</p>
               </div>
             ) : section.type === "dual-select" ? (
               <div className="flex gap-2">
-                <select className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none">
+                <select className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-800 outline-none shadow-sm focus:border-slate-400">
                   {section.options.map((item) => (
                     <option key={item}>{item}</option>
                   ))}
                 </select>
-                <select className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none">
+                <select className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-800 outline-none shadow-sm focus:border-slate-400">
                   {section.options.map((item) => (
                     <option key={item}>{item}</option>
                   ))}
                 </select>
               </div>
             ) : (
-              <div className="space-y-2 text-sm text-slate-700">
+              <div className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
                 {section.options.map((item) => (
                   <label
                     key={item.label}
-                    className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white/90 px-3 py-2 shadow-sm transition hover:border-rose-100"
+                    className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-[0_12px_32px_-26px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 hover:border-slate-300"
                   >
-                    <input type="checkbox" className="accent-rose-500" defaultChecked={item.defaultChecked} />
+                    <input
+                      type="checkbox"
+                      className="accent-slate-900"
+                      checked={activeFilters.includes(item.label)}
+                      onChange={(e) => toggleFilter(item.label, e.target.checked)}
+                    />
                     {item.label}
                   </label>
                 ))}
@@ -187,15 +249,18 @@ const FilterBlock = ({
   defaultOpen?: boolean;
 }) => {
   return (
-    <details open={defaultOpen} className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 shadow-sm shadow-rose-50">
-      <summary className="flex cursor-pointer items-center justify-between px-3 py-2 text-sm font-semibold text-slate-900 transition hover:bg-rose-50/70">
+    <details
+      open={defaultOpen}
+      className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_40px_-30px_rgba(15,23,42,0.35)]"
+    >
+      <summary className="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50">
         {title}
-        <div className="flex items-center gap-2 text-xs text-rose-600">
-          {action && <button className="hover:text-indigo-600">{action}</button>}
+        <div className="flex items-center gap-2 text-xs text-slate-600">
+          {action && <button className="font-semibold hover:text-slate-900">{action}</button>}
           <ChevronDown className="h-4 w-4 text-slate-500 transition group-open:rotate-180" />
         </div>
       </summary>
-      <div className="border-t border-slate-200 bg-white/90 px-3 py-3">{children}</div>
+      <div className="border-t border-slate-200 bg-white px-4 py-4">{children}</div>
     </details>
   );
 };
