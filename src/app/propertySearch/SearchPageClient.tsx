@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SlidersHorizontal } from "lucide-react";
 import { HeaderNav } from "../homePage/components/HeaderNav";
@@ -56,6 +56,7 @@ export function SearchPageClient() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const hasOpenedFiltersOnce = useRef(false);
 
   const currentParams = useMemo(() => {
     const entries = Array.from(searchParams.entries());
@@ -87,6 +88,17 @@ export function SearchPageClient() {
   React.useEffect(() => {
     setActiveListingType(selectedListingType);
   }, [selectedListingType]);
+
+  React.useEffect(() => {
+    if (searchParams.get("openFilters") === "1" && !hasOpenedFiltersOnce.current) {
+      hasOpenedFiltersOnce.current = true;
+      setShowMobileFilters(true);
+
+      const params = new URLSearchParams(Array.from(searchParams.entries()));
+      params.delete("openFilters");
+      router.replace(`/propertySearch?${params.toString()}`, { scroll: false });
+    }
+  }, [router, searchParams]);
 
   const handleHeroSearch = (params: { location: string; listingType: ListingType }) => {
     updateSearchParams({ q: params.location || null, listingType: params.listingType });

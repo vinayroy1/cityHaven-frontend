@@ -26,7 +26,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <HeaderNav />
-      <HeroSearch />
+      <HeroSearch enableFiltersButton />
       <QuickActions />
       <ListingSection title="Popular homes in Gurgaon District" listings={popularListings} cta="View all" />
       <ListingSection title="Available this weekend" listings={weekendGetaways} cta="See more" />

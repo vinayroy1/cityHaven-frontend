@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Building2, User, Search, Home } from "lucide-react";
+import { Building2, User, Search, Home, SlidersHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export type ListingType = "SELL" | "RENT" | "PG";
@@ -16,6 +16,8 @@ type HeroSearchProps = {
   className?: string;
   trailingActionDesktop?: React.ReactNode;
   trailingActionMobile?: React.ReactNode;
+  enableFiltersButton?: boolean;
+  onFiltersClick?: (params: { location: string; listingType: ListingType }) => void;
 };
 
 const TABS: { key: ListingType; label: string }[] = [
@@ -34,6 +36,8 @@ export function HeroSearch({
   className = "",
   trailingActionDesktop,
   trailingActionMobile,
+  enableFiltersButton = false,
+  onFiltersClick,
 }: HeroSearchProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = React.useState<ListingType>(initialListingType);
@@ -61,6 +65,19 @@ export function HeroSearch({
     router.push(`/propertySearch?${params.toString()}`);
   };
 
+  const handleOpenFilters = () => {
+    const normalizedLocation = location.trim();
+    if (onFiltersClick) {
+      onFiltersClick({ location: normalizedLocation, listingType: activeTab });
+      return;
+    }
+    const params = new URLSearchParams();
+    if (normalizedLocation) params.set("q", normalizedLocation);
+    params.set("listingType", activeTab);
+    params.set("openFilters", "1");
+    router.push(`/propertySearch?${params.toString()}`);
+  };
+
   const handleTabChange = (tab: ListingType) => {
     setActiveTab(tab);
     onListingTypeChange?.(tab);
@@ -74,6 +91,30 @@ export function HeroSearch({
     ? "relative overflow-hidden rounded-2xl border border-white/70 bg-white px-3 py-4 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.45)] sm:px-4"
     : "relative overflow-hidden rounded-[28px] border border-white/60 bg-white/90 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.6)] backdrop-blur";
   const innerPadding = isEmbedded ? "px-2 py-3 sm:px-3" : "px-4 py-5 md:px-6";
+
+  const defaultMobileFiltersButton =
+    enableFiltersButton && !trailingActionMobile ? (
+      <button
+        type="button"
+        onClick={handleOpenFilters}
+        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-sm transition hover:-translate-y-0.5"
+        aria-label="Open filters"
+      >
+        <SlidersHorizontal className="h-4 w-4" />
+      </button>
+    ) : null;
+
+  const defaultDesktopFiltersButton =
+    enableFiltersButton && !trailingActionDesktop ? (
+      <button
+        type="button"
+        onClick={handleOpenFilters}
+        className="relative inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5"
+      >
+        <SlidersHorizontal className="h-4 w-4 text-slate-500" />
+        Filters
+      </button>
+    ) : null;
 
   return (
     <section className={sectionClasses}>
@@ -139,7 +180,7 @@ export function HeroSearch({
                   >
                     <Search className="h-4 w-4" />
                   </button>
-                  {trailingActionMobile}
+                  {trailingActionMobile ?? defaultMobileFiltersButton}
                 </div>
               </label>
 
@@ -151,7 +192,7 @@ export function HeroSearch({
                   <Search className="h-4 w-4" />
                   <span className="hidden md:inline">Search</span>
                 </button>
-                {trailingActionDesktop}
+                {trailingActionDesktop ?? defaultDesktopFiltersButton}
               </div>
             </div>
 
