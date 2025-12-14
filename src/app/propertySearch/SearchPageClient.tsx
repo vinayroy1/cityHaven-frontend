@@ -119,55 +119,53 @@ export function SearchPageClient() {
     <main className="relative min-h-screen bg-gradient-to-b from-rose-50/50 via-white to-emerald-50/40 text-slate-900">
       <HeaderNav />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-10">
-        <div className="relative flex flex-col gap-4 overflow-hidden rounded-[28px] border border-slate-200/70 bg-white px-4 py-5 shadow-[0_26px_65px_-46px_rgba(15,23,42,0.45)] sm:px-6 sm:py-6 lg:px-8">
-          <div className="relative flex flex-col gap-4">
-            <nav className="inline-flex items-center gap-2 self-start rounded-full border border-rose-100 bg-white px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm">
-              Home <span className="text-rose-500">›</span> {breadcrumbLabels[activeListingType]}
-            </nav>
-            <h1 className="text-xl font-semibold text-slate-900">{listingTitles[activeListingType]}</h1>
-            <div className="relative flex flex-col gap-2 md:gap-3">
-              <HeroSearch
-                variant="embedded"
-                eyebrowText="Switch between Buy, Rent, or PG and update your search instantly"
-                initialLocation={(currentParams.q as string) || ""}
-                initialListingType={activeListingType}
-                onListingTypeChange={setActiveListingType}
-                onSearch={({ location, listingType }) => handleHeroSearch({ location, listingType })}
-                className="mt-1"
-                trailingActionMobile={
-                  <button
-                    type="button"
-                    onClick={() => setShowMobileFilters(true)}
-                    className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white shadow-md shadow-slate-300 transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-slate-300"
-                  >
-                    <SlidersHorizontal className="h-4 w-4" />
-                    {selectedFiltersCount > 0 && (
-                      <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-400 px-1 text-[11px] font-semibold text-slate-900 shadow-sm">
-                        {selectedFiltersCount}
-                      </span>
-                    )}
-                  </button>
-                }
-                trailingActionDesktop={
-                  <button
-                    type="button"
-                    onClick={() => setShowMobileFilters(true)}
-                    className="relative inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5"
-                  >
-                    <SlidersHorizontal className="h-4 w-4 text-slate-500" />
-                    Filters
-                    {selectedFiltersCount > 0 && (
-                      <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-400 px-1 text-[11px] font-semibold text-slate-900 shadow-sm">
-                        {selectedFiltersCount}
-                      </span>
-                    )}
-                  </button>
-                }
-              />
-            </div>
-            <div className="flex flex-col gap-4 lg:flex-row">
-              {isLoading ? <ResultsSkeleton /> : <ResultsList />}
-            </div>
+        <div className="relative flex flex-col gap-4">
+          <nav className="inline-flex items-center gap-2 self-start rounded-full border border-rose-100 bg-white px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm">
+            Home <span className="text-rose-500">›</span> {breadcrumbLabels[activeListingType]}
+          </nav>
+          <h1 className="text-xl font-semibold text-slate-900">{listingTitles[activeListingType]}</h1>
+          <div className="relative flex flex-col gap-2 md:gap-3">
+            <HeroSearch
+              variant="embedded"
+              eyebrowText="Switch between Buy, Rent, or PG and update your search instantly"
+              initialLocation={(currentParams.q as string) || ""}
+              initialListingType={activeListingType}
+              onListingTypeChange={setActiveListingType}
+              onSearch={({ location, listingType }) => handleHeroSearch({ location, listingType })}
+              className="mt-1"
+              trailingActionMobile={
+                <button
+                  type="button"
+                  onClick={() => setShowMobileFilters(true)}
+                  className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white shadow-md shadow-slate-300 transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                  {selectedFiltersCount > 0 && (
+                    <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-400 px-1 text-[11px] font-semibold text-slate-900 shadow-sm">
+                      {selectedFiltersCount}
+                    </span>
+                  )}
+                </button>
+              }
+              trailingActionDesktop={
+                <button
+                  type="button"
+                  onClick={() => setShowMobileFilters(true)}
+                  className="relative inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5"
+                >
+                  <SlidersHorizontal className="h-4 w-4 text-slate-500" />
+                  Filters
+                  {selectedFiltersCount > 0 && (
+                    <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-400 px-1 text-[11px] font-semibold text-slate-900 shadow-sm">
+                      {selectedFiltersCount}
+                    </span>
+                  )}
+                </button>
+              }
+            />
+          </div>
+          <div className="flex flex-col gap-4 lg:flex-row">
+            {isLoading ? <ResultsSkeleton /> : <ResultsList />}
           </div>
         </div>
       </div>
