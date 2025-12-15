@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StateMessage } from "@/components/ui/state-message";
 import { ResultCard } from "./ResultCard";
 import { usePropertySearchInfinite } from "@/features/propertyListing/useQueries";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
@@ -117,12 +118,12 @@ export function ResultsList() {
         </div>
       )}
       {isError && (
-        <div className="text-xs text-rose-600">
-          Something went wrong.{" "}
-          <button type="button" onClick={() => refetch()} className="font-semibold underline">
-            Retry
-          </button>
-        </div>
+        <StateMessage
+          tone="error"
+          title="We hit a snag loading properties"
+          description="This section couldn’t refresh. Your filters are still applied—please retry."
+          action={{ label: "Retry", onClick: () => refetch() }}
+        />
       )}
     </div>
   );
