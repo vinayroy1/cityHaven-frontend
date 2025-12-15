@@ -1,12 +1,14 @@
 import type { ListingType } from "../homePage/components/HeroSearch";
 
-type CheckboxOption = { label: string; defaultChecked?: boolean };
+export type CheckboxOption = { label: string; slug: string; apiKey: string; defaultChecked?: boolean };
+export type SelectedFilter = { slug: string; label: string; apiKey: string };
+export type FilterMeta = { label: string; apiKey: string };
 type FilterSection =
   | { key: string; title: string; type: "dual-select"; options: string[] }
   | { key: string; title: string; type: "checkbox"; options: CheckboxOption[] };
 
 export type ListingFilterConfig = {
-  appliedFilters: string[];
+  defaultFilters?: string[];
   sections: FilterSection[];
   propertyCategorySlugs: string[];
 };
@@ -19,33 +21,33 @@ export const propertyTypes = [
 
 export const propertySubTypes = [
   // Residential
-  { name: "Apartment", slug: "apartment", propertyTypeSlug: "residential" },
-  { name: "Independent House / Villa", slug: "independent-house-villa", propertyTypeSlug: "residential" },
-  { name: "Independent / Builder Floor", slug: "independent-builder-floor", propertyTypeSlug: "residential" },
-  { name: "1 RK / Studio Apartment", slug: "1rk-studio-apartment", propertyTypeSlug: "residential" },
-  { name: "Serviced Apartment", slug: "serviced-apartment", propertyTypeSlug: "residential" },
-  { name: "Plot / Land", slug: "plot-land-res", propertyTypeSlug: "residential" },
-  { name: "Farmhouse", slug: "farmhouse", propertyTypeSlug: "residential" },
-  { name: "Other", slug: "residential-other", propertyTypeSlug: "residential" },
+  { name: "Apartment", slug: "apartment", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Independent House / Villa", slug: "independent-house-villa", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Independent / Builder Floor", slug: "independent-builder-floor", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "1 RK / Studio Apartment", slug: "1rk-studio-apartment", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Serviced Apartment", slug: "serviced-apartment", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Plot / Land", slug: "plot-land-res", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Farmhouse", slug: "farmhouse", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Other", slug: "residential-other", propertyTypeSlug: "residential", apiKey: "propertySubType" },
 
   // Commercial
-  { name: "Office", slug: "office", propertyTypeSlug: "commercial" },
-  { name: "Retail", slug: "retail", propertyTypeSlug: "commercial" },
-  { name: "Plot / Land", slug: "plot-land-com", propertyTypeSlug: "commercial" },
-  { name: "Storage", slug: "storage", propertyTypeSlug: "commercial" },
-  { name: "Industry", slug: "industry", propertyTypeSlug: "commercial" },
-  { name: "Hospitality", slug: "hospitality", propertyTypeSlug: "commercial" },
-  { name: "Other", slug: "commercial-other", propertyTypeSlug: "commercial" },
+  { name: "Office", slug: "office", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
+  { name: "Retail", slug: "retail", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
+  { name: "Plot / Land", slug: "plot-land-com", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
+  { name: "Storage", slug: "storage", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
+  { name: "Industry", slug: "industry", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
+  { name: "Hospitality", slug: "hospitality", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
+  { name: "Other", slug: "commercial-other", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
 
   // PG
-  { name: "Private Room", slug: "pg-private-room", propertyTypeSlug: "pg" },
-  { name: "Shared Room", slug: "pg-shared-room", propertyTypeSlug: "pg" },
-  { name: "Bed / Dormitory", slug: "pg-bed", propertyTypeSlug: "pg" },
+  { name: "Private Room", slug: "pg-private-room", propertyTypeSlug: "pg", apiKey: "propertySubType" },
+  { name: "Shared Room", slug: "pg-shared-room", propertyTypeSlug: "pg", apiKey: "propertySubType" },
+  { name: "Bed / Dormitory", slug: "pg-bed", propertyTypeSlug: "pg", apiKey: "propertySubType" },
 ];
 
 export const listingFilterConfigs: Record<ListingType, ListingFilterConfig> = {
   SELL: {
-    appliedFilters: ["Agricultural/Farm Land", "Industrial Lands/Plots", "Commercial Land/Inst. Land", "T.N.H.B.Phase-1"],
+    defaultFilters: [],
     propertyCategorySlugs: ["residential", "commercial"],
     sections: [
       { key: "budget", title: "Budget", type: "dual-select", options: ["No min", "₹40 Lac", "₹80 Lac", "₹1 Cr", "No max"] },
@@ -53,12 +55,16 @@ export const listingFilterConfigs: Record<ListingType, ListingFilterConfig> = {
         key: "postedBy",
         title: "Posted by",
         type: "checkbox",
-        options: [{ label: "Owner", defaultChecked: true }, { label: "Dealer" }, { label: "Builder" }],
+        options: [
+          { label: "Owner", slug: "posted-by-owner", defaultChecked: true },
+          { label: "Dealer", slug: "posted-by-dealer" },
+          { label: "Builder", slug: "posted-by-builder" },
+        ],
       },
     ],
   },
   RENT: {
-    appliedFilters: ["Near metro", "Furnished", "Parking available"],
+    defaultFilters: [],
     propertyCategorySlugs: ["residential", "commercial"],
     sections: [
       {
@@ -71,12 +77,16 @@ export const listingFilterConfigs: Record<ListingType, ListingFilterConfig> = {
         key: "amenities",
         title: "Preferences",
         type: "checkbox",
-        options: [{ label: "Furnished" }, { label: "With parking", defaultChecked: true }, { label: "Pet friendly" }],
+        options: [
+          { label: "Furnished", slug: "amenity-furnished" },
+          { label: "With parking", slug: "amenity-parking", defaultChecked: true },
+          { label: "Pet friendly", slug: "amenity-pet-friendly" },
+        ],
       },
     ],
   },
   PG: {
-    appliedFilters: ["Meals included", "Near college", "Female only"],
+    defaultFilters: [],
     propertyCategorySlugs: ["pg"],
     sections: [
       {
@@ -90,17 +100,21 @@ export const listingFilterConfigs: Record<ListingType, ListingFilterConfig> = {
         title: "Occupancy type",
         type: "checkbox",
         options: [
-          { label: "Single sharing", defaultChecked: true },
-          { label: "Double sharing", defaultChecked: true },
-          { label: "Triple sharing" },
-          { label: "Dorm / Co-living" },
+          { label: "Single sharing", slug: "occupancy-single", defaultChecked: true },
+          { label: "Double sharing", slug: "occupancy-double", defaultChecked: true },
+          { label: "Triple sharing", slug: "occupancy-triple" },
+          { label: "Dorm / Co-living", slug: "occupancy-dorm" },
         ],
       },
       {
         key: "amenities",
         title: "Amenities",
         type: "checkbox",
-        options: [{ label: "AC rooms" }, { label: "Wi-Fi", defaultChecked: true }, { label: "Attached washroom" }],
+        options: [
+          { label: "AC rooms", slug: "amenity-ac" },
+          { label: "Wi-Fi", slug: "amenity-wifi", defaultChecked: true },
+          { label: "Attached washroom", slug: "amenity-washroom" },
+        ],
       },
     ],
   },

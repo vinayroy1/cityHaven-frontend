@@ -9,6 +9,10 @@ export type PropertySearchParams = {
   sort?: string;
   cursor?: number | string | null;
   pageSize?: number | string;
+  propertySubType?: string | string[];
+  postedBy?: string | string[];
+  amenities?: string | string[];
+  occupancy?: string | string[];
 };
 
 export type PropertySearchMedia = {

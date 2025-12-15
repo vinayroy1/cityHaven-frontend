@@ -12,15 +12,15 @@ import {
   UserRound,
   Users,
 } from "lucide-react";
-import { listingFilterConfigs, propertySubTypes, propertyTypes, type ListingFilterConfig } from "../data";
+import { listingFilterConfigs, propertySubTypes, propertyTypes, type ListingFilterConfig, type SelectedFilter } from "../data";
 import type { ListingType } from "../../homePage/components/HeroSearch";
 import { AppliedFilters } from "./AppliedFilters";
 
 type FiltersPanelProps = {
   asDrawer?: boolean;
   listingType?: ListingType;
-  appliedFilters?: string[];
-  onFiltersChange?: (filters: string[]) => void;
+  appliedFilters?: SelectedFilter[];
+  onFiltersChange?: (filters: SelectedFilter[]) => void;
 };
 
 export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, onFiltersChange }: FiltersPanelProps) {
@@ -68,13 +68,14 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
     setBudgetValues({ min: "", max: "" });
   }, [budgetOptions.join("|")]);
 
-  const activeFilters = appliedFilters ?? config.appliedFilters;
-  const toggleFilter = (label: string, checked: boolean) => {
+  const activeFilters = appliedFilters ?? [];
+  const isActive = (slug: string) => activeFilters.some((f) => f.slug === slug);
+  const toggleFilter = (slug: string, label: string, apiKey: string, checked: boolean) => {
     if (!onFiltersChange) return;
-    const normalized = label.trim();
-    const withoutLabel = activeFilters.filter((item) => item !== normalized);
-    const nextFilters = checked ? [...withoutLabel, normalized] : withoutLabel;
-    onFiltersChange(Array.from(new Set(nextFilters)));
+    const normalized = slug.trim();
+    const withoutLabel = activeFilters.filter((item) => item.slug !== normalized);
+    const nextFilters = checked ? [...withoutLabel, { slug: normalized, label, apiKey }] : withoutLabel;
+    onFiltersChange(nextFilters);
   };
 
   return (
@@ -106,7 +107,7 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
         <AppliedFilters
           filters={activeFilters}
           onClearAll={() => onFiltersChange?.([])}
-          onRemove={(filter) => toggleFilter(filter, false)}
+          onRemove={(filter) => toggleFilter(filter.slug, filter.label, filter.apiKey, false)}
         />
       </div>
 
@@ -153,8 +154,8 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
                   <input
                     type="checkbox"
                     className="accent-slate-900"
-                    checked={activeFilters.includes(item.name)}
-                    onChange={(e) => toggleFilter(item.name, e.target.checked)}
+                    checked={isActive(item.slug)}
+                    onChange={(e) => toggleFilter(item.slug, item.name, item.apiKey, e.target.checked)}
                   />
                   {item.name}
                 </label>
@@ -216,19 +217,19 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
               <div className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
                 {section.options.map((item) => (
                   <label
-                    key={item.label}
+                    key={item.slug}
                     className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-[0_12px_32px_-26px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 hover:border-slate-300"
                   >
                     <input
                       type="checkbox"
                       className="accent-slate-900"
-                      checked={activeFilters.includes(item.label)}
-                      onChange={(e) => toggleFilter(item.label, e.target.checked)}
-                    />
-                    {item.label}
-                  </label>
-                ))}
-              </div>
+                    checked={isActive(item.slug)}
+                    onChange={(e) => toggleFilter(item.slug, item.label, item.apiKey, e.target.checked)}
+                  />
+                  {item.label}
+                </label>
+              ))}
+            </div>
             )}
           </FilterBlock>
         ))}

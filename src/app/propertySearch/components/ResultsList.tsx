@@ -21,6 +21,10 @@ export function ResultsList() {
       priceMin: searchParams.get("priceMin") || undefined,
       priceMax: searchParams.get("priceMax") || undefined,
       sort: searchParams.get("sort") || undefined,
+      propertySubType: searchParams.get("propertySubType") || undefined,
+      postedBy: searchParams.get("postedBy") || undefined,
+      amenities: searchParams.get("amenities") || undefined,
+      occupancy: searchParams.get("occupancy") || undefined,
       pageSize: 10,
     };
   }, [searchParams]);

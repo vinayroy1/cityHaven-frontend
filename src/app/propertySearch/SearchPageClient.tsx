@@ -7,7 +7,13 @@ import { HeaderNav } from "../homePage/components/HeaderNav";
 import { HeroSearch, type ListingType } from "../homePage/components/HeroSearch";
 import { FiltersPanel } from "./components/FiltersPanel";
 import { ResultsList } from "./components/ResultsList";
-import { listingFilterConfigs, type ListingFilterConfig } from "./data";
+import {
+  listingFilterConfigs,
+  propertySubTypes,
+  type ListingFilterConfig,
+  type SelectedFilter,
+  type FilterMeta,
+} from "./data";
 
 const ResultsSkeleton = () => (
   <div className="flex-1 space-y-3">
@@ -39,16 +45,44 @@ const ResultsSkeleton = () => (
   </div>
 );
 
-const getDefaultSelectedFilters = (config: ListingFilterConfig) => {
-  const defaults: string[] = [];
+const buildFilterMetaIndex = (config: ListingFilterConfig) => {
+  const index: Record<string, FilterMeta> = {};
+  propertySubTypes
+    .filter((item) => config.propertyCategorySlugs.includes(item.propertyTypeSlug))
+    .forEach((item) => {
+      index[item.slug] = { label: item.name, apiKey: item.apiKey };
+    });
   config.sections.forEach((section) => {
     if (section.type === "checkbox") {
       section.options.forEach((option) => {
-        if (option.defaultChecked) defaults.push(option.label);
+        index[option.slug] = { label: option.label, apiKey: option.apiKey };
       });
     }
   });
-  return defaults;
+  return index;
+};
+
+const getDefaultSelectedFilters = (config: ListingFilterConfig, metaIndex: Record<string, FilterMeta>) => {
+  const defaults: string[] = [...(config.defaultFilters ?? [])];
+  config.sections.forEach((section) => {
+    if (section.type === "checkbox") {
+      section.options.forEach((option) => {
+        if (option.defaultChecked) defaults.push(option.slug);
+      });
+    }
+  });
+  return Array.from(new Set(defaults))
+    .map((slug) => (metaIndex[slug] ? { slug, label: metaIndex[slug].label, apiKey: metaIndex[slug].apiKey } : null))
+    .filter(Boolean) as SelectedFilter[];
+};
+
+const buildApiFilterParams = (filters: SelectedFilter[]) => {
+  const grouped = filters.reduce<Record<string, string[]>>((acc, item) => {
+    if (!item.apiKey) return acc;
+    acc[item.apiKey] = acc[item.apiKey] ? [...acc[item.apiKey], item.slug] : [item.slug];
+    return acc;
+  }, {});
+  return Object.fromEntries(Object.entries(grouped).map(([key, values]) => [key, values.join(",")]));
 };
 
 export function SearchPageClient() {
@@ -101,7 +135,9 @@ export function SearchPageClient() {
   }, [router, searchParams]);
 
   const handleHeroSearch = (params: { location: string; listingType: ListingType }) => {
-    updateSearchParams({ q: params.location || null, listingType: params.listingType });
+    const filterParams = buildApiFilterParams(appliedFilters);
+    const cleanup = Object.fromEntries(filterCleanupKeys.map((key) => [key, filterParams[key] ?? null]));
+    updateSearchParams({ q: params.location || null, listingType: params.listingType, ...cleanup, ...filterParams });
   };
 
   const listingTitles: Record<ListingType, string> = {
@@ -115,20 +151,49 @@ export function SearchPageClient() {
     PG: "PG / Co-living",
   };
   const filterConfig = listingFilterConfigs[activeListingType] ?? listingFilterConfigs.SELL;
-  const defaultFilters = useMemo(() => getDefaultSelectedFilters(filterConfig), [filterConfig]);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>(defaultFilters);
-  const selectedFiltersCount = selectedFilters.length;
+  const filterMetaIndex = useMemo(() => buildFilterMetaIndex(filterConfig), [filterConfig]);
+  const filterApiKeys = useMemo(
+    () => Array.from(new Set(Object.values(filterMetaIndex).map((meta) => meta.apiKey))),
+    [filterMetaIndex],
+  );
+  const filterCleanupKeys = useMemo(() => Array.from(new Set(["filters", ...filterApiKeys])), [filterApiKeys]);
+  const defaultFilters = useMemo(() => getDefaultSelectedFilters(filterConfig, filterMetaIndex), [filterConfig, filterMetaIndex]);
+  const [appliedFilters, setAppliedFilters] = useState<SelectedFilter[]>(defaultFilters);
+  const [draftFilters, setDraftFilters] = useState<SelectedFilter[]>(defaultFilters);
+  const selectedFiltersCount = appliedFilters.length;
 
-  const handleFiltersChange = (next: string[]) => {
-    setSelectedFilters(Array.from(new Set(next)));
+  React.useEffect(() => {
+    if (showMobileFilters) {
+      setDraftFilters(appliedFilters);
+    }
+  }, [appliedFilters, showMobileFilters]);
+
+  const handleFiltersChange = (next: SelectedFilter[]) => {
+    const unique = Array.from(new Map(next.map((f) => [f.slug, f])).values());
+    setDraftFilters(unique);
   };
 
   React.useEffect(() => {
-    setSelectedFilters(defaultFilters);
-  }, [defaultFilters, filterConfig, activeListingType]);
+    const filtersFromQuery: SelectedFilter[] = [];
+    Object.entries(filterMetaIndex).forEach(([slug, meta]) => {
+      const value = currentParams[meta.apiKey];
+      if (!value) return;
+      const values = String(value).split(",").filter(Boolean);
+      if (values.includes(slug)) filtersFromQuery.push({ slug, label: meta.label, apiKey: meta.apiKey });
+    });
+
+    if (filtersFromQuery.length) {
+      setAppliedFilters(filtersFromQuery);
+      setDraftFilters(filtersFromQuery);
+      return;
+    }
+
+    setAppliedFilters(defaultFilters);
+    setDraftFilters(defaultFilters);
+  }, [currentParams, defaultFilters, filterMetaIndex]);
 
   return (
-    <main className="relative min-h-screen bg-gradient-to-b from-rose-50/50 via-white to-emerald-50/40 text-slate-900">
+    <main className="relative min-h-screen bg-white text-slate-900">
       <HeaderNav />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-10">
         <div className="relative flex flex-col gap-4">
@@ -148,7 +213,10 @@ export function SearchPageClient() {
               trailingActionMobile={
                 <button
                   type="button"
-                  onClick={() => setShowMobileFilters(true)}
+                  onClick={() => {
+                    setDraftFilters(appliedFilters);
+                    setShowMobileFilters(true);
+                  }}
                   className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white shadow-md shadow-slate-300 transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-slate-300"
                 >
                   <SlidersHorizontal className="h-4 w-4" />
@@ -162,7 +230,10 @@ export function SearchPageClient() {
               trailingActionDesktop={
                 <button
                   type="button"
-                  onClick={() => setShowMobileFilters(true)}
+                  onClick={() => {
+                    setDraftFilters(appliedFilters);
+                    setShowMobileFilters(true);
+                  }}
                   className="relative inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5"
                 >
                   <SlidersHorizontal className="h-4 w-4 text-slate-500" />
@@ -199,7 +270,7 @@ export function SearchPageClient() {
               <FiltersPanel
                 asDrawer
                 listingType={activeListingType}
-                appliedFilters={selectedFilters}
+                appliedFilters={draftFilters}
                 onFiltersChange={handleFiltersChange}
               />
             </div>
@@ -207,14 +278,23 @@ export function SearchPageClient() {
               <button
                 type="button"
                 className="w-full rounded-full border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm"
-                onClick={() => setShowMobileFilters(false)}
+                onClick={() => {
+                  setDraftFilters(appliedFilters);
+                  setShowMobileFilters(false);
+                }}
               >
                 Cancel
               </button>
               <button
                 type="button"
                 className="w-full rounded-full bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm"
-                onClick={() => setShowMobileFilters(false)}
+                onClick={() => {
+                  const filterParams = buildApiFilterParams(draftFilters);
+                  const cleanup = Object.fromEntries(filterCleanupKeys.map((key) => [key, filterParams[key] ?? null]));
+                  setAppliedFilters(draftFilters);
+                  updateSearchParams({ ...cleanup, ...filterParams });
+                  setShowMobileFilters(false);
+                }}
               >
                 Apply
               </button>
