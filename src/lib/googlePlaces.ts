@@ -1,9 +1,18 @@
 type Prediction = { description: string; place_id: string };
 type AutocompleteResponse = { predictions: Prediction[]; error?: string };
 
-export const fetchAutocompleteSuggestions = async (input: string): Promise<Prediction[]> => {
+export const createPlacesSessionToken = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  return `sess_${Date.now()}_${Math.random().toString(16).slice(2, 10)}`;
+};
+
+export const fetchAutocompleteSuggestions = async (input: string, sessionToken?: string): Promise<Prediction[]> => {
   if (!input || input.trim().length < 3) return [];
-  const res = await fetch(`/api/google/autocomplete?input=${encodeURIComponent(input)}`, { cache: "no-store" });
+  const params = new URLSearchParams();
+  params.set("input", input);
+  if (sessionToken) params.set("sessionToken", sessionToken);
+
+  const res = await fetch(`/api/google/autocomplete?${params.toString()}`, { cache: "no-store" });
   if (!res.ok) return [];
   const data: AutocompleteResponse = await res.json();
   return data.predictions ?? [];
@@ -20,9 +29,13 @@ export type PlaceDetails = {
   nearby: (string | undefined)[];
 };
 
-export const fetchPlaceDetails = async (placeId: string): Promise<PlaceDetails | null> => {
+export const fetchPlaceDetails = async (placeId: string, sessionToken?: string): Promise<PlaceDetails | null> => {
   if (!placeId) return null;
-  const res = await fetch(`/api/google/details?placeId=${encodeURIComponent(placeId)}`, { cache: "no-store" });
+  const params = new URLSearchParams();
+  params.set("placeId", placeId);
+  if (sessionToken) params.set("sessionToken", sessionToken);
+
+  const res = await fetch(`/api/google/details?${params.toString()}`, { cache: "no-store" });
   if (!res.ok) return null;
   const data = (await res.json()) as PlaceDetails & { error?: string };
   if ("error" in data) return null;

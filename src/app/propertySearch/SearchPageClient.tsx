@@ -114,7 +114,9 @@ export function SearchPageClient() {
     setTimeout(() => setIsLoading(false), 600);
   };
 
-  const selectedListingType = ((["SELL", "RENT", "PG"] as ListingType[]).includes(currentParams.listingType as ListingType)
+  const selectedListingType = ((["SELL", "RENT", "PG", "COMMERCIAL", "PLOT"] as ListingType[]).includes(
+    currentParams.listingType as ListingType,
+  )
     ? (currentParams.listingType as ListingType)
     : "SELL") as ListingType;
   const [activeListingType, setActiveListingType] = useState<ListingType>(selectedListingType);
@@ -144,11 +146,15 @@ export function SearchPageClient() {
     SELL: "Browse properties for sale",
     RENT: "Search homes and offices for rent",
     PG: "Discover PG / co-living stays",
+    COMMERCIAL: "Explore commercial spaces",
+    PLOT: "Find plots and land",
   };
   const breadcrumbLabels: Record<ListingType, string> = {
     SELL: "Buy property",
     RENT: "Rentals",
     PG: "PG / Co-living",
+    COMMERCIAL: "Commercial",
+    PLOT: "Plots / Land",
   };
   const filterConfig = listingFilterConfigs[activeListingType] ?? listingFilterConfigs.SELL;
   const filterMetaIndex = useMemo(() => buildFilterMetaIndex(filterConfig), [filterConfig]);
@@ -204,7 +210,7 @@ export function SearchPageClient() {
           <div className="relative flex flex-col gap-2 md:gap-3">
             <HeroSearch
               variant="embedded"
-              eyebrowText="Switch between Buy, Rent, or PG and update your search instantly"
+              eyebrowText="Switch between Buy, Rent, Commercial, Plot, or PG and update your search instantly"
               initialLocation={(currentParams.q as string) || ""}
               initialListingType={activeListingType}
               onListingTypeChange={setActiveListingType}

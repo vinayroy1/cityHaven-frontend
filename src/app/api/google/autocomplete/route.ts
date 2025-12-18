@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const input = searchParams.get("input");
+  const sessionToken = searchParams.get("sessionToken");
 
   if (!input || input.trim().length < 3) {
     return NextResponse.json({ predictions: [] });
@@ -17,6 +18,7 @@ export async function GET(req: NextRequest) {
   url.searchParams.set("input", input);
   url.searchParams.set("types", "geocode");
   url.searchParams.set("components", "country:in");
+  if (sessionToken) url.searchParams.set("sessiontoken", sessionToken);
   url.searchParams.set("key", key);
 
   const res = await fetch(url.toString(), { cache: "no-store" });

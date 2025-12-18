@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { Building2, User, Search, Home, SlidersHorizontal } from "lucide-react";
+import { Building2, User, Search, Home, SlidersHorizontal, TreePine } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { fetchAutocompleteSuggestions, fetchPlaceDetails, type PlaceDetails } from "@/lib/googlePlaces";
+import { createPlacesSessionToken, fetchAutocompleteSuggestions, fetchPlaceDetails, type PlaceDetails } from "@/lib/googlePlaces";
 
-export type ListingType = "SELL" | "RENT" | "PG";
+export type ListingType = "SELL" | "RENT" | "PG" | "COMMERCIAL" | "PLOT";
 
 type HeroSearchProps = {
   initialLocation?: string;
@@ -27,8 +27,18 @@ type LocationTag = { label: string; placeId: string; city?: string; locality?: s
 const TABS: { key: ListingType; label: string }[] = [
   { key: "SELL", label: "Buy" },
   { key: "RENT", label: "Rent" },
+  { key: "COMMERCIAL", label: "Commercial" },
+  { key: "PLOT", label: "Plot" },
   { key: "PG", label: "PG / Co-living" },
 ];
+
+const TAB_ICONS: Record<ListingType, React.ReactNode> = {
+  SELL: <Home className="h-4 w-4 text-red-500" />,
+  RENT: <Home className="h-4 w-4 text-amber-500" />,
+  COMMERCIAL: <Building2 className="h-4 w-4 text-sky-600" />,
+  PLOT: <TreePine className="h-4 w-4 text-emerald-600" />,
+  PG: <User className="h-4 w-4 text-indigo-500" />,
+};
 
 export function HeroSearch({
   initialLocation = "",
@@ -52,6 +62,7 @@ export function HeroSearch({
   const [selectionError, setSelectionError] = React.useState<string | null>(null);
   const [selectedTags, setSelectedTags] = React.useState<LocationTag[]>(initialLocation ? [{ label: initialLocation, placeId: "" }] : []);
   const [showMoreTags, setShowMoreTags] = React.useState(false);
+  const [sessionToken, setSessionToken] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setLocation(initialLocation);
@@ -74,10 +85,16 @@ export function HeroSearch({
       return;
     }
 
+    if (!sessionToken) {
+      setSessionToken(createPlacesSessionToken());
+    }
+
     let cancelled = false;
     setLoadingSuggestions(true);
     const timer = setTimeout(async () => {
-      const results = await fetchAutocompleteSuggestions(trimmed);
+      const token = sessionToken || createPlacesSessionToken();
+      if (!sessionToken) setSessionToken(token);
+      const results = await fetchAutocompleteSuggestions(trimmed, token);
       if (!cancelled) {
         setSuggestions(results);
         setLoadingSuggestions(false);
@@ -88,7 +105,7 @@ export function HeroSearch({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [location]);
+  }, [location, sessionToken]);
 
   const buildQueryFromTags = () => selectedTags.map((tag) => tag.label).join(", ");
 
@@ -109,7 +126,7 @@ export function HeroSearch({
     setSuggestions([]);
     setLocation(suggestion.description);
 
-    const details: PlaceDetails | null = await fetchPlaceDetails(suggestion.place_id);
+    const details: PlaceDetails | null = await fetchPlaceDetails(suggestion.place_id, sessionToken ?? undefined);
     const locality = details?.locality || details?.subLocality || "";
     const city = details?.city || "";
     const label = locality || city || suggestion.description;
@@ -122,6 +139,7 @@ export function HeroSearch({
       return [...prev, { label: finalLabel, placeId: suggestion.place_id, city: city || undefined, locality: locality || undefined }];
     });
     setLocation("");
+    setSessionToken(null); // end session after place details call
   };
 
   const handleRemoveTag = (placeId: string, label: string) => {
@@ -222,7 +240,7 @@ export function HeroSearch({
           <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
             <div className="flex items-center gap-2 overflow-x-auto pb-1 text-sm font-semibold text-slate-700">
               {TABS.map((tab) => {
-                const icon = tab.key === "PG" ? <User className="h-4 w-4 text-sky-500" /> : <Home className="h-4 w-4 text-red-500" />;
+                const icon = TAB_ICONS[tab.key];
                 return (
                   <button
                     key={tab.key}

@@ -46,6 +46,7 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const placeId = searchParams.get("placeId");
+  const sessionToken = searchParams.get("sessionToken");
 
   if (!placeId) {
     return NextResponse.json({ error: "placeId required" }, { status: 400 });
@@ -54,6 +55,7 @@ export async function GET(req: NextRequest) {
   const url = new URL("https://maps.googleapis.com/maps/api/place/details/json");
   url.searchParams.set("place_id", placeId);
   url.searchParams.set("fields", "place_id,formatted_address,address_component,geometry,plus_code");
+  if (sessionToken) url.searchParams.set("sessiontoken", sessionToken);
   url.searchParams.set("key", key);
 
   const res = await fetch(url.toString(), { cache: "no-store" });

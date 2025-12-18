@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { cityOptions, projectOptions } from "@/features/propertyListing";
-import { fetchAutocompleteSuggestions, fetchPlaceDetails, fetchReverseGeocode, type PlaceDetails } from "@/lib/googlePlaces";
+import { createPlacesSessionToken, fetchAutocompleteSuggestions, fetchPlaceDetails, fetchReverseGeocode, type PlaceDetails } from "@/lib/googlePlaces";
 import { requestLocationPermissionOnce } from "@/lib/permissions";
 import { FieldShell, NumberInput } from "./StepCommon";
 import type { StepProps } from "./StepCommon";
@@ -27,16 +27,18 @@ export function LocationProjectStep({ form }: StepProps) {
   const [error, setError] = useState<string | null>(null);
   const [lastFetchedQuery, setLastFetchedQuery] = useState("");
   const [locating, setLocating] = useState(false);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
 
   const handlePlaceDetails = async (placeId: string, description: string) => {
     setError(null);
-    const details = await fetchPlaceDetails(placeId);
+    const details = await fetchPlaceDetails(placeId, sessionToken ?? undefined);
     if (!details) {
       setError("Could not fetch place details. Please try again.");
       return;
     }
 
     applyPlaceDetails(details, description);
+    setSessionToken(null);
   };
 
   const applyPlaceDetails = (details: PlaceDetails, description: string) => {
@@ -61,6 +63,7 @@ export function LocationProjectStep({ form }: StepProps) {
     form.trigger(["location.cityName", "location.locality"]);
     setAddressQuery(selectedAddress);
     setLastFetchedQuery(selectedAddress); // prevent immediate re-fetch and re-opening suggestions after selection
+    setSessionToken(null); // end session after place selection
   };
 
   const handleUseCurrentLocation = () => {
@@ -110,7 +113,9 @@ export function LocationProjectStep({ form }: StepProps) {
       const smallIncrement = lastFetchedQuery && trimmed.startsWith(lastFetchedQuery) && trimmed.length - lastFetchedQuery.length === 1;
       if (trimmed === lastFetchedQuery || smallIncrement) return;
       setLoadingSuggestions(true);
-      const results = await fetchAutocompleteSuggestions(trimmed);
+      const token = sessionToken || createPlacesSessionToken();
+      if (!sessionToken) setSessionToken(token);
+      const results = await fetchAutocompleteSuggestions(trimmed, token);
       setSuggestions(results);
       setLastFetchedQuery(trimmed);
       setLoadingSuggestions(false);

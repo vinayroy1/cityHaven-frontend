@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import Link from "next/link";
 import {
   BedDouble,
   Building2,
@@ -12,9 +15,17 @@ import {
   UserRound,
   Users,
 } from "lucide-react";
-import { listingFilterConfigs, propertySubTypes, propertyTypes, type ListingFilterConfig, type SelectedFilter } from "../data";
+import {
+  listingFilterConfigs,
+  propertySubTypes,
+  propertyTypes,
+  commercialPropertyCategories,
+  type ListingFilterConfig,
+  type SelectedFilter,
+} from "../data";
 import type { ListingType } from "../../homePage/components/HeroSearch";
 import { AppliedFilters } from "./AppliedFilters";
+import { Slider } from "@/components/ui/slider";
 
 type FiltersPanelProps = {
   asDrawer?: boolean;
@@ -25,20 +36,30 @@ type FiltersPanelProps = {
 
 export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, onFiltersChange }: FiltersPanelProps) {
   const config: ListingFilterConfig = listingFilterConfigs[listingType] ?? listingFilterConfigs.SELL;
-  const allowedCategories = React.useMemo(
+  type CategoryOption = { slug: string; name: string };
+  const baseCategories = React.useMemo(
     () => propertyTypes.filter((type) => config.propertyCategorySlugs.includes(type.slug)),
     [config.propertyCategorySlugs],
   );
-  const defaultCategory = allowedCategories[0]?.slug ?? "residential";
+  const commercialCategories = React.useMemo<CategoryOption[]>(() => {
+    if (listingType !== "COMMERCIAL") return [];
+    return commercialPropertyCategories;
+  }, [listingType]);
+  const categoryOptions: CategoryOption[] = listingType === "COMMERCIAL" ? commercialCategories : baseCategories;
+  const defaultCategory = categoryOptions[0]?.slug ?? baseCategories[0]?.slug ?? "residential";
   const [selectedCategory, setSelectedCategory] = React.useState(defaultCategory);
-  const budgetOptions =
-    config.sections.find((section) => section.key === "budget" && section.type === "dual-select")?.options ?? [];
-  const [budgetValues, setBudgetValues] = React.useState({ min: "", max: "" });
+  const [selectedAreaUnit, setSelectedAreaUnit] = React.useState<AreaUnitValue>("SQFT");
 
   const categoryIcons: Record<string, React.ReactNode> = {
     residential: <Home className="h-4 w-4" />,
     commercial: <Building2 className="h-4 w-4" />,
     pg: <UserRound className="h-4 w-4" />,
+    office: <Building2 className="h-4 w-4" />,
+    retail: <Building2 className="h-4 w-4" />,
+    "plot-land-com": <TreePine className="h-4 w-4" />,
+    storage: <Warehouse className="h-4 w-4" />,
+    industry: <Warehouse className="h-4 w-4" />,
+    hospitality: <Hotel className="h-4 w-4" />,
   };
 
   const propertyIcons: Record<string, React.ReactNode> = {
@@ -49,12 +70,25 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
     "serviced-apartment": <Hotel className="h-4 w-4" />,
     "plot-land-res": <TreePine className="h-4 w-4" />,
     farmhouse: <TreePine className="h-4 w-4" />,
-    office: <Building2 className="h-4 w-4" />,
-    retail: <Building2 className="h-4 w-4" />,
+    "agri-farm-land": <TreePine className="h-4 w-4" />,
+    "ready-to-move-office-space": <Building2 className="h-4 w-4" />,
+    "bare-shell-office-space": <Building2 className="h-4 w-4" />,
+    "co-working-office-space": <Building2 className="h-4 w-4" />,
+    "commercial-shops": <Building2 className="h-4 w-4" />,
+    "commercial-showrooms": <Building2 className="h-4 w-4" />,
+    "commercial-land-inst-land": <TreePine className="h-4 w-4" />,
+    "agricultural-farm-land": <TreePine className="h-4 w-4" />,
+    "industrial-lands-plots": <TreePine className="h-4 w-4" />,
+    warehouse: <Warehouse className="h-4 w-4" />,
+    "factory-manufacturing": <Warehouse className="h-4 w-4" />,
+    "cold-storage": <Warehouse className="h-4 w-4" />,
+    godown: <Warehouse className="h-4 w-4" />,
+    factory: <Warehouse className="h-4 w-4" />,
+    manufacturing: <Warehouse className="h-4 w-4" />,
+    "hotel-resorts": <Hotel className="h-4 w-4" />,
+    "guest-house-banquet-halls": <Hotel className="h-4 w-4" />,
     "plot-land-com": <TreePine className="h-4 w-4" />,
-    storage: <Warehouse className="h-4 w-4" />,
-    industry: <Warehouse className="h-4 w-4" />,
-    hospitality: <Hotel className="h-4 w-4" />,
+    "commercial-other": <Building2 className="h-4 w-4" />,
     "pg-private-room": <BedDouble className="h-4 w-4" />,
     "pg-shared-room": <Users className="h-4 w-4" />,
     "pg-bed": <BedDouble className="h-4 w-4" />,
@@ -64,9 +98,19 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
     setSelectedCategory(defaultCategory);
   }, [defaultCategory]);
 
-  React.useEffect(() => {
-    setBudgetValues({ min: "", max: "" });
-  }, [budgetOptions.join("|")]);
+  const filteredSubTypes = React.useMemo(() => {
+    if (listingType === "PLOT") {
+      if (selectedCategory === "residential") {
+        return [];
+      }
+      const plotCommercialSlugs = ["commercial-land-inst-land", "agricultural-farm-land", "industrial-lands-plots"];
+      return plotCommercialSlugs
+        .map((slug) => propertySubTypes.find((item) => item.slug === slug))
+        .filter((item): item is (typeof propertySubTypes)[number] => Boolean(item));
+    }
+    return propertySubTypes.filter((item) => item.propertyTypeSlug === selectedCategory);
+  }, [listingType, selectedCategory]);
+  const showPlotResidentialMessage = listingType === "PLOT" && selectedCategory === "residential";
 
   const activeFilters = appliedFilters ?? [];
   const isActive = (slug: string) => activeFilters.some((f) => f.slug === slug);
@@ -116,9 +160,9 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
         </div>
 
         <div className="relative space-y-4">
-          <FilterBlock title="Property category">
+          <FilterBlock title={listingType === "COMMERCIAL" ? "Property sub-category" : "Property category"}>
             <div className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
-              {allowedCategories.map((category) => {
+              {categoryOptions.map((category) => {
                 const isSelected = selectedCategory === category.slug;
                 return (
                   <label
@@ -151,10 +195,11 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
           </FilterBlock>
 
           <FilterBlock title="Property type">
-            <div key={selectedCategory} className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
-              {propertySubTypes
-                .filter((item) => item.propertyTypeSlug === selectedCategory)
-                .map((item) => {
+            {showPlotResidentialMessage ? (
+              <p className="text-xs font-semibold text-slate-600">All residential plots / land are included automatically.</p>
+            ) : (
+              <div key={selectedCategory} className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
+                {filteredSubTypes.map((item) => {
                   const checked = isActive(item.slug);
                   return (
                     <label
@@ -182,47 +227,59 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
                     </label>
                   );
                 })}
-            </div>
+              </div>
+            )}
+            {listingType === "SELL" && (
+              <p className="mt-2 text-xs text-slate-500">
+                Looking for commercial properties?{" "}
+                <Link href="/propertySearch?listingType=COMMERCIAL" className="font-semibold text-rose-600 hover:underline">
+                  Click here
+                </Link>
+              </p>
+            )}
+            {listingType === "COMMERCIAL" && (
+              <p className="mt-2 text-xs text-slate-500">
+                Looking for residential properties?{" "}
+                <Link href="/propertySearch?listingType=SELL" className="font-semibold text-rose-600 hover:underline">
+                  Browse homes
+                </Link>
+              </p>
+            )}
           </FilterBlock>
 
-          {config.sections.map((section) => (
-            <FilterBlock key={section.key} title={section.title}>
-              {section.type === "dual-select" && section.key === "budget" ? (
-                <div className="space-y-4 rounded-2xl border border-white/70 bg-white/80 px-3 py-4 shadow-[0_14px_36px_-28px_rgba(15,23,42,0.35)] ring-1 ring-rose-100/60 backdrop-blur-sm">
-                  <div className="h-2 rounded-full bg-rose-50/80">
-                    <div className="h-full w-full rounded-full bg-gradient-to-r from-rose-400 via-amber-300 to-emerald-400" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="flex flex-col gap-1 text-[11px] font-semibold uppercase tracking-wide text-slate-700">
-                      Minimum
-                      <div className="flex items-center gap-2 rounded-2xl border border-rose-100/80 bg-white px-3 py-2 shadow-sm transition focus-within:border-rose-200">
-                        <span className="text-sm text-rose-500">₹</span>
-                        <input
-                          type="text"
-                          className="w-full bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:font-normal placeholder:text-slate-400"
-                          placeholder={budgetOptions[0] ?? "No min"}
-                          value={budgetValues.min}
-                          onChange={(e) => setBudgetValues((prev) => ({ ...prev, min: e.target.value }))}
-                        />
-                      </div>
-                    </label>
-                    <label className="flex flex-col gap-1 text-[11px] font-semibold uppercase tracking-wide text-slate-700">
-                      Maximum
-                      <div className="flex items-center gap-2 rounded-2xl border border-emerald-100/80 bg-white px-3 py-2 shadow-sm transition focus-within:border-emerald-200">
-                        <span className="text-sm text-emerald-500">₹</span>
-                        <input
-                          type="text"
-                          className="w-full bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:font-normal placeholder:text-slate-400"
-                          placeholder={budgetOptions[budgetOptions.length - 1] ?? "No max"}
-                          value={budgetValues.max}
-                          onChange={(e) => setBudgetValues((prev) => ({ ...prev, max: e.target.value }))}
-                        />
-                      </div>
-                    </label>
-                  </div>
-                  <p className="text-xs text-slate-500">Set a comfortable range for your budget.</p>
-                </div>
-              ) : section.type === "dual-select" ? (
+          {config.sections.map((section) => {
+            if (section.type === "dual-select" && section.key === "area") {
+              return (
+                <FilterBlock
+                  key={section.key}
+                  title="Select area range"
+                  action={
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-2 py-1 text-xs font-semibold text-slate-700 shadow-sm">
+                      <span className="hidden text-[11px] uppercase tracking-wide text-slate-500 sm:inline">Area unit</span>
+                      <select
+                        value={selectedAreaUnit}
+                        onChange={(event) => setSelectedAreaUnit(event.target.value as AreaUnitValue)}
+                        className="rounded-full border border-white/80 bg-white px-2 py-1 text-sm font-semibold text-slate-800 outline-none focus:border-rose-200"
+                      >
+                        {AREA_UNIT_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  }
+                >
+                  <AreaRangeSlider options={section.options} areaUnit={selectedAreaUnit} />
+                </FilterBlock>
+              );
+            }
+
+            return (
+              <FilterBlock key={section.key} title={section.title}>
+                {section.type === "dual-select" && section.key === "budget" ? (
+                  <PriceRangeSlider options={section.options} listingType={listingType} />
+                ) : section.type === "dual-select" ? (
                 <div className="flex gap-2">
                   <select className="w-full rounded-xl border border-rose-100 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none shadow-sm transition focus:border-rose-200">
                     {section.options.map((item) => (
@@ -260,8 +317,9 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
                   })}
                 </div>
               )}
-            </FilterBlock>
-          ))}
+              </FilterBlock>
+            );
+          })}
         </div>
       </div>
     </aside>
@@ -276,7 +334,7 @@ const FilterBlock = ({
 }: {
   title: string;
   children: React.ReactNode;
-  action?: string;
+  action?: React.ReactNode;
   defaultOpen?: boolean;
 }) => {
   return (
@@ -287,11 +345,201 @@ const FilterBlock = ({
       <summary className="flex cursor-pointer items-center justify-between bg-gradient-to-r from-white via-rose-50/60 to-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-rose-50/70">
         {title}
         <div className="flex items-center gap-2 text-xs text-slate-600">
-          {action && <button className="font-semibold hover:text-slate-900">{action}</button>}
+          {action}
           <ChevronDown className="h-4 w-4 text-slate-500 transition group-open:rotate-180" />
         </div>
       </summary>
       <div className="border-t border-white/80 bg-white/90 px-4 py-4">{children}</div>
     </details>
+  );
+};
+
+const numberFormatter = new Intl.NumberFormat("en-IN");
+const AREA_UNIT_OPTIONS = [
+  { label: "Sq.ft", value: "SQFT", suffix: "sqft" },
+  { label: "Sq.yd", value: "SQYD", suffix: "sqyd" },
+  { label: "Sq.m", value: "SQM", suffix: "sqm" },
+  { label: "Acre", value: "ACRE", suffix: "acre" },
+] as const;
+type AreaUnitValue = (typeof AREA_UNIT_OPTIONS)[number]["value"];
+
+const parseAreaValue = (input: string): number | null => {
+  const valueMatch = input.replace(/,/g, "").match(/[\d.]+/);
+  if (!valueMatch) return null;
+  const baseValue = Number(valueMatch[0]);
+  if (Number.isNaN(baseValue)) return null;
+  const normalized = input.toLowerCase();
+  if (normalized.includes("acre")) {
+    return Math.round(baseValue * 43560);
+  }
+  if (normalized.includes("sqyd")) {
+    return Math.round(baseValue * 9);
+  }
+  if (normalized.includes("sqm")) {
+    return Math.round(baseValue * 10.7639);
+  }
+  return Math.round(baseValue);
+};
+
+const getAreaSliderSettings = (options: string[]) => {
+  const numericValues = options
+    .map((option) => (option.toLowerCase().includes("no min") || option.toLowerCase().includes("no max") ? null : parseAreaValue(option)))
+    .filter((value): value is number => typeof value === "number");
+  const fallbackMax = 20000;
+  const max = numericValues.length ? Math.max(...numericValues) : fallbackMax;
+  const safeMax = Math.max(max, 1000);
+  const min = 0;
+  const magnitude = Math.pow(10, Math.max(Math.floor(Math.log10(safeMax)) - 2, 0));
+  const step = Math.max(10, Math.round(magnitude));
+  return { min, max: safeMax, step };
+};
+
+const convertSqftToUnit = (sqft: number, unit: AreaUnitValue) => {
+  switch (unit) {
+    case "ACRE":
+      return sqft / 43560;
+    case "SQM":
+      return sqft / 10.7639;
+    case "SQYD":
+      return sqft / 9;
+    default:
+      return sqft;
+  }
+};
+
+const AreaRangeSlider = ({ options, areaUnit }: { options: string[]; areaUnit: AreaUnitValue }) => {
+  const sliderSettings = React.useMemo(() => getAreaSliderSettings(options), [options]);
+  const [range, setRange] = React.useState<[number, number]>([sliderSettings.min, sliderSettings.max]);
+
+  React.useEffect(() => {
+    setRange([sliderSettings.min, sliderSettings.max]);
+  }, [sliderSettings.min, sliderSettings.max]);
+
+  const unitSuffix = React.useMemo(() => AREA_UNIT_OPTIONS.find((item) => item.value === areaUnit)?.suffix ?? "sqft", [areaUnit]);
+
+  const formatLabel = (value: number, type: "min" | "max") => {
+    if (type === "min" && value <= sliderSettings.min) return "No min";
+    if (type === "max" && value >= sliderSettings.max) return "No max";
+    const convertedValue = convertSqftToUnit(value, areaUnit);
+    return `${numberFormatter.format(Math.round(convertedValue))} ${unitSuffix}`;
+  };
+
+  return (
+    <div className="space-y-4 rounded-2xl border border-white/70 bg-white/80 px-4 py-5 shadow-[0_14px_36px_-28px_rgba(15,23,42,0.35)] ring-1 ring-rose-100/60 backdrop-blur-sm">
+      <div className="flex items-center justify-between text-sm font-semibold text-slate-900">
+        <span>{formatLabel(range[0], "min")}</span>
+        <span>{formatLabel(range[1], "max")}</span>
+      </div>
+      <Slider
+        value={range}
+        className="py-3"
+        min={sliderSettings.min}
+        max={sliderSettings.max}
+        step={sliderSettings.step}
+        onValueChange={(values) => setRange(values as [number, number])}
+      />
+      <p className="text-xs text-slate-500">Values shown in {unitSuffix}</p>
+    </div>
+  );
+};
+
+const parseCurrencyValue = (input: string): number | null => {
+  const normalized = input.replace(/[,₹]/g, "").trim().toLowerCase();
+  if (!normalized || normalized.includes("no min") || normalized.includes("no max")) return null;
+  const match = normalized.match(/[\d.]+/);
+  if (!match) return null;
+  const base = Number(match[0]);
+  if (Number.isNaN(base)) return null;
+  const hasCrore = normalized.includes("crore") || normalized.includes("cr");
+  const hasLac = normalized.includes("lakh") || normalized.includes("lac") || /(^|\s)[\d.]+l/.test(normalized) || normalized.endsWith("l");
+  const hasThousand = normalized.includes("k");
+  if (hasCrore) return Math.round(base * 10000000);
+  if (hasLac) return Math.round(base * 100000);
+  if (hasThousand) return Math.round(base * 1000);
+  return Math.round(base);
+};
+
+const PRICE_SLIDER_OVERRIDES: Partial<Record<ListingType, { min?: number; max?: number; hasNoMin?: boolean; hasNoMax?: boolean }>> = {
+  RENT: { min: 0, max: 2000000, hasNoMin: false, hasNoMax: false },
+  SELL: { min: 500000, max: 30000000, hasNoMin: false, hasNoMax: false },
+};
+
+const getPriceSliderSettings = (options: string[], listingType: ListingType) => {
+  const numericValues = options
+    .map((option) => parseCurrencyValue(option))
+    .filter((value): value is number => typeof value === "number");
+  const fallbackMax = 10000000;
+  let hasNoMin = options.some((option) => option.toLowerCase().includes("no min"));
+  let hasNoMax = options.some((option) => option.toLowerCase().includes("no max"));
+  const minValue = numericValues.length ? Math.min(...numericValues) : 0;
+  const maxValue = numericValues.length ? Math.max(...numericValues) : fallbackMax;
+  let sliderMin = hasNoMin ? 0 : minValue;
+  let sliderMax = hasNoMax ? Math.max(maxValue, minValue + 1) : maxValue;
+
+  const override = PRICE_SLIDER_OVERRIDES[listingType];
+  if (override) {
+    if (typeof override.min === "number") {
+      sliderMin = override.min;
+      hasNoMin = override.hasNoMin ?? false;
+    }
+    if (typeof override.max === "number") {
+      sliderMax = override.max;
+      hasNoMax = override.hasNoMax ?? false;
+    }
+    if (override.hasNoMin !== undefined) hasNoMin = override.hasNoMin;
+    if (override.hasNoMax !== undefined) hasNoMax = override.hasNoMax;
+  }
+
+  const magnitude = Math.pow(10, Math.max(Math.floor(Math.log10(sliderMax || 1)) - 1, 0));
+  const step = Math.max(1000, Math.round(magnitude));
+  return { min: sliderMin, max: sliderMax, step, hasNoMin, hasNoMax };
+};
+
+const formatCurrencyLabel = (value: number) => {
+  if (value >= 10000000) {
+    const amount = value / 10000000;
+    return `₹${amount % 1 === 0 ? amount.toFixed(0) : amount.toFixed(1)} Cr`;
+  }
+  if (value >= 100000) {
+    const amount = value / 100000;
+    return `₹${amount % 1 === 0 ? amount.toFixed(0) : amount.toFixed(1)} Lac`;
+  }
+  if (value >= 1000) {
+    const amount = value / 1000;
+    return `₹${amount % 1 === 0 ? amount.toFixed(0) : amount.toFixed(1)} K`;
+  }
+  return `₹${numberFormatter.format(value)}`;
+};
+
+const PriceRangeSlider = ({ options, listingType }: { options: string[]; listingType: ListingType }) => {
+  const sliderSettings = React.useMemo(() => getPriceSliderSettings(options, listingType), [options, listingType]);
+  const [range, setRange] = React.useState<[number, number]>([sliderSettings.min, sliderSettings.max]);
+
+  React.useEffect(() => {
+    setRange([sliderSettings.min, sliderSettings.max]);
+  }, [sliderSettings.min, sliderSettings.max]);
+
+  const formatLabel = (value: number, type: "min" | "max") => {
+    if (type === "min" && sliderSettings.hasNoMin && value <= sliderSettings.min) return "No min";
+    if (type === "max" && sliderSettings.hasNoMax && value >= sliderSettings.max) return "No max";
+    return formatCurrencyLabel(value);
+  };
+
+  return (
+    <div className="space-y-4 rounded-2xl border border-white/70 bg-white/80 px-4 py-5 shadow-[0_14px_36px_-28px_rgba(15,23,42,0.35)] ring-1 ring-rose-100/60 backdrop-blur-sm">
+      <div className="flex items-center justify-between text-sm font-semibold text-slate-900">
+        <span>{formatLabel(range[0], "min")}</span>
+        <span>{formatLabel(range[1], "max")}</span>
+      </div>
+      <Slider
+        value={range}
+        className="py-3"
+        min={sliderSettings.min}
+        max={sliderSettings.max}
+        step={sliderSettings.step}
+        onValueChange={(values) => setRange(values as [number, number])}
+      />
+      <p className="text-xs text-slate-500">Values shown in INR</p>
+    </div>
   );
 };

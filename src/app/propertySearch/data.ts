@@ -27,17 +27,31 @@ export const propertySubTypes = [
   { name: "1 RK / Studio Apartment", slug: "1rk-studio-apartment", propertyTypeSlug: "residential", apiKey: "propertySubType" },
   { name: "Serviced Apartment", slug: "serviced-apartment", propertyTypeSlug: "residential", apiKey: "propertySubType" },
   { name: "Plot / Land", slug: "plot-land-res", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Agricultural / Farm Land", slug: "agri-farm-land", propertyTypeSlug: "residential", apiKey: "propertySubType" },
   { name: "Farmhouse", slug: "farmhouse", propertyTypeSlug: "residential", apiKey: "propertySubType" },
   { name: "Other", slug: "residential-other", propertyTypeSlug: "residential", apiKey: "propertySubType" },
 
-  // Commercial
-  { name: "Office", slug: "office", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
-  { name: "Retail", slug: "retail", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
-  { name: "Plot / Land", slug: "plot-land-com", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
-  { name: "Storage", slug: "storage", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
-  { name: "Industry", slug: "industry", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
-  { name: "Hospitality", slug: "hospitality", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
-  { name: "Other", slug: "commercial-other", propertyTypeSlug: "commercial", apiKey: "propertySubType" },
+  // Commercial (grouped sub-categories)
+  { name: "Ready to move office space", slug: "ready-to-move-office-space", propertyTypeSlug: "office", apiKey: "propertySubType" },
+  { name: "Bare shell office space", slug: "bare-shell-office-space", propertyTypeSlug: "office", apiKey: "propertySubType" },
+  { name: "Co-working office space", slug: "co-working-office-space", propertyTypeSlug: "office", apiKey: "propertySubType" },
+
+  { name: "Commercial Shops", slug: "commercial-shops", propertyTypeSlug: "retail", apiKey: "propertySubType" },
+  { name: "Commercial Showrooms", slug: "commercial-showrooms", propertyTypeSlug: "retail", apiKey: "propertySubType" },
+
+  { name: "Commercial Land / Inst. Land", slug: "commercial-land-inst-land", propertyTypeSlug: "plot-land-com", apiKey: "propertySubType" },
+  { name: "Agricultural / Farm Land", slug: "agricultural-farm-land", propertyTypeSlug: "plot-land-com", apiKey: "propertySubType" },
+  { name: "Industrial Lands / Plots", slug: "industrial-lands-plots", propertyTypeSlug: "plot-land-com", apiKey: "propertySubType" },
+
+  { name: "Warehouse", slug: "warehouse", propertyTypeSlug: "storage", apiKey: "propertySubType" },
+  { name: "Cold Storage", slug: "cold-storage", propertyTypeSlug: "storage", apiKey: "propertySubType" },
+  { name: "Godown", slug: "godown", propertyTypeSlug: "storage", apiKey: "propertySubType" },
+
+  { name: "Factory", slug: "factory", propertyTypeSlug: "industry", apiKey: "propertySubType" },
+  { name: "Manufacturing", slug: "manufacturing", propertyTypeSlug: "industry", apiKey: "propertySubType" },
+
+  { name: "Hotel / Resorts", slug: "hotel-resorts", propertyTypeSlug: "hospitality", apiKey: "propertySubType" },
+  { name: "Guest-House / Banquet-Halls", slug: "guest-house-banquet-halls", propertyTypeSlug: "hospitality", apiKey: "propertySubType" },
 
   // PG
   { name: "Private Room", slug: "pg-private-room", propertyTypeSlug: "pg", apiKey: "propertySubType" },
@@ -45,12 +59,129 @@ export const propertySubTypes = [
   { name: "Bed / Dormitory", slug: "pg-bed", propertyTypeSlug: "pg", apiKey: "propertySubType" },
 ];
 
+const RESIDENTIAL_DEFAULTS = [
+  "apartment",
+  "independent-house-villa",
+  "independent-builder-floor",
+  "1rk-studio-apartment",
+  "serviced-apartment",
+  "plot-land-res",
+  "farmhouse",
+  "residential-other",
+];
+
+const COMMERCIAL_DEFAULTS = [
+  "ready-to-move-office-space",
+  "bare-shell-office-space",
+  "co-working-office-space",
+  "commercial-shops",
+  "commercial-showrooms",
+  "commercial-land-inst-land",
+  "agricultural-farm-land",
+  "industrial-lands-plots",
+  "warehouse",
+  "cold-storage",
+  "godown",
+  "factory",
+  "manufacturing",
+  "hotel-resorts",
+  "guest-house-banquet-halls",
+];
+
+export const commercialPropertyCategories = [
+  { name: "Office space", slug: "office" },
+  { name: "Retail", slug: "retail" },
+  { name: "Commercial / Inst. land", slug: "plot-land-com" },
+  { name: "Storage / Logistics", slug: "storage" },
+  { name: "Industry", slug: "industry" },
+  { name: "Hospitality", slug: "hospitality" },
+];
+
 export const listingFilterConfigs: Record<ListingType, ListingFilterConfig> = {
   SELL: {
-    defaultFilters: [],
+    defaultFilters: [...RESIDENTIAL_DEFAULTS],
+    propertyCategorySlugs: ["residential"],
+    sections: [
+      { key: "budget", title: "Budget", type: "dual-select", options: ["No min", "₹40 Lac", "₹80 Lac", "₹1 Cr", "No max"] },
+      {
+        key: "bedrooms",
+        title: "Bedrooms",
+        type: "checkbox",
+        options: [
+          { label: "1 BHK", slug: "1", apiKey: "bedrooms" },
+          { label: "2 BHK", slug: "2", apiKey: "bedrooms" },
+          { label: "3 BHK", slug: "3", apiKey: "bedrooms" },
+          { label: "4+ BHK", slug: "4PLUS", apiKey: "bedrooms" },
+        ],
+      },
+      {
+        key: "constructionStatus",
+        title: "Construction status",
+        type: "checkbox",
+        options: [
+          { label: "Under construction", slug: "under-construction", apiKey: "constructionStatus" },
+          { label: "Ready to move", slug: "ready-to-move", apiKey: "constructionStatus" },
+          { label: "New launch", slug: "new-launch", apiKey: "constructionStatus" },
+        ],
+      },
+      {
+        key: "postedBy",
+        title: "Posted by",
+        type: "checkbox",
+        options: [
+          { label: "Owner", slug: "posted-by-owner", apiKey: "postedBy", defaultChecked: true },
+          { label: "Dealer", slug: "posted-by-dealer", apiKey: "postedBy" },
+          { label: "Builder", slug: "posted-by-builder", apiKey: "postedBy" },
+        ],
+      },
+    ],
+  },
+  COMMERCIAL: {
+    defaultFilters: [...COMMERCIAL_DEFAULTS],
+    propertyCategorySlugs: ["commercial"],
+    sections: [
+      { key: "budget", title: "Budget", type: "dual-select", options: ["No min", "₹40 Lac", "₹80 Lac", "₹1 Cr", "No max"] },
+      { key: "area", title: "Area", type: "dual-select", options: ["No min", "500 sq.ft", "1,000 sq.ft", "5,000 sq.ft", "20,000 sq.ft", "No max"] },
+      {
+        key: "constructionStatus",
+        title: "Construction status",
+        type: "checkbox",
+        options: [
+          { label: "Ready to move", slug: "ready-to-move", apiKey: "constructionStatus", defaultChecked: true },
+          { label: "Under construction", slug: "under-construction", apiKey: "constructionStatus" },
+          { label: "New launch", slug: "new-launch", apiKey: "constructionStatus" },
+        ],
+      },
+      {
+        key: "postedBy",
+        title: "Posted by",
+        type: "checkbox",
+        options: [
+          { label: "Owner", slug: "posted-by-owner", apiKey: "postedBy", defaultChecked: true },
+          { label: "Dealer", slug: "posted-by-dealer", apiKey: "postedBy" },
+          { label: "Builder", slug: "posted-by-builder", apiKey: "postedBy" },
+        ],
+      },
+      {
+        key: "investmentOptions",
+        title: "Investment options",
+        type: "checkbox",
+        options: [
+          { label: "Pre leased spaces", slug: "invest-pre-leased", apiKey: "investmentOptions" },
+          { label: "Food courts", slug: "invest-food-court", apiKey: "investmentOptions" },
+          { label: "Restaurants", slug: "invest-restaurant", apiKey: "investmentOptions" },
+          { label: "Multiplexes", slug: "invest-multiplex", apiKey: "investmentOptions" },
+          { label: "SCO plots", slug: "invest-sco-plot", apiKey: "investmentOptions" },
+        ],
+      },
+    ],
+  },
+  PLOT: {
+    defaultFilters: ["plot-land-res", "agri-farm-land", "commercial-land-inst-land", "agricultural-farm-land", "industrial-lands-plots"],
     propertyCategorySlugs: ["residential", "commercial"],
     sections: [
       { key: "budget", title: "Budget", type: "dual-select", options: ["No min", "₹40 Lac", "₹80 Lac", "₹1 Cr", "No max"] },
+      { key: "area", title: "Area", type: "dual-select", options: ["No min", "600 sq.ft", "1,200 sq.ft", "2,400 sq.ft", "1 acre", "No max"] },
       {
         key: "postedBy",
         title: "Posted by",
@@ -64,8 +195,8 @@ export const listingFilterConfigs: Record<ListingType, ListingFilterConfig> = {
     ],
   },
   RENT: {
-    defaultFilters: [],
-    propertyCategorySlugs: ["residential", "commercial"],
+    defaultFilters: [...RESIDENTIAL_DEFAULTS],
+    propertyCategorySlugs: ["residential"],
     sections: [
       {
         key: "budget",
@@ -74,13 +205,34 @@ export const listingFilterConfigs: Record<ListingType, ListingFilterConfig> = {
         options: ["No min", "₹10k", "₹25k", "₹50k", "₹1L", "No max"],
       },
       {
-        key: "amenities",
-        title: "Preferences",
+        key: "bedrooms",
+        title: "Bedrooms",
         type: "checkbox",
         options: [
-          { label: "Furnished", slug: "amenity-furnished", apiKey: "amenities" },
-          { label: "With parking", slug: "amenity-parking", apiKey: "amenities", defaultChecked: true },
-          { label: "Pet friendly", slug: "amenity-pet-friendly", apiKey: "amenities" },
+          { label: "1 BHK", slug: "1", apiKey: "bedrooms" },
+          { label: "2 BHK", slug: "2", apiKey: "bedrooms" },
+          { label: "3 BHK", slug: "3", apiKey: "bedrooms" },
+          { label: "4+ BHK", slug: "4PLUS", apiKey: "bedrooms" },
+        ],
+      },
+      {
+        key: "postedBy",
+        title: "Posted by",
+        type: "checkbox",
+        options: [
+          { label: "Owner", slug: "posted-by-owner", apiKey: "postedBy", defaultChecked: true },
+          { label: "Dealer", slug: "posted-by-dealer", apiKey: "postedBy" },
+          { label: "Builder", slug: "posted-by-builder", apiKey: "postedBy" },
+        ],
+      },
+      {
+        key: "furnishing",
+        title: "Furnishing",
+        type: "checkbox",
+        options: [
+          { label: "Unfurnished", slug: "unfurnished", apiKey: "furnishing" },
+          { label: "Semi-furnished", slug: "semi-furnished", apiKey: "furnishing" },
+          { label: "Fully furnished", slug: "furnished", apiKey: "furnishing" },
         ],
       },
     ],
