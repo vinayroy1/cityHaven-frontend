@@ -111,7 +111,7 @@ export function HeaderNav() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur" onMouseLeave={closeMenu}>
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur" onMouseLeave={closeMenu}>
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:px-6 flex-nowrap">
         <div className="flex items-center gap-2 whitespace-nowrap">
           <Link href="/homePage" className="flex items-center gap-2 text-lg font-semibold">
