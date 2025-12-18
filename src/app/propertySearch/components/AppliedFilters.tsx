@@ -10,7 +10,7 @@ export function AppliedFilters({ filters, onClearAll, onRemove }: Props) {
       {filters.map((filter) => (
         <span
           key={filter.slug}
-          className="group flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-100 via-amber-100 to-emerald-100 px-3 py-1.5 text-[11px] font-semibold text-slate-900 shadow-[0_12px_30px_-18px_rgba(15,23,42,0.35)] ring-1 ring-white/70"
+          className="group flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-50 via-amber-50 to-emerald-50 px-3 py-1.5 text-[11px] font-semibold text-slate-900 shadow-[0_12px_30px_-18px_rgba(244,63,94,0.35)] ring-1 ring-white/70"
         >
           {filter.label}
           <button

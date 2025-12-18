@@ -124,27 +124,29 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
 
   return (
     <aside
-      className={`relative w-full overflow-hidden rounded-[28px] border border-white/60 bg-gradient-to-br from-white via-rose-50/85 to-emerald-50/80 p-5 shadow-[0_30px_90px_-46px_rgba(15,23,42,0.5)] backdrop-blur ${
+      className={`relative w-full overflow-hidden rounded-[28px] border border-white/60 bg-gradient-to-br from-white via-rose-50/95 to-amber-50/80 p-5 shadow-[0_30px_90px_-46px_rgba(15,23,42,0.5)] backdrop-blur ${
         asDrawer ? "" : "lg:w-[380px]"
       }`}
     >
-      <div className="pointer-events-none absolute -left-12 -top-10 h-48 w-48 rounded-full bg-rose-300/30 blur-3xl" />
-      <div className="pointer-events-none absolute -right-16 bottom-0 h-52 w-52 rounded-full bg-emerald-300/25 blur-3xl" />
+      <div className="pointer-events-none absolute -left-12 -top-10 h-48 w-48 rounded-full bg-rose-300/25 blur-3xl" />
+      <div className="pointer-events-none absolute -right-16 bottom-0 h-52 w-52 rounded-full bg-amber-200/25 blur-3xl" />
 
       <div className="relative z-10 space-y-5">
         <div className="relative flex items-start justify-between gap-3 rounded-2xl border border-white/70 bg-white/70 px-4 py-3 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.4)] backdrop-blur-sm">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 via-amber-400 to-teal-400 text-white shadow-lg shadow-rose-200/50 ring-4 ring-white/70">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 via-amber-400 to-emerald-400 text-white shadow-lg shadow-rose-200/60 ring-4 ring-white/70">
               <SlidersHorizontal className="h-5 w-5" />
             </span>
             <div className="space-y-0.5">
               <p className="text-base font-semibold text-slate-900">Filters</p>
-              <p className="text-xs text-slate-500">Tune results to match your taste</p>
+              <p className="text-xs text-slate-500">
+                Tune results to match your taste
+              </p>
             </div>
           </div>
           <button
             type="button"
-            className="inline-flex items-center gap-1 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-rose-600 shadow-sm ring-1 ring-rose-100 transition hover:-translate-y-0.5 hover:ring-rose-200"
+            className="inline-flex items-center gap-1 rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-rose-600 shadow-sm ring-1 ring-rose-100 transition hover:-translate-y-0.5 hover:ring-rose-200"
             onClick={() => onFiltersChange?.([])}
           >
             Clear all
@@ -155,12 +157,14 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
           <AppliedFilters
             filters={activeFilters}
             onClearAll={() => onFiltersChange?.([])}
-            onRemove={(filter) => toggleFilter(filter.slug, filter.label, filter.apiKey, false)}
+            onRemove={(filter) =>
+              toggleFilter(filter.slug, filter.label, filter.apiKey, false)
+            }
           />
         </div>
 
         <div className="relative space-y-4">
-          <FilterBlock title={listingType === "COMMERCIAL" ? "Property sub-category" : "Property category"}>
+          <FilterBlock title={"Property category"}>
             <div className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
               {categoryOptions.map((category) => {
                 const isSelected = selectedCategory === category.slug;
@@ -169,16 +173,20 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
                     key={category.slug}
                     className={`flex items-center gap-2 rounded-full border px-4 py-2 transition ${
                       isSelected
-                        ? "border-transparent bg-gradient-to-r from-rose-100 via-amber-100 to-emerald-100 text-slate-900 shadow-[0_12px_30px_-20px_rgba(244,63,94,0.4)]"
+                        ? "border-transparent bg-gradient-to-r from-rose-50 via-amber-50 to-emerald-50 text-slate-900 shadow-[0_12px_30px_-20px_rgba(244,63,94,0.35)]"
                         : "border-white/70 bg-white/80 text-slate-700 hover:border-rose-100 hover:shadow-sm"
                     }`}
                   >
                     <span
                       className={`flex h-8 w-8 items-center justify-center rounded-full text-slate-700 ${
-                        isSelected ? "bg-gradient-to-br from-rose-500 via-amber-400 to-emerald-400 text-white shadow-md" : "bg-slate-100"
+                        isSelected
+                          ? "bg-gradient-to-br from-rose-500 via-amber-400 to-emerald-400 text-white shadow-md"
+                          : "bg-slate-100"
                       }`}
                     >
-                      {categoryIcons[category.slug] ?? <Home className="h-4 w-4" />}
+                      {categoryIcons[category.slug] ?? (
+                        <Home className="h-4 w-4" />
+                      )}
                     </span>
                     <input
                       type="radio"
@@ -196,9 +204,14 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
 
           <FilterBlock title="Property type">
             {showPlotResidentialMessage ? (
-              <p className="text-xs font-semibold text-slate-600">All residential plots / land are included automatically.</p>
+              <p className="text-xs font-semibold text-slate-600">
+                All residential plots / land are included automatically.
+              </p>
             ) : (
-              <div key={selectedCategory} className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
+              <div
+                key={selectedCategory}
+                className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800"
+              >
                 {filteredSubTypes.map((item) => {
                   const checked = isActive(item.slug);
                   return (
@@ -206,22 +219,33 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
                       key={item.slug}
                       className={`flex items-center gap-2 rounded-full border px-3.5 py-2 shadow-[0_12px_32px_-26px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 ${
                         checked
-                          ? "border-transparent bg-gradient-to-r from-rose-100 via-amber-100 to-emerald-100 text-slate-900"
+                          ? "border-transparent bg-gradient-to-r from-rose-50 via-amber-50 to-emerald-50 text-slate-900"
                           : "border-white/70 bg-white/85 text-slate-700 hover:border-rose-100"
                       }`}
                     >
                       <span
                         className={`flex h-8 w-8 items-center justify-center rounded-full text-slate-700 ${
-                          checked ? "bg-gradient-to-br from-rose-500 via-amber-400 to-emerald-400 text-white shadow-sm" : "bg-slate-100"
+                          checked
+                            ? "bg-gradient-to-br from-rose-500 via-amber-400 to-emerald-400 text-white shadow-sm"
+                            : "bg-slate-100"
                         }`}
                       >
-                        {propertyIcons[item.slug] ?? <Building2 className="h-4 w-4" />}
+                        {propertyIcons[item.slug] ?? (
+                          <Building2 className="h-4 w-4" />
+                        )}
                       </span>
                       <input
                         type="checkbox"
                         className="accent-rose-500"
                         checked={checked}
-                        onChange={(e) => toggleFilter(item.slug, item.name, item.apiKey, e.target.checked)}
+                        onChange={(e) =>
+                          toggleFilter(
+                            item.slug,
+                            item.name,
+                            item.apiKey,
+                            e.target.checked
+                          )
+                        }
                       />
                       {item.name}
                     </label>
@@ -232,7 +256,10 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
             {listingType === "SELL" && (
               <p className="mt-2 text-xs text-slate-500">
                 Looking for commercial properties?{" "}
-                <Link href="/propertySearch?listingType=COMMERCIAL" className="font-semibold text-rose-600 hover:underline">
+                <Link
+                  href="/propertySearch?listingType=COMMERCIAL"
+                  className="font-semibold text-rose-600 hover:underline"
+                >
                   Click here
                 </Link>
               </p>
@@ -240,7 +267,10 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
             {listingType === "COMMERCIAL" && (
               <p className="mt-2 text-xs text-slate-500">
                 Looking for residential properties?{" "}
-                <Link href="/propertySearch?listingType=SELL" className="font-semibold text-rose-600 hover:underline">
+                <Link
+                  href="/propertySearch?listingType=SELL"
+                  className="font-semibold text-rose-600 hover:underline"
+                >
                   Browse homes
                 </Link>
               </p>
@@ -255,10 +285,16 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
                   title="Select area range"
                   action={
                     <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-2 py-1 text-xs font-semibold text-slate-700 shadow-sm">
-                      <span className="hidden text-[11px] uppercase tracking-wide text-slate-500 sm:inline">Area unit</span>
+                      <span className="hidden text-[11px] uppercase tracking-wide text-slate-500 sm:inline">
+                        Area unit
+                      </span>
                       <select
                         value={selectedAreaUnit}
-                        onChange={(event) => setSelectedAreaUnit(event.target.value as AreaUnitValue)}
+                        onChange={(event) =>
+                          setSelectedAreaUnit(
+                            event.target.value as AreaUnitValue
+                          )
+                        }
                         className="rounded-full border border-white/80 bg-white px-2 py-1 text-sm font-semibold text-slate-800 outline-none focus:border-rose-200"
                       >
                         {AREA_UNIT_OPTIONS.map((option) => (
@@ -270,7 +306,10 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
                     </div>
                   }
                 >
-                  <AreaRangeSlider options={section.options} areaUnit={selectedAreaUnit} />
+                  <AreaRangeSlider
+                    options={section.options}
+                    areaUnit={selectedAreaUnit}
+                  />
                 </FilterBlock>
               );
             }
@@ -278,45 +317,55 @@ export function FiltersPanel({ asDrawer, listingType = "SELL", appliedFilters, o
             return (
               <FilterBlock key={section.key} title={section.title}>
                 {section.type === "dual-select" && section.key === "budget" ? (
-                  <PriceRangeSlider options={section.options} listingType={listingType} />
+                  <PriceRangeSlider
+                    options={section.options}
+                    listingType={listingType}
+                  />
                 ) : section.type === "dual-select" ? (
-                <div className="flex gap-2">
-                  <select className="w-full rounded-xl border border-rose-100 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none shadow-sm transition focus:border-rose-200">
-                    {section.options.map((item) => (
-                      <option key={item}>{item}</option>
-                    ))}
-                  </select>
-                  <select className="w-full rounded-xl border border-emerald-100 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none shadow-sm transition focus:border-emerald-200">
-                    {section.options.map((item) => (
-                      <option key={item}>{item}</option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
-                <div className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
-                  {section.options.map((item) => {
-                    const checked = isActive(item.slug);
-                    return (
-                      <label
-                        key={item.slug}
-                        className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 shadow-[0_12px_32px_-26px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 ${
-                          checked
-                            ? "border-transparent bg-gradient-to-r from-rose-100 via-amber-100 to-emerald-100 text-slate-900"
-                            : "border-white/70 bg-white/85 text-slate-700 hover:border-rose-100"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          className="accent-rose-500"
-                          checked={checked}
-                          onChange={(e) => toggleFilter(item.slug, item.label, item.apiKey, e.target.checked)}
-                        />
-                        {item.label}
-                      </label>
-                    );
-                  })}
-                </div>
-              )}
+                  <div className="flex gap-2">
+                    <select className="w-full rounded-xl border border-rose-100 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none shadow-sm transition focus:border-rose-200">
+                      {section.options.map((item) => (
+                        <option key={item}>{item}</option>
+                      ))}
+                    </select>
+                    <select className="w-full rounded-xl border border-amber-100 bg-white px-3 py-2 text-sm font-semibold text-slate-800 outline-none shadow-sm transition focus:border-amber-200">
+                      {section.options.map((item) => (
+                        <option key={item}>{item}</option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2 text-sm font-semibold text-slate-800">
+                    {section.options.map((item) => {
+                      const checked = isActive(item.slug);
+                      return (
+                        <label
+                          key={item.slug}
+                          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 shadow-[0_12px_32px_-26px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 ${
+                            checked
+                              ? "border-transparent bg-gradient-to-r from-rose-50 via-amber-50 to-emerald-50 text-slate-900"
+                              : "border-white/70 bg-white/85 text-slate-700 hover:border-rose-100"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="accent-rose-500"
+                            checked={checked}
+                            onChange={(e) =>
+                              toggleFilter(
+                                item.slug,
+                                item.label,
+                                item.apiKey,
+                                e.target.checked
+                              )
+                            }
+                          />
+                          {item.label}
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
               </FilterBlock>
             );
           })}
@@ -342,14 +391,16 @@ const FilterBlock = ({
       open={defaultOpen}
       className="group overflow-hidden rounded-2xl border border-white/70 bg-white/85 shadow-[0_18px_50px_-34px_rgba(15,23,42,0.4)] ring-1 ring-rose-100/60 backdrop-blur-sm"
     >
-      <summary className="flex cursor-pointer items-center justify-between bg-gradient-to-r from-white via-rose-50/60 to-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-rose-50/70">
+      <summary className="flex cursor-pointer items-center justify-between bg-gradient-to-r from-white via-rose-50/60 to-amber-50/40 px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-rose-50/70">
         {title}
         <div className="flex items-center gap-2 text-xs text-slate-600">
           {action}
           <ChevronDown className="h-4 w-4 text-slate-500 transition group-open:rotate-180" />
         </div>
       </summary>
-      <div className="border-t border-white/80 bg-white/90 px-4 py-4">{children}</div>
+      <div className="border-t border-white/80 bg-white/90 px-4 py-4">
+        {children}
+      </div>
     </details>
   );
 };
@@ -459,8 +510,12 @@ const parseCurrencyValue = (input: string): number | null => {
   return Math.round(base);
 };
 
-const PRICE_SLIDER_OVERRIDES: Partial<Record<ListingType, { min?: number; max?: number; hasNoMin?: boolean; hasNoMax?: boolean }>> = {
-  RENT: { min: 0, max: 2000000, hasNoMin: false, hasNoMax: false },
+const PRICE_SLIDER_OVERRIDES: Partial<
+  Record<
+    ListingType,
+    { min?: number; max?: number; hasNoMin?: boolean; hasNoMax?: boolean }
+  >
+> = {
   SELL: { min: 500000, max: 30000000, hasNoMin: false, hasNoMax: false },
 };
 
