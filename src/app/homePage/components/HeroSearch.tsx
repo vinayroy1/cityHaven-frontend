@@ -484,56 +484,64 @@ export function HeroSearch({
               <div className="hidden flex-col gap-3 md:flex">
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="min-w-[240px] flex-1">{renderLocationInput("desktop")}</div>
-                  <div className="flex min-w-[180px] flex-1 flex-col gap-1">
-                    <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Property Type</span>
-                    <div className="relative">
-                      <select
-                        className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 pr-10 text-sm font-semibold text-slate-900 outline-none"
-                        value={propertyType}
-                        onChange={(e) => setPropertyType(e.target.value)}
-                      >
-                        {PROPERTY_TYPES.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                    </div>
+                  <div className="min-w-[180px] flex-1">
+                    <label className="flex min-h-[56px] w-full items-center rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 shadow-[0_15px_35px_-25px_rgba(15,23,42,0.35)]">
+                      <div className="flex w-full flex-col">
+                        <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Property Type</span>
+                        <div className="relative mt-1">
+                          <select
+                            className="w-full appearance-none bg-transparent pr-8 text-sm font-semibold text-slate-900 outline-none"
+                            value={propertyType}
+                            onChange={(e) => setPropertyType(e.target.value)}
+                          >
+                            {PROPERTY_TYPES.map((type) => (
+                              <option key={type} value={type}>
+                                {type}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                        </div>
+                      </div>
+                    </label>
                   </div>
-                  <div className="flex min-w-[260px] flex-1 flex-col gap-1">
-                    <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Budget</span>
-                    <div className="flex items-center gap-2">
-                      <div className="relative flex-1">
-                        <select
-                          className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 pr-10 text-sm font-semibold text-slate-900 outline-none"
-                          value={budgetMin}
-                          onChange={(e) => handleBudgetMinChange(e.target.value)}
-                        >
-                          {BUDGET_OPTIONS.map((option) => (
-                            <option key={option.label} value={option.value}>
-                              {option.value ? `Min ${option.label}` : "No min"}
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                  <div className="min-w-[260px] flex-1">
+                    <label className="flex min-h-[56px] w-full rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 shadow-[0_15px_35px_-25px_rgba(15,23,42,0.35)]">
+                      <div className="flex w-full flex-col">
+                        <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Budget</span>
+                        <div className="mt-1 flex items-center gap-2">
+                          <div className="relative flex-1">
+                            <select
+                              className="w-full rounded-xl border border-slate-200 bg-white/90 px-3 py-2 pr-8 text-sm font-semibold text-slate-900 outline-none appearance-none"
+                              value={budgetMin}
+                              onChange={(e) => handleBudgetMinChange(e.target.value)}
+                            >
+                              {BUDGET_OPTIONS.map((option) => (
+                                <option key={option.label} value={option.value}>
+                                  {option.value ? `Min ${option.label}` : "No min"}
+                                </option>
+                              ))}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                          </div>
+                          <span className="text-slate-300">to</span>
+                          <div className="relative flex-1">
+                            <select
+                              className="w-full rounded-xl border border-slate-200 bg-white/90 px-3 py-2 pr-8 text-sm font-semibold text-slate-900 outline-none appearance-none"
+                              value={budgetMax}
+                              onChange={(e) => handleBudgetMaxChange(e.target.value)}
+                            >
+                              {BUDGET_OPTIONS.map((option) => (
+                                <option key={`${option.label}-max`} value={option.value}>
+                                  {option.value ? `Max ${option.label}` : "No max"}
+                                </option>
+                              ))}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-slate-400">-</span>
-                      <div className="relative flex-1">
-                        <select
-                          className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 pr-10 text-sm font-semibold text-slate-900 outline-none"
-                          value={budgetMax}
-                          onChange={(e) => handleBudgetMaxChange(e.target.value)}
-                        >
-                          {BUDGET_OPTIONS.map((option) => (
-                            <option key={`${option.label}-max`} value={option.value}>
-                              {option.value ? `Max ${option.label}` : "No max"}
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                      </div>
-                    </div>
+                    </label>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -548,15 +556,7 @@ export function HeroSearch({
                     )}
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-slate-600">
-                  <button
-                    type="button"
-                    onClick={handleOpenFilters}
-                    className="inline-flex items-center gap-1 text-rose-600 transition hover:text-rose-700"
-                  >
-                    Advanced filters
-                    <ChevronDown className="h-3 w-3" />
-                  </button>
+                <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-600">
                   <div className="flex flex-wrap gap-2">
                     {[
                       {
@@ -681,7 +681,7 @@ export function HeroSearch({
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
                       <select
-                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 pr-8 text-sm font-semibold text-slate-900 outline-none"
+                        className="h-12 w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 pr-8 text-sm font-semibold text-slate-900 outline-none"
                         value={budgetMin}
                         onChange={(e) => handleBudgetMinChange(e.target.value)}
                       >
@@ -695,7 +695,7 @@ export function HeroSearch({
                     </div>
                     <div className="relative flex-1">
                       <select
-                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 pr-8 text-sm font-semibold text-slate-900 outline-none"
+                        className="h-12 w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 pr-8 text-sm font-semibold text-slate-900 outline-none"
                         value={budgetMax}
                         onChange={(e) => handleBudgetMaxChange(e.target.value)}
                       >
@@ -749,7 +749,7 @@ export function HeroSearch({
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Property type</span>
                 <div className="relative">
                   <select
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 pr-8 text-sm font-semibold text-slate-900 outline-none"
+                    className="h-12 w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 pr-8 text-sm font-semibold text-slate-900 outline-none"
                     value={propertyType}
                     onChange={(e) => setPropertyType(e.target.value)}
                   >
