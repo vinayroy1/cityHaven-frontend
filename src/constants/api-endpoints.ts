@@ -20,6 +20,9 @@ export const API_ENDPOINTS = {
   propertyListing: {
     create: `${BASE}/propertyListing`,
     update: (id: number | string) => `${BASE}/propertyListing/${id}`,
+    // Associates media URLs with a listing: POST { items: [{ url, type }] }.
+    // (Raw file hosting is not exposed by this backend — see MediaField.)
+    media: (id: number | string) => `${BASE}/propertyListing/${id}/media`,
     search: `${BASE}/propertyListing/search`,
     my: `${BASE}/propertyListing/my`,
     org: `${BASE}/propertyListing/org`,

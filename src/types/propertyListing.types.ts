@@ -59,6 +59,11 @@ export interface PropertyContextBlock {
   propertySubTypeId?: string;
   propertySubCategoryId?: string;
   locatedInsideId?: string;
+  /** Slug-based identity used by the config-driven flow and the API payload. */
+  propertyTypeSlug?: string;
+  propertySubTypeSlug?: string;
+  propertySubCategorySlug?: string;
+  locatedInsideSlug?: string;
   organizationId?: string;
   ownerId?: number | null;
   createdById?: number | null;

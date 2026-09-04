@@ -49,6 +49,15 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
   const selectedSubCategory = selectedSubType?.categories?.find((c) => c.id === `${context.propertySubCategoryId ?? ""}`);
   const selectedLocatedInside = selectedSubType?.locatedInsideOptions?.find((l) => l.id === `${context.locatedInsideId ?? ""}`);
 
+  // The config-driven flow stores slugs directly; prefer them when present.
+  const resolvedTypeSlug =
+    context.propertyTypeSlug ||
+    selectedType?.slug ||
+    (context.resCom === "COMMERCIAL" ? "commercial" : context.listingType === "PG" ? "pg" : "residential");
+  const resolvedSubTypeSlug = context.propertySubTypeSlug || selectedSubType?.slug;
+  const resolvedSubCategorySlug = context.propertySubCategorySlug || selectedSubCategory?.slug;
+  const resolvedLocatedInsideSlug = context.locatedInsideSlug || selectedLocatedInside?.slug;
+
   const safeConstructionType =
     availability.constructionType && typeof availability.constructionType === "object" ? availability.constructionType : undefined;
   const safeApprovedBy = amenities.approvedBy && typeof amenities.approvedBy === "object" ? amenities.approvedBy : undefined;
@@ -66,10 +75,10 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     listingType: context.listingType,
     resCom: context.resCom,
     postedAs: context.postedAs,
-    propertyTypeSlug: selectedType?.slug,
-    propertySubTypeSlug: selectedSubType?.slug,
-    propertySubCategorySlug: selectedSubCategory?.slug,
-    locatedInsideSlug: selectedLocatedInside?.slug,
+    propertyTypeSlug: resolvedTypeSlug,
+    propertySubTypeSlug: resolvedSubTypeSlug,
+    propertySubCategorySlug: resolvedSubCategorySlug,
+    locatedInsideSlug: resolvedLocatedInsideSlug,
     organizationId: toNumber(context.organizationId),
     ownerId: context.ownerId ?? undefined,
     createdById: context.createdById ?? undefined,
@@ -143,7 +152,6 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     zoneType: details.zoneType || undefined,
     suitableForBussinessType: details.suitableForBussinessType?.length ? details.suitableForBussinessType : undefined,
     shopFacadeSize: details.shopFacadeSize ?? undefined,
-    shopFacadeSizeUnit: details.shopFacadeSizeUnit || undefined,
     locatedNear: details.locatedNear?.length ? details.locatedNear : undefined,
     passengerLifts: details.passengerLifts ?? undefined,
     serviceLifts: details.serviceLifts ?? undefined,
@@ -202,7 +210,6 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     publicParking: amenities.publicParking ?? undefined,
     noOfParkings: amenities.noOfParkings ?? undefined,
     reservedParking: safeReservedParking,
-    multilevelParking: amenities.multilevelParking ?? undefined,
     centralAirConditioning: amenities.centralAirConditioning ?? undefined,
     oxygenDuct: amenities.oxygenDuct ?? undefined,
     ups: amenities.ups ?? undefined,
@@ -259,7 +266,6 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
       publicParking: amenities.publicParking ?? undefined,
       noOfParkings: amenities.noOfParkings ?? undefined,
       reservedParking: safeReservedParking,
-      multilevelParking: amenities.multilevelParking ?? undefined,
       centralAirConditioning: amenities.centralAirConditioning ?? undefined,
       oxygenDuct: amenities.oxygenDuct ?? undefined,
       ups: amenities.ups ?? undefined,
@@ -278,7 +284,6 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
       passengerLifts: details.passengerLifts ?? undefined,
       serviceLifts: details.serviceLifts ?? undefined,
       shopFacadeSize: details.shopFacadeSize ?? undefined,
-      shopFacadeSizeUnit: details.shopFacadeSizeUnit || undefined,
       locatedNear: details.locatedNear?.length ? details.locatedNear : undefined,
       suitableForBussinessType: details.suitableForBussinessType?.length ? details.suitableForBussinessType : undefined,
       qualityRating: details.qualityRating || undefined,

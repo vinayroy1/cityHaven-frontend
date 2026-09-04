@@ -1,4 +1,4 @@
-import { getAllowedPropertyTypes, getSubTypesForSelection, propertyTypes, propertySubTypeCatalog } from "@/features/propertyListing";
+import { getAllowedPropertyTypes, getSubTypesForSelection, propertySubTypeCatalog } from "@/features/propertyListing";
 
 describe("Property listing selection rules", () => {
   test("SELL allows Residential and Commercial types", () => {
@@ -13,10 +13,10 @@ describe("Property listing selection rules", () => {
     expect(ids).toEqual(["1", "2"]);
   });
 
-  test("PG allows only Residential type", () => {
+  test("PG maps to the dedicated PG property type", () => {
     const types = getAllowedPropertyTypes("PG");
     const ids = types.map((t) => t.id);
-    expect(ids).toEqual(["1"]);
+    expect(ids).toEqual(["3"]);
   });
 
   test("PG sub-types are forced to PG group regardless of propertyTypeId", () => {
@@ -33,7 +33,7 @@ describe("Property listing selection rules", () => {
     const subs = getSubTypesForSelection("SELL", "1");
     const slugs = subs.map((s) => s.slug);
     expect(slugs).toContain("apartment");
-    expect(slugs).toContain("res-plot-land");
+    expect(slugs).toContain("plot-land-res");
   });
 
   test("Commercial sub-types list includes Office and Retail", () => {
