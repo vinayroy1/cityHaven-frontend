@@ -26,13 +26,22 @@ export type PropertySearchItem = {
   title: string;
   description?: string | null;
   price?: number | null;
+  priceType?: string | null;
   deposit?: number | null;
   bedrooms?: number | null;
   bathrooms?: number | null;
   carpetArea?: number | null;
+  carpetAreaUnit?: string | null;
+  builtUpArea?: number | null;
+  builtUpAreaUnit?: string | null;
+  plotArea?: number | null;
+  plotAreaUnit?: string | null;
   areaUnit?: string | null;
   listingType?: string | null;
   resCom?: string | null;
+  postedAs?: string | null;
+  furnishing?: string | null;
+  propertySubTypeId?: number | null;
   cityName?: string | null;
   locality?: string | null;
   subLocality?: string | null;
@@ -45,6 +54,7 @@ export type PropertySearchItem = {
 
 export type PropertySearchResponse = {
   items: PropertySearchItem[];
-  nextCursor: number | null;
+  nextCursor: string | number | null;
   hasMore: boolean;
+  total?: number;
 };

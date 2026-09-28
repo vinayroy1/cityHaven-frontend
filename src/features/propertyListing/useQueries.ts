@@ -72,16 +72,24 @@ export function useVisitsInfinite(params?: { pageSize?: number }) {
   return { ...query, items: flattenPages(query.data?.pages as CursorPage<any>[] | undefined) };
 }
 
+type SearchPage<T> = CursorPage<T> & { nextCursor?: string | number | null; total?: number };
+
 export function usePropertySearchInfinite(params?: Record<string, any>) {
-  const query = useInfiniteQuery<CursorPage<any>, Error>({
+  const query = useInfiniteQuery<SearchPage<any>, Error>({
     queryKey: ["propertySearch", params],
     queryFn: ({ pageParam }) =>
-      apiFetch<CursorPage<any>>({
+      apiFetch<SearchPage<any>>({
         url: API_ENDPOINTS.propertyListing.search,
-        params: { ...(params || {}), cursor: pageParam },
+        params: { ...(params || {}), cursor: pageParam as string | number | null | undefined },
       }),
     initialPageParam: null,
-    getNextPageParam: (last) => (last && "nextCursor" in last ? (last as CursorPage<any>).nextCursor ?? undefined : undefined),
+    getNextPageParam: (last) =>
+      last && "nextCursor" in last ? (last as SearchPage<any>).nextCursor ?? undefined : undefined,
   });
-  return { ...query, items: flattenPages(query.data?.pages as CursorPage<any>[] | undefined) };
+  const pages = query.data?.pages as SearchPage<any>[] | undefined;
+  return {
+    ...query,
+    items: flattenPages(pages),
+    total: pages?.[pages.length - 1]?.total,
+  };
 }

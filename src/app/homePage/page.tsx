@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { HeaderNav } from "./components/HeaderNav";
-import { HeroSearch } from "./components/HeroSearch";
+import { HomeSearch } from "./components/HomeSearch";
 import { QuickActions } from "./components/QuickActions";
 import { ListingSection } from "./components/ListingSection";
 import { AppPromo } from "./components/AppPromo";
@@ -26,7 +26,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <HeaderNav />
-      <HeroSearch enableFiltersButton />
+      <HomeSearch />
       <QuickActions />
       <ListingSection title="Popular homes in Gurgaon District" listings={popularListings} cta="View all" />
       <ListingSection title="Available this weekend" listings={weekendGetaways} cta="See more" />
