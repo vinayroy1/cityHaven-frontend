@@ -1,6 +1,13 @@
 type Prediction = { description: string; place_id: string };
 type AutocompleteResponse = { predictions: Prediction[]; error?: string };
 
+export class GooglePlacesError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GooglePlacesError";
+  }
+}
+
 export const createPlacesSessionToken = () => {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
   return `sess_${Date.now()}_${Math.random().toString(16).slice(2, 10)}`;
@@ -13,8 +20,12 @@ export const fetchAutocompleteSuggestions = async (input: string, sessionToken?:
   if (sessionToken) params.set("sessionToken", sessionToken);
 
   const res = await fetch(`/api/google/autocomplete?${params.toString()}`, { cache: "no-store" });
-  if (!res.ok) return [];
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new GooglePlacesError(data?.error || "Could not load location suggestions.");
+  }
   const data: AutocompleteResponse = await res.json();
+  if (data.error) throw new GooglePlacesError(data.error);
   return data.predictions ?? [];
 };
 

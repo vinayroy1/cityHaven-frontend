@@ -32,6 +32,7 @@ export function LocationSearchInput({
   const [text, setText] = React.useState(keyword);
   const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
   const [open, setOpen] = React.useState(false);
   const [sessionToken, setSessionToken] = React.useState<string | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -45,6 +46,7 @@ export function LocationSearchInput({
     if (trimmed.length < 3) {
       setSuggestions([]);
       setLoading(false);
+      setError(null);
       return;
     }
     let token = sessionToken;
@@ -54,11 +56,20 @@ export function LocationSearchInput({
     }
     let cancelled = false;
     setLoading(true);
+    setError(null);
     const timer = setTimeout(async () => {
-      const results = await fetchAutocompleteSuggestions(trimmed, token ?? undefined);
-      if (!cancelled) {
-        setSuggestions(results);
-        setLoading(false);
+      try {
+        const results = await fetchAutocompleteSuggestions(trimmed, token ?? undefined);
+        if (!cancelled) setSuggestions(results);
+      } catch (err) {
+        if (!cancelled) {
+          setSuggestions([]);
+          setError(err instanceof Error ? err.message : "Could not load location suggestions.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }, 300);
     return () => {
@@ -151,6 +162,7 @@ export function LocationSearchInput({
       {open && text.trim().length >= 2 && (
         <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl">
           {loading && <p className="px-3 py-2 text-xs text-slate-500">Searching…</p>}
+          {!loading && error && <p className="px-3 py-2 text-xs text-rose-600">{error}</p>}
           {suggestions.map((s) => (
             <button
               key={s.place_id}

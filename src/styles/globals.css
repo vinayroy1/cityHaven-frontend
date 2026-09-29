@@ -196,5 +196,17 @@ html {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 
+/* Hide visible scrollbar rails globally while keeping scroll/swipe behavior. */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 /* Slightly stronger heading weights to match modern look */
 h1, h2, h3 { font-weight: 600; }

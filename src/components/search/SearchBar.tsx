@@ -14,7 +14,7 @@ function SearchEditor({ value, onSubmit }: { value: SearchState; onSubmit: (next
   const update = (next: SearchState) => { draftRef.current = next; setDraft(next); };
   const submit = () => onSubmit(draftRef.current);
   return <div className="space-y-4">
-    <div className="flex gap-5 overflow-x-auto border-b border-zinc-200" aria-label="Property category">
+    <div className="no-scrollbar flex gap-5 overflow-x-auto border-b border-zinc-200" aria-label="Property category">
       {INTENT_KEYS.map((intent) => <button key={intent} type="button" aria-pressed={draft.intent === intent} onClick={() => update(intent === draft.intent ? draft : clearAllFilters({ ...draft, intent, transaction: "SELL" }))} className={`shrink-0 border-b-2 pb-3 text-sm font-semibold transition ${draft.intent === intent ? "border-rose-600 text-rose-700" : "border-transparent text-zinc-500 hover:text-zinc-900"}`}>{INTENT_CONFIG[intent].label}</button>)}
     </div>
     {draft.intent === "COMMERCIAL" && <div className="flex gap-2" aria-label="Commercial transaction">{(["SELL", "RENT"] as const).map((transaction) => <button key={transaction} type="button" aria-pressed={(draft.transaction ?? "SELL") === transaction} onClick={() => update({ ...draft, transaction, priceMin: undefined, priceMax: undefined })} className={`rounded-md border px-4 py-2 text-sm ${(draft.transaction ?? "SELL") === transaction ? "border-rose-600 bg-rose-50 text-rose-700" : "border-zinc-200"}`}>{transaction === "SELL" ? "Buy" : "Rent / Lease"}</button>)}</div>}

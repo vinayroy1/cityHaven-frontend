@@ -107,10 +107,16 @@ export function LocationStep() {
       setLoading(true);
       const t = token || createPlacesSessionToken();
       if (!token) setToken(t);
-      const results = await fetchAutocompleteSuggestions(q, t);
-      setSuggestions(results);
-      setLastQuery(q);
-      setLoading(false);
+      try {
+        const results = await fetchAutocompleteSuggestions(q, t);
+        setSuggestions(results);
+        setLastQuery(q);
+      } catch (err) {
+        setSuggestions([]);
+        setError(err instanceof Error ? err.message : "Could not load location suggestions.");
+      } finally {
+        setLoading(false);
+      }
     }, 500);
     return () => clearTimeout(handle);
   }, [addressQuery, lastQuery, token]);

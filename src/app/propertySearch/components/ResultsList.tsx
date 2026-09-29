@@ -35,6 +35,24 @@ const isFresh = (createdAt?: string) => {
   return Date.now() - created <= 1000 * 60 * 60 * 24 * 30;
 };
 
+const postedAtLabel = (createdAt?: string) => {
+  if (!createdAt) return "Recently posted";
+  const created = new Date(createdAt);
+  const createdTime = created.getTime();
+  if (!Number.isFinite(createdTime)) return "Recently posted";
+
+  const diffDays = Math.max(0, Math.floor((Date.now() - createdTime) / (1000 * 60 * 60 * 24)));
+  if (diffDays === 0) return "Posted today";
+  if (diffDays === 1) return "Posted yesterday";
+  if (diffDays < 30) return `Posted ${diffDays} days ago`;
+
+  return `Posted on ${created.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })}`;
+};
+
 const isVerifiedListing = (item: PropertySearchItem) =>
   Boolean(item.price && (item.locality || item.cityName) && item.postedAs);
 
@@ -138,7 +156,7 @@ export function ResultsList({ results }: { results: SearchResults }) {
             subtitle={[item.locality, item.subLocality, item.cityName].filter(Boolean).join(" · ")}
             price={money(item.price)}
             area={area(item)}
-            age={item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-IN") : "New"}
+            postedAt={postedAtLabel(item.createdAt)}
             owner={postedAsLabel(item.postedAs)}
             bedrooms={item.bedrooms}
             bathrooms={item.bathrooms}
