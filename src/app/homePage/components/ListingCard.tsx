@@ -18,13 +18,13 @@ export function ListingCard({ id, title, location, price, badge, image }: Props)
   const href = id ? `/properties/${id}` : "/propertySearch";
 
   return (
-    <div className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+    <div className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
       <div className="relative">
         <Link href={href} className="block">
           <img src={image} alt={title} className="h-44 w-full object-cover transition duration-500 group-hover:scale-105" />
         </Link>
         {badge && (
-          <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 shadow">
+          <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 shadow dark:bg-slate-900/90 dark:text-slate-100">
             {badge}
           </span>
         )}
@@ -33,11 +33,11 @@ export function ListingCard({ id, title, location, price, badge, image }: Props)
       <Link href={href} className="block space-y-1 p-4">
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-4 w-4 text-emerald-500" />
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Verified</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Verified</p>
         </div>
-        <h3 className="text-base font-semibold text-slate-900 line-clamp-1">{title}</h3>
-        <p className="text-sm text-slate-600 line-clamp-1">{location}</p>
-        <p className="text-sm font-semibold text-slate-900">{price}</p>
+        <h3 className="text-base font-semibold text-slate-900 line-clamp-1 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400">{title}</h3>
+        <p className="text-sm text-slate-600 line-clamp-1 dark:text-slate-400">{location}</p>
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">{price}</p>
       </Link>
     </div>
   );

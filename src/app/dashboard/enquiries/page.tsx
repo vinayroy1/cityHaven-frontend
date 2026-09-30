@@ -2,8 +2,9 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import { Heart, MapPin, MessageCircle, PhoneCall, RefreshCw } from "lucide-react";
+import { ArrowLeft, Heart, MapPin, MessageCircle, PhoneCall, RefreshCw } from "lucide-react";
 import { useFavoritesInfinite, useEnquiriesInfinite, useVisitsInfinite } from "@/features/propertyListing/useQueries";
+import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 
 export default function EnquiriesPage() {
   const [filter, setFilter] = useState<"saved" | "enquiries" | "visits">("saved");
@@ -147,8 +148,19 @@ export default function EnquiriesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
+    <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
+      <HeaderNav />
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
+        <div>
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to Dashboard</span>
+          </Link>
+        </div>
+
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Customer workspace</p>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Edit3, MapPin, Trash2 } from "lucide-react";
 import { useDeletePropertyMutation, useGetPropertyQuery } from "@/features/propertyListing/api";
+import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 
 export default function ManagePropertyPage() {
   const params = useParams();
@@ -22,7 +23,8 @@ export default function ManagePropertyPage() {
   const item = data || {};
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
+    <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
+      <HeaderNav />
       <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
         <div className="flex items-center justify-between">
           <button

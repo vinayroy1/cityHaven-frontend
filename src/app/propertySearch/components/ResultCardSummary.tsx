@@ -95,47 +95,47 @@ export function ResultCardSummary({
   return (
     <div className="relative z-0 flex flex-1 flex-col gap-2.5 p-3 sm:gap-3 sm:p-4">
       <div className="flex flex-wrap gap-1.5">
-        {contextBadge && <span className="rounded-md bg-rose-50 px-2 py-1 text-[11px] font-semibold text-rose-700">{contextBadge}</span>}
-        {posterBadge && <span className="rounded-md bg-sky-50 px-2 py-1 text-[11px] font-semibold text-sky-700">{posterBadge}</span>}
-        {type && <span className="hidden rounded-md bg-zinc-100 px-2 py-1 text-[11px] font-semibold text-zinc-700 sm:inline-flex">{type}</span>}
+        {contextBadge && <span className="rounded-md bg-rose-50 px-2 py-1 text-[11px] font-semibold text-rose-700 dark:bg-rose-950 dark:text-rose-300">{contextBadge}</span>}
+        {posterBadge && <span className="rounded-md bg-sky-50 px-2 py-1 text-[11px] font-semibold text-sky-700 dark:bg-sky-950 dark:text-sky-300">{posterBadge}</span>}
+        {type && <span className="hidden rounded-md bg-zinc-100 px-2 py-1 text-[11px] font-semibold text-zinc-700 dark:bg-slate-800 dark:text-slate-300 sm:inline-flex">{type}</span>}
       </div>
 
       <div>
-        <h3 className="line-clamp-1 text-sm font-semibold text-zinc-950 group-hover:text-rose-700 sm:line-clamp-2 sm:text-base">
+        <h3 className="line-clamp-1 text-sm font-semibold text-zinc-950 group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 sm:line-clamp-2 sm:text-base">
           {title || "Property listing"}
         </h3>
         {subtitle && (
-          <p className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-zinc-600 sm:text-sm">
+          <p className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-zinc-600 dark:text-slate-400 sm:text-sm">
             <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
             <span className="truncate">{subtitle}</span>
           </p>
         )}
       </div>
 
-      <p className="text-base font-bold text-zinc-950 sm:text-lg">{price}</p>
+      <p className="text-base font-bold text-zinc-950 dark:text-white sm:text-lg">{price}</p>
 
-      <div className="grid grid-cols-2 gap-1.5 text-xs text-zinc-700 sm:gap-2">
+      <div className="grid grid-cols-2 gap-1.5 text-xs text-zinc-700 dark:text-slate-300 sm:gap-2">
         {bedrooms != null && bedrooms > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2 py-1.5 sm:px-2.5">
+          <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">
             <BedDouble className="h-3.5 w-3.5 text-zinc-400" />
             {bedrooms} BHK
           </span>
         )}
         {bathrooms != null && bathrooms > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2 py-1.5 sm:px-2.5">
+          <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">
             <Bath className="h-3.5 w-3.5 text-zinc-400" />
             {bathrooms} Bath
           </span>
         )}
-        <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2 py-1.5 sm:px-2.5">
+        <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">
           <Ruler className="h-3.5 w-3.5 text-zinc-400" />
           <span className="truncate">{area}</span>
         </span>
-        <span className="truncate rounded-md bg-zinc-50 px-2 py-1.5 sm:px-2.5">{owner}</span>
+        <span className="truncate rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">{owner}</span>
       </div>
 
-      <div className="mt-auto flex items-center justify-between gap-2 border-t border-zinc-100 pt-2.5 sm:gap-3 sm:pt-3">
-        <p className="truncate text-xs text-zinc-500">{postedAt}</p>
+      <div className="mt-auto flex items-center justify-between gap-2 border-t border-zinc-100 dark:border-slate-800 pt-2.5 sm:gap-3 sm:pt-3">
+        <p className="truncate text-xs text-zinc-500 dark:text-slate-400">{postedAt}</p>
         <button
           type="button"
           className="relative z-20 inline-flex shrink-0 items-center gap-1.5 rounded-md bg-rose-600 px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 sm:text-sm"

@@ -29,28 +29,28 @@ export function TransactionCard({ transactionType, ownershipType, listingType, d
   const depositText = formatMoney(deposit);
 
   return (
-    <div className="border-t border-zinc-200 py-5">
+    <div className="border-t border-zinc-200 py-5 dark:border-slate-800">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Transaction</p>
-          <p className="text-base font-semibold text-slate-900">{heading}</p>
-          <p className="text-xs text-slate-600">{depositText ? `Deposit ${depositText}` : "Confirm charges and paperwork with owner"}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Transaction</p>
+          <p className="text-base font-semibold text-slate-900 dark:text-white">{heading}</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400">{depositText ? `Deposit ${depositText}` : "Confirm charges and paperwork with owner"}</p>
         </div>
-        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{formatEnum(listingType) || "Listed"}</span>
+        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">{formatEnum(listingType) || "Listed"}</span>
       </div>
-      <div className="mt-4 grid gap-3 text-sm text-slate-700">
+      <div className="mt-4 grid gap-3 text-sm text-slate-700 dark:text-slate-300">
         <div className="flex items-start gap-3">
           <Sparkles className="mt-1 h-4 w-4 text-amber-500" />
           <div>
-            <p className="font-semibold text-slate-900">Before you decide</p>
-            <p className="text-xs text-slate-600">Confirm the total charges and review ownership documents with the advertiser.</p>
+            <p className="font-semibold text-slate-900 dark:text-white">Before you decide</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400">Confirm the total charges and review ownership documents with the advertiser.</p>
           </div>
         </div>
         <div className="flex items-start gap-3">
-          <CalendarClock className="mt-1 h-4 w-4 text-sky-600" />
+          <CalendarClock className="mt-1 h-4 w-4 text-sky-600 dark:text-sky-400" />
           <div>
-            <p className="font-semibold text-slate-900">Plan a visit</p>
-            <p className="text-xs text-slate-600">Send an enquiry to verify availability, exact address, and visit timings.</p>
+            <p className="font-semibold text-slate-900 dark:text-white">Plan a visit</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400">Send an enquiry to verify availability, exact address, and visit timings.</p>
           </div>
         </div>
       </div>

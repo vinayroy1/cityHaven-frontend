@@ -1,19 +1,21 @@
 "use client";
 
 import React from "react";
-import { LockKeyhole, Loader2 } from "lucide-react";
+import { LockKeyhole, Loader2, Building2, User, AlertCircle, ShieldCheck } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { LeadDetailsStep, ProfileDetailsStep, PlanSelectionStep } from "@/app/propertySearch/components/ContactUnlockDialog";
 import { useUpdateProfileMutation } from "@/features/auth/api";
+import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import {
   useGetPlansQuery,
   useLazyCheckUnlockedContactQuery,
-  useLazyGetMyCreditsQuery,
+  useLazyGetBillingSummaryQuery,
   useRequestContactOtpMutation,
   useVerifyContactOtpMutation,
   usePurchaseCreditsByPlanMutation,
   useUnlockPropertyContactMutation,
+  BillingSummary,
 } from "@/features/contactVerify/api";
 
 type Step = "signin" | "profile" | "check" | "plans" | "confirm";
@@ -26,7 +28,6 @@ function errorMessage(error: unknown) {
 export function ContactAccessFlow({ propertyId, onContact }: { propertyId: number | string; onContact: (phone: string) => void }) {
   const [open, setOpen] = React.useState(false);
   const [step, setStep] = React.useState<Step>("signin");
-  const [credits, setCredits] = React.useState<number | null>(null);
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [name, setName] = React.useState("");
@@ -35,15 +36,25 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
   const [otp, setOtp] = React.useState("");
   const [sent, setSent] = React.useState(false);
   const [seconds, setSeconds] = React.useState(0);
-  const [selected, setSelected] = React.useState("");
+  const [selectedPlanId, setSelectedPlanId] = React.useState("");
+
+  // Billing scope: "PERSONAL" | organizationId number
+  const [selectedScope, setSelectedScope] = React.useState<"PERSONAL" | number>("PERSONAL");
+  const [personalSummary, setPersonalSummary] = React.useState<BillingSummary | null>(null);
+  const [orgSummary, setOrgSummary] = React.useState<BillingSummary | null>(null);
 
   const [check] = useLazyCheckUnlockedContactQuery();
-  const [getCredits] = useLazyGetMyCreditsQuery();
+  const [fetchSummary] = useLazyGetBillingSummaryQuery();
   const [requestOtp] = useRequestContactOtpMutation();
   const [verifyOtp] = useVerifyContactOtpMutation();
   const [updateProfile] = useUpdateProfileMutation();
   const [purchase] = usePurchaseCreditsByPlanMutation();
   const [unlock] = useUnlockPropertyContactMutation();
+
+  const orgsQuery = useMyOrganizationsQuery(undefined, {
+    skip: typeof window === "undefined" || !localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY),
+  });
+  const orgs = orgsQuery.data ?? [];
 
   const plansQuery = useGetPlansQuery(undefined, { skip: !open || step !== "plans" });
   const plans = (plansQuery.data?.data ?? [])
@@ -62,8 +73,14 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
       }).format(p.price),
       popular: Boolean(p.features?.popular),
     }));
-  const current = plans.find((p) => p.id === selected) ?? plans[0];
+  const currentPlan = plans.find((p) => p.id === selectedPlanId) ?? plans[0];
 
+  const activeOrg = orgs.find((o) => o.id === selectedScope);
+  const isOrgScope = selectedScope !== "PERSONAL" && Boolean(activeOrg);
+  const activeSummary = isOrgScope ? orgSummary : personalSummary;
+  const currentCredits = activeSummary?.credits ?? 0;
+
+  // Background check on load if already unlocked
   React.useEffect(() => {
     if (!localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)) return;
     let active = true;
@@ -75,8 +92,6 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
           onContact(contact.data.ownerPhone);
           return;
         }
-        const balance = await getCredits().unwrap();
-        if (active) setCredits(balance.data.credits);
       } catch {
         // Silent catch for background access check
       }
@@ -84,7 +99,29 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
     return () => {
       active = false;
     };
-  }, [propertyId, check, getCredits, onContact]);
+  }, [propertyId, check, onContact]);
+
+  // Load billing summaries when open or scope changes
+  React.useEffect(() => {
+    if (!open || typeof window === "undefined" || !localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)) return;
+    let active = true;
+    void (async () => {
+      try {
+        const pSum = await fetchSummary({ target: "USER" }).unwrap();
+        if (active) setPersonalSummary(pSum.data);
+
+        if (isOrgScope && typeof selectedScope === "number") {
+          const oSum = await fetchSummary({ target: "ORG", organizationId: selectedScope }).unwrap();
+          if (active) setOrgSummary(oSum.data);
+        }
+      } catch {
+        // Handled in flow
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [open, selectedScope, isOrgScope, fetchSummary]);
 
   React.useEffect(() => {
     if (!seconds) return;
@@ -104,30 +141,40 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
         return;
       }
 
-      // 2. Fetch credits
-      const result = await getCredits().unwrap();
-      const balance = result.data.credits ?? 0;
-      setCredits(balance);
+      // 2. Refresh summaries
+      const pSum = await fetchSummary({ target: "USER" }).unwrap();
+      setPersonalSummary(pSum.data);
 
-      if (balance > 0) {
-        // Automatically unlock contact
-        const res = await unlock(propertyId).unwrap();
+      let orgBalance = 0;
+      if (isOrgScope && typeof selectedScope === "number") {
+        const oSum = await fetchSummary({ target: "ORG", organizationId: selectedScope }).unwrap();
+        setOrgSummary(oSum.data);
+        orgBalance = oSum.data.credits ?? 0;
+      }
+
+      const availableBalance = isOrgScope ? orgBalance : (pSum.data.credits ?? 0);
+
+      if (availableBalance > 0) {
+        // Unlock contact with active scope
+        const res = await unlock({
+          propertyId,
+          organizationId: isOrgScope && typeof selectedScope === "number" ? selectedScope : undefined,
+        }).unwrap();
+
         if (res.data?.ownerPhone) {
-          setCredits(res.credits ?? null);
           onContact(res.data.ownerPhone);
           setOpen(false);
           return;
         }
       }
 
-      // If 0 credits, show plans
+      // If insufficient credits in chosen scope, show plans
       setStep("plans");
     } catch (err: any) {
-      // If unauthorized / token invalid, fallback to sign in
       if (err?.status === 401 || err?.originalStatus === 401) {
         localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
         setStep("signin");
-      } else if (err?.status === 402 || err?.data?.message?.includes("credits")) {
+      } else if (err?.status === 402 || err?.data?.message?.includes("credits") || err?.data?.message?.includes("allowance")) {
         setStep("plans");
       } else {
         setError(errorMessage(err));
@@ -211,11 +258,12 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
       <button
         type="button"
         onClick={begin}
-        className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-700 px-3 py-3 text-sm font-semibold text-white hover:bg-emerald-800"
+        className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-700 px-3 py-3 text-sm font-semibold text-white hover:bg-emerald-800 shadow-sm"
       >
         <LockKeyhole className="h-4 w-4" />
-        {credits === 0 ? "Buy credits to unlock" : "View owner contact"}
+        View owner contact
       </button>
+
       <Dialog
         open={open}
         onOpenChange={(value) => {
@@ -230,7 +278,7 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
                 : step === "profile"
                   ? "Complete your profile"
                   : step === "plans"
-                    ? "Buy contact credits"
+                    ? "Purchase contact credits"
                     : "Unlock owner contact"}
             </DialogTitle>
             <DialogDescription>
@@ -239,10 +287,76 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
                 : step === "profile"
                   ? "Please enter your details to complete your account."
                   : step === "plans"
-                    ? "Choose a contact pack to view owner numbers."
-                    : "Unlocking this property..."}
+                    ? isOrgScope
+                      ? `Select a contact pack for ${activeOrg?.name || "your organization"}.`
+                      : "Choose a contact pack for your personal account."
+                    : "Unlocking this property contact..."}
             </DialogDescription>
           </DialogHeader>
+
+          {/* Workspace / Account Scope Selector (if member of organizations) */}
+          {orgs.length > 0 && step !== "signin" && step !== "profile" && (
+            <div className="mb-2 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-slate-800 dark:bg-slate-800/60">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-slate-400 mb-2">Active Billing Workspace</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedScope("PERSONAL")}
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition ${
+                    selectedScope === "PERSONAL"
+                      ? "bg-emerald-700 text-white shadow-sm"
+                      : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  <User className="h-3.5 w-3.5" />
+                  Personal ({personalSummary?.credits ?? 0} credits)
+                </button>
+                {orgs.map((org) => {
+                  const active = selectedScope === org.id;
+                  return (
+                    <button
+                      key={org.id}
+                      type="button"
+                      onClick={() => setSelectedScope(org.id)}
+                      className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition ${
+                        active
+                          ? "bg-emerald-700 text-white shadow-sm"
+                          : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
+                      }`}
+                    >
+                      <Building2 className="h-3.5 w-3.5" />
+                      {org.name}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Informative Workspace Scope Banner */}
+              <div className="mt-2.5 rounded-md bg-white border border-zinc-200 p-2.5 text-xs text-zinc-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                {isOrgScope ? (
+                  <div className="space-y-1">
+                    <p className="font-semibold text-zinc-950 dark:text-white flex items-center gap-1.5">
+                      <Building2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                      Using {activeOrg?.name}&apos;s contact allowance ({currentCredits} available)
+                    </p>
+                    <p className="text-[11px] text-zinc-500 dark:text-slate-400">
+                      Unlocking this contact will make it visible to all authorized team members in {activeOrg?.name}.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <p className="font-semibold text-zinc-950 dark:text-white flex items-center gap-1.5">
+                      <User className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                      Using your Personal Account balance ({personalSummary?.credits ?? 0} credits)
+                    </p>
+                    <p className="text-[11px] text-zinc-500 dark:text-slate-400">
+                      This unlock is saved to your personal account only.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {step === "signin" && (
             <LeadDetailsStep
@@ -281,41 +395,57 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
 
           {step === "check" && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-3" />
-              <p className="text-sm font-medium text-zinc-800">Checking contact access...</p>
-              <p className="text-xs text-zinc-500 mt-1">Please wait a moment.</p>
+              <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-400 mb-3" />
+              <p className="text-sm font-medium text-zinc-800 dark:text-slate-200">Checking contact access & allowance...</p>
+              <p className="text-xs text-zinc-500 dark:text-slate-400 mt-1">Please wait a moment.</p>
             </div>
           )}
 
           {step === "plans" && (
             <>
+              {isOrgScope && currentCredits === 0 && (
+                <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
+                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                  <div>
+                    <p className="font-semibold">{activeOrg?.name} has 0 contact credits remaining</p>
+                    <p className="mt-0.5 text-amber-700 dark:text-amber-400">
+                      As an employee/manager, you can ask an organization Admin/Owner to purchase a pack, or switch above to use your Personal Account.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {plansQuery.isFetching ? (
                 <div className="flex flex-col items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-zinc-400 mb-2" />
-                  <p className="text-sm text-zinc-600">Loading plans...</p>
+                  <Loader2 className="h-6 w-6 animate-spin text-zinc-400 dark:text-slate-500 mb-2" />
+                  <p className="text-sm text-zinc-600 dark:text-slate-400">Loading contact packs...</p>
                 </div>
               ) : plansQuery.isError ? (
                 <div className="py-4 text-center">
-                  <p className="text-sm text-red-600 mb-2">Could not load plans.</p>
+                  <p className="text-sm text-red-600 dark:text-rose-400 mb-2">Could not load plans.</p>
                   <button
                     type="button"
                     onClick={() => void plansQuery.refetch()}
-                    className="rounded-md bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-zinc-200"
+                    className="rounded-md bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-zinc-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     Retry
                   </button>
                 </div>
-              ) : current ? (
+              ) : currentPlan ? (
                 <PlanSelectionStep
                   plansList={plans}
-                  selectedPlan={current.id}
-                  currentPlan={current}
+                  selectedPlan={currentPlan.id}
+                  currentPlan={currentPlan}
                   contactError={error}
                   loading={busy}
-                  onSelectedPlanChange={setSelected}
+                  onSelectedPlanChange={setSelectedPlanId}
                   onPurchasePlan={() =>
                     void run(async () => {
-                      await purchase({ planId: current.dbId }).unwrap();
+                      await purchase({
+                        planId: currentPlan.dbId,
+                        target: isOrgScope ? "ORG" : "USER",
+                        organizationId: isOrgScope && typeof selectedScope === "number" ? selectedScope : undefined,
+                      }).unwrap();
                       await checkAndUnlock();
                     })
                   }
@@ -323,30 +453,6 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
               ) : (
                 <p className="py-4 text-center text-sm text-zinc-500">No contact plans are available right now.</p>
               )}
-            </>
-          )}
-
-          {step === "confirm" && (
-            <>
-              <p className="text-sm text-zinc-600">
-                Your balance: <strong>{credits} credits</strong>
-              </p>
-              <button
-                type="button"
-                disabled={busy}
-                className="rounded-md bg-emerald-700 p-3 text-sm font-semibold text-white disabled:opacity-60"
-                onClick={() =>
-                  void run(async () => {
-                    const result = await unlock(propertyId).unwrap();
-                    if (!result.data?.ownerPhone) throw new Error("Contact unavailable");
-                    setCredits(result.credits ?? null);
-                    onContact(result.data.ownerPhone);
-                    setOpen(false);
-                  })
-                }
-              >
-                {busy ? "Unlocking..." : "Unlock contact · 1 credit"}
-              </button>
             </>
           )}
 

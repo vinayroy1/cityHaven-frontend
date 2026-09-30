@@ -321,11 +321,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const amenities = property.amenitiesByCategory?.flatMap((group) => group.amenities?.map((item) => item.name).filter(Boolean) ?? []) as string[] | undefined;
 
   return (
-    <main className="min-h-screen bg-white text-zinc-900 [letter-spacing:0]">
+    <main className="min-h-screen bg-white text-zinc-900 [letter-spacing:0] dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
       <HeaderNav />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:py-7">
-        <nav aria-label="Breadcrumb" className="flex flex-wrap gap-2 text-xs text-zinc-500"><a href="/" className="hover:text-emerald-700">Home</a><span>/</span><a href="/propertySearch" className="hover:text-emerald-700">Properties</a><span>/</span><span>{property.propertySubType?.name ?? property.propertyType?.name ?? "Details"}</span></nav>
+        <nav aria-label="Breadcrumb" className="flex flex-wrap gap-2 text-xs text-zinc-500 dark:text-slate-400"><a href="/" className="hover:text-emerald-700 dark:hover:text-emerald-400">Home</a><span>/</span><a href="/propertySearch" className="hover:text-emerald-700 dark:hover:text-emerald-400">Properties</a><span>/</span><span>{property.propertySubType?.name ?? property.propertyType?.name ?? "Details"}</span></nav>
 
         <section className="py-4">
           <HeroHeader
@@ -345,8 +345,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
           <div className="min-w-0 space-y-8">
             <GalleryStrip images={images?.length ? images : FALLBACK_IMAGES} title={property.propertySubType?.name ?? "Property gallery"} subtitle={`${images?.length ?? 0} photos available`} />
-            <nav aria-label="Property sections" className="flex gap-6 overflow-x-auto border-b border-zinc-200 text-sm font-semibold">
-              {[['overview', 'Overview'], ['details', 'Property details'], ['location', 'Location']].map(([anchor, label]) => <a key={anchor} href={`#${anchor}`} className="shrink-0 border-b-2 border-transparent pb-3 text-zinc-600 transition hover:border-emerald-600 hover:text-emerald-700">{label}</a>)}
+            <nav aria-label="Property sections" className="flex gap-6 overflow-x-auto border-b border-zinc-200 dark:border-slate-800 text-sm font-semibold">
+              {[['overview', 'Overview'], ['details', 'Property details'], ['location', 'Location']].map(([anchor, label]) => <a key={anchor} href={`#${anchor}`} className="shrink-0 border-b-2 border-transparent pb-3 text-zinc-600 dark:text-slate-400 transition hover:border-emerald-600 hover:text-emerald-700 dark:hover:text-emerald-400">{label}</a>)}
             </nav>
             <AboutHighlights aboutCopy={property.description || "This property is listed on CityHaven with key pricing, location, media, and owner information. Contact the owner to confirm visit slots, documents, and negotiation details."} highlights={buildHighlights(property)} amenities={amenities} />
             <PropertyDetailsGrid groups={buildDetailGroups(property)} />

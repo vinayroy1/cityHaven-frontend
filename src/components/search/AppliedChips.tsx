@@ -39,16 +39,16 @@ export function AppliedChips({
           type="button"
           aria-label={`Remove ${chip.label}`}
           onClick={() => onChange(chip.remove(state))}
-          className="group inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white py-1 pl-3 pr-2 text-[13px] font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+          className="group inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white py-1 pl-3 pr-2 text-[13px] font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-700"
         >
           {chip.label}
-          <X className="h-3.5 w-3.5 text-slate-400 transition group-hover:text-slate-700" />
+          <X className="h-3.5 w-3.5 text-slate-400 transition group-hover:text-slate-700 dark:group-hover:text-slate-200" />
         </button>
       ))}
       <button
         type="button"
         onClick={() => onChange(clearAllFilters(state))}
-        className="text-[13px] font-semibold text-rose-600 hover:text-rose-700"
+        className="text-[13px] font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300"
       >
         Clear all
       </button>

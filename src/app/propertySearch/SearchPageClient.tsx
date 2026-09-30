@@ -49,14 +49,14 @@ export function SearchPageClient() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
+    <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
       <HeaderNav />
 
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
         {/* sticky search + quick filters — sits just below the site header.
             NB: no `backdrop-blur`/`filter` here — it would become the containing
             block for the SearchBar's `position: fixed` mobile sheet. */}
-        <div className="sticky top-16 z-30 -mx-4 space-y-3 border-b border-slate-200 bg-slate-50 px-4 pb-3 pt-3 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="sticky top-16 z-30 -mx-4 space-y-3 border-b border-slate-200 bg-slate-50 px-4 pb-3 pt-3 dark:border-slate-800 dark:bg-slate-950 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <SearchBar
             variant="results"
             value={state}
@@ -72,12 +72,12 @@ export function SearchPageClient() {
         </div>
 
         <div className="mt-4 flex items-center justify-between gap-3">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             {results.isLoading ? (
-              <span className="text-slate-400">Searching…</span>
+              <span className="text-slate-400 dark:text-slate-500">Searching…</span>
             ) : (
               <>
-                <span className="text-base font-semibold text-slate-900">
+                <span className="text-base font-bold text-slate-900 dark:text-white">
                   {results.refining ? resultCount : results.total ?? resultCount}
                 </span>{" "}
                 {(results.refining ? resultCount : results.total ?? resultCount) === 1

@@ -3,6 +3,7 @@ import { MessageCircle, PhoneCall, Send, UserCircle2 } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 import { SectionCard } from "../components/SectionCard";
 import { StatPill } from "../components/StatPill";
+import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 
 const threads = [
   { name: "Priya (Buyer)", property: "3BHK - Indiranagar", last: "Can we visit tomorrow?", time: "2m ago" },
@@ -17,12 +18,14 @@ const messages = [
 
 export default function MessagesPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-amber-50 text-slate-900">
+    <main className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-amber-50 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100 transition-colors duration-150">
+      <HeaderNav />
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
         <PageHeader
           tag="Inbox"
           title="Messages"
           subtitle="Connect to backend messaging threads; unify visit scheduling and documents."
+          backHref="/dashboard"
           actions={
             <button className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-[0_18px_50px_-24px_rgba(15,23,42,0.8)] transition hover:-translate-y-0.5">
               New message

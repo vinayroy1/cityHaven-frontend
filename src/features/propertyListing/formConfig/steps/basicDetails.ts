@@ -57,13 +57,6 @@ export const basicDetailsStep: StepConfig = {
             { value: "BUILDER", label: "Builder" },
           ],
         },
-        {
-          id: "context.organizationId",
-          label: "Company / agency name",
-          type: "text",
-          placeholder: "Registered business name",
-          visibleWhen: { field: "context.postedAs", in: ["AGENT", "BUILDER"] },
-        },
       ],
     },
     {

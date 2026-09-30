@@ -122,20 +122,20 @@ export function LocationSearchInput({
 
   return (
     <div className="relative">
-      <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2 py-1.5 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200">
+      <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2 py-1.5 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:focus-within:border-rose-400 dark:focus-within:ring-rose-500/20">
         <MapPin className="ml-1 h-4 w-4 shrink-0 text-rose-500" />
 
         {localities.map((l) => (
           <span
             key={l.label}
-            className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-800"
+            className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200"
           >
             {l.label}
             <button
               type="button"
               onClick={() => removeLocality(l.label)}
               aria-label={`Remove ${l.label}`}
-              className="rounded-full p-0.5 text-slate-500 hover:bg-white hover:text-slate-800"
+              className="rounded-full p-0.5 text-slate-500 hover:bg-white hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-600 dark:hover:text-white"
             >
               <X className="h-3 w-3" />
             </button>
@@ -144,7 +144,7 @@ export function LocationSearchInput({
 
         <input
           ref={inputRef}
-          className="min-w-[8rem] flex-1 bg-transparent px-1 py-1 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+          className="min-w-[8rem] flex-1 bg-transparent px-1 py-1 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
           placeholder={localities.length || keyword ? "Add another area" : placeholder}
           value={text}
           onChange={(e) => {
@@ -160,19 +160,19 @@ export function LocationSearchInput({
       </div>
 
       {open && text.trim().length >= 2 && (
-        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl">
-          {loading && <p className="px-3 py-2 text-xs text-slate-500">Searching…</p>}
-          {!loading && error && <p className="px-3 py-2 text-xs text-rose-600">{error}</p>}
+        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+          {loading && <p className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">Searching…</p>}
+          {!loading && error && <p className="px-3 py-2 text-xs text-rose-600 dark:text-rose-400">{error}</p>}
           {suggestions.map((s) => (
             <button
               key={s.place_id}
               type="button"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => void addLocality(s)}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50"
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-              <span className="text-slate-800">{s.description}</span>
+              <span className="text-slate-800 dark:text-slate-200">{s.description}</span>
             </button>
           ))}
           {text.trim().length >= 3 && (
@@ -180,11 +180,11 @@ export function LocationSearchInput({
               type="button"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => { commitKeyword(); onSubmit?.(); }}
-              className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2 text-left text-sm hover:bg-slate-50"
+              className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2 text-left text-sm hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
             >
               <Search className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-              <span className="text-slate-800">
-                Search <span className="font-semibold">&ldquo;{text.trim()}&rdquo;</span> as keyword
+              <span className="text-slate-800 dark:text-slate-200">
+                Search <span className="font-semibold text-rose-600 dark:text-rose-400">&ldquo;{text.trim()}&rdquo;</span> as keyword
               </span>
             </button>
           )}

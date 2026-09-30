@@ -85,17 +85,17 @@ function RangePicker({
 
   return (
     <div className="space-y-3">
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500">{label}</p>
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-800/50">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500 dark:text-slate-400">{label}</p>
         <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
-          <p className="text-sm font-semibold text-slate-950">{rangeText}</p>
-          <p className="shrink-0 text-[11px] text-slate-500">{domainText}</p>
+          <p className="text-sm font-semibold text-slate-950 dark:text-white">{rangeText}</p>
+          <p className="shrink-0 text-[11px] text-slate-500 dark:text-slate-400">{domainText}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
         <RangeSelect label="Min" value={lo} placeholder="No min" options={minOptions} format={format} onChange={setMin} />
-        <span className="pb-2 text-sm font-semibold text-slate-300">to</span>
+        <span className="pb-2 text-sm font-semibold text-slate-300 dark:text-slate-600">to</span>
         <RangeSelect label="Max" value={hi} placeholder="No max" options={maxOptions} format={format} onChange={setMax} />
       </div>
 
@@ -138,15 +138,15 @@ function RangeSelect({
 }) {
   return (
     <label className="block">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500">{label}</span>
+      <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500 dark:text-slate-400">{label}</span>
       <select
         value={value ?? ""}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
+        className="mt-1 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-rose-500 dark:focus:ring-rose-500/20"
       >
-        <option value="">{placeholder}</option>
+        <option value="" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">{placeholder}</option>
         {options.map((option) => (
-          <option key={option} value={option}>
+          <option key={option} value={option} className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">
             {format(option)}
           </option>
         ))}
@@ -261,17 +261,17 @@ function AccordionSection({
 }) {
   const count = sectionActiveCount(section, draft);
   return (
-    <section data-section={section.key} className="border-b border-slate-100 last:border-0">
+    <section data-section={section.key} className="border-b border-slate-100 last:border-0 dark:border-slate-800">
       <button
         type="button"
         onClick={onToggle}
         className="flex w-full items-center justify-between py-3.5 text-left"
         aria-expanded={open}
       >
-        <span className="flex items-center gap-2 text-[15px] font-semibold text-slate-900">
+        <span className="flex items-center gap-2 text-[15px] font-semibold text-slate-900 dark:text-white">
           {section.title}
           {count > 0 && (
-            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-slate-900 px-1.5 text-[11px] font-semibold text-white">
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-slate-900 px-1.5 text-[11px] font-semibold text-white dark:bg-slate-100 dark:text-slate-900">
               {count}
             </span>
           )}
@@ -350,9 +350,9 @@ function FilterSections({
       {renderGroup(server)}
       {client.length > 0 && (
         <>
-          <p className="flex items-center gap-2 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+          <p className="flex items-center gap-2 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400 dark:text-slate-500">
             More filters
-            <span className="h-px flex-1 bg-slate-100" />
+            <span className="h-px flex-1 bg-slate-100 dark:bg-slate-800" />
           </p>
           {renderGroup(client)}
         </>
@@ -372,10 +372,10 @@ export function FilterRail({
 }) {
   const count = countActiveFilters(state);
   return (
-    <aside className="sticky top-[8.5rem] hidden h-fit max-h-[calc(100vh-10rem)] w-[300px] shrink-0 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] lg:flex">
-      <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-4">
-        <p className="text-[15px] font-semibold text-slate-900">
-          Filters{count > 0 && <span className="ml-1.5 text-rose-600">{count}</span>}
+    <aside className="sticky top-[8.5rem] hidden h-fit max-h-[calc(100vh-10rem)] w-[300px] shrink-0 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-slate-900 lg:flex">
+      <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
+        <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
+          Filters{count > 0 && <span className="ml-1.5 text-rose-600 dark:text-rose-400">{count}</span>}
         </p>
         {count > 0 && (
           <button type="button" onClick={() => onChange(clearAllFilters(state))} className={linkButton}>
@@ -419,12 +419,12 @@ export function FilterSheet({
   return (
     <div className="fixed inset-0 z-[60] flex flex-col justify-end bg-slate-900/40 lg:hidden">
       <div className="absolute inset-0" onClick={onClose} aria-hidden />
-      <div className="relative z-10 flex max-h-[90vh] flex-col rounded-t-[20px] bg-white shadow-[0_-8px_40px_-12px_rgba(15,23,42,0.25)]">
+      <div className="relative z-10 flex max-h-[90vh] flex-col rounded-t-[20px] bg-white shadow-[0_-8px_40px_-12px_rgba(15,23,42,0.25)] dark:border-t dark:border-slate-800 dark:bg-slate-900">
         <div className="shrink-0 px-4 pb-2 pt-3">
-          <div className="mx-auto h-1 w-9 rounded-full bg-slate-200" />
+          <div className="mx-auto h-1 w-9 rounded-full bg-slate-200 dark:bg-slate-700" />
           <div className="mt-3 flex items-center justify-between">
-            <p className="text-base font-semibold text-slate-900">
-              Filters{count > 0 && <span className="ml-1.5 text-rose-600">{count}</span>}
+            <p className="text-base font-semibold text-slate-900 dark:text-white">
+              Filters{count > 0 && <span className="ml-1.5 text-rose-600 dark:text-rose-400">{count}</span>}
             </p>
             <div className="flex items-center gap-3">
               {count > 0 && (
@@ -435,7 +435,7 @@ export function FilterSheet({
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
@@ -444,11 +444,11 @@ export function FilterSheet({
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto border-t border-slate-100 px-4">
+        <div className="min-h-0 flex-1 overflow-y-auto border-t border-slate-100 px-4 dark:border-slate-800">
           <FilterSections draft={draft} setDraft={setDraft} focusKey={focusKey} />
         </div>
 
-        <div className="flex shrink-0 gap-2 border-t border-slate-200 p-4">
+        <div className="flex shrink-0 gap-2 border-t border-slate-200 p-4 dark:border-slate-800">
           <button type="button" onClick={onClose} className={cn(ghostButton, "flex-1")}>
             Cancel
           </button>

@@ -1,10 +1,63 @@
-import React from 'react';
+import React from "react";
+import Link from "next/link";
+import { ArrowLeft, Mail, KeyRound } from "lucide-react";
+import { HeaderNav } from "@/app/homePage/components/HeaderNav";
+import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 
 export default function ForgotPasswordPage() {
   return (
-    <main className="container mx-auto max-w-md px-4 py-6">
-      <h1 className="text-2xl font-semibold">Forgot Password</h1>
-      <p className="mt-3 text-gray-700">Reset your password via email.</p>
-    </main>
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
+      <HeaderNav />
+
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
+        <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors mb-4"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to Login</span>
+          </Link>
+
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
+            <KeyRound className="h-6 w-6" />
+          </div>
+
+          <h1 className="mt-4 text-2xl font-black text-slate-950 dark:text-white">Reset Password</h1>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Enter your registered email address or mobile number to receive instructions to reset your account credentials.
+          </p>
+
+          <form className="mt-6 space-y-4" onSubmit={(e) => e.preventDefault()}>
+            <div>
+              <label htmlFor="accountIdentifier" className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Email or Mobile Number
+              </label>
+              <input
+                id="accountIdentifier"
+                type="text"
+                placeholder="you@example.com or 10-digit mobile"
+                className="mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-sm font-semibold outline-none transition focus:border-rose-500 focus:bg-white focus:ring-2 focus:ring-rose-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-rose-400"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full rounded-xl bg-rose-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 hover:shadow-lg"
+            >
+              Send Reset Link
+            </button>
+          </form>
+
+          <div className="mt-6 border-t border-slate-100 pt-4 dark:border-slate-800 text-center">
+            <Link href="/login" className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline">
+              Remember your password? Sign in
+            </Link>
+          </div>
+        </div>
+      </main>
+
+      <FooterLinks />
+    </div>
   );
 }

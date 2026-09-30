@@ -19,19 +19,19 @@ export function PropertyDetailsGrid({ groups }: { groups: DetailGroup[] }) {
   if (!visibleGroups.length) return null;
 
   return (
-    <section id="details" className="scroll-mt-24 border-b border-zinc-200 pb-8">
+    <section id="details" className="scroll-mt-24 border-b border-zinc-200 pb-8 dark:border-slate-800">
       <div className="pb-5">
-        <h2 className="text-lg font-semibold text-slate-900">Property details</h2>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Property details</h2>
       </div>
       <div className="space-y-6">
         {visibleGroups.map((group) => (
           <section key={group.title}>
-            <h3 className="text-sm font-semibold text-slate-950">{group.title}</h3>
+            <h3 className="text-sm font-semibold text-slate-950 dark:text-white">{group.title}</h3>
             <dl className="mt-3 grid gap-x-8 sm:grid-cols-2">
               {group.items.map((item) => (
-                <div key={item.label} className="grid min-w-0 grid-cols-2 gap-3 border-b border-zinc-100 py-3">
-                  <dt className="text-xs font-medium text-slate-500">{item.label}</dt>
-                  <dd className="break-words text-sm font-medium text-zinc-900">{item.value}</dd>
+                <div key={item.label} className="grid min-w-0 grid-cols-2 gap-3 border-b border-zinc-100 py-3 dark:border-slate-800">
+                  <dt className="text-xs font-medium text-slate-500 dark:text-slate-400">{item.label}</dt>
+                  <dd className="break-words text-sm font-medium text-zinc-900 dark:text-slate-200">{item.value}</dd>
                 </div>
               ))}
             </dl>

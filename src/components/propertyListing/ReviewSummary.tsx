@@ -61,6 +61,7 @@ export function ReviewSummary({
         <Row label="Type" value={context.propertySubTypeSlug} />
         <Row label="Configuration" value={deriveConfiguration(values)} />
         <Row label="Sub-category" value={context.propertySubCategorySlug} />
+        <Row label="Workspace" value={context.organizationId ? `Organization #${context.organizationId}` : "Personal Account"} />
         <Row label="Posted as" value={context.postedAs} />
       </Group>
 

@@ -28,6 +28,7 @@ import { listingSteps } from "@/features/propertyListing/formConfig/steps";
 import { computeListingScore } from "@/features/propertyListing/formConfig/scoring";
 import { requiredPathsForStep } from "@/features/propertyListing/formConfig/validation";
 import { suggestTitle } from "@/features/propertyListing/formConfig/derive";
+import { APP_CONFIG } from "@/constants/app-config";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import type { FieldPath } from "react-hook-form";
 import { Stepper } from "./Stepper";
@@ -36,6 +37,8 @@ import { PropertyScore } from "./PropertyScore";
 import { SectionRenderer } from "./SectionRenderer";
 import { LocationStep } from "./LocationStep";
 import { ReviewSummary } from "./ReviewSummary";
+import { WorkspacePicker } from "./WorkspacePicker";
+import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import { panel } from "./theme";
 
 const PG_SUBTYPES = ["pg-private-room", "pg-shared-room", "pg-bed"];
@@ -44,12 +47,24 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
   const router = useRouter();
   const searchParams = useSearchParams();
   const propertyId = propIdOverride ?? searchParams.get("id") ?? undefined;
+  const organizationIdFromQuery = searchParams.get("orgId") ?? undefined;
   const dispatch = useAppDispatch();
   const { draft } = useAppSelector(selectPropertyListing);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
+      if (!token) {
+        const redirectUrl = propertyId ? `/propertyListing?id=${propertyId}` : "/propertyListing";
+        router.replace(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
+      }
+    }
+  }, [router, propertyId]);
 
   const [submitProperty, submitState] = useSubmitPropertyMutation();
   const [updateProperty, updateState] = useUpdatePropertyMutation();
   const { data: existing } = useGetPropertyQuery(propertyId as string, { skip: !propertyId });
+  const { data: myOrganizations = [] } = useMyOrganizationsQuery();
 
   const [stepIndex, setStepIndex] = useState(0);
   const [maxVisited, setMaxVisited] = useState(0);
@@ -63,6 +78,13 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
 
   const values = useWatch({ control: form.control }) as PropertyListingFormValues;
   const score = useMemo(() => computeListingScore(listingSteps, values ?? {}), [values]);
+
+  const activeSelectedOrg = useMemo(() => {
+    if (!values?.context?.organizationId) return null;
+    return myOrganizations.find((o) => String(o.id) === String(values.context.organizationId)) || null;
+  }, [myOrganizations, values?.context?.organizationId]);
+
+  const isViewerInSelectedOrg = activeSelectedOrg?.role?.name === "VIEWER";
 
   // Hydrate an existing listing for editing.
   useEffect(() => {
@@ -80,6 +102,16 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
     const persisted = loadPersistedDraft();
     if (persisted?.form) setResume(persisted);
   }, [propertyId]);
+
+  useEffect(() => {
+    if (propertyId) return;
+    if (organizationIdFromQuery) {
+      form.setValue("context.organizationId", organizationIdFromQuery, { shouldDirty: true });
+      if (form.getValues("context.postedAs") === "OWNER") {
+        form.setValue("context.postedAs", "AGENT", { shouldDirty: true });
+      }
+    }
+  }, [form, organizationIdFromQuery, propertyId]);
 
   // Autosave to localStorage + Redux (debounced).
   useEffect(() => {
@@ -135,6 +167,10 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
   };
 
   const handleNext = async () => {
+    if (isViewerInSelectedOrg) {
+      toast.error("Viewer role cannot publish listings under this organization. Please switch to Personal Account or update your role.");
+      return;
+    }
     const paths = requiredPathsForStep(step, form.getValues()) as FieldPath<PropertyListingFormValues>[];
     const ok = paths.length === 0 || (await form.trigger(paths, { shouldFocus: true }));
     if (!ok) {
@@ -146,6 +182,10 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
   };
 
   const handlePublish = async () => {
+    if (isViewerInSelectedOrg) {
+      toast.error("Viewer role cannot publish listings under this organization. Please switch to Personal Account or update your role.");
+      return;
+    }
     const paths = listingSteps
       .flatMap((s) => requiredPathsForStep(s, form.getValues()))
       .filter((p, i, a) => a.indexOf(p) === i) as FieldPath<PropertyListingFormValues>[];
@@ -244,14 +284,32 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
             <div className="hidden lg:block">
               <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-rose-500">
                 <span>Step {stepIndex + 1} of {listingSteps.length}</span>
-                <span className="text-slate-300">·</span>
-                <span className="text-slate-500 normal-case tracking-normal">{step.label}</span>
+                <span className="text-slate-300 dark:text-slate-700">·</span>
+                <span className="text-slate-500 dark:text-slate-400 normal-case tracking-normal">{step.label}</span>
               </div>
-              <h1 className="mt-3 text-2xl font-semibold text-slate-900">{step.title ?? step.label}</h1>
-              {step.description && <p className="mt-1 text-sm text-slate-500">{step.description}</p>}
+              <h1 className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{step.title ?? step.label}</h1>
+              {step.description && <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{step.description}</p>}
             </div>
 
             <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+              {stepIndex === 0 && (
+                <WorkspacePicker
+                  selectedOrgId={values?.context?.organizationId}
+                  onSelectPersonal={() => {
+                    form.setValue("context.organizationId", undefined, { shouldDirty: true });
+                    if (!form.getValues("context.postedAs")) {
+                      form.setValue("context.postedAs", "OWNER", { shouldDirty: true });
+                    }
+                  }}
+                  onSelectOrg={(org) => {
+                    form.setValue("context.organizationId", String(org.id), { shouldDirty: true });
+                    if (form.getValues("context.postedAs") === "OWNER") {
+                      form.setValue("context.postedAs", "AGENT", { shouldDirty: true });
+                    }
+                  }}
+                />
+              )}
+
               {step.kind === "custom" && step.component === "location" && <LocationStep />}
 
               {step.kind !== "custom" &&
@@ -266,7 +324,7 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
       </div>
 
       {/* sticky action bar */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/90 backdrop-blur lg:sticky lg:bottom-4 lg:mt-4 lg:rounded-2xl lg:border">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90 lg:sticky lg:bottom-4 lg:mt-4 lg:rounded-2xl lg:border">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <Button
             type="button"
@@ -290,17 +348,18 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
             {isLast ? (
               <Button
                 type="button"
-                className="bg-slate-900 px-6 hover:bg-slate-800"
+                className="bg-slate-900 px-6 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                 onClick={handlePublish}
-                disabled={busy}
+                disabled={busy || isViewerInSelectedOrg}
               >
                 {busy ? "Saving…" : propertyId ? "Update listing" : "Post listing"}
               </Button>
             ) : (
               <Button
                 type="button"
-                className="bg-slate-900 px-6 hover:bg-slate-800"
+                className="bg-slate-900 px-6 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                 onClick={handleNext}
+                disabled={isViewerInSelectedOrg}
               >
                 Save &amp; continue
               </Button>

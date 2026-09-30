@@ -3,10 +3,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Phone, Lock, Loader2 } from "lucide-react";
+import { Phone, Lock, Loader2, ArrowLeft } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { apiClient } from "@/lib/services/api/client";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { BrandLogo } from "@/components/common/BrandLogo";
 
 export default function VerifyOtpPage() {
   const router = useRouter();
@@ -78,46 +80,63 @@ export default function VerifyOtpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#eef2ff] text-[#0f172a]">
-      <main className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-10">
-        <div className="w-full max-w-sm sm:max-w-md rounded-2xl bg-white/95 backdrop-blur-xl shadow-xl border border-slate-200">
-          <div className="p-5 sm:p-7">
-            <div className="md:hidden mb-4 font-bold text-2xl tracking-tight">CityHaven</div>
-            <h2 className="text-xl sm:text-2xl font-semibold">Verify OTP</h2>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-indigo-50/40 text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-150">
+      {/* Top Bar with Back Link & Theme Switcher */}
+      <header className="flex items-center justify-between px-6 py-4">
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Login</span>
+        </Link>
+        <ThemeToggle />
+      </header>
+
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-10">
+        <div className="w-full max-w-sm sm:max-w-md rounded-3xl bg-white/95 backdrop-blur-xl shadow-xl border border-slate-200 dark:bg-slate-900/90 dark:border-slate-800">
+          <div className="p-6 sm:p-8">
+            <div className="mb-6">
+              <BrandLogo size="md" showTagline taglineText="Verified Real Estate" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Verify OTP</h2>
 
             <div className="mt-3">
-              <div className="flex items-center justify-between text-xs text-slate-500">
+              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>Step 2 of 2</span>
                 <span>Enter 6-digit code</span>
               </div>
-              <div className="mt-2 h-1.5 rounded-full bg-slate-200">
-                <div className="h-full rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600" style={{ width: '66%' }} />
+              <div className="mt-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800">
+                <div className="h-full rounded-full bg-rose-600" style={{ width: '100%' }} />
               </div>
             </div>
 
-            <div className="mt-5 text-sm text-slate-600 flex items-center gap-2">
+            <div className="mt-5 text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2">
               <Phone className="h-4 w-4 text-slate-400" aria-hidden="true" />
               <span>{mobile ? `Code sent to ${mobile}` : 'Mobile number unavailable'}</span>
             </div>
 
-            <form className="mt-5 space-y-3" onSubmit={handleVerify} aria-label="OTP verification form">
-              <label htmlFor="otp" className="text-sm font-medium">Enter OTP</label>
-              <input
-                id="otp"
-                name="otp"
-                inputMode="numeric"
-                pattern="[0-9]{6}"
-                maxLength={6}
-                className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-base font-semibold outline-none transition-colors focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/25 tracking-widest"
-                placeholder="6-digit OTP"
-                value={otpInput}
-                onChange={(e) => setOtpInput(e.target.value)}
-              />
-              <div className="flex items-center gap-3">
+            <form className="mt-5 space-y-4" onSubmit={handleVerify} aria-label="OTP verification form">
+              <div>
+                <label htmlFor="otp" className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Enter OTP</label>
+                <input
+                  id="otp"
+                  name="otp"
+                  inputMode="numeric"
+                  pattern="[0-9]{6}"
+                  maxLength={6}
+                  className="mt-1.5 h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-lg font-bold outline-none transition focus:border-rose-500 focus:bg-white focus:ring-2 focus:ring-rose-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-rose-400 tracking-widest text-center"
+                  placeholder="------"
+                  value={otpInput}
+                  onChange={(e) => setOtpInput(e.target.value)}
+                />
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
                 <button
                   type="submit"
                   disabled={!validOtp || verifying}
-                  className="flex-1 rounded-lg bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 px-4 py-2 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-transform hover:scale-[1.02] focus:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600/40 disabled:opacity-60 disabled:hover:scale-100"
+                  className="flex-1 rounded-xl bg-rose-600 px-4 py-3 text-white text-sm font-bold shadow-md shadow-rose-200 transition hover:bg-rose-700 hover:shadow-lg disabled:opacity-60 disabled:hover:scale-100"
                 >
                   {verifying ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Verifying</span> : "Verify & Login"}
                 </button>
@@ -125,7 +144,7 @@ export default function VerifyOtpPage() {
                   type="button"
                   onClick={resend}
                   disabled={sending}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-600 hover:bg-slate-50 disabled:opacity-60"
+                  className="rounded-xl border border-slate-200 px-4 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 disabled:opacity-60"
                 >
                   {sending ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Sending</span> : "Resend"}
                 </button>
@@ -133,12 +152,12 @@ export default function VerifyOtpPage() {
             </form>
 
             {message && (
-              <p className="mt-4 text-sm text-indigo-600" aria-live="polite">{message}</p>
+              <p className="mt-4 text-sm font-medium text-rose-600 dark:text-rose-400" aria-live="polite">{message}</p>
             )}
 
-            <div className="mt-6 flex items-center justify-between text-xs text-slate-500">
-              <div className="flex items-center gap-2"><Lock className="h-3.5 w-3.5" aria-hidden="true" /><span>Secure verification</span></div>
-              <Link href="/login" className="text-indigo-600 hover:underline">Change number</Link>
+            <div className="mt-6 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 pt-4 dark:border-slate-800">
+              <div className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" aria-hidden="true" /><span>Secure verification</span></div>
+              <Link href="/login" className="font-bold text-rose-600 dark:text-rose-400 hover:underline">Change number</Link>
             </div>
           </div>
         </div>

@@ -60,12 +60,12 @@ function SkeletonGrid({ count = 6 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="rounded-2xl border border-slate-200 bg-white p-4">
-          <Skeleton className="h-44 w-full rounded-xl" />
+        <div key={i} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <Skeleton className="h-44 w-full rounded-xl dark:bg-slate-800" />
           <div className="mt-3 space-y-2">
-            <Skeleton className="h-5 w-2/3" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="h-5 w-2/3 dark:bg-slate-800" />
+            <Skeleton className="h-4 w-1/2 dark:bg-slate-800" />
+            <Skeleton className="h-4 w-1/3 dark:bg-slate-800" />
           </div>
         </div>
       ))}
@@ -125,10 +125,10 @@ export function ResultsList({ results }: { results: SearchResults }) {
 
   if (!visible.length) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-slate-800 dark:bg-slate-900">
         <SearchX className="mx-auto h-8 w-8 text-slate-400" />
-        <p className="mt-3 text-sm font-semibold text-slate-800">No properties match your search</p>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-3 text-sm font-semibold text-slate-800 dark:text-slate-200">No properties match your search</p>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
           Try widening the area, raising the budget, or removing a filter.
         </p>
       </div>

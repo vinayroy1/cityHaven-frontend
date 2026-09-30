@@ -1,9 +1,15 @@
 import React from "react";
-import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap } from "lucide-react";
+import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, AlertCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { ContactPlan, ContactStep } from "./resultCardTypes";
 
 type OwnerContact = { name: string | null; phone: string | null } | null;
+
+export type ScopeOption = {
+  id: number | "PERSONAL";
+  name: string;
+  credits: number;
+};
 
 type ContactUnlockDialogProps = {
   open: boolean;
@@ -25,6 +31,9 @@ type ContactUnlockDialogProps = {
   ownerContact: OwnerContact;
   owner?: string;
   credits: number;
+  scopes?: ScopeOption[];
+  selectedScope?: "PERSONAL" | number;
+  onScopeChange?: (scope: "PERSONAL" | number) => void;
   onLeadNameChange: (value: string) => void;
   onLeadEmailChange?: (value: string) => void;
   onLeadPhoneChange: (value: string) => void;
@@ -56,6 +65,9 @@ export function ContactUnlockDialog({
   ownerContact,
   owner,
   credits,
+  scopes = [],
+  selectedScope = "PERSONAL",
+  onScopeChange,
   onLeadNameChange,
   onLeadEmailChange,
   onLeadPhoneChange,
@@ -66,6 +78,9 @@ export function ContactUnlockDialog({
   onSelectedPlanChange,
   onPurchasePlan,
 }: ContactUnlockDialogProps) {
+  const activeScopeObj = scopes.find((s) => s.id === selectedScope);
+  const isOrgScope = selectedScope !== "PERSONAL";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -86,7 +101,9 @@ export function ContactUnlockDialog({
             </DialogTitle>
             <DialogDescription className="text-rose-50">
               {contactStep === "contact"
-                ? "Your active contact plan allows you to view this advertiser."
+                ? isOrgScope
+                  ? `Unlocked for all team members in ${activeScopeObj?.name || "your organization"}.`
+                  : "Unlocked for your personal account."
                 : contactStep === "profile"
                   ? "Let us know your name so the property owner can connect with you."
                   : "Verify your mobile number to view owner contact details."}
@@ -96,6 +113,48 @@ export function ContactUnlockDialog({
 
         <div className="space-y-3 p-5">
           <StepIndicator contactStep={contactStep} hasActivePlan={hasActivePlan} />
+
+          {/* Workspace / Account Scope Selector (when authenticated & has orgs) */}
+          {scopes.length > 1 && contactStep !== "details" && contactStep !== "profile" && onScopeChange && (
+            <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-2">Active Billing Workspace</p>
+              <div className="flex flex-wrap gap-1.5">
+                {scopes.map((scope) => {
+                  const active = selectedScope === scope.id;
+                  const isOrg = scope.id !== "PERSONAL";
+                  return (
+                    <button
+                      key={String(scope.id)}
+                      type="button"
+                      onClick={() => onScopeChange(scope.id as any)}
+                      className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition ${
+                        active
+                          ? "bg-rose-600 text-white shadow-sm"
+                          : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-100"
+                      }`}
+                    >
+                      {isOrg ? <Building2 className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}
+                      {scope.name} ({scope.credits} {scope.credits === 1 ? "credit" : "credits"})
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-2.5 rounded-md bg-white border border-zinc-200 p-2 text-xs text-zinc-600">
+                {isOrgScope ? (
+                  <p className="flex items-center gap-1.5 font-medium text-zinc-900">
+                    <Building2 className="h-3.5 w-3.5 text-rose-600" />
+                    Using {activeScopeObj?.name}&apos;s contact allowance ({activeScopeObj?.credits ?? 0} available)
+                  </p>
+                ) : (
+                  <p className="flex items-center gap-1.5 font-medium text-zinc-900">
+                    <User className="h-3.5 w-3.5 text-rose-600" />
+                    Using your Personal Account balance ({activeScopeObj?.credits ?? credits} credits)
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           {contactStep === "details" && (
             <LeadDetailsStep
@@ -125,18 +184,39 @@ export function ContactUnlockDialog({
           )}
 
           {contactStep === "plans" && (
-            <PlanSelectionStep
-              plansList={plansList}
-              selectedPlan={selectedPlan}
-              currentPlan={currentPlan}
-              contactError={contactError}
-              loading={loading}
-              onSelectedPlanChange={onSelectedPlanChange}
-              onPurchasePlan={onPurchasePlan}
-            />
+            <>
+              {isOrgScope && credits === 0 && (
+                <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-amber-600" />
+                  <div>
+                    <p className="font-semibold">{activeScopeObj?.name} has 0 contact credits remaining</p>
+                    <p className="mt-0.5 text-amber-700">
+                      You can purchase a pack for this organization, or switch above to use your personal credits.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <PlanSelectionStep
+                plansList={plansList}
+                selectedPlan={selectedPlan}
+                currentPlan={currentPlan}
+                contactError={contactError}
+                loading={loading}
+                onSelectedPlanChange={onSelectedPlanChange}
+                onPurchasePlan={onPurchasePlan}
+              />
+            </>
           )}
 
-          {contactStep === "contact" && <UnlockedContactStep ownerContact={ownerContact} owner={owner} credits={credits} />}
+          {contactStep === "contact" && (
+            <UnlockedContactStep
+              ownerContact={ownerContact}
+              owner={owner}
+              credits={credits}
+              scopeName={isOrgScope ? activeScopeObj?.name : "Personal Account"}
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>
@@ -167,7 +247,6 @@ export function LeadDetailsStep(props: {
   otpError: string | null;
   resendSeconds: number;
   loading: boolean;
-  onLeadNameChange?: (value: string) => void;
   onLeadPhoneChange: (value: string) => void;
   onOtpChange: (value: string) => void;
   onRequestOtp: () => void;
@@ -423,7 +502,17 @@ export function PlanSelectionStep(props: {
   );
 }
 
-export function UnlockedContactStep({ ownerContact, owner, credits }: { ownerContact: OwnerContact; owner?: string; credits: number }) {
+export function UnlockedContactStep({
+  ownerContact,
+  owner,
+  credits,
+  scopeName,
+}: {
+  ownerContact: OwnerContact;
+  owner?: string;
+  credits: number;
+  scopeName?: string;
+}) {
   return (
     <>
       <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-4">
@@ -434,7 +523,9 @@ export function UnlockedContactStep({ ownerContact, owner, credits }: { ownerCon
             <p className="mt-1 text-xl font-bold text-zinc-950">
               {ownerContact?.phone ? `+91 ${ownerContact.phone}` : "+91 ..... ....."}
             </p>
-            <p className="mt-1 text-xs text-zinc-500">Credits remaining: {credits}</p>
+            <p className="mt-1 text-xs text-zinc-500">
+              Credits remaining: {credits} {scopeName ? `(${scopeName})` : ""}
+            </p>
           </div>
         </div>
       </div>

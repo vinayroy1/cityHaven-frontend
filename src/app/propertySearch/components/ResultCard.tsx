@@ -2,17 +2,19 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { useMeQuery, useUpdateProfileMutation } from "@/features/auth/api";
+import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import {
   useGetPlansQuery,
   useLazyCheckUnlockedContactQuery,
-  useLazyGetMyCreditsQuery,
+  useLazyGetBillingSummaryQuery,
   usePurchaseCreditsByPlanMutation,
   usePurchaseCreditsMutation,
   useRequestContactOtpMutation,
   useUnlockPropertyContactMutation,
   useVerifyContactOtpMutation,
+  BillingSummary,
 } from "@/features/contactVerify/api";
-import { ContactUnlockDialog } from "./ContactUnlockDialog";
+import { ContactUnlockDialog, ScopeOption } from "./ContactUnlockDialog";
 import { ResultCardMedia } from "./ResultCardMedia";
 import { ResultCardSummary, SavePropertyButton } from "./ResultCardSummary";
 import { CONTACT_PLANS, FALLBACK_IMAGE, type ContactPlan, type ContactStep, type ResultCardProps } from "./resultCardTypes";
@@ -50,6 +52,9 @@ export function ResultCard({
   const [resendSeconds, setResendSeconds] = React.useState(0);
   const [hasActivePlan, setHasActivePlan] = React.useState(false);
   const [credits, setCredits] = React.useState(0);
+  const [selectedScope, setSelectedScope] = React.useState<"PERSONAL" | number>("PERSONAL");
+  const [personalSummary, setPersonalSummary] = React.useState<BillingSummary | null>(null);
+  const [orgSummaries, setOrgSummaries] = React.useState<Record<number, BillingSummary>>({});
   const [ownerContact, setOwnerContact] = React.useState<{ name: string | null; phone: string | null } | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [contactError, setContactError] = React.useState<string | null>(null);
@@ -61,11 +66,14 @@ export function ResultCard({
   const { data: meData } = useMeQuery(undefined, { skip: !getToken() });
   const isMyProperty = Boolean(ownerId && meData?.id && Number(ownerId) === Number(meData.id));
 
+  const { data: orgsData } = useMyOrganizationsQuery(undefined, { skip: !getToken() });
+  const orgs = orgsData ?? [];
+
   const { data: plansResponse } = useGetPlansQuery();
   const [requestContactOtp] = useRequestContactOtpMutation();
   const [verifyContactOtp] = useVerifyContactOtpMutation();
   const [updateProfileMutation] = useUpdateProfileMutation();
-  const [triggerGetCredits] = useLazyGetMyCreditsQuery();
+  const [fetchBillingSummary] = useLazyGetBillingSummaryQuery();
   const [triggerCheckUnlocked] = useLazyCheckUnlockedContactQuery();
   const [unlockPropertyContactMutation] = useUnlockPropertyContactMutation();
   const [purchaseCreditsMutation] = usePurchaseCreditsMutation();
@@ -105,6 +113,24 @@ export function ResultCard({
             ? "For sale"
             : null;
 
+  const scopes = React.useMemo<ScopeOption[]>(() => {
+    const list: ScopeOption[] = [
+      {
+        id: "PERSONAL",
+        name: "Personal Account",
+        credits: personalSummary?.credits ?? credits,
+      },
+    ];
+    for (const org of orgs) {
+      list.push({
+        id: org.id,
+        name: org.name,
+        credits: orgSummaries[org.id]?.credits ?? 0,
+      });
+    }
+    return list;
+  }, [personalSummary, credits, orgs, orgSummaries]);
+
   React.useEffect(() => {
     setActiveImage(0);
     setImageFailed(false);
@@ -115,6 +141,27 @@ export function ResultCard({
     const timer = window.setTimeout(() => setResendSeconds((seconds) => Math.max(0, seconds - 1)), 1000);
     return () => window.clearTimeout(timer);
   }, [otpSent, resendSeconds]);
+
+  const refreshScopes = React.useCallback(async () => {
+    try {
+      const pRes = await fetchBillingSummary({ target: "USER" }).unwrap();
+      setPersonalSummary(pRes.data);
+      setCredits(pRes.data.credits ?? 0);
+
+      const orgMap: Record<number, BillingSummary> = {};
+      for (const org of orgs) {
+        try {
+          const oRes = await fetchBillingSummary({ target: "ORG", organizationId: org.id }).unwrap();
+          orgMap[org.id] = oRes.data;
+        } catch {
+          // ignore
+        }
+      }
+      setOrgSummaries(orgMap);
+    } catch {
+      // ignore
+    }
+  }, [fetchBillingSummary, orgs]);
 
   const moveImage = (event: React.MouseEvent<HTMLButtonElement>, direction: 1 | -1) => {
     event.preventDefault();
@@ -151,7 +198,7 @@ export function ResultCard({
     return false;
   };
 
-  const unlockContact = async () => {
+  const unlockContact = async (scopeToUse = selectedScope) => {
     setLoading(true);
     setContactError(null);
     try {
@@ -159,12 +206,17 @@ export function ResultCard({
         setContactStep("contact");
         return;
       }
-      const res = await unlockPropertyContactMutation(id).unwrap();
+      const isOrg = scopeToUse !== "PERSONAL";
+      const res = await unlockPropertyContactMutation({
+        propertyId: id,
+        organizationId: isOrg && typeof scopeToUse === "number" ? scopeToUse : undefined,
+      }).unwrap();
       setOwnerContact({ name: res.data?.ownerName ?? null, phone: res.data?.ownerPhone ?? null });
       setCredits(res.credits ?? 0);
       setContactStep("contact");
+      void refreshScopes();
     } catch (err: any) {
-      if (err?.status === 402 || err?.data?.message?.includes("credits")) {
+      if (err?.status === 402 || err?.data?.message?.includes("credits") || err?.data?.message?.includes("allowance")) {
         setContactStep("plans");
       } else {
         setContactError(err?.data?.message || err.message || "Failed to unlock contact");
@@ -201,12 +253,11 @@ export function ResultCard({
           return;
         }
 
-        const creditsRes = await triggerGetCredits().unwrap();
-        const userCredits = creditsRes?.data?.credits ?? 0;
-        setCredits(userCredits);
-        setHasActivePlan(userCredits > 0);
-        if (userCredits > 0) {
-          await unlockContact();
+        await refreshScopes();
+        const pCredits = personalSummary?.credits ?? 0;
+        setHasActivePlan(pCredits > 0);
+        if (pCredits > 0) {
+          await unlockContact("PERSONAL");
         } else {
           setContactStep("plans");
           setLoading(false);
@@ -246,16 +297,22 @@ export function ResultCard({
   const purchasePlan = async () => {
     setLoading(true);
     setContactError(null);
+    const isOrg = selectedScope !== "PERSONAL";
+    const orgId = isOrg && typeof selectedScope === "number" ? selectedScope : undefined;
     try {
       if (currentPlan?.dbId) {
-        const res = await purchaseCreditsByPlanMutation({ planId: currentPlan.dbId }).unwrap();
+        const res = await purchaseCreditsByPlanMutation({
+          planId: currentPlan.dbId,
+          target: isOrg ? "ORG" : "USER",
+          organizationId: orgId,
+        }).unwrap();
         setCredits(res.data?.credits ?? 0);
       } else {
         const res = await purchaseCreditsMutation({ credits: currentPlan?.credits ?? 20, reason: "PURCHASE" }).unwrap();
         setCredits(res.data?.credits ?? 0);
       }
       setHasActivePlan(true);
-      await unlockContact();
+      await unlockContact(selectedScope);
     } catch (err: any) {
       setContactError(err?.data?.message || err.message || "Purchase failed");
     } finally {
@@ -291,24 +348,16 @@ export function ResultCard({
       const isNewUser = res.data?.isNewUser || !userName || userName === "New User" || userName === "User";
 
       if (isNewUser) {
-        // Ask for Name and optional Email
         setContactStep("profile");
         return;
       }
 
-      // Existing user: check credit balance
-      let userCredits = res.data?.user?.credits ?? 0;
-      try {
-        const creditsRes = await triggerGetCredits().unwrap();
-        if (typeof creditsRes?.data?.credits === "number") userCredits = creditsRes.data.credits;
-      } catch {
-        // Keep the verified response credit count.
-      }
-
+      await refreshScopes();
+      const userCredits = res.data?.user?.credits ?? 0;
       setCredits(userCredits);
       setHasActivePlan(userCredits > 0);
       if (userCredits > 0) {
-        await unlockContact();
+        await unlockContact("PERSONAL");
       } else {
         setContactStep("plans");
       }
@@ -329,18 +378,12 @@ export function ResultCard({
         email: leadEmail.trim() || undefined,
       }).unwrap();
 
-      let userCredits = 0;
-      try {
-        const creditsRes = await triggerGetCredits().unwrap();
-        if (typeof creditsRes?.data?.credits === "number") userCredits = creditsRes.data.credits;
-      } catch {
-        // Fallback to 0
-      }
-
+      await refreshScopes();
+      const userCredits = personalSummary?.credits ?? 0;
       setCredits(userCredits);
       setHasActivePlan(userCredits > 0);
       if (userCredits > 0) {
-        await unlockContact();
+        await unlockContact("PERSONAL");
       } else {
         setContactStep("plans");
       }
@@ -357,7 +400,7 @@ export function ResultCard({
       tabIndex={0}
       onClick={openDetails}
       onKeyDown={handleCardKeyDown}
-      className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-200"
+      className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-200 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
     >
       <ResultCardMedia
         image={image}
@@ -409,6 +452,9 @@ export function ResultCard({
         ownerContact={ownerContact}
         owner={owner}
         credits={credits}
+        scopes={scopes}
+        selectedScope={selectedScope}
+        onScopeChange={(s) => setSelectedScope(s)}
         onLeadNameChange={setLeadName}
         onLeadEmailChange={setLeadEmail}
         onLeadPhoneChange={setLeadPhone}

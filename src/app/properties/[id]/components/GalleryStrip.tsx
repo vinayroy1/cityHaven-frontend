@@ -28,7 +28,7 @@ export function GalleryStrip({ images, title = "Property gallery", subtitle = "C
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg bg-zinc-100">
+      <div className="overflow-hidden rounded-lg bg-zinc-100 dark:bg-slate-900 border border-transparent dark:border-slate-800">
         <div className="relative aspect-[4/3] sm:aspect-[16/10]">
           <img src={activeImage} alt="Property cover" className="h-full w-full cursor-pointer object-cover" onClick={() => setOpen(true)} />
           <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 via-black/20 to-transparent px-4 py-3 text-white">
@@ -75,7 +75,7 @@ export function GalleryStrip({ images, title = "Property gallery", subtitle = "C
               key={src + idx}
               onClick={() => openAt(idx)}
               aria-label={`View photo ${idx + 1}`}
-              className={`relative h-20 overflow-hidden rounded-md border ${idx === activeIndex ? "border-emerald-500 ring-2 ring-emerald-100" : "border-slate-100"} transition`}
+              className={`relative h-20 overflow-hidden rounded-md border ${idx === activeIndex ? "border-emerald-500 ring-2 ring-emerald-100 dark:ring-emerald-950" : "border-slate-100 dark:border-slate-800"} transition`}
             >
               <img src={src} alt={`Property image ${idx + 1}`} className="h-full w-full object-cover" />
               {idx === orderedImages.length - 1 && (

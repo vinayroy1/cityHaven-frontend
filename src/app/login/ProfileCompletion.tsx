@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ShieldCheck, Loader2 } from "lucide-react";
+import { User, Mail, Loader2, ArrowRight, CheckCircle2 } from "lucide-react";
 
 type Props = {
   name: string;
@@ -13,43 +13,79 @@ type Props = {
   message?: string | null;
 };
 
-export function ProfileCompletion({ name, email, onChangeName, onChangeEmail, onSubmit, isSaving, message }: Props) {
+export function ProfileCompletion({
+  name,
+  email,
+  onChangeName,
+  onChangeEmail,
+  onSubmit,
+  isSaving,
+  message,
+}: Props) {
+  const isFormValid = name.trim().length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
   return (
-    <form className="mt-6 space-y-3 border-top border-slate-100 pt-5" onSubmit={onSubmit}>
-      <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-        <ShieldCheck className="h-4 w-4 text-emerald-500" />
-        Complete your profile
+    <form className="mt-6 space-y-4" onSubmit={onSubmit}>
+      <div>
+        <label htmlFor="fullName" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+          Full Name
+        </label>
+        <div className="relative flex items-center">
+          <User className="absolute left-3.5 h-4 w-4 text-slate-400" />
+          <input
+            id="fullName"
+            name="name"
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400"
+            placeholder="e.g. Rahul Sharma"
+            value={name}
+            onChange={(e) => onChangeName(e.target.value)}
+            autoFocus
+          />
+        </div>
       </div>
-      <div className="space-y-2">
-        <input
-          className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-          placeholder="Full name"
-          value={name}
-          onChange={(e) => onChangeName(e.target.value)}
-        />
-        <input
-          className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-          placeholder="Email"
-          type="email"
-          value={email}
-          onChange={(e) => onChangeEmail(e.target.value)}
-        />
+
+      <div>
+        <label htmlFor="emailAddress" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+          Email Address
+        </label>
+        <div className="relative flex items-center">
+          <Mail className="absolute left-3.5 h-4 w-4 text-slate-400" />
+          <input
+            id="emailAddress"
+            name="email"
+            type="email"
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 placeholder:text-slate-400"
+            placeholder="rahul.sharma@example.com"
+            value={email}
+            onChange={(e) => onChangeEmail(e.target.value)}
+          />
+        </div>
       </div>
+
+      {message && (
+        <p className="text-xs font-medium text-rose-600 bg-rose-50 border border-rose-100 p-2.5 rounded-xl">
+          {message}
+        </p>
+      )}
+
       <button
         type="submit"
-        disabled={isSaving}
-        className="w-full rounded-xl border border-emerald-500 bg-emerald-500/90 px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_38px_-24px_rgba(16,185,129,0.8)] transition hover:-translate-y-0.5 hover:bg-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:opacity-60"
+        disabled={isSaving || !isFormValid}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3.5 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
       >
         {isSaving ? (
-          <span className="inline-flex items-center gap-2">
+          <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            Saving...
-          </span>
+            Saving Profile...
+          </>
         ) : (
-          "Save & continue"
+          <>
+            <span>Complete & Continue</span>
+            <CheckCircle2 className="h-4 w-4" />
+          </>
         )}
       </button>
-      {message && <p className="text-xs text-rose-600">{message}</p>}
     </form>
   );
 }
+
