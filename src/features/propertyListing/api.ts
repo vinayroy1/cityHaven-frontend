@@ -49,10 +49,11 @@ export const propertyListingApi = createApi({
       }),
       invalidatesTags: (_res, _err, id) => [{ type: "Property", id }, "Property"],
     }),
-    myProperties: builder.query<any, void>({
-      query: () => ({
+    myProperties: builder.query<any, { cursor?: number; pageSize?: number; status?: string } | void>({
+      query: (params) => ({
         url: API_ENDPOINTS.propertyListing.my,
         method: "GET",
+        params: params || {},
       }),
       transformResponse: (response: { data?: any }) => response.data ?? [],
       providesTags: ["Property"],

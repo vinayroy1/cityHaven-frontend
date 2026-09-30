@@ -12,6 +12,24 @@ type CursorPage<T> = {
 
 const flattenPages = <T,>(pages?: CursorPage<T>[]): T[] => pages?.flatMap((p) => p.items ?? []) ?? [];
 
+export function useMyPropertiesInfinite(params?: { pageSize?: number; status?: string; cityId?: number; listingType?: string }) {
+  const query = useInfiniteQuery<CursorPage<any>, Error>({
+    queryKey: ["myProperties", params],
+    queryFn: ({ pageParam }) =>
+      apiFetch<CursorPage<any>>({
+        url: API_ENDPOINTS.propertyListing.my,
+        params: { ...(params || {}), cursor: pageParam },
+      }),
+    initialPageParam: null,
+    getNextPageParam: (last) => (last && "nextCursor" in last ? (last as CursorPage<any>).nextCursor ?? undefined : undefined),
+  });
+
+  return {
+    ...query,
+    items: flattenPages(query.data?.pages as CursorPage<any>[] | undefined),
+  };
+}
+
 export function useOrgListingsInfinite(params?: { orgId?: number | string; assignedToMe?: boolean; status?: string; cityId?: number; listingType?: string }) {
   const query = useInfiniteQuery<CursorPage<any>, Error>({
     queryKey: ["orgListings", params],
