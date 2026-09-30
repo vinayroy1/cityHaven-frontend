@@ -166,6 +166,7 @@ export function ResultsList({ results }: { results: SearchResults }) {
             isNew={isFresh(item.createdAt)}
             isVerified={isVerifiedListing(item)}
             posterBadge={postedAsLabel(item.postedAs)}
+            ownerId={item.ownerId ?? item.createdById ?? undefined}
             images={item.media?.map((m) => m.url).filter(Boolean) ?? []}
           />
         ))}

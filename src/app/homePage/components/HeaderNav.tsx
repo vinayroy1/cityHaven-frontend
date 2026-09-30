@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Phone, User, Bell, CircleHelp, Menu, X, LogOut } from "lucide-react";
+import { Phone, User, Bell, CircleHelp, Menu, X, LogOut, Heart } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 
 const navMenus = [
@@ -74,9 +74,19 @@ export function HeaderNav() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
-    setIsAuthed(!!token);
+    const checkAuth = () => {
+      const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
+      setIsAuthed(!!token);
+    };
+    checkAuth();
     setMounted(true);
+
+    window.addEventListener("storage", checkAuth);
+    window.addEventListener("auth-change", checkAuth);
+    return () => {
+      window.removeEventListener("storage", checkAuth);
+      window.removeEventListener("auth-change", checkAuth);
+    };
   }, []);
 
   useEffect(() => {
@@ -160,6 +170,14 @@ export function HeaderNav() {
             <Bell className="h-5 w-5" />
           </Link>
           <Link
+            href="/favorites"
+            className="flex h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-rose-200 hover:text-rose-600 active:scale-95"
+            title="Liked properties"
+            aria-label="Liked properties"
+          >
+            <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
+          </Link>
+          <Link
             href="/contact"
             className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-700 transition hover:border-slate-300 sm:flex"
           >
@@ -194,7 +212,7 @@ export function HeaderNav() {
           </button>
 
           {isAuthed && userMenuOpen && (
-            <div className="absolute right-0 top-14 z-50 w-48 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
+            <div className="absolute right-0 top-14 z-50 w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
               <button
                 type="button"
                 onClick={() => {
@@ -204,6 +222,17 @@ export function HeaderNav() {
                 className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
               >
                 Dashboard
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  router.push("/favorites");
+                  setUserMenuOpen(false);
+                }}
+                className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+              >
+                <span>Liked properties</span>
+                <Heart className="h-4 w-4 text-rose-500" />
               </button>
               <button
                 type="button"
@@ -249,6 +278,15 @@ export function HeaderNav() {
                   <span>{isAuthed ? "Go to dashboard" : "Login / Signup"}</span>
                   <User className="h-4 w-4" />
                 </button>
+
+                <Link
+                  href="/favorites"
+                  onClick={toggleMobile}
+                  className="flex items-center justify-between rounded-xl border border-rose-200 bg-rose-50/50 px-3 py-2 text-rose-700 shadow-sm"
+                >
+                  <span>Liked properties</span>
+                  <Heart className="h-4 w-4 fill-rose-500 text-rose-500" />
+                </Link>
 
                 <Link
                   href="/propertyListing"

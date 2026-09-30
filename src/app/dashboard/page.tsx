@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Bell, FileText, HandCoins, IdCard, MessageSquare, NotebookTabs, RouteIcon, ShieldCheck, Users } from "lucide-react";
+import { Bell, FileText, HandCoins, Heart, IdCard, MessageSquare, NotebookTabs, RouteIcon, ShieldCheck, Users } from "lucide-react";
 import { PageHeader } from "./components/PageHeader";
 import { SectionCard } from "./components/SectionCard";
 import { StatPill } from "./components/StatPill";
@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   const quickLinks = [
+    { href: "/dashboard/favorites", title: "Liked Properties", description: "Your shortlisted homes and saved properties.", icon: Heart },
     { href: "/dashboard/properties", title: "Properties", description: "Manage drafts, active listings, and boosts.", icon: NotebookTabs },
     { href: "/dashboard/leads", title: "Leads & CRM", description: "Track enquiries, visits, and follow-ups.", icon: Users },
     { href: "/dashboard/kyc", title: "KYC & Compliance", description: "Keep verification and payouts current.", icon: ShieldCheck },

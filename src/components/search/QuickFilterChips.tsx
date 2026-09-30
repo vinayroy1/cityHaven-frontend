@@ -4,7 +4,7 @@ import React from "react";
 import { SlidersHorizontal, ChevronDown } from "lucide-react";
 import { Chip } from "./Chip";
 import { countActiveFilters, type SearchState } from "./searchQuery";
-import { filterSectionsFor, formatMoney } from "./searchConfig";
+import { filterSectionsFor, budgetConfig } from "./searchConfig";
 
 type Props = {
   state: SearchState;
@@ -15,9 +15,10 @@ function summarise(state: SearchState, key: string): string | null {
   switch (key) {
     case "budget": {
       if (state.priceMin == null && state.priceMax == null) return null;
-      const lo = state.priceMin != null ? formatMoney(state.priceMin) : "Any";
-      const hi = state.priceMax != null ? formatMoney(state.priceMax) : "Any";
-      return `${lo}–${hi}`;
+      const config = budgetConfig(state);
+      const lo = state.priceMin != null ? config.format(state.priceMin) : "Any";
+      const hi = state.priceMax != null ? config.format(state.priceMax) : "Any";
+      return `${lo}–${hi}${config.monthly ? " / month" : ""}`;
     }
     case "bedrooms":
       return state.bedroomsMin != null ? `${state.bedroomsMin}+ BHK` : null;

@@ -46,6 +46,8 @@ export type PropertySearchItem = {
   locality?: string | null;
   subLocality?: string | null;
   address?: string | null;
+  ownerId?: number | null;
+  createdById?: number | null;
   propertyType?: { name?: string | null; slug?: string | null } | null;
   propertySubType?: { name?: string | null; slug?: string | null } | null;
   media?: PropertySearchMedia[];

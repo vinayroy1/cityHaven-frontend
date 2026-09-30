@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MapPin, RefreshCw, Trash2, Edit3, Eye, Plus } from "lucide-react";
@@ -23,12 +23,7 @@ const statusColors: Record<ListingStatus, string> = {
   REJECTED: "bg-rose-50 text-rose-700 border-rose-200",
 };
 
-const mockOrgListings = [
-  { id: 201, title: "Grade A office - MG Road", cityName: "Bengaluru", price: 125000000, status: "UNDER_REVIEW", updatedAt: "2024-11-12" },
-  { id: 202, title: "Retail - Cyberhub", cityName: "Gurugram", price: 78000000, status: "ACTIVE", updatedAt: "2024-11-20" },
-];
-
-export default function DashboardPropertiesPage() {
+function PropertiesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const scope = searchParams.get("scope") || "my";
@@ -156,5 +151,13 @@ export default function DashboardPropertiesPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function DashboardPropertiesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 p-8 text-center text-sm text-slate-500">Loading properties...</div>}>
+      <PropertiesContent />
+    </Suspense>
   );
 }

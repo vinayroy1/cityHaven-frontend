@@ -7,7 +7,7 @@ import {
   describeFilters,
   type SearchState,
 } from "./searchQuery";
-import { FURNISHING_OPTIONS, POSTED_BY_OPTIONS, formatMoney } from "./searchConfig";
+import { FURNISHING_OPTIONS, POSTED_BY_OPTIONS, budgetConfig } from "./searchConfig";
 import { propertySubTypes } from "@/app/propertySearch/data";
 
 const subTypeLabel = (slug: string) =>
@@ -26,7 +26,7 @@ export function AppliedChips({
     subType: subTypeLabel,
     furnishing: furnishingLabel,
     postedAs: postedAsLabel,
-    money: formatMoney,
+    money: (value) => `${budgetConfig(state).format(value)}${budgetConfig(state).monthly ? " / month" : ""}`,
   });
 
   if (!chips.length) return null;

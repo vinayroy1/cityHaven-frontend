@@ -3,7 +3,6 @@
 import React from "react";
 import { ChevronDown, X } from "lucide-react";
 import { cn } from "@/components/ui/utils";
-import { Slider } from "@/components/ui/slider";
 import { Chip } from "./Chip";
 import {
   clearAllFilters,
@@ -12,9 +11,8 @@ import {
 } from "./searchQuery";
 import {
   AREA_PRESETS,
-  BUDGET_PRESETS,
+  budgetConfig,
   filterSectionsFor,
-  formatMoney,
   type FilterSection,
 } from "./searchConfig";
 import { primaryButton, ghostButton, linkButton, muted } from "./theme";
@@ -52,57 +50,123 @@ function sectionActiveCount(section: FilterSection, s: SearchState): number {
   }
 }
 
-// --- range slider ---------------------------------------------------
+// --- range picker ---------------------------------------------------
 
-function RangeSlider({
+function RangePicker({
   presets,
   format,
+  label,
   lo,
   hi,
   onChange,
 }: {
   presets: number[];
   format: (v: number) => string;
+  label: string;
   lo: number | undefined;
   hi: number | undefined;
   onChange: (next: [number | undefined, number | undefined]) => void;
 }) {
-  const N = presets.length;
-  // positions: 0 = "no min", 1..N = presets[pos-1], N+1 = "no max"
-  const toPos = (v: number | undefined, end: "lo" | "hi") => {
-    if (v == null) return end === "lo" ? 0 : N + 1;
-    const i = presets.indexOf(v);
-    return i >= 0 ? i + 1 : end === "lo" ? 0 : N + 1;
-  };
-  const [pos, setPos] = React.useState<[number, number]>([toPos(lo, "lo"), toPos(hi, "hi")]);
-  React.useEffect(() => {
-    setPos([toPos(lo, "lo"), toPos(hi, "hi")]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lo, hi]);
+  const valueOf = (raw: string) => (raw === "" ? undefined : Number(raw));
+  const rangeText = `${lo == null ? "No min" : format(lo)} - ${hi == null ? "No max" : format(hi)}`;
+  const domainText = `${format(presets[0])} to ${format(presets[presets.length - 1])}`;
+  const minOptions = presets.filter((value) => hi == null || value < hi);
+  const maxOptions = presets.filter((value) => lo == null || value > lo);
+  const quickRanges = buildQuickRanges(presets, format);
 
-  const label = (p: number) => (p === 0 ? "No min" : p === N + 1 ? "No max" : format(presets[p - 1]));
-  const commit = (p: [number, number]) =>
-    onChange([p[0] === 0 ? undefined : presets[p[0] - 1], p[1] === N + 1 ? undefined : presets[p[1] - 1]]);
+  const setMin = (raw: string) => {
+    const nextLo = valueOf(raw);
+    onChange([nextLo, hi != null && nextLo != null && hi <= nextLo ? undefined : hi]);
+  };
+  const setMax = (raw: string) => {
+    const nextHi = valueOf(raw);
+    onChange([lo != null && nextHi != null && lo >= nextHi ? undefined : lo, nextHi]);
+  };
 
   return (
-    <div className="space-y-3 pt-1">
-      <div className="flex items-center justify-between text-sm font-semibold text-slate-900">
-        <span>{label(pos[0])}</span>
-        <span className="text-slate-300">—</span>
-        <span>{label(pos[1])}</span>
+    <div className="space-y-3">
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500">{label}</p>
+        <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
+          <p className="text-sm font-semibold text-slate-950">{rangeText}</p>
+          <p className="shrink-0 text-[11px] text-slate-500">{domainText}</p>
+        </div>
       </div>
-      <Slider
-        min={0}
-        max={N + 1}
-        step={1}
-        minStepsBetweenThumbs={1}
-        value={pos}
-        onValueChange={(v) => setPos(v as [number, number])}
-        onValueCommit={(v) => commit(v as [number, number])}
-        className="py-1"
-      />
+
+      <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
+        <RangeSelect label="Min" value={lo} placeholder="No min" options={minOptions} format={format} onChange={setMin} />
+        <span className="pb-2 text-sm font-semibold text-slate-300">to</span>
+        <RangeSelect label="Max" value={hi} placeholder="No max" options={maxOptions} format={format} onChange={setMax} />
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {quickRanges.map((range) => (
+          <Chip
+            key={range.label}
+            size="sm"
+            showCheck={false}
+            selected={lo === range.lo && hi === range.hi}
+            onClick={() => onChange([range.lo, range.hi])}
+          >
+            {range.label}
+          </Chip>
+        ))}
+        {(lo != null || hi != null) && (
+          <Chip size="sm" showCheck={false} selected={false} onClick={() => onChange([undefined, undefined])}>
+            Clear
+          </Chip>
+        )}
+      </div>
     </div>
   );
+}
+
+function RangeSelect({
+  label,
+  value,
+  placeholder,
+  options,
+  format,
+  onChange,
+}: {
+  label: string;
+  value: number | undefined;
+  placeholder: string;
+  options: number[];
+  format: (v: number) => string;
+  onChange: (raw: string) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500">{label}</span>
+      <select
+        value={value ?? ""}
+        onChange={(event) => onChange(event.target.value)}
+        className="mt-1 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {format(option)}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function buildQuickRanges(presets: number[], format: (v: number) => string) {
+  if (presets.length < 4) return [];
+  const first = presets[0];
+  const low = presets[Math.min(2, presets.length - 1)];
+  const midLo = presets[Math.floor(presets.length * 0.35)];
+  const midHi = presets[Math.floor(presets.length * 0.65)];
+  const high = presets[Math.max(presets.length - 3, 0)];
+  return [
+    { label: `Under ${format(low)}`, lo: undefined, hi: low },
+    { label: `${format(midLo)} - ${format(midHi)}`, lo: midLo, hi: midHi },
+    { label: `${format(high)}+`, lo: high, hi: undefined },
+  ].filter((range, index, arr) => index === arr.findIndex((item) => item.label === range.label));
 }
 
 // --- section body -------------------------------------------------
@@ -118,13 +182,16 @@ function SectionBody({
 }) {
   if (section.kind === "range") {
     const budget = section.key === "budget";
-    const presets = budget ? BUDGET_PRESETS[draft.intent] : AREA_PRESETS;
-    const fmt = budget ? formatMoney : (v: number) => `${v.toLocaleString("en-IN")}`;
+    const config = budgetConfig(draft);
+    const presets = budget ? config.presets : AREA_PRESETS;
+    const fmt = budget ? config.format : (v: number) => `${v.toLocaleString("en-IN")} sq.ft`;
     const [lo, hi] = readRange(draft, budget);
+    const label = budget ? config.label : section.title;
     return (
-      <RangeSlider
+      <RangePicker
         presets={presets}
         format={fmt}
+        label={label}
         lo={lo}
         hi={hi}
         onChange={(next) => setDraft(writeRange(draft, budget, next))}

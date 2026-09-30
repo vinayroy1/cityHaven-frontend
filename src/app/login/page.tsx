@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Phone, Lock, RefreshCw, KeyRound, Loader2, ShieldCheck } from "lucide-react";
@@ -15,7 +15,7 @@ function makeCode(len = 5) {
   return s;
 }
 
-export default function LoginPage() {
+function LoginContent() {
   const year = new Date().getFullYear();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -288,5 +288,13 @@ export default function LoginPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 p-8 text-center text-sm text-slate-500">Loading sign in...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

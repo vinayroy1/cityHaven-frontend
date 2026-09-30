@@ -3,6 +3,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { propertyListingReducer, propertyListingApi } from "@/features/propertyListing";
 import { authApi } from "@/features/auth/api";
+import { contactVerifyApi } from "@/features/contactVerify/api";
 
 export const makeStore = () =>
   configureStore({
@@ -10,9 +11,14 @@ export const makeStore = () =>
       propertyListing: propertyListingReducer,
       [propertyListingApi.reducerPath]: propertyListingApi.reducer,
       [authApi.reducerPath]: authApi.reducer,
+      [contactVerifyApi.reducerPath]: contactVerifyApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(propertyListingApi.middleware, authApi.middleware),
+      getDefaultMiddleware().concat(
+        propertyListingApi.middleware,
+        authApi.middleware,
+        contactVerifyApi.middleware
+      ),
     devTools: true,
   });
 

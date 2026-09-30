@@ -1,50 +1,53 @@
+"use client";
+
 import React from "react";
-import { MessageCircle, Phone, ShieldCheck } from "lucide-react";
+import { LockKeyhole, Phone } from "lucide-react";
+import { ContactAccessFlow } from "./ContactAccessFlow";
 
 type OwnerContactCardProps = {
+  propertyId: number | string;
   name: string;
   postedAgo: string;
-  badge?: string;
 };
 
-export function OwnerContactCard({ name, postedAgo, badge = "Verified" }: OwnerContactCardProps) {
-  return (
-    <div className="w-full rounded-2xl border border-slate-200 bg-slate-900 text-white shadow-lg">
-      <div className="flex items-center gap-3 border-b border-white/10 px-4 py-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-lg font-semibold">{name.slice(0, 2).toUpperCase()}</div>
-        <div>
-          <p className="text-sm text-white/70">Owner</p>
-          <p className="text-base font-semibold">{name}</p>
-          <p className="text-xs text-emerald-200">Posted {postedAgo}</p>
-        </div>
-        <span className="ml-auto flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-100">
-          <ShieldCheck className="h-4 w-4" /> {badge}
-        </span>
-      </div>
+export function OwnerContactCard({ propertyId, name, postedAgo }: OwnerContactCardProps) {
+  const initial = name.trim().slice(0, 2).toUpperCase() || "CH";
+  const [phone, setPhone] = React.useState<string | null>(null);
+  const digits = phone?.replace(/\D/g, "") ?? "";
+  const contactNumber = digits.length === 10 ? `91${digits}` : digits;
+  const buttonClass = "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-700 px-3 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600";
 
-      <div className="space-y-3 px-4 py-4">
-        <label className="block text-xs uppercase tracking-wide text-white/70">Name</label>
-        <input className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/50 focus:border-white/40 focus:outline-none" placeholder="Your name" />
-        <label className="block text-xs uppercase tracking-wide text-white/70">Phone number</label>
-        <div className="flex gap-2">
-          <span className="flex items-center rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white">+91</span>
-          <input className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/50 focus:border-white/40 focus:outline-none" placeholder="98765 43210" />
+  return (
+    <section aria-label="Owner contact" className="w-full overflow-hidden rounded-lg border border-zinc-200 bg-white text-zinc-900 shadow-sm">
+      <div className="p-5">
+        <h2 className="text-lg font-semibold">Contact owner</h2>
+        <div className="mt-5 flex items-center gap-3">
+          <div aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-sm font-semibold text-emerald-800">{initial}</div>
+          <div className="min-w-0">
+            <p className="break-words text-base font-semibold">{name}</p>
+            <p className="mt-1 text-xs text-zinc-500">Posted {postedAgo}</p>
+          </div>
         </div>
-        <label className="block text-xs uppercase tracking-wide text-white/70">Message</label>
-        <textarea
-          className="h-20 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/50 focus:border-white/40 focus:outline-none"
-          placeholder="I am interested in this land. Please call back."
-        />
-        <div className="grid grid-cols-2 gap-2 pt-2">
-          <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm transition hover:-translate-y-0.5">
-            <Phone className="h-4 w-4" /> Call owner
-          </button>
-          <button className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5">
-            <MessageCircle className="h-4 w-4" /> WhatsApp
-          </button>
-        </div>
-        <p className="text-[11px] text-white/60">By sending an enquiry you agree to be contacted by CityHaven and the owner.</p>
+        <div className="my-5 border-t border-zinc-100" />
+        {phone ? (
+          <>
+            <p className="text-xs font-medium text-emerald-700">Contact unlocked</p>
+            <p className="mt-2 break-all text-xl font-semibold">+{contactNumber}</p>
+            <a href={`tel:+${contactNumber}`} className={`${buttonClass} mt-5`}><Phone className="h-4 w-4" /> Call owner</a>
+          </>
+        ) : (
+          <>
+            <div className="flex items-start gap-2.5">
+              <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />
+              <div>
+                <p className="text-sm font-medium">Owner contact is private</p>
+                <p className="mt-1 text-xs leading-5 text-zinc-500">Use one credit to reveal the phone number.</p>
+              </div>
+            </div>
+            <ContactAccessFlow key={propertyId} propertyId={propertyId} onContact={setPhone} />
+          </>
+        )}
       </div>
-    </div>
+    </section>
   );
 }

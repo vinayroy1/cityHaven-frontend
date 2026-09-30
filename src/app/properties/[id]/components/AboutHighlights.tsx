@@ -6,17 +6,18 @@ type Highlight = { title: string; detail: string; icon: LucideIcon };
 type AboutHighlightsProps = {
   aboutCopy: string;
   highlights: Highlight[];
+  amenities?: string[];
 };
 
-export function AboutHighlights({ aboutCopy, highlights }: AboutHighlightsProps) {
+export function AboutHighlights({ aboutCopy, highlights, amenities = [] }: AboutHighlightsProps) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <section id="overview" className="scroll-mt-24 border-b border-zinc-200 pb-8">
       <h2 className="text-lg font-semibold">About this property</h2>
       <p className="mt-3 text-sm leading-relaxed text-slate-700">{aboutCopy}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         {highlights.map(({ title, detail, icon: Icon }) => (
-          <div key={title} className="flex gap-3 rounded-2xl border border-slate-100 bg-slate-50/80 p-3">
-            <span className="mt-1 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-slate-800 shadow-sm">
+          <div key={title} className="flex gap-3 py-2">
+            <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center text-emerald-700">
               <Icon className="h-5 w-5" />
             </span>
             <div>
@@ -26,6 +27,18 @@ export function AboutHighlights({ aboutCopy, highlights }: AboutHighlightsProps)
           </div>
         ))}
       </div>
-    </div>
+      {amenities.length > 0 && (
+        <div className="mt-5 border-t border-slate-100 pt-4">
+          <h3 className="text-sm font-semibold text-slate-900">Amenities</h3>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {amenities.map((amenity) => (
+              <span key={amenity} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+                {amenity}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
   );
 }

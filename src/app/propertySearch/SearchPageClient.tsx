@@ -83,7 +83,7 @@ export function SearchPageClient() {
                 {(results.refining ? resultCount : results.total ?? resultCount) === 1
                   ? "property"
                   : "properties"}{" "}
-                to {state.intent === "RENT" || state.intent === "PG" ? "rent" : "buy"}
+                to {state.intent === "RENT" || state.intent === "PG" || (state.intent === "COMMERCIAL" && state.transaction === "RENT") ? "rent" : "buy"}
               </>
             )}
           </p>

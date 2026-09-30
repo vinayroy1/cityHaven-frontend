@@ -17,12 +17,24 @@ export const API_ENDPOINTS = {
     // Use users/me for profile updates
     profile: `${BASE}/users/me`,
   },
+  contactVerify: {
+    requestOtp: `${BASE}/contact-verify/request-otp`,
+    verifyOtp: `${BASE}/contact-verify/verify-otp`,
+  },
+  billing: {
+    plans: `${BASE}/billing/plans`,
+    myCredits: `${BASE}/billing/credits/my`,
+    purchaseCredits: `${BASE}/billing/credits/purchase`,
+    purchaseCreditsByPlan: `${BASE}/billing/credits/purchase-plan`,
+  },
   propertyListing: {
     create: `${BASE}/propertyListing`,
     update: (id: number | string) => `${BASE}/propertyListing/${id}`,
     // Associates media URLs with a listing: POST { items: [{ url, type }] }.
-    // (Raw file hosting is not exposed by this backend — see MediaField.)
     media: (id: number | string) => `${BASE}/propertyListing/${id}/media`,
+    unlockContact: (id: number | string) => `${BASE}/propertyListing/${id}/unlock-contact`,
+    unlockedContact: (id: number | string) => `${BASE}/propertyListing/${id}/unlocked-contact`,
+    favorite: (id: number | string) => `${BASE}/propertyListing/${id}/favorite`,
     search: `${BASE}/propertyListing/search`,
     my: `${BASE}/propertyListing/my`,
     org: `${BASE}/propertyListing/org`,

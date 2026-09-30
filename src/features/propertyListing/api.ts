@@ -16,7 +16,7 @@ type PaginatedResponse<T> = {
 export const propertyListingApi = createApi({
   reducerPath: "propertyListingApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Property"],
+  tagTypes: ["Property", "Favorites"],
   endpoints: (builder) => ({
     submitProperty: builder.mutation<{ id?: number }, PropertyListingFormValues>({
       query: (formValues) => ({
@@ -75,14 +75,28 @@ export const propertyListingApi = createApi({
       transformResponse: (response: { data?: PaginatedResponse<any> }) => response.data ?? { items: [] },
       providesTags: ["Property"],
     }),
-    myFavorites: builder.query<PaginatedResponse<any>, { cursor?: number; pageSize?: number }>({
+    myFavorites: builder.query<PaginatedResponse<any>, { cursor?: number; pageSize?: number } | void>({
       query: (params) => ({
         url: API_ENDPOINTS.propertyListing.favorites,
         method: "GET",
-        params,
+        params: params || {},
       }),
       transformResponse: (response: { data?: PaginatedResponse<any> }) => response.data ?? { items: [] },
-      providesTags: ["Property"],
+      providesTags: ["Favorites"],
+    }),
+    addFavorite: builder.mutation<{ success: boolean; message?: string }, number | string>({
+      query: (id) => ({
+        url: API_ENDPOINTS.propertyListing.favorite(id),
+        method: "POST",
+      }),
+      invalidatesTags: ["Favorites"],
+    }),
+    removeFavorite: builder.mutation<{ success: boolean; message?: string }, number | string>({
+      query: (id) => ({
+        url: API_ENDPOINTS.propertyListing.favorite(id),
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Favorites"],
     }),
     myEnquiries: builder.query<PaginatedResponse<any>, { cursor?: number; pageSize?: number }>({
       query: (params) => ({
@@ -113,6 +127,9 @@ export const {
   useMyPropertiesQuery,
   useOrgListingsQuery,
   useMyFavoritesQuery,
+  useLazyMyFavoritesQuery,
+  useAddFavoriteMutation,
+  useRemoveFavoriteMutation,
   useMyEnquiriesQuery,
   useMyVisitsQuery,
   useSearchPropertiesQuery,
