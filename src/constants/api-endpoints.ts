@@ -61,6 +61,7 @@ export const API_ENDPOINTS = {
     favorites: `${BASE}/propertyListing/me/favorites`,
     enquiries: `${BASE}/propertyListing/me/enquiries`,
     visits: `${BASE}/propertyListing/me/visits`,
+    scheduleVisit: (id: number | string) => `${BASE}/propertyListing/${id}/visits`,
   },
   properties: {
     list: `${BASE}/properties`,

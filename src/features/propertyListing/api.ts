@@ -117,6 +117,27 @@ export const propertyListingApi = createApi({
       transformResponse: (response: { data?: PaginatedResponse<any> }) => response.data ?? { items: [] },
       providesTags: ["Property"],
     }),
+    scheduleVisit: builder.mutation<
+      { success: boolean; message: string; data: any },
+      {
+        propertyId: number | string;
+        scheduledAt: string;
+        timeSlot?: "MORNING" | "AFTERNOON" | "EVENING";
+        tourType?: "IN_PERSON" | "VIDEO_CALL";
+        moveInTimeline?: "IMMEDIATE" | "WITHIN_15_DAYS" | "WITHIN_30_DAYS" | "EXPLORING";
+        visitorName?: string;
+        visitorPhone?: string;
+        visitorEmail?: string;
+        note?: string;
+      }
+    >({
+      query: ({ propertyId, ...body }) => ({
+        url: API_ENDPOINTS.propertyListing.scheduleVisit(propertyId),
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Property"],
+    }),
   }),
 });
 
@@ -133,6 +154,7 @@ export const {
   useRemoveFavoriteMutation,
   useMyEnquiriesQuery,
   useMyVisitsQuery,
+  useScheduleVisitMutation,
   useSearchPropertiesQuery,
   useLazySearchPropertiesQuery,
 } = propertyListingApi;

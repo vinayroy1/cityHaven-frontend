@@ -15,6 +15,7 @@ import {
   BillingSummary,
 } from "@/features/contactVerify/api";
 import { ContactUnlockDialog, ScopeOption } from "./ContactUnlockDialog";
+import { ScheduleVisitDialog } from "@/components/property/ScheduleVisitDialog";
 import { ResultCardMedia } from "./ResultCardMedia";
 import { ResultCardSummary, SavePropertyButton } from "./ResultCardSummary";
 import { CONTACT_PLANS, FALLBACK_IMAGE, type ContactPlan, type ContactStep, type ResultCardProps } from "./resultCardTypes";
@@ -61,6 +62,13 @@ export function ResultCard({
   const [otpError, setOtpError] = React.useState<string | null>(null);
   const [sessionToken, setSessionToken] = React.useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = React.useState("power");
+  const [scheduleOpen, setScheduleOpen] = React.useState(false);
+
+  const openScheduleFlow = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setScheduleOpen(true);
+  };
 
   const getToken = () => sessionToken ?? (typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) ?? "" : "");
   const { data: meData } = useMeQuery(undefined, { skip: !getToken() });
@@ -432,6 +440,18 @@ export function ResultCard({
         contextBadge={contextBadge}
         posterBadge={posterBadge}
         onContactClick={openContactFlow}
+        onScheduleClick={openScheduleFlow}
+      />
+      <ScheduleVisitDialog
+        open={scheduleOpen}
+        onOpenChange={setScheduleOpen}
+        property={{
+          id,
+          title,
+          locality: subtitle,
+          price,
+          ownerName: owner,
+        }}
       />
       <ContactUnlockDialog
         open={contactOpen}

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Bath, BedDouble, Heart, MapPin, PhoneCall, Ruler } from "lucide-react";
+import { Bath, BedDouble, Calendar, Heart, MapPin, PhoneCall, Ruler } from "lucide-react";
 
 type ResultCardSummaryProps = {
   title?: string;
@@ -16,6 +16,7 @@ type ResultCardSummaryProps = {
   contextBadge: string | null;
   posterBadge?: string;
   onContactClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onScheduleClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 import { useAddFavoriteMutation, useRemoveFavoriteMutation } from "@/features/propertyListing/api";
@@ -91,6 +92,7 @@ export function ResultCardSummary({
   contextBadge,
   posterBadge,
   onContactClick,
+  onScheduleClick,
 }: ResultCardSummaryProps) {
   return (
     <div className="relative z-0 flex flex-1 flex-col gap-2.5 p-3 sm:gap-3 sm:p-4">
@@ -134,16 +136,29 @@ export function ResultCardSummary({
         <span className="truncate rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">{owner}</span>
       </div>
 
-      <div className="mt-auto flex items-center justify-between gap-2 border-t border-zinc-100 dark:border-slate-800 pt-2.5 sm:gap-3 sm:pt-3">
+      <div className="mt-auto flex items-center justify-between gap-2 border-t border-zinc-100 dark:border-slate-800 pt-2.5 sm:gap-2.5 sm:pt-3">
         <p className="truncate text-xs text-zinc-500 dark:text-slate-400">{postedAt}</p>
-        <button
-          type="button"
-          className="relative z-20 inline-flex shrink-0 items-center gap-1.5 rounded-md bg-rose-600 px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 sm:text-sm"
-          onClick={onContactClick}
-        >
-          <PhoneCall className="h-3.5 w-3.5" />
-          View contact
-        </button>
+        <div className="flex items-center gap-1.5">
+          {onScheduleClick && (
+            <button
+              type="button"
+              title="Schedule a Site Visit"
+              className="relative z-20 inline-flex shrink-0 items-center gap-1 rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-sm transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-rose-900/60 dark:hover:bg-rose-950/40 dark:hover:text-rose-300"
+              onClick={onScheduleClick}
+            >
+              <Calendar className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+              <span className="hidden sm:inline">Visit</span>
+            </button>
+          )}
+          <button
+            type="button"
+            className="relative z-20 inline-flex shrink-0 items-center gap-1.5 rounded-md bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 sm:text-xs"
+            onClick={onContactClick}
+          >
+            <PhoneCall className="h-3.5 w-3.5" />
+            <span>Contact</span>
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -359,7 +359,15 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           </div>
 
           <aside className="space-y-4 lg:sticky lg:top-24">
-            <OwnerContactCard propertyId={property.id} name={property.owner?.name || "Property owner"} postedAgo={postedAgo(property.createdAt)} />
+            <OwnerContactCard
+              propertyId={property.id}
+              name={property.owner?.name || "Property owner"}
+              postedAgo={postedAgo(property.createdAt)}
+              title={title}
+              locality={property.locality ?? property.cityName}
+              cityName={property.cityName}
+              price={price}
+            />
             <TransactionCard transactionType={property.transactionType} ownershipType={property.ownershipType} listingType={property.listingType} deposit={property.deposit} />
           </aside>
         </section>
