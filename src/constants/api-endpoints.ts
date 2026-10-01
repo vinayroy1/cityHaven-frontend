@@ -78,4 +78,50 @@ export const API_ENDPOINTS = {
   contact: {
     submit: `${BASE}/contact`,
   },
+  admin: {
+    auth: {
+      login: `${BASE}/admin/auth/login`,
+      verifyMfa: `${BASE}/admin/auth/verify-mfa`,
+      me: `${BASE}/admin/auth/me`,
+      invite: `${BASE}/admin/auth/invite`,
+      acceptInvite: (token: string) => `${BASE}/admin/auth/invitations/${token}/accept`,
+    },
+    overview: `${BASE}/admin/overview`,
+    staff: {
+      list: `${BASE}/admin/staff`,
+      invite: `${BASE}/admin/staff/invite`,
+      detail: (id: number | string) => `${BASE}/admin/staff/${id}`,
+      update: (id: number | string) => `${BASE}/admin/staff/${id}`,
+      deactivate: (id: number | string) => `${BASE}/admin/staff/${id}/deactivate`,
+    },
+    properties: {
+      queue: `${BASE}/admin/properties/qc-queue`,
+      detail: (id: number | string) => `${BASE}/admin/properties/${id}`,
+      review: (id: number | string) => `${BASE}/admin/properties/${id}/review`,
+      suspend: (id: number | string) => `${BASE}/admin/properties/${id}/suspend`,
+    },
+    organizations: {
+      queue: `${BASE}/admin/organizations/verification-queue`,
+      detail: (id: number | string) => `${BASE}/admin/organizations/${id}`,
+      verify: (id: number | string) => `${BASE}/admin/organizations/${id}/verify`,
+      updateAllowance: (id: number | string) => `${BASE}/admin/organizations/${id}/allowance`,
+    },
+    users: {
+      list: `${BASE}/admin/users`,
+      detail: (id: number | string) => `${BASE}/admin/users/${id}`,
+      status: (id: number | string) => `${BASE}/admin/users/${id}/status`,
+    },
+    billing: {
+      orders: `${BASE}/admin/billing/orders`,
+      transactions: `${BASE}/admin/billing/transactions`,
+      plans: `${BASE}/admin/billing/plans`,
+      refunds: `${BASE}/admin/billing/refunds`,
+      approveRefund: (id: number | string) => `${BASE}/admin/billing/refunds/${id}/approve`,
+      decideRefund: (id: number | string) => `${BASE}/admin/billing/refunds/${id}/decision`,
+    },
+    audit: {
+      logs: `${BASE}/admin/audit-logs`,
+    },
+    governance: `${BASE}/admin/governance`,
+  },
 };
