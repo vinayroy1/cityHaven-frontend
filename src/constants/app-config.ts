@@ -20,6 +20,7 @@ export const APP_CONFIG = {
   // Auth Configuration
   AUTH: {
     TOKEN_KEY: 'cityhaven_access_token',
+    ADMIN_TOKEN_KEY: 'cityhaven_admin_token',
     REFRESH_TOKEN_KEY: 'cityhaven_refresh_token',
     USER_KEY: 'cityhaven_user',
     TOKEN_EXPIRY_DAYS: 7,

@@ -181,6 +181,33 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const handleLogout = () => {
+    logoutStaff();
+    router.push("/admin/login");
+  };
+
+  if (currentStaff.status === "SUSPENDED" || currentStaff.status === "INACTIVE") {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center p-4">
+        <div className="max-w-md w-full rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-white dark:bg-slate-900 p-8 text-center shadow-xl">
+          <div className="w-14 h-14 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-7 h-7" />
+          </div>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Staff Access Restricted</h2>
+          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+            Your internal staff account (<span className="font-mono font-semibold text-rose-600 dark:text-rose-400">{currentStaff.email}</span>) status is currently <span className="font-bold">{currentStaff.status}</span>. Please contact an Operations Manager or Super Admin to restore active operational duties.
+          </p>
+          <button
+            onClick={handleLogout}
+            className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-xs transition cursor-pointer"
+          >
+            Sign Out to Staff Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Count pending items for badge indicators
   const pendingQcCount = propertyQcList.filter((p) => p.qcStatus === "SUBMITTED" || p.qcStatus === "UNDER_REVIEW").length;
   const pendingOrgCount = orgVerificationList.filter((o) => o.verificationStatus === "PENDING_REVIEW").length;
@@ -203,11 +230,6 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   // Check if current user has permission to view the current route
   const currentNavItem = NAV_ITEMS.find((item) => pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href)));
   const hasAccess = !currentNavItem || currentNavItem.allowedRoles.includes(activeRole);
-
-  const handleLogout = () => {
-    logoutStaff();
-    router.push("/admin/login");
-  };
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");

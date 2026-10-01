@@ -80,6 +80,7 @@ export const API_ENDPOINTS = {
   },
   admin: {
     auth: {
+      requestOtp: `${BASE}/admin/auth/request-otp`,
       login: `${BASE}/admin/auth/login`,
       verifyMfa: `${BASE}/admin/auth/verify-mfa`,
       me: `${BASE}/admin/auth/me`,
@@ -87,6 +88,10 @@ export const API_ENDPOINTS = {
       acceptInvite: (token: string) => `${BASE}/admin/auth/invitations/${token}/accept`,
     },
     overview: `${BASE}/admin/overview`,
+    analytics: {
+      overview: `${BASE}/admin/overview`,
+      kpis: `${BASE}/admin/analytics/kpis`,
+    },
     staff: {
       list: `${BASE}/admin/staff`,
       invite: `${BASE}/admin/staff/invite`,
@@ -118,6 +123,22 @@ export const API_ENDPOINTS = {
       refunds: `${BASE}/admin/billing/refunds`,
       approveRefund: (id: number | string) => `${BASE}/admin/billing/refunds/${id}/approve`,
       decideRefund: (id: number | string) => `${BASE}/admin/billing/refunds/${id}/decision`,
+    },
+    disputes: {
+      list: `${BASE}/admin/disputes`,
+      updateStatus: (id: number | string) => `${BASE}/admin/disputes/${id}/status`,
+      assign: (id: number | string) => `${BASE}/admin/disputes/${id}/assign`,
+    },
+    fraud: {
+      alerts: `${BASE}/admin/fraud/alerts`,
+      resolve: (id: number | string) => `${BASE}/admin/fraud/alerts/${id}/resolve`,
+    },
+    unlocks: {
+      list: `${BASE}/admin/audit/unlocks`,
+    },
+    workload: {
+      autoDistribute: `${BASE}/admin/workload/auto-distribute`,
+      assign: `${BASE}/admin/workload/assign`,
     },
     audit: {
       logs: `${BASE}/admin/audit-logs`,

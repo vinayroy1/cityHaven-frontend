@@ -3,8 +3,12 @@ import { apiClient } from "@/lib/services/api/client";
 import type {
   AdminAuditLog,
   AdminBillingOrder,
+  AdminContactUnlockTrace,
+  AdminDisputeCase,
+  AdminFraudAlert,
   AdminGovernanceSettings,
   AdminRefundCase,
+  DisputeStatus,
   OrgVerificationItem,
   OrgVerificationStatus,
   PropertyQcItem,
@@ -19,11 +23,19 @@ function unwrap<T>(response: { data?: T } | T): T {
 }
 
 export const adminApi = {
-  async login(email: string, mfaCode?: string) {
+  async requestOtp(email: string) {
+    return unwrap(
+      await apiClient.post<{ success: boolean; message: string; email: string; devOtp?: string }>(
+        API_ENDPOINTS.admin.auth.requestOtp,
+        { email }
+      )
+    );
+  },
+  async login(email: string, otpOrMfaCode?: string) {
     return unwrap(
       await apiClient.post<{ token?: string; accessToken?: string; staff?: StaffUser }>(
         API_ENDPOINTS.admin.auth.login,
-        { email, mfaCode }
+        { email, otp: otpOrMfaCode, mfaCode: otpOrMfaCode }
       )
     );
   },
@@ -32,6 +44,9 @@ export const adminApi = {
   },
   async overview() {
     return unwrap(await apiClient.get(API_ENDPOINTS.admin.overview));
+  },
+  async getAnalyticsKpis() {
+    return unwrap(await apiClient.get(API_ENDPOINTS.admin.analytics.kpis));
   },
   async listStaff() {
     return unwrap(await apiClient.get<StaffUser[]>(API_ENDPOINTS.admin.staff.list));
@@ -88,6 +103,30 @@ export const adminApi = {
   },
   async decideRefund(caseId: string | number, decision: "APPROVED" | "REJECTED") {
     return unwrap(await apiClient.post<AdminRefundCase>(API_ENDPOINTS.admin.billing.decideRefund(caseId), { decision }));
+  },
+  async listDisputes() {
+    return unwrap(await apiClient.get<AdminDisputeCase[]>(API_ENDPOINTS.admin.disputes.list));
+  },
+  async updateDisputeStatus(id: string, status: DisputeStatus, notes?: string) {
+    return unwrap(await apiClient.patch<AdminDisputeCase>(API_ENDPOINTS.admin.disputes.updateStatus(id), { status, notes }));
+  },
+  async assignDispute(id: string, staffName: string) {
+    return unwrap(await apiClient.post<AdminDisputeCase>(API_ENDPOINTS.admin.disputes.assign(id), { staffName }));
+  },
+  async listFraudAlerts() {
+    return unwrap(await apiClient.get<AdminFraudAlert[]>(API_ENDPOINTS.admin.fraud.alerts));
+  },
+  async resolveFraudAlert(id: string, status: "RESOLVED" | "DISMISSED", notes?: string) {
+    return unwrap(await apiClient.post<AdminFraudAlert>(API_ENDPOINTS.admin.fraud.resolve(id), { status, notes }));
+  },
+  async listContactUnlocks() {
+    return unwrap(await apiClient.get<AdminContactUnlockTrace[]>(API_ENDPOINTS.admin.unlocks.list));
+  },
+  async autoDistributeWorkload(scope: "PROPERTY" | "ORGANIZATION") {
+    return unwrap(await apiClient.post<{ success: boolean; message: string; count?: number }>(API_ENDPOINTS.admin.workload.autoDistribute, { scope }));
+  },
+  async assignTicket(targetType: "PROPERTY" | "ORGANIZATION" | "DISPUTE", targetId: string | number, staffId: number) {
+    return unwrap(await apiClient.post<{ success: boolean; assignedTo?: string }>(API_ENDPOINTS.admin.workload.assign, { targetType, targetId, staffId }));
   },
   async listAuditLogs() {
     return unwrap(await apiClient.get<AdminAuditLog[]>(API_ENDPOINTS.admin.audit.logs));

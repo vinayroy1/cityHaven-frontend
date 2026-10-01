@@ -12,25 +12,45 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const mounted = useIsMounted();
-  const { loginStaff, staffList } = useAdmin();
+  const { loginStaff, requestOtp, staffList } = useAdmin();
 
   const [email, setEmail] = useState("vinay.admin@cityhaven.in");
-  const [mfaCode, setMfaCode] = useState("123456");
+  const [mfaCode, setMfaCode] = useState("");
   const [step, setStep] = useState<"EMAIL" | "MFA">("EMAIL");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [devOtp, setDevOtp] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setStatusMessage(null);
 
     const cleanEmail = email.trim().toLowerCase();
-    if (!cleanEmail.endsWith("@cityhaven.in")) {
-      setError("Only verified company staff emails (@cityhaven.in) are permitted to access this portal.");
+    if (!cleanEmail) {
+      setError("Please provide your staff email address.");
       return;
     }
 
-    setStep("MFA");
+    setLoading(true);
+    try {
+      const res = await requestOtp(cleanEmail);
+      if (res.success) {
+        setStatusMessage(res.message);
+        if (res.devOtp) {
+          setDevOtp(res.devOtp);
+          setMfaCode(res.devOtp);
+        }
+        setStep("MFA");
+      } else {
+        setError(res.message || "Unable to send authorization code. Please verify your staff email.");
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err?.message || "Failed to connect to authentication service.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleMfaSubmit = async (e: React.FormEvent) => {
@@ -43,28 +63,21 @@ export default function AdminLoginPage() {
       if (res.success) {
         router.push("/admin");
       } else {
-        setError(res.message || "Failed to authenticate. Check your MFA code.");
+        setError(res.message || "Invalid or expired authorization code.");
       }
-    } catch {
-      setError("An unexpected error occurred during authentication.");
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err?.message || "An unexpected error occurred during authentication.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSsoClick = (provider: "Google Workspace" | "Microsoft Entra ID") => {
-    setLoading(true);
+  const handleQuickSelect = async (staffEmail: string) => {
+    setEmail(staffEmail);
+    setStep("EMAIL");
     setError(null);
-    setTimeout(async () => {
-      setEmail("rohan.malhotra@cityhaven.in");
-      const res = await loginStaff("rohan.malhotra@cityhaven.in", "123456");
-      if (res.success) {
-        router.push("/admin");
-      } else {
-        setError("SSO authentication callback failed.");
-      }
-      setLoading(false);
-    }, 1200);
+    setStatusMessage(null);
+    setDevOtp(null);
   };
 
   return (
@@ -100,6 +113,12 @@ export default function AdminLoginPage() {
           </div>
         </div>
 
+        {statusMessage && (
+          <div className="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-700 dark:text-emerald-300 flex items-start gap-2.5 animate-in fade-in duration-200">
+            <div className="leading-relaxed font-medium">{statusMessage}</div>
+          </div>
+        )}
+
         {error && (
           <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2.5 animate-in fade-in duration-200">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-500 mt-0.5" />
@@ -112,7 +131,7 @@ export default function AdminLoginPage() {
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Company Staff Email
+                  Authorized Staff Email
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -122,45 +141,22 @@ export default function AdminLoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@cityhaven.in"
                     required
+                    disabled={loading}
                     className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">Must end with @cityhaven.in domain.</p>
+                <p className="text-[10px] text-slate-500 mt-1">Must be an active staff member assigned in PostgreSQL.</p>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition cursor-pointer"
+                disabled={loading}
+                className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
               >
-                <span>Continue with MFA</span>
+                <span>{loading ? "Verifying Staff & Dispatching OTP..." : "Send Verification Passcode"}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
-
-            <div className="relative flex py-2 items-center">
-              <div className="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-              <span className="flex-shrink mx-3 text-[10px] uppercase font-mono text-slate-400 dark:text-slate-500 font-bold">Or Enterprise SSO</span>
-              <div className="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => handleSsoClick("Google Workspace")}
-                disabled={loading}
-                className="p-2.5 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
-              >
-                <span className="font-bold text-rose-500">G</span> Google SSO
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSsoClick("Microsoft Entra ID")}
-                disabled={loading}
-                className="p-2.5 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
-              >
-                <span className="font-bold text-blue-500">M</span> Microsoft SSO
-              </button>
-            </div>
           </div>
         ) : (
           <form onSubmit={handleMfaSubmit} className="space-y-4 animate-in fade-in duration-200">
@@ -171,7 +167,7 @@ export default function AdminLoginPage() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                6-Digit Authenticator (TOTP) Code
+                6-Digit Security Passcode
               </label>
               <div className="relative">
                 <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -180,21 +176,26 @@ export default function AdminLoginPage() {
                   maxLength={6}
                   value={mfaCode}
                   onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ""))}
-                  placeholder="123456"
+                  placeholder="6-digit code"
                   required
                   autoFocus
+                  disabled={loading}
                   className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl text-sm font-mono tracking-widest text-center text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
                 />
               </div>
-              <p className="text-[10px] text-slate-500 mt-1 text-center">Default demo code: <code className="text-rose-500">123456</code></p>
+              {devOtp && (
+                <div className="mt-2 text-center text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded-lg py-1 px-2">
+                  Dev Passcode from DB: <span className="font-bold underline">{devOtp}</span>
+                </div>
+              )}
             </div>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || mfaCode.length < 6}
               className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
             >
-              {loading ? "Verifying Session..." : "Verify & Launch Console"}
+              {loading ? "Authenticating Session..." : "Verify & Launch Console"}
             </button>
 
             <button
@@ -202,10 +203,13 @@ export default function AdminLoginPage() {
               onClick={() => {
                 setStep("EMAIL");
                 setError(null);
+                setStatusMessage(null);
+                setDevOtp(null);
+                setMfaCode("");
               }}
-              className="w-full text-center text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 py-1 transition"
+              className="w-full text-center text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 py-1 transition cursor-pointer"
             >
-              ← Back to Email
+              ← Back to Email Selection
             </button>
           </form>
         )}
@@ -213,23 +217,22 @@ export default function AdminLoginPage() {
         {/* Demo Quick Logins */}
         <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
           <div className="font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
-            <span>Quick Demo Roster:</span>
-            <span className="text-[10px] font-mono text-slate-400">Auto-fills</span>
+            <span>Known Staff Accounts:</span>
+            <span className="text-[10px] font-mono text-slate-400">PostgreSQL Verified</span>
           </div>
           <div className="space-y-1">
-            {staffList.slice(0, 3).map((staff) => (
+            {[
+              { email: "vinay.admin@cityhaven.in", role: "SUPER_ADMIN", name: "Vinay Admin" },
+              { email: "rohan.malhotra@cityhaven.in", role: "SUPER_ADMIN", name: "Rohan Malhotra" },
+            ].map((staff) => (
               <button
-                key={staff.id}
+                key={staff.email}
                 type="button"
-                onClick={() => {
-                  setEmail(staff.email);
-                  setStep("EMAIL");
-                  setError(null);
-                }}
-                className="w-full text-left px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition flex items-center justify-between font-mono text-[10px] cursor-pointer"
+                onClick={() => handleQuickSelect(staff.email)}
+                className="w-full text-left px-2 py-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition flex items-center justify-between font-mono text-[10px] cursor-pointer"
               >
                 <span>{staff.email}</span>
-                <span className="text-rose-600 dark:text-rose-400 font-sans font-semibold">{staff.roles[0]}</span>
+                <span className="text-rose-600 dark:text-rose-400 font-sans font-semibold">{staff.role}</span>
               </button>
             ))}
           </div>

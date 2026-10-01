@@ -23,40 +23,11 @@ class ApiClient {
     // Request interceptor
     this.client.interceptors.request.use(
       async (config) => {
-        let token = this.getAccessToken();
         const isAdminCall =
           Boolean(config.url?.includes("/admin")) ||
           (typeof window !== "undefined" && window.location.pathname.startsWith("/admin"));
 
-        // Auto-provision token for admin requests if missing
-        if (!token && isAdminCall && typeof window !== "undefined" && !config.url?.includes("/admin/auth/login")) {
-          const storedStaff = localStorage.getItem("cityhaven_admin_current_staff");
-          let adminEmail = "vinay.admin@cityhaven.in";
-          if (storedStaff) {
-            try {
-              const parsed = JSON.parse(storedStaff);
-              if (parsed?.email) adminEmail = parsed.email;
-            } catch {
-              // ignore
-            }
-          }
-          try {
-            const res = await axios.post(`${APP_CONFIG.API.BASE_URL}/v1/admin/auth/login`, {
-              email: adminEmail,
-              mfaCode: "123456",
-            });
-            const newToken = res.data?.data?.accessToken || res.data?.data?.token;
-            if (newToken) {
-              localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, newToken);
-              token = newToken;
-              if (res.data?.data?.staff) {
-                localStorage.setItem("cityhaven_admin_current_staff", JSON.stringify(res.data.data.staff));
-              }
-            }
-          } catch {
-            // ignore
-          }
-        }
+        let token = isAdminCall ? this.getAdminToken() : this.getAccessToken();
 
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
@@ -80,38 +51,11 @@ class ApiClient {
 
         if ((status === 401 || status === 403) && !isRefreshCall) {
           if (isAdminRequest) {
-            if (originalRequest && !(originalRequest as any)._adminRetried) {
-              (originalRequest as any)._adminRetried = true;
-              try {
-                const storedStaff = typeof window !== "undefined" ? localStorage.getItem("cityhaven_admin_current_staff") : null;
-                let adminEmail = "vinay.admin@cityhaven.in";
-                if (storedStaff) {
-                  try {
-                    const parsed = JSON.parse(storedStaff);
-                    if (parsed?.email) adminEmail = parsed.email;
-                  } catch {
-                    // ignore
-                  }
-                }
-                const res = await axios.post(`${APP_CONFIG.API.BASE_URL}/v1/admin/auth/login`, {
-                  email: adminEmail,
-                  mfaCode: "123456",
-                });
-                const newToken = res.data?.data?.accessToken || res.data?.data?.token;
-                if (newToken) {
-                  localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, newToken);
-                  if (res.data?.data?.staff) {
-                    localStorage.setItem("cityhaven_admin_current_staff", JSON.stringify(res.data.data.staff));
-                  }
-                  originalRequest.headers = originalRequest.headers ?? {};
-                  originalRequest.headers.Authorization = `Bearer ${newToken}`;
-                  return this.client(originalRequest);
-                }
-              } catch {
-                // fall through
-              }
+            // For admin endpoints, never redirect to customer /login
+            if (typeof window !== "undefined" && !window.location.pathname.startsWith("/admin/login")) {
+              this.clearAdminSession();
+              window.location.href = `/admin/login?reason=${status === 403 ? "access_denied" : "session_expired"}`;
             }
-            // Never redirect admin requests to public customer login page
             return Promise.reject(this.handleError(error));
           }
 
@@ -149,6 +93,23 @@ class ApiClient {
       return localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
     }
     return null;
+  }
+
+  private getAdminToken(): string | null {
+    if (typeof window !== "undefined") {
+      return (
+        localStorage.getItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY) ||
+        localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)
+      );
+    }
+    return null;
+  }
+
+  public clearAdminSession() {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
+      localStorage.removeItem("cityhaven_admin_current_staff");
+    }
   }
 
   private getRefreshToken(): string | null {

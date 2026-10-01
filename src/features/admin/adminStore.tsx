@@ -50,7 +50,8 @@ interface AdminContextType {
   auditLogs: AdminAuditLog[];
   
   // Actions
-  loginStaff: (email: string, mfaCode?: string) => Promise<{ success: boolean; message?: string }>;
+  requestOtp: (email: string) => Promise<{ success: boolean; message: string; email?: string; devOtp?: string }>;
+  loginStaff: (email: string, otpOrMfaCode?: string) => Promise<{ success: boolean; message?: string }>;
   logoutStaff: () => void;
   switchStaffRole: (role: StaffRole) => void;
   hasPermission: (permission: AdminPermission) => boolean;
@@ -165,44 +166,48 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     let alive = true;
 
     const hydrateFromApi = async () => {
-      let token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
-      if (!token) {
-        try {
-          const loginRes = await adminApi.login("vinay.admin@cityhaven.in", "123456");
-          const newToken = (loginRes as any)?.accessToken || (loginRes as any)?.token;
-          if (newToken) {
-            token = newToken;
-            if (typeof window !== "undefined") {
-              localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, newToken);
-              if ((loginRes as any)?.staff) {
-                localStorage.setItem(STORAGE_KEYS.CURRENT_STAFF, JSON.stringify((loginRes as any).staff));
-                setCurrentStaffState((loginRes as any).staff);
-              }
-            }
-          }
-        } catch {
-          // ignore
-        }
-      }
+      const adminToken = typeof window !== "undefined"
+        ? (localStorage.getItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY) || localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY))
+        : null;
 
-      if (!token) {
-        // Retain local staff session if present
-        setIsHydrated(true);
+      if (!adminToken) {
+        if (alive) {
+          setCurrentStaffState(null);
+          setIsHydrated(true);
+        }
         return;
       }
 
       try {
         const staff = await adminApi.me();
         if (!alive) return;
-        setCurrentStaff(staff);
+        setCurrentStaffState(staff);
+        if (typeof window !== "undefined") {
+          localStorage.setItem(STORAGE_KEYS.CURRENT_STAFF, JSON.stringify(staff));
+        }
 
-        const [staffRoster, properties, organizations, users, billing, refunds, audit, governance] = await Promise.allSettled([
+        const [
+          staffRoster,
+          properties,
+          organizations,
+          users,
+          billing,
+          refunds,
+          disputes,
+          fraudAlerts,
+          unlocks,
+          audit,
+          governance,
+        ] = await Promise.allSettled([
           adminApi.listStaff(),
           adminApi.listPropertyQueue(),
           adminApi.listOrganizations(),
           adminApi.listUsers(),
           adminApi.listBillingOrders(),
           adminApi.listRefunds(),
+          adminApi.listDisputes(),
+          adminApi.listFraudAlerts(),
+          adminApi.listContactUnlocks(),
           adminApi.listAuditLogs(),
           adminApi.getGovernance(),
         ]);
@@ -226,10 +231,18 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         }
         if (billing.status === "fulfilled" && billing.value?.length) setBillingOrders(billing.value);
         if (refunds.status === "fulfilled" && refunds.value?.length) setRefundCases(refunds.value);
+        if (disputes.status === "fulfilled" && disputes.value?.length) setDisputeCases(disputes.value);
+        if (fraudAlerts.status === "fulfilled" && fraudAlerts.value?.length) setFraudAlerts(fraudAlerts.value);
+        if (unlocks.status === "fulfilled" && unlocks.value?.length) setContactUnlocks(unlocks.value);
         if (audit.status === "fulfilled" && audit.value?.length) setAuditLogs(audit.value);
         if (governance.status === "fulfilled" && governance.value) setGovernanceSettings(governance.value);
-      } catch {
-        // Fallback gracefully without wiping currentStaffState
+      } catch (err) {
+        console.warn("Could not hydrate staff session from backend:", err);
+        if (typeof window !== "undefined") {
+          localStorage.removeItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
+          localStorage.removeItem(STORAGE_KEYS.CURRENT_STAFF);
+        }
+        if (alive) setCurrentStaffState(null);
       } finally {
         if (alive) setIsHydrated(true);
       }
@@ -245,7 +258,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         const parsedStaff = JSON.parse(storedStaff) as StaffUser;
         setCurrentStaffState(parsedStaff);
       } else {
-        setCurrentStaffState(INITIAL_STAFF_MEMBERS[0]);
+        setCurrentStaffState(null);
       }
 
       const storedQc = localStorage.getItem(STORAGE_KEYS.QC_QUEUE);
@@ -323,102 +336,78 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const loginStaff = async (email: string, mfaCode?: string) => {
-    if (!mfaCode || mfaCode.length < 6) {
-      return { success: false, message: "Valid 6-digit MFA verification code required." };
+  const requestOtp = async (email: string) => {
+    return adminApi.requestOtp(email);
+  };
+
+  const loginStaff = async (email: string, otpOrMfaCode?: string) => {
+    if (!otpOrMfaCode || otpOrMfaCode.length < 6) {
+      return { success: false, message: "Valid 6-digit verification code required." };
     }
 
     const cleanEmail = email.trim().toLowerCase();
 
-    let authenticatedStaff: StaffUser | null = null;
-
-    // 1. Always attempt live login API call so it shows in the browser Network tab
     try {
-      const loginRes = await adminApi.login(cleanEmail, mfaCode);
-      const token = (loginRes as any)?.token || (loginRes as any)?.accessToken || (loginRes as any)?.data?.accessToken;
+      const loginRes = await adminApi.login(cleanEmail, otpOrMfaCode);
+      const token = (loginRes as any)?.accessToken || (loginRes as any)?.token;
       if (token && typeof window !== "undefined") {
-        localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, token);
+        localStorage.setItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY, token);
       }
       if ((loginRes as any)?.staff) {
-        authenticatedStaff = (loginRes as any).staff;
-        setCurrentStaff(authenticatedStaff);
+        setCurrentStaff((loginRes as any).staff);
       }
-    } catch (err) {
-      console.warn("Backend admin login failed:", err);
-    }
 
-    // 2. Fetch all admin resources from backend using authenticated token
-    const [staffRoster, properties, organizations, users, billing, refunds, audit, governance] = await Promise.allSettled([
-      adminApi.listStaff(),
-      adminApi.listPropertyQueue(),
-      adminApi.listOrganizations(),
-      adminApi.listUsers(),
-      adminApi.listBillingOrders(),
-      adminApi.listRefunds(),
-      adminApi.listAuditLogs(),
-      adminApi.getGovernance(),
-    ]);
+      // Fetch live database collections
+      const [
+        staffRoster,
+        properties,
+        organizations,
+        users,
+        billing,
+        refunds,
+        disputes,
+        fraudAlerts,
+        unlocks,
+        audit,
+        governance,
+      ] = await Promise.allSettled([
+        adminApi.listStaff(),
+        adminApi.listPropertyQueue(),
+        adminApi.listOrganizations(),
+        adminApi.listUsers(),
+        adminApi.listBillingOrders(),
+        adminApi.listRefunds(),
+        adminApi.listDisputes(),
+        adminApi.listFraudAlerts(),
+        adminApi.listContactUnlocks(),
+        adminApi.listAuditLogs(),
+        adminApi.getGovernance(),
+      ]);
 
-    if (staffRoster.status === "fulfilled" && staffRoster.value?.length) setStaffList(staffRoster.value);
-    if (properties.status === "fulfilled" && properties.value?.length) setPropertyQcList(properties.value);
-    if (organizations.status === "fulfilled" && organizations.value?.length) setOrgVerificationList(organizations.value);
-    if (users.status === "fulfilled" && users.value?.length) setUserList(users.value);
-    if (billing.status === "fulfilled" && billing.value?.length) setBillingOrders(billing.value);
-    if (refunds.status === "fulfilled" && refunds.value?.length) setRefundCases(refunds.value);
-    if (audit.status === "fulfilled" && audit.value?.length) setAuditLogs(audit.value);
-    if (governance.status === "fulfilled" && governance.value) setGovernanceSettings(governance.value);
+      if (staffRoster.status === "fulfilled" && staffRoster.value?.length) setStaffList(staffRoster.value);
+      if (properties.status === "fulfilled" && properties.value?.length) setPropertyQcList(properties.value);
+      if (organizations.status === "fulfilled" && organizations.value?.length) setOrgVerificationList(organizations.value);
+      if (users.status === "fulfilled" && users.value?.length) setUserList(users.value);
+      if (billing.status === "fulfilled" && billing.value?.length) setBillingOrders(billing.value);
+      if (refunds.status === "fulfilled" && refunds.value?.length) setRefundCases(refunds.value);
+      if (disputes.status === "fulfilled" && disputes.value?.length) setDisputeCases(disputes.value);
+      if (fraudAlerts.status === "fulfilled" && fraudAlerts.value?.length) setFraudAlerts(fraudAlerts.value);
+      if (unlocks.status === "fulfilled" && unlocks.value?.length) setContactUnlocks(unlocks.value);
+      if (audit.status === "fulfilled" && audit.value?.length) setAuditLogs(audit.value);
+      if (governance.status === "fulfilled" && governance.value) setGovernanceSettings(governance.value);
 
-    // 3. If authenticated via backend, succeed immediately
-    if (authenticatedStaff) {
-      logAuditAction("STAFF_LOGIN_SUCCESS", "STAFF", authenticatedStaff.id, "Staff logged in successfully with MFA");
       return { success: true };
+    } catch (err: any) {
+      console.error("Admin login failed:", err);
+      const msg = err?.response?.data?.message || err?.message || "Invalid credentials or unauthorized staff account.";
+      return { success: false, message: msg };
     }
-
-    // 4. Authenticate against local staff roster
-    const matchingStaff =
-      staffList.find((s) => s.email.toLowerCase() === cleanEmail) ||
-      INITIAL_STAFF_MEMBERS.find((s) => s.email.toLowerCase() === cleanEmail);
-
-    if (matchingStaff) {
-      if (matchingStaff.status !== "ACTIVE") {
-        return { success: false, message: "This staff account has been deactivated or suspended." };
-      }
-      const localStaff: StaffUser = {
-        ...matchingStaff,
-        lastLoginAt: new Date().toISOString(),
-      };
-      setCurrentStaff(localStaff);
-      logAuditAction("STAFF_LOGIN_SUCCESS", "STAFF", localStaff.id, "Staff logged in successfully with MFA");
-      return { success: true };
-    }
-
-    // 5. Fallback for company staff emails
-    if (cleanEmail.endsWith("@cityhaven.in")) {
-      const newStaff: StaffUser = {
-        id: Date.now(),
-        name: cleanEmail.split("@")[0].replace(".", " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-        email: cleanEmail,
-        roles: ["SUPER_ADMIN"],
-        status: "ACTIVE",
-        mfaEnabled: true,
-        createdAt: new Date().toISOString(),
-        lastLoginAt: new Date().toISOString(),
-      };
-      setCurrentStaff(newStaff);
-      setStaffList((prev) => [newStaff, ...prev]);
-      logAuditAction("STAFF_LOGIN_SUCCESS", "STAFF", newStaff.id, "Provisioned staff session for company email");
-      return { success: true };
-    }
-
-    return {
-      success: false,
-      message: "Access restricted to verified company accounts (@cityhaven.in).",
-    };
   };
 
   const logoutStaff = () => {
-    if (currentStaff) {
-      logAuditAction("STAFF_LOGOUT", "STAFF", currentStaff.id, "Staff logged out of admin console");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
+      localStorage.removeItem(STORAGE_KEYS.CURRENT_STAFF);
     }
     setCurrentStaff(null);
   };
@@ -599,8 +588,13 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     logAuditAction(`REFUND_${status}`, "BILLING", caseId, `Refund case ${status.toLowerCase()} by ${currentStaff?.name}`);
   };
 
-  const updateDisputeStatus = (caseId: string, status: DisputeStatus, notes?: string) => {
+  const updateDisputeStatus = async (caseId: string, status: DisputeStatus, notes?: string) => {
     if (!assertPermission("DISPUTE_MANAGE")) return;
+    try {
+      await adminApi.updateDisputeStatus(caseId, status, notes);
+    } catch (err) {
+      console.warn("Backend updateDisputeStatus failed:", err);
+    }
     setDisputeCases((prev) => {
       const updated = prev.map((d) => (d.id === caseId ? { ...d, status, notes: notes || d.notes, updatedAt: new Date().toISOString() } : d));
       if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DISPUTES, JSON.stringify(updated));
@@ -609,8 +603,13 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     logAuditAction(`DISPUTE_${status}`, "DISPUTE", caseId, notes || `Dispute status updated to ${status}`);
   };
 
-  const assignDispute = (caseId: string, staffName: string) => {
+  const assignDispute = async (caseId: string, staffName: string) => {
     if (!assertPermission("DISPUTE_MANAGE")) return;
+    try {
+      await adminApi.assignDispute(caseId, staffName);
+    } catch (err) {
+      console.warn("Backend assignDispute failed:", err);
+    }
     setDisputeCases((prev) => {
       const updated = prev.map((d) =>
         d.id === caseId
@@ -628,8 +627,13 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     logAuditAction("DISPUTE_ASSIGNED", "DISPUTE", caseId, `Assigned to ${staffName}`);
   };
 
-  const resolveFraudAlert = (alertId: string, status: "RESOLVED" | "DISMISSED") => {
+  const resolveFraudAlert = async (alertId: string, status: "RESOLVED" | "DISMISSED") => {
     if (!assertPermission("FRAUD_RESOLVE")) return;
+    try {
+      await adminApi.resolveFraudAlert(alertId, status);
+    } catch (err) {
+      console.warn("Backend resolveFraudAlert failed:", err);
+    }
     setFraudAlerts((prev) => {
       const updated = prev.map((f) => (f.id === alertId ? { ...f, status } : f));
       if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.FRAUD, JSON.stringify(updated));
@@ -645,10 +649,16 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     logAuditAction("PLATFORM_GOVERNANCE_UPDATED", "SETTING", "SYSTEM_POLICIES", reason || `Policy changed: ${Object.keys(settings).join(", ")}`);
   };
 
-  const assignTicketToStaff = (targetType: "PROPERTY" | "ORGANIZATION" | "DISPUTE", targetId: number | string, staffId: number) => {
+  const assignTicketToStaff = async (targetType: "PROPERTY" | "ORGANIZATION" | "DISPUTE", targetId: number | string, staffId: number) => {
     if (!assertPermission("WORKLOAD_ASSIGN")) return;
     const staff = staffList.find((s) => s.id === staffId);
     if (!staff || staff.status !== "ACTIVE") return;
+
+    try {
+      await adminApi.assignTicket(targetType, targetId, staffId);
+    } catch (err) {
+      console.warn("Backend assignTicket failed:", err);
+    }
 
     if (targetType === "PROPERTY") {
       setPropertyQcList((prev) => {
@@ -837,6 +847,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         updateGovernanceSettings,
         autoDistributeWorkload,
         assignTicketToStaff,
+        requestOtp,
         loginStaff,
         logoutStaff,
         switchStaffRole,
