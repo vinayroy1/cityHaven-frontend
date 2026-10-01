@@ -8,13 +8,19 @@ import {
   fetchPlaceDetails,
   type PlaceDetails,
 } from "@/lib/googlePlaces";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { apiFetch } from "@/lib/api/query";
+import type { PropertySearchItem, PropertySearchResponse } from "@/types/propertySearch.types";
 import type { LocalityTag } from "./searchQuery";
 
-type Suggestion = { description: string; place_id: string };
+type Suggestion =
+  | { type: "place"; description: string; place_id: string }
+  | { type: "inventory"; description: string; keyword: string; meta?: string };
 
 type Props = {
   localities: LocalityTag[];
   keyword: string;
+  cityName?: string;
   onChange: (next: { localities: LocalityTag[]; keyword: string }) => void;
   onSubmit?: () => void;
   autoFocus?: boolean;
@@ -24,6 +30,7 @@ type Props = {
 export function LocationSearchInput({
   localities,
   keyword,
+  cityName,
   onChange,
   onSubmit,
   autoFocus,
@@ -59,8 +66,18 @@ export function LocationSearchInput({
     setError(null);
     const timer = setTimeout(async () => {
       try {
-        const results = await fetchAutocompleteSuggestions(trimmed, token ?? undefined);
-        if (!cancelled) setSuggestions(results);
+        const [placeResults, inventoryResults] = await Promise.allSettled([
+          fetchAutocompleteSuggestions(trimmed, token ?? undefined),
+          apiFetch<PropertySearchResponse>({
+            url: API_ENDPOINTS.propertyListing.search,
+            params: { q: trimmed, cityName, pageSize: 6 },
+          }),
+        ]);
+        if (!cancelled) {
+          const inventory = inventoryResults.status === "fulfilled" ? inventorySuggestions(inventoryResults.value.items ?? [], trimmed) : [];
+          const places = placeResults.status === "fulfilled" ? placeResults.value.map((item) => ({ ...item, type: "place" as const })) : [];
+          setSuggestions([...inventory, ...places].slice(0, 8));
+        }
       } catch (err) {
         if (!cancelled) {
           setSuggestions([]);
@@ -78,10 +95,15 @@ export function LocationSearchInput({
     };
   }, [text, sessionToken]);
 
-  const addLocality = async (s: Suggestion) => {
+  const addSuggestion = async (s: Suggestion) => {
     setOpen(false);
     setSuggestions([]);
     setText("");
+    if (s.type === "inventory") {
+      onChange({ localities, keyword: s.keyword });
+      onSubmit?.();
+      return;
+    }
     const details: PlaceDetails | null = await fetchPlaceDetails(s.place_id, sessionToken ?? undefined);
     setSessionToken(null);
     const locality = details?.locality || details?.subLocality || "";
@@ -165,14 +187,17 @@ export function LocationSearchInput({
           {!loading && error && <p className="px-3 py-2 text-xs text-rose-600 dark:text-rose-400">{error}</p>}
           {suggestions.map((s) => (
             <button
-              key={s.place_id}
+              key={`${s.type}:${s.description}`}
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => void addLocality(s)}
+              onClick={() => void addSuggestion(s)}
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
             >
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-              <span className="text-slate-800 dark:text-slate-200">{s.description}</span>
+              {s.type === "inventory" ? <Search className="h-3.5 w-3.5 shrink-0 text-rose-500" /> : <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400" />}
+              <span className="min-w-0">
+                <span className="block truncate text-slate-800 dark:text-slate-200">{s.description}</span>
+                {s.type === "inventory" && s.meta && <span className="block truncate text-xs text-slate-500 dark:text-slate-400">{s.meta}</span>}
+              </span>
             </button>
           ))}
           {text.trim().length >= 3 && (
@@ -192,4 +217,37 @@ export function LocationSearchInput({
       )}
     </div>
   );
+}
+
+function inventorySuggestions(items: PropertySearchItem[], query: string): Suggestion[] {
+  const seen = new Set<string>();
+  const output: Suggestion[] = [];
+  const normalizedQuery = query.toLowerCase();
+
+  for (const item of items) {
+    const candidates = [
+      { label: item.societyOrProjectName, meta: [item.locality, item.cityName].filter(Boolean).join(", ") },
+      { label: item.locality, meta: item.cityName || undefined },
+      { label: item.subLocality, meta: [item.locality, item.cityName].filter(Boolean).join(", ") },
+      { label: item.title, meta: [item.locality, item.cityName].filter(Boolean).join(", ") },
+    ];
+
+    for (const candidate of candidates) {
+      const label = candidate.label?.trim();
+      if (!label) continue;
+      const key = label.toLowerCase();
+      if (seen.has(key)) continue;
+      if (!key.includes(normalizedQuery) && !normalizedQuery.includes(key)) continue;
+      seen.add(key);
+      output.push({
+        type: "inventory",
+        description: label,
+        keyword: label,
+        meta: candidate.meta,
+      });
+      break;
+    }
+  }
+
+  return output;
 }

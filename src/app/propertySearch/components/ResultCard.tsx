@@ -180,6 +180,7 @@ export function ResultCard({
 
   const openDetails = () => router.push(`/properties/${id}`);
   const handleCardKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.target !== event.currentTarget) return;
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
     openDetails();

@@ -261,7 +261,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           {/* Brand header */}
           <div className="p-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
             <Link href="/admin" className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-600 to-indigo-600 flex items-center justify-center font-black text-lg text-white shadow-lg shadow-rose-900/40">
+              <div className="w-9 h-9 rounded-full bg-rose-600 flex items-center justify-center font-bold text-sm text-white shadow-lg shadow-rose-900/30">
                 CH
               </div>
               <div>

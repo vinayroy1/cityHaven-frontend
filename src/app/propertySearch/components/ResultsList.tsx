@@ -5,56 +5,8 @@ import { AlertTriangle, SearchX } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StateMessage } from "@/components/ui/state-message";
 import { ResultCard } from "./ResultCard";
-import type { PropertySearchItem } from "@/types/propertySearch.types";
+import { toResultCardProps } from "./propertyCardAdapter";
 import type { SearchResults } from "@/components/search/useSearchResults";
-
-const money = (v?: number | null) =>
-  v == null ? "Price on request" : `₹${v.toLocaleString("en-IN")}`;
-
-const area = (item: PropertySearchItem) => {
-  const value = item.plotArea ?? item.builtUpArea ?? item.carpetArea;
-  const unit = item.plotAreaUnit ?? item.builtUpAreaUnit ?? item.carpetAreaUnit ?? item.areaUnit;
-  if (value && unit) return `${value.toLocaleString("en-IN")} ${unit.replace(/_/g, " ").toLowerCase()}`;
-  if (item.carpetArea) return `${item.carpetArea} sq.ft`;
-  return "Area NA";
-};
-
-const postedAsLabel = (postedAs?: string | null) => {
-  if (!postedAs) return "Listing";
-  const normalized = postedAs.toUpperCase();
-  if (normalized === "OWNER") return "Owner";
-  if (normalized === "AGENT") return "Agent";
-  if (normalized === "BUILDER") return "Builder";
-  return postedAs[0] + postedAs.slice(1).toLowerCase();
-};
-
-const isFresh = (createdAt?: string) => {
-  if (!createdAt) return false;
-  const created = new Date(createdAt).getTime();
-  if (!Number.isFinite(created)) return false;
-  return Date.now() - created <= 1000 * 60 * 60 * 24 * 30;
-};
-
-const postedAtLabel = (createdAt?: string) => {
-  if (!createdAt) return "Recently posted";
-  const created = new Date(createdAt);
-  const createdTime = created.getTime();
-  if (!Number.isFinite(createdTime)) return "Recently posted";
-
-  const diffDays = Math.max(0, Math.floor((Date.now() - createdTime) / (1000 * 60 * 60 * 24)));
-  if (diffDays === 0) return "Posted today";
-  if (diffDays === 1) return "Posted yesterday";
-  if (diffDays < 30) return `Posted ${diffDays} days ago`;
-
-  return `Posted on ${created.toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })}`;
-};
-
-const isVerifiedListing = (item: PropertySearchItem) =>
-  Boolean(item.price && (item.locality || item.cityName) && item.postedAs);
 
 function SkeletonGrid({ count = 6 }: { count?: number }) {
   return (
@@ -149,26 +101,7 @@ export function ResultsList({ results }: { results: SearchResults }) {
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {visible.map((item) => (
-          <ResultCard
-            key={item.id}
-            id={item.id}
-            title={item.title}
-            subtitle={[item.locality, item.subLocality, item.cityName].filter(Boolean).join(" · ")}
-            price={money(item.price)}
-            area={area(item)}
-            postedAt={postedAtLabel(item.createdAt)}
-            owner={postedAsLabel(item.postedAs)}
-            bedrooms={item.bedrooms}
-            bathrooms={item.bathrooms}
-            type={item.propertySubType?.name || item.propertyType?.name}
-            listingType={item.listingType}
-            resCom={item.resCom}
-            isNew={isFresh(item.createdAt)}
-            isVerified={isVerifiedListing(item)}
-            posterBadge={postedAsLabel(item.postedAs)}
-            ownerId={item.ownerId ?? item.createdById ?? undefined}
-            images={item.media?.map((m) => m.url).filter(Boolean) ?? []}
-          />
+          <ResultCard key={item.id} {...toResultCardProps(item)} />
         ))}
       </div>
 

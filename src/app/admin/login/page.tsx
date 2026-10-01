@@ -100,7 +100,7 @@ export default function AdminLoginPage() {
       {/* Main card */}
       <div className="w-full max-w-md bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 backdrop-blur-xl rounded-2xl shadow-xl p-6 sm:p-8 relative z-10">
         <div className="flex items-center justify-center mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-indigo-600 flex items-center justify-center font-black text-2xl text-white shadow-xl shadow-rose-900/30">
+          <div className="w-12 h-12 rounded-full bg-rose-600 flex items-center justify-center font-bold text-xl text-white shadow-xl shadow-rose-900/40">
             CH
           </div>
         </div>

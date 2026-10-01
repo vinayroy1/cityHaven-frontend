@@ -24,6 +24,12 @@
   }
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -33,9 +39,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Utility: hide horizontal scrollbar for stepper while keeping scrollability */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+/* Utility: hide horizontal scrollbar while keeping scrollability */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.no-scrollbar,
+.scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
 
 /* Headings tighter to match reference visuals */
 h1, h2, h3 { font-weight: 600; }

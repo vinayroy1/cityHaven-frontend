@@ -32,6 +32,7 @@ export type RefineState = {
 
 export type SearchState = {
   q: string; // free keyword (project / builder / landmark)
+  cityName?: string; // structured city filter, kept separate from keyword relevance
   localities: LocalityTag[]; // structured location chips
   intent: IntentKey;
   transaction?: "SELL" | "RENT";
@@ -115,6 +116,7 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
   const state = initialSearchState();
 
   state.q = sp.get("q")?.trim() ?? "";
+  state.cityName = sp.get("city")?.trim() || undefined;
 
   state.localities = sp
     .getAll("loc")
@@ -156,6 +158,7 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   const sp = new URLSearchParams();
 
   if (state.q) sp.set("q", state.q);
+  if (state.cityName) sp.set("city", state.cityName);
   state.localities.forEach((l) => l.label && sp.append("loc", l.label));
   sp.set("intent", state.intent);
   if (state.intent === "COMMERCIAL" && state.transaction === "RENT") sp.set("transaction", "RENT");
@@ -191,6 +194,7 @@ export function buildQueryText(state: SearchState): string {
 
 export type ApiSearchParams = {
   q?: string;
+  cityName?: string;
   listingType: ApiListingType;
   bedrooms?: number;
   priceMin?: number;
@@ -206,6 +210,7 @@ export function toApiParams(state: SearchState, pageSize: number): ApiSearchPara
     pageSize,
   };
   if (q) out.q = q;
+  if (state.cityName) out.cityName = state.cityName;
   if (state.bedroomsMin != null) out.bedrooms = state.bedroomsMin;
   if (state.priceMin != null) out.priceMin = state.priceMin;
   if (state.priceMax != null) out.priceMax = state.priceMax;
@@ -426,7 +431,7 @@ export function clearAllFilters(state: SearchState): SearchState {
 }
 
 export function locationSummary(state: SearchState): string {
-  const parts = [...state.localities.map((l) => l.label), state.q].filter(Boolean);
+  const parts = [...state.localities.map((l) => l.label), state.q, state.cityName].filter(Boolean);
   if (!parts.length) return "Anywhere";
   if (parts.length <= 2) return parts.join(" · ");
   return `${parts[0]} +${parts.length - 1} more`;

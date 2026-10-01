@@ -1,6 +1,7 @@
 export type PropertySearchParams = {
   q?: string;
   cityId?: number | string;
+  cityName?: string;
   listingType?: string;
   bedrooms?: number | string;
   priceMin?: number | string;
@@ -42,9 +43,12 @@ export type PropertySearchItem = {
   postedAs?: string | null;
   furnishing?: string | null;
   propertySubTypeId?: number | null;
+  status?: string | null;
+  qcStatus?: string | null;
   cityName?: string | null;
   locality?: string | null;
   subLocality?: string | null;
+  societyOrProjectName?: string | null;
   address?: string | null;
   ownerId?: number | null;
   createdById?: number | null;

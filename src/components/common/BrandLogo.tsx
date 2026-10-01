@@ -19,9 +19,9 @@ export function BrandLogo({
   className = "",
 }: BrandLogoProps) {
   const iconSizeClasses = {
-    sm: "h-8 w-8 text-xs rounded-xl shadow-sm",
-    md: "h-10 w-10 text-sm rounded-2xl shadow-md shadow-rose-200 dark:shadow-rose-950/50",
-    lg: "h-12 w-12 text-base rounded-2xl shadow-lg shadow-rose-300/40 dark:shadow-rose-950/60",
+    sm: "h-8 w-8 text-xs rounded-full shadow-md shadow-rose-200 dark:shadow-rose-950/40",
+    md: "h-10 w-10 text-sm rounded-full shadow-lg shadow-rose-200 dark:shadow-rose-950/50",
+    lg: "h-12 w-12 text-base rounded-full shadow-xl shadow-rose-300/40 dark:shadow-rose-950/60",
   }[size];
 
   const titleSizeClasses = {
@@ -31,10 +31,10 @@ export function BrandLogo({
   }[size];
 
   const content = (
-    <div className={`group inline-flex items-center gap-2.5 select-none ${className}`}>
-      {/* Gradient Icon Badge */}
+    <div className={`group inline-flex items-center gap-2 select-none ${className}`}>
+      {/* Circular Rose-600 Background Badge matching View Contact button */}
       <span
-        className={`flex shrink-0 items-center justify-center bg-gradient-to-tr from-rose-600 via-rose-500 to-amber-500 text-white font-black tracking-tighter transition-transform duration-200 group-hover:scale-105 ${iconSizeClasses}`}
+        className={`flex shrink-0 items-center justify-center rounded-full bg-rose-600 font-bold text-white tracking-tight transition-transform duration-200 group-hover:scale-105 ${iconSizeClasses}`}
       >
         CH
       </span>
@@ -42,12 +42,12 @@ export function BrandLogo({
       {/* Brand Text */}
       <div className="flex flex-col leading-none">
         <span
-          className={`font-black tracking-tight text-slate-950 dark:text-white transition-colors group-hover:text-rose-600 dark:group-hover:text-rose-400 ${titleSizeClasses}`}
+          className={`font-bold tracking-tight text-slate-900 dark:text-white transition-colors group-hover:text-rose-600 dark:group-hover:text-rose-400 ${titleSizeClasses}`}
         >
           CityHaven
         </span>
         {showTagline && (
-          <span className="mt-1 text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+          <span className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400">
             {taglineText}
           </span>
         )}

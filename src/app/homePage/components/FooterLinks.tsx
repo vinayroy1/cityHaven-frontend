@@ -8,39 +8,38 @@ const columns = [
     links: [
       { label: "Help Centre", href: "/contact" },
       { label: "Safety information", href: "/policies" },
-      { label: "Cancellation options", href: "/policies#cancellation" },
       { label: "Report concern", href: "/contact" },
       { label: "Privacy policy", href: "/privacy" },
       { label: "Terms & conditions", href: "/terms" },
     ],
   },
   {
-    title: "Hosting",
+    title: "Owners & teams",
     links: [
-      { label: "List your home", href: "/propertyListing" },
-      { label: "Host resources", href: "/dashboard" },
-      { label: "Community forum", href: "/community" },
-      { label: "Responsible hosting", href: "/policies#hosting" },
+      { label: "Post property", href: "/propertyListing" },
+      { label: "Owner dashboard", href: "/dashboard" },
+      { label: "Organization workspace", href: "/dashboard/organization" },
+      { label: "Plans & credits", href: "/pricing" },
     ],
   },
   {
     title: "CityHaven",
     links: [
       { label: "About us", href: "/about" },
-      { label: "Newsroom", href: "/about" },
-      { label: "Investors", href: "/about" },
-      { label: "Emergency stays", href: "/homePage" },
+      { label: "Search properties", href: "/propertySearch" },
+      { label: "Saved properties", href: "/favorites" },
+      { label: "Contact support", href: "/contact" },
     ],
   },
 ];
 
 export function FooterLinks() {
   return (
-    <footer className="mt-14 border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 grid-cols-2 md:grid-cols-4">
-        <div className="space-y-3">
+    <footer className="mt-14 overflow-x-clip border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+        <div className="space-y-3 sm:col-span-2 md:col-span-1">
           <BrandLogo size="md" showTagline taglineText="Verified Real Estate" />
-          <p className="text-sm text-slate-600 dark:text-slate-400">Clean, host-led stays and verified homes across top Indian cities.</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">Buy, rent, post and manage approved property listings across Indian cities.</p>
         </div>
         {columns.map((col) => (
           <div key={col.title}>
@@ -55,7 +54,7 @@ export function FooterLinks() {
           </div>
         ))}
       </div>
-      <div className="border-t border-slate-200 dark:border-slate-800 py-4 text-center text-xs text-slate-500 dark:text-slate-400">© {new Date().getFullYear()} CityHaven. Crafted for modern stays.</div>
+      <div className="border-t border-slate-200 py-4 text-center text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">© 2026 CityHaven. Property search and listing management.</div>
     </footer>
   );
 }

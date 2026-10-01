@@ -20,7 +20,7 @@ function SearchEditor({ value, onSubmit, onContextChange }: { value: SearchState
     </div>
     {draft.intent === "COMMERCIAL" && <div className="flex gap-2" aria-label="Commercial transaction">{(["SELL", "RENT"] as const).map((transaction) => <button key={transaction} type="button" aria-pressed={(draft.transaction ?? "SELL") === transaction} onClick={() => changeContext({ ...draft, transaction, priceMin: undefined, priceMax: undefined })} className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${(draft.transaction ?? "SELL") === transaction ? "border-rose-600 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:border-rose-500 dark:text-rose-300" : "border-zinc-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"}`}>{transaction === "SELL" ? "Buy" : "Rent / Lease"}</button>)}</div>}
     <div className="flex flex-col gap-3 sm:flex-row">
-      <div className="min-w-0 flex-1"><LocationSearchInput localities={draft.localities} keyword={draft.q} onChange={({ localities, keyword }) => update({ ...draftRef.current, localities, q: keyword })} onSubmit={submit} /></div>
+      <div className="min-w-0 flex-1"><LocationSearchInput cityName={draft.cityName} localities={draft.localities} keyword={draft.q} onChange={({ localities, keyword }) => update({ ...draftRef.current, localities, q: keyword })} onSubmit={submit} /></div>
       <button type="button" className={`${primaryButton} shrink-0`} onClick={submit}><Search size={18} />Search</button>
     </div>
   </div>;
