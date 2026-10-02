@@ -83,7 +83,7 @@ function roleLabel(role?: string | null) {
   return role[0] + role.slice(1).toLowerCase();
 }
 
-export default function OrganizationDashboardPage() {
+function OrganizationDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [hasToken, setHasToken] = useState<boolean | null>(null);
@@ -905,5 +905,13 @@ export default function OrganizationDashboardPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function OrganizationDashboardPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-8 text-center text-sm text-slate-500 dark:text-slate-400">Loading organization workspace...</div>}>
+      <OrganizationDashboardContent />
+    </React.Suspense>
   );
 }

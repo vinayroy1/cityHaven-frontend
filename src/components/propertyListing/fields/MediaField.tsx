@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { UploadCloud, Trash2, Star, ImageIcon, Video } from "lucide-react";
+import { UploadCloud, Trash2, Star, ImageIcon, Video, Sparkles, Loader2 } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { cn } from "@/components/ui/utils";
 import type { FieldConfig } from "@/features/propertyListing/formConfig/types";
+import { compressImageWithStats } from "@/lib/utils/imageCompression";
 
 // NOTE: this backend has no raw file-upload endpoint. Media is associated with a
 // listing after it is created via POST /propertyListing/{id}/media
@@ -19,6 +20,9 @@ export type PendingMedia = {
   size: number;
   type: string;
   preview: string;
+  originalSize?: number;
+  savedPercentage?: number;
+  wasCompressed?: boolean;
 };
 
 const formatSize = (bytes: number) => {
@@ -29,6 +33,8 @@ const formatSize = (bytes: number) => {
 export function MediaField({ field }: { field: FieldConfig }) {
   const form = useFormContext();
   const [items, setItems] = useState<PendingMedia[]>([]);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [compressProgress, setCompressProgress] = useState<{ current: number; total: number } | null>(null);
 
   useEffect(() => {
     const stored = (form.getValues("meta.draftState") as { mediaUploads?: PendingMedia[] } | null)
@@ -45,18 +51,44 @@ export function MediaField({ field }: { field: FieldConfig }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
 
-  const handleFiles = useCallback((fileList: FileList | null) => {
+  const handleFiles = useCallback(async (fileList: FileList | null) => {
     if (!fileList?.length) return;
-    setItems((prev) => [
-      ...prev,
-      ...Array.from(fileList).map((file) => ({
-        localId: crypto.randomUUID(),
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        preview: URL.createObjectURL(file),
-      })),
-    ]);
+    const rawFiles = Array.from(fileList);
+
+    setIsCompressing(true);
+    setCompressProgress({ current: 0, total: rawFiles.length });
+
+    try {
+      const processed: PendingMedia[] = [];
+
+      for (let i = 0; i < rawFiles.length; i++) {
+        const file = rawFiles[i];
+        setCompressProgress({ current: i + 1, total: rawFiles.length });
+
+        // Apply hardware-accelerated Lanczos + WebP compression for images
+        const compression = await compressImageWithStats(file, {
+          maxDimension: 1920,
+          quality: 0.82,
+        });
+
+        const finalFile = compression.file;
+        processed.push({
+          localId: crypto.randomUUID(),
+          name: finalFile.name,
+          size: finalFile.size,
+          type: finalFile.type,
+          preview: URL.createObjectURL(finalFile),
+          originalSize: compression.originalSize,
+          savedPercentage: compression.savedPercentage,
+          wasCompressed: compression.wasCompressed,
+        });
+      }
+
+      setItems((prev) => [...prev, ...processed]);
+    } finally {
+      setIsCompressing(false);
+      setCompressProgress(null);
+    }
   }, []);
 
   const removeItem = (id: string) => setItems((prev) => prev.filter((i) => i.localId !== id));
@@ -73,14 +105,33 @@ export function MediaField({ field }: { field: FieldConfig }) {
         {field.helpText && <p className="text-xs text-slate-500">{field.helpText}</p>}
       </div>
 
-      <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50/60 px-4 py-10 text-center transition hover:border-slate-500 hover:bg-slate-50">
-        <UploadCloud className="h-7 w-7 text-rose-500" />
-        <span className="text-sm font-semibold text-slate-800">Tap to add photos or video</span>
-        <span className="text-xs text-slate-500">PNG, JPG, WEBP, MP4 · first image becomes the cover</span>
+      <label className={cn(
+        "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50/60 px-4 py-10 text-center transition hover:border-slate-500 hover:bg-slate-50",
+        isCompressing && "opacity-80 pointer-events-none border-rose-300 bg-rose-50/30"
+      )}>
+        {isCompressing ? (
+          <>
+            <Loader2 className="h-7 w-7 text-rose-500 animate-spin" />
+            <span className="text-sm font-semibold text-slate-800">
+              Optimizing photos ({compressProgress?.current} of {compressProgress?.total})...
+            </span>
+            <span className="text-xs text-rose-600 font-medium flex items-center gap-1">
+              <Sparkles className="h-3 w-3" />
+              Compressing for ultra-fast mobile upload
+            </span>
+          </>
+        ) : (
+          <>
+            <UploadCloud className="h-7 w-7 text-rose-500" />
+            <span className="text-sm font-semibold text-slate-800">Tap to add photos or video</span>
+            <span className="text-xs text-slate-500">PNG, JPG, WEBP, MP4 · Auto-compressed for fast loading · first is cover</span>
+          </>
+        )}
         <input
           type="file"
           accept="image/*,video/*"
           multiple
+          disabled={isCompressing}
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
@@ -103,8 +154,16 @@ export function MediaField({ field }: { field: FieldConfig }) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={item.preview} alt={item.name} className="h-full w-full object-cover" />
                 )}
-                <div className="absolute left-2 top-2 rounded-full bg-slate-900/80 px-2 py-0.5 text-[11px] font-semibold text-white">
-                  {idx === 0 ? "Cover" : `#${idx + 1}`}
+                <div className="absolute left-2 top-2 flex items-center gap-1">
+                  <span className="rounded-full bg-slate-900/80 px-2 py-0.5 text-[11px] font-semibold text-white">
+                    {idx === 0 ? "Cover" : `#${idx + 1}`}
+                  </span>
+                  {item.wasCompressed && (
+                    <span className="rounded-full bg-emerald-600/90 px-1.5 py-0.5 text-[10px] font-bold text-white flex items-center gap-0.5 shadow-sm">
+                      <Sparkles className="h-2.5 w-2.5" />
+                      -{item.savedPercentage}%
+                    </span>
+                  )}
                 </div>
                 <div className="absolute right-2 top-2 flex gap-1.5 opacity-0 transition group-hover:opacity-100">
                   <button
