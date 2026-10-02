@@ -34,7 +34,7 @@ export default function ContactPage() {
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-8 sm:px-8">
           <div className="flex items-center gap-3">
             <Link
-              href="/homePage"
+              href="/"
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               <ArrowLeft className="h-3.5 w-3.5" />

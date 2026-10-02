@@ -126,7 +126,7 @@ export default async function AgentPage({ params }: PageProps) {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://awasio.com/homePage",
+        item: "https://awasio.com/",
       },
       {
         "@type": "ListItem",

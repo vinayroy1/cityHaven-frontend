@@ -1,8 +1,22 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Shield, EyeOff, Lock, Smartphone, Database, Bell, ArrowLeft } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
+import { buildCanonical } from "@/constants/seo";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Learn how Awasio collects, protects, and manages your personal information with full transparency and security.",
+  alternates: { canonical: buildCanonical("/privacy") },
+  openGraph: {
+    title: "Privacy Policy | Awasio",
+    description: "Learn how Awasio collects, protects, and manages your personal information with full transparency and security.",
+    url: buildCanonical("/privacy"),
+    type: "website",
+  },
+};
 
 const principles = [
   { title: "Minimal data", body: "We collect only what is required to provide OTP login, personalize listings, and keep your account secure.", icon: EyeOff },
@@ -33,7 +47,7 @@ export default function PrivacyPage() {
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-8 sm:px-8">
           <div className="flex items-center gap-3">
             <Link
-              href="/homePage"
+              href="/"
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               <ArrowLeft className="h-3.5 w-3.5" />

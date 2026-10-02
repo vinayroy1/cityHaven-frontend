@@ -55,7 +55,7 @@ export default function VerifyOtpPage() {
       if (tokens.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, tokens.refreshToken);
       if (tokens.user) localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(tokens.user));
       setMessage('Login successful! Redirecting...');
-      router.push('/homePage');
+      router.push('/');
     } catch (err: any) {
       setMessage(err?.message || 'Invalid OTP. Please try again.');
     } finally {

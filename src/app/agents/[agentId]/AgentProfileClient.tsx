@@ -108,7 +108,7 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
       <div className="border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/60 py-2.5">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-            <Link href="/homePage" className="hover:text-rose-600 transition">
+            <Link href="/" className="hover:text-rose-600 transition">
               Home
             </Link>
             <ChevronRight className="h-3 w-3 text-slate-400" />

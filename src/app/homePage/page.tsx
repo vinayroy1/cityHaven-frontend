@@ -8,11 +8,11 @@ import { seoDefaults, buildCanonical } from "@/constants/seo";
 export const metadata: Metadata = {
   title: seoDefaults.title,
   description: seoDefaults.description,
-  alternates: { canonical: buildCanonical("/homePage") },
+  alternates: { canonical: buildCanonical("/") },
   openGraph: {
     title: seoDefaults.title,
     description: seoDefaults.description,
-    url: buildCanonical("/homePage"),
+    url: buildCanonical("/"),
     type: "website",
   },
 };

@@ -43,7 +43,7 @@ export default function PropertyListingPage() {
 
               <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                 <span>/</span>
-                <Link href="/homePage" className="hover:underline">Home</Link>
+                <Link href="/" className="hover:underline">Home</Link>
                 <span>/</span>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">Post Property</span>
               </div>

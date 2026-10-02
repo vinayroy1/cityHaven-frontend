@@ -15,7 +15,7 @@ export function BrandLogo({
   size = "md",
   showTagline = false,
   taglineText = "Verified Real Estate",
-  href = "/homePage",
+  href = "/",
   className = "",
 }: BrandLogoProps) {
   const iconSizeClasses = {

@@ -134,7 +134,7 @@ function LoginContent() {
   const year = new Date().getFullYear();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/homePage";
+  const redirectTo = searchParams.get("redirect") || "/";
   const [redirectingSession, setRedirectingSession] = useState(true);
 
   // Form states
@@ -645,7 +645,7 @@ function LoginContent() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <div>© {year} Awasio. All rights reserved.</div>
           <nav className="flex items-center gap-4 text-slate-600 dark:text-slate-400 font-medium">
-            <Link href="/homePage" className="hover:text-slate-900 dark:hover:text-white transition">Home</Link>
+            <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition">Home</Link>
             <Link href="/pricing" className="hover:text-slate-900 dark:hover:text-white transition">Pricing</Link>
             <Link href="/terms" className="hover:text-slate-900 dark:hover:text-white transition">Terms</Link>
             <Link href="/privacy" className="hover:text-slate-900 dark:hover:text-white transition">Privacy</Link>

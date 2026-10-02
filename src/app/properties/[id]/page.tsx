@@ -1,8 +1,10 @@
 import React from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BadgeCheck, Bath, BedDouble, CalendarClock, Home, Landmark, Maximize } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { buildCanonical, SITE_URL } from "@/constants/seo";
 import { AboutHighlights } from "./components/AboutHighlights";
 import { GalleryStrip } from "./components/GalleryStrip";
 import { HeroHeader } from "./components/HeroHeader";
@@ -307,6 +309,55 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
   ];
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  let property: PropertyDetails | null = null;
+  try {
+    property = await getProperty(id);
+  } catch {
+    property = null;
+  }
+
+  if (!property) {
+    return {
+      title: "Property Listing Not Found",
+      description: "The requested property listing could not be found on Awasio.",
+    };
+  }
+
+  const title = property.title || `${property.bedrooms ? `${property.bedrooms} BHK ` : ""}${property.propertySubType?.name ?? property.propertyType?.name ?? "Property"} in ${property.locality ?? property.cityName ?? "India"}`;
+  const location = compact([property.subLocality, property.localityRef?.name ?? property.locality, property.city?.name ?? property.cityName]);
+  const price = formatMoney(property.price);
+  const area = getArea(property);
+  const description = property.description
+    ? (property.description.length > 155 ? `${property.description.slice(0, 152)}...` : property.description)
+    : `${title} available for ${property.listingType?.toLowerCase() || "sale/rent"} in ${location || "prime location"}. Price: ${price}. Carpet area: ${area.value}. Verified listings on Awasio.`;
+
+  const ogImages = property.media?.map((m) => m.url).filter(Boolean) as string[] | undefined;
+  const canonicalUrl = buildCanonical(`/properties/${id}`);
+
+  return {
+    title: `${title} | ${price}`,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${title} | ${price} | Awasio`,
+      description,
+      url: canonicalUrl,
+      type: "website",
+      images: ogImages && ogImages.length > 0 ? ogImages.slice(0, 4).map((url) => ({ url })) : [`${SITE_URL}/property-placeholder.webp`],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | ${price}`,
+      description,
+      images: ogImages && ogImages.length > 0 ? [ogImages[0]] : [`${SITE_URL}/property-placeholder.webp`],
+    },
+  };
+}
+
 export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const property = await getProperty(id);
@@ -320,8 +371,76 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const tags = [formatEnum(property.listingType), formatEnum(property.resCom), property.postedAs ? `Posted by ${formatEnum(property.postedAs)}` : null, property.project?.name].filter(Boolean) as string[];
   const amenities = property.amenitiesByCategory?.flatMap((group) => group.amenities?.map((item) => item.name).filter(Boolean) ?? []) as string[] | undefined;
 
+  const schemaType = property.resCom?.toLowerCase() === "commercial"
+    ? "CommercialRealEstate"
+    : (property.propertySubType?.name?.toLowerCase().includes("house") || property.propertySubType?.name?.toLowerCase().includes("villa") ? "SingleFamilyResidence" : "Apartment");
+
+  const propertyJsonLd = {
+    "@context": "https://schema.org",
+    "@type": schemaType,
+    name: title,
+    description: property.description || `${title} in ${location || "prime location"}`,
+    url: buildCanonical(`/properties/${id}`),
+    ...(images && images.length > 0 ? { image: images } : {}),
+    ...(property.bedrooms ? { numberOfRooms: property.bedrooms, numberOfBedrooms: property.bedrooms } : {}),
+    ...(property.bathrooms ? { numberOfBathroomsTotal: property.bathrooms } : {}),
+    ...(property.carpetArea ? {
+      floorSize: {
+        "@type": "QuantitativeValue",
+        value: property.carpetArea,
+        unitText: property.carpetAreaUnit || "SQFT",
+      },
+    } : {}),
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: property.localityRef?.name ?? property.locality ?? property.cityName ?? "India",
+      addressRegion: property.cityName ?? "India",
+      addressCountry: "IN",
+    },
+    offers: {
+      "@type": "Offer",
+      price: property.price || 0,
+      priceCurrency: "INR",
+      availability: "https://schema.org/InStock",
+      businessFunction: property.listingType?.toLowerCase().includes("rent") ? "https://schema.org/LeaseOut" : "https://schema.org/Sell",
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: buildCanonical("/"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Properties",
+        item: buildCanonical("/propertySearch"),
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: title,
+        item: buildCanonical(`/properties/${id}`),
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-white text-zinc-900 [letter-spacing:0] dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(propertyJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <HeaderNav />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:py-7">

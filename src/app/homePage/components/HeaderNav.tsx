@@ -23,7 +23,7 @@ export function HeaderNav() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [accountOpen, setAccountOpen] = React.useState(false);
   const accountRef = React.useRef<HTMLDivElement | null>(null);
-  const loginHref = `/login?redirect=${encodeURIComponent(pathname || "/homePage")}`;
+  const loginHref = `/login?redirect=${encodeURIComponent(pathname || "/")}`;
 
   React.useEffect(() => {
     const checkAuth = () => setIsAuthed(Boolean(localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)));
@@ -51,7 +51,7 @@ export function HeaderNav() {
     localStorage.removeItem(APP_CONFIG.AUTH.USER_KEY);
     setIsAuthed(false);
     setAccountOpen(false);
-    router.push("/homePage");
+    router.push("/");
   };
 
   const accountItems = [
@@ -64,7 +64,7 @@ export function HeaderNav() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <BrandLogo size="md" href="/homePage" />
+        <BrandLogo size="md" href="/" />
 
         <nav className="hidden items-center gap-1 text-sm font-semibold text-slate-700 dark:text-slate-200 lg:flex">
           {searchLinks.map((link) => (
