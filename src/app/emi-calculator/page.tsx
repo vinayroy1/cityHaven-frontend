@@ -8,12 +8,12 @@ import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { EmiCalculator } from "@/components/emi/EmiCalculator";
 
 export const metadata: Metadata = {
-  title: "EMI Calculator - CityHaven",
-  description: "Calculate home loan EMIs instantly with CityHaven's EMI calculator.",
+  title: "EMI Calculator - Awasio",
+  description: "Calculate home loan EMIs instantly with Awasio's EMI calculator.",
   alternates: { canonical: buildCanonical("/emi-calculator") },
   openGraph: {
-    title: "EMI Calculator - CityHaven",
-    description: "Calculate home loan EMIs instantly with CityHaven's EMI calculator.",
+    title: "EMI Calculator - Awasio",
+    description: "Calculate home loan EMIs instantly with Awasio's EMI calculator.",
     url: buildCanonical("/emi-calculator"),
     type: "website",
   },

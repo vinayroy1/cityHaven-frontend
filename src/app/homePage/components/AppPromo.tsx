@@ -6,7 +6,7 @@ export function AppPromo() {
     <section className="mx-auto mt-12 max-w-6xl px-6">
       <div className="grid gap-6 rounded-[24px] border border-slate-200 bg-gradient-to-r from-rose-50 via-white to-indigo-50 p-8 shadow-lg dark:border-slate-800 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 md:grid-cols-[1.2fr_0.8fr] md:items-center">
         <div className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">CityHaven App</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">Awasio App</p>
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Search, shortlist, and list your property on the go.</h3>
           <p className="text-slate-600 dark:text-slate-300">Instant alerts, site-visit slots, digital agreements, and loan offers in one place.</p>
           <div className="flex flex-wrap gap-3">

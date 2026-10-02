@@ -49,8 +49,8 @@ export default function AdminStaffPage() {
     setErrorMsg(null);
 
     const emailClean = inviteEmail.trim().toLowerCase();
-    if (!emailClean.endsWith("@cityhaven.in")) {
-      setErrorMsg("Only company domain emails (@cityhaven.in) are permitted for internal staff accounts.");
+    if (!emailClean.endsWith("@awasio.in")) {
+      setErrorMsg("Only company domain emails (@awasio.in) are permitted for internal staff accounts.");
       return;
     }
 
@@ -66,7 +66,7 @@ export default function AdminStaffPage() {
 
     inviteStaff(emailClean, inviteName.trim(), selectedRoles);
 
-    const token = `inv_cityhaven_${Math.random().toString(36).substring(2, 12)}_${Date.now()}`;
+    const token = `inv_awasio_${Math.random().toString(36).substring(2, 12)}_${Date.now()}`;
     setInviteToken(`${window.location.origin}/admin/login?inviteToken=${token}&email=${encodeURIComponent(emailClean)}`);
     setSuccessMsg(`Staff invitation issued for ${inviteName} (${emailClean})`);
   };
@@ -253,7 +253,7 @@ export default function AdminStaffPage() {
               Invite New Staff Member
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-              Issues an expiring single-use invite token. Requires verified @cityhaven.in domain.
+              Issues an expiring single-use invite token. Requires verified @awasio.in domain.
             </p>
 
             {errorMsg && (
@@ -278,14 +278,14 @@ export default function AdminStaffPage() {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Company Staff Email (@cityhaven.in)
+                    Company Staff Email (@awasio.in)
                   </label>
                   <input
                     type="email"
                     required
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    placeholder="priya.sharma@cityhaven.in"
+                    placeholder="priya.sharma@awasio.in"
                     className="w-full p-2.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-rose-500 rounded-xl text-xs text-slate-900 dark:text-white font-mono"
                   />
                 </div>

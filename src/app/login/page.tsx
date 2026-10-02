@@ -511,7 +511,7 @@ function LoginContent() {
                   Complete Your Profile
                 </h1>
                 <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                  Just a few quick details to personalize your CityHaven experience.
+                  Just a few quick details to personalize your Awasio experience.
                 </p>
 
                 <ProfileCompletion
@@ -643,7 +643,7 @@ function LoginContent() {
       {/* Simplified Footer */}
       <footer className="border-t border-slate-200/60 bg-white/80 py-4 px-6 text-xs text-slate-500 dark:border-slate-850 dark:bg-slate-950/80 dark:text-slate-400">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div>© {year} CityHaven. All rights reserved.</div>
+          <div>© {year} Awasio. All rights reserved.</div>
           <nav className="flex items-center gap-4 text-slate-600 dark:text-slate-400 font-medium">
             <Link href="/homePage" className="hover:text-slate-900 dark:hover:text-white transition">Home</Link>
             <Link href="/pricing" className="hover:text-slate-900 dark:hover:text-white transition">Pricing</Link>

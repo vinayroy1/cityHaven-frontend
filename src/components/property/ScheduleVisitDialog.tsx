@@ -153,14 +153,14 @@ export function ScheduleVisitDialog({
     end.setHours(slotEndHour, 0, 0, 0);
 
     const fmt = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
-    const title = encodeURIComponent(`Property Site Visit: ${property.title || "CityHaven Listing"}`);
+    const title = encodeURIComponent(`Property Site Visit: ${property.title || "Awasio Listing"}`);
     const details = encodeURIComponent(
-      `Property Site Visit scheduled via CityHaven.\nProperty ID: ${property.id}\nMode: ${
+      `Property Site Visit scheduled via Awasio.\nProperty ID: ${property.id}\nMode: ${
         tourType === "VIDEO_CALL" ? "Live Video Call Tour" : "In-Person Physical Visit"
       }\nSlot: ${selectedSlot}\nOwner: ${property.ownerName || "Property Owner"}`
     );
     const loc = encodeURIComponent(
-      [property.locality, property.cityName, property.address].filter(Boolean).join(", ") || "CityHaven Property"
+      [property.locality, property.cityName, property.address].filter(Boolean).join(", ") || "Awasio Property"
     );
 
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${fmt(start)}/${fmt(end)}&details=${details}&location=${loc}`;
@@ -169,20 +169,20 @@ export function ScheduleVisitDialog({
   return (
     <Dialog open={open} onOpenChange={handleResetAndClose}>
       <DialogContent
-        className="max-h-[92vh] overflow-y-auto border-0 bg-white p-0 shadow-2xl sm:max-w-lg dark:bg-slate-900"
+        className="max-h-[92vh] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] overflow-hidden border-0 bg-white p-0 shadow-2xl sm:max-w-lg dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         {!isSuccess ? (
-          <div>
+          <div className="flex max-h-[92vh] min-w-0 flex-col">
             {/* Header with Rose Theme */}
-            <div className="bg-gradient-to-r from-rose-600 to-rose-700 p-5 text-white dark:from-rose-700 dark:to-rose-800">
-              <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-semibold tracking-wide backdrop-blur-md">
+            <div className="shrink-0 bg-gradient-to-r from-rose-600 to-rose-700 p-4 text-white dark:from-rose-700 dark:to-rose-800 sm:p-5">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-semibold backdrop-blur-md">
                   <Sparkles className="h-3 w-3 text-amber-300" />
                   100% Free • Direct Owner Connection
                 </span>
                 {property.price && (
-                  <span className="text-sm font-bold text-white/95">{property.price}</span>
+                  <span className="w-fit rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold text-white/95 sm:bg-transparent sm:px-0 sm:py-0 sm:text-sm">{property.price}</span>
                 )}
               </div>
               <DialogHeader className="mt-2 text-left">
@@ -195,83 +195,84 @@ export function ScheduleVisitDialog({
               </DialogHeader>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5 p-5">
-              {/* Tour Mode Toggle: In-Person vs Video Tour */}
-              <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-slate-400">
-                  Select Tour Type
-                </label>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setTourType("IN_PERSON")}
-                    className={`flex items-center justify-center gap-2 rounded-xl border p-2.5 text-xs font-semibold transition ${
-                      tourType === "IN_PERSON"
-                        ? "border-rose-600 bg-rose-50 text-rose-700 shadow-sm dark:border-rose-500 dark:bg-rose-950/40 dark:text-rose-200"
-                        : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                    }`}
-                  >
-                    <MapPin className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
-                    <span>In-Person Visit</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTourType("VIDEO_CALL")}
-                    className={`flex items-center justify-center gap-2 rounded-xl border p-2.5 text-xs font-semibold transition ${
-                      tourType === "VIDEO_CALL"
-                        ? "border-rose-600 bg-rose-50 text-rose-700 shadow-sm dark:border-rose-500 dark:bg-rose-950/40 dark:text-rose-200"
-                        : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                    }`}
-                  >
-                    <Video className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
-                    <span>Live Video Tour</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Date Selection: 7-day pill carousel */}
-              <div>
-                <div className="flex items-center justify-between">
+            <form onSubmit={handleSubmit} className="flex min-h-0 min-w-0 flex-1 flex-col">
+              <div className="min-h-0 min-w-0 flex-1 space-y-4 overflow-x-hidden overflow-y-auto p-4 sm:space-y-5 sm:p-5">
+                {/* Tour Mode Toggle: In-Person vs Video Tour */}
+                <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-slate-400">
-                    Choose Date
+                    Select Tour Type
                   </label>
-                  <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400">
-                    {activeDateObj.dayLabel}, {activeDateObj.dayNum} {activeDateObj.monthLabel}
-                  </span>
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setTourType("IN_PERSON")}
+                      className={`flex items-center justify-center gap-2 rounded-xl border p-2.5 text-xs font-semibold transition ${
+                        tourType === "IN_PERSON"
+                          ? "border-rose-600 bg-rose-50 text-rose-700 shadow-sm dark:border-rose-500 dark:bg-rose-950/40 dark:text-rose-200"
+                          : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                      }`}
+                    >
+                      <MapPin className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                      <span>In-Person Visit</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTourType("VIDEO_CALL")}
+                      className={`flex items-center justify-center gap-2 rounded-xl border p-2.5 text-xs font-semibold transition ${
+                        tourType === "VIDEO_CALL"
+                          ? "border-rose-600 bg-rose-50 text-rose-700 shadow-sm dark:border-rose-500 dark:bg-rose-950/40 dark:text-rose-200"
+                          : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                      }`}
+                    >
+                      <Video className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                      <span>Live Video Tour</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="mt-2 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                  {availableDates.map((item) => {
-                    const isSelected = item.isoDate === selectedDate;
-                    return (
-                      <button
-                        key={item.isoDate}
-                        type="button"
-                        onClick={() => setSelectedDate(item.isoDate)}
-                        className={`flex min-w-[70px] shrink-0 flex-col items-center justify-center rounded-xl border py-2 text-xs font-medium transition ${
-                          isSelected
-                            ? "border-rose-600 bg-rose-600 text-white shadow-md shadow-rose-200 dark:shadow-rose-950"
-                            : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                        }`}
-                      >
-                        <span className={`text-[10px] ${isSelected ? "text-rose-100 font-semibold" : "text-zinc-500"}`}>
-                          {item.dayLabel}
-                        </span>
-                        <span className="text-base font-bold leading-tight">{item.dayNum}</span>
-                        <span className={`text-[10px] ${isSelected ? "text-rose-100" : "text-zinc-400"}`}>
-                          {item.monthLabel}
-                        </span>
-                      </button>
-                    );
-                  })}
+
+                {/* Date Selection: 7-day pill carousel */}
+                <div className="min-w-0 max-w-full overflow-hidden">
+                  <div className="flex min-w-0 items-center justify-between gap-2">
+                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-slate-400">
+                      Choose Date
+                    </label>
+                    <span className="shrink-0 text-[11px] font-medium text-rose-600 dark:text-rose-400">
+                      {activeDateObj.dayLabel}, {activeDateObj.dayNum} {activeDateObj.monthLabel}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex w-full max-w-full min-w-0 touch-pan-x snap-x gap-2 overflow-x-auto overscroll-x-contain pb-2 no-scrollbar">
+                    {availableDates.map((item) => {
+                      const isSelected = item.isoDate === selectedDate;
+                      return (
+                        <button
+                          key={item.isoDate}
+                          type="button"
+                          onClick={() => setSelectedDate(item.isoDate)}
+                          className={`flex min-w-[64px] shrink-0 snap-start flex-col items-center justify-center rounded-xl border py-2 text-xs font-medium transition sm:min-w-[70px] ${
+                            isSelected
+                              ? "border-rose-600 bg-rose-600 text-white shadow-md shadow-rose-200 dark:shadow-rose-950"
+                              : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                          }`}
+                        >
+                          <span className={`text-[10px] ${isSelected ? "text-rose-100 font-semibold" : "text-zinc-500"}`}>
+                            {item.dayLabel}
+                          </span>
+                          <span className="text-base font-bold leading-tight">{item.dayNum}</span>
+                          <span className={`text-[10px] ${isSelected ? "text-rose-100" : "text-zinc-400"}`}>
+                            {item.monthLabel}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
 
               {/* Time Slot Selection */}
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-slate-400">
                   Select Time Window
                 </label>
-                <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2">
                   {TIME_SLOTS.map((slot) => {
                     const active = selectedSlot === slot.id;
                     return (
@@ -279,7 +280,7 @@ export function ScheduleVisitDialog({
                         key={slot.id}
                         type="button"
                         onClick={() => setSelectedSlot(slot.id)}
-                        className={`relative flex flex-col items-start rounded-xl border p-2.5 text-left transition ${
+                        className={`relative flex min-h-[54px] flex-col items-center justify-center rounded-xl border p-2 text-center transition sm:items-start sm:p-2.5 sm:text-left ${
                           active
                             ? "border-rose-600 bg-rose-50 text-rose-900 shadow-sm dark:border-rose-500 dark:bg-rose-950/40 dark:text-rose-200"
                             : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
@@ -291,7 +292,7 @@ export function ScheduleVisitDialog({
                           </span>
                         )}
                         <span className="text-xs font-bold">{slot.label}</span>
-                        <span className="text-[11px] text-zinc-500 dark:text-slate-400 mt-0.5">{slot.time}</span>
+                        <span className="mt-0.5 hidden text-[11px] text-zinc-500 dark:text-slate-400 sm:inline">{slot.time}</span>
                       </button>
                     );
                   })}
@@ -361,9 +362,10 @@ export function ScheduleVisitDialog({
                   {error}
                 </div>
               )}
+              </div>
 
               {/* Submit CTA */}
-              <div className="space-y-2 pt-1">
+              <div className="shrink-0 space-y-2 border-t border-zinc-100 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5">
                 <button
                   type="submit"
                   disabled={isLoading}
@@ -383,7 +385,7 @@ export function ScheduleVisitDialog({
                 </button>
                 <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-zinc-500 dark:text-slate-400">
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>Free booking • No charges • Direct owner confirmation</span>
+                  <span>Free booking • No charges • Saved to your visit history</span>
                 </p>
               </div>
             </form>
@@ -400,7 +402,7 @@ export function ScheduleVisitDialog({
                 Site Visit Confirmed!
               </h3>
               <p className="mt-1 text-xs text-zinc-500 dark:text-slate-400">
-                The property owner has been notified via WhatsApp & SMS.
+                Your request has been saved. Awasio can notify the owner once notification channels are enabled.
               </p>
             </div>
 

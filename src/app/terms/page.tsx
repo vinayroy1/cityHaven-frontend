@@ -6,7 +6,7 @@ import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 
 const sections = [
   {
-    title: "Using CityHaven",
+    title: "Using Awasio",
     points: [
       "Create an account with accurate information; keep your login secure.",
       "Use OTP sign-in only for yourself—no sharing or reselling of access.",
@@ -32,7 +32,7 @@ const sections = [
   {
     title: "Intellectual property",
     points: [
-      "Logos, copy, and photos are owned by CityHaven or respective partners.",
+      "Logos, copy, and photos are owned by Awasio or respective partners.",
       "Do not scrape, clone, or republish listings or analytics without permission.",
       "Brand assets can be used only with a written approval.",
     ],
@@ -62,7 +62,7 @@ export default function TermsPage() {
             </div>
             <h1 className="mt-2 text-3xl font-semibold leading-tight sm:text-4xl text-slate-950 dark:text-white">Simple rules for a trusted marketplace.</h1>
             <p className="mt-2 max-w-3xl text-sm text-slate-700 dark:text-slate-300">
-              These terms outline how you use CityHaven, interact with listings, and stay compliant with hosts and local regulations. For any clarification, contact our support team.
+              These terms outline how you use Awasio, interact with listings, and stay compliant with hosts and local regulations. For any clarification, contact our support team.
             </p>
             <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-700 dark:text-slate-300">
               {["Transparent policies", "Safety-first", "Respectful community"].map((chip) => (
@@ -111,7 +111,7 @@ export default function TermsPage() {
                 <FileCheck className="h-4 w-4" /> Quick references
               </div>
               <ul className="space-y-2 text-sm text-white/85">
-                <li>• Submit KYC only within CityHaven flows.</li>
+                <li>• Submit KYC only within Awasio flows.</li>
                 <li>• Keep payment proofs until move-in is confirmed.</li>
                 <li>• Report fraud or safety issues immediately.</li>
                 <li>• Use official support channels—avoid third-party links.</li>

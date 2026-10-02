@@ -366,7 +366,7 @@ export function ProfileDetailsStep(props: {
       <div className="rounded-lg border border-zinc-200 p-4">
         <div className="flex items-center gap-2 text-rose-600 mb-2">
           <UserCheck className="h-5 w-5" />
-          <p className="text-sm font-semibold text-zinc-950">Welcome to CityHaven!</p>
+          <p className="text-sm font-semibold text-zinc-950">Welcome to Awasio!</p>
         </div>
         <p className="text-xs text-zinc-500">Please provide your name to finish creating your account.</p>
         <div className="mt-4 space-y-3">

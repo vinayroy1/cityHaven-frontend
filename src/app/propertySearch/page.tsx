@@ -4,12 +4,12 @@ import { buildCanonical } from "@/constants/seo";
 import { SearchPageClient } from "./SearchPageClient";
 
 export const metadata: Metadata = {
-  title: "Search properties - CityHaven",
-  description: "Discover rental, PG, and sale listings by city and locality on CityHaven.",
+  title: "Search properties - Awasio",
+  description: "Discover rental, PG, and sale listings by city and locality on Awasio.",
   alternates: { canonical: buildCanonical("/propertySearch") },
   openGraph: {
-    title: "Search properties - CityHaven",
-    description: "Discover rental, PG, and sale listings by city and locality on CityHaven.",
+    title: "Search properties - Awasio",
+    description: "Discover rental, PG, and sale listings by city and locality on Awasio.",
     url: buildCanonical("/propertySearch"),
     type: "website",
   },

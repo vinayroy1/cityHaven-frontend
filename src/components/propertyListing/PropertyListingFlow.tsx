@@ -197,7 +197,7 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
     const payload = form.getValues();
     // Stamp the current user so the listing shows under "My listings".
     try {
-      const raw = localStorage.getItem("cityhaven_user");
+      const raw = localStorage.getItem("awasio_user");
       const uid = raw ? (JSON.parse(raw) as { id?: number }).id : undefined;
       if (uid && !payload.context.ownerId) {
         payload.context = { ...payload.context, ownerId: uid, createdById: uid };

@@ -47,7 +47,7 @@ export default function PrivacyPage() {
             </div>
             <h1 className="mt-2 text-3xl font-semibold leading-tight sm:text-4xl text-slate-950 dark:text-white">Your data, protected and in your control.</h1>
             <p className="mt-2 max-w-3xl text-sm text-slate-700 dark:text-slate-300">
-              CityHaven is built on trust. We use your data to deliver a secure OTP login, personalized discovery, and reliable communication—nothing more.
+              Awasio is built on trust. We use your data to deliver a secure OTP login, personalized discovery, and reliable communication—nothing more.
             </p>
             <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-700 dark:text-slate-300">
               {["Encrypted OTP", "Consent-first", "No resale of data"].map((chip) => (

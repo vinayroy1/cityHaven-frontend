@@ -14,7 +14,7 @@ export default function AdminLoginPage() {
   const mounted = useIsMounted();
   const { loginStaff, requestOtp, staffList } = useAdmin();
 
-  const [email, setEmail] = useState("vinay.admin@cityhaven.in");
+  const [email, setEmail] = useState("vinay.admin@awasio.in");
   const [mfaCode, setMfaCode] = useState("");
   const [step, setStep] = useState<"EMAIL" | "MFA">("EMAIL");
   const [error, setError] = useState<string | null>(null);
@@ -101,12 +101,12 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 backdrop-blur-xl rounded-2xl shadow-xl p-6 sm:p-8 relative z-10">
         <div className="flex items-center justify-center mb-6">
           <div className="w-12 h-12 rounded-full bg-rose-600 flex items-center justify-center font-bold text-xl text-white shadow-xl shadow-rose-900/40">
-            CH
+            A
           </div>
         </div>
 
         <div className="text-center mb-6">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">CityHaven Internal Portal</h1>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Awasio Internal Portal</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Authorized Staff & Operations Access Only</p>
           <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 text-rose-600 dark:text-rose-300 border border-slate-200 dark:border-slate-700">
             <Lock className="w-3 h-3 text-rose-500" /> MFA & SSO Enforced
@@ -139,7 +139,7 @@ export default function AdminLoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@cityhaven.in"
+                    placeholder="name@awasio.in"
                     required
                     disabled={loading}
                     className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
@@ -222,8 +222,8 @@ export default function AdminLoginPage() {
           </div>
           <div className="space-y-1">
             {[
-              { email: "vinay.admin@cityhaven.in", role: "SUPER_ADMIN", name: "Vinay Admin" },
-              { email: "rohan.malhotra@cityhaven.in", role: "SUPER_ADMIN", name: "Rohan Malhotra" },
+              { email: "vinay.admin@awasio.in", role: "SUPER_ADMIN", name: "Vinay Admin" },
+              { email: "rohan.malhotra@awasio.in", role: "SUPER_ADMIN", name: "Rohan Malhotra" },
             ].map((staff) => (
               <button
                 key={staff.email}
@@ -240,7 +240,7 @@ export default function AdminLoginPage() {
       </div>
 
       <div className="mt-6 text-center text-xs text-slate-500 flex items-center gap-4">
-        <span>CityHaven Systems v2.4</span>
+        <span>Awasio Systems v2.4</span>
         <span>•</span>
         <Link href="/" className="hover:text-slate-700 dark:hover:text-slate-300 underline">
           Return to Customer Site

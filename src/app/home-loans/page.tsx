@@ -7,12 +7,12 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 
 export const metadata: Metadata = {
-  title: "Home Loans - CityHaven",
-  description: "Compare home loan options, calculate interest rates, and start your property journey with CityHaven.",
+  title: "Home Loans - Awasio",
+  description: "Compare home loan options, calculate interest rates, and start your property journey with Awasio.",
   alternates: { canonical: buildCanonical("/home-loans") },
   openGraph: {
-    title: "Home Loans - CityHaven",
-    description: "Compare home loan options, calculate interest rates, and start your property journey with CityHaven.",
+    title: "Home Loans - Awasio",
+    description: "Compare home loan options, calculate interest rates, and start your property journey with Awasio.",
     url: buildCanonical("/home-loans"),
     type: "website",
   },

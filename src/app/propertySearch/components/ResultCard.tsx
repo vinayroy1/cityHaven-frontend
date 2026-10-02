@@ -26,7 +26,6 @@ export function ResultCard({
   subtitle,
   price,
   area,
-  postedAt,
   owner,
   ownerId,
   bedrooms,
@@ -433,7 +432,6 @@ export function ResultCard({
         price={price}
         area={area}
         owner={owner}
-        postedAt={postedAt}
         bedrooms={bedrooms}
         bathrooms={bathrooms}
         type={type}

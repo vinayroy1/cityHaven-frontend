@@ -7,8 +7,8 @@ import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { buildCanonical } from "@/constants/seo";
 
 export const metadata: Metadata = {
-  title: "Policies & Safety - CityHaven",
-  description: "Learn about CityHaven's trust, safety, cancellation, and hosting policies.",
+  title: "Policies & Safety - Awasio",
+  description: "Learn about Awasio's trust, safety, cancellation, and hosting policies.",
   alternates: { canonical: buildCanonical("/policies") },
 };
 
@@ -36,7 +36,7 @@ export default function PoliciesPage() {
               Policies & Safety Standards
             </h1>
             <p className="mt-2 text-base text-slate-600 dark:text-slate-300">
-              CityHaven is committed to building a safe, transparent, and trustworthy real estate marketplace for owners, buyers, and tenants.
+              Awasio is committed to building a safe, transparent, and trustworthy real estate marketplace for owners, buyers, and tenants.
             </p>
           </div>
         </div>
@@ -74,7 +74,7 @@ export default function PoliciesPage() {
               <h2 className="text-xl font-bold text-slate-950 dark:text-white">Data Privacy & Anti-Spam</h2>
             </div>
             <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-              Contact numbers unlocked through the platform are masked and protected under strict consent guidelines. Unsolicited telemarketing or sharing buyer data outside CityHaven is a violation of our terms.
+              Contact numbers unlocked through the platform are masked and protected under strict consent guidelines. Unsolicited telemarketing or sharing buyer data outside Awasio is a violation of our terms.
             </p>
           </section>
 

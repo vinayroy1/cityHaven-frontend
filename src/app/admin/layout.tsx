@@ -262,11 +262,11 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           <div className="p-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
             <Link href="/admin" className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-full bg-rose-600 flex items-center justify-center font-bold text-sm text-white shadow-lg shadow-rose-900/30">
-                CH
+                A
               </div>
               <div>
                 <div className="text-sm font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-                  CityHaven <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/20 dark:border-rose-500/30">Admin</span>
+                  Awasio <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/20 dark:border-rose-500/30">Admin</span>
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400">Staff Ops & Moderation</div>
               </div>

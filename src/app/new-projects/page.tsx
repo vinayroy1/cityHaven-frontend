@@ -7,11 +7,11 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 
 export const metadata: Metadata = {
-  title: "New Projects - CityHaven",
+  title: "New Projects - Awasio",
   description: "Discover upcoming, newly launched, and RERA-approved residential and commercial projects across top cities.",
   alternates: { canonical: buildCanonical("/new-projects") },
   openGraph: {
-    title: "New Projects - CityHaven",
+    title: "New Projects - Awasio",
     description: "Discover upcoming, newly launched, and RERA-approved residential and commercial projects across top cities.",
     url: buildCanonical("/new-projects"),
     type: "website",

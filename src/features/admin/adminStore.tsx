@@ -131,18 +131,18 @@ function staffHasPermission(staff: StaffUser | null, permission: AdminPermission
 }
 
 const STORAGE_KEYS = {
-  CURRENT_STAFF: "cityhaven_admin_current_staff",
-  STAFF_LIST: "cityhaven_admin_staff_roster",
-  QC_QUEUE: "cityhaven_admin_qc_queue",
-  ORG_VERIF: "cityhaven_admin_org_verifications",
-  USERS: "cityhaven_admin_users",
-  BILLING: "cityhaven_admin_billing_orders",
-  REFUNDS: "cityhaven_admin_refunds",
-  DISPUTES: "cityhaven_admin_disputes",
-  UNLOCKS: "cityhaven_admin_contact_unlocks",
-  FRAUD: "cityhaven_admin_fraud_alerts",
-  AUDIT: "cityhaven_admin_audit_logs",
-  GOVERNANCE: "cityhaven_admin_governance_settings",
+  CURRENT_STAFF: "awasio_admin_current_staff",
+  STAFF_LIST: "awasio_admin_staff_roster",
+  QC_QUEUE: "awasio_admin_qc_queue",
+  ORG_VERIF: "awasio_admin_org_verifications",
+  USERS: "awasio_admin_users",
+  BILLING: "awasio_admin_billing_orders",
+  REFUNDS: "awasio_admin_refunds",
+  DISPUTES: "awasio_admin_disputes",
+  UNLOCKS: "awasio_admin_contact_unlocks",
+  FRAUD: "awasio_admin_fraud_alerts",
+  AUDIT: "awasio_admin_audit_logs",
+  GOVERNANCE: "awasio_admin_governance_settings",
 };
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {

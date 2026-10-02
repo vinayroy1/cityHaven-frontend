@@ -108,7 +108,7 @@ class ApiClient {
   public clearAdminSession() {
     if (typeof window !== "undefined") {
       localStorage.removeItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
-      localStorage.removeItem("cityhaven_admin_current_staff");
+      localStorage.removeItem("awasio_admin_current_staff");
     }
   }
 

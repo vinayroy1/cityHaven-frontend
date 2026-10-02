@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Bell, Building2, CreditCard, FileText, HandCoins, Heart, MessageSquare, NotebookTabs, RouteIcon, ShieldCheck, Users } from "lucide-react";
+import { BadgeCheck, Bell, Building2, CreditCard, FileText, HandCoins, Heart, MessageSquare, NotebookTabs, RouteIcon, ShieldCheck, Users } from "lucide-react";
 import { PageHeader } from "./components/PageHeader";
 import { SectionCard } from "./components/SectionCard";
 import { StatPill } from "./components/StatPill";
@@ -9,12 +9,12 @@ import { buildCanonical } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 
 export const metadata: Metadata = {
-  title: "Dashboard | CityHaven",
-  description: "Monitor listings, leads, KYC, and payouts from your CityHaven control center.",
+  title: "Dashboard | Awasio",
+  description: "Monitor listings, leads, KYC, and payouts from your Awasio control center.",
   alternates: { canonical: buildCanonical("/dashboard") },
   openGraph: {
-    title: "Dashboard | CityHaven",
-    description: "Manage CityHaven listings, leads, compliance, and payouts in one place.",
+    title: "Dashboard | Awasio",
+    description: "Manage Awasio listings, leads, compliance, and payouts in one place.",
     url: buildCanonical("/dashboard"),
     type: "website",
   },
@@ -22,6 +22,7 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   const quickLinks = [
+    { href: "/dashboard/advisor-profile", title: "Advisor Profile & RERA", description: "Manage agent license, RERA verification, and in-person walkthrough services.", icon: BadgeCheck },
     { href: "/pricing", title: "Plans & Contact Packs", description: "Buy contact unlock packs, seller tiers, and agency subscriptions.", icon: CreditCard },
     { href: "/dashboard/favorites", title: "Liked Properties", description: "Your shortlisted homes and saved properties.", icon: Heart },
     { href: "/dashboard/properties", title: "Properties", description: "Manage drafts, active listings, and boosts.", icon: NotebookTabs },
@@ -38,7 +39,7 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-amber-50 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100 transition-colors duration-150">
       <HeaderNav />
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-3.5 py-6 sm:px-6 sm:py-8 overflow-hidden sm:overflow-visible">
         <PageHeader
           tag="Control center"
           title="Dashboard"

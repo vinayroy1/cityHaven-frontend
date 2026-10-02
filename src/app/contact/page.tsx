@@ -8,12 +8,12 @@ import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { ContactForm } from "./ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact CityHaven Support",
-  description: "Call, email, or chat with CityHaven support for bookings, listings, safety, or account queries.",
+  title: "Contact Awasio Support",
+  description: "Call, email, or chat with Awasio support for bookings, listings, safety, or account queries.",
   alternates: { canonical: buildCanonical("/contact") },
   openGraph: {
-    title: "Contact CityHaven Support",
-    description: "Reach CityHaven for property bookings, listings, safety, or account help.",
+    title: "Contact Awasio Support",
+    description: "Reach Awasio for property bookings, listings, safety, or account help.",
     url: buildCanonical("/contact"),
     type: "website",
   },
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 const contacts = [
   { title: "Call support", value: "1800 41 99099", description: "9AM - 11PM IST, 7 days a week", icon: Phone, accent: "text-emerald-600 bg-emerald-50 border-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300" },
-  { title: "Email us", value: "support@cityhaven.com", description: "We respond within 1 business day", icon: Mail, accent: "text-rose-600 bg-rose-50 border-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300" },
+  { title: "Email us", value: "support@awasio.com", description: "We respond within 1 business day", icon: Mail, accent: "text-rose-600 bg-rose-50 border-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300" },
   { title: "Chat", value: "Message our concierge", description: "Instant responses for quick queries", icon: MessageSquare, accent: "text-sky-600 bg-sky-50 border-sky-100 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-300" },
 ];
 
@@ -47,7 +47,7 @@ export default function ContactPage() {
               <ShieldCheck className="h-4 w-4" />
               We are here to help
             </div>
-            <h1 className="mt-2 text-3xl font-semibold leading-tight sm:text-4xl text-slate-950 dark:text-white">Contact CityHaven Support</h1>
+            <h1 className="mt-2 text-3xl font-semibold leading-tight sm:text-4xl text-slate-950 dark:text-white">Contact Awasio Support</h1>
             <p className="mt-2 max-w-3xl text-sm text-slate-700 dark:text-slate-300">
               Reach us for bookings, listings, safety, or account queries. We keep responses fast and transparent.
             </p>
@@ -85,7 +85,7 @@ export default function ContactPage() {
                   <MapPin className="h-4 w-4" />
                   Visit us (by appointment)
                 </div>
-                <p className="mt-2 text-sm text-white/85">CityHaven HQ, Gurgaon</p>
+                <p className="mt-2 text-sm text-white/85">Awasio HQ, Gurgaon</p>
                 <p className="text-xs text-white/70">Mon - Fri, 10AM to 6PM</p>
                 <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs font-semibold text-white ring-1 ring-white/20">
                   <Clock className="h-4 w-4" />

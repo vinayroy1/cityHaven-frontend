@@ -1,5 +1,5 @@
 // Shared styling tokens for the property-listing flow, aligned with the
-// CityHaven design language (slate-900 actions, rose/emerald accents,
+// Awasio design language (slate-900 actions, rose/emerald accents,
 // rounded cards with soft deep shadows).
 
 export const panel =

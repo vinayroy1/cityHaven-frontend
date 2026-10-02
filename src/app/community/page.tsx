@@ -7,12 +7,12 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 
 export const metadata: Metadata = {
-  title: "Community Forum - CityHaven",
-  description: "Join the CityHaven real estate community to swap hosting tips, ask buying questions, and get expert help.",
+  title: "Community Forum - Awasio",
+  description: "Join the Awasio real estate community to swap hosting tips, ask buying questions, and get expert help.",
   alternates: { canonical: buildCanonical("/community") },
   openGraph: {
-    title: "Community Forum - CityHaven",
-    description: "Discuss hosting, renting, and buying with the CityHaven community.",
+    title: "Community Forum - Awasio",
+    description: "Discuss hosting, renting, and buying with the Awasio community.",
     url: buildCanonical("/community"),
     type: "website",
   },
@@ -40,7 +40,7 @@ export default function CommunityPage() {
               <span>Community & Discussion</span>
             </div>
             <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">
-              CityHaven Community Forum
+              Awasio Community Forum
             </h1>
             <p className="mt-2 max-w-2xl text-base text-slate-600 dark:text-slate-300">
               Connect with thousands of property owners, tenants, brokers, and real estate experts to ask questions, share insights, and discuss local trends.

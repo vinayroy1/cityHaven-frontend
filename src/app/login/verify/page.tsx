@@ -21,8 +21,8 @@ export default function VerifyOtpPage() {
 
   useEffect(() => {
     try {
-      const m = sessionStorage.getItem('cityhaven_mobile') || '';
-      const c = sessionStorage.getItem('cityhaven_otp_code');
+      const m = sessionStorage.getItem('awasio_mobile') || '';
+      const c = sessionStorage.getItem('awasio_otp_code');
       setMobile(m);
       setOtpCode(c);
       if (!m || !c) setMessage('No active OTP. Please request again.');

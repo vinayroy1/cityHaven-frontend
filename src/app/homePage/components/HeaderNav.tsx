@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { CreditCard, Heart, LogOut, Menu, User, X } from "lucide-react";
+import { CreditCard, Heart, LogOut, Menu, PlusCircle, User, X } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
@@ -11,9 +11,9 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 const searchLinks = [
   { label: "Buy", href: "/propertySearch?intent=BUY" },
   { label: "Rent", href: "/propertySearch?intent=RENT" },
-  { label: "PG", href: "/propertySearch?intent=PG" },
   { label: "Commercial", href: "/propertySearch?intent=COMMERCIAL" },
   { label: "Plots", href: "/propertySearch?intent=PLOT" },
+  { label: "Find Agents", href: "/agents" },
 ];
 
 export function HeaderNav() {
@@ -77,8 +77,9 @@ export function HeaderNav() {
         <div className="flex items-center gap-2" ref={accountRef}>
           <Link
             href={isAuthed ? "/propertyListing" : "/login?redirect=/propertyListing"}
-            className="hidden rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300 sm:inline-flex dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
+            className="hidden items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100 sm:inline-flex dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-950/60"
           >
+            <PlusCircle className="h-4 w-4" />
             Post property
           </Link>
           <Link
@@ -155,10 +156,20 @@ export function HeaderNav() {
                 {link.label}
               </Link>
             ))}
-            <Link href={isAuthed ? "/propertyListing" : "/login?redirect=/propertyListing"} onClick={() => setMenuOpen(false)} className="rounded-md px-2 py-2 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/30">
+            <Link
+              href={isAuthed ? "/propertyListing" : "/login?redirect=/propertyListing"}
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-2 rounded-md px-2 py-2 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/30"
+            >
+              <PlusCircle className="h-4 w-4" />
               Post property
             </Link>
-            <Link href={isAuthed ? "/pricing" : "/login?redirect=/pricing"} onClick={() => setMenuOpen(false)} className="rounded-md px-2 py-2 text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/30">
+            <Link
+              href={isAuthed ? "/pricing" : "/login?redirect=/pricing"}
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-2 rounded-md px-2 py-2 text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/30"
+            >
+              <CreditCard className="h-4 w-4" />
               Plans & credits
             </Link>
             {!isAuthed && (

@@ -1,5 +1,5 @@
 export const APP_CONFIG = {
-  NAME: 'CityHaven',
+  NAME: 'Awasio',
   VERSION: '1.0.0',
   DESCRIPTION: 'Find your perfect property in the city',
   
@@ -19,10 +19,10 @@ export const APP_CONFIG = {
   
   // Auth Configuration
   AUTH: {
-    TOKEN_KEY: 'cityhaven_access_token',
-    ADMIN_TOKEN_KEY: 'cityhaven_admin_token',
-    REFRESH_TOKEN_KEY: 'cityhaven_refresh_token',
-    USER_KEY: 'cityhaven_user',
+    TOKEN_KEY: 'awasio_access_token',
+    ADMIN_TOKEN_KEY: 'awasio_admin_token',
+    REFRESH_TOKEN_KEY: 'awasio_refresh_token',
+    USER_KEY: 'awasio_user',
     TOKEN_EXPIRY_DAYS: 7,
   },
   
@@ -35,8 +35,8 @@ export const APP_CONFIG = {
   
   // SEO Configuration
   SEO: {
-    DEFAULT_TITLE: 'CityHaven - Find Your Perfect Property',
-    DEFAULT_DESCRIPTION: 'Discover amazing properties in your city with CityHaven',
+    DEFAULT_TITLE: 'Awasio - Find Your Perfect Property',
+    DEFAULT_DESCRIPTION: 'Discover amazing properties in your city with Awasio',
     KEYWORDS: ['real estate', 'property', 'city', 'home', 'apartment'],
   },
 } as const;

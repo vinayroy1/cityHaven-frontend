@@ -71,22 +71,7 @@ export function SearchPageClient() {
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            {results.isLoading ? (
-              <span className="text-slate-400 dark:text-slate-500">Searching…</span>
-            ) : (
-              <>
-                <span className="text-base font-bold text-slate-900 dark:text-white">
-                  {results.refining ? resultCount : results.total ?? resultCount}
-                </span>{" "}
-                {(results.refining ? resultCount : results.total ?? resultCount) === 1
-                  ? "property"
-                  : "properties"}{" "}
-                to {state.intent === "RENT" || state.intent === "PG" || (state.intent === "COMMERCIAL" && state.transaction === "RENT") ? "rent" : "buy"}
-              </>
-            )}
-          </p>
+        <div className="mt-4 flex items-center justify-end gap-3">
           <SortMenu value={state.sort} onChange={(sort) => commit({ ...state, sort })} />
         </div>
 

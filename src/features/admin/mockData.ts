@@ -31,7 +31,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 1,
     name: "Vinay Kumar",
-    email: "vinay.admin@cityhaven.in",
+    email: "vinay.admin@awasio.in",
     roles: ["SUPER_ADMIN"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -41,7 +41,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 2,
     name: "Rajesh Sharma",
-    email: "rajesh.ops@cityhaven.in",
+    email: "rajesh.ops@awasio.in",
     roles: ["OPERATIONS_MANAGER"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -51,7 +51,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 3,
     name: "Pooja Batra",
-    email: "pooja.lead@cityhaven.in",
+    email: "pooja.lead@awasio.in",
     roles: ["SENIOR_QC_LEAD", "QC_REVIEWER"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -61,7 +61,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 4,
     name: "Anjali Mehta",
-    email: "anjali.qc@cityhaven.in",
+    email: "anjali.qc@awasio.in",
     roles: ["QC_REVIEWER"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -71,7 +71,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 5,
     name: "Rohan Deshmukh",
-    email: "rohan.qc@cityhaven.in",
+    email: "rohan.qc@awasio.in",
     roles: ["QC_REVIEWER"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -81,7 +81,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 6,
     name: "Meera Nair",
-    email: "meera.catalog@cityhaven.in",
+    email: "meera.catalog@awasio.in",
     roles: ["CATALOG_SPECIALIST", "QC_REVIEWER"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -91,7 +91,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 7,
     name: "Neha Gupta",
-    email: "neha.verify@cityhaven.in",
+    email: "neha.verify@awasio.in",
     roles: ["VERIFICATION_SPECIALIST"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -101,7 +101,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 8,
     name: "Aditya Kapoor",
-    email: "aditya.legal@cityhaven.in",
+    email: "aditya.legal@awasio.in",
     roles: ["LEGAL_COMPLIANCE_OFFICER", "VERIFICATION_SPECIALIST"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -111,7 +111,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 9,
     name: "Sameer Khan",
-    email: "sameer.fraud@cityhaven.in",
+    email: "sameer.fraud@awasio.in",
     roles: ["FRAUD_INVESTIGATOR"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -121,7 +121,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 10,
     name: "Karan Johar",
-    email: "karan.support@cityhaven.in",
+    email: "karan.support@awasio.in",
     roles: ["SUPPORT_EXECUTIVE"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -131,7 +131,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 11,
     name: "Sunil Verma",
-    email: "sunil.finance@cityhaven.in",
+    email: "sunil.finance@awasio.in",
     roles: ["FINANCE_EXECUTIVE", "FINANCE_APPROVER"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -141,7 +141,7 @@ export const INITIAL_STAFF_MEMBERS: StaffUser[] = [
   {
     id: 12,
     name: "Dr. Vikram Seth",
-    email: "vikram.audit@cityhaven.in",
+    email: "vikram.audit@awasio.in",
     roles: ["ANALYST_AUDITOR"],
     status: "ACTIVE",
     mfaEnabled: true,
@@ -571,7 +571,7 @@ export const INITIAL_AUDIT_LOGS: AdminAuditLog[] = [
     id: "AUD-101",
     actorId: 1,
     actorName: "Vinay Kumar",
-    actorEmail: "vinay.admin@cityhaven.in",
+    actorEmail: "vinay.admin@awasio.in",
     actorRole: "SUPER_ADMIN",
     action: "STAFF_ROLE_ASSIGNED",
     targetType: "STAFF",
@@ -584,7 +584,7 @@ export const INITIAL_AUDIT_LOGS: AdminAuditLog[] = [
     id: "AUD-102",
     actorId: 4,
     actorName: "Neha Gupta",
-    actorEmail: "neha.verify@cityhaven.in",
+    actorEmail: "neha.verify@awasio.in",
     actorRole: "VERIFICATION_SPECIALIST",
     action: "ORGANIZATION_VERIFIED",
     targetType: "ORGANIZATION",
@@ -597,7 +597,7 @@ export const INITIAL_AUDIT_LOGS: AdminAuditLog[] = [
     id: "AUD-103",
     actorId: 3,
     actorName: "Anjali Mehta",
-    actorEmail: "anjali.qc@cityhaven.in",
+    actorEmail: "anjali.qc@awasio.in",
     actorRole: "QC_REVIEWER",
     action: "PROPERTY_QC_APPROVED",
     targetType: "PROPERTY",

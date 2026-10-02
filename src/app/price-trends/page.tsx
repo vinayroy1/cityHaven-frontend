@@ -7,11 +7,11 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 
 export const metadata: Metadata = {
-  title: "Price Trends - CityHaven",
+  title: "Price Trends - Awasio",
   description: "Track property price trends, rental yields, and time-on-market analytics across top localities.",
   alternates: { canonical: buildCanonical("/price-trends") },
   openGraph: {
-    title: "Price Trends - CityHaven",
+    title: "Price Trends - Awasio",
     description: "Track property price trends, rental yields, and time-on-market analytics across top localities.",
     url: buildCanonical("/price-trends"),
     type: "website",

@@ -219,7 +219,6 @@ export default function FavoritesPage() {
                             ? `${item.carpetArea} ${item.carpetAreaUnit || "sq.ft"}`
                             : undefined
                       }
-                      postedAt={item.createdAt ? new Date(item.createdAt).toLocaleDateString() : undefined}
                       owner={item.postedAs || "Owner"}
                       ownerId={item.ownerId ?? item.createdById ?? undefined}
                       bedrooms={item.bedrooms}

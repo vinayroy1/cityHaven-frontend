@@ -7,7 +7,7 @@ import {
 } from "../mockData";
 import type { StaffRole, PropertyQcItem, OrgVerificationItem, AdminDisputeCase, AdminGovernanceSettings } from "../types";
 
-describe("CityHaven Admin Operations & Governance Workflow", () => {
+describe("Awasio Admin Operations & Governance Workflow", () => {
   it("should define 12 distinct operational staff roles correctly", () => {
     const roles = new Set(INITIAL_STAFF_MEMBERS.flatMap((s) => s.roles));
     expect(roles.has("SUPER_ADMIN")).toBe(true);

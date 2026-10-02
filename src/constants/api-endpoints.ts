@@ -76,6 +76,14 @@ export const API_ENDPOINTS = {
   notifications: {
     list: `${BASE}/notifications`,
   },
+  leads: {
+    my: `${BASE}/my`,
+    assigned: `${BASE}/assigned`,
+    detail: (id: number | string) => `${BASE}/${id}`,
+    status: (id: number | string) => `${BASE}/${id}/status`,
+    visits: `${BASE}/visits/my`,
+    visit: (id: number | string) => `${BASE}/visits/${id}`,
+  },
   contact: {
     submit: `${BASE}/contact`,
   },

@@ -24,7 +24,7 @@ export const ROUTES = {
 } as const;
 
 export const EXTERNAL_ROUTES = {
-  GITHUB: 'https://github.com/your-org/cityhaven-frontend',
-  DOCS: 'https://docs.cityhaven.com',
-  SUPPORT: 'https://support.cityhaven.com',
+  GITHUB: 'https://github.com/your-org/awasio-frontend',
+  DOCS: 'https://docs.awasio.com',
+  SUPPORT: 'https://support.awasio.com',
 } as const;

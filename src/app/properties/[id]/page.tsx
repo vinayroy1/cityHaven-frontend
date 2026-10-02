@@ -99,7 +99,7 @@ type PropertyDetails = {
   amenitiesByCategory?: AmenityGroup[];
 };
 
-const FALLBACK_IMAGES = ["/property-placeholder.svg"];
+const FALLBACK_IMAGES = ["/property-placeholder.webp"];
 
 async function getProperty(id: string): Promise<PropertyDetails | null> {
   const response = await fetch(API_ENDPOINTS.propertyListing.update(id), { cache: "no-store" });
@@ -314,7 +314,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
   const images = property.media?.map((item) => item.url).filter(Boolean) as string[] | undefined;
   const location = compact([property.subLocality, property.localityRef?.name ?? property.locality, property.city?.name ?? property.cityName]);
-  const title = property.title || `${property.bedrooms ? `${property.bedrooms} BHK ` : ""}${property.propertySubType?.name ?? property.propertyType?.name ?? "Property"} in ${property.locality ?? property.cityName ?? "CityHaven"}`;
+  const title = property.title || `${property.bedrooms ? `${property.bedrooms} BHK ` : ""}${property.propertySubType?.name ?? property.propertyType?.name ?? "Property"} in ${property.locality ?? property.cityName ?? "Awasio"}`;
   const price = formatMoney(property.price);
   const area = getArea(property);
   const tags = [formatEnum(property.listingType), formatEnum(property.resCom), property.postedAs ? `Posted by ${formatEnum(property.postedAs)}` : null, property.project?.name].filter(Boolean) as string[];
@@ -348,7 +348,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             <nav aria-label="Property sections" className="flex gap-6 overflow-x-auto border-b border-zinc-200 dark:border-slate-800 text-sm font-semibold">
               {[['overview', 'Overview'], ['details', 'Property details'], ['location', 'Location']].map(([anchor, label]) => <a key={anchor} href={`#${anchor}`} className="shrink-0 border-b-2 border-transparent pb-3 text-zinc-600 dark:text-slate-400 transition hover:border-emerald-600 hover:text-emerald-700 dark:hover:text-emerald-400">{label}</a>)}
             </nav>
-            <AboutHighlights aboutCopy={property.description || "This property is listed on CityHaven with key pricing, location, media, and owner information. Contact the owner to confirm visit slots, documents, and negotiation details."} highlights={buildHighlights(property)} amenities={amenities} />
+            <AboutHighlights aboutCopy={property.description || "This property is listed on Awasio with key pricing, location, media, and owner information. Contact the owner to confirm visit slots, documents, and negotiation details."} highlights={buildHighlights(property)} amenities={amenities} />
             <PropertyDetailsGrid groups={buildDetailGroups(property)} />
             <LocationCard
               headline={location || property.address || "Location details"}

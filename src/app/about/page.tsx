@@ -21,12 +21,12 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 
 export const metadata: Metadata = {
-  title: "About CityHaven - Smarter Real Estate Discovery",
-  description: "Learn how CityHaven blends verified listings, human guidance, and locality insights for faster, safer moves.",
+  title: "About Awasio - Smarter Real Estate Discovery",
+  description: "Learn how Awasio blends verified listings, human guidance, and locality insights for faster, safer moves.",
   alternates: { canonical: buildCanonical("/about") },
   openGraph: {
-    title: "About CityHaven - Smarter Real Estate Discovery",
-    description: "Learn how CityHaven blends verified listings, human guidance, and locality insights for faster, safer moves.",
+    title: "About Awasio - Smarter Real Estate Discovery",
+    description: "Learn how Awasio blends verified listings, human guidance, and locality insights for faster, safer moves.",
     url: buildCanonical("/about"),
     type: "website",
   },
@@ -66,7 +66,7 @@ const pillars = [
 const milestones = [
   {
     year: "2021",
-    title: "CityHaven Begins",
+    title: "Awasio Begins",
     body: "Launched with curated direct-owner rentals and a mission to eliminate fake listings and middleman friction.",
   },
   {
@@ -136,7 +136,7 @@ export default function AboutPage() {
             <div className="space-y-4">
               <span className="inline-flex items-center gap-2 rounded-full border border-rose-200/80 bg-rose-50/80 px-3 py-1 text-xs font-bold uppercase tracking-wider text-rose-600 dark:border-rose-900/60 dark:bg-rose-950/60 dark:text-rose-400">
                 <Sparkles className="h-3.5 w-3.5" />
-                About CityHaven
+                About Awasio
               </span>
 
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-4xl lg:text-5xl leading-[1.15]">
@@ -147,7 +147,7 @@ export default function AboutPage() {
               </h1>
 
               <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed sm:text-lg">
-                CityHaven combines verified property inventory with direct owner connections and transparent locality intelligence so you make confident housing decisions without guesswork or spam.
+                Awasio combines verified property inventory with direct owner connections and transparent locality intelligence so you make confident housing decisions without guesswork or spam.
               </p>
 
               <div className="pt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">

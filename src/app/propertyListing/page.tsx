@@ -8,12 +8,12 @@ import { Toaster } from "@/components/ui/sonner";
 import { buildCanonical } from "@/constants/seo";
 
 export const metadata: Metadata = {
-  title: "Post your property - CityHaven",
-  description: "List your property for rent or sale on CityHaven and reach verified buyers and tenants.",
+  title: "Post your property - Awasio",
+  description: "List your property for rent or sale on Awasio and reach verified buyers and tenants.",
   alternates: { canonical: buildCanonical("/propertyListing") },
   openGraph: {
-    title: "Post your property - CityHaven",
-    description: "List your property for rent or sale on CityHaven and reach verified buyers and tenants.",
+    title: "Post your property - Awasio",
+    description: "List your property for rent or sale on Awasio and reach verified buyers and tenants.",
     url: buildCanonical("/propertyListing"),
     type: "website",
   },

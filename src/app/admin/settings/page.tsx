@@ -186,7 +186,7 @@ export default function AdminSettingsPage() {
                   />
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Every submitted property is held in <strong>UNDER_REVIEW</strong> status. Nothing goes live on CityHaven until an authorized Quality Control staff member manually inspects and approves it.
+                  Every submitted property is held in <strong>UNDER_REVIEW</strong> status. Nothing goes live on Awasio until an authorized Quality Control staff member manually inspects and approves it.
                 </p>
               </div>
               <div className="mt-3 text-[10px] font-mono text-rose-600 dark:text-rose-400 font-semibold">

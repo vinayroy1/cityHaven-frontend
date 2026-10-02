@@ -27,7 +27,7 @@ export default function DashboardProfilePage() {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/50">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 <ShieldCheck className="h-4 w-4 text-emerald-500" />
@@ -36,6 +36,17 @@ export default function DashboardProfilePage() {
               <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-200">Verified Member</p>
               <Link href="/dashboard/kyc" className="mt-2 inline-block text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline">
                 View KYC details →
+              </Link>
+            </div>
+
+            <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-4 dark:border-rose-950 dark:bg-rose-950/20">
+              <div className="flex items-center gap-2 text-xs font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wider">
+                <UserCircle2 className="h-4 w-4 text-rose-600" />
+                <span>Advisor & RERA</span>
+              </div>
+              <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-200">Agent Verification</p>
+              <Link href="/dashboard/advisor-profile" className="mt-2 inline-block text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline">
+                Manage advisor profile →
               </Link>
             </div>
 

@@ -437,7 +437,7 @@ export default function OrganizationDashboardPage() {
                     onChange={(event) => setOrgName(event.target.value)}
                     required
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-                    placeholder="CityHaven Realty"
+                    placeholder="Awasio Realty"
                   />
                 </label>
                 <label className="block">

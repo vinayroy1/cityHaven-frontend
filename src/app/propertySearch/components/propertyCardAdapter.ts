@@ -35,24 +35,6 @@ export const isFreshListing = (createdAt?: string) => {
   return Date.now() - created <= 1000 * 60 * 60 * 24 * 30;
 };
 
-export const postedAtLabel = (createdAt?: string) => {
-  if (!createdAt) return "Recently posted";
-  const created = new Date(createdAt);
-  const createdTime = created.getTime();
-  if (!Number.isFinite(createdTime)) return "Recently posted";
-
-  const diffDays = Math.max(0, Math.floor((Date.now() - createdTime) / (1000 * 60 * 60 * 24)));
-  if (diffDays === 0) return "Posted today";
-  if (diffDays === 1) return "Posted yesterday";
-  if (diffDays < 30) return `Posted ${diffDays} days ago`;
-
-  return `Posted on ${created.toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })}`;
-};
-
 export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
   return {
     id: item.id,
@@ -60,7 +42,6 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     subtitle: [item.locality, item.subLocality, item.cityName].filter(Boolean).join(" · "),
     price: money(item.price, item.listingType),
     area: area(item),
-    postedAt: postedAtLabel(item.createdAt),
     owner: postedAsLabel(item.postedAs),
     bedrooms: item.bedrooms,
     bathrooms: item.bathrooms,

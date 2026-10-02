@@ -13,7 +13,7 @@ type PageHeaderProps = {
 
 export function PageHeader({ tag, title, subtitle, actions, backHref, backLabel = "Back to Dashboard" }: PageHeaderProps) {
   return (
-    <div className="flex flex-col gap-3 rounded-3xl border border-white/70 bg-white/90 px-4 py-5 shadow-[0_16px_50px_-32px_rgba(15,23,42,0.55)] backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 sm:px-6">
+    <div className="flex flex-col gap-3 rounded-3xl border border-white/70 bg-white/90 p-4 sm:px-6 sm:py-5 shadow-[0_16px_50px_-32px_rgba(15,23,42,0.55)] backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 w-full max-w-full">
       {backHref && (
         <div className="mb-1">
           <Link
@@ -25,17 +25,17 @@ export function PageHeader({ tag, title, subtitle, actions, backHref, backLabel 
           </Link>
         </div>
       )}
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-2">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="space-y-1.5 min-w-0 flex-1">
           {tag ? (
             <span className="inline-flex items-center rounded-full bg-gradient-to-r from-rose-500/10 via-amber-400/10 to-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-rose-600 dark:text-rose-400">
               {tag}
             </span>
           ) : null}
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white sm:text-3xl">{title}</h1>
-          {subtitle ? <p className="text-sm text-slate-600 dark:text-slate-400">{subtitle}</p> : null}
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white sm:text-2xl lg:text-3xl break-words">{title}</h1>
+          {subtitle ? <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 break-words">{subtitle}</p> : null}
         </div>
-        {actions ? <div className="flex-shrink-0">{actions}</div> : null}
+        {actions ? <div className="flex flex-wrap items-center gap-2 shrink-0">{actions}</div> : null}
       </div>
     </div>
   );

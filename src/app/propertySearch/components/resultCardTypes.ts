@@ -4,7 +4,6 @@ export type ResultCardProps = {
   subtitle?: string;
   price?: string;
   area?: string;
-  postedAt?: string;
   owner?: string;
   ownerId?: number | null;
   bedrooms?: number | null;
@@ -20,7 +19,7 @@ export type ResultCardProps = {
 
 export type ContactStep = "details" | "profile" | "plans" | "contact";
 
-export const FALLBACK_IMAGE = "/property-placeholder.svg";
+export const FALLBACK_IMAGE = "/property-placeholder.webp";
 
 export const CONTACT_PLANS = [
   { id: "trial", name: "Trial", contacts: "1 owner contact", description: "Unlock this listing only.", price: "₹49" },
