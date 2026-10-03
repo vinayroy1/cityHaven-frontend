@@ -2,6 +2,7 @@ import React from "react";
 
 type SimilarItem = {
   id: string;
+  slug?: string;
   title: string;
   subtitle: string;
   price: string;
@@ -38,7 +39,7 @@ export function SimilarList({ items }: SimilarListProps) {
             </div>
             <div className="flex flex-col gap-2">
               <span className="rounded-full bg-white px-2 py-1 text-[11px] font-semibold text-emerald-700 dark:bg-slate-900 dark:text-emerald-400">Owner</span>
-              <a href={`/properties/${item.id}`} className="text-xs font-semibold text-sky-700 hover:text-sky-600 dark:text-sky-400 dark:hover:text-sky-300">
+              <a href={`/properties/${item.slug || item.id}`} className="text-xs font-semibold text-sky-700 hover:text-sky-600 dark:text-sky-400 dark:hover:text-sky-300">
                 View
               </a>
             </div>

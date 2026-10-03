@@ -128,6 +128,22 @@ export function mapApiToForm(flat: Flat): PropertyListingFormValues {
     meta: {
       title: s(flat.title),
       description: s(flat.description),
+      draftState: Array.isArray(flat.media) && flat.media.length
+        ? {
+            mediaUploads: (flat.media as Array<any>).map((m) => ({
+              localId: String(m.id || crypto.randomUUID()),
+              id: m.id,
+              name: m.meta?.name || `photo_${m.id}.webp`,
+              size: m.meta?.size || 0,
+              type: m.type === "VIDEO" ? "video/mp4" : "image/webp",
+              preview: m.url,
+              uploadedUrl: m.url,
+              uploaded: true,
+              wasCompressed: Boolean(m.meta?.savedPercentage),
+              savedPercentage: m.meta?.savedPercentage,
+            })),
+          }
+        : undefined,
     },
     media: {
       mediaIds: Array.isArray(flat.mediaIds) ? (flat.mediaIds as number[]) : undefined,

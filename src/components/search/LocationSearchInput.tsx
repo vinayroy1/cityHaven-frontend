@@ -1,19 +1,21 @@
 "use client";
 
 import React from "react";
-import { MapPin, Search, X } from "lucide-react";
+import { Building2, LocateFixed, MapPin, Search, Sparkles, X } from "lucide-react";
 import {
   createPlacesSessionToken,
   fetchAutocompleteSuggestions,
-  fetchPlaceDetails,
-  type PlaceDetails,
 } from "@/lib/googlePlaces";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { apiFetch } from "@/lib/api/query";
 import type { PropertySearchItem, PropertySearchResponse } from "@/types/propertySearch.types";
-import type { LocalityTag } from "./searchQuery";
+import type { IntentKey, LocalityTag } from "./searchQuery";
+import { detectUserLocation, getCurrentCluster, requestGpsLocation } from "@/lib/geo/geoService";
+import { generateIntentSuggestions, type IntentSuggestion } from "@/lib/search/intentParser";
+import { getClusterCities } from "@/config/regionalClusters";
 
 type Suggestion =
+  | { type: "intent"; id: string; title: string; meta?: string; params: IntentSuggestion["params"] }
   | { type: "place"; description: string; place_id: string }
   | { type: "inventory"; description: string; keyword: string; meta?: string };
 
@@ -21,7 +23,10 @@ type Props = {
   localities: LocalityTag[];
   keyword: string;
   cityName?: string;
+  activeIntent?: IntentKey;
+  listingType?: string;
   onChange: (next: { localities: LocalityTag[]; keyword: string }) => void;
+  onSelectIntent?: (params: IntentSuggestion["params"]) => void;
   onSubmit?: () => void;
   autoFocus?: boolean;
   placeholder?: string;
@@ -31,7 +36,10 @@ export function LocationSearchInput({
   localities,
   keyword,
   cityName,
+  activeIntent,
+  listingType,
   onChange,
+  onSelectIntent,
   onSubmit,
   autoFocus,
   placeholder = "Search city, locality, project or landmark",
@@ -42,6 +50,8 @@ export function LocationSearchInput({
   const [error, setError] = React.useState<string | null>(null);
   const [open, setOpen] = React.useState(false);
   const [sessionToken, setSessionToken] = React.useState<string | null>(null);
+  const [cluster, setCluster] = React.useState(getCurrentCluster());
+  const [detectingGps, setDetectingGps] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -49,13 +59,35 @@ export function LocationSearchInput({
   }, [autoFocus]);
 
   React.useEffect(() => {
+    setText(keyword);
+  }, [keyword]);
+
+  // Detect location in background on mount (zero-friction IP detection)
+  React.useEffect(() => {
+    detectUserLocation().then(() => {
+      setCluster(getCurrentCluster());
+    });
+  }, []);
+
+  React.useEffect(() => {
+    // Only search autocomplete suggestions when the user is actively interacting with the input
+    if (!open) return;
+
     const trimmed = text.trim();
-    if (trimmed.length < 3) {
+    if (trimmed.length < 2) {
       setSuggestions([]);
       setLoading(false);
       setError(null);
       return;
     }
+
+    const currentIntent: IntentKey = activeIntent ?? (listingType === "RENT" ? "RENT" : listingType === "PG" ? "PG" : "BUY");
+    // 1. Generate 99acres-style intent suggestions immediately (0ms latency)
+    const intentItems = generateIntentSuggestions(trimmed, currentIntent, cluster, 6);
+    if (intentItems.length > 0) {
+      setSuggestions(intentItems.map((item) => ({ ...item, description: item.title })));
+    }
+
     let token = sessionToken;
     if (!token) {
       token = createPlacesSessionToken();
@@ -64,61 +96,132 @@ export function LocationSearchInput({
     let cancelled = false;
     setLoading(true);
     setError(null);
+
     const timer = setTimeout(async () => {
       try {
         const [placeResults, inventoryResults] = await Promise.allSettled([
           fetchAutocompleteSuggestions(trimmed, token ?? undefined),
           apiFetch<PropertySearchResponse>({
             url: API_ENDPOINTS.propertyListing.search,
-            params: { q: trimmed, cityName, pageSize: 6 },
+            params: { q: trimmed, cityName, listingType, pageSize: 6 },
           }),
         ]);
+
         if (!cancelled) {
           const inventory = inventoryResults.status === "fulfilled" ? inventorySuggestions(inventoryResults.value.items ?? [], trimmed) : [];
           const places = placeResults.status === "fulfilled" ? placeResults.value.map((item) => ({ ...item, type: "place" as const })) : [];
-          setSuggestions([...inventory, ...places].slice(0, 8));
+          
+          // Merge: Intent templates first, then inventory listings, then physical places
+          setSuggestions([...intentItems, ...inventory, ...places].slice(0, 10));
         }
       } catch (err) {
         if (!cancelled) {
-          setSuggestions([]);
-          setError(err instanceof Error ? err.message : "Could not load location suggestions.");
+          if (intentItems.length === 0) {
+            setSuggestions([]);
+            setError(err instanceof Error ? err.message : "Could not load location suggestions.");
+          }
         }
       } finally {
         if (!cancelled) {
           setLoading(false);
         }
       }
-    }, 300);
+    }, 280);
+
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [text, sessionToken]);
+  }, [text, sessionToken, activeIntent, listingType, cluster, cityName, open]);
 
-  const addSuggestion = async (s: Suggestion) => {
+  const handleSelectIntent = (s: Suggestion & { type: "intent" }) => {
     setOpen(false);
     setSuggestions([]);
     setText("");
-    if (s.type === "inventory") {
-      onChange({ localities, keyword: s.keyword });
-      onSubmit?.();
+
+    if (onSelectIntent) {
+      onSelectIntent(s.params);
       return;
     }
-    const details: PlaceDetails | null = await fetchPlaceDetails(s.place_id, sessionToken ?? undefined);
-    setSessionToken(null);
-    const locality = details?.locality || details?.subLocality || "";
-    const city = details?.city || "";
-    const base = locality || city || s.description;
-    const label = city && base && !base.toLowerCase().includes(city.toLowerCase()) ? `${base}, ${city}` : base;
-    if (localities.some((l) => l.label.toLowerCase() === label.toLowerCase())) return;
+
+    const targetCity = s.params.cityName;
+    if (targetCity && !localities.some((l) => l.label.toLowerCase() === targetCity.toLowerCase())) {
+      onChange({
+        keyword: "",
+        localities: [...localities, { label: targetCity, city: targetCity }],
+      });
+    }
+    onSubmit?.();
+  };
+
+  const addSuggestion = (s: Suggestion) => {
+    if (s.type === "intent") {
+      handleSelectIntent(s);
+      return;
+    }
+
+    setOpen(false);
+    setSuggestions([]);
+    setText("");
+
+    const label = s.type === "inventory" ? (s.keyword || s.description) : cleanPlaceLabel(s.description);
+    if (!label) return;
+
+    if (localities.some((l) => l.label.toLowerCase() === label.toLowerCase())) {
+      inputRef.current?.focus();
+      return;
+    }
+
     onChange({
       keyword: "",
-      localities: [...localities, { label, placeId: s.place_id, city: city || undefined, locality: locality || undefined }],
+      localities: [
+        ...localities,
+        {
+          label,
+          placeId: s.type === "place" ? s.place_id : undefined,
+        },
+      ],
     });
+
+    setSessionToken(null);
+    inputRef.current?.focus();
+  };
+
+  const handleDetectCurrentLocation = async () => {
+    setDetectingGps(true);
+    try {
+      const profile = await requestGpsLocation();
+      if (profile && profile.city) {
+        setCluster(getCurrentCluster());
+        const label = profile.city;
+        if (!localities.some((l) => l.label.toLowerCase() === label.toLowerCase())) {
+          onChange({
+            keyword: "",
+            localities: [...localities, { label, city: label }],
+          });
+        }
+        setOpen(false);
+        setText("");
+      }
+    } finally {
+      setDetectingGps(false);
+    }
   };
 
   const removeLocality = (label: string) => {
     onChange({ keyword, localities: localities.filter((l) => l.label !== label) });
+  };
+
+  const addMultipleLocalityChips = (labels: string[]) => {
+    const cleanList = labels
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0 && !localities.some((existing) => existing.label.toLowerCase() === l.toLowerCase()));
+    if (!cleanList.length) return;
+    const newItems = cleanList.map((label) => ({ label, city: label }));
+    onChange({
+      keyword: "",
+      localities: [...localities, ...newItems],
+    });
   };
 
   const commitKeyword = () => {
@@ -131,9 +234,48 @@ export function LocationSearchInput({
     return false;
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val.includes(",")) {
+      const parts = val.split(",");
+      const chipsToAdd = parts.slice(0, -1).map((s) => s.trim()).filter(Boolean);
+      const remainingText = parts[parts.length - 1];
+      if (chipsToAdd.length > 0) {
+        addMultipleLocalityChips(chipsToAdd);
+      }
+      setText(remainingText);
+      return;
+    }
+    setText(val);
+    onChange({ localities, keyword: val });
+    setOpen(true);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      const trimmed = text.trim();
+      if (trimmed.includes(",")) {
+        const parts = trimmed.split(",").map((s) => s.trim()).filter(Boolean);
+        addMultipleLocalityChips(parts);
+        setText("");
+        setOpen(false);
+        onSubmit?.();
+        return;
+      }
+      if (trimmed) {
+        const clean = trimmed;
+        if (!localities.some((l) => l.label.toLowerCase() === clean.toLowerCase())) {
+          onChange({
+            keyword: "",
+            localities: [...localities, { label: clean, city: clean }],
+          });
+        }
+        setText("");
+        setOpen(false);
+        onSubmit?.();
+        return;
+      }
       commitKeyword();
       onSubmit?.();
     }
@@ -142,8 +284,41 @@ export function LocationSearchInput({
     }
   };
 
+  const [placement, setPlacement] = React.useState<"bottom" | "top">("bottom");
+  const [dropdownMaxHeight, setDropdownMaxHeight] = React.useState<number>(320);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const calculatePosition = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      if (spaceBelow < 260 && spaceAbove > spaceBelow) {
+        setPlacement("top");
+        setDropdownMaxHeight(Math.min(320, Math.max(140, spaceAbove - 16)));
+      } else {
+        setPlacement("bottom");
+        setDropdownMaxHeight(Math.min(320, Math.max(140, spaceBelow - 16)));
+      }
+    };
+
+    calculatePosition();
+    window.addEventListener("scroll", calculatePosition, { passive: true });
+    window.addEventListener("resize", calculatePosition);
+    return () => {
+      window.removeEventListener("scroll", calculatePosition);
+      window.removeEventListener("resize", calculatePosition);
+    };
+  }, [open]);
+
+  const clusterCities = getClusterCities(cluster, 5);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2 py-1.5 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:focus-within:border-rose-400 dark:focus-within:ring-rose-500/20">
         <MapPin className="ml-1 h-4 w-4 shrink-0 text-rose-500" />
 
@@ -169,42 +344,146 @@ export function LocationSearchInput({
           className="min-w-[8rem] flex-1 bg-transparent px-1 py-1 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
           placeholder={localities.length || keyword ? "Add another area" : placeholder}
           value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-            onChange({ localities, keyword: e.target.value });
+          onChange={handleInputChange}
+          onFocus={() => {
             setOpen(true);
+            setTimeout(() => {
+              containerRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }, 100);
           }}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 150)}
+          onBlur={() => setTimeout(() => setOpen(false), 200)}
           onKeyDown={handleKeyDown}
-          aria-label="Search location or keyword"
+          autoComplete="off"
         />
       </div>
 
-      {open && text.trim().length >= 2 && (
-        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl dark:border-slate-800 dark:bg-slate-900">
-          {loading && <p className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">Searching…</p>}
-          {!loading && error && <p className="px-3 py-2 text-xs text-rose-600 dark:text-rose-400">{error}</p>}
-          {suggestions.map((s) => (
+      {open && (
+        <div
+          style={{ maxHeight: `${dropdownMaxHeight}px` }}
+          className={`absolute left-0 right-0 z-50 overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl transition-all dark:border-slate-700 dark:bg-slate-900 ${
+            placement === "top"
+              ? "bottom-[calc(100%+6px)] shadow-slate-950/20"
+              : "top-[calc(100%+6px)] shadow-slate-950/15"
+          }`}
+        >
+          {/* Empty text state: GPS Location & Regional Popular Cities */}
+          {text.trim().length < 2 && (
+            <div className="p-2 space-y-2">
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={handleDetectCurrentLocation}
+                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-semibold text-rose-600 hover:bg-rose-50/80 dark:text-rose-400 dark:hover:bg-rose-950/40 transition"
+              >
+                <LocateFixed className={`h-4 w-4 shrink-0 ${detectingGps ? "animate-spin" : ""}`} />
+                <span>{detectingGps ? "Detecting location..." : "Use my current location"}</span>
+              </button>
+
+              <div className="border-t border-slate-100 pt-1.5 dark:border-slate-800">
+                <p className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Popular in {cluster.name}
+                </p>
+                <div className="flex flex-wrap gap-1.5 px-2.5 py-1">
+                  {clusterCities.map((cName) => (
+                    <button
+                      key={cName}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        if (!localities.some((l) => l.label.toLowerCase() === cName.toLowerCase())) {
+                          onChange({ keyword: "", localities: [...localities, { label: cName, city: cName }] });
+                        }
+                        setOpen(false);
+                      }}
+                      className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 hover:border-rose-400 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-rose-600 dark:hover:bg-rose-950/40"
+                    >
+                      {cName}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {loading && suggestions.length === 0 && (
+            <p className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">Searching locations…</p>
+          )}
+
+          {!loading && error && suggestions.length === 0 && (
+            <p className="px-3 py-2 text-xs text-rose-600 dark:text-rose-400">{error}</p>
+          )}
+
+          {/* Render suggestions */}
+          {suggestions.map((s, idx) => {
+            if (s.type === "intent") {
+              return (
+                <button
+                  key={`intent:${s.id || idx}`}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSelectIntent(s)}
+                  className="group flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors"
+                >
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <Search className="h-3.5 w-3.5 shrink-0 text-slate-400 group-hover:text-rose-600 dark:text-slate-500 dark:group-hover:text-rose-400 transition-colors" />
+                    <span className="truncate text-slate-800 dark:text-slate-200">{s.title}</span>
+                  </div>
+                  <Sparkles className="h-3 w-3 shrink-0 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              );
+            }
+
+            if (s.type === "place") {
+              return (
+                <button
+                  key={`place:${s.place_id}`}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => void addSuggestion(s)}
+                  className="group flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors"
+                >
+                  <div className="flex min-w-0 items-center gap-2">
+                    <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400 group-hover:text-rose-500 dark:text-slate-500 transition-colors" />
+                    <span className="truncate text-slate-800 dark:text-slate-200">{s.description}</span>
+                  </div>
+                  {/* 99acres style Landmark badge */}
+                  <span className="shrink-0 rounded-sm bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                    Landmark
+                  </span>
+                </button>
+              );
+            }
+
+            return (
+              <button
+                key={`inventory:${s.description}`}
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => void addSuggestion(s)}
+                className="group flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors"
+              >
+                <div className="flex min-w-0 items-center gap-2">
+                  <Building2 className="h-3.5 w-3.5 shrink-0 text-rose-500" />
+                  <span className="min-w-0">
+                    <span className="block truncate text-slate-800 dark:text-slate-200">{s.description}</span>
+                    {s.meta && <span className="block truncate text-xs text-slate-500 dark:text-slate-400">{s.meta}</span>}
+                  </span>
+                </div>
+                <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                  Project
+                </span>
+              </button>
+            );
+          })}
+
+          {text.trim().length >= 2 && (
             <button
-              key={`${s.type}:${s.description}`}
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => void addSuggestion(s)}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
-            >
-              {s.type === "inventory" ? <Search className="h-3.5 w-3.5 shrink-0 text-rose-500" /> : <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400" />}
-              <span className="min-w-0">
-                <span className="block truncate text-slate-800 dark:text-slate-200">{s.description}</span>
-                {s.type === "inventory" && s.meta && <span className="block truncate text-xs text-slate-500 dark:text-slate-400">{s.meta}</span>}
-              </span>
-            </button>
-          ))}
-          {text.trim().length >= 3 && (
-            <button
-              type="button"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => { commitKeyword(); onSubmit?.(); }}
+              onClick={() => {
+                commitKeyword();
+                onSubmit?.();
+              }}
               className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2 text-left text-sm hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
             >
               <Search className="h-3.5 w-3.5 shrink-0 text-slate-400" />
@@ -250,4 +529,19 @@ function inventorySuggestions(items: PropertySearchItem[], query: string): Sugge
   }
 
   return output;
+}
+
+export function cleanPlaceLabel(description: string): string {
+  if (!description) return "";
+  const parts = description.split(",").map((p) => p.trim()).filter(Boolean);
+  // Strip trailing "India" if present
+  if (parts.length > 1 && parts[parts.length - 1].toLowerCase() === "india") {
+    parts.pop();
+  }
+  // If there are 3 or more parts remaining (e.g. ["DLF Phase 2", "Sector 25", "Gurugram"]),
+  // keep the first 2 parts (locality + city/area) for a concise chip label
+  if (parts.length > 2) {
+    return parts.slice(0, 2).join(", ");
+  }
+  return parts.join(", ");
 }

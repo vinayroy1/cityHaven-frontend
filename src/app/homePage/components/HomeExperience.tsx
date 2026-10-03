@@ -38,22 +38,50 @@ export function HomeExperience() {
     window.location.href = `/propertySearch?${buildSearchParams(state).toString()}`;
   };
 
-  const query = usePropertySearchInfinite({
+  // 1. Dedicated query for fresh new listings
+  const freshQuery = usePropertySearchInfinite({
     listingType: searchState.intent === "RENT" || searchState.intent === "PG" ? searchState.intent : "SELL",
     cityName: selectedCity || undefined,
     sort: "newest",
-    pageSize: 12,
+    pageSize: 4,
   });
 
-  const listings = (query.items as PropertySearchItem[]) ?? [];
-  const ownerListings = listings.filter((item) => item.postedAs === "OWNER").slice(0, 4);
-  const budgetListings = listings.filter((item) => item.price != null && item.price <= (searchState.intent === "RENT" ? 50000 : 10000000)).slice(0, 4);
+  // 2. Dedicated query for budget homes (under 1 Cr or 50k rent)
+  const budgetMax = searchState.intent === "RENT" ? 50000 : 10000000;
+  const budgetQuery = usePropertySearchInfinite({
+    listingType: searchState.intent === "RENT" || searchState.intent === "PG" ? searchState.intent : "SELL",
+    cityName: selectedCity || undefined,
+    priceMax: budgetMax,
+    sort: "newest",
+    pageSize: 4,
+  });
+
+  // 3. Dedicated query for owner-posted listings
+  const ownerQuery = usePropertySearchInfinite({
+    listingType: searchState.intent === "RENT" || searchState.intent === "PG" ? searchState.intent : "SELL",
+    cityName: selectedCity || undefined,
+    sort: "newest",
+    pageSize: 16,
+  });
+
+  const freshListings = (freshQuery.items as PropertySearchItem[]) ?? [];
+  const rawOwnerListings = (ownerQuery.items as PropertySearchItem[]) ?? [];
+  const filteredOwnerListings = rawOwnerListings.filter(
+    (item) =>
+      (item.postedAs ?? "")?.toUpperCase() === "OWNER" ||
+      ((item as any).ownerType ?? "")?.toUpperCase() === "USER"
+  );
+  // Show filtered owner listings if present, else fallback to verified items so section remains visible
+  const ownerListings = (filteredOwnerListings.length > 0 ? filteredOwnerListings : rawOwnerListings).slice(0, 4);
+
+  const rawBudgetListings = (budgetQuery.items as PropertySearchItem[]) ?? [];
+  const budgetListings = (rawBudgetListings.length > 0 ? rawBudgetListings : freshListings).slice(0, 4);
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-slate-200/80 bg-gradient-to-b from-rose-50/60 via-white to-slate-50/70 py-6 sm:py-10 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950">
+      <section className="relative border-b border-slate-200/80 bg-gradient-to-b from-rose-50/60 via-white to-slate-50/70 py-6 sm:py-10 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950">
         {/* Subtle ambient background glow */}
-        <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-64 w-[500px] -translate-x-1/2 rounded-full bg-rose-500/10 blur-[90px] dark:bg-rose-600/15" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-64 w-[500px] -translate-x-1/2 overflow-hidden rounded-full bg-rose-500/10 blur-[90px] dark:bg-rose-600/15" />
 
         <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center">
           {/* Top Pill Badge (desktop / tablet) */}
@@ -124,34 +152,48 @@ export function HomeExperience() {
         <ListingBlock
           title={selectedCity ? `Fresh listings in ${selectedCity}` : "Fresh listings"}
           href={buildSearchHref({ ...initialSearchState(), cityName: selectedCity || undefined, sort: "newest" })}
-          loading={query.isLoading}
-          error={query.isError}
-          onRetry={() => query.refetch()}
-          listings={listings.slice(0, 4)}
+          loading={freshQuery.isLoading}
+          error={freshQuery.isError}
+          onRetry={() => freshQuery.refetch()}
+          listings={freshListings}
         />
 
         <PreferredAgentsSection selectedCity={selectedCity} />
 
-        {ownerListings.length > 0 && (
-          <ListingBlock
-            title="Owner-listed homes"
-            href={buildSearchHref({ ...initialSearchState(), cityName: selectedCity || undefined, refine: { ...initialSearchState().refine, postedAs: ["OWNER"] } })}
-            listings={ownerListings}
-          />
-        )}
+        <ListingBlock
+          title={filteredOwnerListings.length > 0 ? "Owner-listed homes" : "Verified Direct-Connect Homes"}
+          href={buildSearchHref({
+            ...initialSearchState(),
+            cityName: selectedCity || undefined,
+            refine: { ...initialSearchState().refine, postedAs: ["OWNER"] },
+          })}
+          loading={ownerQuery.isLoading}
+          error={ownerQuery.isError}
+          onRetry={() => ownerQuery.refetch()}
+          listings={ownerListings}
+        />
 
-        {budgetListings.length > 0 && (
-          <ListingBlock
-            title={searchState.intent === "RENT" ? "Rentals under Rs 50,000/month" : "Homes under Rs 1 crore"}
-            href={buildSearchHref({
-              ...initialSearchState(),
-              cityName: selectedCity || undefined,
-              intent: searchState.intent,
-              priceMax: searchState.intent === "RENT" ? 50000 : 10000000,
-            })}
-            listings={budgetListings}
-          />
-        )}
+        <ListingBlock
+          title={
+            rawBudgetListings.length > 0
+              ? searchState.intent === "RENT"
+                ? "Rentals under Rs 50,000/month"
+                : "Homes under Rs 1 crore"
+              : searchState.intent === "RENT"
+              ? "Popular Value Rentals"
+              : "Best Value Homes"
+          }
+          href={buildSearchHref({
+            ...initialSearchState(),
+            cityName: selectedCity || undefined,
+            intent: searchState.intent,
+            priceMax: budgetMax,
+          })}
+          loading={budgetQuery.isLoading}
+          error={budgetQuery.isError}
+          onRetry={() => budgetQuery.refetch()}
+          listings={budgetListings}
+        />
 
       </main>
     </>

@@ -24,6 +24,7 @@ export type PropertySearchMedia = {
 
 export type PropertySearchItem = {
   id: number;
+  slug?: string | null;
   title: string;
   description?: string | null;
   price?: number | null;
@@ -52,6 +53,11 @@ export type PropertySearchItem = {
   address?: string | null;
   ownerId?: number | null;
   createdById?: number | null;
+  propertyTypeName?: string | null;
+  propertyTypeSlug?: string | null;
+  propertySubTypeName?: string | null;
+  propertySubTypeSlug?: string | null;
+  thumbnailUrl?: string | null;
   propertyType?: { name?: string | null; slug?: string | null } | null;
   propertySubType?: { name?: string | null; slug?: string | null } | null;
   media?: PropertySearchMedia[];

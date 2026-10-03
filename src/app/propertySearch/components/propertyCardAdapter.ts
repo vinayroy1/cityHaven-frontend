@@ -38,6 +38,7 @@ export const isFreshListing = (createdAt?: string) => {
 export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
   return {
     id: item.id,
+    slug: item.slug,
     title: item.title,
     subtitle: [item.locality, item.subLocality, item.cityName].filter(Boolean).join(" · "),
     price: money(item.price, item.listingType),
@@ -45,13 +46,13 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     owner: postedAsLabel(item.postedAs),
     bedrooms: item.bedrooms,
     bathrooms: item.bathrooms,
-    type: item.propertySubType?.name || item.propertyType?.name,
+    type: item.propertySubType?.name || item.propertySubTypeName || item.propertyType?.name || item.propertyTypeName,
     listingType: item.listingType,
     resCom: item.resCom,
     isNew: isFreshListing(item.createdAt),
     isVerified: item.qcStatus === "APPROVED",
     posterBadge: postedAsLabel(item.postedAs),
     ownerId: item.ownerId ?? item.createdById ?? undefined,
-    images: item.media?.map((m) => m.url).filter(Boolean) ?? [],
+    images: [item.thumbnailUrl, ...(item.media?.map((m) => m.url) ?? [])].filter(Boolean) as string[],
   };
 }

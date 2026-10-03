@@ -13,7 +13,7 @@ export const API_ENDPOINTS = {
     changePassword: `${BASE}/auth/change-password`,
     forgotPassword: `${BASE}/auth/forgot-password`,
     resetPassword: `${BASE}/auth/reset-password`,
-    me: `${BASE}/auth/me`,
+    me: `${BASE}/users/me`,
     // Use users/me for profile updates
     profile: `${BASE}/users/me`,
   },
@@ -52,6 +52,7 @@ export const API_ENDPOINTS = {
     update: (id: number | string) => `${BASE}/propertyListing/${id}`,
     // Associates media URLs with a listing: POST { items: [{ url, type }] }.
     media: (id: number | string) => `${BASE}/propertyListing/${id}/media`,
+    presignMediaUpload: `${BASE}/propertyListing/media/presign-upload`,
     unlockContact: (id: number | string) => `${BASE}/propertyListing/${id}/unlock-contact`,
     unlockedContact: (id: number | string) => `${BASE}/propertyListing/${id}/unlocked-contact`,
     favorite: (id: number | string) => `${BASE}/propertyListing/${id}/favorite`,

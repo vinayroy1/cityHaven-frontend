@@ -22,6 +22,7 @@ import { CONTACT_PLANS, FALLBACK_IMAGE, type ContactPlan, type ContactStep, type
 
 export function ResultCard({
   id,
+  slug,
   title,
   subtitle,
   price,
@@ -185,7 +186,7 @@ export function ResultCard({
     setActiveImage(index);
   };
 
-  const openDetails = () => router.push(`/properties/${id}`);
+  const openDetails = () => router.push(`/properties/${slug || id}`);
   const handleCardKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.target !== event.currentTarget) return;
     if (event.key !== "Enter" && event.key !== " ") return;

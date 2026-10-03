@@ -116,7 +116,7 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
   const state = initialSearchState();
 
   state.q = sp.get("q")?.trim() ?? "";
-  state.cityName = sp.get("city")?.trim() || undefined;
+  state.cityName = sp.get("city")?.trim() || sp.get("cityName")?.trim() || undefined;
 
   state.localities = sp
     .getAll("loc")
@@ -130,6 +130,9 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
   } else {
     const legacy = sp.get("listingType");
     if (legacy) state.intent = legacyListingTypeToIntent(legacy) ?? state.intent;
+  }
+  if ((sp.get("resCom") ?? "").toUpperCase() === "COMMERCIAL") {
+    state.intent = "COMMERCIAL";
   }
 
   state.priceMin = toNum(sp.get("priceMin"));
@@ -196,11 +199,13 @@ export type ApiSearchParams = {
   q?: string;
   cityName?: string;
   listingType: ApiListingType;
+  resCom?: "RESIDENTIAL" | "COMMERCIAL";
   bedrooms?: number;
   priceMin?: number;
   priceMax?: number;
   sort?: Exclude<SortKey, "relevance">;
   pageSize: number;
+  postedAs?: string;
 };
 
 export function toApiParams(state: SearchState, pageSize: number): ApiSearchParams {
@@ -209,12 +214,16 @@ export function toApiParams(state: SearchState, pageSize: number): ApiSearchPara
     listingType: state.intent === "COMMERCIAL" ? state.transaction ?? "SELL" : INTENT_CONFIG[state.intent].listingType,
     pageSize,
   };
+  // Server-side resCom filter: avoids fetching residential on commercial searches
+  if (state.intent === "COMMERCIAL") out.resCom = "COMMERCIAL";
   if (q) out.q = q;
-  if (state.cityName) out.cityName = state.cityName;
+  const cityName = state.cityName ?? (state.localities.length === 1 ? state.localities[0]?.city : undefined);
+  if (cityName) out.cityName = cityName;
   if (state.bedroomsMin != null) out.bedrooms = state.bedroomsMin;
   if (state.priceMin != null) out.priceMin = state.priceMin;
   if (state.priceMax != null) out.priceMax = state.priceMax;
   if (state.sort !== "relevance") out.sort = state.sort;
+  if (state.refine.postedAs.length === 1) out.postedAs = state.refine.postedAs[0];
   return out;
 }
 
@@ -224,12 +233,12 @@ export function hasClientRefinements(state: SearchState): boolean {
   return (
     r.subType.length > 0 ||
     r.furnishing.length > 0 ||
-    r.postedAs.length > 0 ||
+    // postedAs with multiple values still needs client refinement (API only accepts single value)
+    r.postedAs.length > 1 ||
     r.bathroomsMin != null ||
     r.areaMin != null ||
     r.areaMax != null ||
-    state.intent === "COMMERCIAL" ||
-    state.intent === "PLOT" ||
+    state.intent === "PLOT" || // PLOT still needs client-side subType slug filtering
     state.localities.length > 1
   );
 }
@@ -237,6 +246,7 @@ export function hasClientRefinements(state: SearchState): boolean {
 // --- client-side refinement -------------------------------------------
 
 export type RefinableItem = {
+  title?: string | null;
   resCom?: string | null;
   furnishing?: string | null;
   postedAs?: string | null;
@@ -249,6 +259,8 @@ export type RefinableItem = {
   plotAreaUnit?: string | null;
   areaUnit?: string | null;
   propertySubTypeId?: number | null;
+  propertySubTypeSlug?: string | null;
+  propertySubTypeName?: string | null;
   propertySubType?: { slug?: string | null } | null;
   cityName?: string | null;
   locality?: string | null;
@@ -290,10 +302,27 @@ export function applyClientRefinements<T extends RefinableItem>(
     }
 
     if (wantedSubTypeIds.size || wantedSubTypeSlugs.size) {
-      const slug = item.propertySubType?.slug ?? undefined;
+      const slug = item.propertySubType?.slug ?? item.propertySubTypeSlug ?? undefined;
       const byId = item.propertySubTypeId != null && wantedSubTypeIds.has(item.propertySubTypeId);
       const bySlug = slug != null && wantedSubTypeSlugs.has(slug);
-      if (!byId && !bySlug) return false;
+      let byKeyword = false;
+      if (!byId && !bySlug) {
+        const textCorpus = [item.title, item.propertySubTypeName, slug].filter(Boolean).join(" ").toLowerCase();
+        for (const wanted of wantedSubTypeSlugs) {
+          if (wanted === "office" && (textCorpus.includes("office") || textCorpus.includes("coworking"))) {
+            byKeyword = true;
+            break;
+          }
+          if (
+            (wanted === "shop" || wanted === "retail" || wanted === "commercial-shops") &&
+            (textCorpus.includes("shop") || textCorpus.includes("retail") || textCorpus.includes("showroom"))
+          ) {
+            byKeyword = true;
+            break;
+          }
+        }
+      }
+      if (!byId && !bySlug && !byKeyword) return false;
     }
 
     if (refine.furnishing.length) {
@@ -363,6 +392,17 @@ export function describeFilters(
 ): FilterChip[] {
   const chips: FilterChip[] = [];
   const money = labels.money ?? ((v: number) => `₹${v}`);
+
+  state.localities.forEach((loc) => {
+    chips.push({
+      id: `loc:${loc.label}`,
+      label: loc.label,
+      remove: (s) => ({
+        ...s,
+        localities: s.localities.filter((l) => l.label !== loc.label),
+      }),
+    });
+  });
 
   if (state.priceMin != null || state.priceMax != null) {
     const lo = state.priceMin != null ? money(state.priceMin) : "Any";

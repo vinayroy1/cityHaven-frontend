@@ -8,9 +8,21 @@ type CursorPage<T> = {
   items: T[];
   nextCursor?: number | null;
   hasMore?: boolean;
+  total?: number;
 };
 
-const flattenPages = <T,>(pages?: CursorPage<T>[]): T[] => pages?.flatMap((p) => p.items ?? []) ?? [];
+export const normalizePage = <T,>(page: CursorPage<T> | { data?: CursorPage<T> } | T[] | undefined | null): CursorPage<T> => {
+  if (Array.isArray(page)) return { items: page };
+  const nested: CursorPage<T> | undefined =
+    page && "data" in page && !("items" in page) ? page.data : (page as CursorPage<T> | undefined | null) ?? undefined;
+  return {
+    ...(nested || {}),
+    items: Array.isArray(nested?.items) ? nested.items : [],
+  };
+};
+
+const flattenPages = <T,>(pages?: (CursorPage<T> | { data?: CursorPage<T> } | T[])[]): T[] =>
+  pages?.flatMap((p) => normalizePage(p).items) ?? [];
 
 export function useMyPropertiesInfinite(params?: { pageSize?: number; status?: string; cityId?: number; listingType?: string }) {
   const query = useInfiniteQuery<CursorPage<any>, Error>({
@@ -21,7 +33,7 @@ export function useMyPropertiesInfinite(params?: { pageSize?: number; status?: s
         params: { ...(params || {}), cursor: pageParam },
       }),
     initialPageParam: null,
-    getNextPageParam: (last) => (last && "nextCursor" in last ? (last as CursorPage<any>).nextCursor ?? undefined : undefined),
+    getNextPageParam: (last) => normalizePage(last).nextCursor ?? undefined,
   });
 
   return {
@@ -39,7 +51,7 @@ export function useOrgListingsInfinite(params?: { orgId?: number | string; assig
         params: { ...(params || {}), cursor: pageParam },
       }),
     initialPageParam: null,
-    getNextPageParam: (last) => (last && "nextCursor" in last ? (last as CursorPage<any>).nextCursor ?? undefined : undefined),
+    getNextPageParam: (last) => normalizePage(last).nextCursor ?? undefined,
   });
 
   return {
@@ -57,7 +69,7 @@ export function useFavoritesInfinite(params?: { pageSize?: number }) {
         params: { ...(params || {}), cursor: pageParam },
       }),
     initialPageParam: null,
-    getNextPageParam: (last) => (last && "nextCursor" in last ? (last as CursorPage<any>).nextCursor ?? undefined : undefined),
+    getNextPageParam: (last) => normalizePage(last).nextCursor ?? undefined,
   });
   return { ...query, items: flattenPages(query.data?.pages as CursorPage<any>[] | undefined) };
 }
@@ -71,7 +83,7 @@ export function useEnquiriesInfinite(params?: { pageSize?: number }) {
         params: { ...(params || {}), cursor: pageParam },
       }),
     initialPageParam: null,
-    getNextPageParam: (last) => (last && "nextCursor" in last ? (last as CursorPage<any>).nextCursor ?? undefined : undefined),
+    getNextPageParam: (last) => normalizePage(last).nextCursor ?? undefined,
   });
   return { ...query, items: flattenPages(query.data?.pages as CursorPage<any>[] | undefined) };
 }
@@ -85,7 +97,7 @@ export function useVisitsInfinite(params?: { pageSize?: number }) {
         params: { ...(params || {}), cursor: pageParam },
       }),
     initialPageParam: null,
-    getNextPageParam: (last) => (last && "nextCursor" in last ? (last as CursorPage<any>).nextCursor ?? undefined : undefined),
+    getNextPageParam: (last) => normalizePage(last).nextCursor ?? undefined,
   });
   return { ...query, items: flattenPages(query.data?.pages as CursorPage<any>[] | undefined) };
 }
@@ -101,13 +113,13 @@ export function usePropertySearchInfinite(params?: Record<string, any>) {
         params: { ...(params || {}), cursor: pageParam as string | number | null | undefined },
       }),
     initialPageParam: null,
-    getNextPageParam: (last) =>
-      last && "nextCursor" in last ? (last as SearchPage<any>).nextCursor ?? undefined : undefined,
+    getNextPageParam: (last) => normalizePage(last).nextCursor ?? undefined,
   });
   const pages = query.data?.pages as SearchPage<any>[] | undefined;
+  const normalizedPages = pages?.map((page) => normalizePage(page) as SearchPage<any>);
   return {
     ...query,
     items: flattenPages(pages),
-    total: pages?.[pages.length - 1]?.total,
+    total: normalizedPages?.[normalizedPages.length - 1]?.total,
   };
 }

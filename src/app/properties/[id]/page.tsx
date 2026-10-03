@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { BadgeCheck, Bath, BedDouble, CalendarClock, Home, Landmark, Maximize } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
@@ -21,6 +21,7 @@ type AmenityGroup = {
 };
 type PropertyDetails = {
   id: number;
+  slug?: string | null;
   title?: string | null;
   description?: string | null;
   price?: number | null;
@@ -334,7 +335,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     : `${title} available for ${property.listingType?.toLowerCase() || "sale/rent"} in ${location || "prime location"}. Price: ${price}. Carpet area: ${area.value}. Verified listings on Awasio.`;
 
   const ogImages = property.media?.map((m) => m.url).filter(Boolean) as string[] | undefined;
-  const canonicalUrl = buildCanonical(`/properties/${id}`);
+  const canonicalUrl = buildCanonical(`/properties/${property.slug || id}`);
 
   return {
     title: `${title} | ${price}`,
@@ -363,6 +364,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const property = await getProperty(id);
   if (!property) notFound();
 
+  // Consolidate legacy numeric URLs or older paths to the canonical SEO slug
+  if (property.slug && id !== property.slug) {
+    permanentRedirect(`/properties/${property.slug}`);
+  }
+
   const images = property.media?.map((item) => item.url).filter(Boolean) as string[] | undefined;
   const location = compact([property.subLocality, property.localityRef?.name ?? property.locality, property.city?.name ?? property.cityName]);
   const title = property.title || `${property.bedrooms ? `${property.bedrooms} BHK ` : ""}${property.propertySubType?.name ?? property.propertyType?.name ?? "Property"} in ${property.locality ?? property.cityName ?? "Awasio"}`;
@@ -380,7 +386,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     "@type": schemaType,
     name: title,
     description: property.description || `${title} in ${location || "prime location"}`,
-    url: buildCanonical(`/properties/${id}`),
+    url: buildCanonical(`/properties/${property.slug || id}`),
     ...(images && images.length > 0 ? { image: images } : {}),
     ...(property.bedrooms ? { numberOfRooms: property.bedrooms, numberOfBedrooms: property.bedrooms } : {}),
     ...(property.bathrooms ? { numberOfBathroomsTotal: property.bathrooms } : {}),
@@ -426,7 +432,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         "@type": "ListItem",
         position: 3,
         name: title,
-        item: buildCanonical(`/properties/${id}`),
+        item: buildCanonical(`/properties/${property.slug || id}`),
       },
     ],
   };

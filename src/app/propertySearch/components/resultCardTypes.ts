@@ -1,5 +1,6 @@
 export type ResultCardProps = {
   id: number;
+  slug?: string | null;
   title?: string;
   subtitle?: string;
   price?: string;

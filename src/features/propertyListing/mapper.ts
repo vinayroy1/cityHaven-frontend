@@ -301,8 +301,29 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
       }
     : {};
 
+  // Extract uploaded media items from draft state
+  const draftUploads = (meta?.draftState as any)?.mediaUploads as Array<any> | undefined;
+  const mediaPayload = Array.isArray(draftUploads) && draftUploads.length
+    ? {
+        media: draftUploads
+          .filter((item) => item.uploadedUrl || item.url)
+          .map((item, idx) => ({
+            id: item.id,
+            url: item.uploadedUrl || item.url,
+            type: item.type?.startsWith("video") ? "VIDEO" : "IMAGE",
+            order: idx,
+            meta: {
+              name: item.name,
+              size: item.size,
+              savedPercentage: item.savedPercentage,
+            },
+          })),
+      }
+    : {};
+
   return {
     ...stripEmpty(base),
     ...amenityPayload,
+    ...mediaPayload,
   };
 };

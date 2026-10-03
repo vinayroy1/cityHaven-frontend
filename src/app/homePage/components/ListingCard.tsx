@@ -7,6 +7,7 @@ import { SavePropertyButton } from "@/app/propertySearch/components/ResultCardSu
 
 type Props = {
   id?: string;
+  slug?: string;
   title: string;
   location: string;
   price: string;
@@ -14,8 +15,8 @@ type Props = {
   image: string;
 };
 
-export function ListingCard({ id, title, location, price, badge, image }: Props) {
-  const href = id ? `/properties/${id}` : "/propertySearch";
+export function ListingCard({ id, slug, title, location, price, badge, image }: Props) {
+  const href = slug ? `/properties/${slug}` : id ? `/properties/${id}` : "/propertySearch";
 
   return (
     <div className="group relative block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">

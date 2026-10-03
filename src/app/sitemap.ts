@@ -1,8 +1,22 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/constants/seo";
 import { getAllAgentIds } from "@/data/agents";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 const CITIES = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
+
+async function getActiveProperties(): Promise<Array<{ id: number; slug?: string | null; updatedAt?: string | null }>> {
+  try {
+    const res = await fetch(`${API_ENDPOINTS.propertyListing.search}?pageSize=100`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { data?: { items?: Array<{ id: number; slug?: string | null; updatedAt?: string | null }> } };
+    return json?.data?.items ?? [];
+  } catch {
+    return [];
+  }
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -106,11 +120,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 4. Sample active property URLs
-  const samplePropertyIds = [5, 7, 9, 12, 14, 15];
-  const propertyRoutes: MetadataRoute.Sitemap = samplePropertyIds.map((id) => ({
-    url: `${SITE_URL}/properties/${id}`,
-    lastModified: now,
+  // 4. Dynamic Active Properties with SEO Slugs
+  const properties = await getActiveProperties();
+  const propertyRoutes: MetadataRoute.Sitemap = properties.map((prop) => ({
+    url: `${SITE_URL}/properties/${prop.slug || prop.id}`,
+    lastModified: prop.updatedAt ? new Date(prop.updatedAt) : now,
     changeFrequency: "daily",
     priority: 0.85,
   }));

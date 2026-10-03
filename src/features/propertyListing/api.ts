@@ -138,6 +138,17 @@ export const propertyListingApi = createApi({
       }),
       invalidatesTags: ["Property"],
     }),
+    getPresignedUploadUrl: builder.mutation<
+      { uploadUrl: string; publicUrl: string; key: string },
+      { fileName: string; contentType: string; category?: string; entityId?: number | string; subFolder?: string }
+    >({
+      query: (body) => ({
+        url: API_ENDPOINTS.propertyListing.presignMediaUpload,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: { data: { uploadUrl: string; publicUrl: string; key: string } }) => response.data,
+    }),
   }),
 });
 
@@ -157,4 +168,5 @@ export const {
   useScheduleVisitMutation,
   useSearchPropertiesQuery,
   useLazySearchPropertiesQuery,
+  useGetPresignedUploadUrlMutation,
 } = propertyListingApi;

@@ -48,6 +48,15 @@ describe("parse <-> build round-trip", () => {
     expect(parseSearchParams(new URLSearchParams("listingType=COMMERCIAL")).intent).toBe("COMMERCIAL");
     expect(parseSearchParams(new URLSearchParams("q=koramangala")).q).toBe("koramangala");
   });
+
+  it("reads backend-style cityName and commercial resCom links", () => {
+    const parsed = parseSearchParams(
+      new URLSearchParams("listingType=SELL&pageSize=30&resCom=COMMERCIAL&q=Delhi&cityName=Delhi"),
+    );
+    expect(parsed.intent).toBe("COMMERCIAL");
+    expect(parsed.cityName).toBe("Delhi");
+    expect(parsed.q).toBe("Delhi");
+  });
 });
 
 describe("toApiParams — backend allow-list only", () => {
@@ -63,7 +72,7 @@ describe("toApiParams — backend allow-list only", () => {
     });
     const api = toApiParams(s, 12) as Record<string, unknown>;
     expect(Object.keys(api).sort()).toEqual(
-      ["bedrooms", "listingType", "pageSize", "priceMin", "q", "sort"].sort(),
+      ["bedrooms", "listingType", "pageSize", "postedAs", "priceMin", "q", "sort"].sort(),
     );
     expect(api.listingType).toBe("SELL");
     expect(api.bedrooms).toBe(3);
@@ -80,12 +89,18 @@ describe("toApiParams — backend allow-list only", () => {
   it("drops sort when relevance", () => {
     expect(toApiParams(state({ sort: "relevance" }), 12).sort).toBeUndefined();
   });
+
+  it("sends cityName when a single selected locality is a city chip", () => {
+    const api = toApiParams(state({ localities: [{ label: "Delhi", city: "Delhi" }] }), 12);
+    expect(api.cityName).toBe("Delhi");
+    expect(api.q).toBe("Delhi");
+  });
 });
 
 describe("hasClientRefinements", () => {
-  it("is true for Commercial/Plot intents and for browser-only filters", () => {
+  it("is true for Plot intents and for browser-only filters", () => {
     expect(hasClientRefinements(state())).toBe(false);
-    expect(hasClientRefinements(state({ intent: "COMMERCIAL" }))).toBe(true);
+    expect(hasClientRefinements(state({ intent: "COMMERCIAL" }))).toBe(false);
     expect(hasClientRefinements(state({ intent: "PLOT" }))).toBe(true);
     expect(hasClientRefinements(state({ refine: { subType: ["apartment"], furnishing: [], postedAs: [] } }))).toBe(true);
     expect(hasClientRefinements(state({ localities: [{ label: "a" }, { label: "b" }] }))).toBe(true);
@@ -112,6 +127,18 @@ describe("applyClientRefinements", () => {
   });
   it("Commercial intent keeps only COMMERCIAL resCom", () => {
     expect(run(state({ intent: "COMMERCIAL" }))).toEqual([3]);
+  });
+  it("filters backend flat propertySubTypeSlug values", () => {
+    const backendItems = [
+      { id: 52, resCom: "COMMERCIAL", propertySubTypeSlug: "retail", locality: "Connaught Place", cityName: "New Delhi" },
+      { id: 107, resCom: "COMMERCIAL", propertySubTypeSlug: null, locality: "Jasola", cityName: "New Delhi" },
+    ];
+    const ids = applyClientRefinements(
+      backendItems,
+      state({ intent: "COMMERCIAL", refine: { subType: ["retail"], furnishing: [], postedAs: [] } }),
+      subTypeSlugToId,
+    ).map((i) => i.id);
+    expect(ids).toEqual([52]);
   });
   it("filters by area range", () => {
     expect(run(state({ refine: { subType: [], furnishing: [], postedAs: [], areaMin: 1000, areaMax: 3000 } }))).toEqual([1]);
