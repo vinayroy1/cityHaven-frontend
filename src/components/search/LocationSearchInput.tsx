@@ -3,9 +3,9 @@
 import React from "react";
 import { Building2, LocateFixed, MapPin, Search, Sparkles, X } from "lucide-react";
 import {
-  createPlacesSessionToken,
-  fetchAutocompleteSuggestions,
-} from "@/lib/googlePlaces";
+  fetchAwasioSuggestions,
+  type AwasioSuggestion,
+} from "@/lib/awasioSuggestions";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { apiFetch } from "@/lib/api/query";
 import type { PropertySearchItem, PropertySearchResponse } from "@/types/propertySearch.types";
@@ -16,7 +16,7 @@ import { getClusterCities } from "@/config/regionalClusters";
 
 type Suggestion =
   | { type: "intent"; id: string; title: string; meta?: string; params: IntentSuggestion["params"] }
-  | { type: "place"; description: string; place_id: string }
+  | { type: "awasio"; suggestion: AwasioSuggestion }
   | { type: "inventory"; description: string; keyword: string; meta?: string };
 
 type Props = {
@@ -49,7 +49,7 @@ export function LocationSearchInput({
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [open, setOpen] = React.useState(false);
-  const [sessionToken, setSessionToken] = React.useState<string | null>(null);
+
   const [cluster, setCluster] = React.useState(getCurrentCluster());
   const [detectingGps, setDetectingGps] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -81,38 +81,30 @@ export function LocationSearchInput({
       return;
     }
 
+    const effectiveCity = cityName?.trim() || "Bengaluru";
     const currentIntent: IntentKey = activeIntent ?? (listingType === "RENT" ? "RENT" : listingType === "PG" ? "PG" : "BUY");
-    // 1. Generate 99acres-style intent suggestions immediately (0ms latency)
-    const intentItems = generateIntentSuggestions(trimmed, currentIntent, cluster, 6);
+    // 1. Generate intent suggestions ONLY for the selected city
+    const intentItems = generateIntentSuggestions(trimmed, currentIntent, cluster, 6)
+      .filter((item) => !effectiveCity || item.params.cityName?.toLowerCase() === effectiveCity.toLowerCase());
     if (intentItems.length > 0) {
       setSuggestions(intentItems.map((item) => ({ ...item, description: item.title })));
     }
 
-    let token = sessionToken;
-    if (!token) {
-      token = createPlacesSessionToken();
-      setSessionToken(token);
-    }
     let cancelled = false;
     setLoading(true);
     setError(null);
 
     const timer = setTimeout(async () => {
       try {
-        const [placeResults, inventoryResults] = await Promise.allSettled([
-          fetchAutocompleteSuggestions(trimmed, token ?? undefined),
-          apiFetch<PropertySearchResponse>({
-            url: API_ENDPOINTS.propertyListing.search,
-            params: { q: trimmed, cityName, listingType, pageSize: 6 },
-          }),
-        ]);
+        const suggestResults = await fetchAwasioSuggestions(trimmed, { limit: 20, maxPerGroup: 20, city: effectiveCity, types: ["LOCALITY", "PROJECT"] });
 
         if (!cancelled) {
-          const inventory = inventoryResults.status === "fulfilled" ? inventorySuggestions(inventoryResults.value.items ?? [], trimmed) : [];
-          const places = placeResults.status === "fulfilled" ? placeResults.value.map((item) => ({ ...item, type: "place" as const })) : [];
-          
-          // Merge: Intent templates first, then inventory listings, then physical places
-          setSuggestions([...intentItems, ...inventory, ...places].slice(0, 10));
+          const chSuggestions: Suggestion[] = (suggestResults.data || [])
+            .filter((s: AwasioSuggestion) => s.type !== "CITY")
+            .map((s: AwasioSuggestion) => ({ type: "awasio" as const, suggestion: s }));
+
+          // Instant Merge: Intent templates → Awasio local master dataset suggestions
+          setSuggestions([...intentItems, ...chSuggestions].slice(0, 20));
         }
       } catch (err) {
         if (!cancelled) {
@@ -126,13 +118,13 @@ export function LocationSearchInput({
           setLoading(false);
         }
       }
-    }, 280);
+    }, 60);
 
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [text, sessionToken, activeIntent, listingType, cluster, cityName, open]);
+  }, [text, activeIntent, listingType, cluster, cityName, open]);
 
   const handleSelectIntent = (s: Suggestion & { type: "intent" }) => {
     setOpen(false);
@@ -164,7 +156,14 @@ export function LocationSearchInput({
     setSuggestions([]);
     setText("");
 
-    const label = s.type === "inventory" ? (s.keyword || s.description) : cleanPlaceLabel(s.description);
+    let label = "";
+    if (s.type === "awasio") {
+      // Prefer locality name, then city name
+      label = s.suggestion.location.locality || s.suggestion.title || "";
+    } else if (s.type === "inventory") {
+      label = s.keyword || s.description;
+    }
+
     if (!label) return;
 
     if (localities.some((l) => l.label.toLowerCase() === label.toLowerCase())) {
@@ -178,12 +177,11 @@ export function LocationSearchInput({
         ...localities,
         {
           label,
-          placeId: s.type === "place" ? s.place_id : undefined,
+          city: s.type === "awasio" ? (s.suggestion.location.city || undefined) : undefined,
         },
       ],
     });
 
-    setSessionToken(null);
     inputRef.current?.focus();
   };
 
@@ -379,29 +377,7 @@ export function LocationSearchInput({
                 <span>{detectingGps ? "Detecting location..." : "Use my current location"}</span>
               </button>
 
-              <div className="border-t border-slate-100 pt-1.5 dark:border-slate-800">
-                <p className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  Popular in {cluster.name}
-                </p>
-                <div className="flex flex-wrap gap-1.5 px-2.5 py-1">
-                  {clusterCities.map((cName) => (
-                    <button
-                      key={cName}
-                      type="button"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => {
-                        if (!localities.some((l) => l.label.toLowerCase() === cName.toLowerCase())) {
-                          onChange({ keyword: "", localities: [...localities, { label: cName, city: cName }] });
-                        }
-                        setOpen(false);
-                      }}
-                      className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 hover:border-rose-400 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-rose-600 dark:hover:bg-rose-950/40"
-                    >
-                      {cName}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              
             </div>
           )}
 
@@ -433,23 +409,34 @@ export function LocationSearchInput({
               );
             }
 
-            if (s.type === "place") {
+            if (s.type === "awasio") {
+              const sg = s.suggestion;
+              const Icon = sg.type === "CITY" ? Building2 : sg.type === "PROJECT" ? Building2 : MapPin;
               return (
                 <button
-                  key={`place:${s.place_id}`}
+                  key={sg.id}
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => void addSuggestion(s)}
-                  className="group flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors"
+                  className="group flex w-full items-center justify-between gap-2 px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors"
                 >
                   <div className="flex min-w-0 items-center gap-2">
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400 group-hover:text-rose-500 dark:text-slate-500 transition-colors" />
-                    <span className="truncate text-slate-800 dark:text-slate-200">{s.description}</span>
+                    <Icon className="h-3.5 w-3.5 shrink-0 text-slate-400 group-hover:text-rose-500 dark:text-slate-500 transition-colors" />
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm text-slate-800 dark:text-slate-200">{sg.title}</span>
+                      <span className="block truncate text-xs text-slate-400 dark:text-slate-500">{sg.subtitle}</span>
+                    </span>
                   </div>
-                  {/* 99acres style Landmark badge */}
-                  <span className="shrink-0 rounded-sm bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                    Landmark
-                  </span>
+                  <div className="flex shrink-0 flex-col items-end gap-0.5">
+                    <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
+                      {sg.badge}
+                    </span>
+                    {sg.metrics?.formattedPriceSqft && (
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                        {sg.metrics.formattedPriceSqft}
+                      </span>
+                    )}
+                  </div>
                 </button>
               );
             }

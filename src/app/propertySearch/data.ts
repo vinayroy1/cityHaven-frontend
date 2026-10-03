@@ -18,11 +18,13 @@ export const commercialPropertyCategories = [
 export const propertySubTypes = [
   // Residential
   { name: "Apartment", slug: "apartment", propertyTypeSlug: "residential", apiKey: "propertySubType" },
-  { name: "Independent House / Villa", slug: "independent-house-villa", propertyTypeSlug: "residential", apiKey: "propertySubType" },
-  { name: "Independent / Builder Floor", slug: "independent-builder-floor", propertyTypeSlug: "residential", apiKey: "propertySubType" },
-  { name: "1 RK / Studio Apartment", slug: "1rk-studio-apartment", propertyTypeSlug: "residential", apiKey: "propertySubType" },
-  { name: "Serviced Apartment", slug: "serviced-apartment", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Builder Floor", slug: "independent-builder-floor", propertyTypeSlug: "residential", apiKey: "propertySubType" },
   { name: "Plot / Land", slug: "plot-land-res", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Villa", slug: "villa", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Independent House", slug: "independent-house-villa", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Penthouse", slug: "penthouse", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "1 RK / Studio", slug: "1rk-studio-apartment", propertyTypeSlug: "residential", apiKey: "propertySubType" },
+  { name: "Serviced Apartment", slug: "serviced-apartment", propertyTypeSlug: "residential", apiKey: "propertySubType" },
   { name: "Agricultural / Farm Land", slug: "agri-farm-land", propertyTypeSlug: "residential", apiKey: "propertySubType" },
   { name: "Farmhouse", slug: "farmhouse", propertyTypeSlug: "residential", apiKey: "propertySubType" },
   { name: "Other", slug: "residential-other", propertyTypeSlug: "residential", apiKey: "propertySubType" },

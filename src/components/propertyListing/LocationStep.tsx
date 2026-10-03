@@ -5,12 +5,9 @@ import { MapPin } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
-  createPlacesSessionToken,
-  fetchAutocompleteSuggestions,
-  fetchPlaceDetails,
-  fetchReverseGeocode,
-  type PlaceDetails,
-} from "@/lib/googlePlaces";
+  fetchAwasioSuggestions,
+  type AwasioSuggestion,
+} from "@/lib/awasioSuggestions";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import { errorText, fieldLabel } from "./theme";
 
@@ -39,37 +36,33 @@ export function LocationStep() {
   const form = useFormContext<PropertyListingFormValues>();
   const errors = form.formState.errors.location ?? {};
   const [addressQuery, setAddressQuery] = useState(form.getValues("location.address") ?? "");
-  const [suggestions, setSuggestions] = useState<{ description: string; place_id: string }[]>([]);
+  const [suggestions, setSuggestions] = useState<AwasioSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [lastQuery, setLastQuery] = useState("");
 
-  const applyDetails = (details: PlaceDetails, description: string) => {
-    const address = details.formattedAddress || description;
-    form.setValue("location.address", address);
-    form.setValue("location.latitude", details.location.lat);
-    form.setValue("location.longitude", details.location.lng);
-    form.setValue("location.cityName", details.city || "");
-    form.setValue("location.locality", details.locality || details.subLocality || details.city || "");
-    form.setValue("location.subLocality", details.subLocality || "");
-    form.setValue("location.pincode", details.postalCode || "");
+  const applySuggestion = (suggestion: AwasioSuggestion) => {
+    const displayAddress = [
+      suggestion.location.locality,
+      suggestion.location.city,
+      suggestion.location.state,
+    ].filter(Boolean).join(", ");
+    form.setValue("location.address", displayAddress);
+    form.setValue("location.latitude", suggestion.location.lat ?? null);
+    form.setValue("location.longitude", suggestion.location.lng ?? null);
+    form.setValue("location.cityName", suggestion.location.city || "");
+    form.setValue("location.locality", suggestion.location.locality || suggestion.location.city || "");
+    form.setValue("location.pincode", suggestion.location.pincode ? String(suggestion.location.pincode) : "");
     form.trigger(["location.cityName", "location.locality"]);
-    setAddressQuery(address);
-    setLastQuery(address);
-    setToken(null);
+    setAddressQuery(displayAddress);
+    setLastQuery(displayAddress);
     setSuggestions([]);
   };
 
-  const pickSuggestion = async (placeId: string, description: string) => {
+  const pickSuggestion = (s: AwasioSuggestion) => {
     setError(null);
-    const details = await fetchPlaceDetails(placeId, token ?? undefined);
-    if (!details) {
-      setError("Could not fetch place details. Try again.");
-      return;
-    }
-    applyDetails(details, description);
+    applySuggestion(s);
   };
 
   const useCurrentLocation = () => {
@@ -82,9 +75,21 @@ export function LocationStep() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
-          const details = await fetchReverseGeocode(pos.coords.latitude, pos.coords.longitude);
-          if (details) applyDetails(details, details.formattedAddress || "");
-          else setError("Could not resolve your location.");
+          const { reverseGeocodeAwasio } = await import("@/lib/awasioSuggestions");
+          const result = await reverseGeocodeAwasio(pos.coords.latitude, pos.coords.longitude);
+          if (result?.city) {
+            form.setValue("location.cityName", result.city);
+            form.setValue("location.locality", result.locality || result.city);
+            if (result.pincode) form.setValue("location.pincode", result.pincode);
+            const address = [result.locality, result.city, result.state].filter(Boolean).join(", ");
+            form.setValue("location.address", address);
+            form.setValue("location.latitude", pos.coords.latitude);
+            form.setValue("location.longitude", pos.coords.longitude);
+            form.trigger(["location.cityName", "location.locality"]);
+            setAddressQuery(address);
+          } else {
+            setError("Could not resolve your location. Please type manually.");
+          }
         } finally {
           setLocating(false);
         }
@@ -105,11 +110,9 @@ export function LocationStep() {
         return;
       }
       setLoading(true);
-      const t = token || createPlacesSessionToken();
-      if (!token) setToken(t);
       try {
-        const results = await fetchAutocompleteSuggestions(q, t);
-        setSuggestions(results);
+        const resp = await fetchAwasioSuggestions(q, { limit: 6, types: ["CITY", "LOCALITY", "PROJECT"] });
+        setSuggestions(resp.data);
         setLastQuery(q);
       } catch (err) {
         setSuggestions([]);
@@ -117,9 +120,9 @@ export function LocationStep() {
       } finally {
         setLoading(false);
       }
-    }, 500);
+    }, 280);
     return () => clearTimeout(handle);
-  }, [addressQuery, lastQuery, token]);
+  }, [addressQuery, lastQuery]);
 
   return (
     <div className="space-y-5">
@@ -148,12 +151,21 @@ export function LocationStep() {
             <div className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg">
               {suggestions.map((s) => (
                 <button
-                  key={s.place_id}
+                  key={s.id}
                   type="button"
-                  className="block w-full border-b border-slate-100 px-3 py-2 text-left text-sm last:border-0 hover:bg-slate-50"
-                  onClick={() => pickSuggestion(s.place_id, s.description)}
+                  className="flex w-full items-center justify-between border-b border-slate-100 px-3 py-2 text-left last:border-0 hover:bg-slate-50"
+                  onClick={() => pickSuggestion(s)}
                 >
-                  {s.description}
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm text-slate-800">{s.title}</span>
+                    <span className="block truncate text-xs text-slate-400">{s.subtitle}</span>
+                  </span>
+                  <span
+                    className="ml-2 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase text-white"
+                    style={{ backgroundColor: s.badgeColor }}
+                  >
+                    {s.badge}
+                  </span>
                 </button>
               ))}
             </div>

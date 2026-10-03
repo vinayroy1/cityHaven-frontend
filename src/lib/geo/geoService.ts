@@ -1,5 +1,4 @@
 import { resolveMetroCluster, type MetroCluster, DEFAULT_COUNTRY } from "@/config/regionalClusters";
-import { fetchReverseGeocode } from "@/lib/googlePlaces";
 
 export interface UserLocationProfile {
   city: string;
@@ -11,7 +10,7 @@ export interface UserLocationProfile {
   timestamp: number;
 }
 
-const STORAGE_KEY = "cityhaven_user_geo";
+const STORAGE_KEY = "awasio_user_geo";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 let inMemoryProfile: UserLocationProfile | null = null;
@@ -43,7 +42,7 @@ function saveLocation(profile: UserLocationProfile): void {
   if (typeof window !== "undefined") {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-      window.dispatchEvent(new CustomEvent("cityhaven-geo-change", { detail: profile }));
+      window.dispatchEvent(new CustomEvent("awasio-geo-change", { detail: profile }));
     } catch {
       // ignore storage quota error
     }
@@ -111,11 +110,12 @@ export async function requestGpsLocation(): Promise<UserLocationProfile | null> 
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          const details = await fetchReverseGeocode(latitude, longitude);
-          const detectedCity = details?.city || details?.locality || "Delhi";
+          const { reverseGeocodeAwasio } = await import("@/lib/awasioSuggestions");
+          const result = await reverseGeocodeAwasio(latitude, longitude);
+          const detectedCity = result?.city || "Delhi";
           const profile: UserLocationProfile = {
             city: detectedCity,
-            region: details?.subLocality || undefined,
+            region: result?.locality || undefined,
             country: DEFAULT_COUNTRY,
             latitude,
             longitude,

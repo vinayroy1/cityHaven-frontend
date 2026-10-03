@@ -88,6 +88,9 @@ export const API_ENDPOINTS = {
   contact: {
     submit: `${BASE}/contact`,
   },
+  search: {
+    suggestions: `${BASE}/search/suggestions`,
+  },
   admin: {
     auth: {
       requestOtp: `${BASE}/admin/auth/request-otp`,

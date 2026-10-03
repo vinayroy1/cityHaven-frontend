@@ -66,7 +66,7 @@ export function SearchPageClient() {
             activeFilterCount={activeCount}
             onOpenFilters={() => openFilters()}
           />
-          <div className="lg:hidden">
+          <div className="md:hidden">
             <QuickFilterChips state={state} onOpenFilters={openFilters} />
           </div>
         </div>

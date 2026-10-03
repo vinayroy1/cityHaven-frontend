@@ -13,17 +13,29 @@ import type { PropertySearchItem } from "@/types/propertySearch.types";
 
 import { ALL_AGENTS, type Agent } from "@/data/agents";
 import { getMergedHomepageFeaturedAgents } from "@/lib/services/agentProfile";
+import { detectUserLocation } from "@/lib/geo/geoService";
 
 const CITY_OPTIONS = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
 const STORAGE_KEY = "awasio.home.city";
 
 export function HomeExperience() {
-  const [selectedCity, setSelectedCity] = React.useState("");
-  const [searchState, setSearchState] = React.useState<SearchState>(() => initialSearchState());
+  const [selectedCity, setSelectedCity] = React.useState("Delhi");
+  const [searchState, setSearchState] = React.useState<SearchState>(() => initialSearchState("Delhi"));
 
   React.useEffect(() => {
     const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved && CITY_OPTIONS.includes(saved)) setSelectedCity(saved);
+    if (saved && CITY_OPTIONS.includes(saved)) {
+      setSelectedCity(saved);
+      setSearchState((prev) => ({ ...prev, cityName: saved }));
+    } else {
+      detectUserLocation().then((profile) => {
+        if (profile?.city) {
+          const matched = CITY_OPTIONS.find((c) => c.toLowerCase() === profile.city.toLowerCase()) || profile.city;
+          setSelectedCity(matched);
+          setSearchState((prev) => ({ ...prev, cityName: matched }));
+        }
+      });
+    }
   }, []);
 
   const updateCity = (city: string) => {
@@ -108,43 +120,17 @@ export function HomeExperience() {
             <SearchBar
               variant="hero"
               value={{ ...searchState, cityName: selectedCity || undefined }}
-              onChange={setSearchState}
+              onChange={(next) => {
+                setSearchState(next);
+                if (next.cityName !== selectedCity) {
+                  updateCity(next.cityName || "");
+                }
+              }}
               onSubmit={submit}
             />
           </div>
 
-          {/* Active City Selector: Single row horizontal scroll on mobile, centered wrap on desktop */}
-          <div className="mt-3.5 sm:mt-4 flex w-full items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 sm:flex-wrap sm:justify-center">
-            <span className="inline-flex shrink-0 items-center gap-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mr-0.5">
-              <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-rose-500" />
-              City:
-            </span>
-            <button
-              type="button"
-              onClick={() => updateCity("")}
-              className={`shrink-0 rounded-full px-2.5 sm:px-3 py-1 text-xs font-semibold transition-all duration-150 active:scale-95 ${
-                !selectedCity
-                  ? "bg-slate-950 text-white shadow-xs dark:bg-white dark:text-slate-950"
-                  : "border border-slate-200 bg-white/90 text-slate-700 hover:border-slate-300 hover:bg-white hover:text-slate-950 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:bg-slate-900"
-              }`}
-            >
-              All Cities
-            </button>
-            {CITY_OPTIONS.map((city) => (
-              <button
-                key={city}
-                type="button"
-                onClick={() => updateCity(city)}
-                className={`shrink-0 rounded-full px-2.5 sm:px-3 py-1 text-xs font-semibold transition-all duration-150 active:scale-95 ${
-                  selectedCity === city
-                    ? "bg-rose-600 text-white shadow-xs shadow-rose-600/30 scale-[1.03]"
-                    : "border border-slate-200 bg-white/90 text-slate-700 hover:border-slate-300 hover:bg-white hover:text-slate-950 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:bg-slate-900"
-                }`}
-              >
-                {city}
-              </button>
-            ))}
-          </div>
+          
         </div>
       </section>
 

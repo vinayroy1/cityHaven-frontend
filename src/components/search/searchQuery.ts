@@ -25,6 +25,10 @@ export type RefineState = {
   subType: string[]; // property sub-type slugs
   furnishing: string[]; // UNFURNISHED | SEMI_FURNISHED | FURNISHED
   postedAs: string[]; // OWNER | AGENT | BUILDER
+  possessionStatus?: string[]; // READY_TO_MOVE | UNDER_CONSTRUCTION
+  gatedCommunity?: string[]; // YES
+  amenities?: string[]; // SECURITY | POWER_BACKUP | etc.
+  bhkTypes?: string[]; // 1 BHK, 1.5 BHK, 2 BHK, etc.
   bathroomsMin?: number;
   areaMin?: number;
   areaMax?: number;
@@ -71,10 +75,15 @@ const emptyRefine = (): RefineState => ({
   subType: [],
   furnishing: [],
   postedAs: [],
+  possessionStatus: [],
+  gatedCommunity: [],
+  amenities: [],
+  bhkTypes: [],
 });
 
-export const initialSearchState = (): SearchState => ({
+export const initialSearchState = (cityName = "Delhi"): SearchState => ({
   q: "",
+  cityName,
   localities: [],
   intent: "BUY",
   sort: "relevance",
@@ -118,8 +127,11 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
   state.q = sp.get("q")?.trim() ?? "";
   state.cityName = sp.get("city")?.trim() || sp.get("cityName")?.trim() || undefined;
 
-  state.localities = sp
-    .getAll("loc")
+  const locParams = [...sp.getAll("loc"), ...sp.getAll("locality"), ...sp.getAll("localities")];
+  if (locParams.length === 0 && sp.get("locality")) {
+    locParams.push(...sp.get("locality")!.split(","));
+  }
+  state.localities = locParams
     .map((label) => label.trim())
     .filter(Boolean)
     .map((label) => ({ label }));
@@ -162,7 +174,9 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
 
   if (state.q) sp.set("q", state.q);
   if (state.cityName) sp.set("city", state.cityName);
-  state.localities.forEach((l) => l.label && sp.append("loc", l.label));
+  if (state.localities.length > 0) {
+    sp.set("locality", state.localities.map((l) => l.label).join(","));
+  }
   sp.set("intent", state.intent);
   if (state.intent === "COMMERCIAL" && state.transaction === "RENT") sp.set("transaction", "RENT");
 
@@ -187,10 +201,7 @@ export const buildSearchHref = (state: SearchState): string =>
 
 /** The location text sent to the backend `q` (keyword + locality labels). */
 export function buildQueryText(state: SearchState): string {
-  return [state.q, ...state.localities.map((l) => l.label)]
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .join(", ");
+  return state.q.trim();
 }
 
 // --- API params (backend allow-list ONLY) ------------------------------
@@ -198,6 +209,7 @@ export function buildQueryText(state: SearchState): string {
 export type ApiSearchParams = {
   q?: string;
   cityName?: string;
+  locality?: string;
   listingType: ApiListingType;
   resCom?: "RESIDENTIAL" | "COMMERCIAL";
   bedrooms?: number;
@@ -209,16 +221,17 @@ export type ApiSearchParams = {
 };
 
 export function toApiParams(state: SearchState, pageSize: number): ApiSearchParams {
-  const q = buildQueryText(state);
   const out: ApiSearchParams = {
     listingType: state.intent === "COMMERCIAL" ? state.transaction ?? "SELL" : INTENT_CONFIG[state.intent].listingType,
     pageSize,
   };
-  // Server-side resCom filter: avoids fetching residential on commercial searches
   if (state.intent === "COMMERCIAL") out.resCom = "COMMERCIAL";
-  if (q) out.q = q;
+  if (state.q) out.q = state.q;
   const cityName = state.cityName ?? (state.localities.length === 1 ? state.localities[0]?.city : undefined);
   if (cityName) out.cityName = cityName;
+  if (state.localities.length > 0) {
+    out.locality = state.localities.map((l) => l.label).join(",");
+  }
   if (state.bedroomsMin != null) out.bedrooms = state.bedroomsMin;
   if (state.priceMin != null) out.priceMin = state.priceMin;
   if (state.priceMax != null) out.priceMax = state.priceMax;
@@ -335,6 +348,21 @@ export function applyClientRefinements<T extends RefinableItem>(
       if (!refine.postedAs.includes(p)) return false;
     }
 
+    if (refine.possessionStatus?.length) {
+      const st = ((item as any).status ?? (item as any).availabilityStatus ?? "").toUpperCase();
+      if (!refine.possessionStatus.some((wanted) => st.includes(wanted) || (wanted === "READY_TO_MOVE" && st.includes("READY")))) {
+        return false;
+      }
+    }
+
+    if (refine.bhkTypes?.length) {
+      const beds = (item as any).bedrooms;
+      const bhkStr = beds ? `${beds} BHK` : "";
+      if (bhkStr && !refine.bhkTypes.some((b) => b.includes(String(beds)))) {
+        return false;
+      }
+    }
+
     if (refine.bathroomsMin != null && (item.bathrooms ?? 0) < refine.bathroomsMin) {
       return false;
     }
@@ -439,6 +467,27 @@ export function describeFilters(
       id: `postedAs:${v}`,
       label: labels.postedAs?.(v) ?? v,
       remove: (s) => ({ ...s, refine: { ...s.refine, postedAs: s.refine.postedAs.filter((x) => x !== v) } }),
+    });
+  });
+  (state.refine.possessionStatus || []).forEach((v) => {
+    chips.push({
+      id: `possession:${v}`,
+      label: v === "READY_TO_MOVE" ? "Ready To Move" : "Under Construction",
+      remove: (s) => ({ ...s, refine: { ...s.refine, possessionStatus: (s.refine.possessionStatus || []).filter((x) => x !== v) } }),
+    });
+  });
+  (state.refine.bhkTypes || []).forEach((v) => {
+    chips.push({
+      id: `bhk:${v}`,
+      label: v,
+      remove: (s) => ({ ...s, refine: { ...s.refine, bhkTypes: (s.refine.bhkTypes || []).filter((x) => x !== v) } }),
+    });
+  });
+  (state.refine.amenities || []).forEach((v) => {
+    chips.push({
+      id: `amenity:${v}`,
+      label: v.replace(/_/g, " "),
+      remove: (s) => ({ ...s, refine: { ...s.refine, amenities: (s.refine.amenities || []).filter((x) => x !== v) } }),
     });
   });
   if (state.refine.bathroomsMin != null) {

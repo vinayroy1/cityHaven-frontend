@@ -69,35 +69,59 @@ export async function GET(req: NextRequest) {
       clientIp.startsWith("10.") ||
       clientIp.startsWith("172.");
 
-    if (!isLocalhost) {
-      // Fast IP Lookup with strict 1s abort controller
+    // IP Lookup pipeline: works on localhost using public IP lookup as well as client IP
+    const targetIp = isLocalhost ? "" : clientIp;
+    
+    // 3a. Primary Provider: ip-api.com (Reliable, high limit, returns exact Indian cities)
+    try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+      const url = targetIp ? `http://ip-api.com/json/${targetIp}` : "http://ip-api.com/json";
+      const ipRes = await fetch(url, { signal: controller.signal, cache: "no-store" });
+      clearTimeout(timeoutId);
 
-      try {
-        const ipRes = await fetch(`https://ipapi.co/${clientIp}/json/`, {
-          signal: controller.signal,
-          headers: { "User-Agent": "cityhaven-geo-lookup" },
-          cache: "no-store",
-        });
-        clearTimeout(timeoutId);
-
-        if (ipRes.ok) {
-          const data = await ipRes.json();
-          if (data && data.city && data.country_code) {
-            return NextResponse.json({
-              city: data.city,
-              region: data.region,
-              country: data.country_code,
-              latitude: Number.isFinite(Number(data.latitude)) ? Number(data.latitude) : undefined,
-              longitude: Number.isFinite(Number(data.longitude)) ? Number(data.longitude) : undefined,
-              source: "ip_lookup",
-            } satisfies GeoDetectionResult);
-          }
+      if (ipRes.ok) {
+        const data = await ipRes.json();
+        if (data && data.status === "success" && data.city) {
+          const rawCity = data.city === "New Delhi" ? "Delhi" : data.city;
+          return NextResponse.json({
+            city: rawCity,
+            region: data.regionName,
+            country: data.countryCode || "IN",
+            latitude: Number.isFinite(Number(data.lat)) ? Number(data.lat) : undefined,
+            longitude: Number.isFinite(Number(data.lon)) ? Number(data.lon) : undefined,
+            source: "ip_lookup",
+          } satisfies GeoDetectionResult);
         }
-      } catch {
-        // Fall through to default fallback
       }
+    } catch {
+      // Try secondary provider
+    }
+
+    // 3b. Secondary Provider: ipapi.co fallback
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+      const url = targetIp ? `https://ipapi.co/${targetIp}/json/` : "https://ipapi.co/json/";
+      const ipRes = await fetch(url, { signal: controller.signal, cache: "no-store" });
+      clearTimeout(timeoutId);
+
+      if (ipRes.ok) {
+        const data = await ipRes.json();
+        if (data && data.city && !data.error) {
+          const rawCity = data.city === "New Delhi" ? "Delhi" : data.city;
+          return NextResponse.json({
+            city: rawCity,
+            region: data.region,
+            country: data.country_code || "IN",
+            latitude: Number.isFinite(Number(data.latitude)) ? Number(data.latitude) : undefined,
+            longitude: Number.isFinite(Number(data.longitude)) ? Number(data.longitude) : undefined,
+            source: "ip_lookup",
+          } satisfies GeoDetectionResult);
+        }
+      }
+    } catch {
+      // Fall through to default fallback
     }
 
     // 4. Default regional fallback

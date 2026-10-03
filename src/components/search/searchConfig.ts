@@ -1,9 +1,5 @@
 /**
- * Declarative config for the property-search filter UI. Add a filter by adding a
- * section here — the renderer (`FilterSheet`) and quick chips read from this.
- *
- * `server: true`  -> the value is sent to the backend (`toApiParams`).
- * `server: false` -> the value is applied client-side (`applyClientRefinements`).
+ * Declarative config for the property-search filter UI.
  */
 import {
   propertySubTypes,
@@ -24,24 +20,51 @@ export const SORT_OPTIONS: SortOption[] = [
 export const FURNISHING_OPTIONS = [
   { value: "UNFURNISHED", label: "Unfurnished" },
   { value: "SEMI_FURNISHED", label: "Semi-furnished" },
-  { value: "FURNISHED", label: "Fully furnished" },
+  { value: "FURNISHED", label: "Furnished" },
 ];
 
 export const POSTED_BY_OPTIONS = [
-  { value: "OWNER", label: "Owner" },
-  { value: "AGENT", label: "Agent" },
-  { value: "BUILDER", label: "Builder" },
+  { value: "OWNER", label: "Owners" },
+  { value: "AGENT", label: "Partner Agents" },
+  { value: "BUILDER", label: "Builders" },
 ];
 
-const BHK_OPTIONS = [
-  { value: 1, label: "1+ BHK" },
-  { value: 2, label: "2+ BHK" },
-  { value: 3, label: "3+ BHK" },
-  { value: 4, label: "4+ BHK" },
-  { value: 5, label: "5+ BHK" },
+export const POSSESSION_STATUS_OPTIONS = [
+  { value: "READY_TO_MOVE", label: "Ready To Move" },
+  { value: "UNDER_CONSTRUCTION", label: "Under Construction" },
 ];
 
-const BATH_OPTIONS = [
+export const GATED_COMMUNITY_OPTIONS = [
+  { value: "YES", label: "Gated Community" },
+];
+
+export const AMENITIES_OPTIONS = [
+  { value: "SECURITY", label: "24 x 7 Security" },
+  { value: "POWER_BACKUP", label: "Power Backup" },
+  { value: "SWIMMING_POOL", label: "Swimming Pool" },
+  { value: "MARKET", label: "Attached Market" },
+  { value: "CLUBHOUSE", label: "Clubhouse" },
+  { value: "PARKING", label: "Visitor's Parking" },
+  { value: "CENTRAL_AC", label: "Central AC" },
+  { value: "INTERCOM", label: "Intercom" },
+];
+
+export const BHK_OPTIONS = [
+  { value: "1 RK", label: "1 RK" },
+  { value: "Studio", label: "Studio" },
+  { value: "1 BHK", label: "1 BHK" },
+  { value: "1.5 BHK", label: "1.5 BHK" },
+  { value: "2 BHK", label: "2 BHK" },
+  { value: "2.5 BHK", label: "2.5 BHK" },
+  { value: "3 BHK", label: "3 BHK" },
+  { value: "3.5 BHK", label: "3.5 BHK" },
+  { value: "4 BHK", label: "4 BHK" },
+  { value: "5 BHK", label: "5 BHK" },
+  { value: "6 BHK", label: "6 BHK" },
+  { value: "6+ BHK", label: "6+ BHK" },
+];
+
+export const BATH_OPTIONS = [
   { value: 1, label: "1+" },
   { value: 2, label: "2+" },
   { value: 3, label: "3+" },
@@ -51,7 +74,6 @@ const BATH_OPTIONS = [
 const L = 100_000;
 const CR = 10_000_000;
 
-/** Budget preset stops (₹) per intent — used for the min/max dropdowns. */
 export const BUDGET_PRESETS: Record<IntentKey, number[]> = {
   BUY: [10 * L, 20 * L, 30 * L, 50 * L, 75 * L, 1 * CR, 1.5 * CR, 2 * CR, 3 * CR, 5 * CR, 10 * CR],
   RENT: [5_000, 10_000, 15_000, 20_000, 25_000, 30_000, 40_000, 50_000, 75_000, 1 * L],
@@ -60,7 +82,6 @@ export const BUDGET_PRESETS: Record<IntentKey, number[]> = {
   PLOT: [10 * L, 25 * L, 50 * L, 1 * CR, 2 * CR, 5 * CR, 10 * CR, 20 * CR],
 };
 
-/** Area preset stops (sq.ft) for the built-up / plot-area dropdowns. */
 export const AREA_PRESETS = [200, 500, 1_000, 1_500, 2_000, 3_000, 5_000, 10_000, 20_000];
 
 export function formatMoney(v: number): string {
@@ -80,8 +101,6 @@ export function budgetConfig(state: Pick<SearchState, "intent" | "transaction">)
   return { monthly, presets, label, format };
 }
 
-// --- sub-type option lists -------------------------------------------
-
 type SubTypeOption = { slug: string; label: string };
 
 const subTypesByPropertySlug = (slugs: string[]): SubTypeOption[] =>
@@ -97,8 +116,6 @@ const COMMERCIAL_SUBTYPES = subTypesByPropertySlug(
   commercialPropertyCategories.map((c) => c.slug),
 ).filter((s) => !PLOT_SUBTYPE_SLUGS.includes(s.slug));
 
-/** slug -> backend propertySubTypeId. The catalog order matches the backend
- * seed (apartment = 1, independent-house-villa = 2, …). */
 const SUBTYPE_ID_BY_SLUG: Record<string, number> = propertySubTypes.reduce(
   (acc, s, i) => {
     acc[s.slug] = i + 1;
@@ -108,8 +125,6 @@ const SUBTYPE_ID_BY_SLUG: Record<string, number> = propertySubTypes.reduce(
 );
 
 export const subTypeSlugToId = (slug: string): number | undefined => SUBTYPE_ID_BY_SLUG[slug];
-
-// --- sections -------------------------------------------------------
 
 export type FilterSection =
   | {
@@ -127,13 +142,6 @@ export type FilterSection =
       stateKeys: ["areaMin", "areaMax"];
     }
   | {
-      key: "bedrooms";
-      title: string;
-      kind: "min-chips";
-      server: true;
-      options: { value: number; label: string }[];
-    }
-  | {
       key: "bathrooms";
       title: string;
       kind: "min-chips";
@@ -141,7 +149,7 @@ export type FilterSection =
       options: { value: number; label: string }[];
     }
   | {
-      key: "subType" | "furnishing" | "postedAs";
+      key: "subType" | "furnishing" | "postedAs" | "possessionStatus" | "gatedCommunity" | "amenities" | "bhkTypes";
       title: string;
       kind: "multi-chips";
       server: false;
@@ -152,53 +160,74 @@ export type FilterSection =
 export function filterSectionsFor(intent: IntentKey): FilterSection[] {
   const sections: FilterSection[] = [
     { key: "budget", title: "Budget", kind: "range", server: true, stateKeys: ["priceMin", "priceMax"] },
+    {
+      key: "area",
+      title: intent === "PLOT" ? "Plot Area / Size (sq.ft)" : "Size / Area (sq.ft)",
+      kind: "range",
+      server: false,
+      stateKeys: ["areaMin", "areaMax"],
+    },
   ];
 
   const isResidential = intent === "BUY" || intent === "RENT";
 
+  // Property Type
+  const opts = intent === "PLOT" ? propertySubTypes.filter((s) => PLOT_SUBTYPE_SLUGS.includes(s.slug)).map((s) => ({ slug: s.slug, label: s.name })) : intent === "PG" ? subTypesByPropertySlug(["pg"]) : intent === "COMMERCIAL" ? COMMERCIAL_SUBTYPES : RESIDENTIAL_SUBTYPES;
+  if (opts.length) {
+    sections.push({
+      key: "subType",
+      title: intent === "PG" ? "Accommodation Type" : intent === "PLOT" ? "Land Use" : "Property Type",
+      kind: "multi-chips",
+      server: false,
+      options: opts.map((o) => ({ value: o.slug, label: o.label })),
+    });
+  }
+
+  // Bedrooms / BHK
   if (isResidential) {
     sections.push({
-      key: "bedrooms",
+      key: "bhkTypes",
       title: "Bedrooms",
-      kind: "min-chips",
-      server: true,
+      kind: "multi-chips",
+      server: false,
       options: BHK_OPTIONS,
     });
   }
 
-  if (intent === "COMMERCIAL" || intent === "PLOT") {
-    sections.push({
-      key: "area",
-      title: intent === "PLOT" ? "Plot area (sq.ft)" : "Built-up area (sq.ft)",
-      kind: "range",
-      server: false,
-      stateKeys: ["areaMin", "areaMax"],
-    });
-  }
-
-  {
-    const opts = intent === "PLOT" ? propertySubTypes.filter((s) => PLOT_SUBTYPE_SLUGS.includes(s.slug)).map((s) => ({ slug: s.slug, label: s.name })) : intent === "PG" ? subTypesByPropertySlug(["pg"]) : intent === "COMMERCIAL" ? COMMERCIAL_SUBTYPES : RESIDENTIAL_SUBTYPES;
-    if (opts.length) {
-      sections.push({
-        key: "subType",
-        title: intent === "PG" ? "Accommodation" : intent === "PLOT" ? "Land use" : "Property type",
-        kind: "multi-chips",
-        server: false,
-        options: opts.map((o) => ({ value: o.slug, label: o.label })),
-      });
-    }
-  }
-
+  // Furnishing
   if (isResidential || intent === "PG") {
     sections.push({
       key: "furnishing",
-      title: "Furnishing",
+      title: "Furnishing Status",
       kind: "multi-chips",
       server: false,
       options: FURNISHING_OPTIONS,
     });
   }
 
+  // Possession Status
+  if (isResidential || intent === "COMMERCIAL") {
+    sections.push({
+      key: "possessionStatus",
+      title: "Possession Status",
+      kind: "multi-chips",
+      server: false,
+      options: POSSESSION_STATUS_OPTIONS,
+    });
+  }
+
+  // Gated Community
+  if (isResidential) {
+    sections.push({
+      key: "gatedCommunity",
+      title: "Gated Communities",
+      kind: "multi-chips",
+      server: false,
+      options: GATED_COMMUNITY_OPTIONS,
+    });
+  }
+
+  // Bathrooms
   if (isResidential) {
     sections.push({
       key: "bathrooms",
@@ -209,16 +238,28 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
     });
   }
 
+  // Posted By
   sections.push({
     key: "postedAs",
-    title: "Posted by",
+    title: "Posted By",
     kind: "multi-chips",
     server: false,
     options: POSTED_BY_OPTIONS,
   });
 
+  // Amenities
+  if (isResidential || intent === "COMMERCIAL" || intent === "PG") {
+    sections.push({
+      key: "amenities",
+      title: "Amenities",
+      kind: "multi-chips",
+      server: false,
+      options: AMENITIES_OPTIONS,
+    });
+  }
+
   return sections;
 }
 
 export const CLIENT_REFINE_HINT =
-  "Marked filters are applied instantly in your browser as results load.";
+  "Filters are applied instantly in your browser as results load.";

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { AlertTriangle, SearchX } from "lucide-react";
+import { SearchX } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StateMessage } from "@/components/ui/state-message";
 import { ResultCard } from "./ResultCard";
@@ -10,7 +10,7 @@ import type { SearchResults } from "@/components/search/useSearchResults";
 
 function SkeletonGrid({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
           <Skeleton className="h-44 w-full rounded-xl dark:bg-slate-800" />
@@ -28,9 +28,6 @@ function SkeletonGrid({ count = 6 }: { count?: number }) {
 export function ResultsList({ results }: { results: SearchResults }) {
   const {
     visible,
-    fetchedCount,
-    total,
-    refining,
     isLoading,
     isFetchingNextPage,
     hasNextPage,
@@ -89,17 +86,7 @@ export function ResultsList({ results }: { results: SearchResults }) {
 
   return (
     <div className="space-y-4">
-      {refining && (
-        <p className="flex items-center gap-1.5 text-xs text-slate-500">
-          <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-500" />
-          <span>
-            {visible.length} of {fetchedCount} loaded {fetchedCount === 1 ? "listing" : "listings"}
-            {total != null ? ` (of ${total})` : ""} match{hasNextPage ? ", keep scrolling for more" : ""}.
-          </span>
-        </p>
-      )}
-
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
         {visible.map((item) => (
           <ResultCard key={item.id} {...toResultCardProps(item)} />
         ))}

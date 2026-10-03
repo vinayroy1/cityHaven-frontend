@@ -241,7 +241,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
       <div className="bg-gradient-to-r from-amber-600 via-rose-600 to-indigo-700 text-white text-xs font-semibold py-1.5 px-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-2">
           <ShieldAlert className="w-4 h-4 text-amber-200 animate-pulse" />
-          <span className="truncate">CITYHAVEN INTERNAL STAFF OPERATIONS PORTAL • RESTRICTED ACCESS • ALL ACTIONS AUDITED</span>
+          <span className="truncate">AWASIO INTERNAL STAFF OPERATIONS PORTAL • RESTRICTED ACCESS • ALL ACTIONS AUDITED</span>
         </div>
         <div className="flex items-center gap-4 text-[11px] font-mono opacity-90 hidden sm:flex shrink-0">
           <span>Session: SECURE_MFA_ACTIVE</span>

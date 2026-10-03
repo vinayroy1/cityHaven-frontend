@@ -57,10 +57,18 @@ const num = (id: string, label: string, extra?: Partial<FieldConfig>): FieldConf
 });
 
 // BHK quick-select — the primary residential descriptor.
-const bhkOptions: Option[] = [1, 2, 3, 4, 5, 6].map((n) => ({
-  value: n,
-  label: n === 6 ? "6+ BHK" : `${n} BHK`,
-}));
+const bhkOptions: Option[] = [
+  { value: 0.5, label: "1 RK" },
+  { value: 1, label: "1 BHK" },
+  { value: 1.5, label: "1.5 BHK" },
+  { value: 2, label: "2 BHK" },
+  { value: 2.5, label: "2.5 BHK" },
+  { value: 3, label: "3 BHK" },
+  { value: 3.5, label: "3.5 BHK" },
+  { value: 4, label: "4 BHK" },
+  { value: 5, label: "5 BHK" },
+  { value: 6, label: "6+ BHK" },
+];
 
 export const propertyProfileStep: StepConfig = {
   id: "profile",
