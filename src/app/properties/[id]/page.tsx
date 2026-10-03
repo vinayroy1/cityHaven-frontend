@@ -1,4 +1,4 @@
-import React from "react";
+import React, { cache } from "react";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { BadgeCheck, Bath, BedDouble, CalendarClock, Home, Landmark, Maximize } from "lucide-react";
@@ -104,13 +104,15 @@ type PropertyDetails = {
 
 const FALLBACK_IMAGES = ["/property-placeholder.webp"];
 
-async function getProperty(id: string): Promise<PropertyDetails | null> {
-  const response = await fetch(API_ENDPOINTS.propertyListing.update(id), { cache: "no-store" });
+const getProperty = cache(async (id: string): Promise<PropertyDetails | null> => {
+  const response = await fetch(API_ENDPOINTS.propertyListing.update(id), {
+    next: { revalidate: 60 },
+  });
   if (response.status === 404) return null;
-  if (!response.ok) throw new Error("Failed to fetch property details");
+  if (!response.ok) return null;
   const payload = (await response.json()) as { data?: PropertyDetails };
   return payload.data ?? null;
-}
+});
 
 function formatEnum(value?: string | null) {
   if (!value) return "";
