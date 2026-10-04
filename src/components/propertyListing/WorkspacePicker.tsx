@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { APP_CONFIG } from "@/constants/app-config";
 import { User, Building2, ShieldAlert, CheckCircle2, Crown, ShieldCheck } from "lucide-react";
 import { useMyOrganizationsQuery, type Organization, type OrganizationRole } from "@/features/organizations/api";
 import { cn } from "@/components/ui/utils";
@@ -21,7 +22,13 @@ interface WorkspacePickerProps {
 }
 
 export function WorkspacePicker({ selectedOrgId, onSelectPersonal, onSelectOrg }: WorkspacePickerProps) {
-  const { data: organizations = [], isLoading } = useMyOrganizationsQuery();
+  const [hasToken, setHasToken] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasToken(Boolean(localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)));
+    }
+  }, []);
+  const { data: organizations = [], isLoading } = useMyOrganizationsQuery(undefined, { skip: !hasToken });
 
   const isPersonal = !selectedOrgId;
   const activeOrg = organizations.find((o) => String(o.id) === String(selectedOrgId));

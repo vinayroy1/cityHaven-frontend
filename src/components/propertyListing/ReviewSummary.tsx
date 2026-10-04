@@ -47,10 +47,15 @@ const deriveConfiguration = (values: any): string => {
 };
 
 export function ReviewSummary({ values, uploadedPhotos: explicitPhotos, onEditStep }: { values: any; uploadedPhotos?: any[]; onEditStep: (stepIndex: number) => void }) {
-  const extractedPhotos = explicitPhotos?.length
+  const rawList = explicitPhotos?.length
     ? explicitPhotos
-    : (values?.meta?.draftState?.mediaUploads || values?.media || []);
-  const uploadedPhotos = extractedPhotos.filter((p: any) => p.preview || p.uploadedUrl || p.url).map((p: any) => ({
+    : (
+        values?.meta?.draftState?.mediaUploads ||
+        (Array.isArray(values?.media) ? values.media : null) ||
+        (Array.isArray(values?.mediaUploads) ? values.mediaUploads : null) ||
+        []
+      );
+  const uploadedPhotos = rawList.filter((p: any) => p.preview || p.uploadedUrl || p.url).map((p: any) => ({
     ...p,
     preview: p.preview || p.uploadedUrl || p.url,
   }));
@@ -237,7 +242,14 @@ export function ReviewSummary({ values, uploadedPhotos: explicitPhotos, onEditSt
           >
             <DetailItem label="City" value={location.cityName} icon={Building2} />
             <DetailItem label="Locality" value={location.locality} icon={MapPin} />
+            <DetailItem label="Sector" value={location.sectorNumber ? (location.sectorNumber.toLowerCase().startsWith("sector") ? location.sectorNumber : `Sector ${location.sectorNumber}`) : undefined} />
+            <DetailItem label="Sub-locality / Pocket" value={location.subLocality} />
             <DetailItem label="Project / Society" value={location.societyOrProjectName} />
+            <DetailItem label="Building / Landmark" value={location.buildingName} />
+            <DetailItem label="Flat / Unit No." value={location.flatNumber} />
+            <DetailItem label="House / Villa No." value={location.houseNumber} />
+            <DetailItem label="Tower / Block No." value={location.towerNumber} />
+            <DetailItem label="Plot No." value={location.plotNumber} />
             <DetailItem label="Complete Address" value={location.address} />
             <DetailItem label="Pincode" value={location.pincode} />
           </SectionCard>

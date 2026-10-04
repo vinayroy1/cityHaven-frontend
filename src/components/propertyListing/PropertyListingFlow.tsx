@@ -27,7 +27,7 @@ import { mapApiToForm } from "@/features/propertyListing/apiToForm";
 import { listingSteps } from "@/features/propertyListing/formConfig/steps";
 import { computeListingScore } from "@/features/propertyListing/formConfig/scoring";
 import { requiredPathsForStep } from "@/features/propertyListing/formConfig/validation";
-import { suggestTitle } from "@/features/propertyListing/formConfig/derive";
+import { suggestTitle, suggestDescription } from "@/features/propertyListing/formConfig/derive";
 import { APP_CONFIG } from "@/constants/app-config";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import type { FieldPath } from "react-hook-form";
@@ -64,7 +64,13 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
   const [submitProperty, submitState] = useSubmitPropertyMutation();
   const [updateProperty, updateState] = useUpdatePropertyMutation();
   const { data: existing } = useGetPropertyQuery(propertyId as string, { skip: !propertyId });
-  const { data: myOrganizations = [] } = useMyOrganizationsQuery();
+  const [hasToken, setHasToken] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasToken(Boolean(localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)));
+    }
+  }, []);
+  const { data: myOrganizations = [] } = useMyOrganizationsQuery(undefined, { skip: !hasToken });
 
   const [stepIndex, setStepIndex] = useState(0);
   const [maxVisited, setMaxVisited] = useState(0);
@@ -138,22 +144,64 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
         form.setValue("context.propertySubCategorySlug", undefined);
       if (values?.context?.locatedInsideSlug) form.setValue("context.locatedInsideSlug", undefined);
     }
+    if (subType?.includes("plot-land")) {
+      form.setValue("details.bedrooms", undefined);
+      form.setValue("details.bathrooms", undefined);
+      form.setValue("details.balconies", undefined);
+      form.setValue("amenities.furnishing", undefined);
+    }
+    // Allow title and description to regenerate when classification or subType changes
+    isTitleCustomRef.current = false;
+    isDescCustomRef.current = false;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listingType, resCom, subType]);
 
-  // Prefill a suggested title once, when the user reaches the profile step
-  // with enough context and hasn't typed their own.
-  const titleSuggestedRef = useRef(false);
+  // Real-time Title & Description Auto-Generator based on user selections
+  const lastAutoTitleRef = useRef<string>("");
+  const lastAutoDescRef = useRef<string>("");
+  const isTitleCustomRef = useRef<boolean>(false);
+  const isDescCustomRef = useRef<boolean>(false);
+
+  // Watch for manual user edits on title & description to freeze auto-generation
   useEffect(() => {
-    if (titleSuggestedRef.current || propertyId) return;
-    if (stepIndex >= 2 && !form.getValues("meta.title") && values?.location?.cityName) {
-      const suggestion = suggestTitle(values);
-      if (suggestion) {
-        form.setValue("meta.title", suggestion, { shouldDirty: true });
-        titleSuggestedRef.current = true;
+    const currentTitle = form.getValues("meta.title");
+    if (currentTitle && lastAutoTitleRef.current && currentTitle !== lastAutoTitleRef.current) {
+      isTitleCustomRef.current = true;
+    }
+    const currentDesc = form.getValues("meta.description");
+    if (currentDesc && lastAutoDescRef.current && currentDesc !== lastAutoDescRef.current) {
+      isDescCustomRef.current = true;
+    }
+  }, [values?.meta?.title, values?.meta?.description, form]);
+
+  // Dynamically update Title & Description in real time as user changes property config
+  useEffect(() => {
+    if (propertyId) return;
+
+    if (!isTitleCustomRef.current && values?.location?.cityName) {
+      const newTitle = suggestTitle(values);
+      if (newTitle && newTitle !== form.getValues("meta.title")) {
+        form.setValue("meta.title", newTitle, { shouldDirty: true });
+        lastAutoTitleRef.current = newTitle;
       }
     }
-  }, [stepIndex, values, form, propertyId]);
+
+    if (!isDescCustomRef.current && values?.location?.cityName) {
+      const newDesc = suggestDescription(values);
+      if (newDesc && newDesc !== form.getValues("meta.description")) {
+        form.setValue("meta.description", newDesc, { shouldDirty: true });
+        lastAutoDescRef.current = newDesc;
+      }
+    }
+  }, [
+    values?.context,
+    values?.details,
+    values?.location,
+    values?.pricing,
+    values?.amenities,
+    propertyId,
+    form,
+  ]);
 
   const step = listingSteps[stepIndex];
   const isLast = stepIndex === listingSteps.length - 1;

@@ -5,6 +5,13 @@ export interface Property {
   price: number;
   location: {
     address: string;
+    flatNumber?: string;
+    houseNumber?: string;
+    towerNumber?: string;
+    plotNumber?: string;
+    buildingName?: string;
+    sectorNumber?: string;
+    subLocality?: string;
     city: string;
     state: string;
     zipCode: string;

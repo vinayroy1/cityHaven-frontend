@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Check } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import { Controller, get, useFormContext, useWatch } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +19,8 @@ import { cn } from "@/components/ui/utils";
 import { evaluateCondition } from "@/features/propertyListing/formConfig/conditions";
 import { areaUnitOptions, monthOptions } from "@/features/propertyListing/formConfig/options";
 import type { FieldConfig, FormValues, Option } from "@/features/propertyListing/formConfig/types";
+import { suggestDescription } from "@/features/propertyListing/formConfig/derive";
+import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import { chip as chipCls, errorText, fieldLabel, helpText as helpCls } from "../theme";
 import { amountToWords } from "./numberToWords";
 import { MediaField } from "./MediaField";
@@ -123,7 +126,27 @@ export function FieldRenderer({ field, values }: Props) {
           control={form.control}
           rules={rules}
           render={({ field: rhf }) => (
-            <Labelled label={field.label} required={required} error={error} helpText={field.helpText}>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className={fieldLabel}>
+                  {field.label}
+                  {required && <span className="ml-0.5 text-rose-500">*</span>}
+                </label>
+                {field.id === "meta.description" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const aiDesc = suggestDescription(values as PropertyListingFormValues);
+                      rhf.onChange(aiDesc);
+                      toast.success("AI Description generated based on your property details!");
+                    }}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Auto-Generate with AI
+                  </button>
+                )}
+              </div>
               <Textarea
                 placeholder={field.placeholder}
                 disabled={disabled}
@@ -132,7 +155,8 @@ export function FieldRenderer({ field, values }: Props) {
                 onChange={(e) => rhf.onChange(e.target.value)}
                 onBlur={rhf.onBlur}
               />
-            </Labelled>
+              {error ? <p className={errorText}>{error}</p> : field.helpText ? <p className={helpCls}>{field.helpText}</p> : null}
+            </div>
           )}
         />
       );

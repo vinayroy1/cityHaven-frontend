@@ -326,7 +326,7 @@ export function LocationStep() {
       combined += ` - ${watchedPincode.trim()}`;
     }
 
-    if (combined) {
+    if (combined && combined !== form.getValues("location.address")) {
       form.setValue("location.address", combined);
       setAddressQuery(combined);
       setLastQuery(combined);
@@ -364,7 +364,7 @@ export function LocationStep() {
       newAddress += ` - ${watchedPincode.trim()}`;
     }
 
-    if (newAddress) {
+    if (newAddress && newAddress !== form.getValues("location.address")) {
       form.setValue("location.address", newAddress);
       setAddressQuery(newAddress);
       setLastQuery(newAddress); // Prevents address search popup from triggering on dropdown select
