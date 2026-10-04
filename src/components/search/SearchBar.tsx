@@ -20,7 +20,14 @@ function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?:
     setDraft(value);
   }, [value]);
 
-  const submit = () => onSubmit(draftRef.current);
+  const submit = () => {
+    let next = draftRef.current;
+    if (next.q && next.q.trim()) {
+      next = { ...next, q: "" };
+      update(next);
+    }
+    onSubmit(next);
+  };
   const changeContext = (next: SearchState) => { update(next); onContextChange?.(next); };
 
   return (

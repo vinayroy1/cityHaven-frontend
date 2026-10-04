@@ -75,11 +75,15 @@ export interface PropertyLocationBlock {
   localityId?: string;
   locality?: string;
   subLocality?: string;
+  sectorNumber?: string;
   projectId?: string;
   societyOrProjectName?: string;
+  buildingName?: string;
   mall?: string;
   address?: string;
+  flatNumber?: string;
   houseNumber?: string;
+  towerNumber?: string;
   plotNumber?: string;
   pincode?: string;
   latitude?: number | null;

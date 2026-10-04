@@ -175,7 +175,9 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   if (state.q) sp.set("q", state.q);
   if (state.cityName) sp.set("city", state.cityName);
   if (state.localities.length > 0) {
-    sp.set("locality", state.localities.map((l) => l.label).join(","));
+    for (const loc of state.localities) {
+      sp.append("locality", loc.label);
+    }
   }
   sp.set("intent", state.intent);
   if (state.intent === "COMMERCIAL" && state.transaction === "RENT") sp.set("transaction", "RENT");
@@ -226,11 +228,11 @@ export function toApiParams(state: SearchState, pageSize: number): ApiSearchPara
     pageSize,
   };
   if (state.intent === "COMMERCIAL") out.resCom = "COMMERCIAL";
-  if (state.q) out.q = state.q;
+  const queryParts = [state.q, ...state.localities.map((l) => l.label)].filter(Boolean);
+  if (queryParts.length > 0) out.q = queryParts.join(", ");
   const cityName = state.cityName ?? (state.localities.length === 1 ? state.localities[0]?.city : undefined);
-  if (cityName) out.cityName = cityName;
-  if (state.localities.length > 0) {
-    out.locality = state.localities.map((l) => l.label).join(",");
+  if (cityName && (!state.localities.length || (state.localities.length === 1 && state.localities[0]?.city === state.localities[0]?.label))) {
+    out.cityName = cityName;
   }
   if (state.bedroomsMin != null) out.bedrooms = state.bedroomsMin;
   if (state.priceMin != null) out.priceMin = state.priceMin;
@@ -252,7 +254,7 @@ export function hasClientRefinements(state: SearchState): boolean {
     r.areaMin != null ||
     r.areaMax != null ||
     state.intent === "PLOT" || // PLOT still needs client-side subType slug filtering
-    state.localities.length > 1
+    state.localities.length > 0
   );
 }
 
@@ -371,7 +373,7 @@ export function applyClientRefinements<T extends RefinableItem>(
     if (refine.areaMin != null && (area == null || area < refine.areaMin)) return false;
     if (refine.areaMax != null && (area == null || area > refine.areaMax)) return false;
 
-    if (localityNeedles.length > 1) {
+    if (localityNeedles.length > 0) {
       const hay = [item.locality, item.subLocality, item.cityName]
         .filter(Boolean)
         .join(" ")

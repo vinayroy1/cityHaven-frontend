@@ -223,13 +223,9 @@ export function LocationSearchInput({
   };
 
   const commitKeyword = () => {
-    const trimmed = text.trim();
-    if (trimmed) {
-      onChange({ localities, keyword: trimmed });
-      setOpen(false);
-      return true;
-    }
-    return false;
+    setText("");
+    onChange({ localities, keyword: "" });
+    setOpen(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -261,21 +257,13 @@ export function LocationSearchInput({
         onSubmit?.();
         return;
       }
-      if (trimmed) {
-        const clean = trimmed;
-        if (!localities.some((l) => l.label.toLowerCase() === clean.toLowerCase())) {
-          onChange({
-            keyword: "",
-            localities: [...localities, { label: clean, city: clean }],
-          });
-        }
-        setText("");
-        setOpen(false);
-        onSubmit?.();
-        return;
-      }
-      commitKeyword();
+      // If user typed text but did not select a suggestion from the dropdown,
+      // clear the unselected text and pass only city & selected locality chips
+      setText("");
+      onChange({ localities, keyword: "" });
+      setOpen(false);
       onSubmit?.();
+      return;
     }
     if (e.key === "Backspace" && !text && localities.length) {
       removeLocality(localities[localities.length - 1].label);
@@ -471,11 +459,12 @@ export function LocationSearchInput({
                 commitKeyword();
                 onSubmit?.();
               }}
-              className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2 text-left text-sm hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
+              className="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2 text-left text-xs text-slate-500 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
             >
               <Search className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-              <span className="text-slate-800 dark:text-slate-200">
-                Search <span className="font-semibold text-rose-600 dark:text-rose-400">&ldquo;{text.trim()}&rdquo;</span> as keyword
+              <span>
+                Select a locality suggestion above, or search all properties in{" "}
+                <span className="font-semibold text-rose-600 dark:text-rose-400">{cityName || "city"}</span>
               </span>
             </button>
           )}
