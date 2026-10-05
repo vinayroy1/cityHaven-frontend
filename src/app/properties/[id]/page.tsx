@@ -463,6 +463,9 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             priceHint={property.priceType ? formatEnum(property.priceType) : area.value}
             category={property.propertySubCategory?.name ?? property.propertySubType?.name ?? property.propertyType?.name ?? "Property details"}
             tags={tags}
+            ownerName={property.owner?.name || "Property owner"}
+            locality={property.locality ?? property.cityName}
+            cityName={property.cityName}
           />
           <div className="mt-5">
             <QuickFactsGrid items={buildQuickFacts(property)} />

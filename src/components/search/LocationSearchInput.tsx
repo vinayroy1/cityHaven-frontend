@@ -305,13 +305,14 @@ export function LocationSearchInput({
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2 py-1.5 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:focus-within:border-rose-400 dark:focus-within:ring-rose-500/20">
-        <MapPin className="ml-1 h-4 w-4 shrink-0 text-rose-500" />
+      <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2.5 py-2 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:focus-within:border-rose-400 dark:focus-within:ring-rose-500/20">
+        <MapPin className="ml-0.5 h-4 w-4 shrink-0 text-rose-500" />
 
+        {/* Desktop inline locality chips */}
         {localities.map((l) => (
           <span
             key={l.label}
-            className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200"
+            className="hidden sm:inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200"
           >
             {l.label}
             <button
@@ -327,8 +328,8 @@ export function LocationSearchInput({
 
         <input
           ref={inputRef}
-          className="min-w-[8rem] flex-1 bg-transparent px-1 py-1 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
-          placeholder={localities.length || keyword ? "Add another area" : placeholder}
+          className="min-w-[7rem] flex-1 bg-transparent px-1.5 py-0.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+          placeholder={localities.length || keyword ? "Add another area..." : placeholder}
           value={text}
           onChange={handleInputChange}
           onFocus={() => {
@@ -342,6 +343,40 @@ export function LocationSearchInput({
           autoComplete="off"
         />
       </div>
+
+      {/* Mobile-only selected localities row below the search input */}
+      {localities.length > 0 && (
+        <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:hidden">
+          <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">Selected:</span>
+          {localities.map((l) => (
+            <span
+              key={l.label}
+              className="inline-flex items-center gap-1 rounded-full bg-rose-50 border border-rose-200/80 px-2.5 py-1 text-xs font-semibold text-rose-700 dark:bg-rose-950/50 dark:border-rose-900/60 dark:text-rose-300"
+            >
+              <span>{l.label}</span>
+              <button
+                type="button"
+                onClick={() => removeLocality(l.label)}
+                aria-label={`Remove ${l.label}`}
+                className="rounded-full p-0.5 text-rose-500 hover:bg-rose-100 hover:text-rose-800 dark:text-rose-400 dark:hover:bg-rose-900 dark:hover:text-white"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+          {localities.length > 1 && (
+            <button
+              type="button"
+              onClick={() => {
+                onChange({ localities: [], keyword: text });
+              }}
+              className="text-[11px] font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 px-1 py-0.5 underline transition"
+            >
+              Clear all
+            </button>
+          )}
+        </div>
+      )}
 
       {open && (
         <div

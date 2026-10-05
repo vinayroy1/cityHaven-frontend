@@ -24,13 +24,13 @@ export function HomeExperience() {
 
   React.useEffect(() => {
     const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved && CITY_OPTIONS.includes(saved)) {
+    if (saved) {
       setSelectedCity(saved);
       setSearchState((prev) => ({ ...prev, cityName: saved }));
     } else {
       detectUserLocation().then((profile) => {
         if (profile?.city) {
-          const matched = CITY_OPTIONS.find((c) => c.toLowerCase() === profile.city.toLowerCase()) || profile.city;
+          const matched = profile.city;
           setSelectedCity(matched);
           setSearchState((prev) => ({ ...prev, cityName: matched }));
         }
@@ -40,13 +40,18 @@ export function HomeExperience() {
 
   const updateCity = (city: string) => {
     setSelectedCity(city);
+    setSearchState((prev) => ({ ...prev, cityName: city || undefined }));
     if (city) window.localStorage.setItem(STORAGE_KEY, city);
     else window.localStorage.removeItem(STORAGE_KEY);
   };
 
   const submit = (next: SearchState) => {
-    const state = { ...next, cityName: selectedCity || undefined };
+    const targetCity = next.cityName || selectedCity || undefined;
+    const state = { ...next, cityName: targetCity };
     setSearchState(state);
+    if (targetCity) {
+      updateCity(targetCity);
+    }
     window.location.href = `/propertySearch?${buildSearchParams(state).toString()}`;
   };
 
@@ -110,8 +115,8 @@ export function HomeExperience() {
             </span>
           </h1>
 
-          {/* Short concise subtitle */}
-          <p className="mx-auto mt-1 sm:mt-2 max-w-xl text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          {/* Short concise subtitle - visible on desktop/tablet, hidden on mobile */}
+          <p className="hidden sm:block mx-auto mt-1 sm:mt-2 max-w-xl text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             Verified rental homes, apartments, and commercial spaces across India.
           </p>
 

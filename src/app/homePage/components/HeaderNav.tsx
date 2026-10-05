@@ -208,20 +208,23 @@ export function HeaderNav() {
         </nav>
 
         {/* Right Side CTAs & Actions */}
-        <div className="flex items-center gap-2 sm:gap-2.5" ref={accountRef}>
-          {/* Post Property Glowing CTA */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5" ref={accountRef}>
+          {/* Post Property Glowing CTA - Always visible on mobile and desktop */}
           <Link
             href={isAuthed ? "/propertyListing" : "/login?redirect=/propertyListing"}
-            className="group relative hidden items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-[length:200%_auto] px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition-all duration-300 hover:bg-right hover:shadow-lg hover:shadow-emerald-600/30 hover:-translate-y-0.5 active:translate-y-0 sm:inline-flex"
+            className="group relative inline-flex items-center gap-1.5 sm:gap-2 overflow-hidden rounded-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 bg-[length:200%_auto] px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/20 transition-all duration-300 hover:bg-right hover:shadow-lg hover:shadow-emerald-600/30 hover:-translate-y-0.5 active:translate-y-0"
           >
-            <PlusCircle className="h-4 w-4 transition-transform duration-200 group-hover:rotate-90" />
-            <span>Post Property</span>
-            <span className="rounded-full bg-white/25 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-50 backdrop-blur-xs">
+            <PlusCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-200 group-hover:rotate-90 shrink-0" />
+            <span className="whitespace-nowrap">
+              <span className="inline sm:hidden">Post</span>
+              <span className="hidden sm:inline">Post Property</span>
+            </span>
+            <span className="rounded-full bg-white/25 px-1 sm:px-1.5 py-0.2 sm:py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-emerald-50 backdrop-blur-xs">
               Free
             </span>
           </Link>
 
-          {/* Plans Pill Button */}
+          {/* Plans Pill Button (Desktop only) */}
           <Link
             href={isAuthed ? "/pricing" : "/login?redirect=/pricing"}
             className="group hidden items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/80 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs backdrop-blur-sm transition-all duration-200 hover:border-amber-400/80 hover:bg-amber-50/50 hover:text-amber-700 md:inline-flex dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-amber-500/50 dark:hover:bg-amber-950/30 dark:hover:text-amber-300"
@@ -230,18 +233,20 @@ export function HeaderNav() {
             <span>Plans</span>
           </Link>
 
-          {/* Saved Properties Heart Icon */}
+          {/* Saved Properties Heart Icon (Visible on sm+ screens, available in mobile drawer) */}
           <Link
             href="/favorites"
-            className="group relative flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/70 text-slate-600 shadow-2xs backdrop-blur-sm transition-all duration-200 hover:border-rose-300 hover:bg-rose-50/60 hover:text-rose-600 active:scale-95 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:border-rose-900/50 dark:hover:bg-rose-950/40 dark:hover:text-rose-400"
+            className="group relative hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/70 text-slate-600 shadow-2xs backdrop-blur-sm transition-all duration-200 hover:border-rose-300 hover:bg-rose-50/60 hover:text-rose-600 active:scale-95 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:border-rose-900/50 dark:hover:bg-rose-950/40 dark:hover:text-rose-400"
             aria-label="Saved properties"
             title="Saved properties"
           >
             <Heart className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
           </Link>
 
-          {/* Theme Toggle */}
-          <ThemeToggle />
+          {/* Theme Toggle (Visible on sm+ screens, available in mobile drawer) */}
+          <div className="hidden sm:block">
+            <ThemeToggle />
+          </div>
 
           {/* Authenticated Account Menu or Login Button */}
           {isAuthed ? (
@@ -249,7 +254,7 @@ export function HeaderNav() {
               <button
                 type="button"
                 onClick={() => setAccountOpen((open) => !open)}
-                className={`flex items-center gap-2 rounded-full border p-1 pr-2.5 transition-all duration-200 ${
+                className={`flex items-center gap-1 sm:gap-2 rounded-full border p-1 sm:pr-2.5 transition-all duration-200 ${
                   accountOpen
                     ? "border-rose-400 bg-rose-50/70 shadow-xs dark:border-rose-800 dark:bg-rose-950/30"
                     : "border-slate-200/80 bg-white/80 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-slate-700"
@@ -443,6 +448,10 @@ export function HeaderNav() {
                       </Link>
                     );
                   })}
+                  <div className="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 px-1">
+                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Appearance</span>
+                    <ThemeToggle />
+                  </div>
                   <button
                     type="button"
                     onClick={logout}
@@ -453,14 +462,30 @@ export function HeaderNav() {
                   </button>
                 </div>
               ) : (
-                <Link
-                  href={loginHref}
-                  onClick={() => setMenuOpen(false)}
-                  className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-center text-sm font-bold text-white shadow-md dark:bg-white dark:text-slate-950"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Login or Sign Up</span>
-                </Link>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between px-1">
+                    <Link
+                      href="/favorites"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400"
+                    >
+                      <Heart className="h-4 w-4 text-rose-500" />
+                      <span>Saved Properties</span>
+                    </Link>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-400 dark:text-slate-500">Theme</span>
+                      <ThemeToggle />
+                    </div>
+                  </div>
+                  <Link
+                    href={loginHref}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-center text-sm font-bold text-white shadow-md dark:bg-white dark:text-slate-950"
+                  >
+                    <User className="h-4 w-4" />
+                    <span>Login or Sign Up</span>
+                  </Link>
+                </div>
               )}
             </div>
           </div>

@@ -32,7 +32,7 @@ export function FooterLinks() {
           {/* Brand Info */}
           <div className="space-y-2.5 md:col-span-6">
             <BrandLogo size="md" showTagline taglineText="Verified Real Estate" />
-            <p className="max-w-md text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p className="hidden sm:block max-w-md text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               Buy, rent, post and manage approved property listings across Indian cities with transparent pricing.
             </p>
           </div>

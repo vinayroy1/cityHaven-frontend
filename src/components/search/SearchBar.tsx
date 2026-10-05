@@ -70,10 +70,11 @@ function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?:
         </div>
       )}
 
-      {/* Single-row mobile & desktop container for CitySelector + LocationSearchInput */}
-      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-stretch">
-        <div className="flex min-w-0 flex-1 items-start gap-1.5 sm:gap-2">
-          <div className="shrink-0">
+      {/* Search Input Container: Stacked on mobile with generous touch targets, inline row on sm+ */}
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-start">
+        <div className="flex flex-col gap-2 sm:flex-row sm:min-w-0 sm:flex-1 sm:items-start sm:gap-2">
+          {/* City selector: full width on mobile so selected city is clear and easily tapped; compact pill on desktop */}
+          <div className="w-full sm:w-auto sm:shrink-0">
             <CitySelectorDropdown
               compact
               selectedCityName={draft.cityName}
@@ -90,6 +91,8 @@ function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?:
               }}
             />
           </div>
+
+          {/* Location search input: gets 100% width on both mobile and desktop */}
           <div className="min-w-0 flex-1">
             <LocationSearchInput
               cityName={draft.cityName}
@@ -137,9 +140,11 @@ function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?:
             />
           </div>
         </div>
+
+        {/* Search submit button */}
         <button
           type="button"
-          className={`${primaryButton} shrink-0 w-full sm:w-auto h-11`}
+          className={`${primaryButton} shrink-0 w-full sm:w-auto h-11 font-semibold shadow-sm`}
           onClick={submit}
         >
           <Search size={18} />
@@ -152,7 +157,7 @@ function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?:
 
 export function SearchBar({ variant, value, onChange, onSubmit, activeFilterCount = 0, onOpenFilters }: Props) {
   const [open, setOpen] = React.useState(false);
-  if (variant === "hero") return <SearchEditor variant="hero" value={value} onSubmit={onSubmit} />;
+  if (variant === "hero") return <SearchEditor variant="hero" value={value} onSubmit={onSubmit} onContextChange={onChange} />;
   return (
     <>
       <div className="hidden lg:block">

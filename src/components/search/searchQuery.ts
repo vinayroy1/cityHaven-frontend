@@ -122,10 +122,11 @@ const legacyListingTypeToIntent = (v: string): IntentKey | undefined => {
 // --- parse ---------------------------------------------------------------
 
 export function parseSearchParams(sp: URLSearchParams): SearchState {
-  const state = initialSearchState();
+  const state = initialSearchState("");
 
   state.q = sp.get("q")?.trim() ?? "";
-  state.cityName = sp.get("city")?.trim() || sp.get("cityName")?.trim() || undefined;
+  const paramCity = sp.get("city")?.trim() || sp.get("cityName")?.trim();
+  state.cityName = paramCity || undefined;
 
   const locParams = [...sp.getAll("loc"), ...sp.getAll("locality"), ...sp.getAll("localities")];
   if (locParams.length === 0 && sp.get("locality")) {

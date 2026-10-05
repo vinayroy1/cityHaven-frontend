@@ -646,6 +646,13 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     if (!assertPermission("GOVERNANCE_UPDATE")) return;
     const updated = await adminApi.updateGovernance(settings, reason || "Governance policies updated by Super Admin");
     setGovernanceSettings(updated);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(STORAGE_KEYS.GOVERNANCE, JSON.stringify(updated));
+      } catch {
+        /* storage full or unavailable */
+      }
+    }
     logAuditAction("PLATFORM_GOVERNANCE_UPDATED", "SETTING", "SYSTEM_POLICIES", reason || `Policy changed: ${Object.keys(settings).join(", ")}`);
   };
 

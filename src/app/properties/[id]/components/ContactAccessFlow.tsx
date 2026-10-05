@@ -25,7 +25,19 @@ function errorMessage(error: unknown) {
   return value?.data?.message || value?.message || "Unable to continue. Please try again.";
 }
 
-export function ContactAccessFlow({ propertyId, onContact }: { propertyId: number | string; onContact: (phone: string) => void }) {
+type ContactAccessFlowProps = {
+  propertyId: number | string;
+  onContact: (phone: string) => void;
+  triggerClassName?: string;
+  triggerLabel?: string;
+};
+
+export function ContactAccessFlow({
+  propertyId,
+  onContact,
+  triggerClassName,
+  triggerLabel = "View owner contact",
+}: ContactAccessFlowProps) {
   const [open, setOpen] = React.useState(false);
   const [step, setStep] = React.useState<Step>("signin");
   const [busy, setBusy] = React.useState(false);
@@ -258,10 +270,13 @@ export function ContactAccessFlow({ propertyId, onContact }: { propertyId: numbe
       <button
         type="button"
         onClick={begin}
-        className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-700 px-3 py-3 text-sm font-semibold text-white hover:bg-emerald-800 shadow-sm"
+        className={
+          triggerClassName ??
+          "mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-700 px-3 py-3 text-sm font-semibold text-white hover:bg-emerald-800 shadow-sm"
+        }
       >
-        <LockKeyhole className="h-4 w-4" />
-        View owner contact
+        <LockKeyhole className="h-4 w-4 shrink-0" />
+        <span>{triggerLabel}</span>
       </button>
 
       <Dialog

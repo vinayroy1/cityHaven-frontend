@@ -14,7 +14,7 @@ import type {
 } from "./types";
 
 export const DEFAULT_GOVERNANCE_SETTINGS: AdminGovernanceSettings = {
-  propertyReviewPolicy: "AI_SMART_TRIAGE",
+  propertyReviewPolicy: "INSTANT_PUBLISH_BYPASS",
   orgReviewPolicy: "MANDATORY_KYC",
   autoAssignEnabled: true,
   routingStrategy: "LEAST_LOADED",

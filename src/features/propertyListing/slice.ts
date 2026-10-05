@@ -209,8 +209,8 @@ export const initialPropertyListingFormValues: PropertyListingFormValues = {
     documentIds: [],
   },
   publishOptions: {
-    status: "DRAFT",
-    qcRequired: true,
+    status: "ACTIVE",
+    qcRequired: false,
   },
 };
 

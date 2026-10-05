@@ -195,14 +195,16 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex h-11 items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 sm:px-3.5 text-xs sm:text-sm font-bold text-slate-800 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700/80 ${
-          compact ? "w-auto" : ""
+        className={`flex h-11 items-center justify-between sm:justify-start gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 sm:px-3.5 text-xs sm:text-sm font-bold text-slate-800 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700/80 ${
+          compact ? "w-full sm:w-auto" : "w-full"
         }`}
         aria-expanded={isOpen}
         aria-label="Select City"
       >
-        <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-rose-500" />
-        <span className="truncate max-w-[76px] xs:max-w-[100px] sm:max-w-[130px]">{currentDisplay}</span>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-rose-500" />
+          <span className="truncate max-w-[200px] xs:max-w-none sm:max-w-[130px]">{currentDisplay}</span>
+        </div>
         <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 

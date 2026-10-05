@@ -253,6 +253,24 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
     } catch {
       /* no stored user */
     }
+    let shouldAutoPublish = true;
+    try {
+      const storedGov = localStorage.getItem("awasio_admin_governance_settings");
+      if (storedGov) {
+        const parsedGov = JSON.parse(storedGov);
+        if (parsedGov.propertyReviewPolicy === "MANDATORY_REVIEW") {
+          shouldAutoPublish = false;
+        }
+      }
+    } catch {
+      /* fallback to autopublish */
+    }
+
+    payload.publishOptions = {
+      status: shouldAutoPublish ? "ACTIVE" : "DRAFT",
+      qcRequired: !shouldAutoPublish,
+    };
+
     dispatch(saveDraft(payload));
     try {
       if (propertyId) {
@@ -260,7 +278,7 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
         toast.success("Listing updated.");
       } else {
         await submitProperty(payload).unwrap();
-        toast.success("Listing submitted for review.");
+        toast.success(shouldAutoPublish ? "Listing published successfully." : "Listing submitted for review.");
         clearPersistedDraft();
       }
       router.push("/dashboard/properties");
