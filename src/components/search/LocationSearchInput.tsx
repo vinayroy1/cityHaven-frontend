@@ -257,10 +257,9 @@ export function LocationSearchInput({
         onSubmit?.();
         return;
       }
-      // If user typed text but did not select a suggestion from the dropdown,
-      // clear the unselected text and pass only city & selected locality chips
+      // If user typed text and hit Enter, trigger submit so SearchBar parses slots
+      onChange({ localities, keyword: trimmed });
       setText("");
-      onChange({ localities, keyword: "" });
       setOpen(false);
       onSubmit?.();
       return;

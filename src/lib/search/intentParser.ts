@@ -359,3 +359,250 @@ export function generateIntentSuggestions(
 
   return suggestions.slice(0, maxResults);
 }
+
+// =========================================================================
+// 4. COMPREHENSIVE NATURAL LANGUAGE SLOT-FILLER & RESOLVER
+// Handles arbitrary good/bad/colloquial real estate search strings.
+// =========================================================================
+
+export interface ExtractedQuerySlots {
+  intent?: IntentKey;
+  transaction?: "SELL" | "RENT";
+  bedroomsMin?: number;
+  subType?: string;
+  priceMax?: number;
+  priceMin?: number;
+  postedAs?: "OWNER" | "AGENT" | "BUILDER";
+  remainingLocationQuery: string;
+  hasExtractedFilters: boolean;
+}
+
+/**
+ * Parses numeric and unit expressions like "20k", "15000", "50 lacs", "1.5 cr".
+ */
+export function parseBudgetExpression(numStr: string, unitStr?: string): number | undefined {
+  const val = parseFloat(numStr);
+  if (isNaN(val) || val <= 0) return undefined;
+
+  const u = (unitStr || "").toLowerCase().trim();
+  if (u.startsWith("k") || u.startsWith("thou")) return Math.round(val * 1_000);
+  if (u.startsWith("l")) return Math.round(val * 100_000);
+  if (u.startsWith("cr")) return Math.round(val * 10_000_000);
+
+  // If no unit provided: If value < 500, assume in Lakhs (e.g. "under 50" -> 50 Lakhs)
+  if (val < 500) return Math.round(val * 100_000);
+  return Math.round(val);
+}
+
+/**
+ * Robust slot-filler that normalizes noisy colloquial user inputs:
+ * Extracts BHK, Intent (Rent/Buy/PG), Budget caps, Owner/Brokerage, and leaves clean location tokens.
+ */
+export function extractSlotsFromQuery(rawQuery: string): ExtractedQuerySlots {
+  let text = rawQuery.toLowerCase().trim();
+  if (!text) {
+    return { remainingLocationQuery: "", hasExtractedFilters: false };
+  }
+
+  const result: Partial<ExtractedQuerySlots> = {};
+  let filterCount = 0;
+
+  // 1. Brokerage / Direct Owner
+  if (/\b(no\s*brokerage|without\s*brokerage|zero\s*brokerage|direct\s*owner|by\s*owner|owner\s*only)\b/i.test(text)) {
+    result.postedAs = "OWNER";
+    filterCount++;
+    text = text
+      .replace(/\b(no|without|zero)\s*brokerage\b/gi, " ")
+      .replace(/\b(direct|by)?\s*owner\s*(only)?\b/gi, " ");
+  }
+
+  // 2. Intent & Transaction
+  if (/\b(for\s*rent|on\s*rent|to\s*rent|rent|rental|lease|to\s*let)\b/i.test(text)) {
+    result.intent = "RENT";
+    result.transaction = "RENT";
+    filterCount++;
+    text = text.replace(/\b(for\s*rent|on\s*rent|to\s*rent|rent|rental|lease|to\s*let)\b/gi, " ");
+  } else if (/\b(for\s*sale|on\s*sale|buy|purchase|resale|invest)\b/i.test(text)) {
+    result.intent = "BUY";
+    result.transaction = "SELL";
+    filterCount++;
+    text = text.replace(/\b(for\s*sale|on\s*sale|buy|purchase|resale|invest)\b/gi, " ");
+  } else if (/\b(pg|co-?living|hostel|paying\s*guest)\b/i.test(text)) {
+    result.intent = "PG";
+    filterCount++;
+    text = text.replace(/\b(pg|co-?living|hostel|paying\s*guest)\b/gi, " ");
+  }
+
+  // 3. Bedrooms / BHK / RK / Studio
+  // Matches "2bhk", "2 bhk", "3 bed", "4 bedroom", "1rk", "1 room set", "studio"
+  const bhkMatch = text.match(/\b([1-6])\s*(?:bhk|bed|bedroom|br|b\.h\.k)\b/i);
+  if (bhkMatch) {
+    result.bedroomsMin = parseInt(bhkMatch[1], 10);
+    filterCount++;
+    text = text.replace(bhkMatch[0], " ");
+  } else if (/\b(1\s*rk|studio|1\s*room\s*set)\b/i.test(text)) {
+    result.bedroomsMin = 1;
+    filterCount++;
+    text = text.replace(/\b(1\s*rk|studio|1\s*room\s*set)\b/gi, " ");
+  }
+
+  // 4. Subtypes (Apartment / Flat / Villa / Plot / Penthouse / Office)
+  if (/\b(flats?|apartments?)\b/i.test(text)) {
+    result.subType = "apartment";
+    filterCount++;
+    text = text.replace(/\b(flats?|apartments?)\b/gi, " ");
+  } else if (/\b(villas?|independent\s*house|bungalow|kothi)\b/i.test(text)) {
+    result.subType = "villa";
+    filterCount++;
+    text = text.replace(/\b(villas?|independent\s*house|bungalow|kothi)\b/gi, " ");
+  } else if (/\b(penthouses?)\b/i.test(text)) {
+    result.subType = "penthouse";
+    filterCount++;
+    text = text.replace(/\b(penthouses?)\b/gi, " ");
+  } else if (/\b(builder\s*floors?|floors?)\b/i.test(text)) {
+    result.subType = "builder-floor";
+    filterCount++;
+    text = text.replace(/\b(builder\s*floors?|floors?)\b/gi, " ");
+  } else if (/\b(plots?|lands?|farmhouse)\b/i.test(text)) {
+    result.intent = "PLOT";
+    result.subType = "plot";
+    filterCount++;
+    text = text.replace(/\b(plots?|lands?|farmhouse)\b/gi, " ");
+  } else if (/\b(offices?|office\s*space|coworking)\b/i.test(text)) {
+    result.intent = "COMMERCIAL";
+    result.subType = "office";
+    filterCount++;
+    text = text.replace(/\b(offices?|office\s*space|coworking)\b/gi, " ");
+  } else if (/\b(shops?|showrooms?|retail)\b/i.test(text)) {
+    result.intent = "COMMERCIAL";
+    result.subType = "shop";
+    filterCount++;
+    text = text.replace(/\b(shops?|showrooms?|retail)\b/gi, " ");
+  }
+
+  // 5. Budget Max Match (e.g. "under 20k", "below 1.5 cr", "under 50 lacs", "max 25000", "< 30000")
+  const budgetMaxRegex = /(?:under|below|max|within|less\s*than|<)\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|cr|crore)?\b/i;
+  const budgetMaxMatch = text.match(budgetMaxRegex);
+  if (budgetMaxMatch) {
+    const parsed = parseBudgetExpression(budgetMaxMatch[1], budgetMaxMatch[2]);
+    if (parsed) {
+      result.priceMax = parsed;
+      filterCount++;
+      text = text.replace(budgetMaxMatch[0], " ");
+    }
+  }
+
+  // 6. Budget Min Match (e.g. "above 20k", "min 50 lacs", "> 1 cr")
+  const budgetMinRegex = /(?:above|min|minimum|greater\s*than|>)\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)\s*(k|thousand|l|lac|lakh|cr|crore)?\b/i;
+  const budgetMinMatch = text.match(budgetMinRegex);
+  if (budgetMinMatch) {
+    const parsed = parseBudgetExpression(budgetMinMatch[1], budgetMinMatch[2]);
+    if (parsed) {
+      result.priceMin = parsed;
+      filterCount++;
+      text = text.replace(budgetMinMatch[0], " ");
+    }
+  }
+
+  // 7. Remove connective prepositions & noise tokens ("in", "at", "near", "around", "urgent", "need", "looking for")
+  const cleanedLocation = text
+    .replace(/\b(in|at|near|around|for|need|looking\s*for|urgent|required|want)\b/gi, " ")
+    .replace(/[^a-zA-Z0-9\s-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return {
+    ...result,
+    remainingLocationQuery: cleanedLocation,
+    hasExtractedFilters: filterCount > 0,
+  };
+}
+
+/**
+ * Converts a raw search query text + existing SearchState into a fully resolved SearchState with
+ * extracted intents, BHKs, price boundaries, refine options, and resolved location chips.
+ */
+export async function resolveSearchQueryToState(
+  rawQuery: string,
+  currentState: import("@/components/search/searchQuery").SearchState
+): Promise<import("@/components/search/searchQuery").SearchState> {
+  const trimmed = rawQuery.trim();
+  if (!trimmed) return currentState;
+
+  const slots = extractSlotsFromQuery(trimmed);
+
+  let nextIntent = slots.intent ?? currentState.intent;
+  let nextTransaction = slots.transaction ?? currentState.transaction;
+  let nextBedrooms = slots.bedroomsMin ?? currentState.bedroomsMin;
+  let nextPriceMax = slots.priceMax ?? currentState.priceMax;
+  let nextPriceMin = slots.priceMin ?? currentState.priceMin;
+
+  const nextRefine = { ...currentState.refine };
+  if (slots.subType) {
+    nextRefine.subType = Array.from(new Set([...nextRefine.subType, slots.subType]));
+  }
+  if (slots.postedAs) {
+    nextRefine.postedAs = Array.from(new Set([...nextRefine.postedAs, slots.postedAs]));
+  }
+
+  let nextLocalities = [...currentState.localities];
+  let nextCity = currentState.cityName;
+
+  // If we have a remaining geographic term (e.g. "chattarpur", "saket", "gurgaon")
+  if (slots.remainingLocationQuery && slots.remainingLocationQuery.length >= 2) {
+    try {
+      const { fetchAwasioSuggestions } = await import("@/lib/awasioSuggestions");
+      const resp = await fetchAwasioSuggestions(slots.remainingLocationQuery, {
+        limit: 5,
+        city: nextCity,
+      });
+
+      const topResult = resp.data?.[0];
+      if (topResult) {
+        if (topResult.type === "CITY" && topResult.location?.city) {
+          nextCity = topResult.location.city;
+        } else if (topResult.type === "LOCALITY" || topResult.type === "PROJECT") {
+          const locName = topResult.title || topResult.location?.locality || slots.remainingLocationQuery;
+          const locCity = topResult.location?.city || nextCity;
+          if (!nextLocalities.some((l) => l.label.toLowerCase() === locName.toLowerCase())) {
+            nextLocalities.push({
+              label: locName,
+              city: locCity,
+              locality: locName,
+            });
+          }
+          if (locCity && !nextCity) {
+            nextCity = locCity;
+          }
+        }
+      } else {
+        // Fallback: If no server suggestion matched, treat remaining text as a locality chip or keyword
+        const term = slots.remainingLocationQuery;
+        if (!nextLocalities.some((l) => l.label.toLowerCase() === term.toLowerCase())) {
+          nextLocalities.push({ label: term, city: nextCity || term });
+        }
+      }
+    } catch (_) {
+      // Offline / API error fallback: preserve as locality
+      const term = slots.remainingLocationQuery;
+      if (!nextLocalities.some((l) => l.label.toLowerCase() === term.toLowerCase())) {
+        nextLocalities.push({ label: term, city: nextCity || term });
+      }
+    }
+  }
+
+  return {
+    ...currentState,
+    intent: nextIntent,
+    transaction: nextTransaction,
+    bedroomsMin: nextBedrooms,
+    priceMax: nextPriceMax,
+    priceMin: nextPriceMin,
+    refine: nextRefine,
+    localities: nextLocalities,
+    cityName: nextCity,
+    q: "", // clear raw query text since all entities have been resolved into state
+  };
+}
+
+

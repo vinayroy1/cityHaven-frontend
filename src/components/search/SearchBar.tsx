@@ -7,6 +7,8 @@ import { SearchDialog } from "./SearchDialog";
 import { INTENT_CONFIG, INTENT_KEYS, clearAllFilters, locationSummary, type SearchState } from "./searchQuery";
 import { primaryButton } from "./theme";
 
+import { resolveSearchQueryToState } from "@/lib/search/intentParser";
+
 type Props = { variant: "hero" | "results"; value: SearchState; onChange: (next: SearchState) => void; onSubmit: (next: SearchState) => void; resultCount?: number; activeFilterCount?: number; onOpenFilters?: () => void };
 
 function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?: "hero" | "results"; value: SearchState; onSubmit: (next: SearchState) => void; onContextChange?: (next: SearchState) => void }) {
@@ -20,10 +22,10 @@ function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?:
     setDraft(value);
   }, [value]);
 
-  const submit = () => {
+  const submit = async () => {
     let next = draftRef.current;
     if (next.q && next.q.trim()) {
-      next = { ...next, q: "" };
+      next = await resolveSearchQueryToState(next.q, next);
       update(next);
     }
     onSubmit(next);

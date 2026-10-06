@@ -439,8 +439,13 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     ],
   };
 
+  const heroImage = images?.[0];
+
   return (
     <main className="min-h-screen bg-white text-zinc-900 [letter-spacing:0] dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
+      {heroImage && (
+        <link rel="preload" as="image" href={heroImage} fetchPriority="high" />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(propertyJsonLd) }}

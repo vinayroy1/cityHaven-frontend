@@ -163,7 +163,13 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
     bathroomsMin: toNum(sp.get("r.bath")),
     areaMin: toNum(sp.get("r.areaMin")),
     areaMax: toNum(sp.get("r.areaMax")),
+    bhkTypes: splitList(sp.get("r.bhkTypes")),
   };
+
+  // Auto-sync UI chip for BHK if not set but bedroomsMin is provided
+  if (state.bedroomsMin != null && state.refine.bhkTypes?.length === 0) {
+    state.refine.bhkTypes = [`${state.bedroomsMin} BHK`];
+  }
 
   return state;
 }
@@ -195,6 +201,7 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   if (r.bathroomsMin != null) sp.set("r.bath", String(r.bathroomsMin));
   if (r.areaMin != null) sp.set("r.areaMin", String(r.areaMin));
   if (r.areaMax != null) sp.set("r.areaMax", String(r.areaMax));
+  if (r.bhkTypes && r.bhkTypes.length) sp.set("r.bhkTypes", r.bhkTypes.join(","));
 
   return sp;
 }

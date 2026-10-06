@@ -1,8 +1,13 @@
 "use client";
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { Calendar as CalendarIcon, MapPin, Phone, Share2, Sparkles } from "lucide-react";
 import { ContactAccessFlow } from "./ContactAccessFlow";
-import { ScheduleVisitDialog } from "@/components/property/ScheduleVisitDialog";
+
+const ScheduleVisitDialog = dynamic(
+  () => import("@/components/property/ScheduleVisitDialog").then((m) => m.ScheduleVisitDialog),
+  { ssr: false }
+);
 
 type HeroHeaderProps = {
   propertyId: string | number;

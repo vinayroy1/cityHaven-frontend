@@ -1,8 +1,14 @@
 "use client";
 
 import React from "react";
-import { LockKeyhole, Phone } from "lucide-react";
+import dynamic from "next/dynamic";
+import { Calendar as CalendarIcon, LockKeyhole, Phone, Sparkles } from "lucide-react";
 import { ContactAccessFlow } from "./ContactAccessFlow";
+
+const ScheduleVisitDialog = dynamic(
+  () => import("@/components/property/ScheduleVisitDialog").then((m) => m.ScheduleVisitDialog),
+  { ssr: false }
+);
 
 type OwnerContactCardProps = {
   propertyId: number | string;
@@ -13,9 +19,6 @@ type OwnerContactCardProps = {
   cityName?: string | null;
   price?: string | null;
 };
-
-import { Calendar as CalendarIcon, Sparkles } from "lucide-react";
-import { ScheduleVisitDialog } from "@/components/property/ScheduleVisitDialog";
 
 export function OwnerContactCard({
   propertyId,

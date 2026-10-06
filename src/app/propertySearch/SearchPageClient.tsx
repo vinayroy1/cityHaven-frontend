@@ -71,8 +71,26 @@ export function SearchPageClient() {
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-end gap-3">
-          <SortMenu value={state.sort} onChange={(sort) => commit({ ...state, sort })} />
+        {/* Semantic H1 & Results Status Bar for Google SEO & UX */}
+        <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-200/60 pb-3 dark:border-slate-800/60">
+          <div>
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-950 dark:text-white">
+              {state.cityName || state.locality
+                ? `Properties in ${[state.locality, state.cityName].filter(Boolean).join(", ")}`
+                : "Verified Properties in India"}
+              <span className="ml-1.5 font-normal text-slate-500 text-sm dark:text-slate-400 capitalize">
+                • {state.intent === "rent" ? "Rent" : state.intent === "pg" ? "PG & Co-Living" : state.intent === "commercial" ? "Commercial" : "Buy & Rent"}
+              </span>
+            </h1>
+            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              {settledCount !== undefined
+                ? `${settledCount} verified listings match your criteria`
+                : "Fetching latest verified properties..."}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <SortMenu value={state.sort} onChange={(sort) => commit({ ...state, sort })} />
+          </div>
         </div>
 
         <div className="mt-3 empty:hidden">
