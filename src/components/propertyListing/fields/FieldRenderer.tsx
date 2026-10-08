@@ -122,7 +122,12 @@ export function FieldRenderer({ field, values }: Props) {
               <Input
                 type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}
                 inputMode={field.type === "number" ? "decimal" : undefined}
-                placeholder={field.placeholder}
+                placeholder={
+                  field.placeholder ??
+                  (field.type === "number"
+                    ? `Enter ${field.label.replace(/\s*\([₹Rs.]+\)\s*/gi, "").toLowerCase()}`
+                    : undefined)
+                }
                 disabled={disabled}
                 min={field.min}
                 max={field.max}

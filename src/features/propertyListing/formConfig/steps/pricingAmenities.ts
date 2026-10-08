@@ -3,13 +3,24 @@ import { preset } from "../conditions";
 import { paymentFrequencyOptions } from "../options";
 import type { FieldConfig, Option, StepConfig } from "../types";
 
-const money = (id: string, label: string, extra?: Partial<FieldConfig>): FieldConfig => ({
-  id,
-  label,
-  type: "number",
-  min: 0,
-  ...extra,
-});
+const money = (id: string, label: string, extra?: Partial<FieldConfig>): FieldConfig => {
+  let defaultPlaceholder = "e.g. 10,000";
+  if (id.includes("deposit")) defaultPlaceholder = "e.g. 50,000";
+  else if (id.includes("maintenance")) defaultPlaceholder = "e.g. 2,500";
+  else if (id.includes("bookingAmount")) defaultPlaceholder = "e.g. 1,00,000";
+  else if (id.includes("membershipCharge")) defaultPlaceholder = "e.g. 5,000";
+  else if (id.includes("annualDuesPayable")) defaultPlaceholder = "e.g. 10,000";
+  else if (id.includes("expectedRental")) defaultPlaceholder = "e.g. 25,000";
+
+  return {
+    id,
+    label,
+    placeholder: extra?.placeholder ?? defaultPlaceholder,
+    type: "number",
+    min: 0,
+    ...extra,
+  };
+};
 
 const amenityChoices: Option[] = amenityOptions.map((a) => ({ value: a.id, label: a.label }));
 
