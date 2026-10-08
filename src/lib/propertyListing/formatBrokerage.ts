@@ -41,7 +41,7 @@ export function getBrokerageDisplay(
     const formatted = amt !== null && amt > 0 ? `₹${formatIndianCurrency(amt)}` : null;
     return {
       badge: "15 Days Rent",
-      label: "15 Days Rent (Delhi/NCR Standard)",
+      label: "15 Days Rent",
       amountFormatted: formatted,
       fullText: formatted ? `15 Days Rent (${formatted})` : "15 Days Rent",
       isZero: false,

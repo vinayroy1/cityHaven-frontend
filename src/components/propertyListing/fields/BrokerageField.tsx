@@ -17,36 +17,33 @@ interface BrokerageOption {
   value: string;
   label: string;
   info: string;
-  badge?: string;
 }
 
 const RENT_OPTIONS: BrokerageOption[] = [
   {
     value: "HALF_MONTH_RENT",
     label: "15 Days Rent",
-    info: "Delhi/NCR standard norm: Tenant pays half-month (15 days) rent as brokerage.",
-    badge: "Delhi Norm",
+    info: "Tenant pays half-month (15 days) rent as brokerage fee.",
   },
   {
     value: "ONE_MONTH_RENT",
     label: "1 Month Rent",
-    info: "Bengaluru/Mumbai 30 days norm: Tenant pays 1 full month rent as brokerage.",
+    info: "Tenant pays 1 full month (30 days) rent as brokerage fee.",
   },
   {
     value: "FIXED",
     label: "Fixed Amount (₹)",
-    info: "Specify an exact flat rupee fee that you will charge the client.",
+    info: "Specify an exact flat rupee fee you charge the client.",
   },
   {
     value: "PERCENTAGE",
     label: "Percentage (%)",
-    info: "Charge a percentage fee based on the annual lease value.",
+    info: "Charge a custom percentage fee based on the annual lease value.",
   },
   {
     value: "ZERO",
     label: "Zero Brokerage",
-    info: "Charged to owner only or promo: No commission will be charged to the tenant.",
-    badge: "3x Inquiries",
+    info: "No commission will be charged to the tenant (e.g. charged to owner only or promotional listing).",
   },
 ];
 
@@ -54,18 +51,17 @@ const SELL_OPTIONS: BrokerageOption[] = [
   {
     value: "ONE_PERCENT",
     label: "1% of Total Value",
-    info: "Standard Indian residential norm: 1% commission on final transaction price.",
-    badge: "Standard",
+    info: "1% commission based on the final property transaction price.",
   },
   {
     value: "TWO_PERCENT",
     label: "2% of Total Value",
-    info: "Commercial & premium property norm: 2% commission on final transaction price.",
+    info: "2% commission based on the final property transaction price.",
   },
   {
     value: "PERCENTAGE",
     label: "Custom %",
-    info: "Enter any custom percentage you charge (e.g. 1.5%).",
+    info: "Enter any custom percentage you charge for this property.",
   },
   {
     value: "FIXED",
@@ -75,8 +71,7 @@ const SELL_OPTIONS: BrokerageOption[] = [
   {
     value: "ZERO",
     label: "Zero Brokerage",
-    info: "Direct builder or promo: No brokerage fee charged to the buyer.",
-    badge: "3x Inquiries",
+    info: "No brokerage fee will be charged to the buyer.",
   },
 ];
 
@@ -191,11 +186,11 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
         <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
           Choose Brokerage Terms for this Listing
         </label>
-        <span className="text-[11px] text-slate-400">Tap (i) on any option for details</span>
+        <span className="text-[11px] text-slate-400">Tap (i) for details</span>
       </div>
 
-      {/* Options Grid: Full Width 5 Columns on Desktop, 2 Columns on Mobile, ultra-compact */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5 w-full">
+      {/* Options: Flexible wrap without text truncation */}
+      <div className="flex flex-wrap gap-2.5 w-full">
         {options.map((opt) => {
           const isSelected = activeType === opt.value;
           return (
@@ -203,13 +198,13 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
               key={opt.value}
               onClick={() => handleSelectType(opt.value)}
               className={cn(
-                "group relative flex min-h-[46px] sm:min-h-[50px] cursor-pointer items-center justify-between rounded-xl border px-2.5 py-2 transition-all select-none",
+                "group relative flex flex-1 min-w-[130px] sm:min-w-[160px] cursor-pointer items-center justify-between rounded-xl border px-3 py-2.5 transition-all select-none",
                 isSelected
                   ? "border-rose-600 bg-rose-50/70 shadow-xs ring-1 ring-rose-500/30 dark:border-rose-500 dark:bg-rose-950/40"
                   : "border-slate-200 bg-slate-50/50 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40 dark:hover:border-slate-700"
               )}
             >
-              <div className="flex items-center gap-2 overflow-hidden pr-1">
+              <div className="flex items-center gap-2">
                 <div
                   className={cn(
                     "flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border transition",
@@ -220,19 +215,12 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
                 >
                   {isSelected && <Check className="h-2 w-2 stroke-[3]" />}
                 </div>
-                <div className="flex flex-col truncate">
-                  <span className={cn(
-                    "truncate text-xs font-bold leading-tight",
-                    isSelected ? "text-slate-950 dark:text-white" : "text-slate-800 dark:text-slate-200"
-                  )}>
-                    {opt.label}
-                  </span>
-                  {opt.badge && (
-                    <span className="mt-0.5 inline-block text-[9px] font-extrabold uppercase tracking-tight text-rose-600 dark:text-rose-400">
-                      {opt.badge}
-                    </span>
-                  )}
-                </div>
+                <span className={cn(
+                  "text-xs font-bold leading-normal whitespace-normal break-words",
+                  isSelected ? "text-slate-950 dark:text-white" : "text-slate-800 dark:text-slate-200"
+                )}>
+                  {opt.label}
+                </span>
               </div>
 
               {/* Info (i) Button */}
@@ -243,10 +231,10 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
                   e.stopPropagation();
                   setActiveInfo((prev) => (prev?.title === opt.label ? null : { title: opt.label, text: opt.info }));
                 }}
-                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-200/70 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                className="ml-1.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-200/70 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
                 title={opt.info}
               >
-                <Info className="h-3 w-3" />
+                <Info className="h-3.5 w-3.5" />
               </button>
             </div>
           );
@@ -258,7 +246,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
         <div className="flex items-start justify-between gap-2 rounded-xl border border-indigo-100 bg-indigo-50/80 p-2.5 text-xs text-indigo-900 dark:border-indigo-950 dark:bg-indigo-950/40 dark:text-indigo-200 animate-in fade-in">
           <div className="flex items-start gap-1.5">
             <Info className="h-3.5 w-3.5 shrink-0 text-indigo-600 dark:text-indigo-400 mt-0.5" />
-            <p>
+            <p className="leading-relaxed">
               <strong className="font-bold">{activeInfo.title}:</strong> {activeInfo.text}
             </p>
           </div>
@@ -272,13 +260,13 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
         </div>
       )}
 
-      {/* Auto-Calculation Summary or Custom Inputs: Full Width */}
+      {/* Auto-Calculation Summary or Custom Inputs: Complete Full-Text Display */}
       <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 sm:p-3.5 dark:border-slate-800 dark:bg-slate-950/40">
         {activeType === "HALF_MONTH_RENT" && (
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs">
+          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-xs">
             <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
               <Sparkles className="h-3.5 w-3.5 shrink-0" />
-              <span>15 Days Rental Commission (Delhi/NCR)</span>
+              <span>15 Days Rental Commission</span>
             </div>
             {currentPrice > 0 ? (
               <p className="text-slate-700 dark:text-slate-300">
@@ -297,7 +285,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
         )}
 
         {activeType === "ONE_MONTH_RENT" && (
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs">
+          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-xs">
             <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
               <Sparkles className="h-3.5 w-3.5 shrink-0" />
               <span>1 Month (30 Days) Rental Commission</span>
@@ -319,7 +307,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
         )}
 
         {activeType === "ONE_PERCENT" && (
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs">
+          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-xs">
             <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
               <Sparkles className="h-3.5 w-3.5 shrink-0" />
               <span>1% Standard Property Sale Commission</span>
@@ -341,7 +329,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
         )}
 
         {activeType === "TWO_PERCENT" && (
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs">
+          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-xs">
             <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
               <Sparkles className="h-3.5 w-3.5 shrink-0" />
               <span>2% Commercial / Premium Sale Commission</span>
