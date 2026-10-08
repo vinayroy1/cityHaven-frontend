@@ -38,7 +38,7 @@ const RENT_OPTIONS: BrokerageOption[] = [
   {
     value: "PERCENTAGE",
     label: "Percentage (%)",
-    info: "Charge a custom percentage fee based on the annual lease value.",
+    info: "Charge a custom percentage fee based on the total property value.",
   },
   {
     value: "ZERO",
