@@ -9,7 +9,7 @@ import { isFieldFilled } from "@/features/propertyListing/formConfig/validation"
 import { FieldRenderer } from "./fields/FieldRenderer";
 import { sectionCard } from "./theme";
 
-const FULL_WIDTH_TYPES = new Set(["textarea", "chip-radio", "chip-multi", "chip-add", "media", "price"]);
+const FULL_WIDTH_TYPES = new Set(["textarea", "chip-radio", "chip-multi", "chip-add", "media", "price", "brokerage"]);
 
 export function SectionRenderer({
   section,

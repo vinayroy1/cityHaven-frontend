@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
-import { Check, ShieldCheck, Sparkles } from "lucide-react";
+import { Check, Info, ShieldCheck, Sparkles, X } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 import { amountToWords } from "./numberToWords";
 import { formatIndianCurrency } from "@/lib/propertyListing/formatBrokerage";
@@ -16,7 +16,7 @@ interface BrokerageFieldProps {
 interface BrokerageOption {
   value: string;
   label: string;
-  subtitle?: string;
+  info: string;
   badge?: string;
 }
 
@@ -24,28 +24,28 @@ const RENT_OPTIONS: BrokerageOption[] = [
   {
     value: "HALF_MONTH_RENT",
     label: "15 Days Rent",
-    subtitle: "Delhi/NCR Standard",
-    badge: "Most Popular",
+    info: "Delhi/NCR standard norm: Tenant pays half-month (15 days) rent as brokerage.",
+    badge: "Delhi Norm",
   },
   {
     value: "ONE_MONTH_RENT",
     label: "1 Month Rent",
-    subtitle: "30 Days standard",
+    info: "Bengaluru/Mumbai 30 days norm: Tenant pays 1 full month rent as brokerage.",
   },
   {
     value: "FIXED",
     label: "Fixed Amount (₹)",
-    subtitle: "Custom rupee fee",
+    info: "Specify an exact flat rupee fee that you will charge the client.",
   },
   {
     value: "PERCENTAGE",
     label: "Percentage (%)",
-    subtitle: "Custom % of annual rent",
+    info: "Charge a percentage fee based on the annual lease value.",
   },
   {
     value: "ZERO",
     label: "Zero Brokerage",
-    subtitle: "Charged to owner only / Promo",
+    info: "Charged to owner only or promo: No commission will be charged to the tenant.",
     badge: "3x Inquiries",
   },
 ];
@@ -54,28 +54,28 @@ const SELL_OPTIONS: BrokerageOption[] = [
   {
     value: "ONE_PERCENT",
     label: "1% of Total Value",
-    subtitle: "Standard Indian sale norm",
-    badge: "Industry Standard",
+    info: "Standard Indian residential norm: 1% commission on final transaction price.",
+    badge: "Standard",
   },
   {
     value: "TWO_PERCENT",
     label: "2% of Total Value",
-    subtitle: "Commercial / High-value norm",
+    info: "Commercial & premium property norm: 2% commission on final transaction price.",
   },
   {
     value: "PERCENTAGE",
     label: "Custom %",
-    subtitle: "Enter any percentage",
+    info: "Enter any custom percentage you charge (e.g. 1.5%).",
   },
   {
     value: "FIXED",
     label: "Fixed Amount (₹)",
-    subtitle: "Custom flat fee",
+    info: "Specify an exact flat rupee fee you charge for this deal.",
   },
   {
     value: "ZERO",
     label: "Zero Brokerage",
-    subtitle: "Direct builder / No fee from buyer",
+    info: "Direct builder or promo: No brokerage fee charged to the buyer.",
     badge: "3x Inquiries",
   },
 ];
@@ -87,6 +87,9 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
   const priceRaw = useWatch({ control: form.control, name: "pricing.price" });
   const brokerageType = useWatch({ control: form.control, name: "pricing.brokerageType" });
   const brokerageVal = useWatch({ control: form.control, name: "pricing.brokerage" });
+
+  const [activeInfo, setActiveInfo] = useState<{ title: string; text: string } | null>(null);
+  const [showPlatformInfo, setShowPlatformInfo] = useState(false);
 
   const isRent = listingType === "RENT" || listingType === "PG";
   const options = isRent ? RENT_OPTIONS : SELL_OPTIONS;
@@ -130,7 +133,6 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
     }
   }, [currentPrice, activeType]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // User interaction event handler: never loops
   const handleSelectType = (val: string) => {
     form.setValue("pricing.brokerageType", val, { shouldDirty: true });
     if (val === "HALF_MONTH_RENT") {
@@ -144,7 +146,6 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
     } else if (val === "ZERO") {
       form.setValue("pricing.brokerage", 0, { shouldDirty: true });
     } else if (val === "FIXED" || val === "PERCENTAGE") {
-      // Clear auto-calculated price so user can enter custom number
       const prevAuto = [Math.round(currentPrice / 2), currentPrice, Math.round(currentPrice * 0.01), Math.round(currentPrice * 0.02), 0];
       if (brokerageVal !== null && prevAuto.includes(Number(brokerageVal))) {
         form.setValue("pricing.brokerage", null, { shouldDirty: true });
@@ -158,174 +159,220 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
       : null;
 
   return (
-    <div className="space-y-4 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/60">
-      {/* Platform Zero-Commission Guarantee Banner */}
-      <div className="flex items-start gap-3 rounded-xl border border-emerald-200/80 bg-emerald-50/70 p-3.5 dark:border-emerald-900/60 dark:bg-emerald-950/40">
-        <ShieldCheck className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-        <div className="text-xs text-emerald-900 dark:text-emerald-200">
-          <p className="font-bold">Awasio Platform Guarantee: 0% Platform Brokerage</p>
-          <p className="mt-0.5 text-emerald-800/80 dark:text-emerald-300/80">
+    <div className="w-full space-y-3.5 rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/60">
+      {/* Platform Zero-Commission Guarantee: Slim Header Bar with (i) toggle */}
+      <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/70 p-2.5 sm:px-3.5 sm:py-2.5 dark:border-emerald-900/60 dark:bg-emerald-950/40">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <span className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
+              Awasio Platform Guarantee: 0% Platform Brokerage
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowPlatformInfo((prev) => !prev)}
+            className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-100/70 dark:text-emerald-300 dark:hover:bg-emerald-900/40"
+            title="Click for platform policy details"
+          >
+            <Info className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{showPlatformInfo ? "Hide" : "Details"}</span>
+          </button>
+        </div>
+        {showPlatformInfo && (
+          <p className="mt-2 border-t border-emerald-200/60 pt-2 text-[11px] leading-relaxed text-emerald-800/90 dark:border-emerald-900/50 dark:text-emerald-300/90">
             Awasio never charges any commission from you, owners, or clients. The brokerage fee you configure here is your independent fee charged directly to the prospective {isRent ? "tenant" : "buyer"}.
           </p>
-        </div>
+        )}
       </div>
 
-      {/* Brokerage Type Selection Cards */}
-      <div className="space-y-2">
+      {/* Brokerage Options Header */}
+      <div className="flex items-center justify-between gap-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
           Choose Brokerage Terms for this Listing
         </label>
-        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-          {options.map((opt) => {
-            const isSelected = activeType === opt.value;
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                disabled={disabled}
-                onClick={() => handleSelectType(opt.value)}
-                className={cn(
-                  "relative flex flex-col items-start rounded-xl border p-3.5 text-left transition-all",
-                  isSelected
-                    ? "border-rose-600 bg-rose-50/60 ring-2 ring-rose-500/20 dark:border-rose-500 dark:bg-rose-950/40"
-                    : "border-slate-200 bg-slate-50/40 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40 dark:hover:border-slate-700"
-                )}
-              >
-                {opt.badge && (
-                  <span className="absolute right-2.5 top-2.5 inline-flex items-center rounded-md bg-rose-100 px-1.5 py-0.5 text-[9px] font-extrabold text-rose-700 dark:bg-rose-900/60 dark:text-rose-300">
-                    {opt.badge}
-                  </span>
-                )}
-                <div className="flex items-center gap-2">
-                  <div
-                    className={cn(
-                      "flex h-4 w-4 items-center justify-center rounded-full border",
-                      isSelected
-                        ? "border-rose-600 bg-rose-600 text-white dark:border-rose-500 dark:bg-rose-500"
-                        : "border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-800"
-                    )}
-                  >
-                    {isSelected && <Check className="h-2.5 w-2.5 stroke-[3]" />}
-                  </div>
-                  <span className="text-sm font-bold text-slate-900 dark:text-white">
-                    {opt.label}
-                  </span>
-                </div>
-                {opt.subtitle && (
-                  <span className="mt-1 pl-6 text-[11px] text-slate-500 dark:text-slate-400">
-                    {opt.subtitle}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+        <span className="text-[11px] text-slate-400">Tap (i) on any option for details</span>
       </div>
 
-      {/* Auto-Calculation / Custom Input Preview */}
-      <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/40">
+      {/* Options Grid: Full Width 5 Columns on Desktop, 2 Columns on Mobile, ultra-compact */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5 w-full">
+        {options.map((opt) => {
+          const isSelected = activeType === opt.value;
+          return (
+            <div
+              key={opt.value}
+              onClick={() => handleSelectType(opt.value)}
+              className={cn(
+                "group relative flex min-h-[46px] sm:min-h-[50px] cursor-pointer items-center justify-between rounded-xl border px-2.5 py-2 transition-all select-none",
+                isSelected
+                  ? "border-rose-600 bg-rose-50/70 shadow-xs ring-1 ring-rose-500/30 dark:border-rose-500 dark:bg-rose-950/40"
+                  : "border-slate-200 bg-slate-50/50 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40 dark:hover:border-slate-700"
+              )}
+            >
+              <div className="flex items-center gap-2 overflow-hidden pr-1">
+                <div
+                  className={cn(
+                    "flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border transition",
+                    isSelected
+                      ? "border-rose-600 bg-rose-600 text-white dark:border-rose-500 dark:bg-rose-500"
+                      : "border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-800"
+                  )}
+                >
+                  {isSelected && <Check className="h-2 w-2 stroke-[3]" />}
+                </div>
+                <div className="flex flex-col truncate">
+                  <span className={cn(
+                    "truncate text-xs font-bold leading-tight",
+                    isSelected ? "text-slate-950 dark:text-white" : "text-slate-800 dark:text-slate-200"
+                  )}>
+                    {opt.label}
+                  </span>
+                  {opt.badge && (
+                    <span className="mt-0.5 inline-block text-[9px] font-extrabold uppercase tracking-tight text-rose-600 dark:text-rose-400">
+                      {opt.badge}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Info (i) Button */}
+              <button
+                type="button"
+                aria-label={`Info about ${opt.label}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveInfo((prev) => (prev?.title === opt.label ? null : { title: opt.label, text: opt.info }));
+                }}
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-200/70 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                title={opt.info}
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Info popover strip if user taps (i) */}
+      {activeInfo && (
+        <div className="flex items-start justify-between gap-2 rounded-xl border border-indigo-100 bg-indigo-50/80 p-2.5 text-xs text-indigo-900 dark:border-indigo-950 dark:bg-indigo-950/40 dark:text-indigo-200 animate-in fade-in">
+          <div className="flex items-start gap-1.5">
+            <Info className="h-3.5 w-3.5 shrink-0 text-indigo-600 dark:text-indigo-400 mt-0.5" />
+            <p>
+              <strong className="font-bold">{activeInfo.title}:</strong> {activeInfo.text}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setActiveInfo(null)}
+            className="rounded p-0.5 text-indigo-500 hover:bg-indigo-100 dark:hover:bg-indigo-900"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Auto-Calculation Summary or Custom Inputs: Full Width */}
+      <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 sm:p-3.5 dark:border-slate-800 dark:bg-slate-950/40">
         {activeType === "HALF_MONTH_RENT" && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold text-rose-700 dark:text-rose-400">
-              <Sparkles className="h-4 w-4" />
-              <span>Standard 15 Days Rental Commission (Delhi/NCR)</span>
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs">
+            <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
+              <Sparkles className="h-3.5 w-3.5 shrink-0" />
+              <span>15 Days Rental Commission (Delhi/NCR)</span>
             </div>
             {currentPrice > 0 ? (
-              <p className="text-sm text-slate-700 dark:text-slate-300">
-                Based on monthly rent of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>, tenant will pay:{" "}
+              <p className="text-slate-700 dark:text-slate-300">
+                Based on monthly rent of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>:{" "}
                 <span className="font-extrabold text-slate-950 dark:text-white">
                   ₹{formatIndianCurrency(Math.round(currentPrice / 2))}
                 </span>{" "}
-                <span className="text-xs text-slate-500">(15 Days Rent)</span>
+                <span className="text-[11px] text-slate-500">(15 Days Rent)</span>
               </p>
             ) : (
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Will automatically compute as 15 Days (half month) rent once monthly rent is entered above.
+              <p className="text-slate-500 dark:text-slate-400">
+                Will automatically compute once monthly rent is entered above.
               </p>
             )}
           </div>
         )}
 
         {activeType === "ONE_MONTH_RENT" && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold text-rose-700 dark:text-rose-400">
-              <Sparkles className="h-4 w-4" />
-              <span>Full 1 Month (30 Days) Rental Commission</span>
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs">
+            <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
+              <Sparkles className="h-3.5 w-3.5 shrink-0" />
+              <span>1 Month (30 Days) Rental Commission</span>
             </div>
             {currentPrice > 0 ? (
-              <p className="text-sm text-slate-700 dark:text-slate-300">
-                Based on monthly rent of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>, tenant will pay:{" "}
+              <p className="text-slate-700 dark:text-slate-300">
+                Based on monthly rent of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>:{" "}
                 <span className="font-extrabold text-slate-950 dark:text-white">
                   ₹{formatIndianCurrency(currentPrice)}
                 </span>{" "}
-                <span className="text-xs text-slate-500">(1 Month Rent)</span>
+                <span className="text-[11px] text-slate-500">(1 Month Rent)</span>
               </p>
             ) : (
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Will automatically compute as 1 month rent once monthly rent is entered above.
+              <p className="text-slate-500 dark:text-slate-400">
+                Will automatically compute once monthly rent is entered above.
               </p>
             )}
           </div>
         )}
 
         {activeType === "ONE_PERCENT" && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold text-rose-700 dark:text-rose-400">
-              <Sparkles className="h-4 w-4" />
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs">
+            <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
+              <Sparkles className="h-3.5 w-3.5 shrink-0" />
               <span>1% Standard Property Sale Commission</span>
             </div>
             {currentPrice > 0 ? (
-              <p className="text-sm text-slate-700 dark:text-slate-300">
-                Based on property price of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>, brokerage will be:{" "}
+              <p className="text-slate-700 dark:text-slate-300">
+                Based on property price of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>:{" "}
                 <span className="font-extrabold text-slate-950 dark:text-white">
                   ₹{formatIndianCurrency(Math.round(currentPrice * 0.01))}
                 </span>{" "}
-                <span className="text-xs text-slate-500">(1% of sale value)</span>
+                <span className="text-[11px] text-slate-500">(1% of sale value)</span>
               </p>
             ) : (
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Will automatically compute as 1% once expected price is entered above.
+              <p className="text-slate-500 dark:text-slate-400">
+                Will automatically compute once expected price is entered above.
               </p>
             )}
           </div>
         )}
 
         {activeType === "TWO_PERCENT" && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold text-rose-700 dark:text-rose-400">
-              <Sparkles className="h-4 w-4" />
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs">
+            <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
+              <Sparkles className="h-3.5 w-3.5 shrink-0" />
               <span>2% Commercial / Premium Sale Commission</span>
             </div>
             {currentPrice > 0 ? (
-              <p className="text-sm text-slate-700 dark:text-slate-300">
-                Based on property price of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>, brokerage will be:{" "}
+              <p className="text-slate-700 dark:text-slate-300">
+                Based on property price of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>:{" "}
                 <span className="font-extrabold text-slate-950 dark:text-white">
                   ₹{formatIndianCurrency(Math.round(currentPrice * 0.02))}
                 </span>{" "}
-                <span className="text-xs text-slate-500">(2% of sale value)</span>
+                <span className="text-[11px] text-slate-500">(2% of sale value)</span>
               </p>
             ) : (
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Will automatically compute as 2% once expected price is entered above.
+              <p className="text-slate-500 dark:text-slate-400">
+                Will automatically compute once expected price is entered above.
               </p>
             )}
           </div>
         )}
 
         {activeType === "ZERO" && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-400">
-              <ShieldCheck className="h-4 w-4" />
-              <span>Zero Brokerage for {isRent ? "Tenants" : "Buyers"}!</span>
-            </div>
-            <p className="text-xs text-slate-600 dark:text-slate-300">
-              You are not charging any commission to the {isRent ? "tenant" : "buyer"}. This listing will be promoted with a highlighted <strong>0% Brokerage</strong> badge across search results and detail pages.
-            </p>
+          <div className="flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300">
+            <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <span>
+              <strong>Zero Brokerage for {isRent ? "Tenants" : "Buyers"}!</strong> Listing will feature a highlighted <strong>0% Brokerage</strong> badge.
+            </span>
           </div>
         )}
 
         {activeType === "FIXED" && (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
               Enter Fixed Brokerage Amount (₹)
             </label>
@@ -333,7 +380,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
               name="pricing.brokerage"
               control={form.control}
               render={({ field: rhf }) => (
-                <div className="flex h-11 items-center rounded-xl border border-slate-200 bg-white px-3 transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-800 dark:bg-slate-900">
+                <div className="flex h-10 w-full max-w-sm items-center rounded-xl border border-slate-200 bg-white px-3 transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-800 dark:bg-slate-900">
                   <span className="text-sm font-bold text-slate-500">₹</span>
                   <input
                     type="number"
@@ -350,7 +397,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
               )}
             />
             {words && (
-              <p className="text-xs font-medium text-slate-500">
+              <p className="text-[11px] font-medium text-slate-500">
                 ₹ {words}
               </p>
             )}
@@ -358,7 +405,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
         )}
 
         {activeType === "PERCENTAGE" && (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
               Enter Custom Brokerage Percentage (%)
             </label>
@@ -366,7 +413,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
               name="pricing.brokerage"
               control={form.control}
               render={({ field: rhf }) => (
-                <div className="flex h-11 items-center rounded-xl border border-slate-200 bg-white px-3 transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-800 dark:bg-slate-900">
+                <div className="flex h-10 w-full max-w-xs items-center rounded-xl border border-slate-200 bg-white px-3 transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-800 dark:bg-slate-900">
                   <input
                     type="number"
                     inputMode="decimal"
@@ -384,7 +431,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
               )}
             />
             {currentPrice > 0 && brokerageVal && Number(brokerageVal) > 0 && (
-              <p className="text-xs text-slate-600 dark:text-slate-400">
+              <p className="text-[11px] text-slate-600 dark:text-slate-400">
                 Equivalent to approx:{" "}
                 <strong className="text-slate-900 dark:text-white">
                   ₹{formatIndianCurrency(Math.round((currentPrice * Number(brokerageVal)) / 100))}
@@ -401,7 +448,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
         control={form.control}
         defaultValue={true}
         render={({ field: rhf }) => (
-          <label className="flex items-center gap-2.5 cursor-pointer pt-1">
+          <label className="flex items-center gap-2 cursor-pointer pt-0.5">
             <input
               type="checkbox"
               disabled={disabled}
