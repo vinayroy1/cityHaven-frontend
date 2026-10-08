@@ -3,6 +3,7 @@
 import React from "react";
 import { LockKeyhole, Loader2, Building2, User, AlertCircle, ShieldCheck } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { LeadDetailsStep, ProfileDetailsStep, PlanSelectionStep } from "@/app/propertySearch/components/ContactUnlockDialog";
 import { useUpdateProfileMutation } from "@/features/auth/api";
@@ -92,7 +93,10 @@ export function ContactAccessFlow({
   const activeSummary = isOrgScope ? orgSummary : personalSummary;
   const currentCredits = activeSummary?.credits ?? 0;
 
-  // Background check on load if already unlocked
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Background check on load if already unlocked or returning from login with autoUnlock
   React.useEffect(() => {
     if (!localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)) return;
     let active = true;
@@ -104,6 +108,11 @@ export function ContactAccessFlow({
           onContact(contact.data.ownerPhone);
           return;
         }
+        // If returning from login with autoUnlock, immediately trigger the flow
+        if (searchParams.get("autoUnlock") === "true") {
+          setOpen(true);
+          void run(checkAndUnlock);
+        }
       } catch {
         // Silent catch for background access check
       }
@@ -111,7 +120,7 @@ export function ContactAccessFlow({
     return () => {
       active = false;
     };
-  }, [propertyId, check, onContact]);
+  }, [propertyId, check, onContact, searchParams]);
 
   // Load billing summaries when open or scope changes
   React.useEffect(() => {
@@ -209,18 +218,14 @@ export function ContactAccessFlow({
   }
 
   function begin() {
-    setOpen(true);
     setError(null);
     const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
     if (!token) {
-      setStep("signin");
-      setSent(false);
-      setOtp("");
-      setMobile("");
-      setName("");
-      setEmail("");
+      const returnUrl = encodeURIComponent(`${window.location.pathname}?autoUnlock=true`);
+      router.push(`/login?redirect=${returnUrl}`);
       return;
     }
+    setOpen(true);
     void run(checkAndUnlock);
   }
 
@@ -232,11 +237,17 @@ export function ContactAccessFlow({
     setSeconds(30);
   }
 
-  async function signIn() {
-    if (mobile.trim().length < 10 || otp.trim().length < 6) return;
+  async function signIn(inputPassword?: string) {
+    const isOtpEnabled = process.env.NEXT_PUBLIC_ENABLE_OTP_FLOW === "true";
+    if (isOtpEnabled) {
+      if (mobile.trim().length < 10 || otp.trim().length < 6) return;
+    } else {
+      if (mobile.trim().length < 10) return;
+    }
     const response = await verifyOtp({
       mobileNumber: mobile.trim(),
-      otp: otp.trim(),
+      otp: isOtpEnabled ? otp.trim() : undefined,
+      password: inputPassword,
       propertyId: Number(propertyId),
       source: "property_details",
     }).unwrap();
@@ -392,7 +403,7 @@ export function ContactAccessFlow({
                 setError(null);
               }}
               onRequestOtp={() => void run(sendOtp)}
-              onVerifyLeadDetails={() => void run(signIn)}
+              onVerifyLeadDetails={(pwd?: string) => void run(() => signIn(pwd))}
             />
           )}
 

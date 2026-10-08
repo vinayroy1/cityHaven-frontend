@@ -14,28 +14,61 @@ export default function AdminLoginPage() {
   const mounted = useIsMounted();
   const { loginStaff, requestOtp, staffList } = useAdmin();
 
-  const [email, setEmail] = useState("vinay.admin@awasio.in");
+  const [loginId, setLoginId] = useState("vinay.admin@awasio.in");
+  const [password, setPassword] = useState("");
+  const isOtpEnabled = process.env.NEXT_PUBLIC_ENABLE_OTP_FLOW === "true";
+  const [authMode, setAuthMode] = useState<"PASSWORD" | "OTP">(isOtpEnabled ? "OTP" : "PASSWORD");
   const [mfaCode, setMfaCode] = useState("");
-  const [step, setStep] = useState<"EMAIL" | "MFA">("EMAIL");
+  const [step, setStep] = useState<"INPUT" | "MFA">("INPUT");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [devOtp, setDevOtp] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setStatusMessage(null);
+
+    const cleanLoginId = loginId.trim();
+    if (!cleanLoginId) {
+      setError("Please provide your staff email or mobile number.");
+      return;
+    }
+    if (!password) {
+      setError("Please enter your staff password.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await loginStaff(cleanLoginId, password, true);
+      if (res.success) {
+        router.push("/admin");
+      } else {
+        setError(res.message || "Invalid staff credentials.");
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err?.message || "Failed to authenticate staff account.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setStatusMessage(null);
 
-    const cleanEmail = email.trim().toLowerCase();
-    if (!cleanEmail) {
+    const cleanLoginId = loginId.trim().toLowerCase();
+    if (!cleanLoginId) {
       setError("Please provide your staff email address.");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await requestOtp(cleanEmail);
+      const res = await requestOtp(cleanLoginId);
       if (res.success) {
         setStatusMessage(res.message);
         if (res.devOtp) {
@@ -59,7 +92,7 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const res = await loginStaff(email.trim(), mfaCode.trim());
+      const res = await loginStaff(loginId.trim(), mfaCode.trim(), false);
       if (res.success) {
         router.push("/admin");
       } else {
@@ -73,8 +106,8 @@ export default function AdminLoginPage() {
   };
 
   const handleQuickSelect = async (staffEmail: string) => {
-    setEmail(staffEmail);
-    setStep("EMAIL");
+    setLoginId(staffEmail);
+    setStep("INPUT");
     setError(null);
     setStatusMessage(null);
     setDevOtp(null);
@@ -126,43 +159,127 @@ export default function AdminLoginPage() {
           </div>
         )}
 
-        {step === "EMAIL" ? (
-          <div className="space-y-4">
-            <form onSubmit={handleEmailSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Authorized Staff Email
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@awasio.in"
-                    required
-                    disabled={loading}
-                    className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
-                  />
-                </div>
-                <p className="text-[10px] text-slate-500 mt-1">Must be an active staff member assigned in PostgreSQL.</p>
-              </div>
+        {isOtpEnabled && (
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-4">
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode("PASSWORD");
+                setStep("INPUT");
+                setError(null);
+              }}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition ${
+                authMode === "PASSWORD"
+                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm"
+                  : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+              }`}
+            >
+              Password
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode("OTP");
+                setStep("INPUT");
+                setError(null);
+              }}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition ${
+                authMode === "OTP"
+                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm"
+                  : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+              }`}
+            >
+              Email OTP
+            </button>
+          </div>
+        )}
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
-              >
-                <span>{loading ? "Verifying Staff & Dispatching OTP..." : "Send Verification Passcode"}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </form>
+        {step === "INPUT" ? (
+          <div className="space-y-4">
+            {authMode === "PASSWORD" ? (
+              <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Staff Email or Mobile
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={loginId}
+                      onChange={(e) => setLoginId(e.target.value)}
+                      placeholder="Email or Mobile"
+                      required
+                      disabled={loading}
+                      className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Staff Password
+                  </label>
+                  <div className="relative">
+                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      disabled={loading}
+                      className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
+                >
+                  <span>{loading ? "Authenticating Staff..." : "Sign In to Admin Console"}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleEmailSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Authorized Staff Email
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="email"
+                      value={loginId}
+                      onChange={(e) => setLoginId(e.target.value)}
+                      placeholder="name@awasio.in"
+                      required
+                      disabled={loading}
+                      className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">Must be an active staff member assigned in PostgreSQL.</p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
+                >
+                  <span>{loading ? "Verifying Staff & Dispatching OTP..." : "Send Verification Passcode"}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </form>
+            )}
           </div>
         ) : (
           <form onSubmit={handleMfaSubmit} className="space-y-4 animate-in fade-in duration-200">
             <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 text-xs">
               <div className="text-slate-500 dark:text-slate-400 text-[11px]">Staff Account:</div>
-              <div className="font-mono font-semibold text-rose-600 dark:text-rose-300">{email}</div>
+              <div className="font-mono font-semibold text-rose-600 dark:text-rose-300">{loginId}</div>
             </div>
 
             <div>
@@ -201,7 +318,7 @@ export default function AdminLoginPage() {
             <button
               type="button"
               onClick={() => {
-                setStep("EMAIL");
+                setStep("INPUT");
                 setError(null);
                 setStatusMessage(null);
                 setDevOtp(null);

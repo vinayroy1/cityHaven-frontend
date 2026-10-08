@@ -25,6 +25,8 @@ import {
 
 
 
+import { PROPERTY_SUBTYPES } from "@/constants/backend-schema";
+
 interface ReviewSummaryProps {
   values: any;
   uploadedPhotos?: Array<{ localId?: string; preview?: string; uploadedUrl?: string }>;
@@ -228,7 +230,15 @@ export function ReviewSummary({ values, uploadedPhotos: explicitPhotos, onEditSt
           >
             <DetailItem label="Listing Type" value={context.listingType === "RENT" ? "For Rent" : context.listingType === "PG" ? "PG / Co-Living" : "For Sale"} />
             <DetailItem label="Category" value={context.resCom === "COMMERCIAL" ? "Commercial" : "Residential"} />
-            <DetailItem label="Sub-Type" value={context.propertySubTypeSlug ? context.propertySubTypeSlug.replace(/-/g, " ").toUpperCase() : undefined} />
+            <DetailItem
+              label="Sub-Type"
+              value={
+                context.propertySubTypeSlug
+                  ? PROPERTY_SUBTYPES.find((s) => s.slug === context.propertySubTypeSlug)?.name ??
+                    context.propertySubTypeSlug.replace(/-/g, " ").toUpperCase()
+                  : undefined
+              }
+            />
             <DetailItem label="Sub-Category" value={context.propertySubCategorySlug ? context.propertySubCategorySlug.replace(/-/g, " ") : undefined} />
             <DetailItem label="Posted By" value={context.postedAs || "Owner"} />
           </SectionCard>

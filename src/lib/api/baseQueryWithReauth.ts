@@ -1,4 +1,5 @@
 import { fetchBaseQuery, type BaseQueryFn, type FetchArgs, type FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/app-config";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
@@ -61,8 +62,21 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
 ) => {
   let result = await rawBaseQuery(args, api, extraOptions);
   if (result?.error && result?.error?.status === 401) {
-    // don't retry refresh endpoint itself
     const url = typeof args === "string" ? args : args.url;
+
+    // Do NOT trigger reauth or window reload on login, register, verify-otp, or refresh endpoints
+    const isAuthEndpoint =
+      url.includes("/auth/login") ||
+      url.includes("/auth/register") ||
+      url.includes("/auth/signup") ||
+      url.includes("/auth/verify-otp") ||
+      url.includes("/auth/request-otp");
+
+    if (isAuthEndpoint) {
+      return result;
+    }
+
+    // don't retry refresh endpoint itself
     if (url.includes("/auth/refresh")) {
       clearTokens();
       if (typeof window !== "undefined") window.location.href = "/login";
@@ -87,5 +101,45 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
       if (typeof window !== "undefined") window.location.href = "/login";
     }
   }
+
+  // Display user-friendly mobile toast popup for API errors that automatically disappears
+  if (result?.error && typeof window !== "undefined") {
+    const errorData = result.error.data as any;
+    const message =
+      errorData?.message ||
+      errorData?.error ||
+      (typeof result.error.data === "string" ? result.error.data : null) ||
+      (result.error.status === "FETCH_ERROR" ? "Network error. Please check your connection." : "Something went wrong. Please try again.");
+
+    // Ignore abort/silent cancellations
+    if (result.error.status !== "PARSING_ERROR" && message) {
+      toast.error(message, {
+        duration: 3500,
+      });
+    }
+  }
+
+  // Display success toast popup on any POST, PUT, PATCH, or DELETE API response
+  if (!result?.error && typeof window !== "undefined") {
+    const method = (typeof args === "string" ? "GET" : (args.method || "GET")).toUpperCase();
+    const url = typeof args === "string" ? args : args.url;
+
+    // Filter mutation methods (POST, PUT, PATCH, DELETE) and avoid background heartbeats/refreshes
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(method) && !url.includes("/auth/refresh-token")) {
+      const responseData = result.data as any;
+      const successMessage =
+        responseData?.message ||
+        (method === "DELETE"
+          ? "Item deleted successfully"
+          : method === "PUT" || method === "PATCH"
+          ? "Updated successfully"
+          : "Action completed successfully");
+
+      toast.success(successMessage, {
+        duration: 3500,
+      });
+    }
+  }
+
   return result;
 };

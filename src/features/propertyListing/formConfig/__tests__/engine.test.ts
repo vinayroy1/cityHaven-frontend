@@ -126,7 +126,7 @@ describe("derive: configuration + title", () => {
     v.details = { ...v.details, bedrooms: 3 };
     v.location = { ...v.location, cityName: "Bengaluru", locality: "Whitefield" };
     expect(deriveConfiguration(v)).toBe("3 BHK");
-    expect(suggestTitle(v)).toBe("3 BHK Apartment for Rent in Whitefield, Bengaluru");
+    expect(suggestTitle(v)).toBe("3 BHK Flat / Apartment for Rent in Whitefield, Bengaluru");
   });
 
   test("commercial office title", () => {

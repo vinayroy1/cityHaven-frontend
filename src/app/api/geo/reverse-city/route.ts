@@ -14,16 +14,25 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Delegate to backend geo endpoint if available
+    // Delegate to backend detect-city endpoint if available
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-    const res = await fetch(`${backendUrl}/v1/geo/reverse?lat=${lat}&lng=${lng}`, {
+    const res = await fetch(`${backendUrl}/v1/detect-city?lat=${lat}&lng=${lng}`, {
       cache: "no-store",
-      signal: AbortSignal.timeout(4000),
+      signal: AbortSignal.timeout(2000),
     });
 
     if (res.ok) {
       const data = await res.json();
-      return NextResponse.json(data);
+      if (data?.data?.name) {
+        return NextResponse.json({
+          city: data.data.name,
+          locality: data.data.name,
+          state: data.data.state || "",
+          pincode: "",
+          source: "backend_db",
+          distanceKm: data.data.distance_km ?? 0,
+        });
+      }
     }
   } catch {
     // Fall through to haversine-based lookup

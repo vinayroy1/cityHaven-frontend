@@ -39,7 +39,7 @@ type ContactUnlockDialogProps = {
   onLeadPhoneChange: (value: string) => void;
   onOtpChange: (value: string) => void;
   onRequestOtp: () => void;
-  onVerifyLeadDetails: () => void;
+  onVerifyLeadDetails: (password?: string) => void;
   onSaveProfile?: () => void;
   onSelectedPlanChange: (value: string) => void;
   onPurchasePlan: () => void;
@@ -250,7 +250,7 @@ export function LeadDetailsStep(props: {
   onLeadPhoneChange: (value: string) => void;
   onOtpChange: (value: string) => void;
   onRequestOtp: () => void;
-  onVerifyLeadDetails: () => void;
+  onVerifyLeadDetails: (password?: string) => void;
 }) {
   const {
     leadPhone,
@@ -264,6 +264,67 @@ export function LeadDetailsStep(props: {
     onRequestOtp,
     onVerifyLeadDetails,
   } = props;
+
+  const isOtpEnabled = process.env.NEXT_PUBLIC_ENABLE_OTP_FLOW === "true";
+  const [password, setPassword] = React.useState("");
+
+  if (!isOtpEnabled) {
+    return (
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onVerifyLeadDetails(password);
+        }}
+        className="rounded-lg border border-zinc-200 p-4 space-y-3"
+      >
+        <p className="text-sm font-semibold text-zinc-950">Quick Sign In to View Contact</p>
+        <p className="text-xs text-zinc-500">Enter your mobile number and password to access owner contacts instantly.</p>
+
+        <div>
+          <label className="block text-xs font-semibold text-zinc-700 mb-1">Mobile Number</label>
+          <div className="flex rounded-md border border-zinc-200 focus-within:border-rose-400 focus-within:ring-2 focus-within:ring-rose-100">
+            <span className="inline-flex items-center px-3 text-xs font-semibold text-zinc-600 bg-zinc-50 border-r border-zinc-200 rounded-l-md">
+              +91
+            </span>
+            <input
+              value={leadPhone}
+              onChange={(event) => onLeadPhoneChange(event.target.value.replace(/\D/g, "").slice(0, 10))}
+              placeholder="10-digit mobile number"
+              inputMode="tel"
+              required
+              className="h-11 w-full rounded-r-md px-3 text-sm outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-zinc-700 mb-1">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            required
+            className="h-11 w-full rounded-md border border-zinc-200 px-3 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
+          />
+        </div>
+
+        {otpError && (
+          <p className="flex items-center gap-1.5 text-xs font-medium text-red-600">
+            <span>!</span> {otpError}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={leadPhone.length < 10 || password.length < 4 || loading}
+          className="w-full rounded-md bg-rose-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:shadow-none"
+        >
+          {loading ? "Authenticating..." : "Continue"}
+        </button>
+      </form>
+    );
+  }
 
   return (
     <>
@@ -341,7 +402,7 @@ export function LeadDetailsStep(props: {
           type="button"
           className="w-full rounded-md bg-rose-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:shadow-none"
           disabled={otp.length < 6 || loading}
-          onClick={onVerifyLeadDetails}
+          onClick={() => onVerifyLeadDetails()}
         >
           {loading ? "Verifying..." : "Verify & Continue"}
         </button>

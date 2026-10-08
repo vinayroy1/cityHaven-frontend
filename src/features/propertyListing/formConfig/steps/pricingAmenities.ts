@@ -28,6 +28,7 @@ export const pricingAmenitiesStep: StepConfig = {
         {
           id: "pricing.price",
           label: "Expected price (₹)",
+          placeholder: "Expected price (e.g. 50,00,000)",
           type: "price",
           required: true,
           perUnitField: "pricing.pricePerSqFt",
@@ -36,6 +37,7 @@ export const pricingAmenitiesStep: StepConfig = {
         {
           id: "pricing.price",
           label: "Monthly rent (₹)",
+          placeholder: "Monthly rent (e.g. 25,000)",
           type: "price",
           required: true,
           visibleWhen: preset("priceIsRent"),
@@ -43,6 +45,7 @@ export const pricingAmenitiesStep: StepConfig = {
         {
           id: "pricing.price",
           label: "Rent per bed / month (₹)",
+          placeholder: "Rent per bed / month (e.g. 8,000)",
           type: "price",
           required: true,
           visibleWhen: preset("priceIsPg"),
@@ -61,7 +64,7 @@ export const pricingAmenitiesStep: StepConfig = {
       id: "deposit",
       title: "Deposit & charges",
       collapsible: true,
-      defaultCollapsed: true,
+      defaultCollapsed: false,
       visibleWhen: {
         or: [preset("showDeposit"), preset("showMaintenance"), preset("showSocietyCharges"), preset("showRentalYield")],
       },

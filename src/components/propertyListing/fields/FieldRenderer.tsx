@@ -45,12 +45,29 @@ const Labelled = ({
   children: React.ReactNode;
 }) => (
   <div className="space-y-1.5">
-    <label htmlFor={htmlFor} className={fieldLabel}>
-      {label}
-      {required && <span className="ml-0.5 text-rose-500">*</span>}
-    </label>
+    <div className="flex items-center justify-between gap-2">
+      <label htmlFor={htmlFor} className={fieldLabel}>
+        {label}
+        {required ? (
+          <span className="ml-1.5 inline-flex items-center rounded-md border border-rose-200/90 bg-rose-50 px-1.5 py-0.5 text-[10px] font-bold tracking-tight text-rose-600 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-400">
+            Mandatory
+          </span>
+        ) : (
+          <span className="ml-1.5 text-[11px] font-normal text-slate-400 dark:text-slate-500">
+            (Optional)
+          </span>
+        )}
+      </label>
+    </div>
     {children}
-    {error ? <p className={errorText}>{error}</p> : helpText ? <p className={helpCls}>{helpText}</p> : null}
+    {error ? (
+      <p className="flex items-center gap-1 text-xs font-semibold text-rose-600 dark:text-rose-400">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose-500" />
+        {error}
+      </p>
+    ) : helpText ? (
+      <p className={helpCls}>{helpText}</p>
+    ) : null}
   </div>
 );
 
@@ -130,7 +147,15 @@ export function FieldRenderer({ field, values }: Props) {
               <div className="flex items-center justify-between">
                 <label className={fieldLabel}>
                   {field.label}
-                  {required && <span className="ml-0.5 text-rose-500">*</span>}
+                  {required ? (
+                    <span className="ml-1.5 inline-flex items-center rounded-md border border-rose-200/90 bg-rose-50 px-1.5 py-0.5 text-[10px] font-bold tracking-tight text-rose-600 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-400">
+                      Mandatory
+                    </span>
+                  ) : (
+                    <span className="ml-1.5 text-[11px] font-normal text-slate-400 dark:text-slate-500">
+                      (Optional)
+                    </span>
+                  )}
                 </label>
                 {field.id === "meta.description" && (
                   <button
@@ -209,9 +234,27 @@ export function FieldRenderer({ field, values }: Props) {
                       disabled={disabled || optDisabled(o)}
                       // radio semantics: switch selection, never clear on re-click
                       // (unless the field is optional, where clearing is allowed)
-                      onClick={() =>
-                        rhf.onChange(active && !required && !field.requiredWhen ? undefined : o.value)
-                      }
+                      onClick={() => {
+                        const nextVal = active && !required && !field.requiredWhen ? "" : o.value;
+                        rhf.onChange(nextVal);
+                        if (field.id === "context.resCom" && nextVal !== rhf.value) {
+                          form.setValue("context.propertySubTypeSlug", "", { shouldDirty: true });
+                          form.setValue("context.propertySubCategorySlug", "", { shouldDirty: true });
+                          form.setValue("context.locatedInsideSlug", "", { shouldDirty: true });
+                          form.clearErrors(["context.propertySubTypeSlug", "context.propertySubCategorySlug", "context.locatedInsideSlug"]);
+                        } else if (field.id === "context.listingType" && nextVal !== rhf.value) {
+                          if (nextVal === "PG" || rhf.value === "PG") {
+                            form.setValue("context.propertySubTypeSlug", "", { shouldDirty: true });
+                            form.clearErrors(["context.propertySubTypeSlug"]);
+                          }
+                        } else if (field.id === "context.propertySubTypeSlug" && nextVal !== rhf.value) {
+                          if (!["office", "retail"].includes(String(nextVal))) {
+                            form.setValue("context.propertySubCategorySlug", "", { shouldDirty: true });
+                            form.setValue("context.locatedInsideSlug", "", { shouldDirty: true });
+                            form.clearErrors(["context.propertySubCategorySlug", "context.locatedInsideSlug"]);
+                          }
+                        }
+                      }}
                     >
                       {o.label}
                     </Chip>
@@ -526,7 +569,10 @@ function PriceField({
                   type="number"
                   inputMode="numeric"
                   disabled={disabled}
-                  placeholder={field.placeholder ?? "Expected price"}
+                  placeholder={
+                    field.placeholder ??
+                    (field.label?.toLowerCase().includes("rent") ? "Monthly rent" : "Expected price")
+                  }
                   className="w-full bg-transparent px-2 py-2 text-sm outline-none"
                   value={rhf.value === undefined || rhf.value === null ? "" : String(rhf.value)}
                   onChange={(e) => rhf.onChange(toNum(e.target.value))}

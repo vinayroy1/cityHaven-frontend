@@ -18,6 +18,7 @@ type ResultCardSummaryProps = {
   onScheduleClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
+import { useRouter } from "next/navigation";
 import { useAddFavoriteMutation, useRemoveFavoriteMutation } from "@/features/propertyListing/api";
 import { APP_CONFIG } from "@/constants/app-config";
 
@@ -27,6 +28,7 @@ type SavePropertyButtonProps = {
 };
 
 export function SavePropertyButton({ propertyId, initialSaved = false }: SavePropertyButtonProps) {
+  const router = useRouter();
   const [saved, setSaved] = React.useState(initialSaved);
   const [addFavorite, { isLoading: isAdding }] = useAddFavoriteMutation();
   const [removeFavorite, { isLoading: isRemoving }] = useRemoveFavoriteMutation();
@@ -42,7 +44,8 @@ export function SavePropertyButton({ propertyId, initialSaved = false }: SavePro
 
     const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
     if (!token) {
-      window.dispatchEvent(new CustomEvent("open-auth-modal"));
+      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      router.push(`/login?redirect=${returnUrl}`);
       return;
     }
 

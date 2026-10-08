@@ -102,6 +102,7 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     pincode: location.pincode || undefined,
     latitude: location.latitude ?? undefined,
     longitude: location.longitude ?? undefined,
+    nearbyLandmarks: location.nearbyLandmarks || undefined,
 
     // details (structure)
     areaSize: details.areaSize ?? undefined,

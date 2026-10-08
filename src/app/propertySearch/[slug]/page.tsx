@@ -99,5 +99,35 @@ export default async function PropertySearchSlugPage({ params, searchParams }: P
     }
   }
 
+  // Fallback to local intent parser if backend fails or doesn't return filters
+  const { extractSlotsFromQuery } = await import("@/lib/search/intentParser");
+  const textQuery = slug.replace(/-/g, " ");
+  const slots = extractSlotsFromQuery(textQuery);
+  
+  if (slots.hasExtractedFilters) {
+    const searchParamsObj = new URLSearchParams();
+    
+    if (slots.intent) {
+      searchParamsObj.set("intent", slots.intent.toLowerCase());
+    }
+    if (slots.bedroomsMin) {
+      searchParamsObj.set("bedroomsMin", String(slots.bedroomsMin));
+      // Also set standard bedrooms parameter that the UI expects
+      searchParamsObj.set("bedrooms", String(slots.bedroomsMin));
+    }
+    if (slots.subType) {
+      searchParamsObj.set("subType", slots.subType);
+    }
+    
+    // Carry over any extra search params
+    for (const [key, value] of Object.entries(query)) {
+      if (value && typeof value === "string" && !searchParamsObj.has(key)) {
+        searchParamsObj.set(key, value);
+      }
+    }
+    
+    redirect(`/propertySearch?${searchParamsObj.toString()}`);
+  }
+
   return <SearchPageClient />;
 }

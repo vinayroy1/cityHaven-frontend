@@ -31,11 +31,17 @@ export const adminApi = {
       )
     );
   },
-  async login(email: string, otpOrMfaCode?: string) {
+  async login(loginId: string, secret?: string, isPassword?: boolean) {
     return unwrap(
       await apiClient.post<{ token?: string; accessToken?: string; staff?: StaffUser }>(
         API_ENDPOINTS.admin.auth.login,
-        { email, otp: otpOrMfaCode, mfaCode: otpOrMfaCode }
+        {
+          loginId,
+          email: loginId,
+          password: isPassword ? secret : undefined,
+          otp: !isPassword ? secret : undefined,
+          mfaCode: !isPassword ? secret : undefined,
+        }
       )
     );
   },

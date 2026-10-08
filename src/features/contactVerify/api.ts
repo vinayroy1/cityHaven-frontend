@@ -11,8 +11,9 @@ export interface RequestContactOtpPayload {
 
 export interface VerifyContactOtpPayload {
   name?: string;
-  mobileNumber: string;
-  otp: string;
+  mobileNumber?: string;
+  otp?: string;
+  password?: string;
   propertyId?: number;
   email?: string;
   source?: string;

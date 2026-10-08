@@ -26,7 +26,12 @@ import {
 import { mapApiToForm } from "@/features/propertyListing/apiToForm";
 import { listingSteps } from "@/features/propertyListing/formConfig/steps";
 import { computeListingScore } from "@/features/propertyListing/formConfig/scoring";
-import { requiredPathsForStep } from "@/features/propertyListing/formConfig/validation";
+import {
+  requiredPathsForStep,
+  getRequiredFieldsForStep,
+  isFieldFilled,
+  type RequiredFieldMeta,
+} from "@/features/propertyListing/formConfig/validation";
 import { suggestTitle, suggestDescription } from "@/features/propertyListing/formConfig/derive";
 import { APP_CONFIG } from "@/constants/app-config";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
@@ -38,6 +43,7 @@ import { SectionRenderer } from "./SectionRenderer";
 import { LocationStep } from "./LocationStep";
 import { ReviewSummary } from "./ReviewSummary";
 import { WorkspacePicker } from "./WorkspacePicker";
+import { MandatoryFieldsTracker } from "./MandatoryFieldsTracker";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import { panel } from "./theme";
 
@@ -97,17 +103,36 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
     if (existing && !hydratedRef.current) {
       hydratedRef.current = true;
       const mapped = mapApiToForm(existing as Record<string, unknown>);
+      prevClassificationRef.current = {
+        listingType: mapped.context?.listingType,
+        resCom: mapped.context?.resCom,
+        subType: mapped.context?.propertySubTypeSlug,
+      };
       form.reset(mapped);
       dispatch(hydrateDraft(mapped));
     }
   }, [existing, form, dispatch]);
 
-  // Offer to resume a local draft (only for a fresh "create" session).
+  // Immediately hydrate saved draft on mount (for a fresh "create" session).
   useEffect(() => {
     if (propertyId) return;
+    if (hydratedRef.current) return;
+    hydratedRef.current = true;
     const persisted = loadPersistedDraft();
-    if (persisted?.form) setResume(persisted);
-  }, [propertyId]);
+    if (persisted?.form) {
+      prevClassificationRef.current = {
+        listingType: persisted.form.context?.listingType,
+        resCom: persisted.form.context?.resCom,
+        subType: persisted.form.context?.propertySubTypeSlug,
+      };
+      form.reset(persisted.form);
+      dispatch(hydrateDraft(persisted.form));
+      const s = persisted.step && persisted.step > 0 ? persisted.step : 0;
+      setStepIndex(s);
+      setMaxVisited(s);
+      setResume(persisted);
+    }
+  }, [propertyId, form, dispatch]);
 
   useEffect(() => {
     if (propertyId) return;
@@ -119,36 +144,75 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
     }
   }, [form, organizationIdFromQuery, propertyId]);
 
-  // Autosave to localStorage + Redux (debounced).
+  // Autosave to localStorage + Redux (debounced) only after form has been hydrated.
   useEffect(() => {
+    if (!hydratedRef.current) return;
     const sub = form.watch((v) => {
       persistDraft({ form: v as PropertyListingFormValues, step: stepIndex });
     });
     return () => sub.unsubscribe();
   }, [form, stepIndex]);
 
-  // Cross-field resets keyed on the classification fields.
+  // Cross-field resets keyed on user changes to the classification fields.
   const listingType = values?.context?.listingType;
   const resCom = values?.context?.resCom;
   const subType = values?.context?.propertySubTypeSlug;
+  const prevClassificationRef = useRef<{ listingType?: string; resCom?: string; subType?: string } | null>(null);
+
   useEffect(() => {
-    if (listingType === "PG") {
-      if (resCom !== "RESIDENTIAL") form.setValue("context.resCom", "RESIDENTIAL");
-      if (subType && !PG_SUBTYPES.includes(subType))
-        form.setValue("context.propertySubTypeSlug", undefined);
-    } else if (subType && PG_SUBTYPES.includes(subType)) {
-      form.setValue("context.propertySubTypeSlug", undefined);
+    // Skip before form is hydrated
+    if (!hydratedRef.current) return;
+
+    // Skip on initial classification recording
+    if (!prevClassificationRef.current) {
+      prevClassificationRef.current = { listingType, resCom, subType };
+      return;
     }
-    if (subType && !["office", "retail"].includes(subType)) {
-      if (values?.context?.propertySubCategorySlug)
-        form.setValue("context.propertySubCategorySlug", undefined);
-      if (values?.context?.locatedInsideSlug) form.setValue("context.locatedInsideSlug", undefined);
+
+    const prev = prevClassificationRef.current;
+    const listingTypeChanged = prev.listingType !== listingType;
+    const resComChanged = prev.resCom !== resCom;
+    const subTypeChanged = prev.subType !== subType;
+    prevClassificationRef.current = { listingType, resCom, subType };
+
+    if (!listingTypeChanged && !resComChanged && !subTypeChanged) {
+      return;
+    }
+
+    if (listingType === "PG") {
+      if (resCom !== "RESIDENTIAL") form.setValue("context.resCom", "RESIDENTIAL", { shouldDirty: true });
+      if (subType && !PG_SUBTYPES.includes(subType)) {
+        form.setValue("context.propertySubTypeSlug", "", { shouldDirty: true });
+        form.clearErrors(["context.propertySubTypeSlug"]);
+      }
+    } else if (listingTypeChanged && subType && PG_SUBTYPES.includes(subType)) {
+      form.setValue("context.propertySubTypeSlug", "", { shouldDirty: true });
+      form.clearErrors(["context.propertySubTypeSlug"]);
+    }
+
+    // When property category changes (e.g. from RESIDENTIAL to COMMERCIAL or vice versa), always clear subtype and dependents
+    if (resComChanged) {
+      form.setValue("context.propertySubTypeSlug", "", { shouldDirty: true });
+      form.setValue("context.propertySubCategorySlug", "", { shouldDirty: true });
+      form.setValue("context.locatedInsideSlug", "", { shouldDirty: true });
+      form.clearErrors(["context.propertySubTypeSlug", "context.propertySubCategorySlug", "context.locatedInsideSlug"]);
+    }
+
+    if (subTypeChanged && subType && !["office", "retail"].includes(subType)) {
+      if (values?.context?.propertySubCategorySlug) {
+        form.setValue("context.propertySubCategorySlug", "", { shouldDirty: true });
+        form.clearErrors(["context.propertySubCategorySlug"]);
+      }
+      if (values?.context?.locatedInsideSlug) {
+        form.setValue("context.locatedInsideSlug", "", { shouldDirty: true });
+        form.clearErrors(["context.locatedInsideSlug"]);
+      }
     }
     if (subType?.includes("plot-land")) {
-      form.setValue("details.bedrooms", undefined);
-      form.setValue("details.bathrooms", undefined);
-      form.setValue("details.balconies", undefined);
-      form.setValue("amenities.furnishing", undefined);
+      form.setValue("details.bedrooms", undefined, { shouldDirty: true });
+      form.setValue("details.bathrooms", undefined, { shouldDirty: true });
+      form.setValue("details.balconies", undefined, { shouldDirty: true });
+      form.setValue("amenities.furnishing", undefined, { shouldDirty: true });
     }
     // Allow title and description to regenerate when classification or subType changes
     isTitleCustomRef.current = false;
@@ -207,6 +271,25 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
   const isLast = stepIndex === listingSteps.length - 1;
   const busy = submitState.isLoading || updateState.isLoading;
 
+  const requiredFieldsMeta = useMemo(() => {
+    return getRequiredFieldsForStep(step, values ?? {});
+  }, [step, values]);
+
+  const missingRequiredFields = useMemo(() => {
+    return requiredFieldsMeta.filter((f) => !isFieldFilled(values ?? {}, f.id));
+  }, [requiredFieldsMeta, values]);
+
+  const scrollToField = (fieldId: string) => {
+    const el = document.getElementById(`field-container-${fieldId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("ring-2", "ring-rose-500", "ring-offset-2", "bg-rose-50/50");
+      setTimeout(() => {
+        el.classList.remove("ring-2", "ring-rose-500", "ring-offset-2", "bg-rose-50/50");
+      }, 2500);
+    }
+  };
+
   const goToStep = (i: number) => {
     dispatch(saveDraft(form.getValues()));
     setStepIndex(i);
@@ -222,7 +305,16 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
     const paths = requiredPathsForStep(step, form.getValues()) as FieldPath<PropertyListingFormValues>[];
     const ok = paths.length === 0 || (await form.trigger(paths, { shouldFocus: true }));
     if (!ok) {
-      toast.error("Please complete the highlighted fields.");
+      const currentValues = form.getValues();
+      const stillMissing = requiredFieldsMeta.filter((f) => !isFieldFilled(currentValues, f.id));
+      if (stillMissing.length > 0) {
+        scrollToField(stillMissing[0].id);
+        const labels = stillMissing.map((f) => f.label).slice(0, 3).join(", ");
+        const extraCount = stillMissing.length > 3 ? ` (+${stillMissing.length - 3} more)` : "";
+        toast.error(`Please complete mandatory fields: ${labels}${extraCount}`);
+      } else {
+        toast.error("Please complete the highlighted fields.");
+      }
       return;
     }
     dispatch(saveDraft(form.getValues()));
@@ -290,6 +382,11 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
   const applyResume = () => {
     if (resume?.form) {
       dispatch(hydrateDraft(resume.form));
+      prevClassificationRef.current = {
+        listingType: resume.form.context?.listingType,
+        resCom: resume.form.context?.resCom,
+        subType: resume.form.context?.propertySubTypeSlug,
+      };
       form.reset(resume.form);
       const s = resume.step && resume.step > 0 ? resume.step : 0;
       setStepIndex(s);
@@ -302,6 +399,11 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
     form.reset(initialPropertyListingFormValues);
     dispatch(hydrateDraft(initialPropertyListingFormValues));
     clearPersistedDraft();
+    prevClassificationRef.current = {
+      listingType: initialPropertyListingFormValues.context?.listingType,
+      resCom: initialPropertyListingFormValues.context?.resCom,
+      subType: initialPropertyListingFormValues.context?.propertySubTypeSlug,
+    };
     setStepIndex(0);
     setMaxVisited(0);
     setResume(null);
@@ -332,14 +434,14 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
 
         <div className="space-y-5">
           {resume && (
-            <div className="flex flex-col gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
-              <span>We found a saved draft. Continue where you left off?</span>
+            <div className="flex flex-col gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3.5 text-sm text-emerald-900 sm:flex-row sm:items-center sm:justify-between dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
+              <span>Restored your saved draft from your previous session.</span>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={startFresh}>
                   Start fresh
                 </Button>
-                <Button size="sm" className="bg-slate-900 hover:bg-slate-800" onClick={applyResume}>
-                  Resume draft
+                <Button size="sm" variant="ghost" onClick={() => setResume(null)}>
+                  Dismiss
                 </Button>
               </div>
             </div>
@@ -378,6 +480,14 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
 
               {step.kind === "custom" && step.component === "location" && <LocationStep />}
 
+              {step.kind !== "custom" && !isLast && (
+                <MandatoryFieldsTracker
+                  totalRequired={requiredFieldsMeta.length}
+                  missingFields={missingRequiredFields}
+                  onJumpToField={scrollToField}
+                />
+              )}
+
               {step.kind !== "custom" &&
                 (step.sections ?? []).map((section, i) => (
                   <SectionRenderer key={section.id} section={section} values={values ?? {}} index={i + 1} />
@@ -401,11 +511,19 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
             Back
           </Button>
           <div className="flex items-center gap-2">
+            {step.kind !== "custom" && missingRequiredFields.length > 0 && !isLast && (
+              <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-amber-200/90 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300 mr-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                {missingRequiredFields.length} mandatory remaining
+              </span>
+            )}
             <Button
               type="button"
               variant="outline"
               onClick={() => {
-                dispatch(saveDraft(form.getValues()));
+                const currentVals = form.getValues();
+                dispatch(saveDraft(currentVals));
+                persistDraft({ form: currentVals, step: stepIndex });
                 toast.success("Draft saved.");
               }}
             >

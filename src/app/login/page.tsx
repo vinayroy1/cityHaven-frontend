@@ -19,9 +19,22 @@ import {
   Users,
   Star,
   Check,
+  Mail,
+  Smartphone,
 } from "lucide-react";
+
+import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/app-config";
-import { useRequestOtpMutation, useVerifyOtpMutation, useUpdateProfileMutation } from "@/features/auth/api";
+import {
+  useRequestOtpMutation,
+  useVerifyOtpMutation,
+  useUpdateProfileMutation,
+  useLoginWithPasswordMutation,
+  useSignupMutation,
+  useGoogleAuthMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+} from "@/features/auth/api";
 import { ProfileCompletion } from "./ProfileCompletion";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { BrandLogo } from "@/components/common/BrandLogo";
@@ -135,10 +148,14 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/";
-  const [redirectingSession, setRedirectingSession] = useState(true);
+  const [redirectingSession, setRedirectingSession] = useState(false);
 
   // Form states
   const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [isSignup, setIsSignup] = useState(false);
   const [otpInput, setOtpInput] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -146,16 +163,47 @@ function LoginContent() {
   const [attemptsLeft, setAttemptsLeft] = useState(3);
   const [resendCountdown, setResendCountdown] = useState(0);
 
+  const isOtpEnabled = process.env.NEXT_PUBLIC_ENABLE_OTP_FLOW === "true";
+  const [authMode, setAuthMode] = useState<"password" | "mobile_otp">(
+    isOtpEnabled ? "mobile_otp" : "password"
+  );
+  const [loginId, setLoginId] = useState("");
+
   // Profile completion states
   const [needsProfile, setNeedsProfile] = useState(false);
   const [profileName, setProfileName] = useState("");
   const [profileEmail, setProfileEmail] = useState("");
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
 
+  // Forgot password flow states
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [forgotStep, setForgotStep] = useState<"enter_email" | "reset_password">("enter_email");
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotOtp, setForgotOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [forgotResendCountdown, setForgotResendCountdown] = useState(0);
+
   // API mutations
   const [requestOtp, { isLoading: sendingOtp }] = useRequestOtpMutation();
   const [verifyOtp, { isLoading: verifyingOtp }] = useVerifyOtpMutation();
   const [updateProfile, { isLoading: updatingProfile }] = useUpdateProfileMutation();
+  const [loginWithPassword, { isLoading: loggingIn }] = useLoginWithPasswordMutation();
+  const [signupUser, { isLoading: signingUp }] = useSignupMutation();
+  const [googleAuth, { isLoading: authenticatingGoogle }] = useGoogleAuthMutation();
+  const [forgotPassword, { isLoading: sendingForgotOtp }] = useForgotPasswordMutation();
+  const [resetPassword, { isLoading: resettingPassword }] = useResetPasswordMutation();
+
+  // Helper to handle tokens & session
+  function handleAuthSuccess(tokens: any) {
+    if (tokens?.accessToken) localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, tokens.accessToken);
+    if (tokens?.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, tokens.refreshToken);
+    if (tokens?.user) localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(tokens.user));
+
+    window.dispatchEvent(new Event("auth-change"));
+    setSuccessMessage("Authentication successful! Redirecting...");
+    router.replace(redirectTo);
+  }
 
   // Check if session already exists
   useEffect(() => {
@@ -175,6 +223,76 @@ function LoginContent() {
       return () => clearTimeout(timer);
     }
   }, [resendCountdown]);
+
+  // Forgot password OTP countdown timer
+  useEffect(() => {
+    if (forgotResendCountdown > 0) {
+      const timer = setTimeout(() => setForgotResendCountdown((prev) => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [forgotResendCountdown]);
+
+  async function handleSendForgotOtp(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    const cleanEmail = forgotEmail.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      const res = await forgotPassword({ email: cleanEmail }).unwrap();
+      toast.success(res.message || `Verification OTP sent to ${cleanEmail}`);
+      setForgotStep("reset_password");
+      setForgotOtp("");
+      setForgotResendCountdown(60);
+    } catch (err: any) {
+      // Toast notification is automatically shown by baseQueryWithReauth
+    }
+  }
+
+  async function handleResetPasswordSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const cleanEmail = forgotEmail.trim().toLowerCase();
+    const cleanOtp = forgotOtp.trim();
+
+    if (!cleanOtp || cleanOtp.length !== 6) {
+      toast.error("Please enter the complete 6-digit OTP code sent to your email.");
+      return;
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters long.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match. Please verify.");
+      return;
+    }
+
+    try {
+      const res = await resetPassword({
+        email: cleanEmail,
+        otp: cleanOtp,
+        newPassword,
+      }).unwrap();
+      toast.success(res.message || "Password reset successfully! Please sign in with your new password.");
+      // Reset forgot password state and switch back to password sign-in
+      setIsForgotPassword(false);
+      setForgotStep("enter_email");
+      setForgotOtp("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setLoginId(cleanEmail);
+      setPassword("");
+      setAuthMode("password");
+    } catch (err: any) {
+      // Toast notification is automatically shown by baseQueryWithReauth
+    }
+  }
 
   const validMobile = useMemo(() => /^\d{10}$/.test(mobile.replace(/\D/g, "")), [mobile]);
 
@@ -244,6 +362,84 @@ function LoginContent() {
     }
   }
 
+  async function handlePasswordSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobileRegex = /^[0-9]{10}$/;
+
+    if (isSignup) {
+      if (!fullName.trim()) {
+        toast.error("Please enter your full name.");
+        return;
+      }
+      if (!emailRegex.test(email.trim())) {
+        toast.error("Please enter a valid email address.");
+        return;
+      }
+      const cleanMobile = mobile.replace(/\D/g, "");
+      if (!mobileRegex.test(cleanMobile)) {
+        toast.error("Please enter a valid 10-digit mobile number.");
+        return;
+      }
+      if (password.length < 6) {
+        toast.error("Password must be at least 6 characters long.");
+        return;
+      }
+
+      try {
+        const tokens = await signupUser({
+          name: fullName.trim(),
+          email: email.trim(),
+          mobileNumber: cleanMobile,
+          password,
+        }).unwrap();
+        handleAuthSuccess(tokens);
+      } catch (err: any) {
+        toast.error(err?.data?.message || err?.message || "Failed to create account. Please try again.");
+      }
+    } else {
+      const cleanLoginId = loginId.trim();
+      const isEmail = emailRegex.test(cleanLoginId);
+      const isMobile = mobileRegex.test(cleanLoginId.replace(/\D/g, ""));
+
+      if (!isEmail && !isMobile) {
+        toast.error("Please enter a valid email address or 10-digit mobile number.");
+        return;
+      }
+      if (password.length < 6) {
+        toast.error("Password must be at least 6 characters long.");
+        return;
+      }
+
+      try {
+        const tokens = await loginWithPassword({
+          loginId: isEmail ? cleanLoginId : cleanLoginId.replace(/\D/g, ""),
+          password,
+        }).unwrap();
+        handleAuthSuccess(tokens);
+      } catch (err: any) {
+        toast.error(err?.data?.message || err?.message || "Invalid credentials. Please verify and try again.");
+      }
+    }
+  }
+
+  async function handleGoogleLogin() {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    try {
+      // In web app, we can simulate Google sign-in or prompt for email in development
+      const demoEmail = prompt("Enter your Google Account email for demo login:", "user@gmail.com");
+      if (!demoEmail) return;
+      const tokens = await googleAuth({ email: demoEmail, name: demoEmail.split("@")[0] }).unwrap();
+      handleAuthSuccess(tokens);
+    } catch (err: any) {
+      setErrorMessage(err?.data?.message || err?.message || "Google authentication failed.");
+    }
+  }
+
   async function handleCompleteProfile(e: React.FormEvent) {
     e.preventDefault();
     setProfileMessage(null);
@@ -291,67 +487,9 @@ function LoginContent() {
               </div>
             </div>
 
-            {/* Step Breadcrumb Progress */}
-            <div className="mb-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 text-xs">
-              <div className="flex items-center gap-1.5">
-                <span
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${
-                    currentStep > 1
-                      ? "bg-emerald-600 text-white"
-                      : "bg-rose-600 text-white"
-                  }`}
-                >
-                  {currentStep > 1 ? <Check className="h-3 w-3" /> : "1"}
-                </span>
-                <span className={currentStep === 1 ? "font-bold text-slate-900 dark:text-white" : "font-medium text-slate-500 dark:text-slate-400"}>
-                  Phone
-                </span>
-              </div>
 
-              <div className="h-0.5 w-8 bg-slate-200 dark:bg-slate-800" />
 
-              <div className="flex items-center gap-1.5">
-                <span
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${
-                    currentStep > 2
-                      ? "bg-emerald-600 text-white"
-                      : currentStep === 2
-                      ? "bg-rose-600 text-white"
-                      : "bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-                  }`}
-                >
-                  {currentStep > 2 ? <Check className="h-3 w-3" /> : "2"}
-                </span>
-                <span className={currentStep === 2 ? "font-bold text-slate-900 dark:text-white" : "font-medium text-slate-500 dark:text-slate-400"}>
-                  OTP
-                </span>
-              </div>
 
-              <div className="h-0.5 w-8 bg-slate-200 dark:bg-slate-800" />
-
-              <div className="flex items-center gap-1.5">
-                <span
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${
-                    currentStep === 3
-                      ? "bg-rose-600 text-white"
-                      : "bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-                  }`}
-                >
-                  3
-                </span>
-                <span className={currentStep === 3 ? "font-bold text-slate-900 dark:text-white" : "font-medium text-slate-500 dark:text-slate-400"}>
-                  Profile
-                </span>
-              </div>
-            </div>
-
-            {/* Error / Success Alerts */}
-            {errorMessage && (
-              <div className="mb-4 flex items-start gap-2.5 rounded-2xl border border-rose-200 bg-rose-50/90 p-3.5 text-xs text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200 animate-in fade-in slide-in-from-top-1">
-                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
 
             {successMessage && (
               <div className="mb-4 flex items-start gap-2.5 rounded-2xl border border-emerald-200 bg-emerald-50/90 p-3.5 text-xs text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200 animate-in fade-in slide-in-from-top-1">
@@ -361,63 +499,409 @@ function LoginContent() {
             )}
 
             {!needsProfile ? (
-              !otpRequested ? (
-                /* STEP 1: Enter Mobile Number */
+              isForgotPassword ? (
+                /* FORGOT PASSWORD FLOW */
+                <div className="animate-in fade-in zoom-in-95 duration-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                      {forgotStep === "enter_email" ? "Reset Password" : "Set New Password"}
+                    </h1>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsForgotPassword(false);
+                        setForgotStep("enter_email");
+                      }}
+                      className="text-xs font-bold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                    >
+                      Back to Sign In
+                    </button>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-5">
+                    {forgotStep === "enter_email"
+                      ? "Enter your registered email address to receive a 6-digit verification code."
+                      : `Enter the 6-digit code sent to ${forgotEmail} and choose a new password.`}
+                  </p>
+
+                  {forgotStep === "enter_email" ? (
+                    <form onSubmit={handleSendForgotOtp} className="space-y-4">
+                      <div>
+                        <label htmlFor="forgotEmail" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                          Email Address
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <Mail className="h-4 w-4" />
+                          </span>
+                          <input
+                            id="forgotEmail"
+                            type="email"
+                            className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
+                            placeholder="you@example.com"
+                            value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)}
+                            required
+                            autoFocus
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={sendingForgotOtp || !forgotEmail.trim()}
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-rose-600 px-5 py-3.5 text-xs font-bold text-white shadow-lg shadow-rose-600/20 transition hover:bg-rose-700 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {sendingForgotOtp ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Sending Verification Code...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Send Verification Code</span>
+                            <ArrowRight className="h-4 w-4" />
+                          </>
+                        )}
+                      </button>
+                    </form>
+                  ) : (
+                    <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                            6-Digit Verification Code
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setForgotStep("enter_email")}
+                            className="text-[11px] font-bold text-rose-600 hover:underline dark:text-rose-400"
+                          >
+                            Change Email
+                          </button>
+                        </div>
+                        <SplitOtpInput
+                          value={forgotOtp}
+                          onChange={setForgotOtp}
+                          disabled={resettingPassword}
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="newPassword" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                          New Password
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <KeyRound className="h-4 w-4" />
+                          </span>
+                          <input
+                            id="newPassword"
+                            type="password"
+                            className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
+                            placeholder="At least 6 characters"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label htmlFor="confirmPassword" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                          Confirm New Password
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <KeyRound className="h-4 w-4" />
+                          </span>
+                          <input
+                            id="confirmPassword"
+                            type="password"
+                            className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
+                            placeholder="Re-enter new password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={resettingPassword || forgotOtp.length !== 6 || !newPassword || !confirmPassword}
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3.5 text-xs font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {resettingPassword ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Updating Password...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Set New Password & Sign In</span>
+                            <CheckCircle2 className="h-4 w-4" />
+                          </>
+                        )}
+                      </button>
+
+                      <div className="flex items-center justify-between text-xs pt-1">
+                        <span className="text-slate-500 dark:text-slate-400">Didn&apos;t receive code?</span>
+                        {forgotResendCountdown > 0 ? (
+                          <span className="font-semibold text-slate-400">
+                            Resend in <strong className="text-slate-600 dark:text-slate-300">{forgotResendCountdown}s</strong>
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={sendingForgotOtp}
+                            onClick={() => handleSendForgotOtp()}
+                            className="font-bold text-rose-600 dark:text-rose-400 hover:underline disabled:opacity-50"
+                          >
+                            Resend OTP
+                          </button>
+                        )}
+                      </div>
+                    </form>
+                  )}
+
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 pt-5">
+                    <Lock className="h-3 w-3 text-slate-400" />
+                    <span>Your security is our top priority.</span>
+                  </div>
+                </div>
+              ) : !otpRequested ? (
+                /* STEP 1: Enter Mobile / Email Credentials */
                 <div className="animate-in fade-in zoom-in-95 duration-200">
                   <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 dark:text-white">
                     Sign In or Register
                   </h1>
-                  <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                    Enter your 10-digit mobile number to access your account instantly without passwords.
+                  <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-5">
+                    {authMode === "mobile_otp" 
+                      ? "Enter your 10-digit mobile number to access your account instantly without passwords."
+                      : "Enter your credentials to securely access your account."}
                   </p>
 
-                  <form onSubmit={handleSendOtp} className="mt-6 space-y-4">
-                    <div>
-                      <label htmlFor="mobile" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                        Mobile Number
-                      </label>
-                      <div className="relative flex items-center">
-                        <span className="absolute left-3.5 flex items-center gap-1 text-xs font-black text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800 pr-2.5">
-                          🇮🇳 +91
-                        </span>
-                        <input
-                          id="mobile"
-                          name="mobile"
-                          type="tel"
-                          inputMode="numeric"
-                          maxLength={10}
-                          className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-20 pr-4 text-sm font-bold tracking-wider text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400"
-                          placeholder="98765 43210"
-                          value={mobile}
-                          onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
-                          autoFocus
-                        />
-                      </div>
+                  {/* Auth Mode Toggle (Only show if OTP is enabled) */}
+                  {!isSignup && isOtpEnabled && (
+                    <div className="flex bg-slate-100 p-1 rounded-xl mb-6 dark:bg-slate-800/50">
+                      <button
+                        onClick={() => setAuthMode("mobile_otp")}
+                        className={`flex-1 text-xs font-bold py-2 rounded-lg transition ${authMode === "mobile_otp" ? "bg-white shadow-sm text-slate-900 dark:bg-slate-950 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}
+                      >
+                        OTP Login
+                      </button>
+                      <button
+                        onClick={() => setAuthMode("password")}
+                        className={`flex-1 text-xs font-bold py-2 rounded-lg transition ${authMode === "password" ? "bg-white shadow-sm text-slate-900 dark:bg-slate-950 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}
+                      >
+                        Password
+                      </button>
                     </div>
+                  )}
 
-                    <button
-                      type="submit"
-                      disabled={sendingOtp || !validMobile}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3.5 text-xs font-bold text-white shadow-lg shadow-slate-900/10 transition hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 dark:bg-rose-600 dark:hover:bg-rose-700 dark:shadow-rose-950/50"
-                    >
-                      {sendingOtp ? (
+                  {authMode === "mobile_otp" ? (
+                    <form onSubmit={handleSendOtp} className="space-y-4">
+                      <div>
+                        <label htmlFor="mobile" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                          Mobile Number
+                        </label>
+                        <div className="relative flex items-center">
+                          <span className="absolute left-3.5 flex items-center gap-1 text-xs font-black text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800 pr-2.5">
+                            🇮🇳 +91
+                          </span>
+                          <input
+                            id="mobile"
+                            name="mobile"
+                            type="tel"
+                            inputMode="numeric"
+                            maxLength={10}
+                            className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-20 pr-4 text-sm font-bold tracking-wider text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400"
+                            placeholder="98765 43210"
+                            value={mobile}
+                            onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
+                            autoFocus
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={sendingOtp || !validMobile}
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3.5 text-xs font-bold text-white shadow-lg shadow-slate-900/10 transition hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 dark:bg-rose-600 dark:hover:bg-rose-700 dark:shadow-rose-950/50"
+                      >
+                        {sendingOtp ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Sending OTP...
+                          </>
+                        ) : (
+                          <>
+                            <span>Continue with OTP</span>
+                            <ArrowRight className="h-4 w-4" />
+                          </>
+                        )}
+                      </button>
+                    </form>
+                  ) : (
+                    <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                      {isSignup && (
+                        <div>
+                          <label htmlFor="fullName" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                            Full Name <span className="text-rose-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                              <Users className="h-4 w-4" />
+                            </span>
+                            <input
+                              id="fullName"
+                              type="text"
+                              className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
+                              placeholder="John Doe"
+                              value={fullName}
+                              onChange={(e) => setFullName(e.target.value)}
+                              required={isSignup}
+                              autoFocus
+                            />
+                          </div>
+                        </div>
+                      )}
+                      
+                      {isSignup ? (
                         <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Sending OTP...
+                          <div>
+                            <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                              Email Address <span className="text-rose-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                <Mail className="h-4 w-4" />
+                              </span>
+                              <input
+                                id="email"
+                                type="email"
+                                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
+                                placeholder="you@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label htmlFor="mobile_pwd" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                              Mobile Number <span className="text-rose-500">*</span>
+                            </label>
+                            <div className="relative flex items-center">
+                              <span className="absolute left-3.5 flex items-center gap-1 text-xs font-black text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800 pr-2.5">
+                                🇮🇳 +91
+                              </span>
+                              <input
+                                id="mobile_pwd"
+                                type="tel"
+                                inputMode="numeric"
+                                maxLength={10}
+                                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-20 pr-4 text-sm font-bold tracking-wider text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400"
+                                placeholder="98765 43210"
+                                value={mobile}
+                                onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
+                                required
+                              />
+                            </div>
+                          </div>
                         </>
                       ) : (
-                        <>
-                          <span>Continue with OTP</span>
-                          <ArrowRight className="h-4 w-4" />
-                        </>
+                        <div>
+                          <label htmlFor="loginId" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                            Email or Mobile
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                              <Users className="h-4 w-4" />
+                            </span>
+                            <input
+                              id="loginId"
+                              type="text"
+                              className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
+                              placeholder="Email or Mobile"
+                              value={loginId}
+                              onChange={(e) => setLoginId(e.target.value)}
+                              required
+                              autoFocus
+                            />
+                          </div>
+                        </div>
                       )}
-                    </button>
 
-                    <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 pt-1">
-                      <Lock className="h-3 w-3 text-slate-400" />
-                      <span>We never share your number or send spam.</span>
-                    </div>
-                  </form>
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                            Password
+                          </label>
+                          {!isSignup && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsForgotPassword(true);
+                                setForgotStep("enter_email");
+                                setForgotEmail(loginId.includes("@") ? loginId : "");
+                              }}
+                              className="text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:underline dark:text-rose-400 dark:hover:text-rose-300 cursor-pointer relative z-10 py-0.5 px-1"
+                            >
+                              Forgot password?
+                            </button>
+                          )}
+                        </div>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <KeyRound className="h-4 w-4" />
+                          </span>
+                          <input
+                            id="password"
+                            type="password"
+                            className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={isSignup ? signingUp : loggingIn}
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3.5 text-xs font-bold text-white shadow-lg shadow-slate-900/10 transition hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-rose-600 dark:hover:bg-rose-700 dark:shadow-rose-950/50 mt-2"
+                      >
+                        {(isSignup ? signingUp : loggingIn) ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>{isSignup ? "Creating Account..." : "Signing In..."}</span>
+                          </>
+                        ) : (
+                          <span>{isSignup ? "Create Account" : "Sign In with Password"}</span>
+                        )}
+                      </button>
+
+                      <div className="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
+                        {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
+                        <button
+                          type="button"
+                          onClick={() => setIsSignup(!isSignup)}
+                          className="font-bold text-rose-600 hover:underline dark:text-rose-400"
+                        >
+                          {isSignup ? "Sign In" : "Sign Up"}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 pt-5">
+                    <Lock className="h-3 w-3 text-slate-400" />
+                    <span>Your data is protected and encrypted.</span>
+                  </div>
                 </div>
               ) : (
                 /* STEP 2: Verify 6-Digit OTP with Split Inputs */

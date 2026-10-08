@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
-import { MapPin, Building2, ChevronDown, Sparkles, Navigation } from "lucide-react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { MapPin, Building2, ChevronDown, Sparkles, Navigation, Train, Hospital, GraduationCap, ShoppingBag, Loader2 } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +11,7 @@ import {
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import { errorText, fieldLabel } from "./theme";
 import indiaCitiesData from "@/data/india-cities-by-state.json";
+import { SearchableSelect } from "./SearchableSelect";
 
 // Known static metadata for popular Indian localities (Pincode + Lat/Lng)
 const KNOWN_LOCALITY_METADATA: Record<string, { pincode: string; lat: number; lng: number }> = {
@@ -127,6 +128,193 @@ export function LocationStep() {
   const [lastQuery, setLastQuery] = useState("");
   const [dynamicLocalities, setDynamicLocalities] = useState<string[]>([]);
   const [geoStatus, setGeoStatus] = useState<{ pincode?: string; lat?: number; lng?: number; source?: string } | null>(null);
+  const [nearbyLandmarks, setNearbyLandmarks] = useState<{
+    transit?: Array<{ name: string; distanceKm: number; duration?: string; key: string }>;
+    healthcare?: Array<{ name: string; distanceKm: number; duration?: string; key: string }>;
+    education?: Array<{ name: string; distanceKm: number; duration?: string; key: string }>;
+    lifestyle?: Array<{ name: string; distanceKm: number; duration?: string; key: string }>;
+  } | null>((form.getValues("location.nearbyLandmarks") as any) ?? null);
+  const [loadingLandmarks, setLoadingLandmarks] = useState(false);
+
+  // Auto-fetch nearby landmarks when valid latitude & longitude are assigned OR from manual address
+  const watchedLat = form.watch("location.latitude");
+  const watchedLng = form.watch("location.longitude");
+  const watchedAddress = form.watch("location.address");
+  const watchedLocality = form.watch("location.locality");
+  const watchedCity = form.watch("location.cityName");
+  const watchedSubLoc = form.watch("location.subLocality");
+  const watchedSociety = form.watch("location.societyOrProjectName");
+  const watchedBuilding = form.watch("location.buildingName");
+  const watchedSector = form.watch("location.sectorNumber");
+  const watchedPincode = form.watch("location.pincode");
+  const lastFetchedCoordsRef = useRef<string>("");
+  const lastGeocodedAddressRef = useRef<string>("");
+  const localityReqSeqRef = useRef<number>(0);
+  const landmarkReqSeqRef = useRef<number>(0);
+  const customLocalityTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-fetch nearby landmarks ONLY when locality is present / selected
+  useEffect(() => {
+    const localityClean = watchedLocality?.trim();
+
+    // 1. If locality is empty (e.g. state or city changed), immediately cancel and clear landmarks
+    if (!localityClean) {
+      landmarkReqSeqRef.current++;
+      setLoadingLandmarks(false);
+      if (nearbyLandmarks) {
+        setNearbyLandmarks(null);
+        form.setValue("location.nearbyLandmarks", null, { shouldDirty: false });
+      }
+      lastFetchedCoordsRef.current = "";
+      lastGeocodedAddressRef.current = "";
+      return;
+    }
+
+    const latNum = Number(watchedLat);
+    const lngNum = Number(watchedLng);
+    const hasValidCoords =
+      Number.isFinite(latNum) && Number.isFinite(lngNum) && latNum !== 0 && lngNum !== 0;
+
+    // 2. If valid coordinates are available (from locality geocoding or city fallback):
+    if (hasValidCoords) {
+      const coordKey = `${latNum.toFixed(4)},${lngNum.toFixed(4)}:${localityClean.toLowerCase()}`;
+      if (lastFetchedCoordsRef.current === coordKey) {
+        setLoadingLandmarks(false);
+        return;
+      }
+
+      // If landmarks already exist in form for these coordinates, reuse without refetching
+      const existingLandmarks = form.getValues("location.nearbyLandmarks");
+      if (existingLandmarks && Object.keys(existingLandmarks).length > 0 && !lastFetchedCoordsRef.current) {
+        lastFetchedCoordsRef.current = coordKey;
+        setNearbyLandmarks(existingLandmarks as any);
+        setLoadingLandmarks(false);
+        return;
+      }
+
+      const reqSeq = ++landmarkReqSeqRef.current;
+      setLoadingLandmarks(true);
+
+      const timer = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/google/nearby-landmarks?lat=${latNum}&lng=${lngNum}`, {
+            cache: "no-store",
+          });
+          if (reqSeq !== landmarkReqSeqRef.current) return;
+          if (!res.ok) return;
+          const data = await res.json();
+          if (reqSeq !== landmarkReqSeqRef.current) return;
+          if (data.success) {
+            lastFetchedCoordsRef.current = coordKey;
+            const formatted = {
+              transit: (data.transit || []).slice(0, 5),
+              healthcare: (data.healthcare || []).slice(0, 5),
+              education: (data.education || []).slice(0, 5),
+              lifestyle: (data.lifestyle || []).slice(0, 5),
+              all: data.all || [],
+            };
+            setNearbyLandmarks(formatted);
+            form.setValue("location.nearbyLandmarks", formatted, { shouldDirty: false });
+          }
+        } catch (err) {
+          console.warn("Could not fetch nearby landmarks", err);
+        } finally {
+          if (reqSeq === landmarkReqSeqRef.current) {
+            setLoadingLandmarks(false);
+          }
+        }
+      }, 350);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+
+    // 3. If coordinates are not yet available, geocode locality + city to obtain coords and landmarks
+    const targetAddress = [
+      watchedSociety?.trim(),
+      watchedBuilding?.trim(),
+      watchedSector ? `Sector ${watchedSector.replace(/^sector\s*/i, "").trim()}` : "",
+      watchedSubLoc?.trim(),
+      localityClean,
+      watchedCity?.trim(),
+      selectedState?.trim(),
+    ].filter(Boolean).join(", ");
+
+    const normalizedQuery = targetAddress.toLowerCase();
+    if (lastGeocodedAddressRef.current === normalizedQuery) {
+      setLoadingLandmarks(false);
+      return;
+    }
+
+    const reqSeq = ++landmarkReqSeqRef.current;
+    setLoadingLandmarks(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/google/nearby-landmarks?address=${encodeURIComponent(targetAddress)}`,
+          { cache: "no-store" }
+        );
+        if (reqSeq !== landmarkReqSeqRef.current) return;
+        if (!res.ok) return;
+        const data = await res.json();
+        if (reqSeq !== landmarkReqSeqRef.current) return;
+        if (data.success) {
+          lastGeocodedAddressRef.current = normalizedQuery;
+
+          // Auto-populate latitude, longitude and pincode if returned
+          if (data.coordinates?.lat && data.coordinates?.lng) {
+            const resLat = Number(data.coordinates.lat);
+            const resLng = Number(data.coordinates.lng);
+            lastFetchedCoordsRef.current = `${resLat.toFixed(4)},${resLng.toFixed(4)}:${localityClean.toLowerCase()}`;
+            form.setValue("location.latitude", resLat, { shouldDirty: true });
+            form.setValue("location.longitude", resLng, { shouldDirty: true });
+            if (data.pincode) {
+              form.setValue("location.pincode", data.pincode, { shouldDirty: true });
+            }
+            setGeoStatus({
+              lat: resLat,
+              lng: resLng,
+              source: "Address Geocoded",
+              pincode: data.pincode || form.getValues("location.pincode") || "",
+            });
+          }
+
+          const formatted = {
+            transit: (data.transit || []).slice(0, 5),
+            healthcare: (data.healthcare || []).slice(0, 5),
+            education: (data.education || []).slice(0, 5),
+            lifestyle: (data.lifestyle || []).slice(0, 5),
+            all: data.all || [],
+          };
+          setNearbyLandmarks(formatted);
+          form.setValue("location.nearbyLandmarks", formatted, { shouldDirty: false });
+        }
+      } catch (err) {
+        console.warn("Could not geocode and fetch landmarks for address", err);
+      } finally {
+        if (reqSeq === landmarkReqSeqRef.current) {
+          setLoadingLandmarks(false);
+        }
+      }
+    }, 450);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [
+    watchedLat,
+    watchedLng,
+    watchedLocality,
+    watchedCity,
+    selectedState,
+    watchedSociety,
+    watchedBuilding,
+    watchedSector,
+    watchedSubLoc,
+    form,
+  ]);
 
   // States list from JSON
   const statesList = useMemo(() => {
@@ -198,26 +386,57 @@ export function LocationStep() {
     }
   }, [selectedCity, selectedState]);
 
-  // MULTI-TIER AUTO-PINCODE & GEOLOCATION (LAT/LNG) FALLBACK ENGINE
-  const fallbackToCityDefaults = (cityName: string) => {
+  // MULTI-TIER AUTO-PINCODE & GEOLOCATION (LAT/LNG) ENGINE
+  const fallbackToCityDefaults = async (cityName: string) => {
+    const currentSeq = ++localityReqSeqRef.current;
     const cityKey = (cityName || "").trim().toLowerCase();
-    const cityMeta = CITY_DEFAULT_COORDINATES[cityKey] || { pincode: "110001", lat: 28.6139, lng: 77.2090 };
+    const cityMeta = CITY_DEFAULT_COORDINATES[cityKey];
     
-    if (!form.getValues("location.pincode") && cityMeta.pincode) {
+    if (cityMeta) {
       form.setValue("location.pincode", cityMeta.pincode);
-    }
-    if (!form.getValues("location.latitude")) form.setValue("location.latitude", cityMeta.lat);
-    if (!form.getValues("location.longitude")) form.setValue("location.longitude", cityMeta.lng);
+      form.setValue("location.latitude", cityMeta.lat);
+      form.setValue("location.longitude", cityMeta.lng);
 
-    setGeoStatus({
-      pincode: form.getValues("location.pincode") || cityMeta.pincode,
-      lat: form.getValues("location.latitude") || cityMeta.lat,
-      lng: form.getValues("location.longitude") || cityMeta.lng,
-      source: "City Level",
-    });
+      setGeoStatus({
+        pincode: cityMeta.pincode,
+        lat: cityMeta.lat,
+        lng: cityMeta.lng,
+        source: "City Level",
+      });
+      return;
+    }
+
+    // Dynamic geocode lookup for city via Google API
+    const cityTarget = [cityName, selectedState].filter(Boolean).join(", ").trim();
+    if (!cityTarget) return;
+
+    try {
+      const gRes = await fetch(`/api/google/nearby-landmarks?address=${encodeURIComponent(cityTarget)}`);
+      if (currentSeq !== localityReqSeqRef.current) return;
+      if (gRes.ok) {
+        const gData = await gRes.json();
+        if (currentSeq !== localityReqSeqRef.current) return;
+        if (gData.success && gData.coordinates?.lat && gData.coordinates?.lng) {
+          form.setValue("location.latitude", gData.coordinates.lat);
+          form.setValue("location.longitude", gData.coordinates.lng);
+          if (gData.pincode) {
+            form.setValue("location.pincode", gData.pincode);
+          }
+          setGeoStatus({
+            pincode: gData.pincode || form.getValues("location.pincode") || "",
+            lat: gData.coordinates.lat,
+            lng: gData.coordinates.lng,
+            source: "City Geocoded",
+          });
+        }
+      }
+    } catch {
+      // Ignore network errors
+    }
   };
 
-  const autoPopulatePincodeAndCoordinates = (localityName: string, cityName: string) => {
+  const autoPopulatePincodeAndCoordinates = async (localityName: string, cityName: string) => {
+    const currentSeq = ++localityReqSeqRef.current;
     const localityKey = (localityName || "").trim().toLowerCase();
 
     // Tier 1: Direct static Locality metadata match
@@ -235,51 +454,69 @@ export function LocationStep() {
       return;
     }
 
-    // Tier 2: Dynamic Geocode Lookup via Awasio suggestions engine
-    const searchTarget = [localityName, cityName].filter(Boolean).join(", ").trim();
+    // Tier 2: Dynamic Geocode Lookup via Google nearby-landmarks geocoder
+    const searchTarget = [localityName, cityName, selectedState].filter(Boolean).join(", ").trim();
     if (searchTarget) {
-      fetchAwasioSuggestions(searchTarget, { limit: 1 })
-        .then((res) => {
-          const first = res.data?.[0];
-          if (first?.location?.lat != null && first?.location?.lng != null) {
-            const { pincode, lat, lng } = first.location;
-            if (pincode) {
-              form.setValue("location.pincode", String(pincode));
+      try {
+        const gRes = await fetch(`/api/google/nearby-landmarks?address=${encodeURIComponent(searchTarget)}`);
+        if (currentSeq !== localityReqSeqRef.current) return;
+        if (gRes.ok) {
+          const gData = await gRes.json();
+          if (currentSeq !== localityReqSeqRef.current) return;
+          if (gData.success && gData.coordinates?.lat && gData.coordinates?.lng) {
+            form.setValue("location.latitude", gData.coordinates.lat);
+            form.setValue("location.longitude", gData.coordinates.lng);
+            if (gData.pincode) {
+              form.setValue("location.pincode", gData.pincode);
             }
-            form.setValue("location.latitude", lat);
-            form.setValue("location.longitude", lng);
             setGeoStatus({
-              pincode: pincode ? String(pincode) : form.getValues("location.pincode"),
-              lat,
-              lng,
-              source: "Geocoded Locality",
+              pincode: gData.pincode || form.getValues("location.pincode") || "",
+              lat: gData.coordinates.lat,
+              lng: gData.coordinates.lng,
+              source: "Locality Geocoded",
             });
             return;
           }
-          // Tier 3: Fall back to City-level coordinates if locality lookup returned no lat/lng
-          fallbackToCityDefaults(cityName);
-        })
-        .catch(() => {
-          fallbackToCityDefaults(cityName);
-        });
-      return;
+        }
+      } catch (err) {
+        console.warn("Geocoding failed for locality", err);
+      }
+
+      // Tier 3: Dynamic Geocode Lookup via Awasio suggestions engine
+      try {
+        const res = await fetchAwasioSuggestions(searchTarget, { limit: 1 });
+        if (currentSeq !== localityReqSeqRef.current) return;
+        const first = res.data?.[0];
+        if (first?.location?.lat != null && first?.location?.lng != null) {
+          const { pincode, lat, lng } = first.location;
+          if (pincode) {
+            form.setValue("location.pincode", String(pincode));
+          }
+          form.setValue("location.latitude", lat);
+          form.setValue("location.longitude", lng);
+          setGeoStatus({
+            pincode: pincode ? String(pincode) : form.getValues("location.pincode") || "",
+            lat,
+            lng,
+            source: "Geocoded Locality",
+          });
+          return;
+        }
+      } catch {
+        // Proceed to Tier 4
+      }
     }
 
-    // Tier 3 Fallback
-    fallbackToCityDefaults(cityName);
+    // Tier 4: Fall back to City-level coordinates if locality lookup returned no lat/lng
+    if (currentSeq === localityReqSeqRef.current && cityName) {
+      fallbackToCityDefaults(cityName);
+    }
   };
 
   const watchedFlatNo = form.watch("location.flatNumber");
   const watchedHouseNo = form.watch("location.houseNumber");
   const watchedTowerNo = form.watch("location.towerNumber");
   const watchedPlotNo = form.watch("location.plotNumber");
-  const watchedSociety = form.watch("location.societyOrProjectName");
-  const watchedBuilding = form.watch("location.buildingName");
-  const watchedSector = form.watch("location.sectorNumber");
-  const watchedSubLoc = form.watch("location.subLocality");
-  const watchedLocality = form.watch("location.locality");
-  const watchedCity = form.watch("location.cityName");
-  const watchedPincode = form.watch("location.pincode");
 
   // Helper to format sector number intelligently (e.g. "5" -> "Sector 5")
   const formatSectorPart = (raw?: string) => {
@@ -373,6 +610,8 @@ export function LocationStep() {
   };
 
   const handleStateChange = (stateName: string) => {
+    localityReqSeqRef.current++;
+    landmarkReqSeqRef.current++;
     setSelectedState(stateName);
     setSelectedCity("");
     setSelectedLocality("");
@@ -380,28 +619,58 @@ export function LocationStep() {
     setCustomLocalityInput("");
     form.setValue("location.cityName", "");
     form.setValue("location.locality", "");
+    form.setValue("location.pincode", "");
+    form.setValue("location.latitude", null);
+    form.setValue("location.longitude", null);
+    form.setValue("location.nearbyLandmarks", null, { shouldDirty: false });
+    setGeoStatus(null);
+    setNearbyLandmarks(null);
+    setLoadingLandmarks(false);
+    lastFetchedCoordsRef.current = "";
+    lastGeocodedAddressRef.current = "";
   };
 
   const handleCityChange = (cityName: string) => {
+    localityReqSeqRef.current++;
+    landmarkReqSeqRef.current++;
     setSelectedCity(cityName);
     setSelectedLocality("");
     setIsCustomLocalityMode(false);
     setCustomLocalityInput("");
     form.setValue("location.cityName", cityName);
     form.setValue("location.locality", "");
+    form.setValue("location.pincode", "");
+    form.setValue("location.latitude", null);
+    form.setValue("location.longitude", null);
+    form.setValue("location.nearbyLandmarks", null, { shouldDirty: false });
+    setGeoStatus(null);
+    setNearbyLandmarks(null);
+    setLoadingLandmarks(false);
+    lastFetchedCoordsRef.current = "";
+    lastGeocodedAddressRef.current = "";
     form.trigger(["location.cityName"]);
 
-    // Fill City-level default lat/lng immediately when city is picked
-    fallbackToCityDefaults(cityName);
-    updateFormattedAddress(cityName, "", selectedState);
+    // Fill City-level default lat/lng immediately when city is picked (landmarks will wait for locality)
+    if (cityName) {
+      fallbackToCityDefaults(cityName);
+      updateFormattedAddress(cityName, "", selectedState);
+    }
   };
 
   const handleLocalitySelect = (localityName: string) => {
+    localityReqSeqRef.current++;
     if (localityName === "__CUSTOM__") {
+      landmarkReqSeqRef.current++;
       setIsCustomLocalityMode(true);
       setSelectedLocality("");
       setCustomLocalityInput("");
       form.setValue("location.locality", "");
+      form.setValue("location.pincode", "");
+      form.setValue("location.nearbyLandmarks", null, { shouldDirty: false });
+      setNearbyLandmarks(null);
+      setLoadingLandmarks(false);
+      lastFetchedCoordsRef.current = "";
+      lastGeocodedAddressRef.current = "";
       return;
     }
 
@@ -409,6 +678,7 @@ export function LocationStep() {
     setSelectedLocality(localityName);
     setCustomLocalityInput(localityName);
     form.setValue("location.locality", localityName);
+    form.setValue("location.pincode", "");
     form.trigger(["location.locality"]);
 
     // Tier 1 -> Tier 2 -> Tier 3 Geocode Resolution
@@ -470,44 +740,63 @@ export function LocationStep() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
-          const { reverseGeocodeAwasio } = await import("@/lib/awasioSuggestions");
-          const result = await reverseGeocodeAwasio(pos.coords.latitude, pos.coords.longitude);
-          if (result?.city) {
-            form.setValue("location.cityName", result.city);
-            form.setValue("location.locality", result.locality || result.city);
-            if (result.pincode) form.setValue("location.pincode", result.pincode);
-            const address = [result.locality, result.city, result.state].filter(Boolean).join(", ");
-            form.setValue("location.address", address);
-            form.setValue("location.latitude", pos.coords.latitude);
-            form.setValue("location.longitude", pos.coords.longitude);
-            form.trigger(["location.cityName", "location.locality"]);
+          let resolvedCity = "";
+          let resolvedLocality = "";
+          let resolvedState = "";
+          let resolvedPincode = "";
 
-            setSelectedCity(result.city);
-            setSelectedLocality(result.locality || result.city);
-            if (result.state) setSelectedState(result.state);
-
-            setGeoStatus({
-              pincode: result.pincode,
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-              source: "GPS Live",
-            });
-
-            setAddressQuery(address);
-            setLastQuery(address);
-            setSuggestions([]);
-          } else {
-            setError("Could not resolve your location. Please type manually.");
+          try {
+            const { reverseGeocodeAwasio } = await import("@/lib/awasioSuggestions");
+            const result = await reverseGeocodeAwasio(pos.coords.latitude, pos.coords.longitude);
+            if (result?.city) {
+              resolvedCity = result.city;
+              resolvedLocality = result.locality || result.city;
+              resolvedState = result.state || "";
+              resolvedPincode = result.pincode || "";
+            }
+          } catch (geocodeErr) {
+            console.warn("Reverse geocode failed, using direct coordinates", geocodeErr);
           }
+
+          const fallbackCity = resolvedCity || "Gurgaon";
+          const fallbackLocality = resolvedLocality || fallbackCity;
+          const address = [fallbackLocality, fallbackCity, resolvedState].filter(Boolean).join(", ");
+
+          form.setValue("location.cityName", fallbackCity);
+          form.setValue("location.locality", fallbackLocality);
+          if (resolvedPincode) form.setValue("location.pincode", resolvedPincode);
+          form.setValue("location.address", address);
+          form.setValue("location.latitude", pos.coords.latitude);
+          form.setValue("location.longitude", pos.coords.longitude);
+          form.trigger(["location.cityName", "location.locality"]);
+
+          setSelectedCity(fallbackCity);
+          setSelectedLocality(fallbackLocality);
+          if (resolvedState) setSelectedState(resolvedState);
+
+          setGeoStatus({
+            pincode: resolvedPincode,
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            source: "GPS Live",
+          });
+
+          setAddressQuery(address);
+          setLastQuery(address);
+          setSuggestions([]);
+        } catch (e: any) {
+          console.error("GPS selection error", e);
+          setError("Could not complete GPS location. Please enter manually.");
         } finally {
           setLocating(false);
         }
       },
-      () => {
+      (err) => {
+        console.warn("Geolocation permission error", err);
         setLocating(false);
-        setError("Location permission denied or unavailable.");
+        setError("Location permission denied or timed out.");
       },
-      { enableHighAccuracy: true, timeout: 8000 },
+      { enableHighAccuracy: true, timeout: 6000 }
     );
   };
 
@@ -604,62 +893,53 @@ export function LocationStep() {
         <div className="grid gap-4 sm:grid-cols-3">
           {/* 1. State Dropdown */}
           <Field label="State / Union Territory">
-            <div className="relative">
-              <select
-                className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-                value={selectedState}
-                onChange={(e) => handleStateChange(e.target.value)}
-              >
-                <option value="">Select State</option>
-                {statesList.map((st) => (
-                  <option key={st} value={st}>
-                    {st}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-2.5 h-4 w-4 text-slate-400" />
-            </div>
+            <SearchableSelect
+              value={selectedState}
+              onChange={handleStateChange}
+              options={statesList}
+              placeholder="Select State / UT"
+              searchPlaceholder="Search State / Union Territory..."
+              emptyMessage="No matching state found"
+            />
           </Field>
 
           {/* 2. City Dropdown */}
           <Field label="City" required error={errors.cityName?.message as string | undefined}>
-            <div className="relative">
-              <select
-                className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-                value={selectedCity}
-                onChange={(e) => handleCityChange(e.target.value)}
-              >
-                <option value="">{selectedState ? `Select City in ${selectedState}` : "Select City"}</option>
-                {citiesList.map((ct) => (
-                  <option key={ct} value={ct}>
-                    {ct}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-2.5 h-4 w-4 text-slate-400" />
-            </div>
+            <SearchableSelect
+              value={selectedCity}
+              onChange={handleCityChange}
+              options={citiesList}
+              placeholder={selectedState ? `Select City in ${selectedState}` : "Select City (or search across India)"}
+              searchPlaceholder={selectedState ? `Search city in ${selectedState}...` : "Search city across India..."}
+              emptyMessage={selectedState ? `No city found in ${selectedState}` : "No matching city found"}
+              hasError={Boolean(errors.cityName)}
+            />
           </Field>
 
           {/* 3. Locality Dropdown / Input */}
           <Field label="Locality / Area" required error={errors.locality?.message as string | undefined}>
-            <div className="relative">
-              <select
-                className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-                value={isCustomLocalityMode ? "__CUSTOM__" : selectedLocality}
-                onChange={(e) => handleLocalitySelect(e.target.value)}
-              >
-                <option value="">
-                  {selectedCity ? `Select Popular Locality in ${selectedCity}` : "Select Locality"}
-                </option>
-                {localitySuggestions.map((loc) => (
-                  <option key={loc} value={loc}>
-                    {loc}
-                  </option>
-                ))}
-                <option value="__CUSTOM__">+ Enter Custom Locality</option>
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-2.5 h-4 w-4 text-slate-400" />
-            </div>
+            <SearchableSelect
+              value={isCustomLocalityMode ? "__CUSTOM__" : selectedLocality}
+              onChange={handleLocalitySelect}
+              options={localitySuggestions}
+              placeholder={selectedCity ? `Select Locality in ${selectedCity}` : "Select Locality"}
+              searchPlaceholder={selectedCity ? `Search locality in ${selectedCity}...` : "Search locality..."}
+              allowCustom={true}
+              customValue="__CUSTOM__"
+              customLabel="+ Enter Custom Locality"
+              onCustomSelect={(customVal) => {
+                setIsCustomLocalityMode(true);
+                setCustomLocalityInput(customVal);
+                setSelectedLocality(customVal);
+                form.setValue("location.locality", customVal);
+                form.setValue("location.pincode", "");
+                form.trigger(["location.locality"]);
+                updateFormattedAddress(selectedCity, customVal, selectedState);
+                autoPopulatePincodeAndCoordinates(customVal, selectedCity);
+              }}
+              emptyMessage={selectedCity ? `No listed locality found in ${selectedCity}` : "No locality found"}
+              hasError={Boolean(errors.locality)}
+            />
           </Field>
         </div>
 
@@ -673,8 +953,23 @@ export function LocationStep() {
                   const val = e.target.value;
                   setCustomLocalityInput(val);
                   form.setValue("location.locality", val);
-                  autoPopulatePincodeAndCoordinates(val, selectedCity);
                   updateFormattedAddress(selectedCity, val, selectedState);
+                  if (customLocalityTimerRef.current) {
+                    clearTimeout(customLocalityTimerRef.current);
+                  }
+                  if (!val.trim()) {
+                    landmarkReqSeqRef.current++;
+                    form.setValue("location.pincode", "");
+                    form.setValue("location.nearbyLandmarks", null, { shouldDirty: false });
+                    setNearbyLandmarks(null);
+                    setLoadingLandmarks(false);
+                    return;
+                  }
+                  customLocalityTimerRef.current = setTimeout(() => {
+                    if (val.trim()) {
+                      autoPopulatePincodeAndCoordinates(val.trim(), selectedCity);
+                    }
+                  }, 400);
                 }}
                 placeholder={selectedCity ? `Type locality name in ${selectedCity}` : "Type custom locality name"}
               />
@@ -691,10 +986,109 @@ export function LocationStep() {
               <strong>
                 {currentLat ? Number(currentLat).toFixed(4) : "—"}, {currentLng ? Number(currentLng).toFixed(4) : "—"}
               </strong>
-              {form.getValues("location.pincode") && (
-                <> · Pincode: <strong>{form.getValues("location.pincode")}</strong></>
+              {watchedPincode && (
+                <> · Pincode: <strong>{watchedPincode}</strong></>
               )}
             </span>
+          </div>
+        )}
+
+        {/* Live Detected Nearby Amenities from Google Places API (New) */}
+        {(loadingLandmarks || nearbyLandmarks) && (
+          <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3.5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-indigo-600" />
+                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
+                  Nearby Landmarks & Connectivity (Auto-Detected)
+                </h4>
+              </div>
+              {loadingLandmarks ? (
+                <span className="flex items-center gap-1.5 text-xs text-indigo-600 font-medium">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" /> Detecting…
+                </span>
+              ) : (
+                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md">
+                  Saved with Listing
+                </span>
+              )}
+            </div>
+
+            {nearbyLandmarks && (
+              <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                {/* 1. Transit */}
+                {nearbyLandmarks.transit && nearbyLandmarks.transit.length > 0 && (
+                  <div className="rounded-lg bg-white p-2.5 border border-slate-200/80 shadow-2xs">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
+                      <Train className="h-3.5 w-3.5 text-blue-600" />
+                      <span>Transit & Metro</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {nearbyLandmarks.transit.map((t, idx) => (
+                        <li key={idx} className="text-xs text-slate-600 flex justify-between gap-1">
+                          <span className="truncate" title={t.name}>{t.name}</span>
+                          <span className="shrink-0 font-semibold text-slate-900">{t.distanceKm} km</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* 2. Healthcare */}
+                {nearbyLandmarks.healthcare && nearbyLandmarks.healthcare.length > 0 && (
+                  <div className="rounded-lg bg-white p-2.5 border border-slate-200/80 shadow-2xs">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
+                      <Hospital className="h-3.5 w-3.5 text-rose-600" />
+                      <span>Healthcare</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {nearbyLandmarks.healthcare.map((h, idx) => (
+                        <li key={idx} className="text-xs text-slate-600 flex justify-between gap-1">
+                          <span className="truncate" title={h.name}>{h.name}</span>
+                          <span className="shrink-0 font-semibold text-slate-900">{h.distanceKm} km</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* 3. Education */}
+                {nearbyLandmarks.education && nearbyLandmarks.education.length > 0 && (
+                  <div className="rounded-lg bg-white p-2.5 border border-slate-200/80 shadow-2xs">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
+                      <GraduationCap className="h-3.5 w-3.5 text-amber-600" />
+                      <span>Schools & Colleges</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {nearbyLandmarks.education.map((e, idx) => (
+                        <li key={idx} className="text-xs text-slate-600 flex justify-between gap-1">
+                          <span className="truncate" title={e.name}>{e.name}</span>
+                          <span className="shrink-0 font-semibold text-slate-900">{e.distanceKm} km</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* 4. Lifestyle */}
+                {nearbyLandmarks.lifestyle && nearbyLandmarks.lifestyle.length > 0 && (
+                  <div className="rounded-lg bg-white p-2.5 border border-slate-200/80 shadow-2xs">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
+                      <ShoppingBag className="h-3.5 w-3.5 text-emerald-600" />
+                      <span>Shopping & Parks</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {nearbyLandmarks.lifestyle.map((l, idx) => (
+                        <li key={idx} className="text-xs text-slate-600 flex justify-between gap-1">
+                          <span className="truncate" title={l.name}>{l.name}</span>
+                          <span className="shrink-0 font-semibold text-slate-900">{l.distanceKm} km</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

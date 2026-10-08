@@ -51,7 +51,7 @@ interface AdminContextType {
   
   // Actions
   requestOtp: (email: string) => Promise<{ success: boolean; message: string; email?: string; devOtp?: string }>;
-  loginStaff: (email: string, otpOrMfaCode?: string) => Promise<{ success: boolean; message?: string }>;
+  loginStaff: (loginId: string, secret?: string, isPassword?: boolean) => Promise<{ success: boolean; message?: string }>;
   logoutStaff: () => void;
   switchStaffRole: (role: StaffRole) => void;
   hasPermission: (permission: AdminPermission) => boolean;
@@ -340,15 +340,15 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     return adminApi.requestOtp(email);
   };
 
-  const loginStaff = async (email: string, otpOrMfaCode?: string) => {
-    if (!otpOrMfaCode || otpOrMfaCode.length < 6) {
-      return { success: false, message: "Valid 6-digit verification code required." };
+  const loginStaff = async (loginId: string, secret?: string, isPassword?: boolean) => {
+    if (!secret || secret.trim().length === 0) {
+      return { success: false, message: isPassword ? "Password is required." : "Valid verification code required." };
     }
 
-    const cleanEmail = email.trim().toLowerCase();
+    const cleanLoginId = loginId.trim();
 
     try {
-      const loginRes = await adminApi.login(cleanEmail, otpOrMfaCode);
+      const loginRes = await adminApi.login(cleanLoginId, secret.trim(), isPassword);
       const token = (loginRes as any)?.accessToken || (loginRes as any)?.token;
       if (token && typeof window !== "undefined") {
         localStorage.setItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY, token);

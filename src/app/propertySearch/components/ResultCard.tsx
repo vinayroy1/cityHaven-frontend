@@ -273,17 +273,17 @@ export function ResultCard({
         }
         return;
       } catch {
-        // Fall through to OTP collection when authenticated checks fail.
+        // Fall through to redirect when token check fails
       }
     }
 
-    setSessionToken(null);
-    setContactStep("details");
-    setOtp("");
-    setOtpSent(false);
-    setResendSeconds(0);
-    setSelectedPlan("power");
+    // Unauthenticated user -> redirect to login with return URL
+    const targetUrl = slug ? `/property/${slug}` : `/properties/${id}`;
+    const returnUrl = encodeURIComponent(`${targetUrl}?autoUnlock=true`);
+    router.push(`/login?redirect=${returnUrl}`);
+    setContactOpen(false);
     setLoading(false);
+    return;
   };
 
   const requestOtp = async () => {
@@ -329,14 +329,20 @@ export function ResultCard({
     }
   };
 
-  const verifyLeadDetails = async () => {
-    if (!otpSent || leadPhone.trim().length < 10 || otp.trim().length < 6) return;
+  const verifyLeadDetails = async (inputPassword?: string) => {
+    const isOtpEnabled = process.env.NEXT_PUBLIC_ENABLE_OTP_FLOW === "true";
+    if (isOtpEnabled) {
+      if (!otpSent || leadPhone.trim().length < 10 || otp.trim().length < 6) return;
+    } else {
+      if (leadPhone.trim().length < 10) return;
+    }
     setOtpError(null);
     setLoading(true);
     try {
       const res = await verifyContactOtp({
         mobileNumber: leadPhone.trim(),
-        otp: otp.trim(),
+        otp: isOtpEnabled ? otp.trim() : undefined,
+        password: inputPassword,
         propertyId: id,
         source: "property_search_result_card",
         city: subtitle || undefined,

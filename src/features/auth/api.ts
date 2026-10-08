@@ -4,8 +4,14 @@ import { baseQueryWithReauth } from "@/lib/api/baseQueryWithReauth";
 
 export type RequestOtpPayload = { mobileNumber: string };
 export type VerifyOtpPayload = { mobileNumber: string; otp: string };
-export type TokenResponse = { accessToken?: string; refreshToken?: string; user?: unknown; isNewUser?: boolean };
+export type LoginPayload = { loginId: string; password: string };
+export type SignupPayload = { name: string; email: string; mobileNumber: string; password: string };
+export type GoogleAuthPayload = { credential?: string; token?: string; email?: string; name?: string };
+export type TokenResponse = { accessToken?: string; refreshToken?: string; user?: any; isNewUser?: boolean };
 export type UpdateProfilePayload = { name?: string; email?: string };
+
+export type ForgotPasswordPayload = { email: string };
+export type ResetPasswordPayload = { email: string; otp: string; newPassword: string };
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -16,6 +22,30 @@ export const authApi = createApi({
         url: API_ENDPOINTS.auth.me,
         method: "GET",
       }),
+    }),
+    loginWithPassword: builder.mutation<TokenResponse, LoginPayload>({
+      query: (body) => ({
+        url: API_ENDPOINTS.auth.login,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: { data?: TokenResponse }) => response.data ?? {},
+    }),
+    signup: builder.mutation<TokenResponse, SignupPayload>({
+      query: (body) => ({
+        url: API_ENDPOINTS.auth.register,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: { data?: TokenResponse }) => response.data ?? {},
+    }),
+    googleAuth: builder.mutation<TokenResponse, GoogleAuthPayload>({
+      query: (body) => ({
+        url: `${API_ENDPOINTS.auth.login.replace(/\/login$/, '')}/google`,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: { data?: TokenResponse }) => response.data ?? {},
     }),
     requestOtp: builder.mutation<{ success?: boolean }, RequestOtpPayload>({
       query: (body) => ({
@@ -33,6 +63,28 @@ export const authApi = createApi({
       }),
       transformResponse: (response: { data?: TokenResponse }) => response.data ?? {},
     }),
+    forgotPassword: builder.mutation<{ success?: boolean; message?: string; email?: string; devOtp?: string }, ForgotPasswordPayload>({
+      query: (body) => ({
+        url: API_ENDPOINTS.auth.forgotPassword,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: { data?: any; message?: string }) => ({
+        ...(response.data ?? {}),
+        message: response.message,
+      }),
+    }),
+    resetPassword: builder.mutation<{ success?: boolean; message?: string }, ResetPasswordPayload>({
+      query: (body) => ({
+        url: API_ENDPOINTS.auth.resetPassword,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: { data?: any; message?: string }) => ({
+        ...(response.data ?? {}),
+        message: response.message,
+      }),
+    }),
     updateProfile: builder.mutation<{ success?: boolean; user?: any }, UpdateProfilePayload>({
       query: (body) => ({
         url: API_ENDPOINTS.auth.profile,
@@ -44,4 +96,15 @@ export const authApi = createApi({
   }),
 });
 
-export const { useRequestOtpMutation, useVerifyOtpMutation, useUpdateProfileMutation, useMeQuery, useLazyMeQuery } = authApi;
+export const {
+  useLoginWithPasswordMutation,
+  useSignupMutation,
+  useGoogleAuthMutation,
+  useRequestOtpMutation,
+  useVerifyOtpMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useUpdateProfileMutation,
+  useMeQuery,
+  useLazyMeQuery,
+} = authApi;

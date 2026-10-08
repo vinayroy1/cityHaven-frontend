@@ -7,6 +7,8 @@ import { StoreProvider } from "@/store/Providers";
 import { requestLocationPermissionOnce } from "@/lib/permissions";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { Toaster } from "@/components/ui/sonner";
+
 export function Providers({ children }: PropsWithChildren) {
   const [queryClient] = useState(() => new QueryClient());
 
@@ -17,7 +19,10 @@ export function Providers({ children }: PropsWithChildren) {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       <QueryClientProvider client={queryClient}>
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          {children}
+          <Toaster position="top-center" richColors closeButton duration={4000} />
+        </StoreProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

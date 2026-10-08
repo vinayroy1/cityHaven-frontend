@@ -413,6 +413,12 @@ export function countActiveFilters(state: SearchState): number {
   n += r.postedAs.length;
   if (r.bathroomsMin != null) n += 1;
   if (r.areaMin != null || r.areaMax != null) n += 1;
+  
+  // Count bhkTypes, but avoid double counting if it's just mirroring bedroomsMin
+  const mirroredBhk = state.bedroomsMin != null ? `${state.bedroomsMin} BHK` : null;
+  const uniqueBhkTypes = (r.bhkTypes || []).filter(b => b !== mirroredBhk);
+  n += uniqueBhkTypes.length;
+
   return n;
 }
 
@@ -452,11 +458,14 @@ export function describeFilters(
     });
   }
   if (state.bedroomsMin != null) {
-    chips.push({
-      id: "bhk",
-      label: `${state.bedroomsMin}+ BHK`,
-      remove: (s) => ({ ...s, bedroomsMin: undefined }),
-    });
+    const isMirrored = (state.refine.bhkTypes || []).includes(`${state.bedroomsMin} BHK`);
+    if (!isMirrored) {
+      chips.push({
+        id: "bhk",
+        label: `${state.bedroomsMin}+ BHK`,
+        remove: (s) => ({ ...s, bedroomsMin: undefined }),
+      });
+    }
   }
   state.refine.subType.forEach((slug) => {
     chips.push({
@@ -490,7 +499,15 @@ export function describeFilters(
     chips.push({
       id: `bhk:${v}`,
       label: v,
-      remove: (s) => ({ ...s, refine: { ...s.refine, bhkTypes: (s.refine.bhkTypes || []).filter((x) => x !== v) } }),
+      remove: (s) => {
+        const nextBhkTypes = (s.refine.bhkTypes || []).filter((x) => x !== v);
+        const isAutoSynced = s.bedroomsMin != null && v === `${s.bedroomsMin} BHK`;
+        return { 
+          ...s, 
+          bedroomsMin: isAutoSynced ? undefined : s.bedroomsMin,
+          refine: { ...s.refine, bhkTypes: nextBhkTypes } 
+        };
+      }
     });
   });
   (state.refine.amenities || []).forEach((v) => {

@@ -95,14 +95,14 @@ export const PROPERTY_TYPES = [
 
 export const PROPERTY_SUBTYPES = [
   // Residential
-  { name: "Apartment", slug: "apartment", propertyTypeSlug: "residential" },
-  { name: "Independent House / Villa", slug: "independent-house-villa", propertyTypeSlug: "residential" },
-  { name: "Independent / Builder Floor", slug: "independent-builder-floor", propertyTypeSlug: "residential" },
-  { name: "1 RK / Studio Apartment", slug: "1rk-studio-apartment", propertyTypeSlug: "residential" },
-  { name: "Serviced Apartment", slug: "serviced-apartment", propertyTypeSlug: "residential" },
-  { name: "Plot / Land", slug: "plot-land-res", propertyTypeSlug: "residential" },
-  { name: "Farmhouse", slug: "farmhouse", propertyTypeSlug: "residential" },
-  { name: "Other", slug: "residential-other", propertyTypeSlug: "residential" },
+  { name: "Flat / Apartment", slug: "apartment", propertyTypeSlug: "residential" },
+  { name: "Own House / Personal Home (Kothi / Villa)", slug: "independent-house-villa", propertyTypeSlug: "residential" },
+  { name: "Builder Floor / Separate Floor", slug: "independent-builder-floor", propertyTypeSlug: "residential" },
+  { name: "1 Room-Kitchen (1 RK / Studio)", slug: "1rk-studio-apartment", propertyTypeSlug: "residential" },
+  { name: "Furnished / Serviced Flat", slug: "serviced-apartment", propertyTypeSlug: "residential" },
+  { name: "Plot / Residential Land", slug: "plot-land-res", propertyTypeSlug: "residential" },
+  { name: "Farmhouse / Farm Home", slug: "farmhouse", propertyTypeSlug: "residential" },
+  { name: "Other Residential Property", slug: "residential-other", propertyTypeSlug: "residential" },
 
   // Commercial
   { name: "Office", slug: "office", propertyTypeSlug: "commercial" },

@@ -88,6 +88,7 @@ export interface PropertyLocationBlock {
   pincode?: string;
   latitude?: number | null;
   longitude?: number | null;
+  nearbyLandmarks?: Record<string, unknown> | null;
   totalTowers?: number | null;
   totalUnits?: number | null;
   constructionStatus?: string;
@@ -163,7 +164,7 @@ export interface PropertyDetailsBlock {
   shopFacadeSizeUnit?: string;
   locatedNear?: string[];
   passengerLifts?: number | null;
-  serviceLifts?: number | null;
+  serviceLifts?: number | null
   qualityRating?: string;
 }
 
