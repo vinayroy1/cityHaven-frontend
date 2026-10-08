@@ -62,12 +62,12 @@ describe("BrokerageField Component", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText("15 Days Rent")).toBeInTheDocument();
-    expect(screen.getByText("1 Month Rent")).toBeInTheDocument();
-    expect(screen.getByText("Zero Brokerage")).toBeInTheDocument();
-    expect(screen.getByText(/Awasio Platform Guarantee: 0% Platform Brokerage/i)).toBeInTheDocument();
-    expect(screen.getByText(/Based on monthly rent of/i)).toBeInTheDocument();
-    expect(screen.getByText(/₹15,000/i)).toBeInTheDocument();
+    expect(screen.getByText("15 Days Rent")).toBeTruthy();
+    expect(screen.getByText("1 Month Rent")).toBeTruthy();
+    expect(screen.getByText("Zero Brokerage")).toBeTruthy();
+    expect(screen.getByText(/Awasio Platform Guarantee: 0% Platform Brokerage/i)).toBeTruthy();
+    expect(screen.getByText(/Based on monthly rent of/i)).toBeTruthy();
+    expect(screen.getByText(/₹15,000/i)).toBeTruthy();
   });
 
   test("renders sale options for SELL listing type", () => {
@@ -77,9 +77,9 @@ describe("BrokerageField Component", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText("1% of Total Value")).toBeInTheDocument();
-    expect(screen.getByText("2% of Total Value")).toBeInTheDocument();
-    expect(screen.getByText(/Based on property price of/i)).toBeInTheDocument();
-    expect(screen.getByText(/₹50,000/i)).toBeInTheDocument();
+    expect(screen.getByText("1% of Total Value")).toBeTruthy();
+    expect(screen.getByText("2% of Total Value")).toBeTruthy();
+    expect(screen.getByText(/Based on property price of/i)).toBeTruthy();
+    expect(screen.getByText(/₹50,000/i)).toBeTruthy();
   });
 });

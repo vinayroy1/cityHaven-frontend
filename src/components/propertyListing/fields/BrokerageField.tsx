@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
-import { Check, Info, ShieldCheck, Sparkles, Percent } from "lucide-react";
+import { Check, ShieldCheck, Sparkles } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 import { amountToWords } from "./numberToWords";
 import { formatIndianCurrency } from "@/lib/propertyListing/formatBrokerage";
@@ -91,33 +91,46 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
   const isRent = listingType === "RENT" || listingType === "PG";
   const options = isRent ? RENT_OPTIONS : SELL_OPTIONS;
   const currentPrice = priceRaw ? Number(priceRaw) : 0;
+  const activeType = brokerageType || (isRent ? "HALF_MONTH_RENT" : "ONE_PERCENT");
 
-  // Set default brokerage type if none selected
+  // Mount only: initialize default brokerage type and computed amount if absent
   useEffect(() => {
-    if (!brokerageType) {
+    const existingType = form.getValues("pricing.brokerageType");
+    if (!existingType) {
       const defaultType = isRent ? "HALF_MONTH_RENT" : "ONE_PERCENT";
-      form.setValue("pricing.brokerageType", defaultType, { shouldDirty: true });
-    }
-  }, [brokerageType, isRent, form]);
+      form.setValue("pricing.brokerageType", defaultType, { shouldDirty: false });
 
-  // Keep auto-calculated amounts in sync when price or type changes
+      const p = Number(form.getValues("pricing.price") || 0);
+      let calc = 0;
+      if (defaultType === "HALF_MONTH_RENT") calc = p > 0 ? Math.round(p / 2) : 0;
+      else if (defaultType === "ONE_PERCENT") calc = p > 0 ? Math.round(p * 0.01) : 0;
+
+      if (form.getValues("pricing.brokerage") === undefined || form.getValues("pricing.brokerage") === null) {
+        form.setValue("pricing.brokerage", calc, { shouldDirty: false });
+      }
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Synchronize computed brokerage amount only when price actually changes
+  const lastPriceRef = useRef<number>(currentPrice);
   useEffect(() => {
-    if (brokerageType === "HALF_MONTH_RENT") {
-      const calculated = currentPrice > 0 ? Math.round(currentPrice / 2) : 0;
-      form.setValue("pricing.brokerage", calculated, { shouldDirty: true });
-    } else if (brokerageType === "ONE_MONTH_RENT") {
-      form.setValue("pricing.brokerage", currentPrice > 0 ? currentPrice : 0, { shouldDirty: true });
-    } else if (brokerageType === "ONE_PERCENT") {
-      const calculated = currentPrice > 0 ? Math.round(currentPrice * 0.01) : 0;
-      form.setValue("pricing.brokerage", calculated, { shouldDirty: true });
-    } else if (brokerageType === "TWO_PERCENT") {
-      const calculated = currentPrice > 0 ? Math.round(currentPrice * 0.02) : 0;
-      form.setValue("pricing.brokerage", calculated, { shouldDirty: true });
-    } else if (brokerageType === "ZERO") {
-      form.setValue("pricing.brokerage", 0, { shouldDirty: true });
-    }
-  }, [brokerageType, currentPrice, form]);
+    if (lastPriceRef.current === currentPrice) return;
+    lastPriceRef.current = currentPrice;
 
+    const currentType = form.getValues("pricing.brokerageType") || activeType;
+    let targetAmt: number | null = null;
+    if (currentType === "HALF_MONTH_RENT") targetAmt = currentPrice > 0 ? Math.round(currentPrice / 2) : 0;
+    else if (currentType === "ONE_MONTH_RENT") targetAmt = currentPrice > 0 ? currentPrice : 0;
+    else if (currentType === "ONE_PERCENT") targetAmt = currentPrice > 0 ? Math.round(currentPrice * 0.01) : 0;
+    else if (currentType === "TWO_PERCENT") targetAmt = currentPrice > 0 ? Math.round(currentPrice * 0.02) : 0;
+    else if (currentType === "ZERO") targetAmt = 0;
+
+    if (targetAmt !== null && form.getValues("pricing.brokerage") !== targetAmt) {
+      form.setValue("pricing.brokerage", targetAmt, { shouldDirty: false });
+    }
+  }, [currentPrice, activeType]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // User interaction event handler: never loops
   const handleSelectType = (val: string) => {
     form.setValue("pricing.brokerageType", val, { shouldDirty: true });
     if (val === "HALF_MONTH_RENT") {
@@ -132,14 +145,15 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
       form.setValue("pricing.brokerage", 0, { shouldDirty: true });
     } else if (val === "FIXED" || val === "PERCENTAGE") {
       // Clear auto-calculated price so user can enter custom number
-      if (brokerageVal === 0 || [Math.round(currentPrice / 2), currentPrice, Math.round(currentPrice * 0.01), Math.round(currentPrice * 0.02)].includes(brokerageVal)) {
+      const prevAuto = [Math.round(currentPrice / 2), currentPrice, Math.round(currentPrice * 0.01), Math.round(currentPrice * 0.02), 0];
+      if (brokerageVal !== null && prevAuto.includes(Number(brokerageVal))) {
         form.setValue("pricing.brokerage", null, { shouldDirty: true });
       }
     }
   };
 
   const words =
-    brokerageType === "FIXED" && brokerageVal && Number(brokerageVal) > 0
+    activeType === "FIXED" && brokerageVal && Number(brokerageVal) > 0
       ? amountToWords(Number(brokerageVal))
       : null;
 
@@ -163,7 +177,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
         </label>
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
           {options.map((opt) => {
-            const isSelected = brokerageType === opt.value;
+            const isSelected = activeType === opt.value;
             return (
               <button
                 key={opt.value}
@@ -210,7 +224,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
 
       {/* Auto-Calculation / Custom Input Preview */}
       <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/40">
-        {brokerageType === "HALF_MONTH_RENT" && (
+        {activeType === "HALF_MONTH_RENT" && (
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs font-semibold text-rose-700 dark:text-rose-400">
               <Sparkles className="h-4 w-4" />
@@ -232,7 +246,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
           </div>
         )}
 
-        {brokerageType === "ONE_MONTH_RENT" && (
+        {activeType === "ONE_MONTH_RENT" && (
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs font-semibold text-rose-700 dark:text-rose-400">
               <Sparkles className="h-4 w-4" />
@@ -254,7 +268,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
           </div>
         )}
 
-        {brokerageType === "ONE_PERCENT" && (
+        {activeType === "ONE_PERCENT" && (
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs font-semibold text-rose-700 dark:text-rose-400">
               <Sparkles className="h-4 w-4" />
@@ -276,7 +290,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
           </div>
         )}
 
-        {brokerageType === "TWO_PERCENT" && (
+        {activeType === "TWO_PERCENT" && (
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs font-semibold text-rose-700 dark:text-rose-400">
               <Sparkles className="h-4 w-4" />
@@ -298,7 +312,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
           </div>
         )}
 
-        {brokerageType === "ZERO" && (
+        {activeType === "ZERO" && (
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-400">
               <ShieldCheck className="h-4 w-4" />
@@ -310,7 +324,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
           </div>
         )}
 
-        {brokerageType === "FIXED" && (
+        {activeType === "FIXED" && (
           <div className="space-y-2">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
               Enter Fixed Brokerage Amount (₹)
@@ -343,7 +357,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
           </div>
         )}
 
-        {brokerageType === "PERCENTAGE" && (
+        {activeType === "PERCENTAGE" && (
           <div className="space-y-2">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
               Enter Custom Brokerage Percentage (%)
