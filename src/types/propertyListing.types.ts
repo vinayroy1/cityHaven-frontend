@@ -168,6 +168,15 @@ export interface PropertyDetailsBlock {
   qualityRating?: string;
 }
 
+export type BrokerageType =
+  | "HALF_MONTH_RENT"
+  | "ONE_MONTH_RENT"
+  | "ONE_PERCENT"
+  | "TWO_PERCENT"
+  | "PERCENTAGE"
+  | "FIXED"
+  | "ZERO";
+
 export interface PricingFinancialsBlock {
   price?: number | null;
   priceType?: string;
@@ -191,7 +200,7 @@ export interface PricingFinancialsBlock {
   expectedRental?: number | null;
   expectedAnnualReturns?: number | null;
   brokerage?: number | null;
-  brokerageType?: string;
+  brokerageType?: BrokerageType | string;
   brokerageNegotiable?: boolean;
   taxGovtCharges?: number | null;
 }

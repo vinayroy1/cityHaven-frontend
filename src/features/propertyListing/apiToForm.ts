@@ -203,6 +203,7 @@ export function mapApiToForm(flat: Flat): PropertyListingFormValues {
       bookingAmount: n(flat.bookingAmount),
       brokerage: n(flat.brokerage),
       brokerageType: s(flat.brokerageType),
+      brokerageNegotiable: b(flat.brokerageNegotiable) ?? true,
     },
     availability: {
       availabilityStatus: s(flat.availabilityStatus) as PropertyListingFormValues["availability"]["availabilityStatus"],

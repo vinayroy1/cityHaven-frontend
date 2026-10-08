@@ -13,6 +13,7 @@ import { OwnerContactCard } from "./components/OwnerContactCard";
 import { PropertyDetailsGrid, type DetailGroup } from "./components/PropertyDetailsGrid";
 import { QuickFactsGrid, type QuickFact } from "./components/QuickFactsGrid";
 import { TransactionCard } from "./components/TransactionCard";
+import { getBrokerageDisplay } from "@/lib/propertyListing/formatBrokerage";
 
 type PropertyMedia = { url?: string | null; type?: string | null };
 type AmenityGroup = {
@@ -64,6 +65,7 @@ type PropertyDetails = {
   maintenancePaymentPeriod?: string | null;
   brokerage?: number | null;
   brokerageType?: string | null;
+  brokerageNegotiable?: boolean | null;
   pricePerSqFt?: number | null;
   priceNegotiable?: boolean | null;
   allInclusivePrice?: boolean | null;
@@ -265,8 +267,13 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
         { label: "Price per sq.ft", value: property.pricePerSqFt ? formatMoney(property.pricePerSqFt) : null },
         { label: "Maintenance", value: property.maintenance ? formatMoney(property.maintenance) : null },
         { label: "Maintenance period", value: formatEnum(property.maintenancePaymentPeriod) },
-        { label: "Brokerage", value: property.brokerage ? formatMoney(property.brokerage) : null },
-        { label: "Brokerage type", value: formatEnum(property.brokerageType) },
+        {
+          label: "Brokerage",
+          value:
+            property.postedAs === "OWNER"
+              ? "0% Brokerage (Direct Owner)"
+              : getBrokerageDisplay(property.brokerage, property.brokerageType, property.brokerageNegotiable).fullText,
+        },
         { label: "Negotiable", value: property.priceNegotiable },
         { label: "All inclusive", value: property.allInclusivePrice },
         { label: "Tax/Govt excluded", value: property.taxAndGovtExcluded },

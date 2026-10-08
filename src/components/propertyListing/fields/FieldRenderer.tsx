@@ -24,6 +24,7 @@ import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import { chip as chipCls, errorText, fieldLabel, helpText as helpCls } from "../theme";
 import { amountToWords } from "./numberToWords";
 import { MediaField } from "./MediaField";
+import { BrokerageField } from "./BrokerageField";
 
 type Props = { field: FieldConfig; values: FormValues };
 
@@ -533,6 +534,9 @@ export function FieldRenderer({ field, values }: Props) {
 
     case "media":
       return <MediaField field={field} />;
+
+    case "brokerage":
+      return <BrokerageField field={field} disabled={disabled} />;
 
     default:
       return null;

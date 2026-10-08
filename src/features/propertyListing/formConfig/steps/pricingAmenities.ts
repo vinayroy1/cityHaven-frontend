@@ -86,22 +86,16 @@ export const pricingAmenitiesStep: StepConfig = {
     },
     {
       id: "brokerage",
-      title: "Brokerage",
-      collapsible: true,
-      defaultCollapsed: true,
+      title: "Brokerage details",
+      description: "Define your transaction fees for clients. Awasio does not charge any platform commission.",
+      collapsible: false,
       visibleWhen: preset("showBrokerage"),
       fields: [
-        money("pricing.brokerage", "Brokerage amount"),
         {
-          id: "pricing.brokerageType",
-          label: "Brokerage type",
-          type: "select",
-          options: [
-            { value: "PERCENTAGE", label: "Percentage" },
-            { value: "FIXED", label: "Fixed" },
-          ],
+          id: "pricing.brokerageBlock",
+          label: "Brokerage terms",
+          type: "brokerage",
         },
-        { id: "pricing.brokerageNegotiable", label: "Brokerage negotiable", type: "checkbox" },
       ],
     },
     {

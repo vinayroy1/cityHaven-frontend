@@ -26,6 +26,7 @@ import {
 
 
 import { PROPERTY_SUBTYPES } from "@/constants/backend-schema";
+import { getBrokerageDisplay } from "@/lib/propertyListing/formatBrokerage";
 
 interface ReviewSummaryProps {
   values: any;
@@ -292,6 +293,19 @@ export function ReviewSummary({ values, uploadedPhotos: explicitPhotos, onEditSt
             <DetailItem label="Price Negotiable" value={pricing.priceNegotiable ? "Yes" : "No"} />
             <DetailItem label="Security Deposit" value={pricing.deposit ? formatPrice(pricing.deposit, "SELL") : undefined} />
             <DetailItem label="Maintenance" value={pricing.maintenance ? `₹ ${pricing.maintenance.toLocaleString("en-IN")} ${pricing.maintenancePaymentPeriod || ""}` : undefined} />
+            {context.postedAs === "AGENT" && (
+              <DetailItem
+                label="Brokerage"
+                value={
+                  getBrokerageDisplay(
+                    pricing.brokerage,
+                    pricing.brokerageType,
+                    pricing.brokerageNegotiable
+                  ).fullText
+                }
+                highlight={pricing.brokerageType === "ZERO"}
+              />
+            )}
           </SectionCard>
         </div>
       )}

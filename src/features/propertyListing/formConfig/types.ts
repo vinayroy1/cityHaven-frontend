@@ -43,7 +43,8 @@ export type FieldType =
   | "measure"
   | "dimension"
   | "price"
-  | "media";
+  | "media"
+  | "brokerage";
 
 export type Option = {
   value: string | number | boolean;
