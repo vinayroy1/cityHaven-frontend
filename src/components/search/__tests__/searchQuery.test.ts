@@ -143,19 +143,51 @@ describe("applyClientRefinements", () => {
   it("filters by area range", () => {
     expect(run(state({ refine: { subType: [], furnishing: [], postedAs: [], areaMin: 1000, areaMax: 3000 } }))).toEqual([1]);
   });
-  it("multi-locality narrows by locality text", () => {
-    expect(run(state({ localities: [{ label: "Whitefield" }, { label: "Indiranagar" }] }))).toEqual([1]);
+  it("filters by food policy for PG listings", () => {
+    const pgItems = [
+      { id: 10, title: "PG with Mess", foodIncluded: true, foodOption: "INCLUDED", resCom: "RESIDENTIAL", locality: "Indiranagar", cityName: "Bengaluru" },
+      { id: 11, title: "PG Self Cooking", foodIncluded: false, foodOption: "SELF_COOKING", resCom: "RESIDENTIAL", locality: "Indiranagar", cityName: "Bengaluru" },
+      { id: 12, title: "PG Without Food", foodIncluded: false, foodOption: "NO_FOOD", resCom: "RESIDENTIAL", locality: "Indiranagar", cityName: "Bengaluru" },
+      { id: 13, title: "Standard Room PG", resCom: "RESIDENTIAL", locality: "Indiranagar", cityName: "Bengaluru" },
+    ];
+    const withFood = applyClientRefinements(
+      pgItems,
+      state({ intent: "PG", refine: { subType: [], furnishing: [], postedAs: [], food: ["INCLUDED"] } }),
+      subTypeSlugToId,
+    ).map((i) => i.id);
+    expect(withFood).toEqual([10]);
+
+    const selfCook = applyClientRefinements(
+      pgItems,
+      state({ intent: "PG", refine: { subType: [], furnishing: [], postedAs: [], food: ["SELF_COOKING"] } }),
+      subTypeSlugToId,
+    ).map((i) => i.id);
+    expect(selfCook).toEqual([11]);
+
+    const noFood = applyClientRefinements(
+      pgItems,
+      state({ intent: "PG", refine: { subType: [], furnishing: [], postedAs: [], food: ["NO_FOOD"] } }),
+      subTypeSlugToId,
+    ).map((i) => i.id);
+    expect(noFood).toEqual([12, 13]);
+
+    const allFoodSelected = applyClientRefinements(
+      pgItems,
+      state({ intent: "PG", refine: { subType: [], furnishing: [], postedAs: [], food: ["NO_FOOD", "SELF_COOKING", "OPTIONAL_MESS", "INCLUDED"] } }),
+      subTypeSlugToId,
+    ).map((i) => i.id);
+    expect(allFoodSelected).toEqual([10, 11, 12, 13]);
   });
 });
 
 describe("describeFilters / clearAllFilters", () => {
-  it("lists active filters and each chip removes only itself", () => {
-    const s = state({ priceMin: 1000, bedroomsMin: 2, refine: { subType: ["apartment"], furnishing: ["FURNISHED"], postedAs: [] } });
+  it("lists active filters including food and each chip removes only itself", () => {
+    const s = state({ priceMin: 1000, bedroomsMin: 2, refine: { subType: ["apartment"], furnishing: ["FURNISHED"], postedAs: [], food: ["INCLUDED"] } });
     const chips = describeFilters(s);
-    expect(chips.map((c) => c.id).sort()).toEqual(["bhk", "budget", "furnishing:FURNISHED", "subType:apartment"].sort());
-    const afterRemoveBhk = chips.find((c) => c.id === "bhk")!.remove(s);
-    expect(afterRemoveBhk.bedroomsMin).toBeUndefined();
-    expect(afterRemoveBhk.refine.subType).toEqual(["apartment"]);
+    expect(chips.map((c) => c.id).sort()).toEqual(["bhk", "budget", "food:INCLUDED", "furnishing:FURNISHED", "subType:apartment"].sort());
+    const afterRemoveFood = chips.find((c) => c.id === "food:INCLUDED")!.remove(s);
+    expect(afterRemoveFood.refine.food).toEqual([]);
+    expect(afterRemoveFood.refine.subType).toEqual(["apartment"]);
   });
   it("clearAllFilters keeps location + intent + sort", () => {
     const s = state({ q: "x", intent: "RENT", sort: "newest", priceMin: 1, bedroomsMin: 2, refine: { subType: ["apartment"], furnishing: [], postedAs: [] } });

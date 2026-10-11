@@ -4,16 +4,20 @@
 
 import { preset } from "../conditions";
 import {
+  accommodationTypeOptions,
   ageOfPropertyOptions,
   areaUnitOptions,
   businessUseOptions,
   constructionStatusOptions,
   constructionTypeOptions,
+  electricityTypeOptions,
   facingOptions,
   fireSafetyOptions,
   floorOptions,
+  foodOptionOptions,
   furnishingItems,
   furnishingOptions,
+  gateClosingTimeOptions,
   kitchenTypeOptions,
   lengthUnitOptions,
   locatedNearOptions,
@@ -24,6 +28,7 @@ import {
   pantryTypeOptions,
   pgForOptions,
   possessionByOptions,
+  pricingBasisOptions,
   qualityRatingOptions,
   sharingTypeOptions,
   washroomTypeOptions,
@@ -240,34 +245,122 @@ export const propertyProfileStep: StepConfig = {
 
     {
       id: "pg",
-      title: "PG details",
+      title: "PG / Hostel / Lodge Accommodation Details",
       visibleWhen: preset("isPG"),
       fields: [
-        { id: "details.pgFor", label: "Allowed for", type: "chip-radio", options: pgForOptions, required: true },
+        {
+          id: "details.accommodationType",
+          label: "Accommodation category",
+          type: "chip-radio",
+          options: accommodationTypeOptions,
+          required: true,
+        },
+        {
+          id: "details.pgFor",
+          label: "Available for (Gender / Occupant)",
+          type: "chip-radio",
+          options: pgForOptions,
+          required: true,
+        },
         {
           id: "details.availableFor",
-          label: "Suitable for",
+          label: "Preferred tenant",
           type: "chip-radio",
           options: [
             { value: "STUDENTS", label: "Students" },
-            { value: "WORKING_PROFESSIONALS", label: "Working professionals" },
-            { value: "ANY", label: "Anyone" },
+            { value: "WORKING_PROFESSIONALS", label: "Working Professionals" },
+            { value: "ANY", label: "Anyone (Students or Working)" },
           ],
         },
-        { id: "details.sharingType", label: "Room sharing", type: "select", options: sharingTypeOptions },
-        counter("details.totalBeds", "Total beds", { max: 60 }),
-        counter("details.availableBeds", "Beds available", { max: 60 }),
-        { id: "details.foodIncluded", label: "Food included", type: "toggle" },
+        {
+          id: "details.pricingBasis",
+          label: "Pricing & room model",
+          type: "chip-radio",
+          options: pricingBasisOptions,
+          required: true,
+        },
+
+        // Per-room fields (when renting entire room)
+        counter("details.maxPersonsInRoom", "Max students / persons allowed per room", {
+          visibleWhen: preset("isPgRoomBasis"),
+          min: 1,
+          max: 6,
+        }),
+        counter("details.totalRoomsAvailable", "Total vacant rooms available", {
+          visibleWhen: preset("isPgRoomBasis"),
+          min: 1,
+          max: 50,
+        }),
+
+        // Per-bed fields (when renting per bed/seat)
+        {
+          id: "details.sharingType",
+          label: "Room sharing (Capacity)",
+          type: "select",
+          options: sharingTypeOptions,
+          visibleWhen: preset("isPgBedBasis"),
+        },
+        counter("details.totalBeds", "Total beds in property", {
+          visibleWhen: preset("isPgBedBasis"),
+          max: 100,
+        }),
+        counter("details.availableBeds", "Vacant beds currently available", {
+          visibleWhen: preset("isPgBedBasis"),
+          max: 100,
+        }),
+
+        // Food & Mess Policy
+        {
+          id: "details.foodOption",
+          label: "Food & mess facility",
+          type: "chip-radio",
+          options: foodOptionOptions,
+          required: true,
+        },
         {
           id: "details.mealType",
-          label: "Meals provided",
+          label: "Meals included in rent",
           type: "select",
           options: mealTypeOptions,
-          visibleWhen: { field: "details.foodIncluded", equals: true },
+          visibleWhen: preset("pgHasFoodIncluded"),
         },
-        { id: "details.acAvailable", label: "AC available", type: "toggle" },
-        { id: "details.attachedBathroom", label: "Attached bathroom", type: "toggle" },
-        { id: "details.attachedBalcony", label: "Attached balcony", type: "toggle" },
+        num("details.messCharges", "Optional mess charges (₹ / month)", {
+          visibleWhen: preset("pgHasOptionalMess"),
+          min: 0,
+        }),
+
+        // Electricity Policy
+        {
+          id: "details.electricityType",
+          label: "Electricity billing terms",
+          type: "chip-radio",
+          options: electricityTypeOptions,
+          required: true,
+        },
+        num("details.electricityRatePerUnit", "Electricity rate per unit (₹ / unit)", {
+          visibleWhen: preset("pgHasSubMeter"),
+          min: 0,
+        }),
+        num("details.electricityMonthlyCharge", "Fixed monthly electricity fee (₹ / month)", {
+          visibleWhen: preset("pgHasFixedElectricity"),
+          min: 0,
+        }),
+
+        // Essential student & living amenities
+        { id: "details.attachedBathroom", label: "Attached washroom (Private for room)", type: "toggle" },
+        { id: "details.hasStudyTable", label: "Study table & chair in room", type: "toggle" },
+        { id: "details.hasRoWater", label: "RO clean drinking water provided", type: "toggle" },
+        { id: "details.hasPowerBackup", label: "Power backup / Inverter facility", type: "toggle" },
+        { id: "details.acAvailable", label: "AC / Air cooler provided", type: "toggle" },
+        { id: "details.attachedBalcony", label: "Attached balcony / window ventilation", type: "toggle" },
+
+        // Curfew & Rules
+        {
+          id: "details.gateClosingTime",
+          label: "Main gate closing / curfew time",
+          type: "select",
+          options: gateClosingTimeOptions,
+        },
       ],
     },
 

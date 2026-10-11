@@ -1,7 +1,8 @@
 import React, { cache } from "react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { BadgeCheck, Bath, BedDouble, CalendarClock, Home, Landmark, Maximize } from "lucide-react";
+import { BadgeCheck, Bath, BedDouble, Building2, CalendarClock, ChevronRight, Home, Landmark, Maximize } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { buildCanonical, SITE_URL } from "@/constants/seo";
@@ -23,6 +24,7 @@ type AmenityGroup = {
 type PropertyDetails = {
   id: number;
   slug?: string | null;
+  status?: string | null;
   title?: string | null;
   description?: string | null;
   price?: number | null;
@@ -87,6 +89,23 @@ type PropertyDetails = {
   receptionArea?: boolean | null;
   centralAirConditioning?: boolean | null;
   zoneType?: string | null;
+  // PG & Student Accommodation fields
+  accommodationType?: string | null;
+  pricingBasis?: string | null;
+  maxPersonsInRoom?: number | null;
+  totalRoomsAvailable?: number | null;
+  foodOption?: string | null;
+  messCharges?: number | null;
+  electricityType?: string | null;
+  electricityRatePerUnit?: number | null;
+  electricityMonthlyCharge?: number | null;
+  hasStudyTable?: boolean | null;
+  hasRoWater?: boolean | null;
+  hasPowerBackup?: boolean | null;
+  gateClosingTime?: string | null;
+  sharingType?: string | null;
+  pgFor?: string | null;
+  mealType?: string | null;
   locatedInside?: { name?: string | null } | null;
   cityName?: string | null;
   locality?: string | null;
@@ -165,13 +184,53 @@ function postedAgo(createdAt?: string | null) {
   return months === 1 ? "1 month ago" : `${months} months ago`;
 }
 
+function isPgRoomWise(property: PropertyDetails): boolean {
+  if (property.pricingBasis === "PER_ROOM") return true;
+  if (property.pricingBasis === "PER_BED") return false;
+  const subTypeSlug = property.propertySubType?.slug?.toLowerCase() ?? "";
+  const subTypeName = property.propertySubType?.name?.toLowerCase() ?? "";
+  const roomType = property.roomType?.toUpperCase() ?? "";
+  return (
+    roomType === "PRIVATE_ROOM" ||
+    subTypeSlug.includes("private") ||
+    subTypeName.includes("private")
+  );
+}
+
 function buildQuickFacts(property: PropertyDetails): QuickFact[] {
+  const isPg = property.listingType?.toUpperCase() === "PG" || property.propertyType?.slug === "pg";
   const area = getArea(property);
   const facts: QuickFact[] = [
-    { label: area.label, value: area.value, hint: property.propertySubType?.name ?? property.propertyType?.name ?? "Listed area", icon: Maximize },
+    {
+      label: area.label,
+      value: area.value,
+      hint: isPg ? (property.roomType ? formatEnum(property.roomType) : "Room area") : (property.propertySubType?.name ?? property.propertyType?.name ?? "Listed area"),
+      icon: Maximize,
+    },
   ];
 
-  if (property.bedrooms || property.bathrooms || property.balconies) {
+  if (isPg) {
+    const roomWise = isPgRoomWise(property);
+    const roomModel = roomWise
+      ? (property.maxPersonsInRoom ? `${property.maxPersonsInRoom} Person Room` : "Private Room")
+      : (property.sharingType
+          ? formatEnum(property.sharingType)
+          : property.sharingCapacity
+          ? `${property.sharingCapacity} Sharing Room`
+          : property.propertySubType?.name ?? "Shared Room");
+    facts.push({
+      label: "Room type",
+      value: roomModel,
+      hint: roomWise
+        ? (property.pgFor ? `For ${formatEnum(property.pgFor)}` : "Single / Full Room Occupancy")
+        : (property.availableBeds
+          ? `${property.availableBeds} bed${property.availableBeds > 1 ? "s" : ""} available`
+          : property.pgFor
+          ? `For ${formatEnum(property.pgFor)}`
+          : "Room details"),
+      icon: BedDouble,
+    });
+  } else if (property.bedrooms || property.bathrooms || property.balconies) {
     facts.push({
       label: "Configuration",
       value: [property.bedrooms ? `${property.bedrooms} BHK` : null, property.bathrooms ? `${property.bathrooms} Bath` : null]
@@ -193,14 +252,14 @@ function buildQuickFacts(property: PropertyDetails): QuickFact[] {
     facts.push({
       label: "Furnishing",
       value: formatEnum(property.furnishing),
-      hint: formatEnum(property.possessionStatus) || "Interior details",
+      hint: isPg ? "Interior setup" : (formatEnum(property.possessionStatus) || "Interior details"),
       icon: Home,
     });
   } else if (property.possessionStatus || property.availabilityStatus) {
     facts.push({
       label: "Availability",
       value: formatEnum(property.possessionStatus ?? property.availabilityStatus),
-      hint: property.availableFrom ? `From ${formatDate(property.availableFrom)}` : "Possession details",
+      hint: property.availableFrom ? `From ${formatDate(property.availableFrom)}` : (isPg ? "Immediate Move-in" : "Possession details"),
       icon: CalendarClock,
     });
   }
@@ -210,6 +269,42 @@ function buildQuickFacts(property: PropertyDetails): QuickFact[] {
 }
 
 function buildHighlights(property: PropertyDetails) {
+  const isPg = property.listingType?.toUpperCase() === "PG" || property.propertyType?.slug === "pg";
+  if (isPg) {
+    return [
+      ...(property.furnishing ? [{ title: formatEnum(property.furnishing), detail: "Furnishing setup", icon: Home }] : []),
+      {
+        title:
+          property.foodOption === "INCLUDED" || property.foodIncluded
+            ? "Meals Included"
+            : property.foodOption === "OPTIONAL_MESS"
+            ? (property.messCharges ? `Optional Mess (₹${property.messCharges.toLocaleString("en-IN")}/mo)` : "Optional Mess Available")
+            : property.foodOption === "SELF_COOKING"
+            ? "Self Cooking Kitchen"
+            : "Outside Food Allowed",
+        detail: property.mealType ? formatEnum(property.mealType) : "Food & Mess Policy",
+        icon: Landmark,
+      },
+      {
+        title: property.attachedBathroom
+          ? "Attached Washroom"
+          : property.bathrooms
+          ? `${property.bathrooms} Washroom(s)`
+          : "Common Washroom",
+        detail: "Hygiene & Sanitation",
+        icon: Bath,
+      },
+      {
+        title: property.availableFrom ? `From ${formatDate(property.availableFrom)}` : "Immediate Move-in",
+        detail:
+          property.gateClosingTime && property.gateClosingTime !== "NO_RESTRICTION"
+            ? `Gate closes at ${property.gateClosingTime.replace(/_/g, " ")}`
+            : "No Curfew / 24x7 Entry",
+        icon: CalendarClock,
+      },
+    ];
+  }
+
   return [
     ...(property.furnishing ? [{ title: formatEnum(property.furnishing), detail: "Furnishing", icon: Home }] : []),
     { title: formatEnum(property.transactionType) || "Transparent transaction", detail: formatEnum(property.ownershipType) || "Ownership details available on enquiry.", icon: Landmark },
@@ -219,6 +314,138 @@ function buildHighlights(property: PropertyDetails) {
 }
 
 function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
+  const isPg = property.listingType?.toUpperCase() === "PG" || property.propertyType?.slug === "pg";
+
+  if (isPg) {
+    const roomWise = isPgRoomWise(property);
+    const foodDisplay =
+      property.foodOption === "INCLUDED" || property.foodIncluded
+        ? (property.mealType ? `Included (${formatEnum(property.mealType)})` : "Included in Rent")
+        : property.foodOption === "OPTIONAL_MESS"
+        ? (property.messCharges ? `Optional Mess (₹${property.messCharges.toLocaleString("en-IN")}/mo)` : "Optional Mess Available")
+        : property.foodOption === "SELF_COOKING"
+        ? "Self Cooking Allowed (Kitchen provided)"
+        : "No Food / Outside Tiffin Allowed";
+
+    const electricityDisplay =
+      property.electricityType === "INCLUDED"
+        ? "Electricity Included in Rent"
+        : property.electricityType === "SUB_METER"
+        ? (property.electricityRatePerUnit ? `Sub-Meter (₹${property.electricityRatePerUnit}/unit)` : "Billed as per Sub-Meter Reading")
+        : property.electricityType === "FIXED_MONTHLY"
+        ? (property.electricityMonthlyCharge ? `Fixed Monthly Surcharge (₹${property.electricityMonthlyCharge}/mo)` : "Fixed Monthly Surcharge")
+        : (() => {
+            const desc = property.description?.toLowerCase() ?? "";
+            if (desc.includes("electricity charges are included") || desc.includes("electricity included")) {
+              return "Electricity Included in Rent";
+            }
+            if (desc.includes("sub-meter")) {
+              const match = desc.match(/₹\s*(\d+)\s*\/\s*unit/i);
+              return match ? `Sub-Meter (₹${match[1]}/unit)` : "Billed as per Sub-Meter Reading";
+            }
+            if (desc.includes("fixed monthly electricity")) {
+              const match = desc.match(/₹\s*(\d+)\s*\/\s*mo/i);
+              return match ? `Fixed Monthly Surcharge (₹${match[1]}/mo)` : "Fixed Monthly Surcharge";
+            }
+            return "Separate / Extra as per usage (Confirm with owner)";
+          })();
+
+    const curfewDisplay =
+      property.gateClosingTime && property.gateClosingTime !== "NO_RESTRICTION"
+        ? property.gateClosingTime.replace(/_/g, " ")
+        : "24x7 Entry / No Curfew";
+
+    return [
+      {
+        title: "Accommodation details",
+        items: [
+          { label: "Category", value: property.accommodationType ? formatEnum(property.accommodationType) : property.propertySubType?.name ?? "PG" },
+          { label: "Allowed for", value: property.pgFor ? formatEnum(property.pgFor) : undefined },
+          { label: "Preferred tenant", value: property.availableFor ? formatEnum(property.availableFor) : undefined },
+          { label: "Posted as", value: formatEnum(property.postedAs) },
+          { label: "Available from", value: property.availableFrom ? formatDate(property.availableFrom) : "Immediate Move-in" },
+          { label: "Status", value: formatEnum(property.availabilityStatus) },
+        ],
+      },
+      {
+        title: "Room & bed configuration",
+        items: [
+          { label: "Pricing model", value: roomWise ? "Entire Room Wise" : "Bed / Seat Wise" },
+          {
+            label: "Room sharing",
+            value: roomWise
+              ? "Private Room"
+              : property.sharingType
+              ? formatEnum(property.sharingType)
+              : property.sharingCapacity
+              ? `${property.sharingCapacity} Sharing Room`
+              : property.propertySubType?.name,
+          },
+          {
+            label: "Room occupancy",
+            value: property.maxPersonsInRoom
+              ? `${property.maxPersonsInRoom} Person${property.maxPersonsInRoom > 1 ? "s" : ""}`
+              : (roomWise ? "1 Person (Private Room)" : undefined),
+          },
+          { label: "Vacant rooms", value: property.totalRoomsAvailable },
+          ...(roomWise
+            ? []
+            : [
+                { label: "Available beds", value: property.availableBeds },
+                { label: "Total beds", value: property.totalBeds },
+              ]),
+          {
+            label: "Washroom type",
+            value: property.attachedBathroom ? "Attached (Private inside room)" : "Common / Floor Shared",
+          },
+          { label: "Furnishing", value: formatEnum(property.furnishing) },
+          { label: "Balcony", value: property.attachedBalcony ? "Attached Balcony" : undefined },
+          { label: "Floor", value: formatEnum(property.floorNumber) },
+        ],
+      },
+      {
+        title: "Food & living terms",
+        items: [
+          { label: "Food & mess", value: foodDisplay },
+          { label: "Electricity billing", value: electricityDisplay },
+          { label: "Gate curfew", value: curfewDisplay },
+          { label: "Study table & chair", value: property.hasStudyTable ? "Provided in room" : undefined },
+          { label: "RO drinking water", value: property.hasRoWater ? "Clean RO Water" : undefined },
+          { label: "Power backup", value: property.hasPowerBackup ? "Inverter / Full Backup" : undefined },
+          { label: "AC / Air cooler", value: property.acAvailable ? "Available" : undefined },
+          { label: "Lift", value: property.lift ? "Available" : undefined },
+          { label: "Parking", value: property.parkingAvailable ? "Available" : undefined },
+        ],
+      },
+      {
+        title: "Area",
+        items: [
+          { label: "Room / Carpet area", value: formatArea(property.carpetArea, property.carpetAreaUnit ?? property.areaUnit) },
+          { label: "Built-up area", value: formatArea(property.builtUpArea, property.builtUpAreaUnit ?? property.areaUnit) },
+        ],
+      },
+      {
+        title: "Pricing",
+        items: [
+          {
+            label: roomWise ? "Monthly room rent" : "Rent per bed / month",
+            value: property.price ? formatMoney(property.price) : null,
+          },
+          { label: "Security deposit", value: property.deposit ? formatMoney(property.deposit) : null },
+          { label: "Maintenance", value: property.maintenance ? formatMoney(property.maintenance) : null },
+          {
+            label: "Brokerage",
+            value:
+              property.postedAs === "OWNER"
+                ? "0% Brokerage (Direct Owner)"
+                : getBrokerageDisplay(property.brokerage, property.brokerageType, property.brokerageNegotiable).fullText,
+          },
+          { label: "Price negotiable", value: property.priceNegotiable ? "Yes" : "No" },
+        ],
+      },
+    ];
+  }
+
   return [
     {
       title: "Basic details",
@@ -302,7 +529,7 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
       ],
     },
     {
-      title: "PG / Commercial",
+      title: "Commercial details",
       items: [
         { label: "Room type", value: formatEnum(property.roomType) },
         { label: "Sharing capacity", value: property.sharingCapacity },
@@ -328,20 +555,31 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     property = null;
   }
 
-  if (!property) {
+  if (!property || property.status === "INACTIVE" || property.status === "DRAFT") {
     return {
       title: "Property Listing Not Found",
-      description: "The requested property listing could not be found on Awasio.",
+      description: "The requested property listing is not currently available on Awasio.",
     };
   }
 
-  const title = property.title || `${property.bedrooms ? `${property.bedrooms} BHK ` : ""}${property.propertySubType?.name ?? property.propertyType?.name ?? "Property"} in ${property.locality ?? property.cityName ?? "India"}`;
+  const isPg = property.listingType?.toUpperCase() === "PG" || property.propertyType?.slug === "pg";
+  const roomWise = isPgRoomWise(property);
+  const pgRoomType = roomWise
+    ? "Private Room"
+    : (property.sharingCapacity ? `${property.sharingCapacity} Sharing Room` : property.propertySubType?.name ?? "PG");
+
+  const fallbackTitle = isPg
+    ? `${pgRoomType} in ${property.locality ?? property.cityName ?? "India"}`
+    : `${property.bedrooms ? `${property.bedrooms} BHK ` : ""}${property.propertySubType?.name ?? property.propertyType?.name ?? "Property"} in ${property.locality ?? property.cityName ?? "India"}`;
+
+  const rawTitle = property.title || fallbackTitle;
+  const title = isPg ? rawTitle.replace(/^1\s*BHK\s*[-–·,]?\s*/i, "") : rawTitle;
   const location = compact([property.subLocality, property.localityRef?.name ?? property.locality, property.city?.name ?? property.cityName]);
   const price = formatMoney(property.price);
   const area = getArea(property);
   const description = property.description
     ? (property.description.length > 155 ? `${property.description.slice(0, 152)}...` : property.description)
-    : `${title} available for ${property.listingType?.toLowerCase() || "sale/rent"} in ${location || "prime location"}. Price: ${price}. Carpet area: ${area.value}. Verified listings on Awasio.`;
+    : `${title} available for ${property.listingType?.toLowerCase() || "stay"} in ${location || "prime location"}. Price: ${price}. Carpet area: ${area.value}. Verified listings on Awasio.`;
 
   const ogImages = property.media?.map((m) => m.url).filter(Boolean) as string[] | undefined;
   const canonicalUrl = buildCanonical(`/properties/${property.slug || id}`);
@@ -371,19 +609,46 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const property = await getProperty(id);
-  if (!property) notFound();
+  if (!property || property.status === "INACTIVE" || property.status === "DRAFT") notFound();
 
   // Consolidate legacy numeric URLs or older paths to the canonical SEO slug
   if (property.slug && id !== property.slug) {
     permanentRedirect(`/properties/${property.slug}`);
   }
 
+  const isPg = property.listingType?.toUpperCase() === "PG" || property.propertyType?.slug === "pg";
+  const roomWise = isPgRoomWise(property);
   const images = property.media?.map((item) => item.url).filter(Boolean) as string[] | undefined;
   const location = compact([property.subLocality, property.localityRef?.name ?? property.locality, property.city?.name ?? property.cityName]);
-  const title = property.title || `${property.bedrooms ? `${property.bedrooms} BHK ` : ""}${property.propertySubType?.name ?? property.propertyType?.name ?? "Property"} in ${property.locality ?? property.cityName ?? "Awasio"}`;
+
+  const pgRoomType = roomWise
+    ? "Private Room"
+    : (property.sharingCapacity ? `${property.sharingCapacity} Sharing Room` : property.propertySubType?.name ?? "PG");
+
+  const fallbackTitle = isPg
+    ? `${pgRoomType} in ${property.locality ?? property.cityName ?? "Awasio"}`
+    : `${property.bedrooms ? `${property.bedrooms} BHK ` : ""}${property.propertySubType?.name ?? property.propertyType?.name ?? "Property"} in ${property.locality ?? property.cityName ?? "Awasio"}`;
+
+  const rawTitle = property.title || fallbackTitle;
+  const title = isPg ? rawTitle.replace(/^1\s*BHK\s*[-–·,]?\s*/i, "") : rawTitle;
+
   const price = formatMoney(property.price);
   const area = getArea(property);
-  const tags = [formatEnum(property.listingType), formatEnum(property.resCom), property.postedAs ? `Posted by ${formatEnum(property.postedAs)}` : null, property.project?.name].filter(Boolean) as string[];
+  const tags = isPg
+    ? [
+        "PG / Lodge",
+        property.availableFor && property.availableFor !== "ALL"
+          ? `For ${formatEnum(property.availableFor)}`
+          : (property.pgFor ? `For ${formatEnum(property.pgFor)}` : null),
+        property.postedAs ? `Posted by ${formatEnum(property.postedAs)}` : null,
+      ].filter(Boolean) as string[]
+    : [
+        formatEnum(property.listingType),
+        formatEnum(property.resCom),
+        property.postedAs ? `Posted by ${formatEnum(property.postedAs)}` : null,
+        property.project?.name,
+      ].filter(Boolean) as string[];
+
   const amenities = property.amenitiesByCategory?.flatMap((group) => group.amenities?.map((item) => item.name).filter(Boolean) ?? []) as string[] | undefined;
 
   const schemaType = property.resCom?.toLowerCase() === "commercial"
@@ -417,7 +682,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       price: property.price || 0,
       priceCurrency: "INR",
       availability: "https://schema.org/InStock",
-      businessFunction: property.listingType?.toLowerCase().includes("rent") ? "https://schema.org/LeaseOut" : "https://schema.org/Sell",
+      businessFunction: property.listingType?.toLowerCase().includes("rent") || isPg ? "https://schema.org/LeaseOut" : "https://schema.org/Sell",
     },
   };
 
@@ -472,7 +737,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             title={title}
             subtitle={location || property.address || "Location available on request"}
             price={price}
-            priceHint={property.priceType ? formatEnum(property.priceType) : area.value}
+            priceHint={
+              isPg
+                ? (roomWise ? "per room / month" : "per bed / month")
+                : (property.priceType ? formatEnum(property.priceType) : area.value)
+            }
             category={property.propertySubCategory?.name ?? property.propertySubType?.name ?? property.propertyType?.name ?? "Property details"}
             tags={tags}
             ownerName={property.owner?.name || "Property owner"}
@@ -487,6 +756,32 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
           <div className="min-w-0 space-y-8">
             <GalleryStrip images={images?.length ? images : FALLBACK_IMAGES} title={property.propertySubType?.name ?? "Property gallery"} subtitle={`${images?.length ?? 0} photos available`} />
+
+            {property.project?.name && (
+              <div className="flex items-center justify-between rounded-2xl border border-rose-200 bg-rose-50/70 p-4 dark:border-rose-900/40 dark:bg-rose-950/20">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-rose-600 shadow-sm dark:bg-slate-900 dark:text-rose-400">
+                    <Building2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                      Master Project / Society
+                    </div>
+                    <div className="text-sm font-black text-slate-900 dark:text-white">
+                      Part of {property.project.name}
+                    </div>
+                  </div>
+                </div>
+                <Link
+                  href={`/new-projects/${property.project.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-rose-600 shadow-sm transition hover:bg-rose-50 dark:bg-slate-900 dark:text-rose-400 dark:hover:bg-slate-800"
+                >
+                  <span>View Project Brochure</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            )}
+
             <nav aria-label="Property sections" className="flex gap-6 overflow-x-auto border-b border-zinc-200 dark:border-slate-800 text-sm font-semibold">
               {[['overview', 'Overview'], ['details', 'Property details'], ['location', 'Location']].map(([anchor, label]) => <a key={anchor} href={`#${anchor}`} className="shrink-0 border-b-2 border-transparent pb-3 text-zinc-600 dark:text-slate-400 transition hover:border-emerald-600 hover:text-emerald-700 dark:hover:text-emerald-400">{label}</a>)}
             </nav>
@@ -496,7 +791,19 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               headline={location || property.address || "Location details"}
               description={property.address || "Exact address can be confirmed with the owner after enquiry."}
               nearby={[property.project?.name ? `Project: ${property.project.name}` : "Locality details available", property.cityName ? `City: ${property.cityName}` : "City information available on request"]}
-              infra={[area.value, property.furnishing ? `${formatEnum(property.furnishing)} furnishing` : "Furnishing details on request", property.possessionStatus ? formatEnum(property.possessionStatus) : "Possession details on request"]}
+              infra={
+                isPg
+                  ? [
+                      area.value !== "Ask owner" ? area.value : (property.sharingCapacity ? `${property.sharingCapacity} Sharing Room` : "PG / Lodge"),
+                      property.furnishing ? formatEnum(property.furnishing) : "Furnishing on request",
+                      property.availableFrom ? `Available from ${formatDate(property.availableFrom)}` : "Immediate Move-in Available",
+                    ]
+                  : [
+                      area.value,
+                      property.furnishing ? formatEnum(property.furnishing) : "Furnishing details on request",
+                      property.possessionStatus ? formatEnum(property.possessionStatus) : "Possession details on request",
+                    ]
+              }
             />
           </div>
 

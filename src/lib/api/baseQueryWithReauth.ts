@@ -69,6 +69,9 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
       url.includes("/auth/login") ||
       url.includes("/auth/register") ||
       url.includes("/auth/signup") ||
+      url.includes("/auth/send-signup-otp") ||
+      url.includes("/auth/forgot-password") ||
+      url.includes("/auth/reset-password") ||
       url.includes("/auth/verify-otp") ||
       url.includes("/auth/request-otp");
 

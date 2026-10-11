@@ -29,6 +29,7 @@ export type RefineState = {
   gatedCommunity?: string[]; // YES
   amenities?: string[]; // SECURITY | POWER_BACKUP | etc.
   bhkTypes?: string[]; // 1 BHK, 1.5 BHK, 2 BHK, etc.
+  food?: string[]; // INCLUDED | OPTIONAL_MESS | SELF_COOKING | NO_FOOD
   bathroomsMin?: number;
   areaMin?: number;
   areaMax?: number;
@@ -79,6 +80,7 @@ const emptyRefine = (): RefineState => ({
   gatedCommunity: [],
   amenities: [],
   bhkTypes: [],
+  food: [],
 });
 
 export const initialSearchState = (cityName = "Delhi"): SearchState => ({
@@ -164,6 +166,7 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
     areaMin: toNum(sp.get("r.areaMin")),
     areaMax: toNum(sp.get("r.areaMax")),
     bhkTypes: splitList(sp.get("r.bhkTypes")),
+    food: splitList(sp.get("r.food")).map((s) => s.toUpperCase()),
   };
 
   // Auto-sync UI chip for BHK if not set but bedroomsMin is provided
@@ -202,6 +205,7 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   if (r.areaMin != null) sp.set("r.areaMin", String(r.areaMin));
   if (r.areaMax != null) sp.set("r.areaMax", String(r.areaMax));
   if (r.bhkTypes && r.bhkTypes.length) sp.set("r.bhkTypes", r.bhkTypes.join(","));
+  if (r.food && r.food.length) sp.set("r.food", r.food.join(","));
 
   return sp;
 }
@@ -261,6 +265,7 @@ export function hasClientRefinements(state: SearchState): boolean {
     r.bathroomsMin != null ||
     r.areaMin != null ||
     r.areaMax != null ||
+    Boolean(r.food && r.food.length > 0 && r.food.length < 4) ||
     state.intent === "PLOT" || // PLOT still needs client-side subType slug filtering
     state.localities.length > 0
   );
@@ -270,6 +275,7 @@ export function hasClientRefinements(state: SearchState): boolean {
 
 export type RefinableItem = {
   title?: string | null;
+  description?: string | null;
   resCom?: string | null;
   furnishing?: string | null;
   postedAs?: string | null;
@@ -288,6 +294,10 @@ export type RefinableItem = {
   cityName?: string | null;
   locality?: string | null;
   subLocality?: string | null;
+  foodIncluded?: boolean | null;
+  foodOption?: string | null;
+  mealType?: string | null;
+  messCharges?: number | null;
 };
 
 /**
@@ -373,6 +383,71 @@ export function applyClientRefinements<T extends RefinableItem>(
       }
     }
 
+    if (refine.food?.length) {
+      // If all food options are selected, accept all listings
+      if (refine.food.length < 4) {
+        const isIncludedWanted = refine.food.includes("INCLUDED");
+        const isMessWanted = refine.food.includes("OPTIONAL_MESS");
+        const isCookingWanted = refine.food.includes("SELF_COOKING");
+        const isNoFoodWanted = refine.food.includes("NO_FOOD");
+
+        const rawFoodOpt = ((item as any).foodOption ?? "").toUpperCase();
+        const hasFoodIncluded = (item as any).foodIncluded === true || rawFoodOpt === "INCLUDED";
+        const hasMess = rawFoodOpt === "OPTIONAL_MESS" || (item as any).messCharges != null;
+        const hasSelfCooking = rawFoodOpt === "SELF_COOKING";
+        const hasNoFood =
+          rawFoodOpt === "NO_FOOD" ||
+          ((item as any).foodIncluded === false && !rawFoodOpt && !hasMess && !hasSelfCooking);
+
+        const desc = ((item as any).description ?? "").toLowerCase();
+        const title = ((item as any).title ?? "").toLowerCase();
+        const corpus = `${title} ${desc}`;
+
+        const corpusHasIncluded =
+          corpus.includes("meal") ||
+          corpus.includes("food included") ||
+          corpus.includes("breakfast") ||
+          corpus.includes("dinner") ||
+          corpus.includes("lunch");
+        const corpusHasMess = corpus.includes("mess") || corpus.includes("tiffin");
+        const corpusHasCooking =
+          corpus.includes("cooking") || corpus.includes("kitchen") || corpus.includes("self cooking");
+        const corpusHasNoFood =
+          corpus.includes("no food") ||
+          corpus.includes("without food") ||
+          corpus.includes("food not included") ||
+          corpus.includes("outside food") ||
+          corpus.includes("room only");
+
+        let matches = false;
+        if (isIncludedWanted && (hasFoodIncluded || corpusHasIncluded)) {
+          matches = true;
+        }
+        if (isMessWanted && (hasMess || corpusHasMess)) {
+          matches = true;
+        }
+        if (isCookingWanted && (hasSelfCooking || corpusHasCooking)) {
+          matches = true;
+        }
+        if (
+          isNoFoodWanted &&
+          (hasNoFood ||
+            corpusHasNoFood ||
+            (!hasFoodIncluded &&
+              !hasMess &&
+              !hasSelfCooking &&
+              !rawFoodOpt &&
+              !corpusHasIncluded &&
+              !corpusHasMess &&
+              !corpusHasCooking))
+        ) {
+          matches = true;
+        }
+
+        if (!matches) return false;
+      }
+    }
+
     if (refine.bathroomsMin != null && (item.bathrooms ?? 0) < refine.bathroomsMin) {
       return false;
     }
@@ -411,6 +486,7 @@ export function countActiveFilters(state: SearchState): number {
   n += r.subType.length;
   n += r.furnishing.length;
   n += r.postedAs.length;
+  if (r.food?.length) n += r.food.length;
   if (r.bathroomsMin != null) n += 1;
   if (r.areaMin != null || r.areaMax != null) n += 1;
   
@@ -431,6 +507,7 @@ export function describeFilters(
     subType?: (slug: string) => string;
     furnishing?: (v: string) => string;
     postedAs?: (v: string) => string;
+    food?: (v: string) => string;
     money?: (v: number) => string;
   } = {},
 ): FilterChip[] {
@@ -486,6 +563,19 @@ export function describeFilters(
       id: `postedAs:${v}`,
       label: labels.postedAs?.(v) ?? v,
       remove: (s) => ({ ...s, refine: { ...s.refine, postedAs: s.refine.postedAs.filter((x) => x !== v) } }),
+    });
+  });
+  (state.refine.food || []).forEach((v) => {
+    const labelMap: Record<string, string> = {
+      INCLUDED: "Meals Included",
+      OPTIONAL_MESS: "Optional Mess",
+      SELF_COOKING: "Self Cooking",
+      NO_FOOD: "Without Food",
+    };
+    chips.push({
+      id: `food:${v}`,
+      label: labels.food?.(v) ?? labelMap[v] ?? v.replace(/_/g, " "),
+      remove: (s) => ({ ...s, refine: { ...s.refine, food: (s.refine.food || []).filter((x) => x !== v) } }),
     });
   });
   (state.refine.possessionStatus || []).forEach((v) => {

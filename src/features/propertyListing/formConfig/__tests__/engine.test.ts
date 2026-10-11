@@ -135,6 +135,39 @@ describe("derive: configuration + title", () => {
     expect(deriveConfiguration(v)).toBe("Office");
     expect(suggestTitle(v)).toBe("Office for Sale in Pune");
   });
+
+  test("PG / Lodge bed-wise and room-wise configuration, titles, and pricing labels", () => {
+    const priceSec = pricingAmenitiesStep.sections!.find((s) => s.id === "price")!;
+
+    // 1. Bed-wise PG
+    const pgBed = ctx({ listingType: "PG", resCom: "RESIDENTIAL", propertySubTypeSlug: "pg-shared-room" });
+    pgBed.details = {
+      ...pgBed.details,
+      accommodationType: "LODGE",
+      pricingBasis: "PER_BED",
+      sharingType: "2 Sharing (Double Seater)",
+    };
+    pgBed.location = { ...pgBed.location, cityName: "Kota", locality: "Mahaveer Nagar" };
+    expect(deriveConfiguration(pgBed)).toBe("2 Sharing (Double Seater) Bed in Student Lodge");
+    expect(suggestTitle(pgBed)).toContain("Shared Room for Stay in Mahaveer Nagar, Kota");
+
+    const visiblePriceBed = priceSec.fields.filter((f) => evalC(pgBed, f.visibleWhen));
+    expect(visiblePriceBed.find((f) => f.id === "pricing.price")?.label).toBe("Rent per bed / month (₹)");
+
+    // 2. Room-wise PG / Lodge
+    const pgRoom = ctx({ listingType: "PG", resCom: "RESIDENTIAL", propertySubTypeSlug: "pg-private-room" });
+    pgRoom.details = {
+      ...pgRoom.details,
+      accommodationType: "LODGE",
+      pricingBasis: "PER_ROOM",
+      maxPersonsInRoom: 2,
+    };
+    pgRoom.location = { ...pgRoom.location, cityName: "Patna", locality: "Boring Road" };
+    expect(deriveConfiguration(pgRoom)).toBe("Student Lodge (2 Person Room)");
+
+    const visiblePriceRoom = priceSec.fields.filter((f) => evalC(pgRoom, f.visibleWhen));
+    expect(visiblePriceRoom.find((f) => f.id === "pricing.price")?.label).toBe("Monthly rent for room (₹)");
+  });
 });
 
 describe("scoring + mapper", () => {

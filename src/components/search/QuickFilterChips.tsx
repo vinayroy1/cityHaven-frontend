@@ -32,6 +32,8 @@ function summarise(state: SearchState, key: string): string | null {
       return state.refine.furnishing.length ? `Furnishing · ${state.refine.furnishing.length}` : null;
     case "postedAs":
       return state.refine.postedAs.length ? `Posted by · ${state.refine.postedAs.length}` : null;
+    case "food":
+      return state.refine.food?.length ? `Food · ${state.refine.food.length}` : null;
     default:
       return null;
   }
@@ -43,6 +45,7 @@ const DEFAULT_LABELS: Record<string, string> = {
   bathrooms: "Bathrooms",
   area: "Area",
   subType: "Property type",
+  food: "Food & Mess",
   furnishing: "Furnishing",
   postedAs: "Posted by",
 };

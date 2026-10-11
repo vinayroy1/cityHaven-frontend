@@ -30,6 +30,7 @@ import {
   useVerifyOtpMutation,
   useUpdateProfileMutation,
   useLoginWithPasswordMutation,
+  useSendSignupOtpMutation,
   useSignupMutation,
   useGoogleAuthMutation,
   useForgotPasswordMutation,
@@ -156,6 +157,9 @@ function LoginContent() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [isSignup, setIsSignup] = useState(false);
+  const [signupStep, setSignupStep] = useState<"details" | "verify_email">("details");
+  const [signupOtp, setSignupOtp] = useState("");
+  const [signupResendCountdown, setSignupResendCountdown] = useState(0);
   const [otpInput, setOtpInput] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -189,6 +193,7 @@ function LoginContent() {
   const [verifyOtp, { isLoading: verifyingOtp }] = useVerifyOtpMutation();
   const [updateProfile, { isLoading: updatingProfile }] = useUpdateProfileMutation();
   const [loginWithPassword, { isLoading: loggingIn }] = useLoginWithPasswordMutation();
+  const [sendSignupOtp, { isLoading: sendingSignupOtp }] = useSendSignupOtpMutation();
   const [signupUser, { isLoading: signingUp }] = useSignupMutation();
   const [googleAuth, { isLoading: authenticatingGoogle }] = useGoogleAuthMutation();
   const [forgotPassword, { isLoading: sendingForgotOtp }] = useForgotPasswordMutation();
@@ -231,6 +236,14 @@ function LoginContent() {
       return () => clearTimeout(timer);
     }
   }, [forgotResendCountdown]);
+
+  // Signup OTP countdown timer
+  useEffect(() => {
+    if (signupResendCountdown > 0) {
+      const timer = setTimeout(() => setSignupResendCountdown((prev) => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [signupResendCountdown]);
 
   async function handleSendForgotOtp(e?: React.FormEvent) {
     if (e) e.preventDefault();
@@ -362,46 +375,86 @@ function LoginContent() {
     }
   }
 
-  async function handlePasswordSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSendSignupEmailOtp(e?: React.FormEvent) {
+    if (e) e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const mobileRegex = /^[0-9]{10}$/;
 
-    if (isSignup) {
-      if (!fullName.trim()) {
-        toast.error("Please enter your full name.");
-        return;
-      }
-      if (!emailRegex.test(email.trim())) {
-        toast.error("Please enter a valid email address.");
-        return;
-      }
-      const cleanMobile = mobile.replace(/\D/g, "");
-      if (!mobileRegex.test(cleanMobile)) {
-        toast.error("Please enter a valid 10-digit mobile number.");
-        return;
-      }
-      if (password.length < 6) {
-        toast.error("Password must be at least 6 characters long.");
-        return;
-      }
+    if (!fullName.trim()) {
+      toast.error("Please enter your full name.");
+      return;
+    }
+    if (!emailRegex.test(email.trim())) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    const cleanMobile = mobile.replace(/\D/g, "");
+    if (!mobileRegex.test(cleanMobile)) {
+      toast.error("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long.");
+      return;
+    }
 
-      try {
-        const tokens = await signupUser({
-          name: fullName.trim(),
-          email: email.trim(),
-          mobileNumber: cleanMobile,
-          password,
-        }).unwrap();
-        handleAuthSuccess(tokens);
-      } catch (err: any) {
-        toast.error(err?.data?.message || err?.message || "Failed to create account. Please try again.");
-      }
-    } else {
-      const cleanLoginId = loginId.trim();
+    try {
+      const res = await sendSignupOtp({
+        name: fullName.trim(),
+        email: email.trim(),
+        mobileNumber: cleanMobile,
+      }).unwrap();
+      toast.success(res.message || `Verification code sent to ${email.trim()}`);
+      setSignupStep("verify_email");
+      setSignupOtp("");
+      setSignupResendCountdown(60);
+    } catch (err: any) {
+      // Toast notification automatically surfaced by baseQueryWithReauth
+    }
+  }
+
+  async function handleCompleteSignup(e: React.FormEvent) {
+    e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    const cleanOtp = signupOtp.trim();
+    if (!cleanOtp || cleanOtp.length !== 6) {
+      toast.error("Please enter the complete 6-digit verification code sent to your email.");
+      return;
+    }
+
+    const cleanMobile = mobile.replace(/\D/g, "");
+    try {
+      const tokens = await signupUser({
+        name: fullName.trim(),
+        email: email.trim(),
+        mobileNumber: cleanMobile,
+        password,
+        otp: cleanOtp,
+      }).unwrap();
+      handleAuthSuccess(tokens);
+    } catch (err: any) {
+      // Handled by toast/unwrap
+    }
+  }
+
+  async function handlePasswordSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (isSignup) {
+      return handleSendSignupEmailOtp(e);
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobileRegex = /^[0-9]{10}$/;
+
+    const cleanLoginId = loginId.trim();
       const isEmail = emailRegex.test(cleanLoginId);
       const isMobile = mobileRegex.test(cleanLoginId.replace(/\D/g, ""));
 
@@ -424,7 +477,6 @@ function LoginContent() {
         toast.error(err?.data?.message || err?.message || "Invalid credentials. Please verify and try again.");
       }
     }
-  }
 
   async function handleGoogleLogin() {
     setErrorMessage(null);
@@ -669,16 +721,115 @@ function LoginContent() {
                     <span>Your security is our top priority.</span>
                   </div>
                 </div>
+              ) : isSignup && signupStep === "verify_email" ? (
+                /* SIGNUP EMAIL OTP VERIFICATION FLOW */
+                <div className="animate-in fade-in zoom-in-95 duration-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                      Verify Your Email
+                    </h1>
+                    <button
+                      type="button"
+                      onClick={() => setSignupStep("details")}
+                      className="text-xs font-bold text-rose-600 hover:underline dark:text-rose-400"
+                    >
+                      Change Details
+                    </button>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-5">
+                    We sent a 6-digit verification code to <span className="font-semibold text-slate-900 dark:text-white">{email}</span>. Enter the code below to complete registration.
+                  </p>
+
+                  <form onSubmit={handleCompleteSignup} className="space-y-4">
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                          6-Digit Verification Code
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setSignupStep("details")}
+                          className="text-[11px] font-bold text-rose-600 hover:underline dark:text-rose-400"
+                        >
+                          Change Details
+                        </button>
+                      </div>
+                      <SplitOtpInput
+                        value={signupOtp}
+                        onChange={setSignupOtp}
+                        disabled={signingUp}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={signingUp || signupOtp.length !== 6}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-rose-600 px-5 py-3.5 text-xs font-bold text-white shadow-lg shadow-rose-600/20 transition hover:bg-rose-700 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                    >
+                      {signingUp ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Creating Account...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Verify Email & Create Account</span>
+                          <CheckCircle2 className="h-4 w-4" />
+                        </>
+                      )}
+                    </button>
+
+                    <div className="flex items-center justify-between text-xs pt-1">
+                      <span className="text-slate-500 dark:text-slate-400">Didn&apos;t receive code?</span>
+                      {signupResendCountdown > 0 ? (
+                        <span className="font-semibold text-slate-400">
+                          Resend in <strong className="text-slate-600 dark:text-slate-300">{signupResendCountdown}s</strong>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={sendingSignupOtp}
+                          onClick={() => handleSendSignupEmailOtp()}
+                          className="font-bold text-rose-600 dark:text-rose-400 hover:underline disabled:opacity-50"
+                        >
+                          Resend Code
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
+                      Already have an account?{" "}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsSignup(false);
+                          setSignupStep("details");
+                          setSignupOtp("");
+                        }}
+                        className="font-bold text-rose-600 hover:underline dark:text-rose-400"
+                      >
+                        Sign In
+                      </button>
+                    </div>
+                  </form>
+
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 pt-5">
+                    <Lock className="h-3 w-3 text-slate-400" />
+                    <span>Your data is protected and encrypted.</span>
+                  </div>
+                </div>
               ) : !otpRequested ? (
                 /* STEP 1: Enter Mobile / Email Credentials */
                 <div className="animate-in fade-in zoom-in-95 duration-200">
                   <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-                    Sign In or Register
+                    {isSignup ? "Create Your Account" : "Sign In or Register"}
                   </h1>
                   <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-5">
-                    {authMode === "mobile_otp" 
-                      ? "Enter your 10-digit mobile number to access your account instantly without passwords."
-                      : "Enter your credentials to securely access your account."}
+                    {isSignup
+                      ? "Join Awasio to discover verified properties, connect with owners, and list properties."
+                      : authMode === "mobile_otp" 
+                        ? "Enter your 10-digit mobile number to access your account instantly without passwords."
+                        : "Enter your credentials to securely access your account."}
                   </p>
 
                   {/* Auth Mode Toggle (Only show if OTP is enabled) */}
@@ -872,16 +1023,28 @@ function LoginContent() {
 
                       <button
                         type="submit"
-                        disabled={isSignup ? signingUp : loggingIn}
+                        disabled={isSignup ? sendingSignupOtp : loggingIn}
                         className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3.5 text-xs font-bold text-white shadow-lg shadow-slate-900/10 transition hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-rose-600 dark:hover:bg-rose-700 dark:shadow-rose-950/50 mt-2"
                       >
-                        {(isSignup ? signingUp : loggingIn) ? (
+                        {isSignup ? (
+                          sendingSignupOtp ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <span>Sending Verification Code...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Verify Email & Continue</span>
+                              <ArrowRight className="h-4 w-4" />
+                            </>
+                          )
+                        ) : loggingIn ? (
                           <>
                             <Loader2 className="h-4 w-4 animate-spin" />
-                            <span>{isSignup ? "Creating Account..." : "Signing In..."}</span>
+                            <span>Signing In...</span>
                           </>
                         ) : (
-                          <span>{isSignup ? "Create Account" : "Sign In with Password"}</span>
+                          <span>Sign In with Password</span>
                         )}
                       </button>
 
@@ -889,7 +1052,11 @@ function LoginContent() {
                         {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
                         <button
                           type="button"
-                          onClick={() => setIsSignup(!isSignup)}
+                          onClick={() => {
+                            setIsSignup(!isSignup);
+                            setSignupStep("details");
+                            setSignupOtp("");
+                          }}
                           className="font-bold text-rose-600 hover:underline dark:text-rose-400"
                         >
                           {isSignup ? "Sign In" : "Sign Up"}

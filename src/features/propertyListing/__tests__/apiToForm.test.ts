@@ -141,4 +141,45 @@ describe("mapApiToForm hydration & prefill tests", () => {
     expect(formValues.context.propertySubTypeSlug).toBe("office");
     expect(formValues.context.propertySubCategorySlug).toBe("co-working-office-space");
   });
+
+  test("correctly maps unified PG / Lodge fields into form values", () => {
+    const pgProperty = {
+      id: 55,
+      listingType: "PG",
+      resCom: "RESIDENTIAL",
+      propertyTypeId: 3,
+      propertySubTypeId: 17, // pg-shared-room
+      accommodationType: "LODGE",
+      pricingBasis: "PER_ROOM",
+      maxPersonsInRoom: 2,
+      totalRoomsAvailable: 5,
+      foodOption: "OPTIONAL_MESS",
+      messCharges: 2500,
+      electricityType: "SUB_METER",
+      electricityRatePerUnit: 10,
+      hasStudyTable: true,
+      hasRoWater: true,
+      hasPowerBackup: true,
+      gateClosingTime: "10:00_PM",
+      attachedBathroom: true,
+      price: 4500,
+    };
+
+    const formValues = mapApiToForm(pgProperty);
+    expect(formValues.context.listingType).toBe("PG");
+    expect(formValues.details.accommodationType).toBe("LODGE");
+    expect(formValues.details.pricingBasis).toBe("PER_ROOM");
+    expect(formValues.details.maxPersonsInRoom).toBe(2);
+    expect(formValues.details.totalRoomsAvailable).toBe(5);
+    expect(formValues.details.foodOption).toBe("OPTIONAL_MESS");
+    expect(formValues.details.messCharges).toBe(2500);
+    expect(formValues.details.electricityType).toBe("SUB_METER");
+    expect(formValues.details.electricityRatePerUnit).toBe(10);
+    expect(formValues.details.hasStudyTable).toBe(true);
+    expect(formValues.details.hasRoWater).toBe(true);
+    expect(formValues.details.hasPowerBackup).toBe(true);
+    expect(formValues.details.gateClosingTime).toBe("10:00_PM");
+    expect(formValues.details.attachedBathroom).toBe(true);
+    expect(formValues.pricing.price).toBe(4500);
+  });
 });

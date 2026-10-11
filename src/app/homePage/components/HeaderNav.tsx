@@ -21,6 +21,7 @@ import {
   User,
   Users,
   X,
+  BedDouble,
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { BrandLogo } from "@/components/common/BrandLogo";
@@ -33,12 +34,24 @@ interface UserProfile {
   role?: string;
 }
 
-const searchLinks = [
+const primaryNavLinks = [
   { label: "Buy", href: "/propertySearch?intent=BUY", icon: Home },
   { label: "Rent", href: "/propertySearch?intent=RENT", icon: Key },
+  { label: "New Projects", href: "/new-projects", icon: Sparkles, isNew: true },
+  { label: "PG / Coliving", href: "/propertySearch?intent=PG", icon: BedDouble },
   { label: "Commercial", href: "/propertySearch?intent=COMMERCIAL", icon: Building2 },
-  { label: "Plots", href: "/propertySearch?intent=PLOT", icon: MapPin },
+];
+
+const secondaryNavLinks = [
+  { label: "Plots & Land", href: "/propertySearch?intent=PLOT", icon: MapPin },
   { label: "Find Agents", href: "/agents", icon: Users },
+  { label: "Post Project (Builder)", href: "/post-project", icon: Building2 },
+];
+
+// All links for mobile drawer
+const searchLinks = [
+  ...primaryNavLinks,
+  ...secondaryNavLinks,
 ];
 
 export function HeaderNav() {
@@ -48,10 +61,12 @@ export function HeaderNav() {
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [accountOpen, setAccountOpen] = React.useState(false);
+  const [moreNavOpen, setMoreNavOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [currentSearch, setCurrentSearch] = React.useState("");
   const accountRef = React.useRef<HTMLDivElement | null>(null);
+  const moreNavRef = React.useRef<HTMLDivElement | null>(null);
 
   const loginHref = `/login?redirect=${encodeURIComponent(pathname || "/")}`;
 
@@ -92,17 +107,20 @@ export function HeaderNav() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close account dropdown when clicking outside
+  // Close account and more dropdowns when clicking outside
   React.useEffect(() => {
-    if (!accountOpen) return;
+    if (!accountOpen && !moreNavOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
-      if (accountRef.current && !accountRef.current.contains(event.target as Node)) {
+      if (accountOpen && accountRef.current && !accountRef.current.contains(event.target as Node)) {
         setAccountOpen(false);
+      }
+      if (moreNavOpen && moreNavRef.current && !moreNavRef.current.contains(event.target as Node)) {
+        setMoreNavOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [accountOpen]);
+  }, [accountOpen, moreNavOpen]);
 
   // Prevent background scroll when mobile menu is active
   React.useEffect(() => {
@@ -181,30 +199,75 @@ export function HeaderNav() {
       {/* Ambient Top Subtle Gradient Accent */}
       <div className="h-[2.5px] w-full bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 opacity-90" />
 
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2.5 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 lg:gap-4 px-3 sm:px-6 lg:px-8 flex-nowrap">
         {/* Brand Logo */}
         <div className="flex shrink-0 items-center">
           <BrandLogo size="md" href="/" />
         </div>
 
-        {/* Center Desktop Navigation */}
-        <nav className="hidden items-center gap-1 rounded-full border border-slate-200/70 bg-slate-100/60 p-1 backdrop-blur-md dark:border-slate-800/70 dark:bg-slate-900/60 lg:flex">
-          {searchLinks.map((link) => {
+        {/* Center Desktop Navigation - Guaranteed Single Line */}
+        <nav className="hidden items-center gap-0.5 rounded-full border border-slate-200/70 bg-slate-100/60 p-1 backdrop-blur-md dark:border-slate-800/70 dark:bg-slate-900/60 lg:flex shrink-0">
+          {primaryNavLinks.map((link) => {
             const active = isLinkActive(link.href);
             return (
               <Link
                 key={link.label}
                 href={link.href}
-                className={`relative flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wide transition-all duration-200 ${
+                className={`relative flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold tracking-wide whitespace-nowrap transition-all duration-200 ${
                   active
                     ? "bg-white text-rose-600 shadow-xs dark:bg-slate-800 dark:text-rose-400"
                     : "text-slate-600 hover:text-slate-950 hover:bg-white/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60"
                 }`}
               >
-                {link.label}
+                <span>{link.label}</span>
+                {"isNew" in link && link.isNew && (
+                  <span className="rounded-full bg-rose-500/10 px-1 py-0.2 text-[9px] font-black uppercase tracking-wider text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">
+                    New
+                  </span>
+                )}
               </Link>
             );
           })}
+
+          {/* More Categories Dropdown */}
+          <div className="relative" ref={moreNavRef}>
+            <button
+              type="button"
+              onClick={() => setMoreNavOpen((open) => !open)}
+              className={`flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                moreNavOpen || secondaryNavLinks.some((l) => isLinkActive(l.href))
+                  ? "bg-white text-rose-600 shadow-xs dark:bg-slate-800 dark:text-rose-400"
+                  : "text-slate-600 hover:text-slate-950 hover:bg-white/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60"
+              }`}
+            >
+              <span>More</span>
+              <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${moreNavOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {moreNavOpen && (
+              <div className="absolute left-1/2 -translate-x-1/2 top-10 z-50 w-56 origin-top rounded-2xl border border-slate-200/90 bg-white p-1.5 shadow-xl backdrop-blur-xl animate-in fade-in zoom-in-95 dark:border-slate-800 dark:bg-slate-950">
+                {secondaryNavLinks.map((item) => {
+                  const Icon = item.icon;
+                  const active = isLinkActive(item.href);
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setMoreNavOpen(false)}
+                      className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition ${
+                        active
+                          ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+                          : "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 shrink-0 text-slate-400" />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Right Side CTAs & Actions */}

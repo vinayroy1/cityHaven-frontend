@@ -97,22 +97,58 @@ export const constructionTypeOptions: Option[] = [
 ];
 
 export const pgForOptions: Option[] = [
-  { value: "BOYS", label: "Boys" },
-  { value: "GIRLS", label: "Girls" },
-  { value: "UNISEX", label: "Unisex" },
+  { value: "BOYS", label: "Boys Only" },
+  { value: "GIRLS", label: "Girls Only" },
+  { value: "UNISEX", label: "Co-ed / Anyone" },
+];
+
+export const accommodationTypeOptions: Option[] = [
+  { value: "LODGE", label: "Lodge / Student Rooms" },
+  { value: "PG", label: "Paying Guest (PG)" },
+  { value: "HOSTEL", label: "Hostel" },
+  { value: "STUDENT_ROOM", label: "Independent Room for Students" },
+];
+
+export const pricingBasisOptions: Option[] = [
+  { value: "PER_BED", label: "Bed / Seat Wise" },
+  { value: "PER_ROOM", label: "Entire Room Wise" },
+];
+
+export const foodOptionOptions: Option[] = [
+  { value: "INCLUDED", label: "Food / Meals Included in Rent" },
+  { value: "OPTIONAL_MESS", label: "Optional Mess Available (Extra Charge)" },
+  { value: "SELF_COOKING", label: "Self Cooking Allowed (Kitchen / Gas Provided)" },
+  { value: "NO_FOOD", label: "No Food / Outside Tiffin Allowed" },
+];
+
+export const electricityTypeOptions: Option[] = [
+  { value: "INCLUDED", label: "Electricity Included in Rent" },
+  { value: "SUB_METER", label: "Sub-Meter (As per reading ₹/unit)" },
+  { value: "FIXED_MONTHLY", label: "Fixed Monthly Surcharge" },
+];
+
+export const gateClosingTimeOptions: Option[] = [
+  { value: "NO_RESTRICTION", label: "No Curfew / 24x7 Entry" },
+  { value: "08:00_PM", label: "8:00 PM" },
+  { value: "09:00_PM", label: "9:00 PM" },
+  { value: "09:30_PM", label: "9:30 PM" },
+  { value: "10:00_PM", label: "10:00 PM" },
+  { value: "10:30_PM", label: "10:30 PM" },
+  { value: "11:00_PM", label: "11:00 PM" },
 ];
 
 export const mealTypeOptions: Option[] = [
-  { value: "BREAKFAST", label: "Breakfast" },
-  { value: "DINNER", label: "Dinner" },
-  { value: "BOTH", label: "Both" },
+  { value: "BREAKFAST", label: "Breakfast Only" },
+  { value: "DINNER", label: "Dinner Only" },
+  { value: "BOTH", label: "Breakfast & Dinner" },
+  { value: "ALL_MEALS", label: "All 3 Meals (Breakfast, Lunch & Dinner)" },
 ];
 
 export const sharingTypeOptions: Option[] = [
-  { value: "SINGLE", label: "1 sharing" },
-  { value: "DOUBLE", label: "2 sharing" },
-  { value: "TRIPLE", label: "3 sharing" },
-  { value: "QUAD", label: "4 sharing" },
+  { value: "SINGLE", label: "1 Sharing (Single Seater)" },
+  { value: "DOUBLE", label: "2 Sharing (Double Seater)" },
+  { value: "TRIPLE", label: "3 Sharing (Triple Seater)" },
+  { value: "QUAD", label: "4+ Sharing (Dormitory/Hall)" },
 ];
 
 export const washroomTypeOptions: Option[] = [

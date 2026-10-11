@@ -7,13 +7,14 @@ import {
   describeFilters,
   type SearchState,
 } from "./searchQuery";
-import { FURNISHING_OPTIONS, POSTED_BY_OPTIONS, budgetConfig } from "./searchConfig";
+import { FURNISHING_OPTIONS, POSTED_BY_OPTIONS, FOOD_OPTIONS, budgetConfig } from "./searchConfig";
 import { propertySubTypes } from "@/app/propertySearch/data";
 
 const subTypeLabel = (slug: string) =>
   propertySubTypes.find((s) => s.slug === slug)?.name ?? slug;
 const furnishingLabel = (v: string) => FURNISHING_OPTIONS.find((o) => o.value === v)?.label ?? v;
 const postedAsLabel = (v: string) => POSTED_BY_OPTIONS.find((o) => o.value === v)?.label ?? v;
+const foodLabel = (v: string) => FOOD_OPTIONS.find((o) => o.value === v)?.label ?? v;
 
 export function AppliedChips({
   state,
@@ -26,6 +27,7 @@ export function AppliedChips({
     subType: subTypeLabel,
     furnishing: furnishingLabel,
     postedAs: postedAsLabel,
+    food: foodLabel,
     money: (value) => `${budgetConfig(state).format(value)}${budgetConfig(state).monthly ? " / month" : ""}`,
   });
 

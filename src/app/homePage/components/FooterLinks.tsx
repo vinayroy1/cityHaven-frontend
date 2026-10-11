@@ -35,6 +35,26 @@ export function FooterLinks() {
             <p className="hidden sm:block max-w-md text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               Buy, rent, post and manage approved property listings across Indian cities with transparent pricing.
             </p>
+            <div className="pt-1 flex flex-col gap-1 text-xs text-slate-500 dark:text-slate-400">
+              <p>
+                Helpline:{" "}
+                <a
+                  href="tel:+918848510629"
+                  className="font-semibold text-slate-700 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
+                >
+                  +91-8848510629
+                </a>
+              </p>
+              <p>
+                Email:{" "}
+                <a
+                  href="mailto:contact@awasio.com"
+                  className="font-semibold text-slate-700 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
+                >
+                  contact@awasio.com
+                </a>
+              </p>
+            </div>
           </div>
 
           {/* Links: 2 side-by-side columns on mobile and desktop */}

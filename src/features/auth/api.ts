@@ -5,7 +5,8 @@ import { baseQueryWithReauth } from "@/lib/api/baseQueryWithReauth";
 export type RequestOtpPayload = { mobileNumber: string };
 export type VerifyOtpPayload = { mobileNumber: string; otp: string };
 export type LoginPayload = { loginId: string; password: string };
-export type SignupPayload = { name: string; email: string; mobileNumber: string; password: string };
+export type SignupPayload = { name: string; email: string; mobileNumber: string; password: string; otp?: string };
+export type SendSignupOtpPayload = { name: string; email: string; mobileNumber: string };
 export type GoogleAuthPayload = { credential?: string; token?: string; email?: string; name?: string };
 export type TokenResponse = { accessToken?: string; refreshToken?: string; user?: any; isNewUser?: boolean };
 export type UpdateProfilePayload = { name?: string; email?: string };
@@ -30,6 +31,17 @@ export const authApi = createApi({
         body,
       }),
       transformResponse: (response: { data?: TokenResponse }) => response.data ?? {},
+    }),
+    sendSignupOtp: builder.mutation<{ success?: boolean; message?: string; email?: string; devOtp?: string }, SendSignupOtpPayload>({
+      query: (body) => ({
+        url: API_ENDPOINTS.auth.sendSignupOtp,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: { data?: any; message?: string }) => ({
+        ...(response.data ?? {}),
+        message: response.message,
+      }),
     }),
     signup: builder.mutation<TokenResponse, SignupPayload>({
       query: (body) => ({
@@ -98,6 +110,7 @@ export const authApi = createApi({
 
 export const {
   useLoginWithPasswordMutation,
+  useSendSignupOtpMutation,
   useSignupMutation,
   useGoogleAuthMutation,
   useRequestOtpMutation,

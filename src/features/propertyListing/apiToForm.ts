@@ -183,6 +183,28 @@ export function mapApiToForm(flat: Flat): PropertyListingFormValues {
       sharingType: s(g("sharingType")),
       totalBeds: n(g("totalBeds")),
       availableBeds: n(g("availableBeds")),
+      accommodationType: s(g("accommodationType")),
+      pricingBasis:
+        s(g("pricingBasis")) ||
+        (s(g("roomType")) === "PRIVATE_ROOM" || s(g("propertySubType.slug")) === "pg-private-room" || s(g("maxPersonsInRoom"))
+          ? "PER_ROOM"
+          : "PER_BED"),
+      maxPersonsInRoom: n(g("maxPersonsInRoom")),
+      totalRoomsAvailable: n(g("totalRoomsAvailable")),
+      foodOption: s(g("foodOption")) || (b(g("foodIncluded")) ? "INCLUDED" : undefined),
+      messCharges: n(g("messCharges")),
+      electricityType: s(g("electricityType")),
+      electricityRatePerUnit: n(g("electricityRatePerUnit")),
+      electricityMonthlyCharge: n(g("electricityMonthlyCharge")),
+      hasStudyTable: b(g("hasStudyTable")),
+      hasRoWater: b(g("hasRoWater")),
+      hasPowerBackup: b(g("hasPowerBackup")),
+      gateClosingTime: s(g("gateClosingTime")),
+      mealType: s(g("mealType")),
+      acAvailable: b(g("acAvailable")),
+      attachedBathroom: b(g("attachedBathroom")),
+      attachedBalcony: b(g("attachedBalcony")),
+      availableFor: s(g("availableFor")),
       qualityRating: s(g("qualityRating")),
       totalRooms: n(g("totalRooms")),
       officeType: s(g("officeType")),

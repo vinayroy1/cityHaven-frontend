@@ -42,6 +42,21 @@ const formatPrice = (price?: number | null, listingType?: string): string | null
 };
 
 const deriveConfiguration = (values: any): string => {
+  const isPg = values.context?.listingType === "PG" || values.context?.propertyTypeSlug === "pg";
+  if (isPg) {
+    const parts: string[] = [];
+    if (values.details?.pricingBasis === "PER_ROOM") {
+      parts.push(values.details?.maxPersonsInRoom ? `${values.details.maxPersonsInRoom} Person Room` : "Private Room");
+    } else if (values.details?.sharingType) {
+      parts.push(values.details.sharingType.replace(/_/g, " "));
+    } else if (values.details?.sharingCapacity) {
+      parts.push(`${values.details.sharingCapacity} Sharing`);
+    } else {
+      parts.push("Shared Room");
+    }
+    if (values.details?.carpetArea) parts.push(`${values.details.carpetArea} sq.ft`);
+    return parts.length > 0 ? parts.join(" • ") : "PG Accommodation";
+  }
   const parts: string[] = [];
   if (values.details?.bedrooms) parts.push(`${values.details.bedrooms} BHK`);
   if (values.details?.bathrooms) parts.push(`${values.details.bathrooms} Bath`);
@@ -129,9 +144,17 @@ export function ReviewSummary({ values, uploadedPhotos: explicitPhotos, onEditSt
             <p className="text-base font-extrabold text-rose-600 dark:text-rose-400">{formattedPrice || "Not Set"}</p>
           </div>
           <div className="px-4 text-center sm:text-left">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Layout</p>
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+              {context.listingType === "PG" ? "Room / Bed" : "Layout"}
+            </p>
             <p className="text-base font-bold text-slate-900 dark:text-white">
-              {details.bedrooms ? `${details.bedrooms} BHK` : "N/A"}
+              {context.listingType === "PG"
+                ? details.pricingBasis === "PER_ROOM"
+                  ? `${details.maxPersonsInRoom ?? 1} Person Room`
+                  : (details.sharingType ? details.sharingType.replace(/_/g, " ") : (details.sharingCapacity ? `${details.sharingCapacity} Sharing` : "Shared Bed"))
+                : details.bedrooms
+                ? `${details.bedrooms} BHK`
+                : "N/A"}
             </p>
           </div>
           <div className="px-4 text-center sm:text-left mt-2 sm:mt-0">
@@ -272,13 +295,84 @@ export function ReviewSummary({ values, uploadedPhotos: explicitPhotos, onEditSt
             stepNumber={2}
             onEdit={onEditStep}
           >
-            <DetailItem label="Bedrooms" value={details.bedrooms ? `${details.bedrooms} BHK` : undefined} icon={Bed} />
-            <DetailItem label="Bathrooms" value={details.bathrooms ? `${details.bathrooms} Baths` : undefined} icon={Bath} />
-            <DetailItem label="Balconies" value={details.balconies} />
-            <DetailItem label="Floor" value={details.totalFloors ? `${details.floorNumber ?? 0} of ${details.totalFloors}` : undefined} />
-            <DetailItem label="Facing" value={details.propertyFacing} icon={Compass} />
-            <DetailItem label="Property Age" value={details.ageOfProperty ? details.ageOfProperty.replace(/_/g, " ") : undefined} />
-            <DetailItem label="Availability" value={availability.availabilityStatus ? availability.availabilityStatus.replace(/_/g, " ") : undefined} icon={Calendar} />
+            {context.listingType === "PG" ? (
+              <>
+                <DetailItem
+                  label="Accommodation"
+                  value={
+                    details.accommodationType === "LODGE"
+                      ? "Student Lodge"
+                      : details.accommodationType === "HOSTEL"
+                      ? "Hostel"
+                      : details.accommodationType === "STUDENT_ROOM"
+                      ? "Student Room"
+                      : "PG"
+                  }
+                />
+                <DetailItem label="Occupants" value={details.pgFor} />
+                <DetailItem
+                  label="Pricing Model"
+                  value={details.pricingBasis === "PER_ROOM" ? "Entire Room Wise" : "Per Bed Wise"}
+                />
+                {details.pricingBasis === "PER_ROOM" ? (
+                  <>
+                    <DetailItem label="Max Occupancy" value={details.maxPersonsInRoom ? `${details.maxPersonsInRoom} Persons/Room` : undefined} />
+                    <DetailItem label="Rooms Available" value={details.totalRoomsAvailable} />
+                  </>
+                ) : (
+                  <>
+                    <DetailItem label="Sharing Type" value={details.sharingType} />
+                    <DetailItem label="Available Beds" value={details.availableBeds} />
+                  </>
+                )}
+                <DetailItem
+                  label="Food &amp; Mess"
+                  value={
+                    details.foodOption === "INCLUDED"
+                      ? `Included (${details.mealType || "Meals"})`
+                      : details.foodOption === "OPTIONAL_MESS"
+                      ? `Optional Mess (₹${details.messCharges || 0}/mo)`
+                      : details.foodOption === "SELF_COOKING"
+                      ? "Self Cooking Allowed"
+                      : "No Food"
+                  }
+                />
+                <DetailItem
+                  label="Electricity"
+                  value={
+                    details.electricityType === "INCLUDED"
+                      ? "Included in Rent"
+                      : details.electricityType === "SUB_METER"
+                      ? `Sub-Meter (${details.electricityRatePerUnit ? `₹${details.electricityRatePerUnit}/unit` : "As per meter"})`
+                      : details.electricityType === "FIXED_MONTHLY"
+                      ? `Fixed (₹${details.electricityMonthlyCharge || 0}/mo)`
+                      : undefined
+                  }
+                />
+                <DetailItem
+                  label="Washroom"
+                  value={details.attachedBathroom ? "Attached (Private)" : "Common / Floor Shared"}
+                />
+                <DetailItem label="Study Table" value={details.hasStudyTable ? "Provided" : "Not Provided"} />
+                <DetailItem label="RO Water" value={details.hasRoWater ? "Available" : "Not Available"} />
+                <DetailItem label="Power Backup" value={details.hasPowerBackup ? "Available" : "Not Available"} />
+                <DetailItem label="AC / Cooler" value={details.acAvailable ? "Available" : "Not Available"} />
+                <DetailItem
+                  label="Gate Closing"
+                  value={details.gateClosingTime && details.gateClosingTime !== "NO_RESTRICTION" ? details.gateClosingTime.replace(/_/g, " ") : "24x7 Entry / No Curfew"}
+                />
+              </>
+            ) : (
+              <>
+                <DetailItem label="Bedrooms" value={details.bedrooms ? `${details.bedrooms} BHK` : undefined} icon={Bed} />
+                <DetailItem label="Bathrooms" value={details.bathrooms ? `${details.bathrooms} Baths` : undefined} icon={Bath} />
+                <DetailItem label="Balconies" value={details.balconies} />
+                <DetailItem label="Floor" value={details.totalFloors ? `${details.floorNumber ?? 0} of ${details.totalFloors}` : undefined} />
+                <DetailItem label="Facing" value={details.propertyFacing} icon={Compass} />
+                <DetailItem label="Property Age" value={details.ageOfProperty ? details.ageOfProperty.replace(/_/g, " ") : undefined} />
+                <DetailItem label="Availability" value={availability.availabilityStatus ? availability.availabilityStatus.replace(/_/g, " ") : undefined} icon={Calendar} />
+              </>
+            )}
           </SectionCard>
 
           {/* Financials & Pricing */}

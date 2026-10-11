@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
     verifyOtp: `${BASE}/auth/verify-otp`,
     refreshToken: `${BASE}/auth/refresh-token`,
     login: `${BASE}/auth/login`,
+    sendSignupOtp: `${BASE}/auth/send-signup-otp`,
     register: `${BASE}/auth/register`,
     logout: `${BASE}/auth/logout`,
     changePassword: `${BASE}/auth/change-password`,

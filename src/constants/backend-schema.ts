@@ -90,7 +90,7 @@ export type BackendEnumName = keyof typeof BACKEND_ENUMS;
 export const PROPERTY_TYPES = [
   { name: "Residential", slug: "residential", resCom: "RESIDENTIAL" },
   { name: "Commercial", slug: "commercial", resCom: "COMMERCIAL" },
-  { name: "PG / Hostel", slug: "pg", resCom: "RESIDENTIAL" },
+  { name: "PG / Hostel / Lodge", slug: "pg", resCom: "RESIDENTIAL" },
 ] as const;
 
 export const PROPERTY_SUBTYPES = [
@@ -113,7 +113,7 @@ export const PROPERTY_SUBTYPES = [
   { name: "Hospitality", slug: "hospitality", propertyTypeSlug: "commercial" },
   { name: "Other", slug: "commercial-other", propertyTypeSlug: "commercial" },
 
-  // PG
+  // PG / Hostel / Lodge
   { name: "Private Room", slug: "pg-private-room", propertyTypeSlug: "pg" },
   { name: "Shared Room", slug: "pg-shared-room", propertyTypeSlug: "pg" },
   { name: "Bed / Dormitory", slug: "pg-bed", propertyTypeSlug: "pg" },

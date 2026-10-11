@@ -55,6 +55,30 @@ export default function PropertyListingPage() {
             </div>
           </div>
 
+          {/* Builder / Project Owner Switch Banner */}
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50/80 via-white to-amber-50/50 p-4 shadow-sm dark:border-rose-900/40 dark:bg-slate-900 dark:from-slate-900 dark:to-slate-900">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                  Listing an entire Project, Township, or Gated Community?
+                </h3>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Builders and developers can list multiple towers, RERA registration, and configuration floor-plan pricing in one place.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/post-project"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 shrink-0"
+            >
+              <span>Open Project Portal</span>
+              <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </div>
+
           {/* Form Wizard Flow */}
           <Suspense fallback={<div className="py-20 text-center text-sm text-slate-500 dark:text-slate-400">Loading property editor…</div>}>
             <PropertyListingFlow />

@@ -20,9 +20,30 @@ export const metadata: Metadata = {
 };
 
 const contacts = [
-  { title: "Call support", value: "1800 41 99099", description: "9AM - 11PM IST, 7 days a week", icon: Phone, accent: "text-emerald-600 bg-emerald-50 border-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300" },
-  { title: "Email us", value: "support@awasio.com", description: "We respond within 1 business day", icon: Mail, accent: "text-rose-600 bg-rose-50 border-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300" },
-  { title: "Chat", value: "Message our concierge", description: "Instant responses for quick queries", icon: MessageSquare, accent: "text-sky-600 bg-sky-50 border-sky-100 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-300" },
+  {
+    title: "Call support",
+    value: "+91-8848510629",
+    href: "tel:+918848510629",
+    description: "9AM - 11PM IST, 7 days a week",
+    icon: Phone,
+    accent: "text-emerald-600 bg-emerald-50 border-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300",
+  },
+  {
+    title: "Email us",
+    value: "contact@awasio.com",
+    href: "mailto:contact@awasio.com",
+    description: "We respond within 1 business day",
+    icon: Mail,
+    accent: "text-rose-600 bg-rose-50 border-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300",
+  },
+  {
+    title: "WhatsApp chat",
+    value: "+91-8848510629",
+    href: "https://wa.me/918848510629?text=Hi%20Awasio%20Support%2C%20I%20have%20an%20enquiry",
+    description: "Instant responses on WhatsApp",
+    icon: MessageSquare,
+    accent: "text-sky-600 bg-sky-50 border-sky-100 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-300",
+  },
 ];
 
 export default function ContactPage() {
@@ -66,14 +87,25 @@ export default function ContactPage() {
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Quick reach</h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                {contacts.map(({ title, value, description, icon: Icon, accent }) => (
+                {contacts.map(({ title, value, href, description, icon: Icon, accent }) => (
                   <div key={title} className={`flex items-start gap-3 rounded-2xl border px-4 py-3 shadow-sm ${accent}`}>
                     <div className="mt-1 rounded-xl bg-white/80 p-2 shadow-inner dark:bg-slate-900">
                       <Icon className="h-5 w-5" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-slate-900 dark:text-white">{title}</p>
-                      <p className="text-sm text-slate-700 dark:text-slate-300">{value}</p>
+                      {href ? (
+                        <a
+                          href={href}
+                          target={href.startsWith("http") ? "_blank" : undefined}
+                          rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                          className="text-sm font-medium text-slate-700 hover:text-rose-600 hover:underline dark:text-slate-300 dark:hover:text-rose-400"
+                        >
+                          {value}
+                        </a>
+                      ) : (
+                        <p className="text-sm text-slate-700 dark:text-slate-300">{value}</p>
+                      )}
                       <p className="text-xs text-slate-600 dark:text-slate-400">{description}</p>
                     </div>
                   </div>

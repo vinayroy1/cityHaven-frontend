@@ -55,44 +55,74 @@ export function HomeExperience() {
     window.location.href = `/propertySearch?${buildSearchParams(state).toString()}`;
   };
 
-  // 1. Dedicated query for fresh new listings
+  // Normalize city name for API (matches database entries like 'New Delhi' when 'Delhi' is selected)
+  const normalizedCity = selectedCity?.toLowerCase().includes("delhi")
+    ? "New Delhi"
+    : (selectedCity || undefined);
+
+  // Intent-based listing type (if user explicitly chooses RENT or PG in search bar)
+  const queryListingType = searchState.intent === "RENT" || searchState.intent === "PG"
+    ? searchState.intent
+    : undefined;
+
+  // 1. Dedicated query for fresh new listings in the selected city
   const freshQuery = usePropertySearchInfinite({
-    listingType: searchState.intent === "RENT" || searchState.intent === "PG" ? searchState.intent : "SELL",
-    cityName: selectedCity || undefined,
+    listingType: queryListingType,
+    cityName: normalizedCity,
     sort: "newest",
-    pageSize: 4,
+    pageSize: 8,
   });
 
-  // 2. Dedicated query for budget homes (under 1 Cr or 50k rent)
+  // 2. Nationwide trending query fallback so the home page is NEVER blank
+  const trendingFallbackQuery = usePropertySearchInfinite({
+    sort: "newest",
+    pageSize: 12,
+  });
+
+  // 3. Dedicated query for budget homes
   const budgetMax = searchState.intent === "RENT" ? 50000 : 10000000;
   const budgetQuery = usePropertySearchInfinite({
-    listingType: searchState.intent === "RENT" || searchState.intent === "PG" ? searchState.intent : "SELL",
-    cityName: selectedCity || undefined,
+    listingType: queryListingType,
+    cityName: normalizedCity,
     priceMax: budgetMax,
     sort: "newest",
-    pageSize: 4,
+    pageSize: 8,
   });
 
-  // 3. Dedicated query for owner-posted listings
+  // 4. Dedicated query for owner-posted listings
   const ownerQuery = usePropertySearchInfinite({
-    listingType: searchState.intent === "RENT" || searchState.intent === "PG" ? searchState.intent : "SELL",
-    cityName: selectedCity || undefined,
+    listingType: queryListingType,
+    cityName: normalizedCity,
     sort: "newest",
     pageSize: 16,
   });
 
-  const freshListings = (freshQuery.items as PropertySearchItem[]) ?? [];
+  const rawFresh = (freshQuery.items as PropertySearchItem[]) ?? [];
+  const trendingListings = (trendingFallbackQuery.items as PropertySearchItem[]) ?? [];
+
+  // If local city has items, show them; otherwise fallback to top trending across metros
+  const freshListings = (rawFresh.length > 0 ? rawFresh : trendingListings).slice(0, 4);
+
   const rawOwnerListings = (ownerQuery.items as PropertySearchItem[]) ?? [];
   const filteredOwnerListings = rawOwnerListings.filter(
     (item) =>
       (item.postedAs ?? "")?.toUpperCase() === "OWNER" ||
       ((item as any).ownerType ?? "")?.toUpperCase() === "USER"
   );
-  // Show filtered owner listings if present, else fallback to verified items so section remains visible
-  const ownerListings = (filteredOwnerListings.length > 0 ? filteredOwnerListings : rawOwnerListings).slice(0, 4);
+  const ownerListings = (
+    filteredOwnerListings.length > 0
+      ? filteredOwnerListings
+      : rawOwnerListings.length > 0
+      ? rawOwnerListings
+      : trendingListings
+  ).slice(0, 4);
 
   const rawBudgetListings = (budgetQuery.items as PropertySearchItem[]) ?? [];
-  const budgetListings = (rawBudgetListings.length > 0 ? rawBudgetListings : freshListings).slice(0, 4);
+  const budgetListings = (
+    rawBudgetListings.length > 0
+      ? rawBudgetListings
+      : freshListings
+  ).slice(0, 4);
 
   return (
     <>
@@ -141,26 +171,42 @@ export function HomeExperience() {
 
       <main className="mx-auto max-w-6xl overflow-x-clip px-4 py-7 sm:px-6">
         <ListingBlock
-          title={selectedCity ? `Fresh listings in ${selectedCity}` : "Fresh listings"}
+          title={
+            rawFresh.length > 0
+              ? (selectedCity ? `Fresh listings in ${selectedCity}` : "Fresh listings")
+              : "Featured Verified Listings"
+          }
           href={buildSearchHref({ ...initialSearchState(), cityName: selectedCity || undefined, sort: "newest" })}
-          loading={freshQuery.isLoading}
-          error={freshQuery.isError}
-          onRetry={() => freshQuery.refetch()}
+          loading={freshQuery.isLoading && trendingFallbackQuery.isLoading}
+          error={freshQuery.isError && trendingFallbackQuery.isError}
+          onRetry={() => {
+            freshQuery.refetch();
+            trendingFallbackQuery.refetch();
+          }}
           listings={freshListings}
         />
 
         <PreferredAgentsSection selectedCity={selectedCity} />
 
         <ListingBlock
-          title={filteredOwnerListings.length > 0 ? "Owner-listed homes" : "Verified Direct-Connect Homes"}
+          title={
+            filteredOwnerListings.length > 0
+              ? "Owner-listed homes"
+              : rawOwnerListings.length > 0
+              ? (selectedCity ? `Verified homes in ${selectedCity}` : "Verified Direct-Connect Homes")
+              : "Direct-Connect Verified Homes"
+          }
           href={buildSearchHref({
             ...initialSearchState(),
             cityName: selectedCity || undefined,
             refine: { ...initialSearchState().refine, postedAs: ["OWNER"] },
           })}
-          loading={ownerQuery.isLoading}
-          error={ownerQuery.isError}
-          onRetry={() => ownerQuery.refetch()}
+          loading={ownerQuery.isLoading && trendingFallbackQuery.isLoading}
+          error={ownerQuery.isError && trendingFallbackQuery.isError}
+          onRetry={() => {
+            ownerQuery.refetch();
+            trendingFallbackQuery.refetch();
+          }}
           listings={ownerListings}
         />
 
@@ -168,11 +214,9 @@ export function HomeExperience() {
           title={
             rawBudgetListings.length > 0
               ? searchState.intent === "RENT"
-                ? "Rentals under Rs 50,000/month"
-                : "Homes under Rs 1 crore"
-              : searchState.intent === "RENT"
-              ? "Popular Value Rentals"
-              : "Best Value Homes"
+                ? "Rentals under ₹50,000/month"
+                : "Homes under ₹1 crore"
+              : "Best Value Homes & Rentals"
           }
           href={buildSearchHref({
             ...initialSearchState(),
@@ -180,9 +224,12 @@ export function HomeExperience() {
             intent: searchState.intent,
             priceMax: budgetMax,
           })}
-          loading={budgetQuery.isLoading}
-          error={budgetQuery.isError}
-          onRetry={() => budgetQuery.refetch()}
+          loading={budgetQuery.isLoading && trendingFallbackQuery.isLoading}
+          error={budgetQuery.isError && trendingFallbackQuery.isError}
+          onRetry={() => {
+            budgetQuery.refetch();
+            trendingFallbackQuery.refetch();
+          }}
           listings={budgetListings}
         />
 

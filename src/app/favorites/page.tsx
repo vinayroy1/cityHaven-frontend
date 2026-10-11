@@ -26,6 +26,7 @@ import {
   useRemoveFavoriteMutation,
 } from "@/features/propertyListing/api";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
+import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { ResultCard } from "@/app/propertySearch/components/ResultCard";
 
 export default function FavoritesPage() {
@@ -33,7 +34,7 @@ export default function FavoritesPage() {
   const { data, isLoading, isFetching, refetch } = useMyFavoritesQuery();
   const [removeFavorite, { isLoading: isRemoving }] = useRemoveFavoriteMutation();
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState<"ALL" | "BUY" | "RENT" | "COMMERCIAL">("ALL");
+  const [typeFilter, setTypeFilter] = useState<"ALL" | "BUY" | "RENT" | "PG" | "COMMERCIAL">("ALL");
 
   const rawItems = useMemo(() => data?.items ?? [], [data?.items]);
 
@@ -50,6 +51,7 @@ export default function FavoritesPage() {
 
       if (typeFilter === "BUY") return item.listingType === "SELL" || item.listingType === "BUY";
       if (typeFilter === "RENT") return item.listingType === "RENT";
+      if (typeFilter === "PG") return item.listingType === "PG";
       if (typeFilter === "COMMERCIAL") return item.resCom === "COMMERCIAL";
       return true;
     });
@@ -135,6 +137,7 @@ export default function FavoritesPage() {
                   { key: "ALL", label: "All Types" },
                   { key: "BUY", label: "For Sale" },
                   { key: "RENT", label: "For Rent" },
+                  { key: "PG", label: "PG / Co-living" },
                   { key: "COMMERCIAL", label: "Commercial" },
                 ] as const
               ).map((tab) => (
@@ -247,6 +250,8 @@ export default function FavoritesPage() {
           )}
         </div>
       </main>
+
+      <FooterLinks />
     </div>
   );
 }

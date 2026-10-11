@@ -49,6 +49,17 @@ export const propertyListingApi = createApi({
       }),
       invalidatesTags: (_res, _err, id) => [{ type: "Property", id }, "Property"],
     }),
+    updatePropertyStatus: builder.mutation<
+      { success: boolean; message?: string; data?: any },
+      { id: number | string; status: "ACTIVE" | "INACTIVE" | "DRAFT" | "SOLD" | "RENTED" | string }
+    >({
+      query: ({ id, status }) => ({
+        url: `${API_ENDPOINTS.propertyListing.update(id)}/status`,
+        method: "PATCH",
+        body: { status },
+      }),
+      invalidatesTags: (_res, _err, args) => [{ type: "Property", id: args.id }, "Property"],
+    }),
     myProperties: builder.query<any, { cursor?: number; pageSize?: number; status?: string } | void>({
       query: (params) => ({
         url: API_ENDPOINTS.propertyListing.my,
@@ -155,6 +166,7 @@ export const propertyListingApi = createApi({
 export const {
   useSubmitPropertyMutation,
   useUpdatePropertyMutation,
+  useUpdatePropertyStatusMutation,
   useDeletePropertyMutation,
   useGetPropertyQuery,
   useMyPropertiesQuery,

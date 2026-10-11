@@ -140,6 +140,20 @@ export interface PropertyDetailsBlock {
   attachedBathroom?: boolean;
   attachedBalcony?: boolean;
   availableFor?: string;
+  // Unified PG / Lodge / Hostel accommodation fields
+  accommodationType?: string; // 'LODGE' | 'PG' | 'HOSTEL' | 'STUDENT_ROOM'
+  pricingBasis?: string; // 'PER_BED' | 'PER_ROOM'
+  maxPersonsInRoom?: number | null;
+  totalRoomsAvailable?: number | null;
+  foodOption?: string; // 'INCLUDED' | 'OPTIONAL_MESS' | 'SELF_COOKING' | 'NO_FOOD'
+  messCharges?: number | null;
+  electricityType?: string; // 'INCLUDED' | 'SUB_METER' | 'FIXED_MONTHLY'
+  electricityRatePerUnit?: number | null;
+  electricityMonthlyCharge?: number | null;
+  hasStudyTable?: boolean;
+  hasRoWater?: boolean;
+  hasPowerBackup?: boolean;
+  gateClosingTime?: string;
   maxNoOfSeats?: number | null;
   minNoOfSeats?: number | null;
   noOfPrivateWashroom?: number | null;

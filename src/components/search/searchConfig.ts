@@ -49,6 +49,13 @@ export const AMENITIES_OPTIONS = [
   { value: "INTERCOM", label: "Intercom" },
 ];
 
+export const FOOD_OPTIONS = [
+  { value: "INCLUDED", label: "Meals Included in Rent" },
+  { value: "OPTIONAL_MESS", label: "Optional Mess / Tiffin" },
+  { value: "SELF_COOKING", label: "Self Cooking / Kitchen" },
+  { value: "NO_FOOD", label: "Outside Food / Tiffin" },
+];
+
 export const BHK_OPTIONS = [
   { value: "1 RK", label: "1 RK" },
   { value: "Studio", label: "Studio" },
@@ -149,7 +156,7 @@ export type FilterSection =
       options: { value: number; label: string }[];
     }
   | {
-      key: "subType" | "furnishing" | "postedAs" | "possessionStatus" | "gatedCommunity" | "amenities" | "bhkTypes";
+      key: "subType" | "furnishing" | "postedAs" | "possessionStatus" | "gatedCommunity" | "amenities" | "bhkTypes" | "food";
       title: string;
       kind: "multi-chips";
       server: false;
@@ -171,7 +178,7 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
 
   const isResidential = intent === "BUY" || intent === "RENT";
 
-  // Property Type
+  // Property Type / Accommodation Type
   const opts = intent === "PLOT" ? propertySubTypes.filter((s) => PLOT_SUBTYPE_SLUGS.includes(s.slug)).map((s) => ({ slug: s.slug, label: s.name })) : intent === "PG" ? subTypesByPropertySlug(["pg"]) : intent === "COMMERCIAL" ? COMMERCIAL_SUBTYPES : RESIDENTIAL_SUBTYPES;
   if (opts.length) {
     sections.push({
@@ -180,6 +187,17 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
       kind: "multi-chips",
       server: false,
       options: opts.map((o) => ({ value: o.slug, label: o.label })),
+    });
+  }
+
+  // Food & Mess Policy (PG / Co-living only)
+  if (intent === "PG") {
+    sections.push({
+      key: "food",
+      title: "Food & Mess",
+      kind: "multi-chips",
+      server: false,
+      options: FOOD_OPTIONS,
     });
   }
 

@@ -43,7 +43,7 @@ export const basicDetailsStep: StepConfig = {
           options: [
             { value: "SELL", label: "Sell" },
             { value: "RENT", label: "Rent / Lease" },
-            { value: "PG", label: "PG / Co-living" },
+            { value: "PG", label: "PG / Hostel / Lodge" },
           ],
         },
         {

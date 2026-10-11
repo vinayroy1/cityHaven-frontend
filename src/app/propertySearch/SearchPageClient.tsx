@@ -3,6 +3,7 @@
 import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { HeaderNav } from "../homePage/components/HeaderNav";
+import { FooterLinks } from "../homePage/components/FooterLinks";
 import { ResultsList } from "./components/ResultsList";
 import { SearchBar } from "@/components/search/SearchBar";
 import { QuickFilterChips } from "@/components/search/QuickFilterChips";
@@ -113,6 +114,8 @@ export function SearchPageClient() {
         focusKey={sheetFocus}
         resultCount={settledCount}
       />
+
+      <FooterLinks />
     </main>
   );
 }
