@@ -83,7 +83,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker builder prune -f || true'
+            sh 'docker image prune -f || true'
         }
         success {
             echo "🎉 Frontend deployment from GitHub main succeeded!"
