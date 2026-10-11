@@ -5,7 +5,24 @@ export const APP_CONFIG = {
   
   // API Configuration
   API: {
-    BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+    get BASE_URL() {
+      const envUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      if (typeof window !== 'undefined') {
+        const currentHost = window.location.hostname;
+        if (currentHost && currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+          try {
+            const parsed = new URL(envUrl);
+            if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
+              parsed.hostname = currentHost;
+              return parsed.toString().replace(/\/$/, '');
+            }
+          } catch {
+            // fallback
+          }
+        }
+      }
+      return envUrl;
+    },
     TIMEOUT: 30000,
     RETRIES: 3,
   },

@@ -6,6 +6,23 @@ type FetchParams = {
   init?: RequestInit;
 };
 
+export function resolveClientUrl(rawUrl: string): string {
+  if (typeof window === "undefined") return rawUrl;
+  try {
+    const currentHost = window.location.hostname;
+    if (currentHost && currentHost !== "localhost" && currentHost !== "127.0.0.1") {
+      const parsed = new URL(rawUrl, window.location.origin);
+      if (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1") {
+        parsed.hostname = currentHost;
+        return parsed.toString();
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return rawUrl;
+}
+
 // Basic fetcher that attaches bearer token if present and returns unwrapped data
 export async function apiFetch<T = any>({ url, params, init }: FetchParams): Promise<T> {
   const search = params
@@ -16,8 +33,9 @@ export async function apiFetch<T = any>({ url, params, init }: FetchParams): Pro
       }, new URLSearchParams())
     : null;
 
+  const targetUrl = resolveClientUrl(url);
   const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
-  const res = await fetch(search ? `${url}?${search.toString()}` : url, {
+  const res = await fetch(search ? `${targetUrl}?${search.toString()}` : targetUrl, {
     ...init,
     headers: {
       "Content-Type": "application/json",
