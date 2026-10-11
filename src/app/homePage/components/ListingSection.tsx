@@ -12,7 +12,7 @@ export function ListingSection({ title, listings, cta, ctaHref = "/propertySearc
       <SectionHeading title={title} cta={cta} href={ctaHref} />
       <div className="flex w-full gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:pb-0 md:grid-cols-3 lg:grid-cols-5">
         {listings.map((item) => (
-          <div key={`${item.id ?? item.title}`} className="w-[76vw] max-w-[295px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+          <div key={`${item.id ?? item.title}`} className="w-[84vw] max-w-[335px] shrink-0 snap-start sm:w-auto sm:max-w-none">
             <ListingCard {...item} />
           </div>
         ))}

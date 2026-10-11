@@ -447,7 +447,7 @@ function ListingBlock({
       {loading ? (
         <div className="flex w-full gap-3.5 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:gap-3 sm:overflow-visible sm:pb-0 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="w-[76vw] max-w-[295px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+            <div key={i} className="w-[84vw] max-w-[335px] shrink-0 snap-start sm:w-auto sm:max-w-none">
               <PropertyCardSkeleton />
             </div>
           ))}
@@ -464,7 +464,7 @@ function ListingBlock({
       ) : listings.length ? (
         <div className="flex w-full gap-3.5 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:gap-3 sm:overflow-visible sm:pb-0 lg:grid-cols-4">
           {listings.map((item) => (
-            <div key={item.id} className="w-[76vw] max-w-[295px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+            <div key={item.id} className="w-[84vw] max-w-[335px] shrink-0 snap-start sm:w-auto sm:max-w-none">
               <ResultCard {...toResultCardProps(item)} />
             </div>
           ))}

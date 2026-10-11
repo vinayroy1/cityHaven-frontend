@@ -98,26 +98,26 @@ export function ResultCardSummary({
   return (
     <div className="relative z-0 flex flex-1 flex-col gap-2.5 p-3 sm:gap-3 sm:p-4">
       <div className="flex flex-wrap gap-1.5">
-        {contextBadge && <span className="rounded-md bg-rose-50 px-2 py-1 text-[11px] font-semibold text-rose-700 dark:bg-rose-950 dark:text-rose-300">{contextBadge}</span>}
-        {posterBadge && <span className="rounded-md bg-sky-50 px-2 py-1 text-[11px] font-semibold text-sky-700 dark:bg-sky-950 dark:text-sky-300">{posterBadge}</span>}
-        {type && <span className="hidden rounded-md bg-zinc-100 px-2 py-1 text-[11px] font-semibold text-zinc-700 dark:bg-slate-800 dark:text-slate-300 sm:inline-flex">{type}</span>}
+        {contextBadge && <span className="rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-950 dark:text-rose-300">{contextBadge}</span>}
+        {posterBadge && <span className="rounded-md bg-sky-50 px-2 py-0.5 text-xs font-bold text-sky-700 dark:bg-sky-950 dark:text-sky-300">{posterBadge}</span>}
+        {type && <span className="hidden rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:bg-slate-800 dark:text-slate-300 sm:inline-flex">{type}</span>}
       </div>
 
       <div>
-        <h3 className="line-clamp-1 text-sm font-semibold text-zinc-950 group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 sm:line-clamp-2 sm:text-base">
+        <h3 className="line-clamp-1 text-[15px] font-bold leading-snug text-zinc-950 group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 sm:line-clamp-2 sm:text-base">
           {title || "Property listing"}
         </h3>
         {subtitle && (
-          <p className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-zinc-600 dark:text-slate-400 sm:text-sm">
+          <p className="mt-1 flex min-w-0 items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-slate-400 sm:text-sm">
             <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
             <span className="truncate">{subtitle}</span>
           </p>
         )}
       </div>
 
-      <p className="text-base font-bold text-zinc-950 dark:text-white sm:text-lg">{price}</p>
+      <p className="text-lg font-black text-zinc-950 dark:text-white sm:text-xl tracking-tight">{price}</p>
 
-      <div className="grid grid-cols-2 gap-1.5 text-xs text-zinc-700 dark:text-slate-300 sm:gap-2">
+      <div className="grid grid-cols-2 gap-1.5 text-xs font-medium text-zinc-700 dark:text-slate-300 sm:gap-2">
         {bedrooms != null && bedrooms > 0 && (
           <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">
             <BedDouble className="h-3.5 w-3.5 text-zinc-400" />
