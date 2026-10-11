@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -421,18 +422,21 @@ export function HeaderNav() {
         </div>
       </div>
 
-      {/* Mobile Navigation Bottom Sheet */}
-      {menuOpen && (
-        <>
-          {/* Dark Backdrop Overlay */}
-          <div
-            className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in lg:hidden"
-            onClick={() => setMenuOpen(false)}
-            aria-hidden="true"
-          />
+      {/* Mobile Navigation Bottom Sheet mounted directly to document.body to escape header backdrop-filter containing block */}
+      {mounted &&
+        menuOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <>
+            {/* Dark Backdrop Overlay */}
+            <div
+              className="fixed inset-0 z-[999] bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in lg:hidden"
+              onClick={() => setMenuOpen(false)}
+              aria-hidden="true"
+            />
 
-          {/* Slide-up Bottom Sheet Anchored to Bottom of Screen */}
-          <div className="fixed inset-x-0 bottom-0 z-50 flex max-h-[86dvh] w-full flex-col rounded-t-3xl border-t border-slate-200/90 bg-white shadow-2xl transition-transform duration-300 animate-in slide-in-from-bottom dark:border-slate-800 dark:bg-slate-950 lg:hidden">
+            {/* Slide-up Bottom Sheet Anchored to Bottom of Screen */}
+            <div className="fixed inset-x-0 bottom-0 z-[1000] flex max-h-[85vh] max-h-[85dvh] w-full flex-col rounded-t-3xl border-t border-slate-200/90 bg-white shadow-2xl transition-transform duration-300 animate-in slide-in-from-bottom dark:border-slate-800 dark:bg-slate-950 lg:hidden pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
             {/* Grab Handle & Sheet Header */}
             <div className="flex flex-col items-center border-b border-slate-100 px-5 pb-3 pt-3 dark:border-slate-800/80">
               <div className="mb-2.5 h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-700" />
@@ -570,7 +574,8 @@ export function HeaderNav() {
               )}
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </header>
   );
