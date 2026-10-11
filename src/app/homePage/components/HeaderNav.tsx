@@ -421,25 +421,41 @@ export function HeaderNav() {
         </div>
       </div>
 
-      {/* Mobile Navigation Drawer Overlay */}
+      {/* Mobile Navigation Bottom Sheet */}
       {menuOpen && (
         <>
           {/* Dark Backdrop Overlay */}
           <div
-            className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-xs lg:hidden"
+            className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in lg:hidden"
             onClick={() => setMenuOpen(false)}
             aria-hidden="true"
           />
 
-          {/* Slide-down Drawer Attached to Bottom of Header */}
-          <div className="absolute left-0 right-0 top-full z-50 w-full border-b border-slate-200/90 bg-white shadow-2xl duration-200 animate-in fade-in slide-in-from-top-2 dark:border-slate-800 dark:bg-slate-950 lg:hidden">
-            <div className="max-h-[calc(100dvh-70px)] overflow-y-auto px-5 py-4">
+          {/* Slide-up Bottom Sheet Anchored to Bottom of Screen */}
+          <div className="fixed inset-x-0 bottom-0 z-50 flex max-h-[86dvh] w-full flex-col rounded-t-3xl border-t border-slate-200/90 bg-white shadow-2xl transition-transform duration-300 animate-in slide-in-from-bottom dark:border-slate-800 dark:bg-slate-950 lg:hidden">
+            {/* Grab Handle & Sheet Header */}
+            <div className="flex flex-col items-center border-b border-slate-100 px-5 pb-3 pt-3 dark:border-slate-800/80">
+              <div className="mb-2.5 h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-700" />
+              <div className="flex w-full items-center justify-between">
+                <span className="text-sm font-bold text-slate-900 dark:text-white">Menu &amp; Quick Links</span>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  aria-label="Close menu"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="overflow-y-auto px-5 py-4 pb-10 space-y-4">
               {/* Quick Action Cards in Mobile */}
-              <div className="grid grid-cols-2 gap-2.5 pb-4">
+              <div className="grid grid-cols-2 gap-2.5">
                 <Link
                   href={isAuthed ? "/propertyListing" : "/login?redirect=/propertyListing"}
                   onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-start justify-between rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 p-3.5 text-white shadow-md shadow-emerald-700/20"
+                  className="flex flex-col items-start justify-between rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 p-3.5 text-white shadow-md shadow-emerald-700/20 active:scale-[0.98] transition-transform"
                 >
                   <PlusCircle className="mb-2 h-5 w-5" />
                   <div>
@@ -450,7 +466,7 @@ export function HeaderNav() {
                 <Link
                   href={isAuthed ? "/pricing" : "/login?redirect=/pricing"}
                   onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-start justify-between rounded-2xl border border-slate-200 bg-slate-50/80 p-3.5 text-slate-800 shadow-2xs dark:border-slate-800 dark:bg-slate-900/80 dark:text-white"
+                  className="flex flex-col items-start justify-between rounded-2xl border border-slate-200 bg-slate-50/80 p-3.5 text-slate-800 shadow-2xs dark:border-slate-800 dark:bg-slate-900/80 dark:text-white active:scale-[0.98] transition-transform"
                 >
                   <Sparkles className="mb-2 h-5 w-5 text-amber-500" />
                   <div>
@@ -460,38 +476,40 @@ export function HeaderNav() {
                 </Link>
               </div>
 
-              <div className="my-2 border-t border-slate-100 dark:border-slate-850" />
+              <div className="border-t border-slate-100 dark:border-slate-850" />
 
               {/* Navigation Explore Section */}
-              <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                Explore Properties
-              </p>
-              <div className="mt-2 space-y-1">
-                {searchLinks.map((link) => {
-                  const Icon = link.icon;
-                  const active = isLinkActive(link.href);
-                  return (
-                    <Link
-                      key={link.label}
-                      href={link.href}
-                      onClick={() => setMenuOpen(false)}
-                      className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
-                        active
-                          ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
-                          : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon className="h-4 w-4 text-slate-400" />
-                        <span>{link.label}</span>
-                      </div>
-                    </Link>
-                  );
-                })}
+              <div>
+                <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Explore Properties
+                </p>
+                <div className="mt-2 space-y-1">
+                  {searchLinks.map((link) => {
+                    const Icon = link.icon;
+                    const active = isLinkActive(link.href);
+                    return (
+                      <Link
+                        key={link.label}
+                        href={link.href}
+                        onClick={() => setMenuOpen(false)}
+                        className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                          active
+                            ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+                            : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className="h-4 w-4 text-slate-400" />
+                          <span>{link.label}</span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* User Account / Auth Section for Mobile */}
-              <div className="my-3 border-t border-slate-100 dark:border-slate-850" />
+              <div className="border-t border-slate-100 dark:border-slate-850" />
               {isAuthed ? (
                 <div className="space-y-1">
                   <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
