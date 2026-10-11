@@ -32,7 +32,7 @@ pipeline {
                 echo "🔨 [Build] Compiling Next.js production Docker image..."
                 sh '''
                     docker build \
-                        --build-arg NEXT_PUBLIC_API_URL=http://95.111.252.156:4000/api \
+                        --build-arg NEXT_PUBLIC_API_URL=https://awasio.com/api \
                         -t ${DOCKER_IMAGE} .
                 '''
             }
@@ -62,7 +62,7 @@ pipeline {
                         -p 3000:3000 \
                         --network ${NETWORK_NAME} \
                         -e PORT=3000 \
-                        -e NEXT_PUBLIC_API_URL='http://95.111.252.156:4000/api' \
+                        -e NEXT_PUBLIC_API_URL='https://awasio.com/api' \
                         ${DOCKER_IMAGE}
                 '''
             }
