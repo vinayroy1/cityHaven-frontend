@@ -2,72 +2,62 @@ pipeline {
     agent any
 
     options {
-        timeout(time: 20, unit: 'MINUTES')
+        timeout(time: 25, unit: 'MINUTES')
         buildDiscarder(logRotator(numToKeepStr: '10'))
         disableConcurrentBuilds()
     }
 
     environment {
         APP_NAME     = "awasio-frontend"
-        DOCKER_IMAGE = "vinaykumar111/awasio-frontend"
-        DOCKER_TAG   = "${BUILD_NUMBER}"
-        REGISTRY_CREDS = "dockerhub-credentials"
+        DOCKER_IMAGE = "awasio-frontend:latest"
+        NETWORK_NAME = "awasio_awasio-net"
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                echo "Pulling latest code for ${APP_NAME}..."
+                echo "Fetching latest commit from GitHub main branch..."
                 checkout scm
-            }
-        }
-
-        stage('Install & Lint') {
-            steps {
-                sh '''
-                    echo "Checking node & npm versions..."
-                    node -v
-                    npm -v
-                '''
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo "Building Docker container image for ${APP_NAME}..."
-                sh """
-                    docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} -t ${DOCKER_IMAGE}:latest .
-                """
-            }
-        }
-
-        stage('Push Image to Registry') {
-            steps {
-                echo "Pushing image to Docker Hub..."
-                withCredentials([usernamePassword(credentialsId: "${REGISTRY_CREDS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
-                        docker push ${DOCKER_IMAGE}:latest
-                    '''
-                }
-            }
-        }
-
-        stage('Deploy to Server') {
-            steps {
-                echo "Deploying ${APP_NAME} container with zero downtime..."
+                echo "Building Next.js production image for ${APP_NAME}..."
                 sh '''
-                    # Stop previous container if running and restart with new image
-                    docker pull ${DOCKER_IMAGE}:latest
+                    docker build \
+                        --build-arg NEXT_PUBLIC_API_URL=http://95.111.252.156:4000/api \
+                        -t ${DOCKER_IMAGE} .
+                '''
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                echo "Deploying ${APP_NAME} on Contabo VPS..."
+                sh '''
                     docker stop ${APP_NAME} || true
                     docker rm ${APP_NAME} || true
                     docker run -d \
                         --name ${APP_NAME} \
-                        --restart unless-stopped \
+                        --restart always \
                         -p 3000:3000 \
-                        --network awasio-network \
-                        ${DOCKER_IMAGE}:latest
+                        --network ${NETWORK_NAME} \
+                        -e PORT=3000 \
+                        -e NEXT_PUBLIC_API_URL='http://95.111.252.156:4000/api' \
+                        ${DOCKER_IMAGE}
+                '''
+            }
+        }
+
+        stage('Health Verification') {
+            steps {
+                echo "Verifying frontend health..."
+                sh '''
+                    sleep 5
+                    docker logs --tail 15 ${APP_NAME}
+                    curl -fsS http://localhost:3000/ > /dev/null || exit 1
+                    echo "✅ Frontend is live and healthy on port 3000!"
                 '''
             }
         }
@@ -75,13 +65,13 @@ pipeline {
 
     post {
         always {
-            sh 'docker system prune -f'
+            sh 'docker builder prune -f || true'
         }
         success {
-            echo "✅ Frontend deployment completed successfully!"
+            echo "🎉 Frontend deployment from GitHub main succeeded!"
         }
         failure {
-            echo "❌ Frontend pipeline failed! Check logs."
+            echo "❌ Frontend deployment failed! Check Jenkins console log."
         }
     }
 }
