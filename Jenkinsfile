@@ -72,10 +72,19 @@ pipeline {
             steps {
                 echo "🩺 [Health Check] Probing frontend live endpoint..."
                 sh '''
-                    sleep 6
-                    docker logs --tail 15 ${APP_NAME}
-                    curl -fsSL http://${APP_NAME}:3000/ > /dev/null || curl -fsSL http://95.111.252.156:3000/ > /dev/null || exit 1
-                    echo "✅ Frontend is live and responding healthy on port 3000!"
+                    echo "Waiting for ${APP_NAME} to initialize..."
+                    for i in $(seq 1 15); do
+                        if curl -fsSL http://${APP_NAME}:3000/ > /dev/null 2>&1 || curl -fsSL http://95.111.252.156:3000/ > /dev/null 2>&1; then
+                            echo "✅ Frontend is healthy and responding (attempt ${i})!"
+                            docker logs --tail 10 ${APP_NAME}
+                            exit 0
+                        fi
+                        echo "Attempt ${i}/15: frontend still initializing, waiting 3s..."
+                        sleep 3
+                    done
+                    echo "❌ Frontend failed to become healthy in time"
+                    docker logs --tail 30 ${APP_NAME}
+                    exit 1
                 '''
             }
         }
