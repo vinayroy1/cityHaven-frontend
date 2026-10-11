@@ -74,7 +74,7 @@ pipeline {
                 sh '''
                     sleep 6
                     docker logs --tail 15 ${APP_NAME}
-                    curl -fsS http://${APP_NAME}:3000/ > /dev/null || curl -fsS http://95.111.252.156:3000/ > /dev/null || exit 1
+                    curl -fsSL http://${APP_NAME}:3000/ > /dev/null || curl -fsSL http://95.111.252.156:3000/ > /dev/null || exit 1
                     echo "✅ Frontend is live and responding healthy on port 3000!"
                 '''
             }
