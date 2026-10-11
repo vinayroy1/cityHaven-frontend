@@ -14,16 +14,22 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Validation') {
             steps {
-                echo "Fetching latest commit from GitHub main branch..."
+                echo "🔍 [Validation] Validating environment and fetching latest commit from GitHub main..."
                 checkout scm
+                sh '''
+                    echo "Git Commit: $(git rev-parse --short HEAD)"
+                    echo "Git Branch: $(git rev-parse --abbrev-ref HEAD)"
+                    docker info > /dev/null || (echo "Docker engine unreachable" && exit 1)
+                    echo "Validation passed."
+                '''
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
-                echo "Building Next.js production image for ${APP_NAME}..."
+                echo "🔨 [Build] Compiling Next.js production Docker image..."
                 sh '''
                     docker build \
                         --build-arg NEXT_PUBLIC_API_URL=http://95.111.252.156:4000/api \
@@ -32,9 +38,21 @@ pipeline {
             }
         }
 
-        stage('Deploy Container') {
+        stage('Build Validation') {
             steps {
-                echo "Deploying ${APP_NAME} on Contabo VPS..."
+                echo "🧪 [Build Validation] Verifying Docker image integrity..."
+                sh '''
+                    docker image inspect ${DOCKER_IMAGE} > /dev/null || exit 1
+                    IMAGE_SIZE=$(docker images ${DOCKER_IMAGE} --format "{{.Size}}")
+                    echo "Image size: ${IMAGE_SIZE}"
+                    echo "Image verified successfully."
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "🚀 [Deploy] Deploying ${APP_NAME} container on Contabo VPS..."
                 sh '''
                     docker stop ${APP_NAME} || true
                     docker rm ${APP_NAME} || true
@@ -50,14 +68,14 @@ pipeline {
             }
         }
 
-        stage('Health Verification') {
+        stage('Health Check') {
             steps {
-                echo "Verifying frontend health..."
+                echo "🩺 [Health Check] Probing frontend live endpoint..."
                 sh '''
-                    sleep 5
+                    sleep 6
                     docker logs --tail 15 ${APP_NAME}
                     curl -fsS http://localhost:3000/ > /dev/null || exit 1
-                    echo "✅ Frontend is live and healthy on port 3000!"
+                    echo "✅ Frontend is live and responding healthy on port 3000!"
                 '''
             }
         }
