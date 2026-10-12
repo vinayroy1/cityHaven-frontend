@@ -22,12 +22,13 @@ export function AdminDeduplicationAlert() {
   const societyOrProjectName = watch("location.societyOrProjectName") || "";
   const locality = watch("location.locality") || "";
   const cityName = watch("location.cityName") || "";
+  const address = watch("location.address") || "";
   const flatNumber = watch("location.flatNumber") || "";
   const bedrooms = watch("details.bedrooms");
   const listingType = watch("context.listingType") || "RENT";
 
   // Use the most specific query string available
-  const queryTerm = societyOrProjectName.trim() || locality.trim();
+  const queryTerm = societyOrProjectName.trim() || locality.trim() || address.trim();
   const shouldSearch = queryTerm.length >= 3;
 
   const { data: searchResults, isFetching } = useSearchPropertiesQuery(
