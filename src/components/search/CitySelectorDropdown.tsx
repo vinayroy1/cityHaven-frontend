@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ChevronDown, Crosshair, Loader2, MapPin, Search, Check, Sparkles } from "lucide-react";
+import { ChevronDown, Crosshair, Loader2, MapPin, Search, Check, Sparkles, X } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 
 export interface CityItem {
@@ -107,6 +107,14 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
 
     const updatePosition = () => {
       if (!containerRef.current) return;
+
+      if (window.innerWidth < 640) {
+        // Mobile uses fixed bottom sheet modal - clamp to visualViewport if keyboard is open
+        const vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        setDropdownMaxHeight(Math.min(480, Math.max(220, vvHeight - 40)));
+        return;
+      }
+
       const rect = containerRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
       const spaceBelow = viewportHeight - rect.bottom;
@@ -115,7 +123,7 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
       // Dynamically calculate exact pixel height so dropdown menu NEVER exceeds viewport bottom
       const margin = 20;
       const minHeight = 160;
-      const preferredMaxHeight = 280;
+      const preferredMaxHeight = 320;
 
       if (spaceBelow < preferredMaxHeight && spaceAbove > spaceBelow) {
         setPlacement("top");
@@ -131,9 +139,13 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
     updatePosition();
     window.addEventListener("scroll", updatePosition, { passive: true });
     window.addEventListener("resize", updatePosition);
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", updatePosition);
+    }
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (window.innerWidth >= 640 && containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -147,6 +159,9 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
     return () => {
       window.removeEventListener("scroll", updatePosition);
       window.removeEventListener("resize", updatePosition);
+      if (vv) {
+        vv.removeEventListener("resize", updatePosition);
+      }
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -208,18 +223,48 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
         <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
-      {/* Dropdown Floating Menu with Viewport Boundary Clamping */}
+      {/* Mobile Backdrop Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-[89] bg-black/50 backdrop-blur-xs sm:hidden"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Dropdown / Mobile Sheet Menu with Viewport Clamping */}
       {isOpen && (
         <div
           ref={dropdownRef}
+          data-city-modal="true"
           style={{ maxHeight: `${dropdownMaxHeight}px` }}
-          className={`absolute left-0 z-[70] w-72 sm:w-80 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl transition-all dark:border-slate-700 dark:bg-slate-900 ${
+          className={`overflow-y-auto bg-white shadow-2xl transition-all dark:border-slate-700 dark:bg-slate-900 border border-slate-200
+            /* Mobile: Centered / bottom sheet with full width so it NEVER clips or goes below viewport */
+            fixed inset-x-3 bottom-4 z-[90] rounded-3xl p-4 sm:p-3
+            /* Desktop (sm+): Floating popup menu */
+            sm:absolute sm:inset-auto sm:left-0 sm:bottom-auto sm:z-[70] sm:w-80 sm:rounded-2xl ${
             placement === "top"
-              ? "bottom-[calc(100%+8px)] shadow-slate-950/20"
-              : "top-[calc(100%+8px)] shadow-slate-950/15"
+              ? "sm:bottom-[calc(100%+8px)] sm:shadow-slate-950/20"
+              : "sm:top-[calc(100%+8px)] sm:shadow-slate-950/15"
           }`}
         >
-          {/* Search box inside dropdown */}
+          {/* Mobile Sheet Header */}
+          <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 sm:hidden dark:border-slate-800">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-rose-500" />
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Choose Your City</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Search box inside dropdown (autoFocus disabled to prevent disruptive keyboard jump on mobile) */}
           <div className="relative mb-2.5">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
             <input
@@ -227,7 +272,6 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
               placeholder="Search Indian city..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              autoFocus
               className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
             />
           </div>

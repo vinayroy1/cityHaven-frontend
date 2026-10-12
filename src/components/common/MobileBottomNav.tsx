@@ -112,54 +112,84 @@ export function MobileBottomNav() {
   }, [drawerOpen]);
 
   const [isKeyboardVisible, setIsKeyboardVisible] = React.useState(false);
+  const baselineHeightRef = React.useRef<number>(0);
 
-  // Auto-hide bottom navigation when virtual keyboard opens or input is focused
+  // Auto-hide bottom navigation when virtual keyboard opens, any input is focused, or dialog is active
   React.useEffect(() => {
-    const handleFocusIn = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        target &&
-        (target.tagName === "INPUT" ||
-          target.tagName === "TEXTAREA" ||
-          target.isContentEditable)
-      ) {
-        setIsKeyboardVisible(true);
+    if (typeof window === "undefined") return;
+
+    const updateBaseline = () => {
+      const h = window.screen?.height || window.innerHeight;
+      if (h > baselineHeightRef.current) {
+        baselineHeightRef.current = h;
       }
     };
+    updateBaseline();
 
-    const handleFocusOut = () => {
-      setTimeout(() => {
-        const active = document.activeElement as HTMLElement;
-        if (
-          !active ||
-          (active.tagName !== "INPUT" &&
-            active.tagName !== "TEXTAREA" &&
-            !active.isContentEditable)
-        ) {
-          setIsKeyboardVisible(false);
-        }
-      }, 120);
+    const isInputFocused = (): boolean => {
+      const active = document.activeElement as HTMLElement | null;
+      if (!active) return false;
+      const tag = active.tagName?.toLowerCase();
+      return (
+        tag === "input" ||
+        tag === "textarea" ||
+        tag === "select" ||
+        active.isContentEditable ||
+        active.getAttribute("role") === "textbox"
+      );
     };
 
-    const handleViewportResize = () => {
-      if (typeof window !== "undefined" && window.visualViewport) {
-        const isKeyboard = window.visualViewport.height < window.innerHeight - 140;
-        setIsKeyboardVisible(isKeyboard);
-      }
+    const isModalOpen = (): boolean => {
+      return Boolean(
+        document.querySelector('[role="dialog"]') ||
+        document.querySelector('[data-vaul-drawer]') ||
+        document.querySelector('[data-city-modal="true"]')
+      );
     };
 
-    window.addEventListener("focusin", handleFocusIn);
-    window.addEventListener("focusout", handleFocusOut);
-    if (typeof window !== "undefined" && window.visualViewport) {
-      window.visualViewport.addEventListener("resize", handleViewportResize);
+    const evaluateState = () => {
+      const vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      const baseline = baselineHeightRef.current || window.screen?.height || 800;
+      // On mobile screens, if viewport height drops below 540px or is 140px smaller than uncompressed baseline, keyboard is open
+      const isMobile = window.innerWidth < 1024;
+      const heightShrunk = isMobile && (vvHeight < 540 || vvHeight < baseline - 140);
+      const inputActive = isInputFocused();
+      const modalActive = isModalOpen();
+
+      setIsKeyboardVisible(inputActive || heightShrunk || modalActive);
+    };
+
+    // Use capture phase so we NEVER miss an input focus anywhere on the page
+    window.addEventListener("focus", evaluateState, true);
+    window.addEventListener("blur", () => setTimeout(evaluateState, 100), true);
+    window.addEventListener("focusin", evaluateState, true);
+    window.addEventListener("focusout", () => setTimeout(evaluateState, 100), true);
+    window.addEventListener("resize", () => {
+      updateBaseline();
+      evaluateState();
+    });
+
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", evaluateState);
+      vv.addEventListener("scroll", evaluateState);
     }
 
+    // Observer for modals/drawers being inserted into DOM
+    const observer = new MutationObserver(() => evaluateState());
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-state", "class"] });
+
     return () => {
-      window.removeEventListener("focusin", handleFocusIn);
-      window.removeEventListener("focusout", handleFocusOut);
-      if (typeof window !== "undefined" && window.visualViewport) {
-        window.visualViewport.removeEventListener("resize", handleViewportResize);
+      window.removeEventListener("focus", evaluateState, true);
+      window.removeEventListener("blur", evaluateState, true);
+      window.removeEventListener("focusin", evaluateState, true);
+      window.removeEventListener("focusout", evaluateState, true);
+      window.removeEventListener("resize", evaluateState);
+      if (vv) {
+        vv.removeEventListener("resize", evaluateState);
+        vv.removeEventListener("scroll", evaluateState);
       }
+      observer.disconnect();
     };
   }, []);
 
@@ -194,8 +224,9 @@ export function MobileBottomNav() {
     <>
       {/* Spacer at document end to prevent bottom content from being covered by fixed nav */}
       <div
+        data-mobile-bottom-spacer="true"
         className={`w-full block lg:hidden pointer-events-none transition-all duration-200 ${
-          isKeyboardVisible ? "h-0" : "h-20"
+          isKeyboardVisible ? "h-0 !hidden" : "h-20"
         }`}
         aria-hidden="true"
       />
@@ -207,7 +238,7 @@ export function MobileBottomNav() {
         aria-label="Mobile Navigation Bar"
         className={`fixed bottom-0 inset-x-0 z-40 block lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-xl shadow-[0_-8px_24px_rgba(0,0,0,0.06)] dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] transition-all duration-200 pb-[env(safe-area-inset-bottom,0px)] ${
           isKeyboardVisible
-            ? "translate-y-full opacity-0 pointer-events-none"
+            ? "translate-y-full opacity-0 pointer-events-none !hidden"
             : "translate-y-0 opacity-100"
         }`}
       >
