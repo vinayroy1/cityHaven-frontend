@@ -52,7 +52,11 @@ const searchLinks = [
   ...secondaryNavLinks,
 ];
 
-export function HeaderNav() {
+interface HeaderNavProps {
+  isMobileHidden?: boolean;
+}
+
+export function HeaderNav({ isMobileHidden = false }: HeaderNavProps = {}) {
   const pathname = usePathname();
   const router = useRouter();
   const [isAuthed, setIsAuthed] = React.useState(false);
@@ -176,6 +180,10 @@ export function HeaderNav() {
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
+        isMobileHidden
+          ? "-translate-y-full pointer-events-none lg:translate-y-0 lg:pointer-events-auto"
+          : "translate-y-0"
+      } ${
         isScrolled
           ? "border-b border-slate-200/80 bg-white/90 shadow-md shadow-slate-900/5 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/90 dark:shadow-black/20"
           : "border-b border-slate-200/50 bg-white/75 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-950/75"

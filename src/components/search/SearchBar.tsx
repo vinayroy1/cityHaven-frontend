@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, Search, SlidersHorizontal } from "lucide-react";
 import { LocationSearchInput } from "./LocationSearchInput";
 import { CitySelectorDropdown } from "./CitySelectorDropdown";
 import { SearchDialog } from "./SearchDialog";
@@ -9,7 +9,17 @@ import { primaryButton } from "./theme";
 
 import { resolveSearchQueryToState } from "@/lib/search/intentParser";
 
-type Props = { variant: "hero" | "results"; value: SearchState; onChange: (next: SearchState) => void; onSubmit: (next: SearchState) => void; resultCount?: number; activeFilterCount?: number; onOpenFilters?: () => void };
+type Props = {
+  variant: "hero" | "results";
+  value: SearchState;
+  onChange: (next: SearchState) => void;
+  onSubmit: (next: SearchState) => void;
+  resultCount?: number;
+  activeFilterCount?: number;
+  onOpenFilters?: () => void;
+  compact?: boolean;
+  onBack?: () => void;
+};
 
 function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?: "hero" | "results"; value: SearchState; onSubmit: (next: SearchState) => void; onContextChange?: (next: SearchState) => void }) {
   const [draft, setDraft] = React.useState(value);
@@ -157,7 +167,17 @@ function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?:
   );
 }
 
-export function SearchBar({ variant, value, onChange, onSubmit, activeFilterCount = 0, onOpenFilters }: Props) {
+export function SearchBar({
+  variant,
+  value,
+  onChange,
+  onSubmit,
+  resultCount,
+  activeFilterCount = 0,
+  onOpenFilters,
+  compact = false,
+  onBack,
+}: Props) {
   const [open, setOpen] = React.useState(false);
   if (variant === "hero") return <SearchEditor variant="hero" value={value} onSubmit={onSubmit} onContextChange={onChange} />;
   return (
@@ -165,30 +185,69 @@ export function SearchBar({ variant, value, onChange, onSubmit, activeFilterCoun
       <div className="hidden lg:block">
         <SearchEditor variant="results" value={value} onSubmit={onSubmit} onContextChange={onChange} />
       </div>
-      <div className="flex gap-2 lg:hidden">
+      <div className="flex items-center gap-2 lg:hidden">
+        {compact && onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="Back"
+            className="flex h-10 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 active:scale-95"
+          >
+            <ArrowLeft size={18} />
+          </button>
+        )}
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-zinc-200 bg-white px-3 py-3 text-left dark:border-slate-800 dark:bg-slate-900"
+          className={`flex min-w-0 flex-1 items-center gap-2.5 rounded-xl border border-zinc-200 bg-white text-left shadow-xs transition hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 active:scale-[0.99] ${
+            compact ? "px-3 py-2" : "px-3 py-2.5 sm:py-3"
+          }`}
         >
-          <Search size={19} className="shrink-0 text-rose-600 dark:text-rose-400" />
-          <span className="min-w-0">
-            <span className="block text-xs font-semibold text-zinc-500 dark:text-slate-400">
-              {INTENT_CONFIG[value.intent].label}
-              {value.intent === "COMMERCIAL" ? (value.transaction === "RENT" ? " / Rent" : " / Buy") : ""}
-            </span>
-            <span className="block truncate text-sm font-medium text-slate-900 dark:text-white">
-              {locationSummary(value)}
-            </span>
+          <Search size={compact ? 16 : 18} className="shrink-0 text-rose-600 dark:text-rose-400" />
+          <span className="min-w-0 flex-1">
+            {compact ? (
+              <span className="flex items-center gap-1.5 truncate">
+                <span className="text-xs font-bold text-rose-600 dark:text-rose-400 shrink-0">
+                  {INTENT_CONFIG[value.intent].label}
+                  {value.intent === "COMMERCIAL" ? (value.transaction === "RENT" ? " / Rent" : " / Buy") : ""}
+                </span>
+                <span className="text-slate-300 dark:text-slate-700 text-xs">•</span>
+                <span className="truncate text-xs font-semibold text-slate-900 dark:text-white">
+                  {locationSummary(value)}
+                </span>
+              </span>
+            ) : (
+              <>
+                <span className="block text-[11px] font-semibold text-zinc-500 dark:text-slate-400">
+                  {INTENT_CONFIG[value.intent].label}
+                  {value.intent === "COMMERCIAL" ? (value.transaction === "RENT" ? " / Rent" : " / Buy") : ""}
+                </span>
+                <span className="block truncate text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                  {locationSummary(value)}
+                </span>
+              </>
+            )}
           </span>
+          {compact && resultCount !== undefined && (
+            <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              {resultCount}
+            </span>
+          )}
         </button>
         <button
           type="button"
           aria-label={`Filters, ${activeFilterCount} active`}
           onClick={onOpenFilters}
-          className="flex w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+          className={`relative flex shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 active:scale-95 ${
+            compact ? "h-10 w-10" : "h-11 w-11 sm:w-12"
+          }`}
         >
-          <SlidersHorizontal size={19} />
+          <SlidersHorizontal size={compact ? 17 : 19} />
+          {activeFilterCount > 0 && (
+            <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-black text-white shadow-xs">
+              {activeFilterCount}
+            </span>
+          )}
         </button>
       </div>
       <SearchDialog open={open} onClose={() => setOpen(false)} title="Search properties">

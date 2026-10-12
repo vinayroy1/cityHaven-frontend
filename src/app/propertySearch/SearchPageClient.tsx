@@ -29,6 +29,37 @@ export function SearchPageClient() {
 
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [sheetFocus, setSheetFocus] = React.useState<string | null>(null);
+  const [isScrolledDown, setIsScrolledDown] = React.useState(false);
+
+  React.useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Always restore full header near the top
+      if (currentScrollY <= 40) {
+        setIsScrolledDown(false);
+        lastScrollY = currentScrollY;
+        return;
+      }
+
+      const diff = currentScrollY - lastScrollY;
+
+      // Scrolling downwards past 60px -> dock compact search at top-0
+      if (diff > 6 && currentScrollY > 60) {
+        setIsScrolledDown(true);
+      } else if (diff < -8) {
+        // Scrolling upwards -> restore full navigation header
+        setIsScrolledDown(false);
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const commit = React.useCallback(
     (next: SearchState) => {
@@ -51,13 +82,16 @@ export function SearchPageClient() {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
-      <HeaderNav />
+      <HeaderNav isMobileHidden={isScrolledDown} />
 
-      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        {/* sticky search + quick filters — sits just below the site header.
-            NB: no `backdrop-blur`/`filter` here — it would become the containing
-            block for the SearchBar's `position: fixed` mobile sheet. */}
-        <div className="sticky top-16 z-30 -mx-4 space-y-3 border-b border-slate-200 bg-slate-50 px-4 pb-3 pt-3 dark:border-slate-800 dark:bg-slate-950 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 pt-1 sm:pt-4 pb-4 sm:px-6 lg:px-8">
+        {/* sticky search + quick filters — sits just below the site header on desktop,
+            docks directly to top-0 when user scrolls down on mobile to maximize viewport. */}
+        <div
+          className={`sticky z-30 -mx-4 border-b border-slate-200 bg-slate-50 px-4 dark:border-slate-800 dark:bg-slate-950 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 lg:top-16 transition-all duration-300 ${
+            isScrolledDown ? "top-0 py-2 shadow-xs" : "top-16 py-3 space-y-2.5"
+          }`}
+        >
           <SearchBar
             variant="results"
             value={state}
@@ -65,9 +99,23 @@ export function SearchPageClient() {
             onSubmit={commit}
             resultCount={settledCount}
             activeFilterCount={activeCount}
+            compact={isScrolledDown}
+            onBack={() => {
+              if (typeof window !== "undefined" && window.history.length > 1) {
+                router.back();
+              } else {
+                router.push("/");
+              }
+            }}
             onOpenFilters={() => openFilters()}
           />
-          <div className="md:hidden">
+          <div
+            className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+              isScrolledDown
+                ? "max-h-0 opacity-0 pointer-events-none -mt-1"
+                : "max-h-16 opacity-100 mt-2"
+            }`}
+          >
             <QuickFilterChips state={state} onOpenFilters={openFilters} />
           </div>
         </div>
