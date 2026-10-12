@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import { Providers } from "./providers";
+import { MobileBottomNav } from "@/components/common/MobileBottomNav";
 import { seoDefaults, buildCanonical, SITE_URL } from "@/constants/seo";
 
 export const viewport: Viewport = {
@@ -91,7 +92,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-150`}
         suppressHydrationWarning
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <MobileBottomNav />
+        </Providers>
       </body>
     </html>
   );
