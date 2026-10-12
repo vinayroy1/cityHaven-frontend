@@ -6,7 +6,6 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '10'))
         disableConcurrentBuilds()
         skipDefaultCheckout(true)
-        timestamps()
     }
 
     environment {
