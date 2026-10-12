@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown, Crosshair, Loader2, MapPin, Search, Check, Sparkles, X } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 
@@ -46,6 +47,7 @@ interface Props {
 
 export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectCity, className = "", compact = false }: Props) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [popularCities, setPopularCities] = React.useState<CityItem[]>(DEFAULT_POPULAR_CITIES);
   const [searchResults, setSearchResults] = React.useState<CityItem[]>([]);
@@ -55,6 +57,22 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock mobile body scroll when drawer is open
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    if (typeof window !== "undefined" && window.innerWidth < 640) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
 
   // 1. Fetch live popular cities from API, filtering strictly for Indian metro cities
   React.useEffect(() => {
@@ -221,129 +239,132 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
       </button>
 
       {/* =========================================================================
-          MOBILE VIEW (< 640px): Native Bottom Sheet Drawer with Backdrop
+          MOBILE VIEW (< 640px): Native Bottom Sheet Drawer with Backdrop (Portaled to body)
           ========================================================================= */}
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] flex flex-col justify-end sm:hidden">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
-            onClick={() => setIsOpen(false)}
-            aria-hidden="true"
-          />
-
-          {/* Bottom Sheet Container */}
-          <div
-            data-city-modal="true"
-            className="relative z-10 w-full max-h-[85vh] overflow-y-auto rounded-t-3xl border-t border-slate-200 bg-white p-5 pb-8 shadow-2xl dark:border-slate-800 dark:bg-slate-900"
-          >
-            {/* Grab handle indicator */}
-            <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-700" />
-
-            {/* Mobile Header */}
-            <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-rose-500" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Choose Your City</h3>
-              </div>
-              <button
-                type="button"
+      {mounted && isOpen && typeof document !== "undefined"
+        ? createPortal(
+            <div className="fixed inset-0 z-[9999] flex flex-col justify-end sm:hidden">
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150"
                 onClick={() => setIsOpen(false)}
-                className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:text-slate-400"
-                aria-label="Close"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Search input (autoFocus disabled to prevent abrupt keyboard jump) */}
-            <div className="relative mb-3">
-              <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search Indian city..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                aria-hidden="true"
               />
-            </div>
 
-            {/* GPS Detect Action */}
-            <button
-              type="button"
-              onClick={handleDetectLocation}
-              disabled={isDetecting}
-              className="mb-4 flex w-full items-center gap-2.5 rounded-2xl bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 active:scale-[0.99] disabled:opacity-50 dark:bg-rose-950/40 dark:text-rose-300"
-            >
-              {isDetecting ? (
-                <Loader2 className="h-4 w-4 animate-spin text-rose-600" />
-              ) : (
-                <Crosshair className="h-4 w-4 text-rose-600 dark:text-rose-400" />
-              )}
-              <span>{isDetecting ? "Detecting nearest city..." : "Detect my current location"}</span>
-            </button>
+              {/* Bottom Sheet Container */}
+              <div
+                data-city-modal="true"
+                className="relative z-10 w-full max-h-[85vh] max-h-[85dvh] overscroll-contain overflow-y-auto rounded-t-3xl border-t border-slate-200 bg-white p-5 pb-8 shadow-2xl dark:border-slate-800 dark:bg-slate-900 animate-in slide-in-from-bottom duration-200"
+              >
+                {/* Grab handle indicator */}
+                <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-700" />
 
-            {/* If searching: show search results */}
-            {search.trim().length > 0 ? (
-              <div className="space-y-1">
-                <p className="px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Search Results</p>
-                {searchResults.length === 0 ? (
-                  <p className="py-4 text-center text-xs text-slate-500">No cities found matching &quot;{search}&quot;</p>
+                {/* Mobile Header */}
+                <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-rose-500" />
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Choose Your City</h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:text-slate-400"
+                    aria-label="Close"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Search input (autoFocus disabled to prevent abrupt keyboard jump) */}
+                <div className="relative mb-3">
+                  <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search Indian city..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  />
+                </div>
+
+                {/* GPS Detect Action */}
+                <button
+                  type="button"
+                  onClick={handleDetectLocation}
+                  disabled={isDetecting}
+                  className="mb-4 flex w-full items-center gap-2.5 rounded-2xl bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 active:scale-[0.99] disabled:opacity-50 dark:bg-rose-950/40 dark:text-rose-300"
+                >
+                  {isDetecting ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-rose-600" />
+                  ) : (
+                    <Crosshair className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                  )}
+                  <span>{isDetecting ? "Detecting nearest city..." : "Detect my current location"}</span>
+                </button>
+
+                {/* If searching: show search results */}
+                {search.trim().length > 0 ? (
+                  <div className="space-y-1">
+                    <p className="px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Search Results</p>
+                    {searchResults.length === 0 ? (
+                      <p className="py-4 text-center text-xs text-slate-500">No cities found matching &quot;{search}&quot;</p>
+                    ) : (
+                      searchResults.map((c) => (
+                        <button
+                          key={`m_search_${c.id}_${c.name}`}
+                          type="button"
+                          onClick={() => {
+                            onSelectCity(c);
+                            setIsOpen(false);
+                            setSearch("");
+                          }}
+                          className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                        >
+                          <span>{c.name} {c.state ? `(${c.state})` : ""}</span>
+                          {selectedCityName?.toLowerCase() === c.name.toLowerCase() && (
+                            <Check className="h-4 w-4 text-rose-600" />
+                          )}
+                        </button>
+                      ))
+                    )}
+                  </div>
                 ) : (
-                  searchResults.map((c) => (
-                    <button
-                      key={`m_search_${c.id}_${c.name}`}
-                      type="button"
-                      onClick={() => {
-                        onSelectCity(c);
-                        setIsOpen(false);
-                        setSearch("");
-                      }}
-                      className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-                    >
-                      <span>{c.name} {c.state ? `(${c.state})` : ""}</span>
-                      {selectedCityName?.toLowerCase() === c.name.toLowerCase() && (
-                        <Check className="h-4 w-4 text-rose-600" />
-                      )}
-                    </button>
-                  ))
+                  /* Popular Indian Metros Grid */
+                  <div>
+                    <p className="mb-2 flex items-center gap-1.5 px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                      <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                      Popular Indian Cities
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {popularCities.map((c) => {
+                        const isSelected = selectedCityName?.toLowerCase() === c.name.toLowerCase();
+                        return (
+                          <button
+                            key={`m_pop_${c.id}_${c.name}`}
+                            type="button"
+                            onClick={() => {
+                              onSelectCity(c);
+                              setIsOpen(false);
+                            }}
+                            className={`flex items-center justify-between rounded-2xl px-3.5 py-3 text-left text-xs font-bold transition ${
+                              isSelected
+                                ? "bg-rose-600 text-white shadow-xs"
+                                : "bg-slate-50 text-slate-800 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                            }`}
+                          >
+                            <span className="truncate">{c.name}</span>
+                            {isSelected && <Check className="h-3.5 w-3.5 shrink-0" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
               </div>
-            ) : (
-              /* Popular Indian Metros Grid */
-              <div>
-                <p className="mb-2 flex items-center gap-1.5 px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                  <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                  Popular Indian Cities
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  {popularCities.map((c) => {
-                    const isSelected = selectedCityName?.toLowerCase() === c.name.toLowerCase();
-                    return (
-                      <button
-                        key={`m_pop_${c.id}_${c.name}`}
-                        type="button"
-                        onClick={() => {
-                          onSelectCity(c);
-                          setIsOpen(false);
-                        }}
-                        className={`flex items-center justify-between rounded-2xl px-3.5 py-3 text-left text-xs font-bold transition ${
-                          isSelected
-                            ? "bg-rose-600 text-white shadow-xs"
-                            : "bg-slate-50 text-slate-800 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                        }`}
-                      >
-                        <span className="truncate">{c.name}</span>
-                        {isSelected && <Check className="h-3.5 w-3.5 shrink-0" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+            </div>,
+            document.body
+          )
+        : null}
 
       {/* =========================================================================
           DESKTOP VIEW (sm+): Compact Floating Dropdown Menu
