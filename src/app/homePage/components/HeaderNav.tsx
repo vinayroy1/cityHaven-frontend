@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -14,14 +13,12 @@ import {
   LayoutDashboard,
   LogOut,
   MapPin,
-  Menu,
   PlusCircle,
   Settings,
   ShieldCheck,
   Sparkles,
   User,
   Users,
-  X,
   BedDouble,
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
@@ -60,7 +57,6 @@ export function HeaderNav() {
   const router = useRouter();
   const [isAuthed, setIsAuthed] = React.useState(false);
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
-  const [menuOpen, setMenuOpen] = React.useState(false);
   const [accountOpen, setAccountOpen] = React.useState(false);
   const [moreNavOpen, setMoreNavOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
@@ -123,17 +119,6 @@ export function HeaderNav() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [accountOpen, moreNavOpen]);
 
-  // Prevent background scroll when mobile menu is active
-  React.useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [menuOpen]);
 
   const logout = () => {
     localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
@@ -142,7 +127,6 @@ export function HeaderNav() {
     setIsAuthed(false);
     setUserProfile(null);
     setAccountOpen(false);
-    setMenuOpen(false);
     router.push("/");
   };
 
@@ -409,174 +393,9 @@ export function HeaderNav() {
             </Link>
           )}
 
-          {/* Mobile Menu Hamburger Button */}
-          <button
-            type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/80 text-slate-700 shadow-2xs backdrop-blur-sm transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:bg-slate-800 lg:hidden"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-          >
-            {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
+
         </div>
       </div>
-
-      {/* Mobile Navigation Bottom Sheet mounted directly to document.body to escape header backdrop-filter containing block */}
-      {mounted &&
-        menuOpen &&
-        typeof document !== "undefined" &&
-        createPortal(
-          <>
-            {/* Dark Backdrop Overlay */}
-            <div
-              className="fixed inset-0 z-[999] bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in lg:hidden"
-              onClick={() => setMenuOpen(false)}
-              aria-hidden="true"
-            />
-
-            {/* Slide-up Bottom Sheet Anchored to Bottom of Screen */}
-            <div className="fixed inset-x-0 bottom-0 z-[1000] flex max-h-[85vh] max-h-[85dvh] w-full flex-col rounded-t-3xl border-t border-slate-200/90 bg-white shadow-2xl transition-transform duration-300 animate-in slide-in-from-bottom dark:border-slate-800 dark:bg-slate-950 lg:hidden pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
-            {/* Grab Handle & Sheet Header */}
-            <div className="flex flex-col items-center border-b border-slate-100 px-5 pb-3 pt-3 dark:border-slate-800/80">
-              <div className="mb-2.5 h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-700" />
-              <div className="flex w-full items-center justify-between">
-                <span className="text-sm font-bold text-slate-900 dark:text-white">Menu &amp; Quick Links</span>
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  aria-label="Close menu"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            <div className="overflow-y-auto px-5 py-4 pb-10 space-y-4">
-              {/* Quick Action Cards in Mobile */}
-              <div className="grid grid-cols-2 gap-2.5">
-                <Link
-                  href={isAuthed ? "/propertyListing" : "/login?redirect=/propertyListing"}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-start justify-between rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 p-3.5 text-white shadow-md shadow-emerald-700/20 active:scale-[0.98] transition-transform"
-                >
-                  <PlusCircle className="mb-2 h-5 w-5" />
-                  <div>
-                    <span className="block text-xs font-bold">Post Property</span>
-                    <span className="text-[10px] font-medium text-emerald-100">100% Free Listing</span>
-                  </div>
-                </Link>
-                <Link
-                  href={isAuthed ? "/pricing" : "/login?redirect=/pricing"}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-start justify-between rounded-2xl border border-slate-200 bg-slate-50/80 p-3.5 text-slate-800 shadow-2xs dark:border-slate-800 dark:bg-slate-900/80 dark:text-white active:scale-[0.98] transition-transform"
-                >
-                  <Sparkles className="mb-2 h-5 w-5 text-amber-500" />
-                  <div>
-                    <span className="block text-xs font-bold">Plans & Credits</span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400">Boost Visibility</span>
-                  </div>
-                </Link>
-              </div>
-
-              <div className="border-t border-slate-100 dark:border-slate-850" />
-
-              {/* Navigation Explore Section */}
-              <div>
-                <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  Explore Properties
-                </p>
-                <div className="mt-2 space-y-1">
-                  {searchLinks.map((link) => {
-                    const Icon = link.icon;
-                    const active = isLinkActive(link.href);
-                    return (
-                      <Link
-                        key={link.label}
-                        href={link.href}
-                        onClick={() => setMenuOpen(false)}
-                        className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
-                          active
-                            ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
-                            : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Icon className="h-4 w-4 text-slate-400" />
-                          <span>{link.label}</span>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* User Account / Auth Section for Mobile */}
-              <div className="border-t border-slate-100 dark:border-slate-850" />
-              {isAuthed ? (
-                <div className="space-y-1">
-                  <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    My Account
-                  </p>
-                  {accountMenuItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900"
-                      >
-                        <Icon className="h-4 w-4 text-slate-400" />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                  <div className="pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 px-1">
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Appearance</span>
-                    <ThemeToggle />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={logout}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/30"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span>Log Out</span>
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between px-1">
-                    <Link
-                      href="/favorites"
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400"
-                    >
-                      <Heart className="h-4 w-4 text-rose-500" />
-                      <span>Saved Properties</span>
-                    </Link>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-400 dark:text-slate-500">Theme</span>
-                      <ThemeToggle />
-                    </div>
-                  </div>
-                  <Link
-                    href={loginHref}
-                    onClick={() => setMenuOpen(false)}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-3 text-center text-sm font-bold text-white shadow-md dark:bg-white dark:text-slate-950"
-                  >
-                    <User className="h-4 w-4" />
-                    <span>Login or Sign Up</span>
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-        </>,
-        document.body
-      )}
     </header>
   );
 }
