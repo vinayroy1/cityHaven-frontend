@@ -111,8 +111,6 @@ export function MobileBottomNav() {
     };
   }, [drawerOpen]);
 
-  if (!mounted) return null;
-
   // Hide on excluded full-screen paths
   const shouldHide = HIDDEN_ROUTES.some((route) => pathname?.startsWith(route));
   if (shouldHide) return null;
