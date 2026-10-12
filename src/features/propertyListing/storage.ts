@@ -7,10 +7,10 @@ export type PersistedListingDraft = {
   step?: number;
 };
 
-export const loadPersistedDraft = (): PersistedListingDraft | null => {
+export const loadPersistedDraft = (key: string = STORAGE_KEY): PersistedListingDraft | null => {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(key);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as PersistedListingDraft;
     if (parsed?.form) {
@@ -43,19 +43,19 @@ export const loadPersistedDraft = (): PersistedListingDraft | null => {
   return null;
 };
 
-export const persistDraft = (data: PersistedListingDraft) => {
+export const persistDraft = (data: PersistedListingDraft, key: string = STORAGE_KEY) => {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    window.localStorage.setItem(key, JSON.stringify(data));
   } catch {
     // ignore
   }
 };
 
-export const clearPersistedDraft = () => {
+export const clearPersistedDraft = (key: string = STORAGE_KEY) => {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(key);
   } catch {
     // ignore
   }

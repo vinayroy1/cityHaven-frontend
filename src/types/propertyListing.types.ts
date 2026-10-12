@@ -67,6 +67,13 @@ export interface PropertyContextBlock {
   organizationId?: string;
   ownerId?: number | null;
   createdById?: number | null;
+  // Sourcing & Owner Handover (Admin & Assisted Listing)
+  ownerName?: string;
+  ownerContact?: string;
+  source?: string;
+  isAssistedListing?: boolean;
+  sendOwnerNotification?: boolean;
+  adminNotes?: string;
 }
 
 export interface PropertyLocationBlock {

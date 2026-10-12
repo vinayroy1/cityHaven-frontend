@@ -39,6 +39,12 @@ export const initialPropertyListingFormValues: PropertyListingFormValues = {
     organizationId: "",
     ownerId: null,
     createdById: null,
+    ownerName: "",
+    ownerContact: "",
+    source: "GOOGLE_SOURCED",
+    isAssistedListing: false,
+    sendOwnerNotification: true,
+    adminNotes: "",
   },
   location: {
     cityId: "",

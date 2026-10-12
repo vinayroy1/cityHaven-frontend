@@ -47,9 +47,20 @@ import { MandatoryFieldsTracker } from "./MandatoryFieldsTracker";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import { panel } from "./theme";
 
+import { AdminOwnerSourcingCard } from "./AdminOwnerSourcingCard";
+import { AdminDeduplicationAlert } from "./AdminDeduplicationAlert";
+
 const PG_SUBTYPES = ["pg-private-room", "pg-shared-room", "pg-bed"];
 
-export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId?: string }) {
+export function PropertyListingFlow({
+  propertyId: propIdOverride,
+  adminMode = false,
+  onSuccessRedirect,
+}: {
+  propertyId?: string;
+  adminMode?: boolean;
+  onSuccessRedirect?: string;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const propertyId = propIdOverride ?? searchParams.get("id") ?? undefined;
@@ -57,15 +68,25 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
   const dispatch = useAppDispatch();
   const { draft } = useAppSelector(selectPropertyListing);
 
+  const storageKey = adminMode ? "adminPropertySourcingDraft" : undefined;
+
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
-      if (!token) {
-        const redirectUrl = propertyId ? `/propertyListing?id=${propertyId}` : "/propertyListing";
-        router.replace(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
+      if (adminMode) {
+        const adminStaff = localStorage.getItem("awasio_admin_staff");
+        const adminToken = localStorage.getItem("awasio_admin_token") || localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
+        if (!adminStaff && !adminToken) {
+          router.replace(`/admin/login?redirect=/admin/properties/create`);
+        }
+      } else {
+        const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
+        if (!token) {
+          const redirectUrl = propertyId ? `/propertyListing?id=${propertyId}` : "/propertyListing";
+          router.replace(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
+        }
       }
     }
-  }, [router, propertyId]);
+  }, [router, propertyId, adminMode]);
 
   const [submitProperty, submitState] = useSubmitPropertyMutation();
   const [updateProperty, updateState] = useUpdatePropertyMutation();
@@ -79,13 +100,26 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
   const { data: myOrganizations = [] } = useMyOrganizationsQuery(undefined, { skip: !hasToken });
 
   const [stepIndex, setStepIndex] = useState(0);
-  const [maxVisited, setMaxVisited] = useState(0);
+  const [maxVisited, setMaxVisited] = useState(adminMode ? listingSteps.length - 1 : 0);
   const [resume, setResume] = useState<{ form: PropertyListingFormValues; step?: number } | null>(null);
   const hydratedRef = useRef(false);
 
   const form = useForm<PropertyListingFormValues>({
     mode: "onChange",
-    defaultValues: draft ?? initialPropertyListingFormValues,
+    defaultValues: draft ?? {
+      ...initialPropertyListingFormValues,
+      context: {
+        ...initialPropertyListingFormValues.context,
+        postedAs: "OWNER",
+        isAssistedListing: adminMode,
+        source: "GOOGLE_SOURCED",
+        sendOwnerNotification: true,
+      },
+      publishOptions: {
+        status: adminMode ? "ACTIVE" : "DRAFT",
+        qcRequired: !adminMode,
+      },
+    },
   });
 
   const values = useWatch({ control: form.control }) as PropertyListingFormValues;
@@ -118,7 +152,7 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
     if (propertyId) return;
     if (hydratedRef.current) return;
     hydratedRef.current = true;
-    const persisted = loadPersistedDraft();
+    const persisted = loadPersistedDraft(storageKey);
     if (persisted?.form) {
       prevClassificationRef.current = {
         listingType: persisted.form.context?.listingType,
@@ -129,10 +163,10 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
       dispatch(hydrateDraft(persisted.form));
       const s = persisted.step && persisted.step > 0 ? persisted.step : 0;
       setStepIndex(s);
-      setMaxVisited(s);
+      setMaxVisited(adminMode ? listingSteps.length - 1 : s);
       setResume(persisted);
     }
-  }, [propertyId, form, dispatch]);
+  }, [propertyId, form, dispatch, storageKey, adminMode]);
 
   useEffect(() => {
     if (propertyId) return;
@@ -148,10 +182,10 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
   useEffect(() => {
     if (!hydratedRef.current) return;
     const sub = form.watch((v) => {
-      persistDraft({ form: v as PropertyListingFormValues, step: stepIndex });
+      persistDraft({ form: v as PropertyListingFormValues, step: stepIndex }, storageKey);
     });
     return () => sub.unsubscribe();
-  }, [form, stepIndex]);
+  }, [form, stepIndex, storageKey]);
 
   // Cross-field resets keyed on user changes to the classification fields.
   const listingType = values?.context?.listingType;
@@ -326,6 +360,17 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
       toast.error("Viewer role cannot publish listings under this organization. Please switch to Personal Account or update your role.");
       return;
     }
+
+    if (adminMode) {
+      const ownerContact = form.getValues("context.ownerContact");
+      const cleanNum = (ownerContact || "").replace(/\D/g, "").slice(-10);
+      if (!cleanNum || cleanNum.length !== 10 || !/^[6-9]\d{9}$/.test(cleanNum)) {
+        toast.error("Please enter a valid 10-digit Indian mobile number for the owner in Step 1.");
+        goToStep(0);
+        return;
+      }
+    }
+
     const paths = listingSteps
       .flatMap((s) => requiredPathsForStep(s, form.getValues()))
       .filter((p, i, a) => a.indexOf(p) === i) as FieldPath<PropertyListingFormValues>[];
@@ -335,33 +380,55 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
       return;
     }
     const payload = form.getValues();
-    // Stamp the current user so the listing shows under "My listings".
-    try {
-      const raw = localStorage.getItem("awasio_user");
-      const uid = raw ? (JSON.parse(raw) as { id?: number }).id : undefined;
-      if (uid && !payload.context.ownerId) {
-        payload.context = { ...payload.context, ownerId: uid, createdById: uid };
-      }
-    } catch {
-      /* no stored user */
-    }
-    let shouldAutoPublish = true;
-    try {
-      const storedGov = localStorage.getItem("awasio_admin_governance_settings");
-      if (storedGov) {
-        const parsedGov = JSON.parse(storedGov);
-        if (parsedGov.propertyReviewPolicy === "MANDATORY_REVIEW") {
-          shouldAutoPublish = false;
-        }
-      }
-    } catch {
-      /* fallback to autopublish */
-    }
 
-    payload.publishOptions = {
-      status: shouldAutoPublish ? "ACTIVE" : "DRAFT",
-      qcRequired: !shouldAutoPublish,
-    };
+    if (adminMode) {
+      try {
+        const rawStaff = localStorage.getItem("awasio_admin_staff");
+        if (rawStaff) {
+          const staffObj = JSON.parse(rawStaff);
+          if (staffObj?.id) {
+            payload.context.createdById = staffObj.id;
+          }
+        }
+      } catch {
+        /* no stored staff */
+      }
+      payload.context.isAssistedListing = true;
+      if (!payload.publishOptions?.status) {
+        payload.publishOptions = {
+          status: "ACTIVE",
+          qcRequired: false,
+        };
+      }
+    } else {
+      // Stamp the current user so the listing shows under "My listings".
+      try {
+        const raw = localStorage.getItem("awasio_user");
+        const uid = raw ? (JSON.parse(raw) as { id?: number }).id : undefined;
+        if (uid && !payload.context.ownerId) {
+          payload.context = { ...payload.context, ownerId: uid, createdById: uid };
+        }
+      } catch {
+        /* no stored user */
+      }
+      let shouldAutoPublish = true;
+      try {
+        const storedGov = localStorage.getItem("awasio_admin_governance_settings");
+        if (storedGov) {
+          const parsedGov = JSON.parse(storedGov);
+          if (parsedGov.propertyReviewPolicy === "MANDATORY_REVIEW") {
+            shouldAutoPublish = false;
+          }
+        }
+      } catch {
+        /* fallback to autopublish */
+      }
+
+      payload.publishOptions = {
+        status: shouldAutoPublish ? "ACTIVE" : "DRAFT",
+        qcRequired: !shouldAutoPublish,
+      };
+    }
 
     dispatch(saveDraft(payload));
     try {
@@ -370,10 +437,16 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
         toast.success("Listing updated.");
       } else {
         await submitProperty(payload).unwrap();
-        toast.success(shouldAutoPublish ? "Listing published successfully." : "Listing submitted for review.");
-        clearPersistedDraft();
+        if (adminMode) {
+          toast.success(
+            `Property successfully listed on behalf of owner ${payload.context?.ownerContact ? `(+91 ${payload.context.ownerContact})` : ""}!`
+          );
+        } else {
+          toast.success(payload.publishOptions.status === "ACTIVE" ? "Listing published successfully." : "Listing submitted for review.");
+        }
+        clearPersistedDraft(storageKey);
       }
-      router.push("/dashboard/properties");
+      router.push(adminMode ? (onSuccessRedirect || "/admin/properties") : "/dashboard/properties");
     } catch {
       toast.error("Could not save the listing. Please try again.");
     }
@@ -390,22 +463,35 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
       form.reset(resume.form);
       const s = resume.step && resume.step > 0 ? resume.step : 0;
       setStepIndex(s);
-      setMaxVisited(s);
+      setMaxVisited(adminMode ? listingSteps.length - 1 : s);
     }
     setResume(null);
   };
 
   const startFresh = () => {
-    form.reset(initialPropertyListingFormValues);
+    form.reset({
+      ...initialPropertyListingFormValues,
+      context: {
+        ...initialPropertyListingFormValues.context,
+        postedAs: "OWNER",
+        isAssistedListing: adminMode,
+        source: "GOOGLE_SOURCED",
+        sendOwnerNotification: true,
+      },
+      publishOptions: {
+        status: adminMode ? "ACTIVE" : "DRAFT",
+        qcRequired: !adminMode,
+      },
+    });
     dispatch(hydrateDraft(initialPropertyListingFormValues));
-    clearPersistedDraft();
+    clearPersistedDraft(storageKey);
     prevClassificationRef.current = {
       listingType: initialPropertyListingFormValues.context?.listingType,
       resCom: initialPropertyListingFormValues.context?.resCom,
       subType: initialPropertyListingFormValues.context?.propertySubTypeSlug,
     };
     setStepIndex(0);
-    setMaxVisited(0);
+    setMaxVisited(adminMode ? listingSteps.length - 1 : 0);
     setResume(null);
   };
 
@@ -460,7 +546,29 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
             </div>
 
             <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-              {stepIndex === 0 && (
+              {adminMode && stepIndex === 0 && <AdminOwnerSourcingCard />}
+
+              {adminMode && stepIndex > 0 && (
+                <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-200/90 bg-indigo-50/70 px-3.5 py-2 text-xs text-indigo-900 dark:border-indigo-800/80 dark:bg-indigo-950/40 dark:text-indigo-200">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
+                    <span>
+                      Listing for: <strong>{values?.context?.ownerName || "Owner"}</strong>{" "}
+                      {values?.context?.ownerContact ? `(+91 ${values.context.ownerContact})` : "(No phone)"} ·
+                      Channel: <strong>{values?.context?.source || "GOOGLE_SOURCED"}</strong>
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => goToStep(0)}
+                    className="font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 underline underline-offset-2"
+                  >
+                    Edit Owner Info
+                  </button>
+                </div>
+              )}
+
+              {stepIndex === 0 && !adminMode && (
                 <WorkspacePicker
                   selectedOrgId={values?.context?.organizationId}
                   onSelectPersonal={() => {
@@ -478,7 +586,12 @@ export function PropertyListingFlow({ propertyId: propIdOverride }: { propertyId
                 />
               )}
 
-              {step.kind === "custom" && step.component === "location" && <LocationStep />}
+              {step.kind === "custom" && step.component === "location" && (
+                <div className="space-y-4">
+                  {adminMode && <AdminDeduplicationAlert />}
+                  <LocationStep />
+                </div>
+              )}
 
               {step.kind !== "custom" && !isLast && (
                 <MandatoryFieldsTracker

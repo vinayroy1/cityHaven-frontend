@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useAdmin } from "@/features/admin/adminStore";
 import { PropertyQcItem, PropertyQcStatus } from "@/features/admin/types";
 import { useIsMounted, formatDateSafe } from "@/features/admin/dateUtils";
@@ -161,7 +162,15 @@ export default function AdminPropertyQcPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/admin/properties/create"
+            className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-600 text-white text-xs font-semibold shadow-sm flex items-center gap-1.5 transition cursor-pointer"
+          >
+            <Building2 className="w-3.5 h-3.5" />
+            <span>+ Sourcing: List for Owner</span>
+          </Link>
+
           {isOpsOrSuperAdmin && (
             <button
               onClick={() => {

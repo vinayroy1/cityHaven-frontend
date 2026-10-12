@@ -82,6 +82,23 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     organizationId: toNumber(context.organizationId),
     ownerId: context.ownerId ?? undefined,
     createdById: context.createdById ?? undefined,
+    ownerName: context.ownerName || undefined,
+    ownerContact: context.ownerContact || undefined,
+    source: context.source || undefined,
+    isAssistedListing: context.isAssistedListing ?? undefined,
+    sendOwnerNotification: context.sendOwnerNotification ?? undefined,
+    adminNotes: context.adminNotes || undefined,
+    status: publishOptions?.status || undefined,
+    qcStatus: publishOptions?.qcRequired === false ? "APPROVED" : undefined,
+    draftState: {
+      ...((meta?.draftState as any) || {}),
+      ownerName: context.ownerName || undefined,
+      ownerContact: context.ownerContact || undefined,
+      source: context.source || undefined,
+      isAssistedListing: context.isAssistedListing ?? undefined,
+      sendOwnerNotification: context.sendOwnerNotification ?? undefined,
+      adminNotes: context.adminNotes || undefined,
+    },
 
     // location
     cityId: toNumber(location.cityId),
@@ -241,9 +258,7 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     oxygenDuct: amenities.oxygenDuct ?? undefined,
     ups: amenities.ups ?? undefined,
 
-    status: publishOptions.status,
     aiMetadata: meta.aiMetadata ?? undefined,
-    draftState: meta.draftState ?? undefined,
     structure: stripEmpty({
       bedrooms: details.bedrooms ?? undefined,
       bathrooms: details.bathrooms ?? undefined,
