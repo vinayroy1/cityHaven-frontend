@@ -126,7 +126,7 @@ export function HomeExperience() {
 
   return (
     <>
-      <section className="relative border-b border-slate-200/80 bg-gradient-to-b from-rose-50/60 via-white to-slate-50/70 py-6 sm:py-10 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950">
+      <section className="relative z-20 border-b border-slate-200/80 bg-gradient-to-b from-rose-50/60 via-white to-slate-50/70 py-6 sm:py-10 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950">
         {/* Subtle ambient background glow */}
         <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-64 w-[500px] -translate-x-1/2 overflow-hidden rounded-full bg-rose-500/10 blur-[90px] dark:bg-rose-600/15" />
 
@@ -151,7 +151,7 @@ export function HomeExperience() {
           </p>
 
           {/* Centered Elevated Search Bar */}
-          <div className="mt-4 sm:mt-6 w-full rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-5 shadow-[0_16px_40px_-15px_rgba(15,23,42,0.1)] backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-[0_16px_40px_-15px_rgba(0,0,0,0.5)] text-left transition">
+          <div className="relative z-20 mt-4 sm:mt-6 w-full rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-5 shadow-[0_16px_40px_-15px_rgba(15,23,42,0.1)] backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-[0_16px_40px_-15px_rgba(0,0,0,0.5)] text-left transition">
             <SearchBar
               variant="hero"
               value={{ ...searchState, cityName: selectedCity || undefined }}

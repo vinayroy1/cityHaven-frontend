@@ -54,6 +54,7 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
   const [isDetecting, setIsDetecting] = React.useState(false);
   const [placement, setPlacement] = React.useState<"bottom" | "top">("bottom");
   const [dropdownMaxHeight, setDropdownMaxHeight] = React.useState<number>(360);
+  const [dropdownCoords, setDropdownCoords] = React.useState<{ top?: number; bottom?: number; left: number }>({ left: 0 });
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -130,40 +131,58 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
     return () => clearTimeout(timer);
   }, [search]);
 
-  // 3. Desktop Placement & Viewport Boundary calculation
+  // 3. Desktop Placement & Viewport Boundary calculation (Escaped directly to document.body)
   React.useEffect(() => {
     if (!isOpen) return;
 
     const updatePosition = () => {
       if (!containerRef.current) return;
-      if (window.innerWidth < 640) return; // Mobile uses fixed bottom sheet drawer
+      if (typeof window === "undefined" || window.innerWidth < 640) return; // Mobile uses fixed bottom sheet drawer
 
       const rect = containerRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
 
-      const margin = 20;
+      const margin = 16;
       const minHeight = 160;
-      const preferredMaxHeight = 320;
+      const preferredMaxHeight = 360;
 
-      if (spaceBelow < preferredMaxHeight && spaceAbove > spaceBelow) {
+      // Keep within left/right viewport boundaries
+      const left = Math.max(12, Math.min(rect.left, window.innerWidth - 336));
+
+      if (spaceBelow < 280 && spaceAbove > spaceBelow) {
         setPlacement("top");
         const available = spaceAbove - margin;
         setDropdownMaxHeight(Math.max(minHeight, Math.min(preferredMaxHeight, available)));
+        setDropdownCoords({
+          bottom: viewportHeight - rect.top + 8,
+          left,
+        });
       } else {
         setPlacement("bottom");
         const available = spaceBelow - margin;
         setDropdownMaxHeight(Math.max(minHeight, Math.min(preferredMaxHeight, available)));
+        setDropdownCoords({
+          top: rect.bottom + 8,
+          left,
+        });
       }
     };
 
     updatePosition();
-    window.addEventListener("scroll", updatePosition, { passive: true });
+    window.addEventListener("scroll", updatePosition, { passive: true, capture: true });
     window.addEventListener("resize", updatePosition);
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (window.innerWidth >= 640 && containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        window.innerWidth >= 640 &&
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target)
+      ) {
         setIsOpen(false);
       }
     };
@@ -175,7 +194,7 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener("scroll", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
       window.removeEventListener("resize", updatePosition);
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
@@ -367,106 +386,112 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
         : null}
 
       {/* =========================================================================
-          DESKTOP VIEW (sm+): Compact Floating Dropdown Menu
+          DESKTOP VIEW (sm+): Compact Floating Dropdown Menu (Portaled to body)
           ========================================================================= */}
-      {isOpen && (
-        <div
-          ref={dropdownRef}
-          data-city-modal="true"
-          style={{ maxHeight: `${dropdownMaxHeight}px` }}
-          className={`hidden sm:block absolute left-0 z-[70] w-80 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl transition-all dark:border-slate-700 dark:bg-slate-900 ${
-            placement === "top"
-              ? "bottom-[calc(100%+8px)] shadow-slate-950/20"
-              : "top-[calc(100%+8px)] shadow-slate-950/15"
-          }`}
-        >
-          {/* Search box inside dropdown */}
-          <div className="relative mb-2.5">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search Indian city..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-            />
-          </div>
-
-          {/* Quick Action: Use GPS Location */}
-          <button
-            type="button"
-            onClick={handleDetectLocation}
-            disabled={isDetecting}
-            className="mb-2.5 flex w-full items-center gap-2 rounded-xl bg-rose-50/80 px-2.5 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100/90 active:scale-[0.99] disabled:opacity-50 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-950/70"
-          >
-            {isDetecting ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Crosshair className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
-            )}
-            <span>{isDetecting ? "Detecting nearest city..." : "Detect my current location"}</span>
-          </button>
-
-          {/* If searching: show search results */}
-          {search.trim().length > 0 ? (
-            <div className="space-y-1">
-              <p className="px-1 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Search Results</p>
-              {searchResults.length === 0 ? (
-                <p className="py-3 text-center text-xs text-slate-500">No cities found matching &quot;{search}&quot;</p>
-              ) : (
-                searchResults.map((c) => (
-                  <button
-                    key={`search_${c.id}_${c.name}`}
-                    type="button"
-                    onClick={() => {
-                      onSelectCity(c);
-                      setIsOpen(false);
-                      setSearch("");
-                    }}
-                    className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-                  >
-                    <span>{c.name} {c.state ? `(${c.state})` : ""}</span>
-                    {selectedCityName?.toLowerCase() === c.name.toLowerCase() && (
-                      <Check className="h-3.5 w-3.5 text-rose-600" />
-                    )}
-                  </button>
-                ))
-              )}
-            </div>
-          ) : (
-            /* Default: Popular Metro Cities Grid */
-            <div>
-              <p className="mb-1.5 flex items-center gap-1 px-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                <Sparkles className="h-3 w-3 text-amber-500" />
-                Popular Indian Cities
-              </p>
-              <div className="grid grid-cols-2 gap-1.5">
-                {popularCities.map((c) => {
-                  const isSelected = selectedCityName?.toLowerCase() === c.name.toLowerCase();
-                  return (
-                    <button
-                      key={`pop_${c.id}_${c.name}`}
-                      type="button"
-                      onClick={() => {
-                        onSelectCity(c);
-                        setIsOpen(false);
-                      }}
-                      className={`flex items-center justify-between rounded-xl px-2.5 py-2 text-left text-xs font-semibold transition ${
-                        isSelected
-                          ? "bg-rose-600 text-white shadow-xs"
-                          : "bg-slate-50 text-slate-700 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                      }`}
-                    >
-                      <span className="truncate">{c.name}</span>
-                      {isSelected && <Check className="h-3 w-3 shrink-0" />}
-                    </button>
-                  );
-                })}
+      {mounted && isOpen && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              ref={dropdownRef}
+              data-city-modal="true"
+              style={{
+                position: "fixed",
+                top: dropdownCoords.top !== undefined ? `${dropdownCoords.top}px` : undefined,
+                bottom: dropdownCoords.bottom !== undefined ? `${dropdownCoords.bottom}px` : undefined,
+                left: `${dropdownCoords.left}px`,
+                maxHeight: `${dropdownMaxHeight}px`,
+                zIndex: 9999,
+              }}
+              className="hidden sm:block w-80 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl transition-all dark:border-slate-700 dark:bg-slate-900 shadow-slate-950/20 animate-in fade-in zoom-in-95 duration-150"
+            >
+              {/* Search box inside dropdown */}
+              <div className="relative mb-2.5">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search Indian city..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                />
               </div>
-            </div>
-          )}
-        </div>
-      )}
+
+              {/* Quick Action: Use GPS Location */}
+              <button
+                type="button"
+                onClick={handleDetectLocation}
+                disabled={isDetecting}
+                className="mb-2.5 flex w-full items-center gap-2 rounded-xl bg-rose-50/80 px-2.5 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100/90 active:scale-[0.99] disabled:opacity-50 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-950/70"
+              >
+                {isDetecting ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Crosshair className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+                )}
+                <span>{isDetecting ? "Detecting nearest city..." : "Detect my current location"}</span>
+              </button>
+
+              {/* If searching: show search results */}
+              {search.trim().length > 0 ? (
+                <div className="space-y-1">
+                  <p className="px-1 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Search Results</p>
+                  {searchResults.length === 0 ? (
+                    <p className="py-3 text-center text-xs text-slate-500">No cities found matching &quot;{search}&quot;</p>
+                  ) : (
+                    searchResults.map((c) => (
+                      <button
+                        key={`search_${c.id}_${c.name}`}
+                        type="button"
+                        onClick={() => {
+                          onSelectCity(c);
+                          setIsOpen(false);
+                          setSearch("");
+                        }}
+                        className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                      >
+                        <span>{c.name} {c.state ? `(${c.state})` : ""}</span>
+                        {selectedCityName?.toLowerCase() === c.name.toLowerCase() && (
+                          <Check className="h-3.5 w-3.5 text-rose-600" />
+                        )}
+                      </button>
+                    ))
+                  )}
+                </div>
+              ) : (
+                /* Default: Popular Metro Cities Grid */
+                <div>
+                  <p className="mb-1.5 flex items-center gap-1 px-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    <Sparkles className="h-3 w-3 text-amber-500" />
+                    Popular Indian Cities
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {popularCities.map((c) => {
+                      const isSelected = selectedCityName?.toLowerCase() === c.name.toLowerCase();
+                      return (
+                        <button
+                          key={`pop_${c.id}_${c.name}`}
+                          type="button"
+                          onClick={() => {
+                            onSelectCity(c);
+                            setIsOpen(false);
+                          }}
+                          className={`flex items-center justify-between rounded-xl px-2.5 py-2 text-left text-xs font-semibold transition ${
+                            isSelected
+                              ? "bg-rose-600 text-white shadow-xs"
+                              : "bg-slate-50 text-slate-700 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                          }`}
+                        >
+                          <span className="truncate">{c.name}</span>
+                          {isSelected && <Check className="h-3 w-3 shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>,
+            document.body
+          )
+        : null}
     </div>
   );
 }
