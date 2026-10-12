@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { Phone, Mail } from "lucide-react";
 import { BrandLogo } from "@/components/common/BrandLogo";
 
 const columns = [
@@ -27,33 +28,32 @@ const columns = [
 export function FooterLinks() {
   return (
     <footer className="mt-8 sm:mt-12 overflow-x-clip border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-12 md:gap-8">
           {/* Brand Info */}
           <div className="space-y-2.5 md:col-span-6">
             <BrandLogo size="md" showTagline taglineText="Verified Real Estate" />
             <p className="hidden sm:block max-w-md text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               Buy, rent, post and manage approved property listings across Indian cities with transparent pricing.
             </p>
-            <div className="pt-1 flex flex-col gap-1 text-xs text-slate-500 dark:text-slate-400">
-              <p>
-                Helpline:{" "}
-                <a
-                  href="tel:+918848510629"
-                  className="font-semibold text-slate-700 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
-                >
-                  +91-8848510629
-                </a>
-              </p>
-              <p>
-                Email:{" "}
-                <a
-                  href="mailto:contact@awasio.com"
-                  className="font-semibold text-slate-700 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400"
-                >
-                  contact@awasio.com
-                </a>
-              </p>
+            {/* Compact Horizontal Contact Pills (Single-line row on mobile, saves vertical height) */}
+            <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
+              <a
+                href="tel:+918848510629"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-slate-50/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-2xs transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:text-rose-400"
+                aria-label="Call Helpline +91-8848510629"
+              >
+                <Phone className="h-3 w-3 text-rose-500 shrink-0" />
+                <span>+91-8848510629</span>
+              </a>
+              <a
+                href="mailto:contact@awasio.com"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-slate-50/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-2xs transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:text-rose-400"
+                aria-label="Email contact@awasio.com"
+              >
+                <Mail className="h-3 w-3 text-rose-500 shrink-0" />
+                <span>contact@awasio.com</span>
+              </a>
             </div>
           </div>
 
