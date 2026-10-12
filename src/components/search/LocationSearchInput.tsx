@@ -278,9 +278,11 @@ export function LocationSearchInput({
     const calculatePosition = () => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      const spaceBelow = viewportHeight - rect.bottom;
-      const spaceAbove = rect.top;
+      const viewport = window.visualViewport;
+      const viewportTop = viewport?.offsetTop ?? 0;
+      const viewportBottom = viewportTop + (viewport?.height ?? window.innerHeight);
+      const spaceBelow = viewportBottom - rect.bottom;
+      const spaceAbove = rect.top - viewportTop;
 
       const isMobile = window.innerWidth < 768;
       if (isMobile) {
@@ -349,9 +351,14 @@ export function LocationSearchInput({
           onChange={handleInputChange}
           onFocus={() => {
             setOpen(true);
-            setTimeout(() => {
-              containerRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-            }, 100);
+            // Mobile browsers already pan the focused input above the keyboard.
+            // A second smooth scroll while visualViewport is resizing pushes a
+            // containing bottom sheet upward and causes visible flicker.
+            if (window.innerWidth >= 768) {
+              setTimeout(() => {
+                containerRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+              }, 100);
+            }
           }}
           onBlur={() => setTimeout(() => setOpen(false), 200)}
           onKeyDown={handleKeyDown}

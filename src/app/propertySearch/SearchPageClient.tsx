@@ -33,32 +33,70 @@ export function SearchPageClient() {
 
   React.useEffect(() => {
     let lastScrollY = window.scrollY;
+    let downwardDistance = 0;
+    let upwardDistance = 0;
+    let frame: number | null = null;
+    let compact = false;
 
-    const handleScroll = () => {
+    const updateFromScroll = () => {
+      frame = null;
       const currentScrollY = window.scrollY;
 
       // Always restore full header near the top
       if (currentScrollY <= 40) {
-        setIsScrolledDown(false);
+        downwardDistance = 0;
+        upwardDistance = 0;
+        if (compact) {
+          compact = false;
+          setIsScrolledDown(false);
+        }
+        lastScrollY = currentScrollY;
+        return;
+      }
+
+      // Body locking and keyboard focus can emit synthetic scroll events. They
+      // must not change the sticky-header mode while a sheet/input is active.
+      const activeElement = document.activeElement as HTMLElement | null;
+      const inputFocused = Boolean(activeElement?.matches("input, textarea, select, [contenteditable='true']"));
+      const modalOpen = Boolean(document.querySelector('[role="dialog"], [data-vaul-drawer], [data-city-modal="true"]'));
+      if (inputFocused || modalOpen) {
         lastScrollY = currentScrollY;
         return;
       }
 
       const diff = currentScrollY - lastScrollY;
+      if (diff > 0) {
+        downwardDistance += diff;
+        upwardDistance = 0;
+      } else if (diff < 0) {
+        upwardDistance -= diff;
+        downwardDistance = 0;
+      }
 
-      // Scrolling downwards past 60px -> dock compact search at top-0
-      if (diff > 6 && currentScrollY > 60) {
+      // Use separate, deliberately wide thresholds. This prevents the height
+      // change caused by compacting the bar from immediately reversing state.
+      if (!compact && currentScrollY > 100 && downwardDistance >= 32) {
+        compact = true;
+        downwardDistance = 0;
         setIsScrolledDown(true);
-      } else if (diff < -8) {
-        // Scrolling upwards -> restore full navigation header
+      } else if (compact && upwardDistance >= 56) {
+        compact = false;
+        upwardDistance = 0;
         setIsScrolledDown(false);
       }
 
       lastScrollY = currentScrollY;
     };
 
+    const handleScroll = () => {
+      if (frame === null) frame = window.requestAnimationFrame(updateFromScroll);
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (frame !== null) window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   const commit = React.useCallback(
@@ -88,7 +126,7 @@ export function SearchPageClient() {
         {/* sticky search + quick filters — sits just below the site header on desktop,
             docks directly to top-0 when user scrolls down on mobile to maximize viewport. */}
         <div
-          className={`sticky z-30 -mx-4 border-b border-slate-200 bg-slate-50 px-4 dark:border-slate-800 dark:bg-slate-950 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 lg:top-16 transition-all duration-300 ${
+          className={`sticky z-30 -mx-4 border-b border-slate-200 bg-slate-50 px-4 dark:border-slate-800 dark:bg-slate-950 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 lg:top-16 transition-[top,padding,box-shadow] duration-200 ease-out ${
             isScrolledDown ? "top-0 py-2 shadow-xs" : "top-16 py-3 space-y-2.5"
           }`}
         >
@@ -110,7 +148,7 @@ export function SearchPageClient() {
             onOpenFilters={() => openFilters()}
           />
           <div
-            className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            className={`md:hidden overflow-hidden transition-[max-height,opacity,margin] duration-200 ease-out ${
               isScrolledDown
                 ? "max-h-0 opacity-0 pointer-events-none -mt-1"
                 : "max-h-16 opacity-100 mt-2"

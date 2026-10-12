@@ -55,6 +55,8 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
   const [placement, setPlacement] = React.useState<"bottom" | "top">("bottom");
   const [dropdownMaxHeight, setDropdownMaxHeight] = React.useState<number>(360);
   const [dropdownCoords, setDropdownCoords] = React.useState<{ top?: number; bottom?: number; left: number }>({ left: 0 });
+  const [mobileViewportStyle, setMobileViewportStyle] = React.useState<React.CSSProperties>({});
+  const mobileSheetHeightRef = React.useRef<number>(0);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -63,15 +65,70 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
     setMounted(true);
   }, []);
 
-  // Lock mobile body scroll when drawer is open
+  // Bulletproof iOS background scroll lock & visualViewport tracking for mobile sheet
   React.useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || typeof window === "undefined" || window.innerWidth >= 640) return;
+
+    // 1. Lock iOS background window scroll precisely so keyboard cannot push background page
+    const scrollY = window.scrollY;
+    const prevPosition = document.body.style.position;
+    const prevTop = document.body.style.top;
+    const prevWidth = document.body.style.width;
     const prevOverflow = document.body.style.overflow;
-    if (typeof window !== "undefined" && window.innerWidth < 640) {
-      document.body.style.overflow = "hidden";
+
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
+
+    // 2. Track visualViewport (adjusts in real time when virtual keyboard opens on iOS/Android)
+    const updateMobileViewport = () => {
+      const vv = window.visualViewport;
+      const viewportHeight = vv?.height ?? window.innerHeight;
+      const viewportWidth = vv?.width ?? window.innerWidth;
+
+      // Capture the fully-open height once. When the keyboard appears only clamp
+      // that height; do not recompute a vh/dvh value on every keyboard frame.
+      if (!mobileSheetHeightRef.current || viewportHeight > mobileSheetHeightRef.current) {
+        mobileSheetHeightRef.current = viewportHeight;
+      }
+      const sheetHeight = Math.min(mobileSheetHeightRef.current * 0.78, viewportHeight);
+
+      setMobileViewportStyle({
+        position: "fixed",
+        top: `${vv?.offsetTop ?? 0}px`,
+        left: `${vv?.offsetLeft ?? 0}px`,
+        width: `${viewportWidth}px`,
+        height: `${viewportHeight}px`,
+        // Custom properties are used so the sheet has one authoritative height.
+        ["--city-sheet-height" as string]: `${sheetHeight}px`,
+      });
+    };
+
+    updateMobileViewport();
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", updateMobileViewport);
+      vv.addEventListener("scroll", updateMobileViewport);
     }
+    window.addEventListener("resize", updateMobileViewport);
+    window.addEventListener("scroll", updateMobileViewport);
+
     return () => {
+      mobileSheetHeightRef.current = 0;
+      // Restore body scroll
+      document.body.style.position = prevPosition;
+      document.body.style.top = prevTop;
+      document.body.style.width = prevWidth;
       document.body.style.overflow = prevOverflow;
+      window.scrollTo(0, scrollY);
+
+      if (vv) {
+        vv.removeEventListener("resize", updateMobileViewport);
+        vv.removeEventListener("scroll", updateMobileViewport);
+      }
+      window.removeEventListener("resize", updateMobileViewport);
+      window.removeEventListener("scroll", updateMobileViewport);
     };
   }, [isOpen]);
 
@@ -262,24 +319,28 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
           ========================================================================= */}
       {mounted && isOpen && typeof document !== "undefined"
         ? createPortal(
-            <div className="fixed inset-0 z-[9999] flex flex-col justify-end sm:hidden">
+            <div
+              style={mobileViewportStyle}
+              className="fixed left-0 top-0 z-[9999] flex h-full w-full flex-col justify-end overflow-hidden sm:hidden"
+            >
               {/* Backdrop */}
               <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150"
+                className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150"
                 onClick={() => setIsOpen(false)}
                 aria-hidden="true"
               />
 
-              {/* Bottom Sheet Container */}
+              {/* Bottom Sheet Container: STABLE fixed height prevents flickering when results count changes */}
               <div
                 data-city-modal="true"
-                className="relative z-10 w-full max-h-[85vh] max-h-[85dvh] overscroll-contain overflow-y-auto rounded-t-3xl border-t border-slate-200 bg-white p-5 pb-8 shadow-2xl dark:border-slate-800 dark:bg-slate-900 animate-in slide-in-from-bottom duration-200"
+                style={{ height: "var(--city-sheet-height, 78vh)" }}
+                className="relative z-10 flex max-h-full w-full shrink-0 flex-col rounded-t-3xl border-t border-slate-200 bg-white p-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-2xl dark:border-slate-800 dark:bg-slate-900 animate-in slide-in-from-bottom duration-200"
               >
                 {/* Grab handle indicator */}
-                <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-700" />
+                <div className="mx-auto mb-3 h-1.5 w-12 shrink-0 rounded-full bg-slate-300 dark:bg-slate-700" />
 
                 {/* Mobile Header */}
-                <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+                <div className="mb-3.5 flex shrink-0 items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
                   <div className="flex items-center gap-2">
                     <MapPin className="h-5 w-5 text-rose-500" />
                     <h3 className="text-base font-bold text-slate-900 dark:text-white">Choose Your City</h3>
@@ -294,16 +355,26 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
                   </button>
                 </div>
 
-                {/* Search input (autoFocus disabled to prevent abrupt keyboard jump) */}
-                <div className="relative mb-3">
+                {/* Search input with quick clear button */}
+                <div className="relative mb-3 shrink-0">
                   <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
                   <input
                     type="text"
                     placeholder="Search Indian city..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-9 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                   />
+                  {search.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setSearch("")}
+                      className="absolute right-3 top-3 rounded-full p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                      aria-label="Clear search"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
 
                 {/* GPS Detect Action */}
@@ -311,7 +382,7 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
                   type="button"
                   onClick={handleDetectLocation}
                   disabled={isDetecting}
-                  className="mb-4 flex w-full items-center gap-2.5 rounded-2xl bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 active:scale-[0.99] disabled:opacity-50 dark:bg-rose-950/40 dark:text-rose-300"
+                  className="mb-3.5 flex shrink-0 w-full items-center gap-2.5 rounded-2xl bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 active:scale-[0.99] disabled:opacity-50 dark:bg-rose-950/40 dark:text-rose-300"
                 >
                   {isDetecting ? (
                     <Loader2 className="h-4 w-4 animate-spin text-rose-600" />
@@ -321,64 +392,69 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
                   <span>{isDetecting ? "Detecting nearest city..." : "Detect my current location"}</span>
                 </button>
 
-                {/* If searching: show search results */}
-                {search.trim().length > 0 ? (
-                  <div className="space-y-1">
-                    <p className="px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Search Results</p>
-                    {searchResults.length === 0 ? (
-                      <p className="py-4 text-center text-xs text-slate-500">No cities found matching &quot;{search}&quot;</p>
-                    ) : (
-                      searchResults.map((c) => (
-                        <button
-                          key={`m_search_${c.id}_${c.name}`}
-                          type="button"
-                          onClick={() => {
-                            onSelectCity(c);
-                            setIsOpen(false);
-                            setSearch("");
-                          }}
-                          className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-                        >
-                          <span>{c.name} {c.state ? `(${c.state})` : ""}</span>
-                          {selectedCityName?.toLowerCase() === c.name.toLowerCase() && (
-                            <Check className="h-4 w-4 text-rose-600" />
-                          )}
-                        </button>
-                      ))
-                    )}
-                  </div>
-                ) : (
-                  /* Popular Indian Metros Grid */
-                  <div>
-                    <p className="mb-2 flex items-center gap-1.5 px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                      <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                      Popular Indian Cities
-                    </p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {popularCities.map((c) => {
-                        const isSelected = selectedCityName?.toLowerCase() === c.name.toLowerCase();
-                        return (
+                {/* Scrollable Content Body (stable height, scrolls internally without resizing container) */}
+                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain pr-0.5">
+                  {search.trim().length > 0 ? (
+                    <div className="space-y-1">
+                      <p className="px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Search Results</p>
+                      {searchResults.length === 0 ? (
+                        <div className="py-8 text-center">
+                          <p className="text-xs text-slate-500">No cities found matching &quot;{search}&quot;</p>
+                          <p className="mt-1 text-[11px] text-slate-400">Try typing another Indian metro or capital</p>
+                        </div>
+                      ) : (
+                        searchResults.map((c) => (
                           <button
-                            key={`m_pop_${c.id}_${c.name}`}
+                            key={`m_search_${c.id}_${c.name}`}
                             type="button"
                             onClick={() => {
                               onSelectCity(c);
                               setIsOpen(false);
+                              setSearch("");
                             }}
-                            className={`flex items-center justify-between rounded-2xl px-3.5 py-3 text-left text-xs font-bold transition ${
-                              isSelected
-                                ? "bg-rose-600 text-white shadow-xs"
-                                : "bg-slate-50 text-slate-800 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                            }`}
+                            className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
-                            <span className="truncate">{c.name}</span>
-                            {isSelected && <Check className="h-3.5 w-3.5 shrink-0" />}
+                            <span>{c.name} {c.state ? `(${c.state})` : ""}</span>
+                            {selectedCityName?.toLowerCase() === c.name.toLowerCase() && (
+                              <Check className="h-4 w-4 text-rose-600" />
+                            )}
                           </button>
-                        );
-                      })}
+                        ))
+                      )}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    /* Popular Indian Metros Grid */
+                    <div>
+                      <p className="mb-2 flex items-center gap-1.5 px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                        Popular Indian Cities
+                      </p>
+                      <div className="grid grid-cols-2 gap-2 pb-2">
+                        {popularCities.map((c) => {
+                          const isSelected = selectedCityName?.toLowerCase() === c.name.toLowerCase();
+                          return (
+                            <button
+                              key={`m_pop_${c.id}_${c.name}`}
+                              type="button"
+                              onClick={() => {
+                                onSelectCity(c);
+                                setIsOpen(false);
+                              }}
+                              className={`flex items-center justify-between rounded-2xl px-3.5 py-3 text-left text-xs font-bold transition ${
+                                isSelected
+                                  ? "bg-rose-600 text-white shadow-xs"
+                                  : "bg-slate-50 text-slate-800 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                              }`}
+                            >
+                              <span className="truncate">{c.name}</span>
+                              {isSelected && <Check className="h-3.5 w-3.5 shrink-0" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>,
             document.body

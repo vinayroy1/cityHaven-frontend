@@ -2,8 +2,10 @@ import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs/config";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+  output: "standalone",
+  // The app does not depend on compiler-specific semantics. Enabling the React
+  // Compiler transforms every component and substantially increases CI time.
+  reactCompiler: false,
   async redirects() {
     return [
       {
@@ -30,7 +32,9 @@ export default withSentryConfig(nextConfig, {
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
   // Upload a larger set of source maps for prettier stack traces (increases build time)
-  widenClientFileUpload: true,
+  // Wider source-map uploads add substantial work and network transfer to
+  // every production build. Opt in only for a dedicated diagnostic build.
+  widenClientFileUpload: process.env.SENTRY_WIDEN_SOURCE_MAPS === "true",
 
   // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
   // This can increase your server load as well as your hosting bill.

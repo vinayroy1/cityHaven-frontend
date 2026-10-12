@@ -5,6 +5,8 @@ pipeline {
         timeout(time: 60, unit: 'MINUTES')
         buildDiscarder(logRotator(numToKeepStr: '10'))
         disableConcurrentBuilds()
+        skipDefaultCheckout(true)
+        timestamps()
     }
 
     environment {
@@ -31,8 +33,11 @@ pipeline {
             steps {
                 echo "🔨 [Build] Compiling Next.js production Docker image..."
                 sh '''
-                    docker build \
+                    DOCKER_BUILDKIT=1 docker build \
+                        --progress=plain \
                         --build-arg NEXT_PUBLIC_API_URL=https://awasio.com/api \
+                        --label awasio.app=${APP_NAME} \
+                        --label awasio.build=${BUILD_NUMBER} \
                         -t ${DOCKER_IMAGE} .
                 '''
             }
@@ -74,7 +79,7 @@ pipeline {
                 sh '''
                     echo "Waiting for ${APP_NAME} to initialize..."
                     for i in $(seq 1 15); do
-                        if curl -fsSL http://${APP_NAME}:3000/ > /dev/null 2>&1 || curl -fsSL http://95.111.252.156:3000/ > /dev/null 2>&1; then
+                        if curl -fsSL http://${APP_NAME}:3000/api/health > /dev/null 2>&1 || curl -fsSL http://95.111.252.156:3000/api/health > /dev/null 2>&1; then
                             echo "✅ Frontend is healthy and responding (attempt ${i})!"
                             docker logs --tail 10 ${APP_NAME}
                             exit 0
@@ -92,7 +97,8 @@ pipeline {
 
     post {
         always {
-            sh 'docker image prune -f || true'
+            // Keep recent layers for fast rebuilds while bounding stale disk use.
+            sh 'docker image prune -f --filter "until=168h" || true'
         }
         success {
             echo "🎉 Frontend deployment from GitHub main succeeded!"

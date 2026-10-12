@@ -5,3 +5,7 @@ node_modules
 *.log
 .env*.local
 .DS_Store
+coverage
+*.tsbuildinfo
+lighthouse-*.json
+*-screenshot.png

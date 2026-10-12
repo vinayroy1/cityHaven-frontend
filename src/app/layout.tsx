@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import { Providers } from "./providers";
 import { MobileBottomNav } from "@/components/common/MobileBottomNav";
-import { seoDefaults, buildCanonical, SITE_URL } from "@/constants/seo";
+import { buildCanonical, SITE_URL } from "@/constants/seo";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -13,16 +12,6 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   interactiveWidget: "resizes-visual",
 };
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -90,7 +79,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-150`}
+        className="antialiased bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-150"
         suppressHydrationWarning
       >
         <Providers>
