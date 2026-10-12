@@ -111,6 +111,58 @@ export function MobileBottomNav() {
     };
   }, [drawerOpen]);
 
+  const [isKeyboardVisible, setIsKeyboardVisible] = React.useState(false);
+
+  // Auto-hide bottom navigation when virtual keyboard opens or input is focused
+  React.useEffect(() => {
+    const handleFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        setIsKeyboardVisible(true);
+      }
+    };
+
+    const handleFocusOut = () => {
+      setTimeout(() => {
+        const active = document.activeElement as HTMLElement;
+        if (
+          !active ||
+          (active.tagName !== "INPUT" &&
+            active.tagName !== "TEXTAREA" &&
+            !active.isContentEditable)
+        ) {
+          setIsKeyboardVisible(false);
+        }
+      }, 120);
+    };
+
+    const handleViewportResize = () => {
+      if (typeof window !== "undefined" && window.visualViewport) {
+        const isKeyboard = window.visualViewport.height < window.innerHeight - 140;
+        setIsKeyboardVisible(isKeyboard);
+      }
+    };
+
+    window.addEventListener("focusin", handleFocusIn);
+    window.addEventListener("focusout", handleFocusOut);
+    if (typeof window !== "undefined" && window.visualViewport) {
+      window.visualViewport.addEventListener("resize", handleViewportResize);
+    }
+
+    return () => {
+      window.removeEventListener("focusin", handleFocusIn);
+      window.removeEventListener("focusout", handleFocusOut);
+      if (typeof window !== "undefined" && window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", handleViewportResize);
+      }
+    };
+  }, []);
+
   // Hide on excluded full-screen paths
   const shouldHide = HIDDEN_ROUTES.some((route) => pathname?.startsWith(route));
   if (shouldHide) return null;
@@ -141,14 +193,23 @@ export function MobileBottomNav() {
   return (
     <>
       {/* Spacer at document end to prevent bottom content from being covered by fixed nav */}
-      <div className="h-20 w-full block lg:hidden pointer-events-none" aria-hidden="true" />
+      <div
+        className={`w-full block lg:hidden pointer-events-none transition-all duration-200 ${
+          isKeyboardVisible ? "h-0" : "h-20"
+        }`}
+        aria-hidden="true"
+      />
 
       {/* =========================================================================
           PERSISTENT MOBILE BOTTOM NAVIGATION BAR (iOS / Android Ergonomics)
           ========================================================================= */}
       <nav
         aria-label="Mobile Navigation Bar"
-        className="fixed bottom-0 inset-x-0 z-40 block lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-xl shadow-[0_-8px_24px_rgba(0,0,0,0.06)] dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] transition-all duration-300 pb-[env(safe-area-inset-bottom,0px)]"
+        className={`fixed bottom-0 inset-x-0 z-40 block lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-xl shadow-[0_-8px_24px_rgba(0,0,0,0.06)] dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] transition-all duration-200 pb-[env(safe-area-inset-bottom,0px)] ${
+          isKeyboardVisible
+            ? "translate-y-full opacity-0 pointer-events-none"
+            : "translate-y-0 opacity-100"
+        }`}
       >
         <div className="grid grid-cols-5 items-center justify-around h-16 max-w-md mx-auto px-2">
           {/* TAB 1: HOME */}

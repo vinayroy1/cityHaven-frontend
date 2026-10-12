@@ -251,7 +251,7 @@ export function SearchBar({
         </button>
       </div>
       <SearchDialog open={open} onClose={() => setOpen(false)} title="Search properties">
-        <div className="min-h-0 flex-1 overflow-y-auto p-5">
+        <div className="min-h-0 flex-1 overflow-y-auto p-5 pb-32">
           {open && (
             <SearchEditor
               variant="results"

@@ -278,9 +278,18 @@ export function LocationSearchInput({
     const calculatePosition = () => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
+      const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
+
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        // On mobile, flipping upside down covers tabs, city selectors, and squishes input.
+        // Always place below the input, and allow dropdown to scroll smoothly.
+        setPlacement("bottom");
+        setDropdownMaxHeight(Math.min(280, Math.max(160, spaceBelow - 12)));
+        return;
+      }
 
       if (spaceBelow < 260 && spaceAbove > spaceBelow) {
         setPlacement("top");
@@ -294,9 +303,16 @@ export function LocationSearchInput({
     calculatePosition();
     window.addEventListener("scroll", calculatePosition, { passive: true });
     window.addEventListener("resize", calculatePosition);
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", calculatePosition);
+    }
     return () => {
       window.removeEventListener("scroll", calculatePosition);
       window.removeEventListener("resize", calculatePosition);
+      if (vv) {
+        vv.removeEventListener("resize", calculatePosition);
+      }
     };
   }, [open]);
 
