@@ -137,6 +137,7 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
   state.localities = locParams
     .map((label) => label.trim())
     .filter(Boolean)
+    .slice(0, 2)
     .map((label) => ({ label }));
 
   const intentParam = sp.get("intent");
@@ -185,7 +186,7 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   if (state.q) sp.set("q", state.q);
   if (state.cityName) sp.set("city", state.cityName);
   if (state.localities.length > 0) {
-    for (const loc of state.localities) {
+    for (const loc of state.localities.slice(0, 2)) {
       sp.append("locality", loc.label);
     }
   }

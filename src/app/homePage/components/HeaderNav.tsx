@@ -54,9 +54,10 @@ const searchLinks = [
 
 interface HeaderNavProps {
   isMobileHidden?: boolean;
+  hideOnPhone?: boolean;
 }
 
-export function HeaderNav({ isMobileHidden = false }: HeaderNavProps = {}) {
+export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: HeaderNavProps = {}) {
   const pathname = usePathname();
   const router = useRouter();
   const [isAuthed, setIsAuthed] = React.useState(false);
@@ -179,7 +180,7 @@ export function HeaderNav({ isMobileHidden = false }: HeaderNavProps = {}) {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 z-50 transition-all duration-300 ${hideOnPhone ? "hidden sm:block" : ""} ${
         isMobileHidden
           ? "-translate-y-full pointer-events-none lg:translate-y-0 lg:pointer-events-auto"
           : "translate-y-0"

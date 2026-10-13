@@ -3,6 +3,7 @@ import React from "react";
 import { ArrowLeft, Search, SlidersHorizontal } from "lucide-react";
 import { LocationSearchInput } from "./LocationSearchInput";
 import { CitySelectorDropdown } from "./CitySelectorDropdown";
+import { MobileSearchFlow } from "./MobileSearchFlow";
 import { SearchDialog } from "./SearchDialog";
 import { INTENT_CONFIG, INTENT_KEYS, clearAllFilters, locationSummary, type SearchState } from "./searchQuery";
 import { primaryButton } from "./theme";
@@ -21,7 +22,7 @@ type Props = {
   onBack?: () => void;
 };
 
-function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?: "hero" | "results"; value: SearchState; onSubmit: (next: SearchState) => void; onContextChange?: (next: SearchState) => void }) {
+export function SearchEditor({ variant, value, onSubmit, onContextChange, showSubmit = true, liveChanges = false }: { variant?: "hero" | "results"; value: SearchState; onSubmit: (next: SearchState) => void; onContextChange?: (next: SearchState) => void; showSubmit?: boolean; liveChanges?: boolean }) {
   const [draft, setDraft] = React.useState(value);
   const draftRef = React.useRef(draft);
   const update = (next: SearchState) => { draftRef.current = next; setDraft(next); };
@@ -97,7 +98,7 @@ function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?:
                   localities: [], // Reset locality chips when city changes to avoid cross-city search conflicts
                 };
                 update(next);
-                if (variant === "results") {
+                if (liveChanges || variant === "results") {
                   onContextChange?.(next);
                 }
               }}
@@ -110,8 +111,6 @@ function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?:
               cityName={draft.cityName}
               localities={draft.localities}
               keyword={draft.q}
-              activeIntent={draft.intent}
-              listingType={draft.intent === "RENT" || draft.intent === "PG" ? draft.intent : "SELL"}
               onChange={({ localities, keyword }) => {
                 const localitiesChanged =
                   localities.length !== draftRef.current.localities.length ||
@@ -119,49 +118,25 @@ function SearchEditor({ variant, value, onSubmit, onContextChange }: { variant?:
                 const next = { ...draftRef.current, localities, q: keyword };
                 update(next);
                 // Only notify context change if locality chips were added/removed, NOT on typing characters
-                if (variant === "results" && localitiesChanged) {
+                if (liveChanges || (variant === "results" && localitiesChanged)) {
                   onContextChange?.(next);
                 }
               }}
-              onSelectIntent={(p) => {
-                const currentLocs = draftRef.current.localities;
-                const targetCity = p.cityName;
-                let nextLocs = currentLocs;
-                if (targetCity) {
-                  if (!currentLocs.some((l) => l.label.toLowerCase() === targetCity.toLowerCase())) {
-                    nextLocs = [...currentLocs, { label: targetCity, city: targetCity }];
-                  }
-                }
-                const next: SearchState = {
-                  ...draftRef.current,
-                  cityName: targetCity || draftRef.current.cityName,
-                  intent: p.intent,
-                  transaction: p.transaction ?? draftRef.current.transaction,
-                  bedroomsMin: p.bedrooms ?? draftRef.current.bedroomsMin,
-                  refine: {
-                    ...draftRef.current.refine,
-                    subType: p.subType ? [p.subType] : draftRef.current.refine.subType,
-                  },
-                  localities: nextLocs,
-                  q: "",
-                };
-                update(next);
-                onSubmit(next);
-              }}
-              onSubmit={submit}
             />
           </div>
         </div>
 
         {/* Search submit button */}
-        <button
-          type="button"
-          className={`${primaryButton} shrink-0 w-full sm:w-auto h-11 font-semibold shadow-sm`}
-          onClick={submit}
-        >
-          <Search size={18} />
-          Search
-        </button>
+        {showSubmit && (
+          <button
+            type="button"
+            className={`${primaryButton} shrink-0 w-full sm:w-auto h-11 font-semibold shadow-sm`}
+            onClick={submit}
+          >
+            <Search size={18} />
+            Search
+          </button>
+        )}
       </div>
     </div>
   );
@@ -175,10 +150,10 @@ export function SearchBar({
   resultCount,
   activeFilterCount = 0,
   onOpenFilters,
-  compact = false,
   onBack,
 }: Props) {
   const [mobileSearchOpen, setMobileSearchOpen] = React.useState(false);
+  const [tabletSearchOpen, setTabletSearchOpen] = React.useState(false);
 
   if (variant === "hero") {
     return (
@@ -190,50 +165,49 @@ export function SearchBar({
 
         {/* Mobile Hero Search: High-end compact search card (NoBroker style) that launches the full search drawer */}
         <div className="sm:hidden">
+          <div className="no-scrollbar mb-2 flex gap-5 overflow-x-auto border-b border-slate-200 px-1 dark:border-slate-800" aria-label="Property category">
+            {INTENT_KEYS.map((intent) => (
+              <button
+                key={intent}
+                type="button"
+                aria-pressed={value.intent === intent}
+                onClick={() => onChange(intent === value.intent ? value : clearAllFilters({ ...value, intent, transaction: "SELL" }))}
+                className={`shrink-0 border-b-2 px-1 pb-2 text-xs font-bold transition ${
+                  value.intent === intent
+                    ? "border-rose-600 text-rose-600 dark:border-rose-400 dark:text-rose-400"
+                    : "border-transparent text-slate-400 dark:text-slate-500"
+                }`}
+              >
+                {INTENT_CONFIG[intent].label}
+              </button>
+            ))}
+          </div>
           <button
             type="button"
             onClick={() => setMobileSearchOpen(true)}
-            className="flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-3.5 text-left shadow-xs transition hover:border-slate-300 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900"
+            className="flex h-12 w-full items-center gap-2 rounded-xl border border-slate-200 bg-white pl-3 pr-1.5 text-left shadow-xs transition hover:border-slate-300 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900"
           >
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
-                <Search size={20} />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400">
-                  <span>{INTENT_CONFIG[value.intent].label}</span>
-                  <span className="text-slate-300 dark:text-slate-700">•</span>
-                  <span className="text-slate-700 dark:text-slate-300 font-semibold truncate">
-                    {value.cityName || "Select City"}
-                  </span>
-                </div>
-                <p className="truncate text-sm font-medium text-slate-400 dark:text-slate-500 mt-0.5">
-                  {value.localities.length > 0 ? locationSummary(value) : "Search locality, project, or builder..."}
-                </p>
-              </div>
-            </div>
-            <span className="shrink-0 rounded-xl bg-rose-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs">
-              Search
+            <Search size={18} className="shrink-0 text-slate-400" />
+            <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-400 dark:text-slate-500">
+              Search by locality, project or landmark
             </span>
+            <span className="flex h-9 shrink-0 items-center rounded-lg bg-rose-600 px-3 text-xs font-bold text-white shadow-xs">Search</span>
           </button>
         </div>
 
-        {/* Full-screen / Bottom sheet Search Modal for Mobile */}
-        <SearchDialog
+        <MobileSearchFlow
           open={mobileSearchOpen}
           onClose={() => setMobileSearchOpen(false)}
-          title="Search Properties"
-        >
-          <SearchEditor
-            variant="hero"
-            value={value}
-            onSubmit={(next) => {
-              setMobileSearchOpen(false);
-              onSubmit(next);
-            }}
-            onContextChange={onChange}
-          />
-        </SearchDialog>
+          value={value}
+          renderSearchEditor={(draft, setDraft) => (
+            <SearchEditor variant="hero" value={draft} onSubmit={setDraft} onContextChange={setDraft} showSubmit={false} liveChanges />
+          )}
+          onSubmit={(next) => {
+            setMobileSearchOpen(false);
+            onChange(next);
+            onSubmit(next);
+          }}
+        />
       </>
     );
   }
@@ -261,7 +235,10 @@ export function SearchBar({
         {/* Compact Search Trigger Pill: Displays category + city + localities */}
         <button
           type="button"
-          onClick={() => setMobileSearchOpen(true)}
+          onClick={() => {
+            if (window.innerWidth < 640) setMobileSearchOpen(true);
+            else setTabletSearchOpen(true);
+          }}
           className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left shadow-xs transition hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 active:scale-[0.99]"
         >
           <Search size={16} className="shrink-0 text-rose-600 dark:text-rose-400" />
@@ -304,17 +281,26 @@ export function SearchBar({
         </button>
       </div>
 
-      {/* Full Search Selection Drawer on Mobile */}
-      <SearchDialog
+      <MobileSearchFlow
         open={mobileSearchOpen}
         onClose={() => setMobileSearchOpen(false)}
-        title="Search Properties"
-      >
+        value={value}
+        resultCount={resultCount}
+        renderSearchEditor={(draft, setDraft) => (
+          <SearchEditor variant="hero" value={draft} onSubmit={setDraft} onContextChange={setDraft} showSubmit={false} liveChanges />
+        )}
+        onSubmit={(next) => {
+          setMobileSearchOpen(false);
+          onSubmit(next);
+        }}
+      />
+
+      <SearchDialog open={tabletSearchOpen} onClose={() => setTabletSearchOpen(false)} title="Search properties">
         <SearchEditor
           variant="results"
           value={value}
           onSubmit={(next) => {
-            setMobileSearchOpen(false);
+            setTabletSearchOpen(false);
             onSubmit(next);
           }}
           onContextChange={onChange}

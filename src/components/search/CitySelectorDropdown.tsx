@@ -2,7 +2,7 @@
 
 import React from "react";
 import { createPortal } from "react-dom";
-import { ChevronDown, Crosshair, Loader2, MapPin, Search, Check, Sparkles, X } from "lucide-react";
+import { ChevronDown, MapPin, Search, Check, Sparkles } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 
 export interface CityItem {
@@ -51,8 +51,6 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
   const [search, setSearch] = React.useState("");
   const [popularCities, setPopularCities] = React.useState<CityItem[]>(DEFAULT_POPULAR_CITIES);
   const [searchResults, setSearchResults] = React.useState<CityItem[]>([]);
-  const [isDetecting, setIsDetecting] = React.useState(false);
-  const [placement, setPlacement] = React.useState<"bottom" | "top">("bottom");
   const [dropdownMaxHeight, setDropdownMaxHeight] = React.useState<number>(360);
   const [dropdownCoords, setDropdownCoords] = React.useState<{ top?: number; bottom?: number; left: number }>({ left: 0 });
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -137,12 +135,11 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
 
       const isMobile = viewportWidth < 640;
       // On mobile, center the dropdown horizontally across the screen
-      let left = isMobile
+      const left = isMobile
         ? Math.max(12, Math.round((viewportWidth - Math.min(360, viewportWidth - 24)) / 2))
         : Math.max(12, Math.min(rect.left, viewportWidth - 320 - 12));
 
       if (spaceBelow < 260 && spaceAbove > spaceBelow) {
-        setPlacement("top");
         const available = spaceAbove - margin;
         setDropdownMaxHeight(Math.max(minHeight, Math.min(preferredMaxHeight, available)));
         setDropdownCoords({
@@ -150,7 +147,6 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
           left,
         });
       } else {
-        setPlacement("bottom");
         const available = spaceBelow - margin;
         setDropdownMaxHeight(Math.max(minHeight, Math.min(preferredMaxHeight, available)));
         setDropdownCoords({
@@ -189,41 +185,6 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen]);
-
-  // 4. GPS Auto-detect city
-  const handleDetectLocation = () => {
-    if (!("geolocation" in navigator)) {
-      alert("Geolocation is not supported by your browser");
-      return;
-    }
-    setIsDetecting(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const detectCity = async () => {
-          try {
-            const { latitude, longitude } = pos.coords;
-            const url = `${APP_CONFIG.API.BASE_URL}/v1/detect-city?lat=${latitude}&lng=${longitude}`;
-            const res = await fetch(url);
-            const json = await res.json();
-            if (json?.data) {
-              onSelectCity(json.data);
-              setIsOpen(false);
-            }
-          } catch (e) {
-            console.error("Detect city failed", e);
-          } finally {
-            setIsDetecting(false);
-          }
-        };
-        void detectCity();
-      },
-      (err) => {
-        console.warn("Geolocation permission denied/timed out", err);
-        setIsDetecting(false);
-      },
-      { timeout: 7000 }
-    );
-  };
 
   const currentDisplay = selectedCityName || "Bengaluru";
 
@@ -277,21 +238,6 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
               </div>
-
-              {/* Quick Action: Use GPS Location */}
-              <button
-                type="button"
-                onClick={handleDetectLocation}
-                disabled={isDetecting}
-                className="mb-2.5 flex w-full items-center gap-2 rounded-xl bg-rose-50/80 px-2.5 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100/90 active:scale-[0.99] disabled:opacity-50 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-950/70"
-              >
-                {isDetecting ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Crosshair className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
-                )}
-                <span>{isDetecting ? "Detecting nearest city..." : "Detect my current location"}</span>
-              </button>
 
               {/* If searching: show search results */}
               {search.trim().length > 0 ? (

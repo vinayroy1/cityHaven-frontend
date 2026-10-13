@@ -151,7 +151,7 @@ export function HomeExperience() {
           </p>
 
           {/* Centered Elevated Search Bar */}
-          <div className="relative z-20 mt-4 sm:mt-6 w-full rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-5 shadow-[0_16px_40px_-15px_rgba(15,23,42,0.1)] backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-[0_16px_40px_-15px_rgba(0,0,0,0.5)] text-left transition">
+          <div className="relative z-20 mt-4 w-full rounded-2xl border border-slate-200/90 bg-white/95 p-2.5 text-left shadow-[0_16px_40px_-15px_rgba(15,23,42,0.1)] backdrop-blur-md transition sm:mt-6 sm:rounded-3xl sm:p-5 dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-[0_16px_40px_-15px_rgba(0,0,0,0.5)]">
             <SearchBar
               variant="hero"
               value={{ ...searchState, cityName: selectedCity || undefined }}

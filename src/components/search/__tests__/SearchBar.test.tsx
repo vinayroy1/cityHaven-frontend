@@ -20,4 +20,16 @@ describe("listing search context", () => {
     fireEvent.click(screen.getByRole("button", { name: "Rent / Lease" }));
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ transaction: "RENT", priceMin: undefined, priceMax: undefined }));
   });
+
+  it("opens the complete mobile search and filter flow from the home search", () => {
+    window.scrollTo = jest.fn();
+    render(<SearchBar variant="hero" value={initialSearchState()} onChange={jest.fn()} onSubmit={jest.fn()} />);
+
+    fireEvent.click(screen.getByText("Search by locality, project or landmark").closest("button")!);
+
+    expect(screen.getByRole("dialog", { name: "Search and filter properties" })).toBeTruthy();
+    expect(screen.getByText("Choose location and filters")).toBeTruthy();
+    expect(screen.getByText("Property filters")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Search properties" })).toBeTruthy();
+  });
 });

@@ -3,7 +3,6 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { X, SlidersHorizontal } from "lucide-react";
-import { cn } from "@/components/ui/utils";
 import { Chip } from "./Chip";
 import {
   clearAllFilters,
@@ -236,7 +235,7 @@ function OpenSection({
   );
 }
 
-function FilterSections({
+export function FilterSectionsEditor({
   draft,
   setDraft,
 }: {
@@ -276,7 +275,7 @@ export function FilterRail({
         )}
       </div>
       <div className="overflow-y-auto px-5 py-2">
-        <FilterSections draft={state} setDraft={onChange} />
+        <FilterSectionsEditor draft={state} setDraft={onChange} />
       </div>
     </aside>
   );
@@ -418,7 +417,7 @@ export function FilterSheet({
 
         {/* Scrollable Body: internal scrolling without resizing or pushing bottom sheet container */}
         <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-2">
-          <FilterSections draft={draft} setDraft={setDraft} />
+          <FilterSectionsEditor draft={draft} setDraft={setDraft} />
         </div>
 
         {/* Footer */}
