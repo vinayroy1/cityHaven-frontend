@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { SlidersHorizontal } from "lucide-react";
 import { HeaderNav } from "../homePage/components/HeaderNav";
 import { FooterLinks } from "../homePage/components/FooterLinks";
 import { ResultsList } from "./components/ResultsList";
@@ -200,6 +201,23 @@ export function SearchPageClient() {
         focusKey={sheetFocus}
         resultCount={settledCount}
       />
+
+      {/* Floating Bottom Filter Button (NoBroker / 99acres style on mobile) */}
+      <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 md:hidden">
+        <button
+          type="button"
+          onClick={() => openFilters()}
+          className="flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-xs font-bold text-white shadow-xl shadow-slate-950/30 transition hover:bg-slate-800 active:scale-95 border border-slate-700/60 dark:bg-rose-600 dark:border-rose-500/80 dark:shadow-rose-950/40"
+        >
+          <SlidersHorizontal size={15} />
+          <span>Filters</span>
+          {activeCount > 0 && (
+            <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 dark:bg-white dark:text-rose-600 px-1 text-[10px] font-black text-white">
+              {activeCount}
+            </span>
+          )}
+        </button>
+      </div>
 
       <FooterLinks />
     </main>

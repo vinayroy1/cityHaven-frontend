@@ -178,117 +178,148 @@ export function SearchBar({
   compact = false,
   onBack,
 }: Props) {
-  // Mobile draft state so typing or changing city doesn't immediately fire redundant search API calls
-  const [mobileDraft, setMobileDraft] = React.useState(value);
-
-  React.useEffect(() => {
-    setMobileDraft(value);
-  }, [value]);
-
-  const handleMobileSubmit = async () => {
-    let next = mobileDraft;
-    if (next.q && next.q.trim()) {
-      next = await resolveSearchQueryToState(next.q, next);
-      setMobileDraft(next);
-    }
-    onChange(next);
-    onSubmit(next);
-  };
+  const [mobileSearchOpen, setMobileSearchOpen] = React.useState(false);
 
   if (variant === "hero") {
-    return <SearchEditor variant="hero" value={value} onSubmit={onSubmit} onContextChange={onChange} />;
+    return (
+      <>
+        {/* Desktop Hero Search: Inline */}
+        <div className="hidden sm:block">
+          <SearchEditor variant="hero" value={value} onSubmit={onSubmit} onContextChange={onChange} />
+        </div>
+
+        {/* Mobile Hero Search: High-end compact search card (NoBroker style) that launches the full search drawer */}
+        <div className="sm:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileSearchOpen(true)}
+            className="flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-3.5 text-left shadow-xs transition hover:border-slate-300 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900"
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
+                <Search size={20} />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400">
+                  <span>{INTENT_CONFIG[value.intent].label}</span>
+                  <span className="text-slate-300 dark:text-slate-700">•</span>
+                  <span className="text-slate-700 dark:text-slate-300 font-semibold truncate">
+                    {value.cityName || "Select City"}
+                  </span>
+                </div>
+                <p className="truncate text-sm font-medium text-slate-400 dark:text-slate-500 mt-0.5">
+                  {value.localities.length > 0 ? locationSummary(value) : "Search locality, project, or builder..."}
+                </p>
+              </div>
+            </div>
+            <span className="shrink-0 rounded-xl bg-rose-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs">
+              Search
+            </span>
+          </button>
+        </div>
+
+        {/* Full-screen / Bottom sheet Search Modal for Mobile */}
+        <SearchDialog
+          open={mobileSearchOpen}
+          onClose={() => setMobileSearchOpen(false)}
+          title="Search Properties"
+        >
+          <SearchEditor
+            variant="hero"
+            value={value}
+            onSubmit={(next) => {
+              setMobileSearchOpen(false);
+              onSubmit(next);
+            }}
+            onContextChange={onChange}
+          />
+        </SearchDialog>
+      </>
+    );
   }
 
   return (
     <div>
-      {/* Desktop View */}
+      {/* Desktop View: Full inline search editor */}
       <div className="hidden lg:block">
         <SearchEditor variant="results" value={value} onSubmit={onSubmit} onContextChange={onChange} />
       </div>
 
-      {/* Mobile View: High-end, roomy 2-row layout with city, locality, filter button & dedicated search button */}
-      <div className="flex flex-col gap-2.5 lg:hidden">
-        {/* Row 1: Back Button + Full-width City Selector Pill + Filter Trigger Button */}
-        <div className="flex items-center gap-2">
-          {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
-              aria-label="Back"
-              className="flex h-11 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 active:scale-95"
-            >
-              <ArrowLeft size={18} />
-            </button>
-          )}
-
-          {/* City Selector: Takes remaining space in Row 1 for clean readability */}
-          <div className="min-w-0 flex-1">
-            <CitySelectorDropdown
-              compact
-              selectedCityName={mobileDraft.cityName}
-              onSelectCity={(city) => {
-                const next = {
-                  ...mobileDraft,
-                  cityName: city.name,
-                  localities: [],
-                };
-                setMobileDraft(next);
-                // Also trigger search immediately on city selection
-                onChange(next);
-                onSubmit(next);
-              }}
-            />
-          </div>
-
-          {/* Tap-only Filter Sheet Button (BHK, Type, Price, Amenities) */}
+      {/* Mobile View: NoBroker-style compact single-line bar with Back button, Tap-to-search summary pill, and Filter button */}
+      <div className="flex items-center gap-2 lg:hidden">
+        {onBack && (
           <button
             type="button"
-            aria-label={`Filters, ${activeFilterCount} active`}
-            onClick={onOpenFilters}
-            className={`relative flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border px-3 text-xs font-bold transition active:scale-95 shadow-xs ${
-              activeFilterCount > 0
-                ? "border-rose-500 bg-rose-50 text-rose-700 dark:border-rose-600 dark:bg-rose-950/40 dark:text-rose-300"
-                : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
-            }`}
+            onClick={onBack}
+            aria-label="Back"
+            className="flex h-11 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 active:scale-95"
           >
-            <SlidersHorizontal size={16} />
-            <span>Filters</span>
-            {activeFilterCount > 0 && (
-              <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-black text-white">
-                {activeFilterCount}
+            <ArrowLeft size={18} />
+          </button>
+        )}
+
+        {/* Compact Search Trigger Pill: Displays category + city + localities */}
+        <button
+          type="button"
+          onClick={() => setMobileSearchOpen(true)}
+          className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left shadow-xs transition hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 active:scale-[0.99]"
+        >
+          <Search size={16} className="shrink-0 text-rose-600 dark:text-rose-400" />
+          <span className="min-w-0 flex-1">
+            <span className="flex items-center gap-1.5 truncate">
+              <span className="text-xs font-bold text-rose-600 dark:text-rose-400 shrink-0">
+                {INTENT_CONFIG[value.intent].label}
+                {value.intent === "COMMERCIAL" ? (value.transaction === "RENT" ? " / Rent" : " / Buy") : ""}
               </span>
-            )}
-          </button>
-        </div>
+              <span className="text-slate-300 dark:text-slate-700 text-xs">•</span>
+              <span className="truncate text-xs font-semibold text-slate-900 dark:text-white">
+                {locationSummary(value)}
+              </span>
+            </span>
+          </span>
+          {resultCount !== undefined && (
+            <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              {resultCount}
+            </span>
+          )}
+        </button>
 
-        {/* Row 2: Generous Locality Search Input + Prominent Search Submit Button */}
-        <div className="flex items-center gap-2">
-          <div className="min-w-0 flex-1">
-            <LocationSearchInput
-              cityName={mobileDraft.cityName}
-              localities={mobileDraft.localities}
-              keyword={mobileDraft.q}
-              activeIntent={mobileDraft.intent}
-              listingType={mobileDraft.intent === "RENT" || mobileDraft.intent === "PG" ? mobileDraft.intent : "SELL"}
-              placeholder="Search locality, project..."
-              onChange={({ localities, keyword }) => {
-                setMobileDraft((prev) => ({ ...prev, localities, q: keyword }));
-              }}
-              onSubmit={handleMobileSubmit}
-            />
-          </div>
-
-          {/* Prominent Search Button: Prevents redundant api calls on typing */}
-          <button
-            type="button"
-            onClick={handleMobileSubmit}
-            className={`${primaryButton} shrink-0 h-11 px-4 text-xs font-bold shadow-sm flex items-center gap-1.5`}
-          >
-            <Search size={16} />
-            <span>Search</span>
-          </button>
-        </div>
+        {/* Sliders Filter Button */}
+        <button
+          type="button"
+          aria-label={`Filters, ${activeFilterCount} active`}
+          onClick={onOpenFilters}
+          className={`relative flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border px-3 text-xs font-bold transition active:scale-95 shadow-xs ${
+            activeFilterCount > 0
+              ? "border-rose-500 bg-rose-50 text-rose-700 dark:border-rose-600 dark:bg-rose-950/40 dark:text-rose-300"
+              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+          }`}
+        >
+          <SlidersHorizontal size={16} />
+          {activeFilterCount > 0 && (
+            <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-black text-white">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
       </div>
+
+      {/* Full Search Selection Drawer on Mobile */}
+      <SearchDialog
+        open={mobileSearchOpen}
+        onClose={() => setMobileSearchOpen(false)}
+        title="Search Properties"
+      >
+        <SearchEditor
+          variant="results"
+          value={value}
+          onSubmit={(next) => {
+            setMobileSearchOpen(false);
+            onSubmit(next);
+          }}
+          onContextChange={onChange}
+        />
+      </SearchDialog>
     </div>
   );
 }
