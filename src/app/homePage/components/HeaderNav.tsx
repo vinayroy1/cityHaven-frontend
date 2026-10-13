@@ -190,9 +190,6 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
           : "border-b border-slate-200/50 bg-white/75 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-950/75"
       }`}
     >
-      {/* Ambient Top Subtle Gradient Accent */}
-      <div className="h-[2.5px] w-full bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 opacity-90" />
-
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 lg:gap-4 px-3 sm:px-6 lg:px-8 flex-nowrap">
         {/* Brand Logo */}
         <div className="flex shrink-0 items-center">
