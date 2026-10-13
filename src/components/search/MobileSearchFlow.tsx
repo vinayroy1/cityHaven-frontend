@@ -40,26 +40,14 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
     document.body.style.width = "100%";
     document.body.style.overflow = "hidden";
 
-    const updateViewport = () => {
-      const viewport = window.visualViewport;
-      setViewportStyle({
-        position: "fixed",
-        top: `${viewport?.offsetTop ?? 0}px`,
-        left: `${viewport?.offsetLeft ?? 0}px`,
-        width: `${viewport?.width ?? window.innerWidth}px`,
-        height: `${viewport?.height ?? window.innerHeight}px`,
-      });
-    };
-
-    updateViewport();
-    const viewport = window.visualViewport;
-    viewport?.addEventListener("resize", updateViewport);
-    viewport?.addEventListener("scroll", updateViewport);
-    window.addEventListener("resize", updateViewport);
+    // Preserve the layout viewport while the keyboard overlays lower content.
+    setViewportStyle({
+      position: "fixed",
+      inset: 0,
+      width: "100%",
+      height: `${window.innerHeight}px`,
+    });
     return () => {
-      viewport?.removeEventListener("resize", updateViewport);
-      viewport?.removeEventListener("scroll", updateViewport);
-      window.removeEventListener("resize", updateViewport);
       document.body.style.position = previous.position;
       document.body.style.top = previous.top;
       document.body.style.width = previous.width;

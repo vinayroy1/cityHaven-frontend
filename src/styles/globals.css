@@ -214,3 +214,14 @@ html {
 
 /* Slightly stronger heading weights to match modern look */
 h1, h2, h3 { font-weight: 600; }
+
+/* iOS WebKit (including Chrome on iOS) zooms and pans the page when a focused
+   form control is smaller than 16px. Keep mobile controls at the safe size so
+   the software keyboard can overlay content without shifting app dialogs. */
+@media (max-width: 767px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}

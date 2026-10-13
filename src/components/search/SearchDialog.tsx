@@ -29,43 +29,16 @@ export function SearchDialog({
     document.body.style.overflow = "hidden";
     document.body.style.touchAction = "none";
 
-    const updateViewport = () => {
-      const vv = window.visualViewport;
-      if (vv && window.innerWidth < 768) {
-        setViewportStyle({
-          position: "fixed",
-          top: `${vv.offsetTop}px`,
-          left: `${vv.offsetLeft}px`,
-          width: `${vv.width}px`,
-          height: `${vv.height}px`,
-        });
-      } else {
-        setViewportStyle({
-          position: "fixed",
-          top: "0px",
-          left: "0px",
-          width: "100%",
-          height: "100dvh",
-        });
-      }
-    };
-
-    updateViewport();
-    const vv = window.visualViewport;
-    if (vv) {
-      vv.addEventListener("resize", updateViewport);
-      vv.addEventListener("scroll", updateViewport);
-    }
-    window.addEventListener("resize", updateViewport);
+    setViewportStyle({
+      position: "fixed",
+      inset: 0,
+      width: "100%",
+      height: `${window.innerHeight}px`,
+    });
 
     return () => {
       document.body.style.overflow = prevOverflow;
       document.body.style.touchAction = prevTouchAction;
-      if (vv) {
-        vv.removeEventListener("resize", updateViewport);
-        vv.removeEventListener("scroll", updateViewport);
-      }
-      window.removeEventListener("resize", updateViewport);
     };
   }, [open]);
 

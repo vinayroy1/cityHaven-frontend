@@ -312,7 +312,7 @@ export function LocationSearchInput({
           <>
             <input
               ref={inputRef}
-              className="min-w-0 flex-1 bg-transparent px-1.5 py-0.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+              className="min-w-0 flex-1 bg-transparent px-1.5 py-0.5 text-base text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500 sm:text-sm"
               placeholder={localities.length === 1 ? "Add one more locality..." : placeholder}
               value={text}
               onChange={handleInputChange}

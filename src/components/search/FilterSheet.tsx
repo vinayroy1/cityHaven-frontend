@@ -120,7 +120,7 @@ function RangeSelect({
       <select
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-900 outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-base font-semibold text-slate-900 outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 dark:border-slate-800 dark:bg-slate-900 dark:text-white sm:text-xs"
       >
         <option value="">{placeholder}</option>
         {options.map((opt) => (
@@ -319,43 +319,16 @@ export function FilterSheet({
     document.body.style.overflow = "hidden";
     document.body.style.touchAction = "none";
 
-    const updateViewport = () => {
-      const vv = window.visualViewport;
-      if (vv && window.innerWidth < 768) {
-        setMobileViewportStyle({
-          position: "fixed",
-          top: `${vv.offsetTop}px`,
-          left: `${vv.offsetLeft}px`,
-          width: `${vv.width}px`,
-          height: `${vv.height}px`,
-        });
-      } else {
-        setMobileViewportStyle({
-          position: "fixed",
-          top: "0px",
-          left: "0px",
-          width: "100%",
-          height: "100dvh",
-        });
-      }
-    };
-
-    updateViewport();
-    const vv = window.visualViewport;
-    if (vv) {
-      vv.addEventListener("resize", updateViewport);
-      vv.addEventListener("scroll", updateViewport);
-    }
-    window.addEventListener("resize", updateViewport);
+    setMobileViewportStyle({
+      position: "fixed",
+      inset: 0,
+      width: "100%",
+      height: `${window.innerHeight}px`,
+    });
 
     return () => {
       document.body.style.overflow = prevOverflow;
       document.body.style.touchAction = prevTouchAction;
-      if (vv) {
-        vv.removeEventListener("resize", updateViewport);
-        vv.removeEventListener("scroll", updateViewport);
-      }
-      window.removeEventListener("resize", updateViewport);
     };
   }, [open]);
 
