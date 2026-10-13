@@ -83,12 +83,6 @@ export function LocationSearchInput({
 
     const effectiveCity = cityName?.trim() || "Bengaluru";
     const currentIntent: IntentKey = activeIntent ?? (listingType === "RENT" ? "RENT" : listingType === "PG" ? "PG" : "BUY");
-    // 1. Generate intent suggestions ONLY for the selected city
-    const intentItems = generateIntentSuggestions(trimmed, currentIntent, cluster, 6)
-      .filter((item) => !effectiveCity || item.params.cityName?.toLowerCase() === effectiveCity.toLowerCase());
-    if (intentItems.length > 0) {
-      setSuggestions(intentItems.map((item) => ({ ...item, description: item.title })));
-    }
 
     let cancelled = false;
     setLoading(true);
@@ -96,6 +90,9 @@ export function LocationSearchInput({
 
     const timer = setTimeout(async () => {
       try {
+        const intentItems = generateIntentSuggestions(trimmed, currentIntent, cluster, 6)
+          .filter((item) => !effectiveCity || item.params.cityName?.toLowerCase() === effectiveCity.toLowerCase());
+
         const suggestResults = await fetchAwasioSuggestions(trimmed, { limit: 20, maxPerGroup: 20, city: effectiveCity, types: ["LOCALITY", "PROJECT"] });
 
         if (!cancelled) {
@@ -103,22 +100,19 @@ export function LocationSearchInput({
             .filter((s: AwasioSuggestion) => s.type !== "CITY")
             .map((s: AwasioSuggestion) => ({ type: "awasio" as const, suggestion: s }));
 
-          // Instant Merge: Intent templates → Awasio local master dataset suggestions
+          // Merge: Intent templates → Awasio local master dataset suggestions
           setSuggestions([...intentItems, ...chSuggestions].slice(0, 20));
         }
       } catch (err) {
         if (!cancelled) {
-          if (intentItems.length === 0) {
-            setSuggestions([]);
-            setError(err instanceof Error ? err.message : "Could not load location suggestions.");
-          }
+          setError(err instanceof Error ? err.message : "Could not load location suggestions.");
         }
       } finally {
         if (!cancelled) {
           setLoading(false);
         }
       }
-    }, 60);
+    }, 180);
 
     return () => {
       cancelled = true;

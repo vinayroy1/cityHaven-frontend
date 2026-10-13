@@ -135,11 +135,11 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
       const minHeight = 160;
       const preferredMaxHeight = 360;
 
-      // Dropdown width: 320px on desktop, or bounded by viewport on mobile (viewportWidth - 24px)
-      const menuWidth = Math.min(320, viewportWidth - 24);
-
-      // Keep within left/right viewport boundaries
-      const left = Math.max(12, Math.min(rect.left, viewportWidth - menuWidth - 12));
+      const isMobile = viewportWidth < 640;
+      // On mobile, center the dropdown horizontally across the screen
+      let left = isMobile
+        ? Math.max(12, Math.round((viewportWidth - Math.min(360, viewportWidth - 24)) / 2))
+        : Math.max(12, Math.min(rect.left, viewportWidth - 320 - 12));
 
       if (spaceBelow < 260 && spaceAbove > spaceBelow) {
         setPlacement("top");

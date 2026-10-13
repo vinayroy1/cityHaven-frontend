@@ -178,6 +178,23 @@ export function SearchBar({
   compact = false,
   onBack,
 }: Props) {
+  // Mobile draft state so typing or changing city doesn't immediately fire redundant search API calls
+  const [mobileDraft, setMobileDraft] = React.useState(value);
+
+  React.useEffect(() => {
+    setMobileDraft(value);
+  }, [value]);
+
+  const handleMobileSubmit = async () => {
+    let next = mobileDraft;
+    if (next.q && next.q.trim()) {
+      next = await resolveSearchQueryToState(next.q, next);
+      setMobileDraft(next);
+    }
+    onChange(next);
+    onSubmit(next);
+  };
+
   if (variant === "hero") {
     return <SearchEditor variant="hero" value={value} onSubmit={onSubmit} onContextChange={onChange} />;
   }
@@ -189,57 +206,37 @@ export function SearchBar({
         <SearchEditor variant="results" value={value} onSubmit={onSubmit} onContextChange={onChange} />
       </div>
 
-      {/* Mobile View: Clean inline header with Back, City Selector, Locality Input & Filter Sheet Trigger */}
+      {/* Mobile View: High-end, roomy 2-row layout with city, locality, filter button & dedicated search button */}
       <div className="flex flex-col gap-2.5 lg:hidden">
+        {/* Row 1: Back Button + Full-width City Selector Pill + Filter Trigger Button */}
         <div className="flex items-center gap-2">
           {onBack && (
             <button
               type="button"
               onClick={onBack}
               aria-label="Back"
-              className="flex h-11 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 active:scale-95"
+              className="flex h-11 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 active:scale-95"
             >
               <ArrowLeft size={18} />
             </button>
           )}
 
-          {/* City Selector Dropdown: Inline pill, opens floating dropdown below */}
-          <div className="shrink-0 max-w-[140px] xs:max-w-[160px]">
+          {/* City Selector: Takes remaining space in Row 1 for clean readability */}
+          <div className="min-w-0 flex-1">
             <CitySelectorDropdown
               compact
-              selectedCityName={value.cityName}
+              selectedCityName={mobileDraft.cityName}
               onSelectCity={(city) => {
                 const next = {
-                  ...value,
+                  ...mobileDraft,
                   cityName: city.name,
                   localities: [],
                 };
+                setMobileDraft(next);
+                // Also trigger search immediately on city selection
                 onChange(next);
                 onSubmit(next);
               }}
-            />
-          </div>
-
-          {/* Locality Search Input: Expands horizontally, opens suggestions directly below */}
-          <div className="min-w-0 flex-1">
-            <LocationSearchInput
-              cityName={value.cityName}
-              localities={value.localities}
-              keyword={value.q}
-              activeIntent={value.intent}
-              listingType={value.intent === "RENT" || value.intent === "PG" ? value.intent : "SELL"}
-              placeholder="Search locality..."
-              onChange={({ localities, keyword }) => {
-                const localitiesChanged =
-                  localities.length !== value.localities.length ||
-                  localities.some((l, i) => l.label !== value.localities[i]?.label);
-                const next = { ...value, localities, q: keyword };
-                onChange(next);
-                if (localitiesChanged) {
-                  onSubmit(next);
-                }
-              }}
-              onSubmit={() => onSubmit(value)}
             />
           </div>
 
@@ -248,14 +245,47 @@ export function SearchBar({
             type="button"
             aria-label={`Filters, ${activeFilterCount} active`}
             onClick={onOpenFilters}
-            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 active:scale-95"
+            className={`relative flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border px-3 text-xs font-bold transition active:scale-95 shadow-xs ${
+              activeFilterCount > 0
+                ? "border-rose-500 bg-rose-50 text-rose-700 dark:border-rose-600 dark:bg-rose-950/40 dark:text-rose-300"
+                : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+            }`}
           >
-            <SlidersHorizontal size={18} />
+            <SlidersHorizontal size={16} />
+            <span>Filters</span>
             {activeFilterCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-black text-white shadow-xs">
+              <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-black text-white">
                 {activeFilterCount}
               </span>
             )}
+          </button>
+        </div>
+
+        {/* Row 2: Generous Locality Search Input + Prominent Search Submit Button */}
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <LocationSearchInput
+              cityName={mobileDraft.cityName}
+              localities={mobileDraft.localities}
+              keyword={mobileDraft.q}
+              activeIntent={mobileDraft.intent}
+              listingType={mobileDraft.intent === "RENT" || mobileDraft.intent === "PG" ? mobileDraft.intent : "SELL"}
+              placeholder="Search locality, project..."
+              onChange={({ localities, keyword }) => {
+                setMobileDraft((prev) => ({ ...prev, localities, q: keyword }));
+              }}
+              onSubmit={handleMobileSubmit}
+            />
+          </div>
+
+          {/* Prominent Search Button: Prevents redundant api calls on typing */}
+          <button
+            type="button"
+            onClick={handleMobileSubmit}
+            className={`${primaryButton} shrink-0 h-11 px-4 text-xs font-bold shadow-sm flex items-center gap-1.5`}
+          >
+            <Search size={16} />
+            <span>Search</span>
           </button>
         </div>
       </div>
