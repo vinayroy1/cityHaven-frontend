@@ -10,6 +10,8 @@ import type { LocalityTag } from "./searchQuery";
 
 type Suggestion = { type: "awasio"; suggestion: AwasioSuggestion };
 
+const LOCALITY_PAGE_SIZE = 30;
+
 type Props = {
   localities: LocalityTag[];
   keyword: string;
@@ -29,7 +31,13 @@ export function LocationSearchInput({
 }: Props) {
   const [text, setText] = React.useState(keyword);
   const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);
+  const [prefetchedSuggestions, setPrefetchedSuggestions] = React.useState<Suggestion[]>([]);
+  const [prefetchedHasMore, setPrefetchedHasMore] = React.useState(false);
+  const [prefetchedNextPage, setPrefetchedNextPage] = React.useState(2);
+  const [nextPage, setNextPage] = React.useState(2);
   const [loading, setLoading] = React.useState(false);
+  const [loadingMore, setLoadingMore] = React.useState(false);
+  const [hasMore, setHasMore] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [open, setOpen] = React.useState(false);
 
@@ -43,13 +51,58 @@ export function LocationSearchInput({
     if (!open) setText("");
   }, [keyword, open]);
 
+  // Warm the dropdown whenever the city changes so the first focus already
+  // contains useful locality choices instead of an empty panel.
+  React.useEffect(() => {
+    const selectedCity = cityName?.trim();
+    let cancelled = false;
+
+    setPrefetchedSuggestions([]);
+    setPrefetchedHasMore(false);
+    setPrefetchedNextPage(2);
+    setNextPage(2);
+    setHasMore(false);
+    if (!selectedCity) return;
+
+    void fetchAwasioSuggestions(selectedCity, {
+      city: selectedCity,
+      types: ["LOCALITY"],
+      page: 1,
+      pageSize: LOCALITY_PAGE_SIZE,
+      maxPerGroup: LOCALITY_PAGE_SIZE,
+    })
+      .then((response) => {
+        if (cancelled) return;
+        const next = (response.data || [])
+          .filter((suggestion) => suggestion.type === "LOCALITY")
+          .map((suggestion) => ({ type: "awasio" as const, suggestion }));
+        setPrefetchedSuggestions(next);
+        const canLoadMore = response.pagination?.hasNextPage ?? next.length >= LOCALITY_PAGE_SIZE;
+        setPrefetchedHasMore(canLoadMore);
+        setHasMore(canLoadMore);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPrefetchedSuggestions([]);
+          setPrefetchedHasMore(false);
+          setHasMore(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [cityName]);
+
   React.useEffect(() => {
     // Only search autocomplete suggestions when the user is actively interacting with the input
     if (!open) return;
 
     const trimmed = text.trim();
     if (trimmed.length < 2) {
-      setSuggestions([]);
+      setSuggestions(prefetchedSuggestions);
+      setHasMore(prefetchedHasMore);
+      setNextPage(prefetchedNextPage);
       setLoading(false);
       setError(null);
       return;
@@ -62,14 +115,22 @@ export function LocationSearchInput({
 
     const timer = setTimeout(async () => {
       try {
-        const suggestResults = await fetchAwasioSuggestions(trimmed, { limit: 20, maxPerGroup: 20, city: effectiveCity, types: ["LOCALITY"] });
+        const suggestResults = await fetchAwasioSuggestions(trimmed, {
+          page: 1,
+          pageSize: LOCALITY_PAGE_SIZE,
+          maxPerGroup: LOCALITY_PAGE_SIZE,
+          city: effectiveCity,
+          types: ["LOCALITY"],
+        });
 
         if (!cancelled) {
           const chSuggestions: Suggestion[] = (suggestResults.data || [])
             .filter((s: AwasioSuggestion) => s.type !== "CITY")
             .map((s: AwasioSuggestion) => ({ type: "awasio" as const, suggestion: s }));
 
-          setSuggestions(chSuggestions.slice(0, 20));
+          setSuggestions(chSuggestions);
+          setNextPage(2);
+          setHasMore(suggestResults.pagination?.hasNextPage ?? chSuggestions.length >= LOCALITY_PAGE_SIZE);
         }
       } catch (err) {
         if (!cancelled) {
@@ -86,7 +147,49 @@ export function LocationSearchInput({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [text, cityName, open]);
+  }, [text, cityName, open, prefetchedSuggestions, prefetchedHasMore, prefetchedNextPage]);
+
+  const loadMoreSuggestions = async () => {
+    if (loading || loadingMore || !hasMore || localities.length >= 2) return;
+
+    const trimmed = text.trim();
+    const selectedCity = cityName?.trim();
+    const query = trimmed.length >= 2 ? trimmed : selectedCity;
+    if (!query) return;
+
+    setLoadingMore(true);
+
+    try {
+      const response = await fetchAwasioSuggestions(query, {
+        city: selectedCity,
+        types: ["LOCALITY"],
+        page: nextPage,
+        pageSize: LOCALITY_PAGE_SIZE,
+        maxPerGroup: LOCALITY_PAGE_SIZE,
+      });
+      const merged = new Map<string, Suggestion>();
+      for (const item of suggestions) merged.set(item.suggestion.id, item);
+      for (const suggestion of response.data || []) {
+        if (suggestion.type === "LOCALITY") {
+          merged.set(suggestion.id, { type: "awasio", suggestion });
+        }
+      }
+      const next = Array.from(merged.values());
+      const canLoadMore = response.pagination?.hasNextPage ?? (response.data || []).length >= LOCALITY_PAGE_SIZE;
+      setSuggestions(next);
+      setNextPage((page) => page + 1);
+      setHasMore(canLoadMore);
+      if (trimmed.length < 2) {
+        setPrefetchedSuggestions(next);
+        setPrefetchedHasMore(canLoadMore);
+        setPrefetchedNextPage(nextPage + 1);
+      }
+    } catch {
+      setHasMore(false);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const addSuggestion = (s: Suggestion) => {
     setOpen(false);
@@ -240,6 +343,12 @@ export function LocationSearchInput({
       {open && (text.trim().length >= 2 || loading || suggestions.length > 0 || Boolean(error)) && (
         <div
           style={{ maxHeight: `${dropdownMaxHeight}px` }}
+          onScroll={(event) => {
+            const element = event.currentTarget;
+            if (element.scrollHeight - element.scrollTop - element.clientHeight <= 48) {
+              void loadMoreSuggestions();
+            }
+          }}
           className={`absolute left-0 right-0 z-50 overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl transition-all dark:border-slate-700 dark:bg-slate-900 ${
             placement === "top"
               ? "bottom-[calc(100%+6px)] shadow-slate-950/20"
@@ -285,6 +394,12 @@ export function LocationSearchInput({
                 </button>
               );
           })}
+
+          {loadingMore && (
+            <p className="border-t border-slate-100 px-3 py-2 text-center text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+              Loading more localities…
+            </p>
+          )}
         </div>
       )}
     </div>

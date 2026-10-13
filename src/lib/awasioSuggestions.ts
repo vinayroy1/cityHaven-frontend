@@ -72,6 +72,13 @@ export interface AwasioSuggestionResponse {
   tookMs: number;
   grouped: AwasioSuggestionGrouped;
   data: AwasioSuggestion[];
+  pagination?: {
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
 }
 
 export async function fetchAwasioSuggestions(
@@ -82,6 +89,8 @@ export async function fetchAwasioSuggestions(
     types?: AwasioSuggestionType[];
     limit?: number;
     maxPerGroup?: number;
+    page?: number;
+    pageSize?: number;
   }
 ): Promise<AwasioSuggestionResponse> {
   if (!query || query.trim().length < 2) {
@@ -89,6 +98,7 @@ export async function fetchAwasioSuggestions(
       success: true, query, total: 0, tookMs: 0,
       grouped: { cities: [], localities: [], projects: [], developers: [] },
       data: [],
+      pagination: { page: 1, pageSize: options?.pageSize || options?.limit || 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
     };
   }
   const params = new URLSearchParams({ q: query.trim() });
@@ -97,6 +107,8 @@ export async function fetchAwasioSuggestions(
   if (options?.types?.length) params.set("types", options.types.join(","));
   if (options?.limit) params.set("limit", String(options.limit));
   if (options?.maxPerGroup) params.set("maxPerGroup", String(options.maxPerGroup));
+  if (options?.page) params.set("page", String(options.page));
+  if (options?.pageSize) params.set("pageSize", String(options.pageSize));
   const res = await fetch(`${BASE}/search/suggestions?${params.toString()}`, { cache: "no-store" });
   if (!res.ok) throw new Error(`Suggestion engine error: ${res.status}`);
   return res.json() as Promise<AwasioSuggestionResponse>;
