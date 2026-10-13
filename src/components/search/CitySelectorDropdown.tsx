@@ -17,8 +17,8 @@ export interface CityItem {
 
 // Curated Top Indian Real Estate Markets (Prevents foreign cities like Auckland/Austin from polluting popular cities)
 const DEFAULT_POPULAR_CITIES: CityItem[] = [
-  { id: 11, name: "Delhi", slug: "delhi", state: "Delhi", isPopular: true },
-  { id: 1363, name: "Gurugram", slug: "gurugram", state: "Haryana", isPopular: true },
+  { id: 12, name: "New Delhi", slug: "new-delhi", state: "Delhi", isPopular: true },
+  { id: 16, name: "Gurugram", slug: "gurugram", state: "Haryana", isPopular: true },
   { id: 13, name: "Noida", slug: "noida", state: "Uttar Pradesh", isPopular: true },
   { id: 1, name: "Mumbai", slug: "mumbai", state: "Maharashtra", isPopular: true },
   { id: 19, name: "Bengaluru", slug: "bengaluru", state: "Karnataka", isPopular: true },
