@@ -1,11 +1,10 @@
 "use client";
 import React from "react";
-import { ArrowLeft, Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import { LocationSearchInput } from "./LocationSearchInput";
 import { CitySelectorDropdown } from "./CitySelectorDropdown";
 import { MobileSearchFlow } from "./MobileSearchFlow";
-import { SearchDialog } from "./SearchDialog";
-import { INTENT_CONFIG, INTENT_KEYS, clearAllFilters, locationSummary, type SearchState } from "./searchQuery";
+import { INTENT_CONFIG, INTENT_KEYS, clearAllFilters, type SearchState } from "./searchQuery";
 import { primaryButton } from "./theme";
 
 import { resolveSearchQueryToState } from "@/lib/search/intentParser";
@@ -147,13 +146,8 @@ export function SearchBar({
   value,
   onChange,
   onSubmit,
-  resultCount,
-  activeFilterCount = 0,
-  onOpenFilters,
-  onBack,
 }: Props) {
   const [mobileSearchOpen, setMobileSearchOpen] = React.useState(false);
-  const [tabletSearchOpen, setTabletSearchOpen] = React.useState(false);
 
   if (variant === "hero") {
     return (
@@ -212,100 +206,5 @@ export function SearchBar({
     );
   }
 
-  return (
-    <div>
-      {/* Desktop View: Full inline search editor */}
-      <div className="hidden lg:block">
-        <SearchEditor variant="results" value={value} onSubmit={onSubmit} onContextChange={onChange} />
-      </div>
-
-      {/* Mobile View: NoBroker-style compact single-line bar with Back button, Tap-to-search summary pill, and Filter button */}
-      <div className="flex items-center gap-2 lg:hidden">
-        {onBack && (
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label="Back"
-            className="flex h-11 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 active:scale-95"
-          >
-            <ArrowLeft size={18} />
-          </button>
-        )}
-
-        {/* Compact Search Trigger Pill: Displays category + city + localities */}
-        <button
-          type="button"
-          onClick={() => {
-            if (window.innerWidth < 640) setMobileSearchOpen(true);
-            else setTabletSearchOpen(true);
-          }}
-          className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left shadow-xs transition hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 active:scale-[0.99]"
-        >
-          <Search size={16} className="shrink-0 text-rose-600 dark:text-rose-400" />
-          <span className="min-w-0 flex-1">
-            <span className="flex items-center gap-1.5 truncate">
-              <span className="text-xs font-bold text-rose-600 dark:text-rose-400 shrink-0">
-                {INTENT_CONFIG[value.intent].label}
-                {value.intent === "COMMERCIAL" ? (value.transaction === "RENT" ? " / Rent" : " / Buy") : ""}
-              </span>
-              <span className="text-slate-300 dark:text-slate-700 text-xs">•</span>
-              <span className="truncate text-xs font-semibold text-slate-900 dark:text-white">
-                {locationSummary(value)}
-              </span>
-            </span>
-          </span>
-          {resultCount !== undefined && (
-            <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-              {resultCount}
-            </span>
-          )}
-        </button>
-
-        {/* Sliders Filter Button */}
-        <button
-          type="button"
-          aria-label={`Filters, ${activeFilterCount} active`}
-          onClick={onOpenFilters}
-          className={`relative flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border px-3 text-xs font-bold transition active:scale-95 shadow-xs ${
-            activeFilterCount > 0
-              ? "border-rose-500 bg-rose-50 text-rose-700 dark:border-rose-600 dark:bg-rose-950/40 dark:text-rose-300"
-              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
-          }`}
-        >
-          <SlidersHorizontal size={16} />
-          {activeFilterCount > 0 && (
-            <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-black text-white">
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
-      </div>
-
-      <MobileSearchFlow
-        open={mobileSearchOpen}
-        onClose={() => setMobileSearchOpen(false)}
-        value={value}
-        resultCount={resultCount}
-        renderSearchEditor={(draft, setDraft) => (
-          <SearchEditor variant="hero" value={draft} onSubmit={setDraft} onContextChange={setDraft} showSubmit={false} liveChanges />
-        )}
-        onSubmit={(next) => {
-          setMobileSearchOpen(false);
-          onSubmit(next);
-        }}
-      />
-
-      <SearchDialog open={tabletSearchOpen} onClose={() => setTabletSearchOpen(false)} title="Search properties">
-        <SearchEditor
-          variant="results"
-          value={value}
-          onSubmit={(next) => {
-            setTabletSearchOpen(false);
-            onSubmit(next);
-          }}
-          onContextChange={onChange}
-        />
-      </SearchDialog>
-    </div>
-  );
+  return <SearchEditor variant="results" value={value} onSubmit={onSubmit} onContextChange={onChange} />;
 }

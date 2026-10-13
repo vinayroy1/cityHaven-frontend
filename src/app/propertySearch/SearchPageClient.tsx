@@ -267,7 +267,7 @@ export function SearchPageClient() {
       />
 
       {/* Floating Bottom Filter Button (NoBroker / 99acres style on mobile) */}
-      <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-40 sm:hidden">
+      <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-40 md:hidden">
         <button
           type="button"
           onClick={() => openFilters()}
