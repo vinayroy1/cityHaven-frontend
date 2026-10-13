@@ -65,44 +65,35 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
     setMounted(true);
   }, []);
 
-  // Bulletproof iOS background scroll lock & visualViewport tracking for mobile sheet
+  // Bulletproof mobile sheet positioning with visualViewport
   React.useEffect(() => {
     if (!isOpen || typeof window === "undefined" || window.innerWidth >= 640) return;
 
-    // 1. Lock iOS background window scroll precisely so keyboard cannot push background page
-    const scrollY = window.scrollY;
-    const prevPosition = document.body.style.position;
-    const prevTop = document.body.style.top;
-    const prevWidth = document.body.style.width;
+    // Prevent background scrolling while modal is open
     const prevOverflow = document.body.style.overflow;
-
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = "100%";
+    const prevTouchAction = document.body.style.touchAction;
     document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
 
-    // 2. Track visualViewport (adjusts in real time when virtual keyboard opens on iOS/Android)
     const updateMobileViewport = () => {
       const vv = window.visualViewport;
-      const viewportHeight = vv?.height ?? window.innerHeight;
-      const viewportWidth = vv?.width ?? window.innerWidth;
-
-      // Capture the fully-open height once. When the keyboard appears only clamp
-      // that height; do not recompute a vh/dvh value on every keyboard frame.
-      if (!mobileSheetHeightRef.current || viewportHeight > mobileSheetHeightRef.current) {
-        mobileSheetHeightRef.current = viewportHeight;
+      if (vv) {
+        setMobileViewportStyle({
+          position: "fixed",
+          top: `${vv.offsetTop}px`,
+          left: `${vv.offsetLeft}px`,
+          width: `${vv.width}px`,
+          height: `${vv.height}px`,
+        });
+      } else {
+        setMobileViewportStyle({
+          position: "fixed",
+          top: "0px",
+          left: "0px",
+          width: "100%",
+          height: "100dvh",
+        });
       }
-      const sheetHeight = Math.min(mobileSheetHeightRef.current * 0.78, viewportHeight);
-
-      setMobileViewportStyle({
-        position: "fixed",
-        top: `${vv?.offsetTop ?? 0}px`,
-        left: `${vv?.offsetLeft ?? 0}px`,
-        width: `${viewportWidth}px`,
-        height: `${viewportHeight}px`,
-        // Custom properties are used so the sheet has one authoritative height.
-        ["--city-sheet-height" as string]: `${sheetHeight}px`,
-      });
     };
 
     updateMobileViewport();
@@ -112,23 +103,16 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
       vv.addEventListener("scroll", updateMobileViewport);
     }
     window.addEventListener("resize", updateMobileViewport);
-    window.addEventListener("scroll", updateMobileViewport);
 
     return () => {
-      mobileSheetHeightRef.current = 0;
-      // Restore body scroll
-      document.body.style.position = prevPosition;
-      document.body.style.top = prevTop;
-      document.body.style.width = prevWidth;
       document.body.style.overflow = prevOverflow;
-      window.scrollTo(0, scrollY);
+      document.body.style.touchAction = prevTouchAction;
 
       if (vv) {
         vv.removeEventListener("resize", updateMobileViewport);
         vv.removeEventListener("scroll", updateMobileViewport);
       }
       window.removeEventListener("resize", updateMobileViewport);
-      window.removeEventListener("scroll", updateMobileViewport);
     };
   }, [isOpen]);
 
@@ -330,11 +314,10 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
                 aria-hidden="true"
               />
 
-              {/* Bottom Sheet Container: STABLE fixed height prevents flickering when results count changes */}
+              {/* Bottom Sheet Container: sized to visualViewport */}
               <div
                 data-city-modal="true"
-                style={{ height: "var(--city-sheet-height, 78vh)" }}
-                className="relative z-10 flex max-h-full w-full shrink-0 flex-col rounded-t-3xl border-t border-slate-200 bg-white p-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-2xl dark:border-slate-800 dark:bg-slate-900 animate-in slide-in-from-bottom duration-200"
+                className="relative z-10 flex max-h-[88%] w-full shrink-0 flex-col rounded-t-3xl border-t border-slate-200 bg-white p-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-2xl dark:border-slate-800 dark:bg-slate-900 animate-in slide-in-from-bottom duration-200"
               >
                 {/* Grab handle indicator */}
                 <div className="mx-auto mb-3 h-1.5 w-12 shrink-0 rounded-full bg-slate-300 dark:bg-slate-700" />

@@ -304,12 +304,68 @@ export function FilterSheet({
     if (open) setDraft(state);
   }, [open, state]);
 
+  const [mobileViewportStyle, setMobileViewportStyle] = React.useState<React.CSSProperties>({});
+
+  React.useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+
+    const prevOverflow = document.body.style.overflow;
+    const prevTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+
+    const updateViewport = () => {
+      const vv = window.visualViewport;
+      if (vv && window.innerWidth < 768) {
+        setMobileViewportStyle({
+          position: "fixed",
+          top: `${vv.offsetTop}px`,
+          left: `${vv.offsetLeft}px`,
+          width: `${vv.width}px`,
+          height: `${vv.height}px`,
+        });
+      } else {
+        setMobileViewportStyle({
+          position: "fixed",
+          top: "0px",
+          left: "0px",
+          width: "100%",
+          height: "100%",
+        });
+      }
+    };
+
+    updateViewport();
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", updateViewport);
+      vv.addEventListener("scroll", updateViewport);
+    }
+    window.addEventListener("resize", updateViewport);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.touchAction = prevTouchAction;
+      if (vv) {
+        vv.removeEventListener("resize", updateViewport);
+        vv.removeEventListener("scroll", updateViewport);
+      }
+      window.removeEventListener("resize", updateViewport);
+    };
+  }, [open]);
+
   if (!open) return null;
 
   const count = countActiveFilters(draft);
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/40 backdrop-blur-xs">
+    <div
+      style={mobileViewportStyle}
+      className="fixed inset-0 z-50 flex justify-end bg-slate-950/40 backdrop-blur-xs"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="flex h-full w-full max-w-md flex-col bg-white shadow-2xl dark:bg-slate-900">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
