@@ -126,7 +126,7 @@ export function HomeExperience() {
 
   return (
     <>
-      <section className="relative z-20 border-b border-slate-200/80 bg-gradient-to-b from-rose-50/60 via-white to-slate-50/70 py-6 sm:py-10 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950">
+      <section className="relative z-20 border-b border-slate-200/80 bg-gradient-to-b from-rose-50/60 via-white to-slate-50/70 pt-3 pb-4 sm:py-10 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950">
         {/* Subtle ambient background glow */}
         <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-64 w-[500px] -translate-x-1/2 overflow-hidden rounded-full bg-rose-500/10 blur-[90px] dark:bg-rose-600/15" />
 
@@ -138,7 +138,7 @@ export function HomeExperience() {
           </div>
 
           {/* Heading */}
-          <h1 className="mt-1 sm:mt-3 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl dark:text-white">
+          <h1 className="mt-0 sm:mt-3 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl dark:text-white">
             Find your perfect space with{" "}
             <span className="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 bg-clip-text text-transparent">
               Awasio
@@ -151,7 +151,7 @@ export function HomeExperience() {
           </p>
 
           {/* Centered Elevated Search Bar */}
-          <div className="relative z-20 mt-4 w-full rounded-2xl border border-slate-200/90 bg-white/95 p-2.5 text-left shadow-[0_16px_40px_-15px_rgba(15,23,42,0.1)] backdrop-blur-md transition sm:mt-6 sm:rounded-3xl sm:p-5 dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-[0_16px_40px_-15px_rgba(0,0,0,0.5)]">
+          <div className="relative z-20 mt-2.5 w-full rounded-2xl border border-slate-200/90 bg-white/95 p-2 text-left shadow-[0_16px_40px_-15px_rgba(15,23,42,0.1)] backdrop-blur-md transition sm:mt-6 sm:rounded-3xl sm:p-5 dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-[0_16px_40px_-15px_rgba(0,0,0,0.5)]">
             <SearchBar
               variant="hero"
               value={{ ...searchState, cityName: selectedCity || undefined }}
@@ -169,7 +169,7 @@ export function HomeExperience() {
         </div>
       </section>
 
-      <main className="mx-auto max-w-6xl overflow-x-clip px-4 py-7 sm:px-6">
+      <main className="mx-auto max-w-6xl overflow-x-clip px-4 pt-3 pb-6 sm:py-7 sm:px-6">
         <ListingBlock
           title={
             rawFresh.length > 0
@@ -437,8 +437,8 @@ function ListingBlock({
   onRetry?: () => void;
 }) {
   return (
-    <section className="mt-9">
-      <div className="mb-4 flex items-center justify-between gap-3">
+    <section className="mt-4 sm:mt-9 first:mt-1">
+      <div className="mb-3 sm:mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-bold text-slate-950 dark:text-white">{title}</h2>
         <Link href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-rose-700 dark:text-rose-400">
           View all <ArrowRight className="h-4 w-4" />
