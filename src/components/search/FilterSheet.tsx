@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { X, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 import { Chip } from "./Chip";
 import {
@@ -299,13 +300,18 @@ export function FilterSheet({
   resultCount?: number;
 }) {
   const [draft, setDraft] = React.useState(state);
+  const [mounted, setMounted] = React.useState(false);
+  const [mobileViewportStyle, setMobileViewportStyle] = React.useState<React.CSSProperties>({});
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (open) setDraft(state);
   }, [open, state]);
 
-  const [mobileViewportStyle, setMobileViewportStyle] = React.useState<React.CSSProperties>({});
-
+  // Bulletproof mobile bottom sheet positioning using visualViewport (same pattern as CitySelectorDropdown)
   React.useEffect(() => {
     if (!open || typeof window === "undefined") return;
 
@@ -330,7 +336,7 @@ export function FilterSheet({
           top: "0px",
           left: "0px",
           width: "100%",
-          height: "100%",
+          height: "100dvh",
         });
       }
     };
@@ -354,24 +360,41 @@ export function FilterSheet({
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!open || !mounted || typeof document === "undefined") return null;
 
   const count = countActiveFilters(draft);
 
-  return (
+  return createPortal(
     <div
       style={mobileViewportStyle}
-      className="fixed inset-0 z-50 flex justify-end bg-slate-950/40 backdrop-blur-xs"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+      className="fixed left-0 top-0 z-[9999] flex h-full w-full flex-col justify-end overflow-hidden md:flex-row md:justify-end"
     >
-      <div className="flex h-full w-full max-w-md flex-col bg-white shadow-2xl dark:bg-slate-900">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Content Sheet:
+          - On mobile (< 768px): Native bottom sheet drawer anchored to bottom of visualViewport, rounded-t-3xl, max-h-[88%]
+          - On desktop (md+): Sleek right slide-over side panel
+      */}
+      <div
+        data-filter-modal="true"
+        className="relative z-10 flex max-h-[88%] w-full shrink-0 flex-col rounded-t-3xl border-t border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 animate-in slide-in-from-bottom duration-200 md:max-h-full md:w-full md:max-w-md md:rounded-none md:border-t-0 md:border-l md:slide-in-from-right"
+      >
+        {/* Grab handle indicator (mobile only) */}
+        <div className="mx-auto mt-3 mb-1.5 h-1.5 w-12 shrink-0 rounded-full bg-slate-300 dark:bg-slate-700 md:hidden" />
+
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
-          <p className="text-base font-bold text-slate-900 dark:text-white">
-            Filters {count > 0 && <span className="text-rose-600">({count})</span>}
-          </p>
+        <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-3.5 dark:border-slate-800">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="h-4 w-4 text-rose-500" />
+            <p className="text-base font-bold text-slate-900 dark:text-white">
+              Filters {count > 0 && <span className="text-rose-600">({count})</span>}
+            </p>
+          </div>
           <div className="flex items-center gap-3">
             {count > 0 && (
               <button
@@ -385,20 +408,21 @@ export function FilterSheet({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              aria-label="Close filters"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
         </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-2">
+        {/* Scrollable Body: internal scrolling without resizing or pushing bottom sheet container */}
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-2">
           <FilterSections draft={draft} setDraft={setDraft} />
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 border-t border-slate-100 p-4 dark:border-slate-800">
+        <div className="flex shrink-0 gap-3 border-t border-slate-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-slate-800 bg-white dark:bg-slate-900">
           <button type="button" className={ghostButton} onClick={onClose}>
             Cancel
           </button>
@@ -414,6 +438,7 @@ export function FilterSheet({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
