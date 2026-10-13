@@ -1,0 +1,650 @@
+[
+  {
+    "centerId": "nirvana-legend-sec39",
+    "name": "Nirvana Legend",
+    "propertyCategory": "RESIDENTIAL",
+    "listingType": "RENT",
+    "subType": "PG",
+    "city": "Gurugram",
+    "locality": "Sector 39",
+    "landmark": "Near Unitech Cyber Park & Medanta Medicity",
+    "address": "Plot No. 42, Sector 39, Near Unitech Cyber Park, Gurugram, Haryana 122001",
+    "ownerName": "Nirvana Rooms Team",
+    "ownerContact": "9315665555",
+    "alternatePhone": "9315667777",
+    "email": "support@nirvanarooms.in",
+    "website": "https://nirvanarooms.in/1rk-1bhk-rent-sector-39-gurgaon/",
+    "baseStartingPrice": 26000,
+    "depositMonths": 1,
+    "foodOption": "INCLUDED",
+    "amenities": [
+      "High Speed WiFi (300 Mbps)",
+      "Air Conditioning (Split AC)",
+      "Attached Washroom & Geyser",
+      "Daily Housekeeping & Linen Change",
+      "100% Power Backup",
+      "Bio-metric Access & 24/7 CCTV",
+      "Dedicated Car & Bike Parking",
+      "RO Purified Water",
+      "Self Serve Laundry & Washing Machine",
+      "In-room Refrigerator & Microwave",
+      "Induction Cooktop & Smart LED TV",
+      "Private Garden & Gazebo",
+      "Sports Zone & Cricket Turf",
+      "Work Desk & Ergonomic Chair"
+    ],
+    "configurations": [
+      {
+        "roomType": "1 BHK with Food",
+        "sharing": "Private 1BHK",
+        "pricePerMonth": 37000,
+        "securityDeposit": 37000,
+        "inclusions": [
+          "All 3 meals daily",
+          "Housekeeping",
+          "WiFi",
+          "Electricity as per submeter",
+          "Power Backup"
+        ]
+      },
+      {
+        "roomType": "1 BHK without Food",
+        "sharing": "Private 1BHK",
+        "pricePerMonth": 35000,
+        "securityDeposit": 35000,
+        "inclusions": [
+          "Housekeeping",
+          "WiFi",
+          "Kitchenette access",
+          "Power Backup"
+        ]
+      },
+      {
+        "roomType": "1 RK with Food",
+        "sharing": "Private Studio 1RK",
+        "pricePerMonth": 30000,
+        "securityDeposit": 30000,
+        "inclusions": [
+          "All 3 meals daily",
+          "Housekeeping",
+          "WiFi",
+          "Power Backup"
+        ]
+      },
+      {
+        "roomType": "1 RK without Food",
+        "sharing": "Private Studio 1RK",
+        "pricePerMonth": 26000,
+        "securityDeposit": 26000,
+        "inclusions": [
+          "Housekeeping",
+          "WiFi",
+          "Power Backup"
+        ]
+      }
+    ],
+    "images": [
+      "https://nirvanarooms.in/wp-content/uploads/2018/09/Nirvana-Legend-Sector-39.png",
+      "https://nirvanarooms.in/wp-content/uploads/2026/06/20260609_133433-rotated.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/06/20260609_133439-rotated.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/06/20260609_133935-rotated.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/06/20260609_133948-rotated.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/06/20260609_134336-rotated.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/06/20260609_134347-rotated.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/06/20260609_134359-rotated.jpg"
+    ],
+    "localImages": [
+      "/nirvana-properties/photos/nirvana-legend-sec39/photo_1.png",
+      "/nirvana-properties/photos/nirvana-legend-sec39/photo_2.jpg",
+      "/nirvana-properties/photos/nirvana-legend-sec39/photo_3.jpg",
+      "/nirvana-properties/photos/nirvana-legend-sec39/photo_4.jpg",
+      "/nirvana-properties/photos/nirvana-legend-sec39/photo_5.jpg",
+      "/nirvana-properties/photos/nirvana-legend-sec39/photo_6.jpg",
+      "/nirvana-properties/photos/nirvana-legend-sec39/photo_7.jpg",
+      "/nirvana-properties/photos/nirvana-legend-sec39/photo_8.jpg"
+    ]
+  },
+  {
+    "centerId": "nirvana-sector-45-park-view",
+    "name": "Nirvana Sector 45 Park View",
+    "propertyCategory": "RESIDENTIAL",
+    "listingType": "RENT",
+    "subType": "PG",
+    "city": "Gurugram",
+    "locality": "Sector 45",
+    "landmark": "Opposite Community Park, near HUDA City Centre Metro",
+    "address": "Opp. Green Park, Sector 45, Gurugram, Haryana 122003",
+    "ownerName": "Nirvana Rooms Team",
+    "ownerContact": "9315665555",
+    "alternatePhone": "9315667777",
+    "email": "support@nirvanarooms.in",
+    "website": "https://nirvanarooms.in/nirvana-sector-45-park-view/",
+    "baseStartingPrice": 16000,
+    "depositMonths": 1,
+    "foodOption": "INCLUDED",
+    "amenities": [
+      "Park Facing Scenic Balcony",
+      "High Speed WiFi",
+      "Air Conditioning",
+      "Attached Washroom & Geysers",
+      "Fresh Home-style Nutritious Meals",
+      "Daily Housekeeping",
+      "24/7 Power Backup",
+      "Bio-metric Security & CCTV",
+      "Community Lounge & Gaming Zone",
+      "Laundry Facilities"
+    ],
+    "configurations": [
+      {
+        "roomType": "Single Private Room",
+        "sharing": "Single Occupancy",
+        "pricePerMonth": 30000,
+        "securityDeposit": 30000,
+        "inclusions": [
+          "All 3 meals",
+          "Housekeeping",
+          "Attached bathroom",
+          "WiFi"
+        ]
+      },
+      {
+        "roomType": "Double Sharing Room",
+        "sharing": "Twin Sharing",
+        "pricePerMonth": 16000,
+        "securityDeposit": 16000,
+        "inclusions": [
+          "All 3 meals",
+          "Housekeeping",
+          "Separate wardrobe & bed",
+          "WiFi"
+        ]
+      }
+    ],
+    "images": [
+      "https://nirvanarooms.in/wp-content/uploads/2026/09/Nirvana-Sector-45-Park-View.png",
+      "https://nirvanarooms.in/wp-content/uploads/2026/09/20260922_154509.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/09/20260922_154523.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/09/20260922_155805.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/09/20260922_155945.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/09/20260922_155952.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/09/20260922_160248.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2026/09/20260922_160301.jpg"
+    ],
+    "localImages": [
+      "/nirvana-properties/photos/nirvana-sector-45-park-view/photo_1.png",
+      "/nirvana-properties/photos/nirvana-sector-45-park-view/photo_2.jpg",
+      "/nirvana-properties/photos/nirvana-sector-45-park-view/photo_3.jpg",
+      "/nirvana-properties/photos/nirvana-sector-45-park-view/photo_4.jpg",
+      "/nirvana-properties/photos/nirvana-sector-45-park-view/photo_5.jpg",
+      "/nirvana-properties/photos/nirvana-sector-45-park-view/photo_6.jpg",
+      "/nirvana-properties/photos/nirvana-sector-45-park-view/photo_7.jpg",
+      "/nirvana-properties/photos/nirvana-sector-45-park-view/photo_8.jpg"
+    ]
+  },
+  {
+    "centerId": "nirvana-golf-course-road-sec55",
+    "name": "Nirvana Golf Course Road",
+    "propertyCategory": "RESIDENTIAL",
+    "listingType": "RENT",
+    "subType": "PG",
+    "city": "Gurugram",
+    "locality": "Sector 55",
+    "landmark": "Near Sector 55-56 Rapid Metro Station & Golf Course Road",
+    "address": "Main Sector 55, Near Rapid Metro Terminal, Gurugram, Haryana 122011",
+    "ownerName": "Nirvana Rooms Team",
+    "ownerContact": "9315665555",
+    "alternatePhone": "9315667777",
+    "email": "support@nirvanarooms.in",
+    "website": "https://nirvanarooms.in/pg-in-golf-course-road-sector-55-gurgaon/",
+    "baseStartingPrice": 16000,
+    "depositMonths": 1,
+    "foodOption": "INCLUDED",
+    "amenities": [
+      "Rapid Metro Walkable (5 mins)",
+      "High Speed WiFi",
+      "Split AC & Geyser",
+      "Daily Chef-Prepared Meals",
+      "Professional Housekeeping",
+      "100% Power Backup",
+      "CCTV & Biometric Entry",
+      "Dedicated Parking Space",
+      "RO Water & Microwave"
+    ],
+    "configurations": [
+      {
+        "roomType": "Single Occupancy Luxury Room",
+        "sharing": "Single",
+        "pricePerMonth": 30000,
+        "securityDeposit": 30000,
+        "inclusions": [
+          "All meals",
+          "High-speed internet",
+          "Housekeeping",
+          "Power Backup"
+        ]
+      },
+      {
+        "roomType": "Double Sharing Room",
+        "sharing": "Twin Sharing",
+        "pricePerMonth": 16000,
+        "securityDeposit": 16000,
+        "inclusions": [
+          "All meals",
+          "Twin bed with luxury mattress",
+          "Locker wardrobe",
+          "WiFi"
+        ]
+      }
+    ],
+    "images": [
+      "https://nirvanarooms.in/wp-content/uploads/2025/11/Golf-Course-Road.png",
+      "https://nirvanarooms.in/wp-content/uploads/2025/12/20251125_134915.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/12/20251125_134901.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/12/20251125_134246.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/12/20251125_134213.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/12/20251125_134156.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/12/20251125_133458.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/12/20251125_133507.jpeg"
+    ],
+    "localImages": [
+      "/nirvana-properties/photos/nirvana-golf-course-road-sec55/photo_1.png",
+      "/nirvana-properties/photos/nirvana-golf-course-road-sec55/photo_2.jpeg",
+      "/nirvana-properties/photos/nirvana-golf-course-road-sec55/photo_3.jpeg",
+      "/nirvana-properties/photos/nirvana-golf-course-road-sec55/photo_4.jpeg",
+      "/nirvana-properties/photos/nirvana-golf-course-road-sec55/photo_5.jpeg",
+      "/nirvana-properties/photos/nirvana-golf-course-road-sec55/photo_6.jpeg",
+      "/nirvana-properties/photos/nirvana-golf-course-road-sec55/photo_7.jpeg",
+      "/nirvana-properties/photos/nirvana-golf-course-road-sec55/photo_8.jpeg"
+    ]
+  },
+  {
+    "centerId": "nirvana-ace-sec46",
+    "name": "Nirvana Ace",
+    "propertyCategory": "RESIDENTIAL",
+    "listingType": "RENT",
+    "subType": "PG",
+    "city": "Gurugram",
+    "locality": "Sector 46",
+    "landmark": "Near Amity International & Huda Market Sector 46",
+    "address": "Near Huda Market, Sector 46, Gurugram, Haryana 122003",
+    "ownerName": "Nirvana Rooms Team",
+    "ownerContact": "9315665555",
+    "alternatePhone": "9315667777",
+    "email": "support@nirvanarooms.in",
+    "website": "https://nirvanarooms.in/pg-in-sector-46-gurgaon-ace-nirvana-rooms-co-living/",
+    "baseStartingPrice": 16000,
+    "depositMonths": 1,
+    "foodOption": "INCLUDED",
+    "amenities": [
+      "Fully Furnished Modern Rooms",
+      "Air Conditioner & Geyser",
+      "Nutritious 3-time Meals",
+      "Fast Broadband WiFi",
+      "Daily Room Cleaning",
+      "Full Power Backup",
+      "Biometric Access",
+      "RO Drinking Water",
+      "Washing Machine Access"
+    ],
+    "configurations": [
+      {
+        "roomType": "Single Private Room",
+        "sharing": "Single",
+        "pricePerMonth": 32000,
+        "securityDeposit": 32000,
+        "inclusions": [
+          "Meals included",
+          "Housekeeping",
+          "High-speed WiFi",
+          "Full amenities"
+        ]
+      },
+      {
+        "roomType": "Double Sharing Room",
+        "sharing": "Twin Sharing",
+        "pricePerMonth": 16000,
+        "securityDeposit": 16000,
+        "inclusions": [
+          "Meals included",
+          "Housekeeping",
+          "Separate storage",
+          "WiFi"
+        ]
+      }
+    ],
+    "images": [
+      "https://nirvanarooms.in/wp-content/uploads/2024/01/Nirvana-Ace-Sector-46.png",
+      "https://nirvanarooms.in/wp-content/uploads/2024/01/Ace-1.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2024/01/Ace-2.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2024/01/Ace-3.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2024/01/Ace-4.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2024/01/Ace-5.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2024/01/Ace-6.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2024/01/Ace-7.jpeg"
+    ],
+    "localImages": [
+      "/nirvana-properties/photos/nirvana-ace-sec46/photo_1.png",
+      "/nirvana-properties/photos/nirvana-ace-sec46/photo_2.jpeg",
+      "/nirvana-properties/photos/nirvana-ace-sec46/photo_3.jpeg",
+      "/nirvana-properties/photos/nirvana-ace-sec46/photo_4.jpeg",
+      "/nirvana-properties/photos/nirvana-ace-sec46/photo_5.jpeg",
+      "/nirvana-properties/photos/nirvana-ace-sec46/photo_6.jpeg",
+      "/nirvana-properties/photos/nirvana-ace-sec46/photo_7.jpeg",
+      "/nirvana-properties/photos/nirvana-ace-sec46/photo_8.jpeg"
+    ]
+  },
+  {
+    "centerId": "nirvana-premia-sec46",
+    "name": "Nirvana Premia",
+    "propertyCategory": "RESIDENTIAL",
+    "listingType": "RENT",
+    "subType": "PG",
+    "city": "Gurugram",
+    "locality": "Sector 46",
+    "landmark": "3-Side Open Property, Near Bakhtawar Chowk & Sector 46 Bus Stand",
+    "address": "3-Side Open Plot, Main Road Sector 46, Gurugram, Haryana 122003",
+    "ownerName": "Nirvana Rooms Team",
+    "ownerContact": "9315665555",
+    "alternatePhone": "9315667777",
+    "email": "support@nirvanarooms.in",
+    "website": "https://nirvanarooms.in/pg-in-sector-46-gurgaon-premia-nirvana-rooms-premium/",
+    "baseStartingPrice": 16000,
+    "depositMonths": 1,
+    "foodOption": "INCLUDED",
+    "amenities": [
+      "In-room Kitchenette & Induction",
+      "In-room Refrigerator & Microwave",
+      "Smart LED TV in Room",
+      "Study Table and Ergonomic Chair",
+      "Split Air Conditioner & Attached Bath",
+      "Self Serve Laundry & Washing Machine",
+      "Engagement & Sports Zone",
+      "3-side Open Natural Light & Airflow",
+      "Biometric Access & High Security"
+    ],
+    "configurations": [
+      {
+        "roomType": "Single Occupancy Studio",
+        "sharing": "Single",
+        "pricePerMonth": 30000,
+        "securityDeposit": 30000,
+        "inclusions": [
+          "Full meals",
+          "In-room Kitchenette & Fridge",
+          "Housekeeping",
+          "WiFi"
+        ]
+      },
+      {
+        "roomType": "Double Sharing Room",
+        "sharing": "Twin Sharing",
+        "pricePerMonth": 16000,
+        "securityDeposit": 16000,
+        "inclusions": [
+          "Full meals",
+          "Housekeeping",
+          "Attached bath & Geyser",
+          "WiFi"
+        ]
+      }
+    ],
+    "images": [
+      "https://nirvanarooms.in/wp-content/uploads/2023/12/Premia-1.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2023/12/Nirvana-Premia-Sector-46.png",
+      "https://nirvanarooms.in/wp-content/uploads/2023/12/premia-2.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2023/12/premia-3.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2023/12/premia-4.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2023/12/premia-5.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2023/12/premia-6.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2023/12/premia-7.jpeg"
+    ],
+    "localImages": [
+      "/nirvana-properties/photos/nirvana-premia-sec46/photo_1.jpeg",
+      "/nirvana-properties/photos/nirvana-premia-sec46/photo_2.png",
+      "/nirvana-properties/photos/nirvana-premia-sec46/photo_3.jpeg",
+      "/nirvana-properties/photos/nirvana-premia-sec46/photo_4.jpeg",
+      "/nirvana-properties/photos/nirvana-premia-sec46/photo_5.jpeg",
+      "/nirvana-properties/photos/nirvana-premia-sec46/photo_6.jpeg",
+      "/nirvana-properties/photos/nirvana-premia-sec46/photo_7.jpeg",
+      "/nirvana-properties/photos/nirvana-premia-sec46/photo_8.jpeg"
+    ]
+  },
+  {
+    "centerId": "nirvana-star-sec46",
+    "name": "Nirvana Star",
+    "propertyCategory": "RESIDENTIAL",
+    "listingType": "RENT",
+    "subType": "PG",
+    "city": "Gurugram",
+    "locality": "Sector 46",
+    "landmark": "Near Bakhtawar Chowk & Medanta",
+    "address": "Sector 46, Near Market, Gurugram, Haryana 122003",
+    "ownerName": "Nirvana Rooms Team",
+    "ownerContact": "9315665555",
+    "alternatePhone": "9315667777",
+    "email": "support@nirvanarooms.in",
+    "website": "https://nirvanarooms.in/pg-in-sector-46-gurgaon-star-nirvana-rooms-affordable/",
+    "baseStartingPrice": 11000,
+    "depositMonths": 1,
+    "foodOption": "INCLUDED",
+    "amenities": [
+      "Affordable Budget Co-Living",
+      "High Speed Internet",
+      "Air Cooled / AC options",
+      "Daily Cleaning",
+      "Home-cooked Fresh Meals",
+      "Power Backup",
+      "Security CCTV",
+      "RO Water Dispenser"
+    ],
+    "configurations": [
+      {
+        "roomType": "Single Private Room",
+        "sharing": "Single",
+        "pricePerMonth": 20000,
+        "securityDeposit": 20000,
+        "inclusions": [
+          "All meals",
+          "Housekeeping",
+          "WiFi",
+          "Power backup"
+        ]
+      },
+      {
+        "roomType": "Double Sharing Affordable",
+        "sharing": "Twin Sharing",
+        "pricePerMonth": 11000,
+        "securityDeposit": 11000,
+        "inclusions": [
+          "All meals",
+          "Housekeeping",
+          "WiFi",
+          "RO water"
+        ]
+      }
+    ],
+    "images": [
+      "https://nirvanarooms.in/wp-content/uploads/2023/12/Nirvana-Star-Sector-46.png",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/star-2.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/star-3.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/star-4.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/star-5.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/star-7.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/star-8.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/star-9.jpeg"
+    ],
+    "localImages": [
+      "/nirvana-properties/photos/nirvana-star-sec46/photo_1.png",
+      "/nirvana-properties/photos/nirvana-star-sec46/photo_2.jpeg",
+      "/nirvana-properties/photos/nirvana-star-sec46/photo_3.jpeg",
+      "/nirvana-properties/photos/nirvana-star-sec46/photo_4.jpeg",
+      "/nirvana-properties/photos/nirvana-star-sec46/photo_5.jpeg",
+      "/nirvana-properties/photos/nirvana-star-sec46/photo_6.jpeg",
+      "/nirvana-properties/photos/nirvana-star-sec46/photo_7.jpeg",
+      "/nirvana-properties/photos/nirvana-star-sec46/photo_8.jpeg"
+    ]
+  },
+  {
+    "centerId": "nirvana-villa-iffco-chowk",
+    "name": "Nirvana Villa (Near IFFCO Chowk)",
+    "propertyCategory": "RESIDENTIAL",
+    "listingType": "RENT",
+    "subType": "PG",
+    "city": "Gurugram",
+    "locality": "Sector 17 / IFFCO Chowk",
+    "landmark": "Walking distance to IFFCO Chowk Metro Station & Cyber City",
+    "address": "Near IFFCO Chowk Metro & Sector 17, Gurugram, Haryana 122001",
+    "ownerName": "Nirvana Rooms Team",
+    "ownerContact": "9315665555",
+    "alternatePhone": "9315667777",
+    "email": "support@nirvanarooms.in",
+    "website": "https://nirvanarooms.in/pg-near-iffco-chowk-gurgaon-nirvana-rooms-boys-pg-villa/",
+    "baseStartingPrice": 12000,
+    "depositMonths": 1,
+    "foodOption": "INCLUDED",
+    "amenities": [
+      "Prime IFFCO Chowk Metro Location",
+      "Independent Villa Style Architecture",
+      "Private Lawn & Terrace Garden",
+      "High Speed Optical Fiber WiFi",
+      "Daily Chef Cooking (Breakfast, Lunch, Dinner)",
+      "Daily Housekeeping",
+      "24/7 Power Backup",
+      "Dedicated Vehicle Parking",
+      "CCTV Surveillance"
+    ],
+    "configurations": [
+      {
+        "roomType": "Private Master Suite",
+        "sharing": "Single",
+        "pricePerMonth": 32000,
+        "securityDeposit": 32000,
+        "inclusions": [
+          "All meals",
+          "Lawn access",
+          "Attached bath",
+          "WiFi"
+        ]
+      },
+      {
+        "roomType": "Twin Sharing Executive Room",
+        "sharing": "Double Sharing",
+        "pricePerMonth": 17000,
+        "securityDeposit": 17000,
+        "inclusions": [
+          "All meals",
+          "Housekeeping",
+          "WiFi",
+          "Power backup"
+        ]
+      },
+      {
+        "roomType": "Triple Sharing Room",
+        "sharing": "Triple Sharing",
+        "pricePerMonth": 12000,
+        "securityDeposit": 12000,
+        "inclusions": [
+          "All meals",
+          "Housekeeping",
+          "WiFi",
+          "Power backup"
+        ]
+      }
+    ],
+    "images": [
+      "https://nirvanarooms.in/wp-content/uploads/2018/09/Iffco-Sector.png",
+      "https://nirvanarooms.in/wp-content/uploads/2018/09/iffco-2.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2018/09/iffco-1.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2018/09/iffco-3.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2018/09/iffco-4.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2018/09/iffco-5.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2018/09/iffco-7.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2018/09/iffco-8.jpeg"
+    ],
+    "localImages": [
+      "/nirvana-properties/photos/nirvana-villa-iffco-chowk/photo_1.png",
+      "/nirvana-properties/photos/nirvana-villa-iffco-chowk/photo_2.jpeg",
+      "/nirvana-properties/photos/nirvana-villa-iffco-chowk/photo_3.jpeg",
+      "/nirvana-properties/photos/nirvana-villa-iffco-chowk/photo_4.jpeg",
+      "/nirvana-properties/photos/nirvana-villa-iffco-chowk/photo_5.jpeg",
+      "/nirvana-properties/photos/nirvana-villa-iffco-chowk/photo_6.jpeg",
+      "/nirvana-properties/photos/nirvana-villa-iffco-chowk/photo_7.jpeg",
+      "/nirvana-properties/photos/nirvana-villa-iffco-chowk/photo_8.jpeg"
+    ]
+  },
+  {
+    "centerId": "nirvana-cyber-park-sec39",
+    "name": "Nirvana Cyber Park",
+    "propertyCategory": "RESIDENTIAL",
+    "listingType": "RENT",
+    "subType": "PG",
+    "city": "Gurugram",
+    "locality": "Sector 39",
+    "landmark": "Direct Walk to Unitech Cyber Park & Bakhtawar Chowk",
+    "address": "Opposite Unitech Cyber Park Gate, Sector 39, Gurugram, Haryana 122001",
+    "ownerName": "Nirvana Rooms Team",
+    "ownerContact": "9315665555",
+    "alternatePhone": "9315667777",
+    "email": "support@nirvanarooms.in",
+    "website": "https://nirvanarooms.in/pg-near-unitech-cyber-park-gurgaon-sector-39-nirvana-rooms/",
+    "baseStartingPrice": 16000,
+    "depositMonths": 1,
+    "foodOption": "INCLUDED",
+    "amenities": [
+      "Next to Unitech Cyber Park IT Offices",
+      "High Speed Broadband Internet",
+      "Air Conditioned Living Spaces",
+      "Attached Bathroom with Water Heaters",
+      "Nutritious Meal Plan",
+      "Regular Housekeeping & Waste Clearance",
+      "Full Power Backup",
+      "Secure Digital Entry & CCTV"
+    ],
+    "configurations": [
+      {
+        "roomType": "Single Private Room",
+        "sharing": "Single",
+        "pricePerMonth": 32000,
+        "securityDeposit": 32000,
+        "inclusions": [
+          "All meals",
+          "Attached washroom",
+          "High-speed WiFi",
+          "Power backup"
+        ]
+      },
+      {
+        "roomType": "Double Sharing Room",
+        "sharing": "Twin Sharing",
+        "pricePerMonth": 16000,
+        "securityDeposit": 16000,
+        "inclusions": [
+          "All meals",
+          "Locker wardrobe",
+          "High-speed WiFi",
+          "Housekeeping"
+        ]
+      }
+    ],
+    "images": [
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/IMG-20250719-WA0005-1.jpg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/DSC_1177.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/DSC_1186.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/DSC_1188.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/DSC_1192.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/DSC_1194.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/DSC_1207.jpeg",
+      "https://nirvanarooms.in/wp-content/uploads/2025/07/DSC_1212.jpeg"
+    ],
+    "localImages": [
+      "/nirvana-properties/photos/nirvana-cyber-park-sec39/photo_1.jpg",
+      "/nirvana-properties/photos/nirvana-cyber-park-sec39/photo_2.jpeg",
+      "/nirvana-properties/photos/nirvana-cyber-park-sec39/photo_3.jpeg",
+      "/nirvana-properties/photos/nirvana-cyber-park-sec39/photo_4.jpeg",
+      "/nirvana-properties/photos/nirvana-cyber-park-sec39/photo_5.jpeg",
+      "/nirvana-properties/photos/nirvana-cyber-park-sec39/photo_6.jpeg",
+      "/nirvana-properties/photos/nirvana-cyber-park-sec39/photo_7.jpeg",
+      "/nirvana-properties/photos/nirvana-cyber-park-sec39/photo_8.jpeg"
+    ]
+  }
+]

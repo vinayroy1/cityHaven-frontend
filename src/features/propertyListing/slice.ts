@@ -41,6 +41,7 @@ export const initialPropertyListingFormValues: PropertyListingFormValues = {
     createdById: null,
     ownerName: "",
     ownerContact: "",
+    ownerPassword: "",
     source: "GOOGLE_SOURCED",
     isAssistedListing: false,
     sendOwnerNotification: true,

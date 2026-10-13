@@ -16,6 +16,12 @@ import {
   FileText,
   BadgeAlert,
   CheckCircle2,
+  KeyRound,
+  Lock,
+  Eye,
+  EyeOff,
+  Copy,
+  RefreshCw,
 } from "lucide-react";
 
 const SOURCING_CHANNELS = [
@@ -29,9 +35,12 @@ const SOURCING_CHANNELS = [
 export function AdminOwnerSourcingCard() {
   const { register, watch, setValue } = useFormContext<PropertyListingFormValues>();
   const { userList, currentStaff } = useAdmin();
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [copiedPassword, setCopiedPassword] = React.useState(false);
 
   const ownerName = watch("context.ownerName") || "";
   const ownerContact = watch("context.ownerContact") || "";
+  const ownerPassword = watch("context.ownerPassword") || "";
   const source = watch("context.source") || "GOOGLE_SOURCED";
   const sendOwnerNotification = watch("context.sendOwnerNotification") ?? true;
   const publishStatus = watch("publishOptions.status") || "ACTIVE";
@@ -57,6 +66,21 @@ export function AdminOwnerSourcingCard() {
         setValue("context.ownerName", matchedUser.name, { shouldDirty: true });
       }
       setValue("context.ownerId", matchedUser.id, { shouldDirty: true });
+    }
+  };
+
+  const handleGeneratePassword = () => {
+    // Generate secure memorable 8-char password like Awasio@2026 or Random Alpha-Numeric
+    const num = Math.floor(1000 + Math.random() * 9000);
+    const generated = `Awasio@${num}`;
+    setValue("context.ownerPassword", generated, { shouldDirty: true, shouldValidate: true });
+  };
+
+  const handleCopyPassword = () => {
+    if (ownerPassword) {
+      navigator.clipboard.writeText(ownerPassword);
+      setCopiedPassword(true);
+      setTimeout(() => setCopiedPassword(false), 2000);
     }
   };
 
@@ -173,6 +197,62 @@ export function AdminOwnerSourcingCard() {
           <p className="text-[11px] text-slate-500 dark:text-slate-400">
             Name displayed on listing contacts or verified badge.
           </p>
+        </div>
+
+        {/* Owner Login Password (for handover via SMS/WhatsApp) */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+              <KeyRound className="h-3.5 w-3.5 text-indigo-500" />
+              Set Owner Login Password
+            </label>
+            <button
+              type="button"
+              onClick={handleGeneratePassword}
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+            >
+              <RefreshCw className="h-3 w-3" />
+              Auto-generate
+            </button>
+          </div>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="e.g. Awasio@8942"
+              autoComplete="new-password"
+              {...register("context.ownerPassword")}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-3.5 pr-20 text-sm font-mono text-slate-900 shadow-sm transition placeholder:font-sans placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+            />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              {ownerPassword && (
+                <button
+                  type="button"
+                  onClick={handleCopyPassword}
+                  title="Copy password to clipboard"
+                  className="rounded p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                title={showPassword ? "Hide password" : "Show password"}
+                className="rounded p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <p className="text-slate-500 dark:text-slate-400">
+              {copiedPassword ? (
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Copied to clipboard!</span>
+              ) : (
+                "Shared with owner to log into Awasio with their mobile + password."
+              )}
+            </p>
+          </div>
         </div>
 
         {/* Sourcing Channel */}

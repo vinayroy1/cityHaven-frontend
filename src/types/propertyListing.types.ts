@@ -70,6 +70,7 @@ export interface PropertyContextBlock {
   // Sourcing & Owner Handover (Admin & Assisted Listing)
   ownerName?: string;
   ownerContact?: string;
+  ownerPassword?: string;
   source?: string;
   isAssistedListing?: boolean;
   sendOwnerNotification?: boolean;

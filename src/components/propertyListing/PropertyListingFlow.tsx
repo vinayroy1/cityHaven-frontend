@@ -554,7 +554,8 @@ export function PropertyListingFlow({
                     <span className="flex h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
                     <span>
                       Listing for: <strong>{values?.context?.ownerName || "Owner"}</strong>{" "}
-                      {values?.context?.ownerContact ? `(+91 ${values.context.ownerContact})` : "(No phone)"} ·
+                      {values?.context?.ownerContact ? `(+91 ${values.context.ownerContact})` : "(No phone)"}
+                      {values?.context?.ownerPassword ? " · Password configured" : ""} ·
                       Channel: <strong>{values?.context?.source || "GOOGLE_SOURCED"}</strong>
                     </span>
                   </div>
