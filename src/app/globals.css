@@ -48,11 +48,3 @@ body {
 /* Headings tighter to match reference visuals */
 h1, h2, h3 { font-weight: 600; }
 small { color: #6b7280; }
-
-/* Automatically suppress fixed mobile bottom navigation and spacers when virtual keyboard reduces viewport height */
-@media (max-height: 540px) {
-  nav[aria-label="Mobile Navigation Bar"],
-  div[data-mobile-bottom-spacer="true"] {
-    display: none !important;
-  }
-}

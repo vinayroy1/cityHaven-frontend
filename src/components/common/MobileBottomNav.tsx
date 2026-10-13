@@ -22,10 +22,13 @@ import {
   Calculator,
   User,
   LogOut,
-  LayoutDashboard,
   ShieldCheck,
-  CreditCard,
-  Settings,
+  Info,
+  CircleHelp,
+  Shield,
+  FileText,
+  Mail,
+  Phone,
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { ThemeToggle } from "./ThemeToggle";
@@ -62,17 +65,27 @@ const resourceLinks = [
   { label: "Pricing & Plans", href: "/pricing", icon: Sparkles },
 ];
 
+const companyAndSupportLinks = [
+  { label: "About us", href: "/about", icon: Info },
+  { label: "Help Centre", href: "/contact", icon: CircleHelp },
+  { label: "Safety information", href: "/policies", icon: Shield },
+  { label: "Privacy policy", href: "/privacy", icon: ShieldCheck },
+  { label: "Terms & conditions", href: "/terms", icon: FileText },
+  { label: "Search properties", href: "/propertySearch", icon: Search },
+  { label: "Saved properties", href: "/favorites", icon: Heart },
+  { label: "Email support", href: "mailto:contact@awasio.com", icon: Mail },
+  { label: "Call support", href: "tel:+918848510629", icon: Phone },
+];
+
 export function MobileBottomNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const [mounted, setMounted] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [isAuthed, setIsAuthed] = React.useState(false);
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
 
   // Check auth
   React.useEffect(() => {
-    setMounted(true);
     const checkAuth = () => {
       const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
       setIsAuthed(Boolean(token));
@@ -111,88 +124,6 @@ export function MobileBottomNav() {
     };
   }, [drawerOpen]);
 
-  const [isKeyboardVisible, setIsKeyboardVisible] = React.useState(false);
-  const baselineHeightRef = React.useRef<number>(0);
-
-  // Auto-hide bottom navigation when virtual keyboard opens, any input is focused, or dialog is active
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const updateBaseline = () => {
-      const h = window.screen?.height || window.innerHeight;
-      if (h > baselineHeightRef.current) {
-        baselineHeightRef.current = h;
-      }
-    };
-    updateBaseline();
-
-    const isInputFocused = (): boolean => {
-      const active = document.activeElement as HTMLElement | null;
-      if (!active) return false;
-      const tag = active.tagName?.toLowerCase();
-      return (
-        tag === "input" ||
-        tag === "textarea" ||
-        tag === "select" ||
-        active.isContentEditable ||
-        active.getAttribute("role") === "textbox"
-      );
-    };
-
-    const isModalOpen = (): boolean => {
-      return Boolean(
-        document.querySelector('[role="dialog"]') ||
-        document.querySelector('[data-vaul-drawer]') ||
-        document.querySelector('[data-city-modal="true"]')
-      );
-    };
-
-    const evaluateState = () => {
-      const vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      const baseline = baselineHeightRef.current || window.screen?.height || 800;
-      // On mobile screens, if viewport height drops below 540px or is 140px smaller than uncompressed baseline, keyboard is open
-      const isMobile = window.innerWidth < 1024;
-      const heightShrunk = isMobile && (vvHeight < 540 || vvHeight < baseline - 140);
-      const inputActive = isInputFocused();
-      const modalActive = isModalOpen();
-
-      setIsKeyboardVisible(inputActive || heightShrunk || modalActive);
-    };
-
-    // Use capture phase so we NEVER miss an input focus anywhere on the page
-    window.addEventListener("focus", evaluateState, true);
-    window.addEventListener("blur", () => setTimeout(evaluateState, 100), true);
-    window.addEventListener("focusin", evaluateState, true);
-    window.addEventListener("focusout", () => setTimeout(evaluateState, 100), true);
-    window.addEventListener("resize", () => {
-      updateBaseline();
-      evaluateState();
-    });
-
-    const vv = window.visualViewport;
-    if (vv) {
-      vv.addEventListener("resize", evaluateState);
-      vv.addEventListener("scroll", evaluateState);
-    }
-
-    // Observer for modals/drawers being inserted into DOM
-    const observer = new MutationObserver(() => evaluateState());
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-state", "class"] });
-
-    return () => {
-      window.removeEventListener("focus", evaluateState, true);
-      window.removeEventListener("blur", evaluateState, true);
-      window.removeEventListener("focusin", evaluateState, true);
-      window.removeEventListener("focusout", evaluateState, true);
-      window.removeEventListener("resize", evaluateState);
-      if (vv) {
-        vv.removeEventListener("resize", evaluateState);
-        vv.removeEventListener("scroll", evaluateState);
-      }
-      observer.disconnect();
-    };
-  }, []);
-
   // Hide on excluded full-screen paths
   const shouldHide = HIDDEN_ROUTES.some((route) => pathname?.startsWith(route));
   if (shouldHide) return null;
@@ -225,9 +156,7 @@ export function MobileBottomNav() {
       {/* Spacer at document end to prevent bottom content from being covered by fixed nav */}
       <div
         data-mobile-bottom-spacer="true"
-        className={`w-full block lg:hidden pointer-events-none transition-all duration-200 ${
-          isKeyboardVisible ? "h-0 !hidden" : "h-20"
-        }`}
+        className="h-20 w-full pointer-events-none block lg:hidden"
         aria-hidden="true"
       />
 
@@ -236,11 +165,7 @@ export function MobileBottomNav() {
           ========================================================================= */}
       <nav
         aria-label="Mobile Navigation Bar"
-        className={`fixed bottom-0 inset-x-0 z-40 block lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-xl shadow-[0_-8px_24px_rgba(0,0,0,0.06)] dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] transition-all duration-200 pb-[env(safe-area-inset-bottom,0px)] ${
-          isKeyboardVisible
-            ? "translate-y-full opacity-0 pointer-events-none !hidden"
-            : "translate-y-0 opacity-100"
-        }`}
+        className="fixed bottom-0 inset-x-0 z-40 block lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-xl shadow-[0_-8px_24px_rgba(0,0,0,0.06)] dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] pb-[env(safe-area-inset-bottom,0px)]"
       >
         <div className="grid grid-cols-5 items-center justify-around h-16 max-w-md mx-auto px-2">
           {/* TAB 1: HOME */}
@@ -487,6 +412,29 @@ export function MobileBottomNav() {
                             <Icon className="h-4 w-4 text-slate-400" />
                             <span>{item.label}</span>
                           </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Company, support and legal links moved from the mobile footer. */}
+                <div>
+                  <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Awasio &amp; Support
+                  </p>
+                  <div className="mt-2 grid grid-cols-2 gap-1">
+                    {companyAndSupportLinks.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.label}
+                          href={item.href}
+                          onClick={() => setDrawerOpen(false)}
+                          className="flex min-w-0 items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900"
+                        >
+                          <Icon className="h-4 w-4 shrink-0 text-slate-400" />
+                          <span className="truncate">{item.label}</span>
                         </Link>
                       );
                     })}

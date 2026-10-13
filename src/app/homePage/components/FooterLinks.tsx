@@ -27,8 +27,8 @@ const columns = [
 
 export function FooterLinks() {
   return (
-    <footer className="mt-8 sm:mt-12 overflow-x-clip border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+    <footer className="mt-4 overflow-x-clip border-t border-slate-200 bg-white sm:mt-12 dark:border-slate-800 dark:bg-slate-950">
+      <div className="mx-auto hidden max-w-6xl px-4 py-6 sm:block sm:px-6 sm:py-10">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-12 md:gap-8">
           {/* Brand Info */}
           <div className="space-y-2.5 md:col-span-6">
