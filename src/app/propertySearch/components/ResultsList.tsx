@@ -10,11 +10,11 @@ import type { SearchResults } from "@/components/search/useSearchResults";
 
 function SkeletonGrid({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-          <Skeleton className="h-44 w-full rounded-xl dark:bg-slate-800" />
-          <div className="mt-3 space-y-2">
+        <div key={i} className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+          <Skeleton className="aspect-[16/9] w-full rounded-none dark:bg-slate-800" />
+          <div className="space-y-2 p-3">
             <Skeleton className="h-5 w-2/3 dark:bg-slate-800" />
             <Skeleton className="h-4 w-1/2 dark:bg-slate-800" />
             <Skeleton className="h-4 w-1/3 dark:bg-slate-800" />
@@ -85,10 +85,10 @@ export function ResultsList({ results }: { results: SearchResults }) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+    <div className="space-y-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         {visible.map((item) => (
-          <ResultCard key={item.id} {...toResultCardProps(item)} />
+          <ResultCard key={item.id} {...toResultCardProps(item)} compact />
         ))}
       </div>
 

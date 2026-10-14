@@ -39,6 +39,7 @@ export function ResultCard({
   isVerified,
   posterBadge,
   images = [],
+  compact = false,
 }: ResultCardProps) {
   const router = useRouter();
   const safeImages = React.useMemo(() => images.filter(Boolean), [images]);
@@ -440,6 +441,7 @@ export function ResultCard({
         onImageError={() => setImageFailed(true)}
         onMoveImage={moveImage}
         onChooseImage={chooseImage}
+        compact={compact}
       />
       <SavePropertyButton propertyId={id} />
       <ResultCardSummary
@@ -456,6 +458,7 @@ export function ResultCard({
         posterBadge={posterBadge}
         onContactClick={openContactFlow}
         onScheduleClick={openScheduleFlow}
+        compact={compact}
       />
       <ScheduleVisitDialog
         open={scheduleOpen}

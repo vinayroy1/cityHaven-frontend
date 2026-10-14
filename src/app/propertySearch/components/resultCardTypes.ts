@@ -16,6 +16,7 @@ export type ResultCardProps = {
   isVerified?: boolean;
   posterBadge?: string;
   images?: string[];
+  compact?: boolean;
 };
 
 import { CDN_ASSETS } from "@/config/cdn";

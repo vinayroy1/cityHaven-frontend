@@ -17,6 +17,7 @@ type ResultCardSummaryProps = {
   posterBadge?: string;
   onContactClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onScheduleClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  compact?: boolean;
 };
 
 import { useRouter } from "next/navigation";
@@ -96,11 +97,22 @@ export function ResultCardSummary({
   posterBadge,
   onContactClick,
   onScheduleClick,
+  compact = false,
 }: ResultCardSummaryProps) {
   const isPg = listingType?.toUpperCase() === "PG";
+  const displayTitle = compact
+    ? (title || "Property listing")
+        .replace(/\s+for\s+(?:sale|rent|lease)\s+in\s+.+$/i, "")
+        .replace(/\s+in\s+[^,]+(?:,.*)?$/i, "")
+        .replace(/^\d+\s+BHK\s+/i, "")
+        .trim()
+    : title || "Property listing";
+  const compactArea = area
+    ?.replace(/^(?:carpet|built[ -]?up|super built[ -]?up)\s*(?:area)?\s*[:\-]?\s*/i, "")
+    .trim();
 
   return (
-    <div className="relative z-0 flex flex-1 flex-col gap-2.5 p-3 sm:gap-3 sm:p-4">
+    <div className={`relative z-0 flex flex-1 flex-col p-3 ${compact ? "gap-2" : "gap-2.5 sm:gap-3 sm:p-4"}`}>
       <div className="flex flex-wrap gap-1.5">
         {contextBadge && <span className="rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-950 dark:text-rose-300">{contextBadge}</span>}
         {posterBadge && <span className="rounded-md bg-sky-50 px-2 py-0.5 text-xs font-bold text-sky-700 dark:bg-sky-950 dark:text-sky-300">{posterBadge}</span>}
@@ -108,19 +120,41 @@ export function ResultCardSummary({
       </div>
 
       <div>
-        <h3 className="line-clamp-1 text-[15px] font-bold leading-snug text-zinc-950 group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 sm:line-clamp-2 sm:text-base">
-          {title || "Property listing"}
+        <h3 title={title} className={`line-clamp-1 font-bold leading-snug text-zinc-950 group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 ${compact ? "text-sm sm:text-[15px]" : "text-[15px] sm:line-clamp-2 sm:text-base"}`}>
+          {displayTitle}
         </h3>
         {subtitle && (
-          <p className="mt-1 flex min-w-0 items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-slate-400 sm:text-sm">
+          <p className={`mt-1 flex min-w-0 items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-slate-400 ${compact ? "" : "sm:text-sm"}`}>
             <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
             <span className="truncate">{subtitle}</span>
           </p>
         )}
       </div>
 
-      <p className="text-lg font-black text-zinc-950 dark:text-white sm:text-xl tracking-tight">{price}</p>
+      <p className={`font-black tracking-tight text-zinc-950 dark:text-white ${compact ? "text-base sm:text-lg" : "text-lg sm:text-xl"}`}>{price}</p>
 
+      {compact ? (
+        <div className="flex min-w-0 items-center gap-2 overflow-hidden rounded-md bg-zinc-50 px-2 py-1.5 text-[11px] font-semibold text-zinc-700 dark:bg-slate-800/80 dark:text-slate-300">
+          {!isPg && bedrooms != null && bedrooms > 0 && (
+            <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap">
+              <BedDouble className="h-3.5 w-3.5 text-zinc-400" />
+              {bedrooms} BHK
+            </span>
+          )}
+          {bathrooms != null && bathrooms > 0 && (
+            <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap border-l border-zinc-200 pl-2 dark:border-slate-700">
+              <Bath className="h-3.5 w-3.5 text-zinc-400" />
+              {bathrooms} Bath
+            </span>
+          )}
+          {compactArea && (
+            <span className="inline-flex min-w-0 items-center gap-1 whitespace-nowrap border-l border-zinc-200 pl-2 dark:border-slate-700">
+              <Ruler className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
+              <span className="truncate">{compactArea}</span>
+            </span>
+          )}
+        </div>
+      ) : (
       <div className="grid grid-cols-2 gap-1.5 text-xs font-medium text-zinc-700 dark:text-slate-300 sm:gap-2">
         {!isPg && bedrooms != null && bedrooms > 0 && (
           <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">
@@ -138,16 +172,17 @@ export function ResultCardSummary({
           <Ruler className="h-3.5 w-3.5 text-zinc-400" />
           <span className="truncate">{area}</span>
         </span>
-        <span className="truncate rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">{owner}</span>
+        {!compact && <span className="truncate rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">{owner}</span>}
       </div>
+      )}
 
-      <div className="mt-auto flex items-center justify-end gap-2 border-t border-zinc-100 dark:border-slate-800 pt-2.5 sm:gap-2.5 sm:pt-3">
+      <div className={`mt-auto flex items-center justify-end gap-2 border-t border-zinc-100 dark:border-slate-800 ${compact ? "pt-2" : "pt-2.5 sm:gap-2.5 sm:pt-3"}`}>
         <div className="grid w-full grid-cols-2 gap-1.5 sm:flex sm:w-auto sm:items-center">
           {onScheduleClick && (
             <button
               type="button"
               title="Schedule a Site Visit"
-              className="relative z-20 inline-flex min-h-9 shrink-0 items-center justify-center gap-1 rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs font-semibold text-zinc-700 shadow-sm transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-rose-900/60 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 sm:px-2.5"
+              className={`relative z-20 inline-flex shrink-0 items-center justify-center gap-1 rounded-md border border-zinc-200 bg-white px-2 text-xs font-semibold text-zinc-700 shadow-sm transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-rose-900/60 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 sm:px-2.5 ${compact ? "min-h-8 py-1" : "min-h-9 py-1.5"}`}
               onClick={onScheduleClick}
             >
               <Calendar className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
@@ -156,7 +191,7 @@ export function ResultCardSummary({
           )}
           <button
             type="button"
-            className="relative z-20 inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-md bg-rose-600 px-2 py-1.5 text-xs font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 sm:px-3 sm:text-xs"
+            className={`relative z-20 inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md bg-rose-600 px-2 text-xs font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 sm:px-3 ${compact ? "min-h-8 py-1" : "min-h-9 py-1.5"}`}
             onClick={onContactClick}
           >
             <PhoneCall className="h-3.5 w-3.5" />

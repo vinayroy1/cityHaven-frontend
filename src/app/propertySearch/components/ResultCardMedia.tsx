@@ -15,6 +15,7 @@ type ResultCardMediaProps = {
   onImageError: () => void;
   onMoveImage: (event: React.MouseEvent<HTMLButtonElement>, direction: 1 | -1) => void;
   onChooseImage: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
+  compact?: boolean;
 };
 
 export function ResultCardMedia({
@@ -31,9 +32,10 @@ export function ResultCardMedia({
   onImageError,
   onMoveImage,
   onChooseImage,
+  compact = false,
 }: ResultCardMediaProps) {
   return (
-    <div className="relative block aspect-[16/10] overflow-hidden bg-zinc-100 sm:aspect-[4/3]">
+    <div className={`relative block overflow-hidden bg-zinc-100 ${compact ? "aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}>
       <img
         src={image}
         alt={title || "Property"}

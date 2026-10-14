@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, ChevronLeft, ChevronRight, Loader2, MapPin, Phone, PhoneCall, RotateCcw, SearchX, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Loader2, MapPin, Phone, PhoneCall, RotateCcw, SearchX, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SearchBar } from "@/components/search/SearchBar";
 import { buildSearchHref, buildSearchParams, initialSearchState, type SearchState } from "@/components/search/searchQuery";
@@ -185,6 +185,7 @@ export function HomeExperience() {
         </div>
       </section>
 
+      <div className="bg-gradient-to-b from-slate-50/80 via-white to-white dark:from-slate-900/45 dark:via-slate-950 dark:to-slate-950">
       <main className="mx-auto max-w-6xl overflow-x-clip px-4 pt-3 pb-6 sm:py-7 sm:px-6">
         <ListingBlock
           title={
@@ -248,23 +249,12 @@ export function HomeExperience() {
         />
 
       </main>
+      </div>
     </>
   );
 }
 
 function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
-  const scrollRef = React.useRef<HTMLDivElement>(null);
-
-  const scrollAgents = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const scrollAmount = 320;
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
   const [agents, setAgents] = React.useState<Agent[]>(() => {
     return ALL_AGENTS.filter((agent) => agent.isHomepageFeatured);
   });
@@ -289,7 +279,7 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
 
   return (
     <section className="mt-10 sm:mt-12">
-      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4">
+      <div className="mb-4 flex items-end justify-between gap-3 sm:mb-6 sm:gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
             <ShieldCheck className="h-3.5 w-3.5" />
@@ -298,47 +288,25 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
           <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
             Meet Verified Local Agents
           </h2>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
-            Certified local specialists available for private property walkthroughs, pricing negotiation, and on-ground assistance.
-          </p>
         </div>
         <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
           <Link
             href="/agents"
             className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400"
           >
-            View all advisors <ArrowRight className="h-4 w-4" />
+            View all <ArrowRight className="h-4 w-4" />
           </Link>
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => scrollAgents("left")}
-              aria-label="Scroll left"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-xs transition hover:border-slate-300 hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollAgents("right")}
-              aria-label="Scroll right"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-xs transition hover:border-slate-300 hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
         </div>
       </div>
 
       <div
-        ref={scrollRef}
         className="flex w-full gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory scroll-smooth"
       >
         {agents.map((agent) => (
           <Link
             key={agent.id}
             href={`/agents/${agent.id}`}
-            className="group w-[285px] sm:w-[310px] shrink-0 snap-start flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs transition-all duration-200 hover:border-rose-300 hover:shadow-md hover:-translate-y-0.5 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 cursor-pointer block"
+            className="group flex w-[285px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 sm:w-[310px]"
           >
             <div>
               {/* Agent Headshot & Identification */}
@@ -363,71 +331,43 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
                     </h3>
                     <BadgeCheck className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
                   </div>
-                  <p className="truncate text-xs font-medium text-slate-500 dark:text-slate-400">
-                    {agent.role}
-                  </p>
-                  <p className="truncate text-[11px] text-slate-400 dark:text-slate-500">
-                    {agent.agency}
+                  <p className="truncate text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                    {agent.role} <span className="text-slate-300 dark:text-slate-600">•</span> {agent.agency}
                   </p>
                 </div>
               </div>
 
               {/* Badges & Verification */}
-              <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-slate-800/80">
+              <div className="mt-3 flex items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
                   <Sparkles className="h-3 w-3 text-rose-500" />
                   {agent.badge}
                 </span>
-                <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <span className="flex items-center gap-1 whitespace-nowrap text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
                   <ShieldCheck className="h-3.5 w-3.5" />
                   RERA Verified
                 </span>
               </div>
 
               {/* Operating Location */}
-              <p className="mt-2.5 flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300 font-medium truncate">
+              <p className="mt-2.5 flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
                 <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
                 <span className="truncate">{agent.area}</span>
               </p>
 
               {/* Service Highlights */}
-              <div className="mt-2.5 flex flex-wrap gap-1.5">
-                {agent.services.slice(0, 2).map((srv) => (
-                  <span
-                    key={srv}
-                    className="inline-flex items-center rounded-md bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-slate-800/70 dark:text-slate-300"
-                  >
-                    • {srv}
-                  </span>
-                ))}
-              </div>
+              <p className="mt-2 truncate text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                {agent.services.slice(0, 2).join(" · ")}
+              </p>
 
-              {/* Stats Grid */}
-              <div className="mt-3.5 grid grid-cols-3 gap-1.5 text-center">
-                <div className="rounded-lg bg-slate-50/90 py-1.5 px-1 dark:bg-slate-800/60">
-                  <p className="text-xs font-bold text-slate-950 dark:text-white">{agent.experience}</p>
-                  <p className="text-[10px] text-slate-500">Exp</p>
-                </div>
-                <div className="rounded-lg bg-slate-50/90 py-1.5 px-1 dark:bg-slate-800/60">
-                  <p className="text-xs font-bold text-slate-950 dark:text-white">{agent.tours}</p>
-                  <p className="text-[10px] text-slate-500">Tours</p>
-                </div>
-                <div className="rounded-lg bg-slate-50/90 py-1.5 px-1 dark:bg-slate-800/60">
-                  <p className="text-xs font-bold text-slate-950 dark:text-white">{agent.listingsCount}</p>
-                  <p className="text-[10px] text-slate-500">Homes</p>
-                </div>
+              {/* Compact stats row */}
+              <div className="mt-3 grid grid-cols-3 divide-x divide-slate-200 rounded-lg bg-slate-50/90 py-2 text-center dark:divide-slate-700 dark:bg-slate-800/60">
+                <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{agent.experience}</strong>Exp</p>
+                <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{agent.tours}</strong>Tours</p>
+                <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{agent.listingsCount}</strong>Homes</p>
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800/80">
-              <span className="text-xs font-bold text-rose-600 group-hover:text-rose-700 dark:text-rose-400">
-                View Profile & Details
-              </span>
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-rose-50 text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition dark:bg-rose-950/60 dark:text-rose-400 dark:group-hover:bg-rose-600 dark:group-hover:text-white">
-                <ArrowRight className="h-3.5 w-3.5" />
-              </span>
-            </div>
           </Link>
         ))}
       </div>
@@ -459,9 +399,9 @@ function ListingBlock({
         </Link>
       </div>
       {loading ? (
-        <div className="flex w-full gap-3.5 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:gap-3 sm:overflow-visible sm:pb-0 lg:grid-cols-4">
+        <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="w-[84vw] max-w-[335px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+            <div key={i} className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]">
               <PropertyCardSkeleton />
             </div>
           ))}
@@ -476,10 +416,10 @@ function ListingBlock({
           )}
         </div>
       ) : listings.length ? (
-        <div className="flex w-full gap-3.5 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:gap-3 sm:overflow-visible sm:pb-0 lg:grid-cols-4">
-          {listings.map((item) => (
-            <div key={item.id} className="w-[84vw] max-w-[335px] shrink-0 snap-start sm:w-auto sm:max-w-none">
-              <ResultCard {...toResultCardProps(item)} />
+        <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
+          {listings.slice(0, 10).map((item) => (
+            <div key={item.id} className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]">
+              <ResultCard {...toResultCardProps(item)} compact />
             </div>
           ))}
         </div>
@@ -498,7 +438,7 @@ export function PropertyCardSkeleton() {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 animate-pulse">
       {/* Media skeleton */}
-      <div className="relative aspect-[16/10] w-full bg-slate-200 dark:bg-slate-800 sm:aspect-[4/3]">
+      <div className="relative aspect-[16/9] w-full bg-slate-200 dark:bg-slate-800">
         {/* Badge skeletons */}
         <div className="absolute left-3 top-3 flex gap-1.5">
           <div className="h-5 w-16 rounded-md bg-slate-300 dark:bg-slate-700" />
@@ -509,7 +449,7 @@ export function PropertyCardSkeleton() {
       </div>
 
       {/* Summary skeleton */}
-      <div className="flex flex-1 flex-col gap-2.5 p-3 sm:gap-3 sm:p-4">
+      <div className="flex flex-1 flex-col gap-2 p-3">
         {/* Category tag skeleton */}
         <div className="flex gap-1.5">
           <div className="h-4 w-14 rounded bg-slate-200 dark:bg-slate-800" />
@@ -525,17 +465,16 @@ export function PropertyCardSkeleton() {
         {/* Price skeleton */}
         <div className="h-5 w-28 rounded bg-slate-200 dark:bg-slate-800 mt-0.5" />
 
-        {/* Specs 4-cell grid */}
-        <div className="grid grid-cols-2 gap-1.5 pt-1 sm:grid-cols-4">
-          <div className="h-9 rounded-lg bg-slate-100 dark:bg-slate-800/60" />
-          <div className="h-9 rounded-lg bg-slate-100 dark:bg-slate-800/60" />
-          <div className="h-9 rounded-lg bg-slate-100 dark:bg-slate-800/60" />
-          <div className="h-9 rounded-lg bg-slate-100 dark:bg-slate-800/60" />
+        {/* Compact specs row */}
+        <div className="grid grid-cols-3 gap-1.5 pt-1">
+          <div className="h-8 rounded-lg bg-slate-100 dark:bg-slate-800/60" />
+          <div className="h-8 rounded-lg bg-slate-100 dark:bg-slate-800/60" />
+          <div className="h-8 rounded-lg bg-slate-100 dark:bg-slate-800/60" />
         </div>
 
         {/* Action button skeleton */}
         <div className="mt-auto pt-2">
-          <div className="h-9 w-full rounded-xl bg-slate-200 dark:bg-slate-800" />
+          <div className="h-8 w-full rounded-xl bg-slate-200 dark:bg-slate-800" />
         </div>
       </div>
     </div>
