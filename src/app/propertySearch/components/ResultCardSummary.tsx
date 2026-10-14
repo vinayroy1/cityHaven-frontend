@@ -12,6 +12,7 @@ type ResultCardSummaryProps = {
   bedrooms?: number | null;
   bathrooms?: number | null;
   type?: string | null;
+  listingType?: string | null;
   contextBadge: string | null;
   posterBadge?: string;
   onContactClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -90,11 +91,14 @@ export function ResultCardSummary({
   bedrooms,
   bathrooms,
   type,
+  listingType,
   contextBadge,
   posterBadge,
   onContactClick,
   onScheduleClick,
 }: ResultCardSummaryProps) {
+  const isPg = listingType?.toUpperCase() === "PG";
+
   return (
     <div className="relative z-0 flex flex-1 flex-col gap-2.5 p-3 sm:gap-3 sm:p-4">
       <div className="flex flex-wrap gap-1.5">
@@ -118,7 +122,7 @@ export function ResultCardSummary({
       <p className="text-lg font-black text-zinc-950 dark:text-white sm:text-xl tracking-tight">{price}</p>
 
       <div className="grid grid-cols-2 gap-1.5 text-xs font-medium text-zinc-700 dark:text-slate-300 sm:gap-2">
-        {bedrooms != null && bedrooms > 0 && (
+        {!isPg && bedrooms != null && bedrooms > 0 && (
           <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">
             <BedDouble className="h-3.5 w-3.5 text-zinc-400" />
             {bedrooms} BHK

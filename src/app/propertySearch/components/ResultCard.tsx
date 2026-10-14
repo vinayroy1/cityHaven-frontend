@@ -451,6 +451,7 @@ export function ResultCard({
         bedrooms={bedrooms}
         bathrooms={bathrooms}
         type={type}
+        listingType={listingType}
         contextBadge={contextBadge}
         posterBadge={posterBadge}
         onContactClick={openContactFlow}
