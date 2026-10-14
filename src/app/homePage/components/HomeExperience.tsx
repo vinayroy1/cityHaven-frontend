@@ -79,11 +79,23 @@ export function HomeExperience() {
     pageSize: 12,
   });
 
-  // 3. Dedicated query for budget homes
-  const budgetMax = searchState.intent === "RENT" ? 50000 : 10000000;
+  // 3. Dedicated query for budget homes / rentals (strictly separated)
+  const isRentSearch = searchState.intent === "RENT";
+  const budgetListingType = isRentSearch ? "RENT" : "SELL";
+  const budgetMax = isRentSearch ? 50000 : 10000000;
+
+  // Local city budget query
   const budgetQuery = usePropertySearchInfinite({
-    listingType: queryListingType,
+    listingType: budgetListingType,
     cityName: normalizedCity,
+    priceMax: budgetMax,
+    sort: "newest",
+    pageSize: 8,
+  });
+
+  // Nationwide fallback budget query (strictly matching the same listingType)
+  const budgetFallbackQuery = usePropertySearchInfinite({
+    listingType: budgetListingType,
     priceMax: budgetMax,
     sort: "newest",
     pageSize: 8,
@@ -118,10 +130,14 @@ export function HomeExperience() {
   ).slice(0, 4);
 
   const rawBudgetListings = (budgetQuery.items as PropertySearchItem[]) ?? [];
+  const rawBudgetFallbackListings = (budgetFallbackQuery.items as PropertySearchItem[]) ?? [];
+
+  // Strictly show matching listingType properties (Sale under 1Cr or Rent under 50k).
+  // NEVER fall back to freshListings (which may contain rental rooms or PGs).
   const budgetListings = (
     rawBudgetListings.length > 0
       ? rawBudgetListings
-      : freshListings
+      : rawBudgetFallbackListings.filter((item) => item.listingType === budgetListingType)
   ).slice(0, 4);
 
   return (
@@ -212,23 +228,21 @@ export function HomeExperience() {
 
         <ListingBlock
           title={
-            rawBudgetListings.length > 0
-              ? searchState.intent === "RENT"
-                ? "Rentals under ₹50,000/month"
-                : "Homes under ₹1 crore"
-              : "Best Value Homes & Rentals"
+            searchState.intent === "RENT"
+              ? "Rentals under ₹50,000/month"
+              : "Homes under ₹1 crore"
           }
           href={buildSearchHref({
             ...initialSearchState(),
             cityName: selectedCity || undefined,
-            intent: searchState.intent,
+            intent: searchState.intent === "RENT" ? "RENT" : "BUY",
             priceMax: budgetMax,
           })}
-          loading={budgetQuery.isLoading && trendingFallbackQuery.isLoading}
-          error={budgetQuery.isError && trendingFallbackQuery.isError}
+          loading={budgetQuery.isLoading && budgetFallbackQuery.isLoading}
+          error={budgetQuery.isError && budgetFallbackQuery.isError}
           onRetry={() => {
             budgetQuery.refetch();
-            trendingFallbackQuery.refetch();
+            budgetFallbackQuery.refetch();
           }}
           listings={budgetListings}
         />
