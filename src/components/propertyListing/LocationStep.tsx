@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { MapPin, Building2, ChevronDown, Sparkles, Navigation, Train, Hospital, GraduationCap, ShoppingBag, Loader2 } from "lucide-react";
+import { Building2, ChevronDown, Sparkles, Navigation, Train, Hospital, GraduationCap, ShoppingBag, Loader2 } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
@@ -120,12 +120,6 @@ export function LocationStep() {
   const [isCustomLocalityMode, setIsCustomLocalityMode] = useState<boolean>(false);
   const [customLocalityInput, setCustomLocalityInput] = useState<string>("");
 
-  const [addressQuery, setAddressQuery] = useState(form.getValues("location.address") ?? "");
-  const [suggestions, setSuggestions] = useState<AwasioSuggestion[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [locating, setLocating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [lastQuery, setLastQuery] = useState("");
   const [dynamicLocalities, setDynamicLocalities] = useState<string[]>([]);
   const [geoStatus, setGeoStatus] = useState<{ pincode?: string; lat?: number; lng?: number; source?: string } | null>(null);
   const [nearbyLandmarks, setNearbyLandmarks] = useState<{
@@ -152,6 +146,7 @@ export function LocationStep() {
   const localityReqSeqRef = useRef<number>(0);
   const landmarkReqSeqRef = useRef<number>(0);
   const customLocalityTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isAddressManuallyEditedRef = useRef<boolean>(Boolean(form.getValues("location.address")));
 
   // Auto-fetch nearby landmarks ONLY when locality is present / selected
   useEffect(() => {
@@ -563,10 +558,10 @@ export function LocationStep() {
       combined += ` - ${watchedPincode.trim()}`;
     }
 
-    if (combined && combined !== form.getValues("location.address")) {
-      form.setValue("location.address", combined);
-      setAddressQuery(combined);
-      setLastQuery(combined);
+    if (combined && (!isAddressManuallyEditedRef.current || !form.getValues("location.address"))) {
+      if (combined !== form.getValues("location.address")) {
+        form.setValue("location.address", combined);
+      }
     }
   }, [
     watchedFlatNo,
@@ -603,9 +598,6 @@ export function LocationStep() {
 
     if (newAddress && newAddress !== form.getValues("location.address")) {
       form.setValue("location.address", newAddress);
-      setAddressQuery(newAddress);
-      setLastQuery(newAddress); // Prevents address search popup from triggering on dropdown select
-      setSuggestions([]); // Closes floating search popup
     }
   };
 
@@ -686,195 +678,11 @@ export function LocationStep() {
     updateFormattedAddress(selectedCity, localityName, selectedState);
   };
 
-  const applySuggestion = (suggestion: AwasioSuggestion) => {
-    const displayAddress = [
-      suggestion.location.locality,
-      suggestion.location.city,
-      suggestion.location.state,
-    ].filter(Boolean).join(", ");
-    form.setValue("location.address", displayAddress);
-    form.setValue("location.latitude", suggestion.location.lat ?? null);
-    form.setValue("location.longitude", suggestion.location.lng ?? null);
-
-    const city = suggestion.location.city || "";
-    const loc = suggestion.location.locality || city || "";
-
-    form.setValue("location.cityName", city);
-    form.setValue("location.locality", loc);
-    form.setValue("location.pincode", suggestion.location.pincode ? String(suggestion.location.pincode) : "");
-    form.trigger(["location.cityName", "location.locality"]);
-
-    setSelectedCity(city);
-    setSelectedLocality(loc);
-    setCustomLocalityInput(loc);
-    setIsCustomLocalityMode(false);
-
-    if (suggestion.location.state) setSelectedState(suggestion.location.state);
-
-    if (suggestion.location.lat && suggestion.location.lng) {
-      setGeoStatus({
-        pincode: suggestion.location.pincode ? String(suggestion.location.pincode) : undefined,
-        lat: suggestion.location.lat,
-        lng: suggestion.location.lng,
-        source: "Direct Suggestion",
-      });
-    }
-
-    setAddressQuery(displayAddress);
-    setLastQuery(displayAddress);
-    setSuggestions([]);
-  };
-
-  const pickSuggestion = (s: AwasioSuggestion) => {
-    setError(null);
-    applySuggestion(s);
-  };
-
-  const useCurrentLocation = () => {
-    setError(null);
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setError("Geolocation is not supported in this browser.");
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          let resolvedCity = "";
-          let resolvedLocality = "";
-          let resolvedState = "";
-          let resolvedPincode = "";
-
-          try {
-            const { reverseGeocodeAwasio } = await import("@/lib/awasioSuggestions");
-            const result = await reverseGeocodeAwasio(pos.coords.latitude, pos.coords.longitude);
-            if (result?.city) {
-              resolvedCity = result.city;
-              resolvedLocality = result.locality || result.city;
-              resolvedState = result.state || "";
-              resolvedPincode = result.pincode || "";
-            }
-          } catch (geocodeErr) {
-            console.warn("Reverse geocode failed, using direct coordinates", geocodeErr);
-          }
-
-          const fallbackCity = resolvedCity || "Gurgaon";
-          const fallbackLocality = resolvedLocality || fallbackCity;
-          const address = [fallbackLocality, fallbackCity, resolvedState].filter(Boolean).join(", ");
-
-          form.setValue("location.cityName", fallbackCity);
-          form.setValue("location.locality", fallbackLocality);
-          if (resolvedPincode) form.setValue("location.pincode", resolvedPincode);
-          form.setValue("location.address", address);
-          form.setValue("location.latitude", pos.coords.latitude);
-          form.setValue("location.longitude", pos.coords.longitude);
-          form.trigger(["location.cityName", "location.locality"]);
-
-          setSelectedCity(fallbackCity);
-          setSelectedLocality(fallbackLocality);
-          if (resolvedState) setSelectedState(resolvedState);
-
-          setGeoStatus({
-            pincode: resolvedPincode,
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            source: "GPS Live",
-          });
-
-          setAddressQuery(address);
-          setLastQuery(address);
-          setSuggestions([]);
-        } catch (e: any) {
-          console.error("GPS selection error", e);
-          setError("Could not complete GPS location. Please enter manually.");
-        } finally {
-          setLocating(false);
-        }
-      },
-      (err) => {
-        console.warn("Geolocation permission error", err);
-        setLocating(false);
-        setError("Location permission denied or timed out.");
-      },
-      { enableHighAccuracy: true, timeout: 6000 }
-    );
-  };
-
-  useEffect(() => {
-    const handle = setTimeout(async () => {
-      const q = addressQuery.trim();
-      if (q.length < 3 || q === lastQuery) {
-        setSuggestions([]);
-        return;
-      }
-      setLoading(true);
-      try {
-        const resp = await fetchAwasioSuggestions(q, { limit: 6, types: ["CITY", "LOCALITY", "PROJECT"] });
-        setSuggestions(resp.data);
-        setLastQuery(q);
-      } catch (err) {
-        setSuggestions([]);
-        setError(err instanceof Error ? err.message : "Could not load location suggestions.");
-      } finally {
-        setLoading(false);
-      }
-    }, 280);
-    return () => clearTimeout(handle);
-  }, [addressQuery, lastQuery]);
-
   const currentLat = form.watch("location.latitude");
   const currentLng = form.watch("location.longitude");
 
   return (
     <div className="space-y-6">
-      {/* Top Map / Smart Search Banner */}
-      <Field label="Quick Location Search or Map Pin">
-        <div className="relative">
-          <Input
-            className="pr-32"
-            placeholder="Search street, landmark or society"
-            value={addressQuery}
-            onChange={(e) => {
-              setAddressQuery(e.target.value);
-              form.setValue("location.address", e.target.value);
-            }}
-          />
-          <button
-            type="button"
-            onClick={useCurrentLocation}
-            disabled={locating}
-            className="absolute right-1.5 top-1.5 inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 hover:bg-emerald-100 disabled:opacity-60 transition"
-          >
-            <MapPin className="h-3.5 w-3.5" />
-            {locating ? "Locating…" : "Use GPS"}
-          </button>
-          {loading && <p className="absolute right-32 top-2.5 text-xs text-slate-400">Searching…</p>}
-          {suggestions.length > 0 && (
-            <div className="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-slate-200 bg-white shadow-xl">
-              {suggestions.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  className="flex w-full items-center justify-between border-b border-slate-100 px-3 py-2.5 text-left last:border-0 hover:bg-slate-50 transition"
-                  onClick={() => pickSuggestion(s)}
-                >
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold text-slate-800">{s.title}</span>
-                    <span className="block truncate text-xs text-slate-400">{s.subtitle}</span>
-                  </span>
-                  <span
-                    className="ml-2 shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase text-white shadow-2xs"
-                    style={{ backgroundColor: s.badgeColor }}
-                  >
-                    {s.badge}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        {error && <p className="mt-1 text-xs text-rose-600">{error}</p>}
-      </Field>
 
       {/* Structured Dropdown Selector Card */}
       <div className="rounded-2xl border border-slate-200/90 bg-slate-50/50 p-4 sm:p-5 space-y-4">
@@ -1126,12 +934,14 @@ export function LocationStep() {
             inputMode="numeric"
           />
         </Field>
-        <Field label="Full Formatted Address (Auto-Generated)">
+        <Field label="Address / Street Details" error={errors.address?.message as string | undefined}>
           <Input
-            {...form.register("location.address")}
-            placeholder="Auto-generated full address"
-            readOnly
-            className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-not-allowed border-slate-200/80 font-medium"
+            {...form.register("location.address", {
+              onChange: () => {
+                isAddressManuallyEditedRef.current = true;
+              },
+            })}
+            placeholder="Enter full address, street details or landmark"
           />
         </Field>
       </div>
