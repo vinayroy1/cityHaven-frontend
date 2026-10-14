@@ -4,6 +4,7 @@ import React from "react";
 import { LockKeyhole, Loader2, Building2, User, AlertCircle, ShieldCheck } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { LeadDetailsStep, ProfileDetailsStep, PlanSelectionStep } from "@/app/propertySearch/components/ContactUnlockDialog";
 import { useUpdateProfileMutation } from "@/features/auth/api";
@@ -194,12 +195,15 @@ export function ContactAccessFlow({
     } catch (err: any) {
       if (err?.status === 401 || err?.originalStatus === 401) {
         localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
-        setStep("signin");
+        setOpen(false);
+        const returnUrl = encodeURIComponent(`${window.location.pathname}?autoUnlock=true`);
+        router.push(`/login?redirect=${returnUrl}`);
       } else if (err?.status === 402 || err?.data?.message?.includes("credits") || err?.data?.message?.includes("allowance")) {
         setStep("plans");
       } else {
-        setError(errorMessage(err));
-        setStep("signin");
+        const msg = err?.data?.message || err?.message || "Owner contact not available";
+        toast.error(msg);
+        setOpen(false);
       }
     }
   }
@@ -210,8 +214,10 @@ export function ContactAccessFlow({
     setError(null);
     try {
       await action();
-    } catch (e) {
-      setError(errorMessage(e));
+    } catch (e: any) {
+      const msg = e?.data?.message || e?.message || "Failed to proceed";
+      toast.error(msg);
+      setOpen(false);
     } finally {
       setBusy(false);
     }

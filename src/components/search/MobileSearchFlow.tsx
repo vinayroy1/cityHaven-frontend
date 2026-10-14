@@ -45,7 +45,6 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
       position: "fixed",
       inset: 0,
       width: "100%",
-      height: `${window.innerHeight}px`,
     });
     return () => {
       document.body.style.position = previous.position;
@@ -66,7 +65,7 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
       aria-label="Search and filter properties"
       data-mobile-search-flow="true"
       style={viewportStyle}
-      className="fixed left-0 top-0 z-[9000] flex h-full w-full flex-col bg-slate-50 text-slate-900 sm:hidden dark:bg-slate-950 dark:text-white"
+      className="fixed inset-0 z-[9000] flex h-[100svh] w-full flex-col overflow-hidden bg-slate-50 text-slate-900 sm:hidden dark:bg-slate-950 dark:text-white"
     >
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-3 dark:border-slate-800 dark:bg-slate-900">
         <button type="button" onClick={onClose} aria-label="Back" className="flex h-10 w-10 items-center justify-center rounded-full text-slate-700 active:bg-slate-100 dark:text-slate-200 dark:active:bg-slate-800">
@@ -100,7 +99,7 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
         <FilterSectionsEditor draft={draft} setDraft={setDraft} />
       </div>
 
-      <footer className="shrink-0 border-t border-slate-200 bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_-20px_rgba(15,23,42,0.5)] dark:border-slate-800 dark:bg-slate-900">
+      <footer className="relative z-20 shrink-0 border-t border-slate-200 bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_-20px_rgba(15,23,42,0.5)] dark:border-slate-800 dark:bg-slate-900">
         <button
           type="button"
           onClick={() => onSubmit(draft)}

@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import React from "react";
+import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/app-config";
 import { useMeQuery, useUpdateProfileMutation } from "@/features/auth/api";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
@@ -225,10 +226,17 @@ export function ResultCard({
       setContactStep("contact");
       void refreshScopes();
     } catch (err: any) {
-      if (err?.status === 402 || err?.data?.message?.includes("credits") || err?.data?.message?.includes("allowance")) {
+      if (err?.status === 401 || err?.originalStatus === 401) {
+        setContactOpen(false);
+        const targetUrl = slug ? `/property/${slug}` : `/properties/${id}`;
+        const returnUrl = encodeURIComponent(`${targetUrl}?autoUnlock=true`);
+        router.push(`/login?redirect=${returnUrl}`);
+      } else if (err?.status === 402 || err?.data?.message?.includes("credits") || err?.data?.message?.includes("allowance")) {
         setContactStep("plans");
       } else {
-        setContactError(err?.data?.message || err.message || "Failed to unlock contact");
+        const errorMsg = err?.data?.message || err?.message || "Owner contact not available";
+        toast.error(errorMsg);
+        setContactOpen(false);
       }
     } finally {
       setLoading(false);
@@ -241,6 +249,16 @@ export function ResultCard({
     setContactError(null);
     setOtpError(null);
     setOwnerContact(null);
+
+    const activeToken = getToken();
+    if (!activeToken) {
+      // Unauthenticated user -> redirect directly to login page with return URL (no login popup)
+      const targetUrl = slug ? `/property/${slug}` : `/properties/${id}`;
+      const returnUrl = encodeURIComponent(`${targetUrl}?autoUnlock=true`);
+      router.push(`/login?redirect=${returnUrl}`);
+      return;
+    }
+
     setContactOpen(true);
     setLoading(true);
 
@@ -251,39 +269,30 @@ export function ResultCard({
       return;
     }
 
-    const activeToken = getToken();
-    if (activeToken) {
-      try {
-        const unlocked = await triggerCheckUnlocked(id).unwrap();
-        if (unlocked?.data?.unlocked) {
-          setOwnerContact({ name: unlocked.data.ownerName ?? null, phone: unlocked.data.ownerPhone ?? null });
-          setContactStep("contact");
-          setLoading(false);
-          return;
-        }
-
-        await refreshScopes();
-        const pCredits = personalSummary?.credits ?? 0;
-        setHasActivePlan(pCredits > 0);
-        if (pCredits > 0) {
-          await unlockContact("PERSONAL");
-        } else {
-          setContactStep("plans");
-          setLoading(false);
-        }
+    try {
+      const unlocked = await triggerCheckUnlocked(id).unwrap();
+      if (unlocked?.data?.unlocked) {
+        setOwnerContact({ name: unlocked.data.ownerName ?? null, phone: unlocked.data.ownerPhone ?? null });
+        setContactStep("contact");
+        setLoading(false);
         return;
-      } catch {
-        // Fall through to redirect when token check fails
       }
-    }
 
-    // Unauthenticated user -> redirect to login with return URL
-    const targetUrl = slug ? `/property/${slug}` : `/properties/${id}`;
-    const returnUrl = encodeURIComponent(`${targetUrl}?autoUnlock=true`);
-    router.push(`/login?redirect=${returnUrl}`);
-    setContactOpen(false);
-    setLoading(false);
-    return;
+      await refreshScopes();
+      const pCredits = personalSummary?.credits ?? 0;
+      setHasActivePlan(pCredits > 0);
+      if (pCredits > 0) {
+        await unlockContact("PERSONAL");
+      } else {
+        setContactStep("plans");
+        setLoading(false);
+      }
+    } catch (err: any) {
+      const errorMsg = err?.data?.message || err?.message || "Owner contact not available";
+      toast.error(errorMsg);
+      setContactOpen(false);
+      setLoading(false);
+    }
   };
 
   const requestOtp = async () => {
