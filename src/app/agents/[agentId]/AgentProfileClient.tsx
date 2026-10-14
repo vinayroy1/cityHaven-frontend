@@ -311,7 +311,7 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                     className="group rounded-xl border border-slate-200 overflow-hidden bg-white hover:border-rose-200 hover:shadow-md transition dark:border-slate-800 dark:bg-slate-900/60 flex flex-col justify-between"
                   >
                     <div>
-                      <div className="relative h-40 w-full overflow-hidden bg-slate-200">
+                      <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-200">
                         <img
                           src={prop.image}
                           alt={prop.title}
@@ -321,8 +321,8 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                           {prop.type} • {prop.beds} BHK
                         </span>
                       </div>
-                      <div className="p-3.5 space-y-1.5">
-                        <p className="text-base font-extrabold text-rose-600 dark:text-rose-400">
+                      <div className="space-y-1 p-3">
+                        <p className="text-sm font-extrabold text-rose-600 dark:text-rose-400">
                           {prop.price}
                         </p>
                         <h3 className="text-xs font-bold text-slate-950 dark:text-white truncate">
@@ -334,13 +334,13 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                         </p>
                       </div>
                     </div>
-                    <div className="p-3.5 pt-0">
+                    <div className="p-3 pt-0">
                       <button
                         type="button"
                         onClick={() => setSelectedPropertyModal(prop.title)}
                         className="w-full rounded-lg bg-slate-100 py-1.5 text-xs font-semibold text-slate-800 hover:bg-rose-50 hover:text-rose-700 transition dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-rose-950/60 dark:hover:text-rose-300"
                       >
-                        Request Walkthrough for This Property
+                        Request walkthrough
                       </button>
                     </div>
                   </div>

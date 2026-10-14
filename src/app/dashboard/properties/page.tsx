@@ -704,14 +704,13 @@ function PropertiesContent() {
             </div>
           ) : viewMode === "grid" ? (
             /* Grid View */
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {paginatedItems.map((item: any) => {
                 const effectiveStatus = isSubscriptionExpired && item.status === "ACTIVE" ? "INACTIVE" : item.status;
                 const cfg = statusConfig[effectiveStatus] || statusConfig.DRAFT;
                 const StatusIcon = cfg.icon;
                 const coverImage = item.media?.[0]?.url || "/placeholder-property.jpg";
                 const locationStr = [item.locality, item.subLocality, item.cityName].filter(Boolean).join(", ");
-                const propertyType = item.propertySubType?.name || item.propertyType?.name || (item.resCom === "COMMERCIAL" ? "Commercial" : "Residential");
                 const isOrgProperty = Boolean(item.organizationId);
                 const isItemActive = effectiveStatus === "ACTIVE";
                 const canActivate = effectiveStatus === "INACTIVE" || effectiveStatus === "DRAFT";
@@ -722,7 +721,7 @@ function PropertiesContent() {
                     className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
                   >
                     {/* Media Thumbnail */}
-                    <div className="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                       <img
                         src={coverImage}
                         alt={item.title || "Property"}
@@ -754,7 +753,7 @@ function PropertiesContent() {
                     </div>
 
                     {/* Card Content */}
-                    <div className="flex flex-1 flex-col p-4">
+                    <div className="flex flex-1 flex-col p-3">
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="line-clamp-1 text-base font-bold text-slate-950 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400">
                           {item.title || "Untitled property"}
@@ -768,34 +767,33 @@ function PropertiesContent() {
                         </p>
                       )}
 
-                      <p className="mt-2 text-lg font-extrabold text-slate-900 dark:text-white">{formatPrice(item.price)}</p>
+                      <p className="mt-1.5 text-base font-extrabold text-slate-900 dark:text-white">{formatPrice(item.price)}</p>
 
                       {/* Key Specs */}
-                      <div className="mt-3 grid grid-cols-2 gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                      <div className="mt-2 flex items-center gap-2 overflow-hidden rounded-lg bg-slate-50 px-2 py-1.5 text-[11px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                         {item.bedrooms ? (
-                          <span className="inline-flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 dark:bg-slate-800">
+                          <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap">
                             <BedDouble className="h-3.5 w-3.5 text-slate-400" />
                             {item.bedrooms} BHK
                           </span>
                         ) : null}
                         {item.bathrooms ? (
-                          <span className="inline-flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 dark:bg-slate-800">
+                          <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap border-l border-slate-200 pl-2 dark:border-slate-700">
                             <Bath className="h-3.5 w-3.5 text-slate-400" />
                             {item.bathrooms} Bath
                           </span>
                         ) : null}
                         {item.builtUpArea || item.carpetArea ? (
-                          <span className="inline-flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 dark:bg-slate-800">
+                          <span className="inline-flex min-w-0 items-center gap-1 whitespace-nowrap border-l border-slate-200 pl-2 dark:border-slate-700">
                             <Ruler className="h-3.5 w-3.5 text-slate-400" />
                             {item.builtUpArea || item.carpetArea} sq.ft
                           </span>
                         ) : null}
-                        <span className="truncate rounded-lg bg-slate-50 px-2 py-1 dark:bg-slate-800">{propertyType}</span>
                       </div>
 
                       {/* Activate Action Prompt for Inactive/Draft Properties */}
                       {canActivate && (
-                        <div className="mt-3 rounded-xl border border-emerald-500/20 bg-emerald-50/50 p-2.5 dark:border-emerald-500/20 dark:bg-emerald-950/20">
+                        <div className="mt-2 rounded-xl border border-emerald-500/20 bg-emerald-50/50 p-2 dark:border-emerald-500/20 dark:bg-emerald-950/20">
                           <div className="flex items-center justify-between gap-2">
                             <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
                               <Zap className="h-3.5 w-3.5 text-emerald-600" />
@@ -815,7 +813,7 @@ function PropertiesContent() {
                       )}
 
                       {/* Footer Actions */}
-                      <div className="mt-auto flex items-center justify-between gap-2 border-t border-slate-100 pt-3 text-xs dark:border-slate-800">
+                      <div className="mt-2 flex items-center justify-between gap-2 border-t border-slate-100 pt-2 text-xs dark:border-slate-800">
                         <span className="text-[11px] text-slate-400 dark:text-slate-500">
                           {item.updatedAt ? `Updated ${new Date(item.updatedAt).toLocaleDateString()}` : `ID: #${item.id}`}
                         </span>

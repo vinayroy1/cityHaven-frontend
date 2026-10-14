@@ -207,7 +207,7 @@ export default function FavoritesPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {filteredItems.map((item: any) => (
                   <div key={item.id} className="relative group">
                     <ResultCard
@@ -233,6 +233,7 @@ export default function FavoritesPage() {
                       isVerified={item.isVerified ?? false}
                       posterBadge={item.postedAs}
                       images={item.media?.map((m: any) => m.url).filter(Boolean) ?? []}
+                      compact
                     />
                     {/* Quick remove button */}
                     <button
