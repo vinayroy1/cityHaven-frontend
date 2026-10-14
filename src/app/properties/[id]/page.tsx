@@ -126,13 +126,24 @@ type PropertyDetails = {
 const FALLBACK_IMAGES = ["/property-placeholder.webp"];
 
 const getProperty = cache(async (id: string): Promise<PropertyDetails | null> => {
-  const response = await fetch(API_ENDPOINTS.propertyListing.update(id), {
-    next: { revalidate: 60 },
-  });
-  if (response.status === 404) return null;
-  if (!response.ok) return null;
-  const payload = (await response.json()) as { data?: PropertyDetails };
-  return payload.data ?? null;
+  try {
+    let endpoint = API_ENDPOINTS.propertyListing.update(id);
+    // If running server-side inside Docker and endpoint points to localhost, rewrite to internal backend service or public URL
+    if (typeof window === "undefined" && endpoint.includes("localhost:4000")) {
+      const serverBase = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://awasio-backend:4000/api";
+      endpoint = `${serverBase}/v1/propertyListing/${id}`;
+    }
+    const response = await fetch(endpoint, {
+      next: { revalidate: 60 },
+    });
+    if (response.status === 404) return null;
+    if (!response.ok) return null;
+    const payload = (await response.json()) as { data?: PropertyDetails };
+    return payload.data ?? null;
+  } catch (error) {
+    console.error(`[getProperty] Failed to fetch property ${id}:`, error);
+    return null;
+  }
 });
 
 function formatEnum(value?: string | null) {
