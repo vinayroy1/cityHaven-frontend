@@ -159,4 +159,18 @@ export const API_ENDPOINTS = {
     },
     governance: `${BASE}/admin/governance`,
   },
+  advisors: {
+    list: `${BASE}/advisors`,
+    detail: (slugOrId: string | number) => `${BASE}/advisors/${slugOrId}`,
+    me: `${BASE}/advisors/me`,
+    create: `${BASE}/advisors`,
+    updateMe: `${BASE}/advisors/me`,
+    toggleAvailability: `${BASE}/advisors/me/availability`,
+    myLeads: `${BASE}/advisors/me/leads`,
+    contact: (id: string | number) => `${BASE}/advisors/${id}/contact`,
+    review: (id: string | number) => `${BASE}/advisors/${id}/reviews`,
+    adminVerifyRera: (id: string | number) => `${BASE}/advisors/admin/${id}/verify-rera`,
+    adminFeature: (id: string | number) => `${BASE}/advisors/admin/${id}/feature`,
+  },
 };
+

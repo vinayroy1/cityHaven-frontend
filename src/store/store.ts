@@ -5,6 +5,7 @@ import { propertyListingReducer, propertyListingApi } from "@/features/propertyL
 import { authApi } from "@/features/auth/api";
 import { contactVerifyApi } from "@/features/contactVerify/api";
 import { organizationsApi } from "@/features/organizations/api";
+import { advisorsApi } from "@/features/advisors/api";
 
 export const makeStore = () =>
   configureStore({
@@ -14,13 +15,15 @@ export const makeStore = () =>
       [authApi.reducerPath]: authApi.reducer,
       [contactVerifyApi.reducerPath]: contactVerifyApi.reducer,
       [organizationsApi.reducerPath]: organizationsApi.reducer,
+      [advisorsApi.reducerPath]: advisorsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
         propertyListingApi.middleware,
         authApi.middleware,
         contactVerifyApi.middleware,
-        organizationsApi.middleware
+        organizationsApi.middleware,
+        advisorsApi.middleware
       ),
     devTools: true,
   });

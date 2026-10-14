@@ -14,6 +14,7 @@ import type { PropertySearchItem } from "@/types/propertySearch.types";
 import { ALL_AGENTS, type Agent } from "@/data/agents";
 import { getMergedHomepageFeaturedAgents } from "@/lib/services/agentProfile";
 import { detectUserLocation } from "@/lib/geo/geoService";
+import { useGetAdvisorsQuery } from "@/features/advisors/api";
 
 const CITY_OPTIONS = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
 const STORAGE_KEY = "awasio.home.city";
@@ -147,14 +148,8 @@ export function HomeExperience() {
         <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-64 w-[500px] -translate-x-1/2 overflow-hidden rounded-full bg-rose-500/10 blur-[90px] dark:bg-rose-600/15" />
 
         <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center">
-          {/* Top Pill Badge (desktop / tablet) */}
-          <div className="hidden sm:inline-flex items-center gap-2 rounded-full border border-rose-200/80 bg-rose-50/90 px-3 py-0.5 text-xs font-semibold text-rose-700 shadow-2xs backdrop-blur-xs dark:border-rose-900/60 dark:bg-rose-950/50 dark:text-rose-300">
-            <Sparkles className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
-            <span>Verified Homes • Direct Owner Connect • Zero Brokerage Options</span>
-          </div>
-
           {/* Heading */}
-          <h1 className="mt-0 sm:mt-3 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl dark:text-white">
+          <h1 className="mt-0 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl dark:text-white">
             Find your perfect space with{" "}
             <span className="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 bg-clip-text text-transparent">
               Awasio
@@ -255,7 +250,13 @@ export function HomeExperience() {
 }
 
 function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
-  const [agents, setAgents] = React.useState<Agent[]>(() => {
+  const { data: apiAdvisors, isLoading } = useGetAdvisorsQuery({
+    city: selectedCity,
+    featured: true,
+    limit: 8,
+  });
+
+  const [staticAgents, setStaticAgents] = React.useState<Agent[]>(() => {
     return ALL_AGENTS.filter((agent) => agent.isHomepageFeatured);
   });
 
@@ -263,12 +264,12 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
     const refreshFeatured = () => {
       try {
         const featured = getMergedHomepageFeaturedAgents(selectedCity);
-        setAgents(featured.length ? featured : ALL_AGENTS.filter((a) => a.isHomepageFeatured));
+        setStaticAgents(featured.length ? featured : ALL_AGENTS.filter((a) => a.isHomepageFeatured));
       } catch {
         const cityAgents = ALL_AGENTS.filter(
           (agent) => agent.isHomepageFeatured && (!selectedCity || agent.city.toLowerCase() === selectedCity.toLowerCase())
         );
-        setAgents(cityAgents.length ? cityAgents : ALL_AGENTS.filter((a) => a.isHomepageFeatured));
+        setStaticAgents(cityAgents.length ? cityAgents : ALL_AGENTS.filter((a) => a.isHomepageFeatured));
       }
     };
 
@@ -276,6 +277,9 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
     window.addEventListener("awasio:agent-profile-updated", refreshFeatured);
     return () => window.removeEventListener("awasio:agent-profile-updated", refreshFeatured);
   }, [selectedCity]);
+
+  // Use dynamic API advisors if available, fallback gracefully to static/local
+  const agents = (apiAdvisors && apiAdvisors.length > 0) ? apiAdvisors : staticAgents;
 
   return (
     <section className="mt-4 sm:mt-6">
@@ -299,78 +303,104 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
         </div>
       </div>
 
-      <div
-        className="flex w-full gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory scroll-smooth"
-      >
-        {agents.map((agent) => (
-          <Link
-            key={agent.id}
-            href={`/agents/${agent.id}`}
-            className="group flex w-[285px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 sm:w-[310px]"
-          >
-            <div>
-              {/* Agent Headshot & Identification */}
+      {isLoading ? (
+        <div className="flex w-full gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="w-[285px] sm:w-[310px] shrink-0 rounded-2xl border border-slate-200/80 bg-white p-3.5 animate-pulse dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-start gap-3.5">
-                <div className="relative shrink-0">
-                  <img
-                    src={agent.avatar}
-                    alt={agent.name}
-                    className="h-14 w-14 rounded-full object-cover ring-2 ring-slate-100 shadow-xs dark:ring-slate-800 group-hover:ring-rose-200 transition"
-                  />
-                  {/* Active / In-Person tour availability indicator */}
-                  <span
-                    title="Available for in-person tours"
-                    className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"
-                  />
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="truncate text-sm font-bold text-slate-950 group-hover:text-rose-600 transition dark:text-white dark:group-hover:text-rose-400">
-                      {agent.name}
-                    </h3>
-                    <BadgeCheck className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
-                  </div>
-                  <p className="truncate text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                    {agent.role} <span className="text-slate-300 dark:text-slate-600">•</span> {agent.agency}
-                  </p>
+                <div className="h-14 w-14 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0" />
+                <div className="flex-1 space-y-2 pt-1">
+                  <div className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-800" />
+                  <div className="h-3 w-1/2 rounded bg-slate-150 dark:bg-slate-850" />
                 </div>
               </div>
-
-              {/* Badges & Verification */}
-              <div className="mt-3 flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
-                  <Sparkles className="h-3 w-3 text-rose-500" />
-                  {agent.badge}
-                </span>
-                <span className="flex items-center gap-1 whitespace-nowrap text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                  <ShieldCheck className="h-3.5 w-3.5" />
-                  RERA Verified
-                </span>
-              </div>
-
-              {/* Operating Location */}
-              <p className="mt-2.5 flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
-                <span className="truncate">{agent.area}</span>
-              </p>
-
-              {/* Service Highlights */}
-              <p className="mt-2 truncate text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                {agent.services.slice(0, 2).join(" · ")}
-              </p>
-
-              {/* Compact stats row */}
-              <div className="mt-3 grid grid-cols-3 divide-x divide-slate-200 rounded-lg bg-slate-50/90 py-2 text-center dark:divide-slate-700 dark:bg-slate-800/60">
-                <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{agent.experience}</strong>Exp</p>
-                <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{agent.tours}</strong>Tours</p>
-                <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{agent.listingsCount}</strong>Homes</p>
-              </div>
+              <div className="mt-4 h-3 w-full rounded bg-slate-200 dark:bg-slate-800" />
+              <div className="mt-2 h-3 w-4/5 rounded bg-slate-150 dark:bg-slate-850" />
             </div>
+          ))}
+        </div>
+      ) : (
+        <div
+          className="flex w-full gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory scroll-smooth"
+        >
+          {agents.map((agent: any) => {
+            const expText = agent.experienceYears ? `${agent.experienceYears}+ yrs` : (agent.experience || "5+ yrs");
+            const toursText = agent.tours || agent.totalToursDone || "50+ visits";
+            const homesText = agent.listingsCount || agent.activePropertiesCount || "10+";
+            const servicesList = Array.isArray(agent.services) ? agent.services : ["Private site visits", "Price negotiation"];
+            const agentKey = agent.slug || agent.id;
 
-          </Link>
-        ))}
-      </div>
+            return (
+              <Link
+                key={agentKey}
+                href={`/agents/${agentKey}`}
+                className="group flex w-[285px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 sm:w-[310px]"
+              >
+                <div>
+                  {/* Agent Headshot & Identification */}
+                  <div className="flex items-start gap-3.5">
+                    <div className="relative shrink-0">
+                      <img
+                        src={agent.avatar}
+                        alt={agent.name}
+                        className="h-14 w-14 rounded-full object-cover ring-2 ring-slate-100 shadow-xs dark:ring-slate-800 group-hover:ring-rose-200 transition"
+                      />
+                      {/* Active / In-Person tour availability indicator */}
+                      <span
+                        title="Available for in-person tours"
+                        className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"
+                      />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <h3 className="truncate text-sm font-bold text-slate-950 group-hover:text-rose-600 transition dark:text-white dark:group-hover:text-rose-400">
+                          {agent.name}
+                        </h3>
+                        <BadgeCheck className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                      </div>
+                      <p className="truncate text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                        {agent.role || agent.title || "Property Advisor"} <span className="text-slate-300 dark:text-slate-600">•</span> {agent.agency}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Badges & Verification */}
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
+                      <Sparkles className="h-3 w-3 text-rose-500" />
+                      {agent.badge || "Top Rated"}
+                    </span>
+                    <span className="flex items-center gap-1 whitespace-nowrap text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                      RERA Verified
+                    </span>
+                  </div>
+
+                  {/* Operating Location */}
+                  <p className="mt-2.5 flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
+                    <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
+                    <span className="truncate">{agent.area || agent.primaryArea || agent.city}</span>
+                  </p>
+
+                  {/* Service Highlights */}
+                  <p className="mt-2 truncate text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                    {servicesList.slice(0, 2).join(" · ")}
+                  </p>
+
+                  {/* Compact stats row */}
+                  <div className="mt-3 grid grid-cols-3 divide-x divide-slate-200 rounded-lg bg-slate-50/90 py-2 text-center dark:divide-slate-700 dark:bg-slate-800/60">
+                    <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{expText}</strong>Exp</p>
+                    <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{toursText}</strong>Tours</p>
+                    <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{homesText}</strong>Homes</p>
+                  </div>
+                </div>
+
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }
