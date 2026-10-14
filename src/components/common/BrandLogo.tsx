@@ -19,15 +19,15 @@ export function BrandLogo({
   className = "",
 }: BrandLogoProps) {
   const iconSizeClasses = {
-    sm: "h-8 w-8",
-    md: "h-10 w-10",
-    lg: "h-12 w-12",
+    sm: "h-6 w-6",
+    md: "h-7 w-7 sm:h-8 sm:w-8",
+    lg: "h-9 w-9 sm:h-10 sm:w-10",
   }[size];
 
   const titleSizeClasses = {
     sm: "text-base",
-    md: "text-lg",
-    lg: "text-xl",
+    md: "text-lg font-bold tracking-tight",
+    lg: "text-xl font-bold tracking-tight",
   }[size];
 
   const content = (
@@ -36,8 +36,7 @@ export function BrandLogo({
         className={`flex shrink-0 items-center justify-center transition-transform duration-200 group-hover:scale-105 ${iconSizeClasses}`}
         aria-hidden="true"
       >
-        <svg viewBox="0 0 256 256" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="256" height="256" rx="56" fill="#FFF1F2" />
+        <svg viewBox="40 40 176 160" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M116.1 49.8C121.9 39.9 136.1 39.9 141.9 49.8L211.7 169.1C217.6 179.2 210.3 192 198.6 192H171.1C165.7 192 160.7 189.1 158 184.4L131.8 138.9C130.5 136.6 127.5 136.6 126.2 138.9L100 184.4C97.3 189.1 92.3 192 86.9 192H59.4C47.7 192 40.4 179.2 46.3 169.1L116.1 49.8Z" fill="#E11D48" />
           <path d="M129 82L169 123V164H89V123L129 82Z" fill="white" />
           <path d="M111 144C111 134.1 119.1 126 129 126C138.9 126 147 134.1 147 144V164H111V144Z" fill="#E11D48" />
@@ -45,9 +44,9 @@ export function BrandLogo({
         </svg>
       </span>
 
-      <div className="flex flex-col leading-none">
+      <div className="flex flex-col leading-none justify-center">
         <span
-          className={`font-bold tracking-tight text-slate-900 dark:text-white transition-colors group-hover:text-rose-600 dark:group-hover:text-rose-400 ${titleSizeClasses}`}
+          className={`text-slate-900 dark:text-white transition-colors group-hover:text-rose-600 dark:group-hover:text-rose-400 ${titleSizeClasses}`}
         >
           Awasio
         </span>

@@ -186,7 +186,7 @@ export function HomeExperience() {
       </section>
 
       <div className="bg-gradient-to-b from-slate-50/80 via-white to-white dark:from-slate-900/45 dark:via-slate-950 dark:to-slate-950">
-      <main className="mx-auto max-w-6xl overflow-x-clip px-4 pt-3 pb-6 sm:py-7 sm:px-6">
+      <main className="mx-auto max-w-6xl overflow-x-clip px-4 pt-2 pb-5 sm:pt-3 sm:pb-6 sm:px-6">
         <ListingBlock
           title={
             rawFresh.length > 0
@@ -278,8 +278,8 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
   }, [selectedCity]);
 
   return (
-    <section className="mt-10 sm:mt-12">
-      <div className="mb-4 flex items-end justify-between gap-3 sm:mb-6 sm:gap-4">
+    <section className="mt-4 sm:mt-6">
+      <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
             <ShieldCheck className="h-3.5 w-3.5" />
@@ -391,8 +391,8 @@ function ListingBlock({
   onRetry?: () => void;
 }) {
   return (
-    <section className="mt-4 sm:mt-9 first:mt-1">
-      <div className="mb-3 sm:mb-4 flex items-center justify-between gap-3">
+    <section className="mt-3 sm:mt-5 first:mt-0">
+      <div className="mb-2 sm:mb-3 flex items-center justify-between gap-3">
         <h2 className="text-lg font-bold text-slate-950 dark:text-white">{title}</h2>
         <Link href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-rose-700 dark:text-rose-400">
           View all <ArrowRight className="h-4 w-4" />

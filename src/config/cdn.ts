@@ -7,7 +7,7 @@ export const CDN_ASSETS = {
   placeholderJpg: `${CLOUDFLARE_CDN_URL}/assets/property-placeholder.jpg`,
   placeholderSvg: `${CLOUDFLARE_CDN_URL}/assets/property-placeholder.svg`,
   logoPrimarySvg: `${CLOUDFLARE_CDN_URL}/assets/logo/awasio-logo-primary.svg`,
-  logoSoftSvg: `${CLOUDFLARE_CDN_URL}/assets/assets/logo/awasio-logo-soft.svg`,
-  logoMarkSvg: `${CLOUDFLARE_CDN_URL}/assets/assets/logo/awasio-mark.svg`,
-  logoRoseConcept: `${CLOUDFLARE_CDN_URL}/assets/assets/logo/awasio-logo-rose-concept.png`,
+  logoSoftSvg: `${CLOUDFLARE_CDN_URL}/assets/logo/awasio-logo-soft.svg`,
+  logoMarkSvg: `${CLOUDFLARE_CDN_URL}/assets/logo/awasio-mark.svg`,
+  logoRoseConcept: `${CLOUDFLARE_CDN_URL}/assets/logo/awasio-logo-rose-concept.png`,
 };
