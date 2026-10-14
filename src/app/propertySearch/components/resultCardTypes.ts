@@ -18,9 +18,11 @@ export type ResultCardProps = {
   images?: string[];
 };
 
+import { CDN_ASSETS } from "@/config/cdn";
+
 export type ContactStep = "details" | "profile" | "plans" | "contact";
 
-export const FALLBACK_IMAGE = "/property-placeholder.webp";
+export const FALLBACK_IMAGE = CDN_ASSETS.placeholderWebp;
 
 export const CONTACT_PLANS = [
   { id: "trial", name: "Trial", contacts: "1 owner contact", description: "Unlock this listing only.", price: "₹49" },

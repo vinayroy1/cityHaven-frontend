@@ -23,6 +23,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { CDN_ASSETS } from "@/config/cdn";
 import type { ProjectConfiguration, ProjectListing } from "@/types/project.types";
 
 function formatPrice(value?: number) {
@@ -86,7 +87,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
           {/* Main Large Image */}
           <div className="relative h-72 sm:h-96 lg:col-span-8 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
             <img
-              src={project.images[0] || "/property-placeholder.webp"}
+              src={project.images[0] || CDN_ASSETS.placeholderWebp}
               alt={project.name}
               className="h-full w-full object-cover"
             />
@@ -120,14 +121,14 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
           <div className="hidden lg:grid lg:col-span-4 grid-rows-2 gap-2">
             <div className="h-48 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
               <img
-                src={project.images[1] || project.images[0] || "/property-placeholder.webp"}
+                src={project.images[1] || project.images[0] || CDN_ASSETS.placeholderWebp}
                 alt="Project View 2"
                 className="h-full w-full object-cover"
               />
             </div>
             <div className="h-48 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
               <img
-                src={project.images[2] || project.images[0] || "/property-placeholder.webp"}
+                src={project.images[2] || project.images[0] || CDN_ASSETS.placeholderWebp}
                 alt="Project View 3"
                 className="h-full w-full object-cover"
               />

@@ -4,6 +4,7 @@ import { HeaderNav } from "./homePage/components/HeaderNav";
 import { HomeExperience } from "./homePage/components/HomeExperience";
 import { FooterLinks } from "./homePage/components/FooterLinks";
 import { SITE_URL, buildCanonical } from "@/constants/seo";
+import { CDN_ASSETS } from "@/config/cdn";
 
 export const metadata: Metadata = {
   title: "Awasio - Find Verified Homes, Apartments & Local Property Advisors",
@@ -50,7 +51,7 @@ export default function RootPage() {
         "@id": `${SITE_URL}/#organization`,
         name: "Awasio Real Estate",
         url: SITE_URL,
-        logo: `${SITE_URL}/assets/logo/awasio-logo-primary.svg`,
+        logo: CDN_ASSETS.logoPrimarySvg,
         description:
           "India's transparent real estate marketplace connecting buyers and tenants with verified property listings and RERA-certified advisors.",
         address: {

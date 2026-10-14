@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import type { ProjectListing } from "@/types/project.types";
+import { CDN_ASSETS } from "@/config/cdn";
 
 const CITIES = ["All", "Noida", "Gurugram", "Mumbai MMR", "Bengaluru", "Delhi"];
 const STATUSES = [
@@ -265,7 +266,7 @@ export function NewProjectsClient({ initialProjects }: { initialProjects: Projec
                 {/* Project Image */}
                 <div className="relative h-56 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                   <img
-                    src={project.images[0] || "/property-placeholder.webp"}
+                    src={project.images[0] || CDN_ASSETS.placeholderWebp}
                     alt={project.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />

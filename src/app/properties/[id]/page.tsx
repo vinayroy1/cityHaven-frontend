@@ -123,7 +123,9 @@ type PropertyDetails = {
   amenitiesByCategory?: AmenityGroup[];
 };
 
-const FALLBACK_IMAGES = ["/property-placeholder.webp"];
+import { CDN_ASSETS } from "@/config/cdn";
+
+const FALLBACK_IMAGES = [CDN_ASSETS.placeholderWebp];
 
 const getProperty = cache(async (id: string): Promise<PropertyDetails | null> => {
   try {
@@ -606,13 +608,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       description,
       url: canonicalUrl,
       type: "website",
-      images: ogImages && ogImages.length > 0 ? ogImages.slice(0, 4).map((url) => ({ url })) : [`${SITE_URL}/property-placeholder.webp`],
+      images: ogImages && ogImages.length > 0 ? ogImages.slice(0, 4).map((url) => ({ url })) : [CDN_ASSETS.placeholderWebp],
     },
     twitter: {
       card: "summary_large_image",
       title: `${title} | ${price}`,
       description,
-      images: ogImages && ogImages.length > 0 ? [ogImages[0]] : [`${SITE_URL}/property-placeholder.webp`],
+      images: ogImages && ogImages.length > 0 ? [ogImages[0]] : [CDN_ASSETS.placeholderWebp],
     },
   };
 }
