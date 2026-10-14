@@ -112,7 +112,7 @@ export function ResultCardSummary({
     .trim();
 
   return (
-    <div className={`relative z-0 flex flex-1 flex-col p-3 ${compact ? "gap-2" : "gap-2.5 sm:gap-3 sm:p-4"}`}>
+    <div className={`relative z-0 flex flex-1 flex-col ${compact ? "gap-1.5 p-2.5 sm:gap-2 sm:p-3" : "gap-2.5 p-3 sm:gap-3 sm:p-4"}`}>
       <div className="flex flex-wrap gap-1.5">
         {contextBadge && <span className="rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-950 dark:text-rose-300">{contextBadge}</span>}
         {posterBadge && <span className="rounded-md bg-sky-50 px-2 py-0.5 text-xs font-bold text-sky-700 dark:bg-sky-950 dark:text-sky-300">{posterBadge}</span>}
@@ -124,7 +124,7 @@ export function ResultCardSummary({
           {displayTitle}
         </h3>
         {subtitle && (
-          <p className={`mt-1 flex min-w-0 items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-slate-400 ${compact ? "" : "sm:text-sm"}`}>
+          <p className={`flex min-w-0 items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-slate-400 ${compact ? "mt-0.5 sm:mt-1" : "mt-1 sm:text-sm"}`}>
             <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
             <span className="truncate">{subtitle}</span>
           </p>
@@ -134,7 +134,7 @@ export function ResultCardSummary({
       <p className={`font-black tracking-tight text-zinc-950 dark:text-white ${compact ? "text-base sm:text-lg" : "text-lg sm:text-xl"}`}>{price}</p>
 
       {compact ? (
-        <div className="flex min-w-0 items-center gap-2 overflow-hidden rounded-md bg-zinc-50 px-2 py-1.5 text-[11px] font-semibold text-zinc-700 dark:bg-slate-800/80 dark:text-slate-300">
+        <div className="flex min-w-0 items-center gap-2 overflow-hidden rounded-md bg-zinc-50 px-2 py-1 text-[11px] font-semibold text-zinc-700 dark:bg-slate-800/80 dark:text-slate-300 sm:py-1.5">
           {!isPg && bedrooms != null && bedrooms > 0 && (
             <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap">
               <BedDouble className="h-3.5 w-3.5 text-zinc-400" />
@@ -176,7 +176,7 @@ export function ResultCardSummary({
       </div>
       )}
 
-      <div className={`mt-auto flex items-center justify-end gap-2 border-t border-zinc-100 dark:border-slate-800 ${compact ? "pt-2" : "pt-2.5 sm:gap-2.5 sm:pt-3"}`}>
+      <div className={`mt-auto flex items-center justify-end gap-2 border-t border-zinc-100 dark:border-slate-800 ${compact ? "pt-1.5 sm:pt-2" : "pt-2.5 sm:gap-2.5 sm:pt-3"}`}>
         <div className="grid w-full grid-cols-2 gap-1.5 sm:flex sm:w-auto sm:items-center">
           {onScheduleClick && (
             <button

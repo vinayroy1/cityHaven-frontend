@@ -35,7 +35,7 @@ export function ResultCardMedia({
   compact = false,
 }: ResultCardMediaProps) {
   return (
-    <div className={`relative block overflow-hidden bg-zinc-100 ${compact ? "aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}>
+    <div className={`relative block overflow-hidden bg-zinc-100 ${compact ? "aspect-[16/7] sm:aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}>
       <img
         src={image}
         alt={title || "Property"}
