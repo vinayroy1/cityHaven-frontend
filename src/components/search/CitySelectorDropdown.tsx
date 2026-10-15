@@ -38,8 +38,6 @@ const KNOWN_INDIAN_METROS = new Set([
   "ranchi", "patna", "bhopal", "dehradun"
 ]);
 
-import { getUserPreferredCity } from "@/lib/geo/geoService";
-
 interface Props {
   selectedCityName?: string;
   onSelectCity: (city: CityItem) => void;
@@ -188,7 +186,9 @@ export function CitySelectorDropdown({ selectedCityName, onSelectCity, className
     };
   }, [isOpen]);
 
-  const currentDisplay = selectedCityName || getUserPreferredCity() || "Select City";
+  // Keep render output deterministic for SSR. The owning search flow restores
+  // any saved/detected city after hydration and passes it through this prop.
+  const currentDisplay = selectedCityName || "Select City";
 
   return (
     <div className={`relative ${className}`} ref={containerRef}>

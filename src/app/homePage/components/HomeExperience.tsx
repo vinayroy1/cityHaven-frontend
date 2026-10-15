@@ -20,26 +20,25 @@ const CITY_OPTIONS = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune
 const STORAGE_KEY = "awasio.home.city";
 
 export function HomeExperience() {
-  const [selectedCity, setSelectedCity] = React.useState<string>(() => getUserPreferredCity() || "");
-  const [searchState, setSearchState] = React.useState<SearchState>(() => {
-    const initCity = getUserPreferredCity();
-    return initialSearchState(initCity || "");
-  });
+  // Server and first client render must match. Browser preferences are restored
+  // in the effect below after hydration.
+  const [selectedCity, setSelectedCity] = React.useState("");
+  const [searchState, setSearchState] = React.useState<SearchState>(() => initialSearchState(""));
 
   React.useEffect(() => {
-    // 1. Check if user already has a saved city in localStorage
-    const saved = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
-    if (saved && saved.trim()) {
-      if (saved !== selectedCity) {
-        setSelectedCity(saved);
-        setSearchState((prev) => ({ ...prev, cityName: saved }));
-      }
+    let cancelled = false;
+
+    // 1. Restore the saved home city or cached geo city after hydration.
+    const preferredCity = getUserPreferredCity()?.trim();
+    if (preferredCity) {
+      setSelectedCity(preferredCity);
+      setSearchState((prev) => ({ ...prev, cityName: preferredCity }));
       return;
     }
 
     // 2. Otherwise detect current location dynamically (GPS first, then IP API)
-    detectUserLocation().then((profile) => {
-      if (profile?.city && profile.city.trim()) {
+    void detectUserLocation().then((profile) => {
+      if (!cancelled && profile?.city && profile.city.trim()) {
         const matched = profile.city.trim();
         setSelectedCity(matched);
         setSearchState((prev) => ({ ...prev, cityName: matched }));
@@ -50,7 +49,11 @@ export function HomeExperience() {
         }
       }
     });
-  }, [selectedCity]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const updateCity = (city: string) => {
     setSelectedCity(city);
