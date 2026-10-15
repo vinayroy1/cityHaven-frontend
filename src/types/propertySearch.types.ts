@@ -56,7 +56,7 @@ export type PropertySearchItem = {
   foodOption?: string | null;
   availableBeds?: number | null;
   totalRoomsAvailable?: number | null;
-  workstations?: number | null;
+  minNoOfSeats?: number | null;
   maxNoOfSeats?: number | null;
   shopFacadeSize?: number | null;
   shopFacadeSizeUnit?: string | null;

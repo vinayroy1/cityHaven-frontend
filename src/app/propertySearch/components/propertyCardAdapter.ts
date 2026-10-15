@@ -36,6 +36,13 @@ const readable = (value?: string | null) =>
         .replace(/\b\w/g, (letter) => letter.toUpperCase())
     : "";
 
+const shortMoney = (value?: number | null) => {
+  if (value == null || value <= 0) return "";
+  if (value >= 10_000_000) return `Rs ${(value / 10_000_000).toFixed(value % 10_000_000 ? 1 : 0)} Cr`;
+  if (value >= 100_000) return `Rs ${(value / 100_000).toFixed(value % 100_000 ? 1 : 0)} L`;
+  return `Rs ${value.toLocaleString("en-IN")}`;
+};
+
 const decisionDetails = (item: PropertySearchItem): string[] => {
   const listingType = item.listingType?.toUpperCase();
   const subtype = (item.propertySubType?.slug || item.propertySubTypeSlug || "").toLowerCase();
@@ -59,8 +66,11 @@ const decisionDetails = (item: PropertySearchItem): string[] => {
   } else if (item.resCom === "COMMERCIAL") {
     details.push(
       area(item),
-      item.workstations ? `${item.workstations} workstations` : item.maxNoOfSeats ? `Up to ${item.maxNoOfSeats} seats` : null,
+      item.maxNoOfSeats
+        ? `${item.minNoOfSeats ? `${item.minNoOfSeats}–` : "Up to "}${item.maxNoOfSeats} seats`
+        : null,
       item.shopFacadeSize ? `${item.shopFacadeSize} ${readable(item.shopFacadeSizeUnit || "ft")} frontage` : null,
+      listingType === "RENT" && item.deposit ? `${shortMoney(item.deposit)} deposit` : null,
       item.officeType && readable(item.officeType),
       item.furnishing && readable(item.furnishing),
     );
@@ -68,6 +78,7 @@ const decisionDetails = (item: PropertySearchItem): string[] => {
     details.push(
       item.bedrooms ? `${item.bedrooms} BHK` : null,
       area(item),
+      listingType === "RENT" && item.deposit ? `${shortMoney(item.deposit)} deposit` : null,
       item.furnishing && readable(item.furnishing),
       item.floorNumber != null && item.floorNumber !== "" ? `Floor ${item.floorNumber}${item.totalFloors ? `/${item.totalFloors}` : ""}` : null,
     );
