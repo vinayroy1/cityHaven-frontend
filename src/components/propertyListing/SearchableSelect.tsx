@@ -28,6 +28,32 @@ interface SearchableSelectProps {
   maxDisplayResults?: number;
 }
 
+function damerauLevenshtein(a: string, b: string): number {
+  if (a === b) return 0;
+  const la = a.length, lb = b.length;
+  if (!la) return lb;
+  if (!lb) return la;
+
+  const d: number[][] = Array.from({ length: la + 1 }, () => new Array(lb + 1).fill(0));
+  for (let i = 0; i <= la; i++) d[i][0] = i;
+  for (let j = 0; j <= lb; j++) d[0][j] = j;
+
+  for (let i = 1; i <= la; i++) {
+    for (let j = 1; j <= lb; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      d[i][j] = Math.min(
+        d[i - 1][j] + 1,
+        d[i][j - 1] + 1,
+        d[i - 1][j - 1] + cost
+      );
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+      }
+    }
+  }
+  return d[la][lb];
+}
+
 export function SearchableSelect({
   value,
   onChange,
@@ -72,25 +98,53 @@ export function SearchableSelect({
     return found ? found.label : value;
   }, [value, normalizedOptions, customValue, customLabel]);
 
-  // Filter options based on search query
+  // Filter options based on search query with space-insensitivity and fuzzy matching
   const filteredOptions = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return normalizedOptions;
+    const raw = search.trim();
+    if (!raw) return normalizedOptions;
 
-    // Prioritize options starting with search query, followed by contains
-    const startsWith: SearchableSelectOption[] = [];
-    const contains: SearchableSelectOption[] = [];
+    const q = raw.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ");
+    const qNoSpace = q.replace(/\s+/g, "");
+    const boundaryQ = q.replace(/([a-zA-Z])(\d)/g, "$1 $2").replace(/(\d)([a-zA-Z])/g, "$1 $2");
+
+    const scored: { opt: SearchableSelectOption; score: number }[] = [];
 
     for (const opt of normalizedOptions) {
-      const lower = opt.label.toLowerCase();
-      if (lower.startsWith(q)) {
-        startsWith.push(opt);
-      } else if (lower.includes(q)) {
-        contains.push(opt);
+      const label = opt.label;
+      const lower = label.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ");
+      const lowerNoSpace = lower.replace(/\s+/g, "");
+
+      let score = 0;
+
+      // 1. Exact match (with or without spaces)
+      if (lower === q || lower === boundaryQ || lowerNoSpace === qNoSpace) {
+        score = 200;
+      }
+      // 2. Prefix match
+      else if (lower.startsWith(q) || lower.startsWith(boundaryQ) || lowerNoSpace.startsWith(qNoSpace)) {
+        score = 150 + Math.min(20, (qNoSpace.length / Math.max(1, lowerNoSpace.length)) * 20);
+      }
+      // 3. Contains match
+      else if (lower.includes(q) || lower.includes(boundaryQ) || lowerNoSpace.includes(qNoSpace)) {
+        score = 100;
+      }
+      // 4. Fuzzy distance / typo match
+      else if (qNoSpace.length >= 4 && lowerNoSpace.length >= 4) {
+        const dist = damerauLevenshtein(qNoSpace, lowerNoSpace);
+        if (dist <= 1) {
+          score = 80;
+        } else if (dist <= 2 && Math.max(qNoSpace.length, lowerNoSpace.length) >= 6) {
+          score = 60;
+        }
+      }
+
+      if (score > 0) {
+        scored.push({ opt, score });
       }
     }
 
-    return [...startsWith, ...contains];
+    scored.sort((a, b) => b.score - a.score);
+    return scored.map((s) => s.opt);
   }, [normalizedOptions, search]);
 
   const displayedOptions = useMemo(() => {
