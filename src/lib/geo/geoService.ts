@@ -36,6 +36,25 @@ export function getCachedLocation(): UserLocationProfile | null {
   return null;
 }
 
+/**
+ * Returns the currently preferred/stored city for the user synchronously from
+ * localStorage ("awasio.home.city" or "awasio_user_geo").
+ * If no stored city is available, returns fallbackCity (which defaults to undefined).
+ */
+export function getUserPreferredCity(fallbackCity?: string): string | undefined {
+  if (typeof window === "undefined") return fallbackCity;
+  try {
+    const savedHomeCity = localStorage.getItem("awasio.home.city");
+    if (savedHomeCity?.trim()) return savedHomeCity.trim();
+
+    const cachedGeo = getCachedLocation();
+    if (cachedGeo?.city?.trim()) return cachedGeo.city.trim();
+  } catch {
+    // ignore localStorage errors
+  }
+  return fallbackCity;
+}
+
 function saveLocation(profile: UserLocationProfile): void {
   inMemoryProfile = profile;
   activeCluster = resolveMetroCluster(profile.city, profile.country);
@@ -59,36 +78,50 @@ export async function detectUserLocation(): Promise<UserLocationProfile> {
   if (detectionPromise) return detectionPromise;
 
   detectionPromise = (async () => {
+    // 1. First try GPS if permission was already granted
+    if (typeof window !== "undefined" && "permissions" in navigator && "geolocation" in navigator) {
+      try {
+        const permission = await navigator.permissions.query({ name: "geolocation" as PermissionName });
+        if (permission.state === "granted") {
+          const gps = await requestGpsLocation();
+          if (gps?.city) return gps;
+        }
+      } catch {
+        // proceed to IP detection
+      }
+    }
+
+    // 2. Fetch IP-based location from backend endpoint
     try {
       const res = await fetch("/api/geo/detect", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        const profile: UserLocationProfile = {
-          city: data.city || "Delhi",
-          region: data.region,
-          country: data.country || DEFAULT_COUNTRY,
-          latitude: data.latitude,
-          longitude: data.longitude,
-          source: data.source === "default" ? "default" : "ip",
-          timestamp: Date.now(),
-        };
-        saveLocation(profile);
-        return profile;
+        if (data && data.city) {
+          const profile: UserLocationProfile = {
+            city: data.city,
+            region: data.region,
+            country: data.country || DEFAULT_COUNTRY,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            source: data.source === "default" ? "default" : "ip",
+            timestamp: Date.now(),
+          };
+          saveLocation(profile);
+          return profile;
+        }
       }
     } catch {
-      // Fall through to default
+      // Fall through
     }
 
+    // 3. Fallback when completely offline or undetected
     const fallback: UserLocationProfile = {
-      city: "Delhi",
-      region: "Delhi",
+      city: "",
+      region: undefined,
       country: DEFAULT_COUNTRY,
-      latitude: 28.6139,
-      longitude: 77.209,
       source: "default",
       timestamp: Date.now(),
     };
-    saveLocation(fallback);
     return fallback;
   })().finally(() => {
     detectionPromise = null;
@@ -112,18 +145,21 @@ export async function requestGpsLocation(): Promise<UserLocationProfile | null> 
         try {
           const { reverseGeocodeAwasio } = await import("@/lib/awasioSuggestions");
           const result = await reverseGeocodeAwasio(latitude, longitude);
-          const detectedCity = result?.city || "Delhi";
-          const profile: UserLocationProfile = {
-            city: detectedCity,
-            region: result?.locality || undefined,
-            country: DEFAULT_COUNTRY,
-            latitude,
-            longitude,
-            source: "gps",
-            timestamp: Date.now(),
-          };
-          saveLocation(profile);
-          resolve(profile);
+          if (result?.city) {
+            const profile: UserLocationProfile = {
+              city: result.city,
+              region: result.locality || undefined,
+              country: DEFAULT_COUNTRY,
+              latitude,
+              longitude,
+              source: "gps",
+              timestamp: Date.now(),
+            };
+            saveLocation(profile);
+            resolve(profile);
+            return;
+          }
+          resolve(null);
         } catch {
           resolve(null);
         }

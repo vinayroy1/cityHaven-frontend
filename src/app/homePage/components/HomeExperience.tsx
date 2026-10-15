@@ -13,31 +13,44 @@ import type { PropertySearchItem } from "@/types/propertySearch.types";
 
 import { ALL_AGENTS, type Agent } from "@/data/agents";
 import { getMergedHomepageFeaturedAgents } from "@/lib/services/agentProfile";
-import { detectUserLocation } from "@/lib/geo/geoService";
+import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
 import { useGetAdvisorsQuery } from "@/features/advisors/api";
 
 const CITY_OPTIONS = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
 const STORAGE_KEY = "awasio.home.city";
 
 export function HomeExperience() {
-  const [selectedCity, setSelectedCity] = React.useState("Delhi");
-  const [searchState, setSearchState] = React.useState<SearchState>(() => initialSearchState("Delhi"));
+  const [selectedCity, setSelectedCity] = React.useState<string>(() => getUserPreferredCity() || "");
+  const [searchState, setSearchState] = React.useState<SearchState>(() => {
+    const initCity = getUserPreferredCity();
+    return initialSearchState(initCity || "");
+  });
 
   React.useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      setSelectedCity(saved);
-      setSearchState((prev) => ({ ...prev, cityName: saved }));
-    } else {
-      detectUserLocation().then((profile) => {
-        if (profile?.city) {
-          const matched = profile.city;
-          setSelectedCity(matched);
-          setSearchState((prev) => ({ ...prev, cityName: matched }));
-        }
-      });
+    // 1. Check if user already has a saved city in localStorage
+    const saved = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+    if (saved && saved.trim()) {
+      if (saved !== selectedCity) {
+        setSelectedCity(saved);
+        setSearchState((prev) => ({ ...prev, cityName: saved }));
+      }
+      return;
     }
-  }, []);
+
+    // 2. Otherwise detect current location dynamically (GPS first, then IP API)
+    detectUserLocation().then((profile) => {
+      if (profile?.city && profile.city.trim()) {
+        const matched = profile.city.trim();
+        setSelectedCity(matched);
+        setSearchState((prev) => ({ ...prev, cityName: matched }));
+        try {
+          window.localStorage.setItem(STORAGE_KEY, matched);
+        } catch {
+          // ignore
+        }
+      }
+    });
+  }, [selectedCity]);
 
   const updateCity = (city: string) => {
     setSelectedCity(city);

@@ -21,15 +21,34 @@ import {
   parseSearchParams,
   type SearchState,
 } from "@/components/search/searchQuery";
+import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
 
 export function SearchPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const state = React.useMemo(
-    () => parseSearchParams(new URLSearchParams(searchParams.toString())),
-    [searchParams],
-  );
+  const state = React.useMemo(() => {
+    const parsed = parseSearchParams(new URLSearchParams(searchParams.toString()));
+    if (!parsed.cityName && parsed.localities.length === 0) {
+      const preferredCity = getUserPreferredCity();
+      if (preferredCity) {
+        parsed.cityName = preferredCity;
+      }
+    }
+    return parsed;
+  }, [searchParams]);
+
+  React.useEffect(() => {
+    // If no city in URL search params or cache, detect dynamically and sync
+    if (!state.cityName && state.localities.length === 0) {
+      detectUserLocation().then((profile) => {
+        if (profile?.city) {
+          const next = { ...state, cityName: profile.city };
+          router.replace(`/propertySearch?${buildSearchParams(next).toString()}`, { scroll: false });
+        }
+      });
+    }
+  }, [state, router]);
 
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = React.useState(false);

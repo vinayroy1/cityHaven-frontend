@@ -51,9 +51,11 @@ export function LocationSearchInput({
     if (!open) setText("");
   }, [keyword, open]);
 
-  // Warm the dropdown whenever the city changes so the first focus already
-  // contains useful locality choices instead of an empty panel.
+  // Warm the dropdown when the user opens/focuses the input so the panel
+  // contains useful locality choices for the selected city.
   React.useEffect(() => {
+    if (!open) return;
+
     const selectedCity = cityName?.trim();
     let cancelled = false;
 
@@ -92,7 +94,7 @@ export function LocationSearchInput({
     return () => {
       cancelled = true;
     };
-  }, [cityName]);
+  }, [cityName, open]);
 
   React.useEffect(() => {
     // Only search autocomplete suggestions when the user is actively interacting with the input
@@ -108,7 +110,7 @@ export function LocationSearchInput({
       return;
     }
 
-    const effectiveCity = cityName?.trim() || "Bengaluru";
+    const effectiveCity = cityName?.trim() || undefined;
     let cancelled = false;
     setLoading(true);
     setError(null);

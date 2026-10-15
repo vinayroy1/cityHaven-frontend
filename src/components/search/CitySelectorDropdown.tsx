@@ -38,6 +38,8 @@ const KNOWN_INDIAN_METROS = new Set([
   "ranchi", "patna", "bhopal", "dehradun"
 ]);
 
+import { getUserPreferredCity } from "@/lib/geo/geoService";
+
 interface Props {
   selectedCityName?: string;
   onSelectCity: (city: CityItem) => void;
@@ -45,7 +47,7 @@ interface Props {
   compact?: boolean;
 }
 
-export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectCity, className = "", compact = false }: Props) {
+export function CitySelectorDropdown({ selectedCityName, onSelectCity, className = "", compact = false }: Props) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -186,7 +188,7 @@ export function CitySelectorDropdown({ selectedCityName = "Bengaluru", onSelectC
     };
   }, [isOpen]);
 
-  const currentDisplay = selectedCityName || "Bengaluru";
+  const currentDisplay = selectedCityName || getUserPreferredCity() || "Select City";
 
   return (
     <div className={`relative ${className}`} ref={containerRef}>

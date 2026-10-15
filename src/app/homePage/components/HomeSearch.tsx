@@ -8,10 +8,23 @@ import {
   initialSearchState,
   type SearchState,
 } from "@/components/search/searchQuery";
+import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
 
 export function HomeSearch() {
   const router = useRouter();
-  const [state, setState] = React.useState<SearchState>(() => initialSearchState());
+  const [state, setState] = React.useState<SearchState>(() =>
+    initialSearchState(getUserPreferredCity() || ""),
+  );
+
+  React.useEffect(() => {
+    if (!state.cityName) {
+      detectUserLocation().then((profile) => {
+        if (profile?.city) {
+          setState((prev) => ({ ...prev, cityName: profile.city }));
+        }
+      });
+    }
+  }, [state.cityName]);
 
   const submit = (next: SearchState) => {
     setState(next);
