@@ -220,23 +220,42 @@ function PropertiesContent() {
   const storageKey = `awasio_${scope}_${subKey}_consumed_listing_ids`;
 
   const [consumedPropertyIds, setConsumedPropertyIds] = useState<number[]>([]);
+  const activePropertyIdsKey = (rawList as Array<{ id: number | string; status?: string }>)
+    .filter((item) => item.status === "ACTIVE")
+    .map((item) => Number(item.id))
+    .filter(Number.isFinite)
+    .sort((a: number, b: number) => a - b)
+    .join(",");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
       const raw = localStorage.getItem(storageKey);
-      const parsed: number[] = raw ? JSON.parse(raw) : [];
+      const stored = raw ? JSON.parse(raw) : [];
+      const parsed = Array.isArray(stored)
+        ? stored.map(Number).filter(Number.isFinite)
+        : [];
       // Any property currently ACTIVE is guaranteed to have consumed a credit
-      const activeIds = rawList
-        .filter((item: any) => item.status === "ACTIVE")
-        .map((item: any) => Number(item.id));
-      const merged = Array.from(new Set([...parsed, ...activeIds]));
-      setConsumedPropertyIds(merged);
-      localStorage.setItem(storageKey, JSON.stringify(merged));
+      const activeIds = activePropertyIdsKey
+        ? activePropertyIdsKey.split(",").map(Number).filter(Number.isFinite)
+        : [];
+      const merged = Array.from(new Set([...parsed, ...activeIds])).sort((a, b) => a - b);
+      const serialized = JSON.stringify(merged);
+
+      setConsumedPropertyIds((current) => {
+        if (current.length === merged.length && current.every((id, index) => id === merged[index])) {
+          return current;
+        }
+        return merged;
+      });
+
+      if (raw !== serialized) {
+        localStorage.setItem(storageKey, serialized);
+      }
     } catch (e) {
       console.error("Error loading consumed listing IDs", e);
     }
-  }, [storageKey, rawList]);
+  }, [storageKey, activePropertyIdsKey]);
 
   // Available listing credits remaining in purchased package
   const consumedCredits = consumedPropertyIds.length;
