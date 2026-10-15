@@ -9,7 +9,7 @@ const feed = [
   { title: "New lead assigned", detail: "Rohit for 3BHK in HSR", time: "2m ago", tone: "rose" },
   { title: "Document verified", detail: "Owner NOC - Sunrise Tower", time: "1h ago", tone: "emerald" },
   { title: "Visit reminder", detail: "Kabir Shah • Co-working • Fri 4PM", time: "3h ago", tone: "amber" },
-  { title: "Payment processed", detail: "Payout ₹1,25,000 • TXN-2481", time: "Today", tone: "slate" },
+  { title: "Listing approved", detail: "Luxury Apartment in Indiranagar is now live", time: "Today", tone: "slate" },
 ];
 
 export default function NotificationsPage() {
@@ -20,7 +20,7 @@ export default function NotificationsPage() {
         <PageHeader
           tag="Inbox"
           title="Notifications"
-          subtitle="Unified feed from leads, documents, KYC, and transactions tables."
+          subtitle="Unified feed from leads, documents, and property updates."
           backHref="/dashboard"
           actions={
             <button className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-[0_18px_50px_-24px_rgba(15,23,42,0.8)] transition hover:-translate-y-0.5">
@@ -34,7 +34,7 @@ export default function NotificationsPage() {
             <StatPill label="Unread" value="5" hint="New today" tone="rose" />
             <StatPill label="Leads" value="3" hint="Assignments & replies" tone="emerald" />
             <StatPill label="Documents" value="1" hint="Verification updates" tone="amber" />
-            <StatPill label="Transactions" value="1" hint="Payout alerts" tone="slate" />
+            <StatPill label="Listings" value="2" hint="Status updates" tone="slate" />
           </div>
         </SectionCard>
 

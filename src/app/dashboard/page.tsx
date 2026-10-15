@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BadgeCheck, Bell, Building2, CreditCard, FileText, HandCoins, Heart, MessageSquare, NotebookTabs, RouteIcon, ShieldCheck, Users } from "lucide-react";
+import { BadgeCheck, Bell, Building2, CreditCard, FileText, Heart, MessageSquare, NotebookTabs, RouteIcon, Users } from "lucide-react";
 import { PageHeader } from "./components/PageHeader";
 import { SectionCard } from "./components/SectionCard";
 import { StatPill } from "./components/StatPill";
@@ -10,11 +10,11 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 
 export const metadata: Metadata = {
   title: "Dashboard | Awasio",
-  description: "Monitor listings, leads, KYC, and payouts from your Awasio control center.",
+  description: "Monitor listings, leads, properties, and documents from your Awasio control center.",
   alternates: { canonical: buildCanonical("/dashboard") },
   openGraph: {
     title: "Dashboard | Awasio",
-    description: "Manage Awasio listings, leads, compliance, and payouts in one place.",
+    description: "Manage Awasio listings, leads, properties, and documents in one place.",
     url: buildCanonical("/dashboard"),
     type: "website",
   },
@@ -28,9 +28,7 @@ export default function DashboardPage() {
     { href: "/dashboard/properties", title: "Properties", description: "Manage drafts, active listings, and boosts.", icon: NotebookTabs },
     { href: "/dashboard/organization", title: "Organization", description: "Manage company workspaces, employees, and roles.", icon: Building2 },
     { href: "/dashboard/leads", title: "Leads & CRM", description: "Track enquiries, visits, and follow-ups.", icon: Users },
-    { href: "/dashboard/kyc", title: "KYC & Compliance", description: "Keep verification and payouts current.", icon: ShieldCheck },
-    { href: "/dashboard/documents", title: "Documents", description: "Rental agreements and proof bundles.", icon: FileText },
-    { href: "/dashboard/transactions", title: "Transactions & Invoices", description: "Payouts, invoices, and billing statements.", icon: HandCoins },
+    { href: "/dashboard/documents", title: "Documents", description: "Property records, title deeds, and NOCs.", icon: FileText },
     { href: "/dashboard/notifications", title: "Notifications", description: "Alerts across messages and status changes.", icon: Bell },
     { href: "/dashboard/messages", title: "Messages", description: "Chat with buyers, tenants, and support.", icon: MessageSquare },
     { href: "/dashboard/settings", title: "Settings", description: "Preferences, alerts, and account controls.", icon: RouteIcon },
@@ -43,7 +41,7 @@ export default function DashboardPage() {
         <PageHeader
           tag="Control center"
           title="Dashboard"
-          subtitle="Manage listings, leads, compliance, and payouts in one place."
+          subtitle="Manage listings, leads, compliance, and properties in one place."
           actions={
             <div className="flex items-center gap-2">
               <Link
@@ -126,12 +124,12 @@ export default function DashboardPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <StatPill label="Active listings" value="12" hint="4 boosting this week" tone="rose" />
             <StatPill label="New leads" value="27" hint="7 need follow-up" tone="emerald" />
-            <StatPill label="Pending KYC" value="2 steps" hint="PAN + bank proof" tone="amber" />
+            <StatPill label="Shortlisted" value="18" hint="Saved by buyers" tone="amber" />
             <StatPill label="Unread alerts" value="5" hint="Messages + status" tone="slate" />
           </div>
         </SectionCard>
 
-        <SectionCard title="Jump into a workflow" subtitle="Everything aligns with your backend objects: leads, KYC, documents, notifications, and transactions.">
+        <SectionCard title="Jump into a workflow" subtitle="Everything aligns with your backend objects: leads, documents, notifications, and properties.">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {quickLinks.map(({ href, title, description, icon: Icon }) => (
               <Link
@@ -157,9 +155,9 @@ export default function DashboardPage() {
         <SectionCard title="Need guidance?" subtitle="Our team can help map backend fields to UI forms.">
           <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-400">
             <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-300">Lead status flow</span>
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-300">KYC + bank verification</span>
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-300">Rental agreements</span>
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-300">Payout audit</span>
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-300">Property ownership proofs</span>
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-300">Society NOCs</span>
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-300">Listing verification</span>
           </div>
         </SectionCard>
       </div>

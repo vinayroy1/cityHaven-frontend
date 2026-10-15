@@ -12,7 +12,7 @@ export default function DashboardProfilePage() {
         <PageHeader
           tag="Account"
           title="My Profile"
-          subtitle="Manage your personal details, KYC status, and notification preferences."
+          subtitle="Manage your personal details, credentials, and notification preferences."
           backHref="/dashboard"
         />
 
@@ -31,11 +31,11 @@ export default function DashboardProfilePage() {
             <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/50">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                <span>KYC Status</span>
+                <span>Account Status</span>
               </div>
-              <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-200">Verified Member</p>
-              <Link href="/dashboard/kyc" className="mt-2 inline-block text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline">
-                View KYC details →
+              <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-200">Active Member</p>
+              <Link href="/dashboard/favorites" className="mt-2 inline-block text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline">
+                View saved homes →
               </Link>
             </div>
 
