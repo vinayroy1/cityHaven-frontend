@@ -37,7 +37,7 @@ export const basicDetailsStep: StepConfig = {
       fields: [
         {
           id: "context.listingType",
-          label: "I want to",
+          label: "I want to list my property for",
           type: "chip-radio",
           required: true,
           options: [
