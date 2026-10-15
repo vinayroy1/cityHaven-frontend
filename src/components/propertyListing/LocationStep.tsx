@@ -10,8 +10,48 @@ import {
 } from "@/lib/awasioSuggestions";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import { errorText, fieldLabel } from "./theme";
-import indiaCitiesData from "@/data/india-cities-by-state.json";
 import { SearchableSelect } from "./SearchableSelect";
+import { PropertyListingCitySelector, type CitySelection } from "./PropertyListingCitySelector";
+import { PropertyListingLocalitySelector, type LocalitySelection } from "./PropertyListingLocalitySelector";
+
+export const INDIAN_STATES_AND_UTS: string[] = [
+  "Andaman and Nicobar Islands",
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chandigarh",
+  "Chhattisgarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jammu and Kashmir",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Ladakh",
+  "Lakshadweep",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Puducherry",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+];
 
 // Known static metadata for popular Indian localities (Pincode + Lat/Lng)
 const KNOWN_LOCALITY_METADATA: Record<string, { pincode: string; lat: number; lng: number }> = {
@@ -72,23 +112,6 @@ const CITY_DEFAULT_COORDINATES: Record<string, { pincode: string; lat: number; l
   "kochi": { pincode: "682001", lat: 9.9312, lng: 76.2673 },
 };
 
-// Curated popular localities for major Indian cities
-const POPULAR_LOCALITIES_BY_CITY: Record<string, string[]> = {
-  "Delhi": ["South Delhi", "Chhatarpur", "Vasant Kunj", "Dwarka", "Rohini", "Saket", "Greater Kailash", "Janakpuri", "Connaught Place", "Pitampura", "Lajpat Nagar", "New Delhi"],
-  "New Delhi": ["South Delhi", "Chhatarpur", "Vasant Kunj", "Dwarka", "Rohini", "Saket", "Greater Kailash", "Janakpuri", "Connaught Place", "Pitampura", "Lajpat Nagar"],
-  "Gurgaon": ["DLF Phase 1", "DLF Phase 5", "Golf Course Road", "Sohna Road", "Sector 56", "Sector 57", "Cyber City", "MG Road", "Sector 48", "Sector 82"],
-  "Gurugram": ["DLF Phase 1", "DLF Phase 5", "Golf Course Road", "Sohna Road", "Sector 56", "Sector 57", "Cyber City", "MG Road", "Sector 48", "Sector 82"],
-  "Noida": ["Sector 62", "Sector 18", "Sector 137", "Sector 150", "Noida Extension", "Sector 78", "Sector 50", "Sector 128"],
-  "Bengaluru": ["HSR Layout", "Whitefield", "Indiranagar", "Koramangala", "Bellandur", "Electronic City", "Jayanagar", "Marathahalli", "Sarjapur Road", "Yelahanka", "JP Nagar"],
-  "Bangalore": ["HSR Layout", "Whitefield", "Indiranagar", "Koramangala", "Bellandur", "Electronic City", "Jayanagar", "Marathahalli", "Sarjapur Road", "Yelahanka", "JP Nagar"],
-  "Mumbai": ["Bandra West", "Andheri West", "Powai", "Juhu", "Worli", "Malad West", "Thane West", "Navi Mumbai", "Borivali", "Goregaon", "Dadra"],
-  "Hyderabad": ["Hitech City", "Gachibowli", "Kondapur", "Jubilee Hills", "Banjara Hills", "Madhapur", "Kukatpally", "Miyapur", "Tellapur"],
-  "Pune": ["Baner", "Hinjewadi", "Wakad", "Viman Nagar", "Kharadi", "Kothrud", "Hadapsar", "Aundh", "Bavdhan"],
-  "Chennai": ["OMR", "Velachery", "Anna Nagar", "Adyar", "T. Nagar", "Porur", "Sholinganallur", "ECR"],
-  "Kolkata": ["Rajarhat", "New Town", "Salt Lake", "Ballygunge", "Alipore", "E M Bypass", "Behala"],
-  "Ahmedabad": ["SG Highway", "Boped", "Satellite", "Prahlad Nagar", "Vastrapur", "Thaltej", "Gota"],
-};
-
 const Field = ({
   label,
   required,
@@ -120,7 +143,6 @@ export function LocationStep() {
   const [isCustomLocalityMode, setIsCustomLocalityMode] = useState<boolean>(false);
   const [customLocalityInput, setCustomLocalityInput] = useState<string>("");
 
-  const [dynamicLocalities, setDynamicLocalities] = useState<string[]>([]);
   const [geoStatus, setGeoStatus] = useState<{ pincode?: string; lat?: number; lng?: number; source?: string } | null>(null);
   const [nearbyLandmarks, setNearbyLandmarks] = useState<{
     transit?: Array<{ name: string; distanceKm: number; duration?: string; key: string }>;
@@ -311,73 +333,21 @@ export function LocationStep() {
     form,
   ]);
 
-  // States list from JSON
-  const statesList = useMemo(() => {
-    return (indiaCitiesData.states || []).map((s) => s.state).sort();
-  }, []);
+  // States list from standard 36 Indian states and UTs
+  const statesList = useMemo(() => INDIAN_STATES_AND_UTS, []);
 
-  // Filtered Cities list based on selected state
-  const citiesList = useMemo(() => {
-    if (!selectedState) {
-      return Array.from(
-        new Set(
-          (indiaCitiesData.states || [])
-            .flatMap((s) => s.cities)
-            .filter(Boolean)
-        )
-      ).sort();
-    }
-    const match = (indiaCitiesData.states || []).find((s) => s.state === selectedState);
-    return match ? [...match.cities].sort() : [];
-  }, [selectedState]);
-
-  // Fetch dynamic localities when selectedCity changes
-  useEffect(() => {
-    if (!selectedCity) {
-      setDynamicLocalities([]);
-      return;
-    }
-
-    let isMounted = true;
-    const fetchCityLocalities = async () => {
-      try {
-        const res = await fetchAwasioSuggestions(selectedCity, { limit: 15, types: ["LOCALITY"] });
-        if (isMounted && res.data) {
-          const names = res.data.map((s) => s.location.locality || s.title).filter(Boolean);
-          setDynamicLocalities(names);
-        }
-      } catch {
-        if (isMounted) setDynamicLocalities([]);
-      }
-    };
-
-    fetchCityLocalities();
-    return () => {
-      isMounted = false;
-    };
-  }, [selectedCity]);
-
-  // Combined locality list for selected city
-  const localitySuggestions = useMemo(() => {
-    if (!selectedCity) return [];
-    const normalized = selectedCity.trim().toLowerCase();
-    
-    const staticKey = Object.keys(POPULAR_LOCALITIES_BY_CITY).find(
-      (k) => k.toLowerCase() === normalized || normalized.includes(k.toLowerCase()) || k.toLowerCase().includes(normalized)
-    );
-    const staticList = staticKey ? POPULAR_LOCALITIES_BY_CITY[staticKey] : [];
-
-    const combined = Array.from(new Set([...staticList, ...dynamicLocalities])).filter(Boolean);
-    return combined;
-  }, [selectedCity, dynamicLocalities]);
-
-  // Sync state if city is pre-filled
+  // Sync state if city is pre-filled on initial edit
   useEffect(() => {
     if (selectedCity && !selectedState) {
-      const foundState = (indiaCitiesData.states || []).find((s) =>
-        s.cities.some((c) => c.toLowerCase() === selectedCity.toLowerCase())
-      );
-      if (foundState) setSelectedState(foundState.state);
+      let isMounted = true;
+      void fetchAwasioSuggestions(selectedCity, { types: ["CITY"], limit: 1 }).then((res) => {
+        if (!isMounted) return;
+        const matched = res.data?.[0]?.location?.state;
+        if (matched) setSelectedState(matched);
+      }).catch(() => {});
+      return () => {
+        isMounted = false;
+      };
     }
   }, [selectedCity, selectedState]);
 
@@ -622,18 +592,18 @@ export function LocationStep() {
     lastGeocodedAddressRef.current = "";
   };
 
-  const handleCityChange = (cityName: string) => {
+  const handleCitySelect = (cityData: CitySelection) => {
     localityReqSeqRef.current++;
     landmarkReqSeqRef.current++;
-    setSelectedCity(cityName);
+
+    const newCityName = cityData.name || "";
+    setSelectedCity(newCityName);
     setSelectedLocality("");
     setIsCustomLocalityMode(false);
     setCustomLocalityInput("");
-    form.setValue("location.cityName", cityName);
+    form.setValue("location.cityName", newCityName);
     form.setValue("location.locality", "");
     form.setValue("location.pincode", "");
-    form.setValue("location.latitude", null);
-    form.setValue("location.longitude", null);
     form.setValue("location.nearbyLandmarks", null, { shouldDirty: false });
     setGeoStatus(null);
     setNearbyLandmarks(null);
@@ -642,40 +612,72 @@ export function LocationStep() {
     lastGeocodedAddressRef.current = "";
     form.trigger(["location.cityName"]);
 
-    // Fill City-level default lat/lng immediately when city is picked (landmarks will wait for locality)
-    if (cityName) {
-      fallbackToCityDefaults(cityName);
-      updateFormattedAddress(cityName, "", selectedState);
+    if (!newCityName) {
+      form.setValue("location.latitude", null);
+      form.setValue("location.longitude", null);
+      updateFormattedAddress("", "", selectedState);
+      return;
     }
+
+    if (cityData.state && !selectedState) {
+      setSelectedState(cityData.state);
+    }
+
+    if (cityData.lat && cityData.lng) {
+      form.setValue("location.latitude", cityData.lat);
+      form.setValue("location.longitude", cityData.lng);
+      setGeoStatus({
+        lat: cityData.lat,
+        lng: cityData.lng,
+        source: "City Level",
+        pincode: form.getValues("location.pincode") || "",
+      });
+    } else {
+      fallbackToCityDefaults(newCityName);
+    }
+
+    updateFormattedAddress(newCityName, "", cityData.state || selectedState);
   };
 
-  const handleLocalitySelect = (localityName: string) => {
+  const handleLocalitySelect = (locData: LocalitySelection) => {
     localityReqSeqRef.current++;
-    if (localityName === "__CUSTOM__") {
-      landmarkReqSeqRef.current++;
+    const locName = locData.name || "";
+
+    if (locData.isCustom) {
       setIsCustomLocalityMode(true);
-      setSelectedLocality("");
-      setCustomLocalityInput("");
-      form.setValue("location.locality", "");
-      form.setValue("location.pincode", "");
-      form.setValue("location.nearbyLandmarks", null, { shouldDirty: false });
-      setNearbyLandmarks(null);
-      setLoadingLandmarks(false);
-      lastFetchedCoordsRef.current = "";
-      lastGeocodedAddressRef.current = "";
+      setSelectedLocality(locName);
+      setCustomLocalityInput(locName);
+      form.setValue("location.locality", locName);
+      form.trigger(["location.locality"]);
+      updateFormattedAddress(selectedCity, locName, selectedState);
+      autoPopulatePincodeAndCoordinates(locName, selectedCity);
       return;
     }
 
     setIsCustomLocalityMode(false);
-    setSelectedLocality(localityName);
-    setCustomLocalityInput(localityName);
-    form.setValue("location.locality", localityName);
-    form.setValue("location.pincode", "");
-    form.trigger(["location.locality"]);
+    setSelectedLocality(locName);
+    setCustomLocalityInput(locName);
+    form.setValue("location.locality", locName);
 
-    // Tier 1 -> Tier 2 -> Tier 3 Geocode Resolution
-    autoPopulatePincodeAndCoordinates(localityName, selectedCity);
-    updateFormattedAddress(selectedCity, localityName, selectedState);
+    if (locData.pincode) {
+      form.setValue("location.pincode", locData.pincode);
+    }
+
+    if (locData.lat && locData.lng) {
+      form.setValue("location.latitude", locData.lat);
+      form.setValue("location.longitude", locData.lng);
+      setGeoStatus({
+        lat: locData.lat,
+        lng: locData.lng,
+        source: "Locality Level",
+        pincode: locData.pincode || form.getValues("location.pincode") || "",
+      });
+    } else {
+      autoPopulatePincodeAndCoordinates(locName, selectedCity);
+    }
+
+    form.trigger(["location.locality"]);
+    updateFormattedAddress(selectedCity, locName, selectedState);
   };
 
   const currentLat = form.watch("location.latitude");
@@ -713,39 +715,21 @@ export function LocationStep() {
 
           {/* 2. City Dropdown */}
           <Field label="City" required error={errors.cityName?.message as string | undefined}>
-            <SearchableSelect
+            <PropertyListingCitySelector
               value={selectedCity}
-              onChange={handleCityChange}
-              options={citiesList}
-              placeholder={selectedState ? `Select City in ${selectedState}` : "Select City (or search across India)"}
-              searchPlaceholder={selectedState ? `Search city in ${selectedState}...` : "Search city across India..."}
-              emptyMessage={selectedState ? `No city found in ${selectedState}` : "No matching city found"}
+              selectedState={selectedState}
+              onChange={handleCitySelect}
               hasError={Boolean(errors.cityName)}
             />
           </Field>
 
           {/* 3. Locality Dropdown / Input */}
           <Field label="Locality / Area" required error={errors.locality?.message as string | undefined}>
-            <SearchableSelect
-              value={isCustomLocalityMode ? "__CUSTOM__" : selectedLocality}
+            <PropertyListingLocalitySelector
+              value={selectedLocality}
+              cityName={selectedCity}
+              selectedState={selectedState}
               onChange={handleLocalitySelect}
-              options={localitySuggestions}
-              placeholder={selectedCity ? `Select Locality in ${selectedCity}` : "Select Locality"}
-              searchPlaceholder={selectedCity ? `Search locality in ${selectedCity}...` : "Search locality..."}
-              allowCustom={true}
-              customValue="__CUSTOM__"
-              customLabel="+ Enter Custom Locality"
-              onCustomSelect={(customVal) => {
-                setIsCustomLocalityMode(true);
-                setCustomLocalityInput(customVal);
-                setSelectedLocality(customVal);
-                form.setValue("location.locality", customVal);
-                form.setValue("location.pincode", "");
-                form.trigger(["location.locality"]);
-                updateFormattedAddress(selectedCity, customVal, selectedState);
-                autoPopulatePincodeAndCoordinates(customVal, selectedCity);
-              }}
-              emptyMessage={selectedCity ? `No listed locality found in ${selectedCity}` : "No locality found"}
               hasError={Boolean(errors.locality)}
             />
           </Field>
@@ -760,6 +744,7 @@ export function LocationStep() {
                 onChange={(e) => {
                   const val = e.target.value;
                   setCustomLocalityInput(val);
+                  setSelectedLocality(val);
                   form.setValue("location.locality", val);
                   updateFormattedAddress(selectedCity, val, selectedState);
                   if (customLocalityTimerRef.current) {
