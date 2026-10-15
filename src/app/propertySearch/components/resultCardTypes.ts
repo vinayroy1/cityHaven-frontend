@@ -12,6 +12,7 @@ export type ResultCardProps = {
   type?: string | null;
   listingType?: string | null;
   resCom?: string | null;
+  decisionDetails?: string[];
   isNew?: boolean;
   isVerified?: boolean;
   posterBadge?: string;

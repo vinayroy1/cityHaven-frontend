@@ -35,6 +35,7 @@ export function ResultCard({
   type,
   listingType,
   resCom,
+  decisionDetails,
   isNew,
   isVerified,
   posterBadge,
@@ -454,6 +455,7 @@ export function ResultCard({
         bathrooms={bathrooms}
         type={type}
         listingType={listingType}
+        decisionDetails={decisionDetails}
         contextBadge={contextBadge}
         posterBadge={posterBadge}
         onContactClick={openContactFlow}

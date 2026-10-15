@@ -28,6 +28,54 @@ const postedAsLabel = (postedAs?: string | null) => {
   return postedAs[0] + postedAs.slice(1).toLowerCase();
 };
 
+const readable = (value?: string | null) =>
+  value
+    ? value
+        .toLowerCase()
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (letter) => letter.toUpperCase())
+    : "";
+
+const decisionDetails = (item: PropertySearchItem): string[] => {
+  const listingType = item.listingType?.toUpperCase();
+  const subtype = (item.propertySubType?.slug || item.propertySubTypeSlug || "").toLowerCase();
+  const isPlot = subtype.includes("plot-land") || item.propertyTypeSlug === "plot-land";
+  const details: Array<string | null | undefined | false> = [];
+
+  if (listingType === "PG") {
+    details.push(
+      item.sharingType && readable(item.sharingType),
+      item.pgFor && `For ${readable(item.pgFor)}`,
+      item.foodOption && readable(item.foodOption),
+      item.availableBeds ? `${item.availableBeds} beds vacant` : item.totalRoomsAvailable ? `${item.totalRoomsAvailable} rooms vacant` : null,
+    );
+  } else if (isPlot) {
+    details.push(
+      area(item),
+      item.plotLength && item.plotBreadth ? `${item.plotLength} × ${item.plotBreadth} ft` : null,
+      item.propertyFacing && `${readable(item.propertyFacing)} facing`,
+      item.openSides ? `${item.openSides} open sides` : null,
+    );
+  } else if (item.resCom === "COMMERCIAL") {
+    details.push(
+      area(item),
+      item.workstations ? `${item.workstations} workstations` : item.maxNoOfSeats ? `Up to ${item.maxNoOfSeats} seats` : null,
+      item.shopFacadeSize ? `${item.shopFacadeSize} ${readable(item.shopFacadeSizeUnit || "ft")} frontage` : null,
+      item.officeType && readable(item.officeType),
+      item.furnishing && readable(item.furnishing),
+    );
+  } else {
+    details.push(
+      item.bedrooms ? `${item.bedrooms} BHK` : null,
+      area(item),
+      item.furnishing && readable(item.furnishing),
+      item.floorNumber != null && item.floorNumber !== "" ? `Floor ${item.floorNumber}${item.totalFloors ? `/${item.totalFloors}` : ""}` : null,
+    );
+  }
+
+  return details.filter((detail): detail is string => Boolean(detail) && detail !== "Area NA").slice(0, 3);
+};
+
 export const isFreshListing = (createdAt?: string) => {
   if (!createdAt) return false;
   const created = new Date(createdAt).getTime();
@@ -49,6 +97,7 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     type: item.propertySubType?.name || item.propertySubTypeName || item.propertyType?.name || item.propertyTypeName,
     listingType: item.listingType,
     resCom: item.resCom,
+    decisionDetails: decisionDetails(item),
     isNew: isFreshListing(item.createdAt),
     isVerified: item.qcStatus === "APPROVED",
     posterBadge: postedAsLabel(item.postedAs),

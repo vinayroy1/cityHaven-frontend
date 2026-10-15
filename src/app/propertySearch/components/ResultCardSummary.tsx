@@ -13,6 +13,7 @@ type ResultCardSummaryProps = {
   bathrooms?: number | null;
   type?: string | null;
   listingType?: string | null;
+  decisionDetails?: string[];
   contextBadge: string | null;
   posterBadge?: string;
   onContactClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -93,6 +94,7 @@ export function ResultCardSummary({
   bathrooms,
   type,
   listingType,
+  decisionDetails,
   contextBadge,
   posterBadge,
   onContactClick,
@@ -133,7 +135,19 @@ export function ResultCardSummary({
 
       <p className={`font-black tracking-tight text-zinc-950 dark:text-white ${compact ? "text-base sm:text-lg" : "text-lg sm:text-xl"}`}>{price}</p>
 
-      {compact ? (
+      {compact && decisionDetails?.length ? (
+        <div className="flex min-w-0 items-center overflow-hidden rounded-md bg-zinc-50 px-2 py-1 text-[11px] font-semibold text-zinc-700 dark:bg-slate-800/80 dark:text-slate-300 sm:py-1.5">
+          {decisionDetails.slice(0, 3).map((detail, index) => (
+            <span
+              key={`${detail}-${index}`}
+              className={`min-w-0 truncate whitespace-nowrap ${index > 0 ? "ml-2 border-l border-zinc-200 pl-2 dark:border-slate-700" : ""}`}
+              title={detail}
+            >
+              {detail}
+            </span>
+          ))}
+        </div>
+      ) : compact ? (
         <div className="flex min-w-0 items-center gap-2 overflow-hidden rounded-md bg-zinc-50 px-2 py-1 text-[11px] font-semibold text-zinc-700 dark:bg-slate-800/80 dark:text-slate-300 sm:py-1.5">
           {!isPg && bedrooms != null && bedrooms > 0 && (
             <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap">

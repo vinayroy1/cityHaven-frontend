@@ -113,9 +113,9 @@ export const predicates: Record<string, Predicate> = {
   hasBhkConfig,
 
   // ---- Area ----
-  showAreaSection: (v) => anyDwelling(v) || isPlot(v) || isWarehouse(v),
-  showBuiltUpArea: (v) => anyDwelling(v) && !isPlot(v) && !isWarehouse(v),
-  showCarpetArea: (v) => anyDwelling(v) && !isPlot(v),
+  showAreaSection: (v) => anyDwelling(v) || isCommercial(v) || isPlot(v) || isWarehouse(v),
+  showBuiltUpArea: (v) => (anyDwelling(v) || isCommercial(v)) && !isPlot(v) && !isWarehouse(v),
+  showCarpetArea: (v) => (anyDwelling(v) || isOffice(v) || isRetail(v)) && !isPlot(v),
   // super built-up is a building-unit concept (loading/common area) — not for villas/farmhouses
   showSuperBuiltUpArea: (v) => (isApartmentOrBuilder(v) || isStudio(v) || isServiced(v) || isOffice(v) || isRetail(v)),
   showPlotArea: (v) => isPlot(v) || isWarehouse(v),
