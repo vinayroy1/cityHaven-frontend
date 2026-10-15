@@ -93,15 +93,19 @@ export async function fetchAwasioSuggestions(
     pageSize?: number;
   }
 ): Promise<AwasioSuggestionResponse> {
-  if (!query || query.trim().length < 2) {
-    return {
-      success: true, query, total: 0, tookMs: 0,
-      grouped: { cities: [], localities: [], projects: [], developers: [] },
-      data: [],
-      pagination: { page: 1, pageSize: options?.pageSize || options?.limit || 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
-    };
+  const cleanQuery = query?.trim() || "";
+  if (!cleanQuery || cleanQuery.length < 2) {
+    if (!options?.city) {
+      return {
+        success: true, query, total: 0, tookMs: 0,
+        grouped: { cities: [], localities: [], projects: [], developers: [] },
+        data: [],
+        pagination: { page: 1, pageSize: options?.pageSize || options?.limit || 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
+      };
+    }
   }
-  const params = new URLSearchParams({ q: query.trim() });
+  const effectiveQuery = cleanQuery.length >= 2 ? cleanQuery : (options?.city || "");
+  const params = new URLSearchParams({ q: effectiveQuery });
   if (options?.city) params.set("city", options.city);
   if (options?.state) params.set("state", options.state);
   if (options?.types?.length) params.set("types", options.types.join(","));

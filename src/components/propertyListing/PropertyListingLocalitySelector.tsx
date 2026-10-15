@@ -38,6 +38,8 @@ export function PropertyListingLocalitySelector({
   const [search, setSearch] = useState("");
   const [localities, setLocalities] = useState<AwasioSuggestion[]>([]);
   const [prefetchedLocalities, setPrefetchedLocalities] = useState<AwasioSuggestion[]>([]);
+  const [prefetchedHasMore, setPrefetchedHasMore] = useState(false);
+  const [prefetchedPage, setPrefetchedPage] = useState(2);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -54,6 +56,8 @@ export function PropertyListingLocalitySelector({
     const cleanCity = cityName?.trim();
     if (!cleanCity) {
       setPrefetchedLocalities([]);
+      setPrefetchedHasMore(false);
+      setPrefetchedPage(2);
       setLocalities([]);
       setHasMore(false);
       setLoading(false);
@@ -78,15 +82,21 @@ export function PropertyListingLocalitySelector({
         if (cancelled || reqId !== activeReqRef.current) return;
 
         const results = (res.data || []).filter((s) => s.type === "LOCALITY");
+        const canLoadMore = res.pagination?.hasNextPage ?? results.length >= LOCALITY_PAGE_SIZE;
         setPrefetchedLocalities(results);
+        setPrefetchedHasMore(canLoadMore);
+        setPrefetchedPage(2);
+
         if (!search.trim()) {
           setLocalities(results);
-          setHasMore(res.pagination?.hasNextPage ?? results.length >= LOCALITY_PAGE_SIZE);
+          setHasMore(canLoadMore);
           setPage(2);
         }
       } catch {
         if (!cancelled && reqId === activeReqRef.current) {
           setPrefetchedLocalities([]);
+          setPrefetchedHasMore(false);
+          setPrefetchedPage(2);
           if (!search.trim()) setLocalities([]);
           setHasMore(false);
         }
@@ -111,8 +121,8 @@ export function PropertyListingLocalitySelector({
     const trimmed = search.trim();
     if (!trimmed) {
       setLocalities(prefetchedLocalities);
-      setHasMore(prefetchedLocalities.length >= LOCALITY_PAGE_SIZE);
-      setPage(2);
+      setHasMore(prefetchedHasMore);
+      setPage(prefetchedPage);
       setLoading(false);
       return;
     }
@@ -135,8 +145,9 @@ export function PropertyListingLocalitySelector({
         if (cancelled || reqId !== activeReqRef.current) return;
 
         const results = (res.data || []).filter((s) => s.type === "LOCALITY");
+        const canLoadMore = res.pagination?.hasNextPage ?? results.length >= LOCALITY_PAGE_SIZE;
         setLocalities(results);
-        setHasMore(res.pagination?.hasNextPage ?? results.length >= LOCALITY_PAGE_SIZE);
+        setHasMore(canLoadMore);
         setPage(2);
       } catch {
         if (!cancelled && reqId === activeReqRef.current) {
@@ -154,21 +165,23 @@ export function PropertyListingLocalitySelector({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [search, isOpen, isCitySelected, cityName, selectedState, prefetchedLocalities]);
+  }, [search, isOpen, isCitySelected, cityName, selectedState, prefetchedLocalities, prefetchedHasMore, prefetchedPage]);
 
   // 3. Infinite scroll pagination for localities
   const loadMoreLocalities = async () => {
     if (loading || loadingMore || !hasMore || !isCitySelected) return;
 
     setLoadingMore(true);
-    const query = search.trim() || cityName.trim();
+    const trimmed = search.trim();
+    const query = trimmed || cityName.trim();
+    const currentPage = page;
 
     try {
       const res = await fetchAwasioSuggestions(query, {
         city: cityName.trim(),
         state: selectedState?.trim() || undefined,
         types: ["LOCALITY"],
-        page,
+        page: currentPage,
         pageSize: LOCALITY_PAGE_SIZE,
         maxPerGroup: LOCALITY_PAGE_SIZE,
       });
@@ -179,9 +192,17 @@ export function PropertyListingLocalitySelector({
       for (const item of nextResults) map.set(item.id, item);
 
       const merged = Array.from(map.values());
+      const canLoadMore = res.pagination?.hasNextPage ?? nextResults.length >= LOCALITY_PAGE_SIZE;
+
       setLocalities(merged);
-      setPage((prev) => prev + 1);
-      setHasMore(res.pagination?.hasNextPage ?? nextResults.length >= LOCALITY_PAGE_SIZE);
+      setPage(currentPage + 1);
+      setHasMore(canLoadMore);
+
+      if (!trimmed) {
+        setPrefetchedLocalities(merged);
+        setPrefetchedHasMore(canLoadMore);
+        setPrefetchedPage(currentPage + 1);
+      }
     } catch {
       setHasMore(false);
     } finally {

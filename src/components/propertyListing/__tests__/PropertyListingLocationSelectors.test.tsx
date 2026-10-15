@@ -182,5 +182,61 @@ describe("PropertyListingLocationSelectors", () => {
         })
       );
     });
+
+    it("paginates on first render when scrolled without searching", async () => {
+      (suggestionsClient.fetchAwasioSuggestions as jest.Mock).mockResolvedValueOnce({
+        success: true,
+        data: [
+          {
+            id: "loc-1",
+            type: "LOCALITY",
+            title: "Sector 1",
+            location: { city: "Gurugram", locality: "Sector 1" },
+          },
+        ],
+        pagination: { hasNextPage: true, page: 1, pageSize: 30 },
+      });
+
+      (suggestionsClient.fetchAwasioSuggestions as jest.Mock).mockResolvedValueOnce({
+        success: true,
+        data: [
+          {
+            id: "loc-2",
+            type: "LOCALITY",
+            title: "Sector 2",
+            location: { city: "Gurugram", locality: "Sector 2" },
+          },
+        ],
+        pagination: { hasNextPage: false, page: 2, pageSize: 30 },
+      });
+
+      render(
+        <PropertyListingLocalitySelector
+          value=""
+          cityName="Gurugram"
+          onChange={jest.fn()}
+        />
+      );
+
+      const input = screen.getByPlaceholderText("Select Locality in Gurugram");
+      fireEvent.focus(input);
+
+      await waitFor(() => {
+        expect(screen.getByText("Sector 1")).toBeTruthy();
+      });
+
+      const listContainer = screen.getByText("Sector 1").closest(".overflow-y-auto");
+      expect(listContainer).toBeTruthy();
+
+      Object.defineProperty(listContainer, "scrollHeight", { value: 500, configurable: true });
+      Object.defineProperty(listContainer, "scrollTop", { value: 460, configurable: true });
+      Object.defineProperty(listContainer, "clientHeight", { value: 40, configurable: true });
+
+      fireEvent.scroll(listContainer!);
+
+      await waitFor(() => {
+        expect(screen.getByText("Sector 2")).toBeTruthy();
+      });
+    });
   });
 });

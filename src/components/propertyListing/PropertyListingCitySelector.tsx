@@ -36,6 +36,8 @@ export function PropertyListingCitySelector({
   const [search, setSearch] = useState("");
   const [cities, setCities] = useState<AwasioSuggestion[]>([]);
   const [prefetchedCities, setPrefetchedCities] = useState<AwasioSuggestion[]>([]);
+  const [prefetchedHasMore, setPrefetchedHasMore] = useState(false);
+  const [prefetchedPage, setPrefetchedPage] = useState(2);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -75,15 +77,21 @@ export function PropertyListingCitySelector({
           });
         }
 
+        const canLoadMore = res.pagination?.hasNextPage ?? results.length >= PAGE_SIZE;
         setPrefetchedCities(results);
+        setPrefetchedHasMore(canLoadMore);
+        setPrefetchedPage(2);
+
         if (!search.trim()) {
           setCities(results);
-          setHasMore(res.pagination?.hasNextPage ?? results.length >= PAGE_SIZE);
+          setHasMore(canLoadMore);
           setPage(2);
         }
       } catch (err) {
         if (!cancelled && reqId === activeReqRef.current) {
           setPrefetchedCities([]);
+          setPrefetchedHasMore(false);
+          setPrefetchedPage(2);
           if (!search.trim()) setCities([]);
         }
       } finally {
@@ -107,8 +115,8 @@ export function PropertyListingCitySelector({
     const trimmed = search.trim();
     if (!trimmed) {
       setCities(prefetchedCities);
-      setHasMore(prefetchedCities.length >= PAGE_SIZE);
-      setPage(2);
+      setHasMore(prefetchedHasMore);
+      setPage(prefetchedPage);
       setLoading(false);
       return;
     }
@@ -129,8 +137,9 @@ export function PropertyListingCitySelector({
         if (cancelled || reqId !== activeReqRef.current) return;
 
         const results = (res.data || []).filter((s) => s.type === "CITY");
+        const canLoadMore = res.pagination?.hasNextPage ?? results.length >= PAGE_SIZE;
         setCities(results);
-        setHasMore(res.pagination?.hasNextPage ?? results.length >= PAGE_SIZE);
+        setHasMore(canLoadMore);
         setPage(2);
       } catch {
         if (!cancelled && reqId === activeReqRef.current) {
@@ -148,20 +157,22 @@ export function PropertyListingCitySelector({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [search, isOpen, prefetchedCities, selectedState]);
+  }, [search, isOpen, prefetchedCities, prefetchedHasMore, prefetchedPage, selectedState]);
 
   // 3. Load more cities on scroll (Pagination)
   const loadMoreCities = async () => {
     if (loading || loadingMore || !hasMore) return;
 
     setLoadingMore(true);
-    const query = search.trim() || selectedState?.trim() || "Delhi";
+    const trimmed = search.trim();
+    const query = trimmed || selectedState?.trim() || "Delhi";
+    const currentPage = page;
 
     try {
       const res = await fetchAwasioSuggestions(query, {
         state: selectedState?.trim() || undefined,
         types: ["CITY"],
-        page,
+        page: currentPage,
         pageSize: PAGE_SIZE,
       });
 
@@ -171,9 +182,17 @@ export function PropertyListingCitySelector({
       for (const c of nextResults) map.set(c.id, c);
 
       const merged = Array.from(map.values());
+      const canLoadMore = res.pagination?.hasNextPage ?? nextResults.length >= PAGE_SIZE;
+
       setCities(merged);
-      setPage((prev) => prev + 1);
-      setHasMore(res.pagination?.hasNextPage ?? nextResults.length >= PAGE_SIZE);
+      setPage(currentPage + 1);
+      setHasMore(canLoadMore);
+
+      if (!trimmed) {
+        setPrefetchedCities(merged);
+        setPrefetchedHasMore(canLoadMore);
+        setPrefetchedPage(currentPage + 1);
+      }
     } catch {
       setHasMore(false);
     } finally {
