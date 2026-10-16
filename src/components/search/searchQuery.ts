@@ -10,6 +10,8 @@
  * are namespaced `r.*` so they can never leak into `toApiParams`.
  */
 
+import type { FlatmateListing } from "@/types/flatmate.types";
+
 export type LocalityTag = {
   label: string;
   placeId?: string;
@@ -23,7 +25,7 @@ export type ApiListingType = "SELL" | "RENT" | "PG";
 
 export type RefineState = {
   subType: string[]; // property sub-type slugs
-  furnishing: string[]; // UNFURNISHED | SEMI_FURNISHED | FURNISHED
+  furnishing: string[]; // UNFURNISHED | SEMI_FURNISHED | FURNISHED | Fully Furnished
   postedAs: string[]; // OWNER | AGENT | BUILDER
   possessionStatus?: string[]; // READY_TO_MOVE | UNDER_CONSTRUCTION
   gatedCommunity?: string[]; // YES
@@ -33,6 +35,11 @@ export type RefineState = {
   bathroomsMin?: number;
   areaMin?: number;
   areaMax?: number;
+  flatmateMode?: string[]; // HAVE_ROOM | NEED_ROOM | BUDDY_UP
+  roomType?: string[]; // Private Room | Shared Room (Twin) | Whole Flat
+  gender?: string[]; // Female Only | Male Only | Any Gender
+  diet?: string[]; // Pure Vegetarian | Vegetarian & Eggetarian | Non-Vegetarian | Vegan | Any Diet
+  lifestyle?: string[]; // PET_FRIENDLY | NON_SMOKER | SMOKING_ALLOWED | DRINKING_ALLOWED
 };
 
 export type SearchState = {
@@ -82,6 +89,11 @@ const emptyRefine = (): RefineState => ({
   amenities: [],
   bhkTypes: [],
   food: [],
+  flatmateMode: [],
+  roomType: [],
+  gender: [],
+  diet: [],
+  lifestyle: [],
 });
 
 export const initialSearchState = (cityName = "Delhi"): SearchState => ({
@@ -164,13 +176,18 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
 
   state.refine = {
     subType: splitList(sp.get("r.subType")),
-    furnishing: splitList(sp.get("r.furnishing")).map((s) => s.toUpperCase()),
+    furnishing: splitList(sp.get("r.furnishing")),
     postedAs: splitList(sp.get("r.postedAs")).map((s) => s.toUpperCase()),
     bathroomsMin: toNum(sp.get("r.bath")),
     areaMin: toNum(sp.get("r.areaMin")),
     areaMax: toNum(sp.get("r.areaMax")),
     bhkTypes: splitList(sp.get("r.bhkTypes")),
     food: splitList(sp.get("r.food")).map((s) => s.toUpperCase()),
+    flatmateMode: splitList(sp.get("r.mode") ?? sp.get("r.flatmateMode")),
+    roomType: splitList(sp.get("r.roomType")),
+    gender: splitList(sp.get("r.gender")),
+    diet: splitList(sp.get("r.diet")),
+    lifestyle: splitList(sp.get("r.lifestyle")),
   };
 
   // Auto-sync UI chip for BHK if not set but bedroomsMin is provided
@@ -210,6 +227,11 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   if (r.areaMax != null) sp.set("r.areaMax", String(r.areaMax));
   if (r.bhkTypes && r.bhkTypes.length) sp.set("r.bhkTypes", r.bhkTypes.join(","));
   if (r.food && r.food.length) sp.set("r.food", r.food.join(","));
+  if (r.flatmateMode && r.flatmateMode.length) sp.set("r.mode", r.flatmateMode.join(","));
+  if (r.roomType && r.roomType.length) sp.set("r.roomType", r.roomType.join(","));
+  if (r.gender && r.gender.length) sp.set("r.gender", r.gender.join(","));
+  if (r.diet && r.diet.length) sp.set("r.diet", r.diet.join(","));
+  if (r.lifestyle && r.lifestyle.length) sp.set("r.lifestyle", r.lifestyle.join(","));
 
   return sp;
 }
@@ -321,6 +343,11 @@ export function hasClientRefinements(state: SearchState): boolean {
     r.areaMin != null ||
     r.areaMax != null ||
     Boolean(r.food && r.food.length > 0 && r.food.length < 4) ||
+    Boolean(r.flatmateMode && r.flatmateMode.length > 0) ||
+    Boolean(r.roomType && r.roomType.length > 0) ||
+    Boolean(r.gender && r.gender.length > 0) ||
+    Boolean(r.diet && r.diet.length > 0) ||
+    Boolean(r.lifestyle && r.lifestyle.length > 0) ||
     state.intent === "PLOT" || // PLOT still needs client-side subType slug filtering
     state.localities.length > 0
   );
@@ -545,6 +572,12 @@ export function countActiveFilters(state: SearchState): number {
   if (r.bathroomsMin != null) n += 1;
   if (r.areaMin != null || r.areaMax != null) n += 1;
   
+  if (r.flatmateMode?.length) n += r.flatmateMode.length;
+  if (r.roomType?.length) n += r.roomType.length;
+  if (r.gender?.length) n += r.gender.length;
+  if (r.diet?.length) n += r.diet.length;
+  if (r.lifestyle?.length) n += r.lifestyle.length;
+
   // Count bhkTypes, but avoid double counting if it's just mirroring bedroomsMin
   const mirroredBhk = state.bedroomsMin != null ? `${state.bedroomsMin} BHK` : null;
   const uniqueBhkTypes = (r.bhkTypes || []).filter(b => b !== mirroredBhk);
@@ -599,6 +632,67 @@ export function describeFilters(
       });
     }
   }
+  (state.refine.flatmateMode || []).forEach((v) => {
+    const labelMap: Record<string, string> = {
+      HAVE_ROOM: "Room Available",
+      NEED_ROOM: "Looking for Room",
+      BUDDY_UP: "Buddy Up (Team)",
+    };
+    chips.push({
+      id: `mode:${v}`,
+      label: labelMap[v] ?? v,
+      remove: (s) => ({
+        ...s,
+        refine: { ...s.refine, flatmateMode: (s.refine.flatmateMode || []).filter((x) => x !== v) },
+      }),
+    });
+  });
+  (state.refine.roomType || []).forEach((v) => {
+    chips.push({
+      id: `roomType:${v}`,
+      label: v,
+      remove: (s) => ({
+        ...s,
+        refine: { ...s.refine, roomType: (s.refine.roomType || []).filter((x) => x !== v) },
+      }),
+    });
+  });
+  (state.refine.gender || []).forEach((v) => {
+    chips.push({
+      id: `gender:${v}`,
+      label: v,
+      remove: (s) => ({
+        ...s,
+        refine: { ...s.refine, gender: (s.refine.gender || []).filter((x) => x !== v) },
+      }),
+    });
+  });
+  (state.refine.diet || []).forEach((v) => {
+    chips.push({
+      id: `diet:${v}`,
+      label: v,
+      remove: (s) => ({
+        ...s,
+        refine: { ...s.refine, diet: (s.refine.diet || []).filter((x) => x !== v) },
+      }),
+    });
+  });
+  (state.refine.lifestyle || []).forEach((v) => {
+    const labelMap: Record<string, string> = {
+      PET_FRIENDLY: "Pet-friendly",
+      NON_SMOKER: "Non-smoker",
+      SMOKING_ALLOWED: "Smoking Allowed",
+      DRINKING_ALLOWED: "Drinking Allowed",
+    };
+    chips.push({
+      id: `lifestyle:${v}`,
+      label: labelMap[v] ?? v,
+      remove: (s) => ({
+        ...s,
+        refine: { ...s.refine, lifestyle: (s.refine.lifestyle || []).filter((x) => x !== v) },
+      }),
+    });
+  });
   state.refine.subType.forEach((slug) => {
     chips.push({
       id: `subType:${slug}`,
@@ -679,6 +773,116 @@ export function describeFilters(
     });
   }
   return chips;
+}
+
+export function applyFlatmateRefinements(
+  items: FlatmateListing[],
+  state: SearchState,
+): FlatmateListing[] {
+  const { refine, priceMin, priceMax } = state;
+
+  return items.filter((item) => {
+    // 1. Mode filter
+    if (refine.flatmateMode?.length) {
+      if (!refine.flatmateMode.includes(item.mode)) return false;
+    }
+
+    // 2. Room Type filter
+    if (refine.roomType?.length) {
+      const roomType = (item.roomType || "").toLowerCase();
+      const match = refine.roomType.some((rt) => {
+        const needle = rt.toLowerCase();
+        return roomType.includes(needle) || needle.includes(roomType);
+      });
+      if (!match) return false;
+    }
+
+    // 3. Gender preference filter
+    if (refine.gender?.length) {
+      const preferred = (item.preferredGenders || []).map((g) => g.toLowerCase());
+      const profileGender = (item.profile?.gender || "").toLowerCase();
+      const match = refine.gender.some((g) => {
+        const needle = g.toLowerCase();
+        if (needle.includes("any")) return true;
+        const isFemaleWanted = needle.includes("female");
+        const isMaleWanted = !isFemaleWanted && needle.includes("male");
+        if (isFemaleWanted) {
+          return preferred.some((p) => p.includes("female") || p.includes("any")) || profileGender === "female";
+        }
+        if (isMaleWanted) {
+          return preferred.some((p) => (!p.includes("female") && p.includes("male")) || p.includes("any")) || profileGender === "male";
+        }
+        return preferred.includes(needle);
+      });
+      if (!match) return false;
+    }
+
+    // 4. Dietary preference filter
+    if (refine.diet?.length) {
+      const itemDiet = (item.preferredDiet || item.profile?.diet || "").toLowerCase();
+      const match = refine.diet.some((d) => {
+        const needle = d.toLowerCase();
+        if (needle.includes("any")) return true;
+        return itemDiet.includes(needle) || needle.includes(itemDiet);
+      });
+      if (!match) return false;
+    }
+
+    // 5. Lifestyle & House rules
+    if (refine.lifestyle?.length) {
+      for (const rule of refine.lifestyle) {
+        if (rule === "PET_FRIENDLY" && !item.petsAllowed && !item.profile?.hasPets) return false;
+        if (rule === "NON_SMOKER" && (item.smokingAllowed || item.profile?.smoking === "Yes")) return false;
+        if (rule === "SMOKING_ALLOWED" && !item.smokingAllowed) return false;
+        if (rule === "DRINKING_ALLOWED" && !item.drinkingAllowed && item.profile?.drinking === "No") return false;
+      }
+    }
+
+    // 6. BHK filter
+    if (refine.bhkTypes?.length) {
+      const itemBhk = item.bhk ? `${item.bhk} BHK` : "";
+      if (itemBhk) {
+        const match = refine.bhkTypes.some((b) => b.includes(String(item.bhk)) || (b.includes("4+") && (item.bhk ?? 0) >= 4));
+        if (!match) return false;
+      }
+    }
+
+    // 7. Furnishing filter
+    if (refine.furnishing?.length) {
+      const f = (item.furnishing || "").toLowerCase();
+      const match = refine.furnishing.some((wanted) => {
+        const w = wanted.toLowerCase();
+        return f.includes(w) || w.includes(f) || (w.includes("furn") && f.includes("furn"));
+      });
+      if (!match) return false;
+    }
+
+    // 8. Budget / Price range
+    if (priceMin != null || priceMax != null) {
+      const min = priceMin ?? 0;
+      const max = priceMax ?? Infinity;
+      if (item.mode === "HAVE_ROOM") {
+        if (item.rent != null && (item.rent < min || item.rent > max)) return false;
+      } else {
+        const itemMax = item.budgetMax ?? item.budgetMin ?? 0;
+        const itemMin = item.budgetMin ?? 0;
+        if (itemMax < min) return false;
+        if (priceMax != null && itemMin > priceMax) return false;
+      }
+    }
+
+    // 9. Locality filter (if selected)
+    if (state.localities.length > 0) {
+      const needles = state.localities.map((l) => l.label.toLowerCase());
+      const hay = [item.locality, ...(item.preferredLocalities || []), item.title, item.cityName]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      if (!needles.some((n) => hay.includes(n))) return false;
+    }
+
+    return true;
+  });
 }
 
 export function clearAllFilters(state: SearchState): SearchState {

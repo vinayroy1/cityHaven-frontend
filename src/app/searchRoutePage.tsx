@@ -56,13 +56,19 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
   const locationLabel = location.state ? location.state : [...location.localities, location.city].filter(Boolean).join(", ") || "India";
   let countLabel = "";
   try {
-    const url = new URL(`${API_BASE}/api/v1/propertyListing/search`);
+    const isFlatmate = intent === "FLATMATE";
+    const url = new URL(isFlatmate ? `${API_BASE}/api/v1/flatmates` : `${API_BASE}/api/v1/propertyListing/search`);
     url.searchParams.set("pageSize", "1");
-    url.searchParams.set("listingType", copy.listingType);
-    if (location.city) url.searchParams.set("cityName", location.city);
-    if (location.state) url.searchParams.set("q", location.state);
-    for (const locality of location.localities) url.searchParams.append("locality", locality);
-    if (intent === "COMMERCIAL") url.searchParams.set("resCom", "COMMERCIAL");
+    if (isFlatmate) {
+      if (location.city) url.searchParams.set("city", location.city);
+      if (location.localities[0]) url.searchParams.set("locality", location.localities[0]);
+    } else {
+      url.searchParams.set("listingType", copy.listingType);
+      if (location.city) url.searchParams.set("cityName", location.city);
+      if (location.state) url.searchParams.set("q", location.state);
+      for (const locality of location.localities) url.searchParams.append("locality", locality);
+      if (intent === "COMMERCIAL") url.searchParams.set("resCom", "COMMERCIAL");
+    }
     const response = await fetch(url, { next: { revalidate: 3600 } });
     if (response.ok) {
       const payload = await response.json();

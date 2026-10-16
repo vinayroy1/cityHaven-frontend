@@ -78,6 +78,52 @@ export const BATH_OPTIONS = [
   { value: 4, label: "4+" },
 ];
 
+export const FLATMATE_MODE_OPTIONS = [
+  { value: "HAVE_ROOM", label: "Room Available" },
+  { value: "NEED_ROOM", label: "Looking for Room" },
+  { value: "BUDDY_UP", label: "Buddy Up (Team)" },
+];
+
+export const FLATMATE_ROOM_TYPE_OPTIONS = [
+  { value: "Private Room", label: "Private Room" },
+  { value: "Shared Room (Twin)", label: "Shared Room" },
+  { value: "Whole Flat", label: "Whole Flat" },
+];
+
+export const FLATMATE_GENDER_OPTIONS = [
+  { value: "Female Only", label: "Female Only" },
+  { value: "Male Only", label: "Male Only" },
+  { value: "Any Gender", label: "Any Gender" },
+];
+
+export const FLATMATE_DIET_OPTIONS = [
+  { value: "Pure Vegetarian", label: "Pure Vegetarian" },
+  { value: "Vegetarian & Eggetarian", label: "Veg & Egg" },
+  { value: "Non-Vegetarian", label: "Non-Vegetarian" },
+  { value: "Vegan", label: "Vegan" },
+  { value: "Any Diet", label: "Any Diet" },
+];
+
+export const FLATMATE_LIFESTYLE_OPTIONS = [
+  { value: "PET_FRIENDLY", label: "Pet-friendly" },
+  { value: "NON_SMOKER", label: "Non-smoker" },
+  { value: "SMOKING_ALLOWED", label: "Smoking Allowed" },
+  { value: "DRINKING_ALLOWED", label: "Drinking Allowed" },
+];
+
+export const FLATMATE_BHK_OPTIONS = [
+  { value: "1 BHK", label: "1 BHK" },
+  { value: "2 BHK", label: "2 BHK" },
+  { value: "3 BHK", label: "3 BHK" },
+  { value: "4+ BHK", label: "4+ BHK" },
+];
+
+export const FLATMATE_FURNISHING_OPTIONS = [
+  { value: "Fully Furnished", label: "Fully Furnished" },
+  { value: "Semi-furnished", label: "Semi-furnished" },
+  { value: "Unfurnished", label: "Unfurnished" },
+];
+
 const L = 100_000;
 const CR = 10_000_000;
 
@@ -85,7 +131,7 @@ export const BUDGET_PRESETS: Record<IntentKey, number[]> = {
   BUY: [10 * L, 20 * L, 30 * L, 50 * L, 75 * L, 1 * CR, 1.5 * CR, 2 * CR, 3 * CR, 5 * CR, 10 * CR],
   RENT: [5_000, 10_000, 15_000, 20_000, 25_000, 30_000, 40_000, 50_000, 75_000, 1 * L],
   PG: [3_000, 5_000, 7_000, 10_000, 12_000, 15_000, 20_000, 25_000],
-  FLATMATE: [3_000, 5_000, 7_000, 10_000, 12_000, 15_000, 20_000, 25_000],
+  FLATMATE: [3_000, 5_000, 7_000, 10_000, 15_000, 20_000, 25_000, 35_000, 50_000, 75_000, 100_000],
   COMMERCIAL: [25 * L, 50 * L, 1 * CR, 2 * CR, 5 * CR, 10 * CR, 25 * CR, 50 * CR],
   PLOT: [10 * L, 25 * L, 50 * L, 1 * CR, 2 * CR, 5 * CR, 10 * CR, 20 * CR],
 };
@@ -157,7 +203,20 @@ export type FilterSection =
       options: { value: number; label: string }[];
     }
   | {
-      key: "subType" | "furnishing" | "postedAs" | "possessionStatus" | "gatedCommunity" | "amenities" | "bhkTypes" | "food";
+      key:
+        | "subType"
+        | "furnishing"
+        | "postedAs"
+        | "possessionStatus"
+        | "gatedCommunity"
+        | "amenities"
+        | "bhkTypes"
+        | "food"
+        | "flatmateMode"
+        | "roomType"
+        | "gender"
+        | "diet"
+        | "lifestyle";
       title: string;
       kind: "multi-chips";
       server: false;
@@ -166,6 +225,20 @@ export type FilterSection =
     };
 
 export function filterSectionsFor(intent: IntentKey): FilterSection[] {
+  // Flatmate has specialized roommate & shared living filters
+  if (intent === "FLATMATE") {
+    return [
+      { key: "budget", title: "Monthly Rent / Budget", kind: "range", server: true, stateKeys: ["priceMin", "priceMax"] },
+      { key: "flatmateMode", title: "Looking For / Mode", kind: "multi-chips", server: false, options: FLATMATE_MODE_OPTIONS },
+      { key: "roomType", title: "Room Type", kind: "multi-chips", server: false, options: FLATMATE_ROOM_TYPE_OPTIONS },
+      { key: "gender", title: "Preferred Gender", kind: "multi-chips", server: false, options: FLATMATE_GENDER_OPTIONS },
+      { key: "diet", title: "Dietary Preference", kind: "multi-chips", server: false, options: FLATMATE_DIET_OPTIONS },
+      { key: "lifestyle", title: "House Rules & Lifestyle", kind: "multi-chips", server: false, options: FLATMATE_LIFESTYLE_OPTIONS },
+      { key: "bhkTypes", title: "Bedrooms (BHK)", kind: "multi-chips", server: false, options: FLATMATE_BHK_OPTIONS },
+      { key: "furnishing", title: "Furnishing Status", kind: "multi-chips", server: false, options: FLATMATE_FURNISHING_OPTIONS },
+    ];
+  }
+
   const sections: FilterSection[] = [
     { key: "budget", title: "Budget", kind: "range", server: true, stateKeys: ["priceMin", "priceMax"] },
     {
@@ -180,7 +253,7 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
   const isResidential = intent === "BUY" || intent === "RENT";
 
   // Property Type / Accommodation Type
-  const isSharedLiving = intent === "PG" || intent === "FLATMATE";
+  const isSharedLiving = intent === "PG";
   const opts = intent === "PLOT" ? propertySubTypes.filter((s) => PLOT_SUBTYPE_SLUGS.includes(s.slug)).map((s) => ({ slug: s.slug, label: s.name })) : isSharedLiving ? subTypesByPropertySlug(["pg"]) : intent === "COMMERCIAL" ? COMMERCIAL_SUBTYPES : RESIDENTIAL_SUBTYPES;
   if (opts.length) {
     sections.push({

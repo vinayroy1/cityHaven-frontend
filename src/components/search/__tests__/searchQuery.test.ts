@@ -6,6 +6,7 @@ import {
   toSearchSlug,
   toApiParams,
   applyClientRefinements,
+  applyFlatmateRefinements,
   hasClientRefinements,
   describeFilters,
   clearAllFilters,
@@ -225,5 +226,115 @@ describe("describeFilters / clearAllFilters", () => {
     expect(cleared.priceMin).toBeUndefined();
     expect(cleared.bedroomsMin).toBeUndefined();
     expect(cleared.refine.subType).toEqual([]);
+  });
+
+  it("handles flatmate filters in describeFilters and remove works accurately", () => {
+    const s = state({
+      intent: "FLATMATE",
+      refine: {
+        subType: [],
+        furnishing: ["Fully Furnished"],
+        postedAs: [],
+        flatmateMode: ["HAVE_ROOM"],
+        roomType: ["Private Room"],
+        gender: ["Female Only"],
+        diet: ["Pure Vegetarian"],
+        lifestyle: ["PET_FRIENDLY", "NON_SMOKER"],
+      },
+    });
+    const chips = describeFilters(s);
+    const chipIds = chips.map((c) => c.id);
+    expect(chipIds).toContain("mode:HAVE_ROOM");
+    expect(chipIds).toContain("roomType:Private Room");
+    expect(chipIds).toContain("gender:Female Only");
+    expect(chipIds).toContain("diet:Pure Vegetarian");
+    expect(chipIds).toContain("lifestyle:PET_FRIENDLY");
+    expect(chipIds).toContain("lifestyle:NON_SMOKER");
+
+    const afterRemoveMode = chips.find((c) => c.id === "mode:HAVE_ROOM")!.remove(s);
+    expect(afterRemoveMode.refine.flatmateMode).toEqual([]);
+    expect(afterRemoveMode.refine.roomType).toEqual(["Private Room"]);
+  });
+});
+
+describe("applyFlatmateRefinements", () => {
+  const flatmateListings: any[] = [
+    {
+      id: 1,
+      mode: "HAVE_ROOM",
+      cityName: "Delhi",
+      locality: "Delhi G P O",
+      roomType: "Private Room",
+      furnishing: "Fully Furnished",
+      rent: 18000,
+      bhk: 2,
+      preferredGenders: ["Female Only"],
+      preferredDiet: "Pure Vegetarian",
+      petsAllowed: true,
+      smokingAllowed: false,
+      drinkingAllowed: true,
+      profile: { gender: "Female", diet: "Pure Vegetarian", smoking: "No", hasPets: true },
+    },
+    {
+      id: 2,
+      mode: "NEED_ROOM",
+      cityName: "Delhi",
+      locality: "Hauz Khas",
+      roomType: "Shared Room",
+      furnishing: "Semi-furnished",
+      budgetMin: 10000,
+      budgetMax: 22000,
+      bhk: 3,
+      preferredGenders: ["Male Only"],
+      preferredDiet: "Non-Vegetarian",
+      petsAllowed: false,
+      smokingAllowed: true,
+      drinkingAllowed: false,
+      profile: { gender: "Male", diet: "Non-Vegetarian", smoking: "Yes", hasPets: false },
+    },
+  ];
+
+  it("filters by flatmate mode", () => {
+    const res = applyFlatmateRefinements(
+      flatmateListings,
+      state({ intent: "FLATMATE", refine: { subType: [], furnishing: [], postedAs: [], flatmateMode: ["HAVE_ROOM"] } }),
+    );
+    expect(res.map((r) => r.id)).toEqual([1]);
+  });
+
+  it("filters by gender preference", () => {
+    const res = applyFlatmateRefinements(
+      flatmateListings,
+      state({ intent: "FLATMATE", refine: { subType: [], furnishing: [], postedAs: [], gender: ["Female Only"] } }),
+    );
+    expect(res.map((r) => r.id)).toEqual([1]);
+  });
+
+  it("filters by lifestyle rules (petsAllowed, non-smoker)", () => {
+    const petFriendly = applyFlatmateRefinements(
+      flatmateListings,
+      state({ intent: "FLATMATE", refine: { subType: [], furnishing: [], postedAs: [], lifestyle: ["PET_FRIENDLY"] } }),
+    );
+    expect(petFriendly.map((r) => r.id)).toEqual([1]);
+
+    const nonSmoker = applyFlatmateRefinements(
+      flatmateListings,
+      state({ intent: "FLATMATE", refine: { subType: [], furnishing: [], postedAs: [], lifestyle: ["NON_SMOKER"] } }),
+    );
+    expect(nonSmoker.map((r) => r.id)).toEqual([1]);
+  });
+
+  it("filters by rent / budget range", () => {
+    const budgetFiltered = applyFlatmateRefinements(
+      flatmateListings,
+      state({ intent: "FLATMATE", priceMin: 15000, priceMax: 20000 }),
+    );
+    expect(budgetFiltered.map((r) => r.id)).toEqual([1, 2]);
+
+    const highOnly = applyFlatmateRefinements(
+      flatmateListings,
+      state({ intent: "FLATMATE", priceMin: 20000 }),
+    );
+    expect(highOnly.map((r) => r.id)).toEqual([2]);
   });
 });

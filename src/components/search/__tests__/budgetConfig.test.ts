@@ -1,7 +1,7 @@
 import { budgetConfig } from "../searchConfig";
 
 describe("contextual property budgets", () => {
-  it.each(["RENT", "PG"] as const)("uses monthly rupees for %s", (intent) => {
+  it.each(["RENT", "PG", "FLATMATE"] as const)("uses monthly rupees for %s", (intent) => {
     const config = budgetConfig({ intent });
     expect(config.monthly).toBe(true);
     expect(config.format(15000)).toBe("₹15,000");

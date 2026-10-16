@@ -34,6 +34,18 @@ function summarise(state: SearchState, key: string): string | null {
       return state.refine.postedAs.length ? `Posted by · ${state.refine.postedAs.length}` : null;
     case "food":
       return state.refine.food?.length ? `Food · ${state.refine.food.length}` : null;
+    case "flatmateMode":
+      return state.refine.flatmateMode?.length ? `Mode · ${state.refine.flatmateMode.length}` : null;
+    case "roomType":
+      return state.refine.roomType?.length ? `Room · ${state.refine.roomType.length}` : null;
+    case "gender":
+      return state.refine.gender?.length ? `Gender · ${state.refine.gender.length}` : null;
+    case "diet":
+      return state.refine.diet?.length ? `Diet · ${state.refine.diet.length}` : null;
+    case "lifestyle":
+      return state.refine.lifestyle?.length ? `Lifestyle · ${state.refine.lifestyle.length}` : null;
+    case "bhkTypes":
+      return state.refine.bhkTypes?.length ? `BHK · ${state.refine.bhkTypes.length}` : null;
     default:
       return null;
   }
@@ -42,12 +54,18 @@ function summarise(state: SearchState, key: string): string | null {
 const DEFAULT_LABELS: Record<string, string> = {
   budget: "Budget",
   bedrooms: "BHK",
+  bhkTypes: "BHK",
   bathrooms: "Bathrooms",
   area: "Area",
   subType: "Property type",
   food: "Food & Mess",
   furnishing: "Furnishing",
   postedAs: "Posted by",
+  flatmateMode: "Mode",
+  roomType: "Room type",
+  gender: "Gender",
+  diet: "Diet",
+  lifestyle: "Lifestyle",
 };
 
 export function QuickFilterChips({ state, onOpenFilters }: Props) {

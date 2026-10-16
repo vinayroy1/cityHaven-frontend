@@ -104,7 +104,7 @@ export function useVisitsInfinite(params?: { pageSize?: number }) {
 
 type SearchPage<T> = CursorPage<T> & { nextCursor?: string | number | null; total?: number };
 
-export function usePropertySearchInfinite(params?: Record<string, any>) {
+export function usePropertySearchInfinite(params?: Record<string, any>, options?: { enabled?: boolean }) {
   const query = useInfiniteQuery<SearchPage<any>, Error>({
     queryKey: ["propertySearch", params],
     queryFn: ({ pageParam }) =>
@@ -114,6 +114,7 @@ export function usePropertySearchInfinite(params?: Record<string, any>) {
       }),
     initialPageParam: null,
     getNextPageParam: (last) => normalizePage(last).nextCursor ?? undefined,
+    enabled: options?.enabled ?? true,
   });
   const pages = query.data?.pages as SearchPage<any>[] | undefined;
   const normalizedPages = pages?.map((page) => normalizePage(page) as SearchPage<any>);
@@ -121,5 +122,27 @@ export function usePropertySearchInfinite(params?: Record<string, any>) {
     ...query,
     items: flattenPages(pages),
     total: normalizedPages?.[normalizedPages.length - 1]?.total,
+  };
+}
+
+export function useFlatmatesSearchInfinite(params?: Record<string, any>, options?: { enabled?: boolean }) {
+  const query = useInfiniteQuery<{ items: any[]; total: number; page: number; pageSize: number; hasMore: boolean }, Error>({
+    queryKey: ["flatmatesSearch", params],
+    queryFn: ({ pageParam }) =>
+      apiFetch<{ items: any[]; total: number; page: number; pageSize: number; hasMore: boolean }>({
+        url: API_ENDPOINTS.flatmates.search,
+        params: { ...(params || {}), page: (pageParam as number) || 1 },
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (last, allPages) => (last?.hasMore ? allPages.length + 1 : undefined),
+    enabled: options?.enabled ?? true,
+  });
+  const pages = query.data?.pages;
+  const items = pages?.flatMap((p) => p?.items ?? []) ?? [];
+  const lastPage = pages?.[pages.length - 1];
+  return {
+    ...query,
+    items,
+    total: lastPage?.total,
   };
 }

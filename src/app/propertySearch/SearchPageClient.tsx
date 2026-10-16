@@ -253,16 +253,20 @@ export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent,
           <div>
             <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-950 dark:text-white">
               {state.cityName || state.localities?.[0]?.label
-                ? `Properties in ${[state.localities?.[0]?.label, state.cityName].filter(Boolean).join(", ")}`
-                : "Verified Properties in India"}
+                ? `${state.intent === "FLATMATE" ? "Flatmates & Shared Homes in" : "Properties in"} ${[state.localities?.[0]?.label, state.cityName].filter(Boolean).join(", ")}`
+                : state.intent === "FLATMATE"
+                  ? "Flatmates & Shared Homes in India"
+                  : "Verified Properties in India"}
               <span className="ml-1.5 font-normal text-slate-500 text-sm dark:text-slate-400 capitalize">
                 • {state.intent === "RENT" ? "Rent" : state.intent === "PG" ? "PG & Co-Living" : state.intent === "FLATMATE" ? "Flatmate" : state.intent === "COMMERCIAL" ? "Commercial" : "Buy & Rent"}
               </span>
             </h1>
             <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
               {settledCount !== undefined
-                ? `${settledCount} verified listings match your criteria`
-                : "Fetching latest verified properties..."}
+                ? `${settledCount} verified ${state.intent === "FLATMATE" ? "flatmate listings" : "listings"} match your criteria`
+                : state.intent === "FLATMATE"
+                  ? "Fetching latest verified flatmates..."
+                  : "Fetching latest verified properties..."}
             </p>
           </div>
           <div className="flex items-center gap-3">
