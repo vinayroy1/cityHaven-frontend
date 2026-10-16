@@ -4,7 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { SearchBar } from "@/components/search/SearchBar";
 import {
-  buildSearchParams,
+  buildSearchHref,
   initialSearchState,
   type SearchState,
 } from "@/components/search/searchQuery";
@@ -12,13 +12,16 @@ import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
 
 export function HomeSearch() {
   const router = useRouter();
-  const [state, setState] = React.useState<SearchState>(() =>
-    initialSearchState(getUserPreferredCity() || ""),
-  );
+  const [state, setState] = React.useState<SearchState>(() => initialSearchState(""));
 
   React.useEffect(() => {
     if (!state.cityName) {
-      detectUserLocation().then((profile) => {
+      const preferredCity = getUserPreferredCity();
+      if (preferredCity) {
+        setState((prev) => ({ ...prev, cityName: preferredCity }));
+        return;
+      }
+      void detectUserLocation().then((profile) => {
         if (profile?.city) {
           setState((prev) => ({ ...prev, cityName: profile.city }));
         }
@@ -28,7 +31,7 @@ export function HomeSearch() {
 
   const submit = (next: SearchState) => {
     setState(next);
-    router.push(`/propertySearch?${buildSearchParams(next).toString()}`);
+    router.push(buildSearchHref(next));
   };
 
   return (

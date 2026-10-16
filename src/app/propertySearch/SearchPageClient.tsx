@@ -16,39 +16,59 @@ import { SortMenu } from "@/components/search/SortMenu";
 import { FilterRail, FilterSheet } from "@/components/search/FilterSheet";
 import { useSearchResults } from "@/components/search/useSearchResults";
 import {
-  buildSearchParams,
+  buildSearchHref,
   countActiveFilters,
   parseSearchParams,
+  type IntentKey,
   type SearchState,
 } from "@/components/search/searchQuery";
 import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
 
-export function SearchPageClient() {
+type SearchPageClientProps = {
+  routeCity?: string;
+  routeLocalities?: string[];
+  routeIntent?: IntentKey;
+  routeState?: string;
+};
+
+export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent, routeState }: SearchPageClientProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const routeLocalitiesKey = routeLocalities.join("\u001f");
 
   const state = React.useMemo(() => {
     const parsed = parseSearchParams(new URLSearchParams(searchParams.toString()));
-    if (!parsed.cityName && parsed.localities.length === 0) {
-      const preferredCity = getUserPreferredCity();
-      if (preferredCity) {
-        parsed.cityName = preferredCity;
-      }
+    if (routeIntent) parsed.intent = routeIntent;
+    if (routeState && !parsed.q) parsed.q = routeState;
+    if (routeCity) parsed.cityName = routeCity;
+    const pathLocalities = routeLocalitiesKey ? routeLocalitiesKey.split("\u001f") : [];
+    if (pathLocalities.length > 0) {
+      parsed.localities = pathLocalities.slice(0, 2).map((label) => ({ label, city: routeCity }));
     }
     return parsed;
-  }, [searchParams]);
+  }, [searchParams, routeCity, routeLocalitiesKey, routeIntent, routeState]);
 
   React.useEffect(() => {
-    // If no city in URL search params or cache, detect dynamically and sync
-    if (!state.cityName && state.localities.length === 0) {
-      detectUserLocation().then((profile) => {
+    // Restore browser-only city preferences after hydration. Keeping storage
+    // reads out of render prevents server/client text mismatches.
+    // Legacy /propertySearch may restore a saved location. Canonical intent
+    // landings such as /buy and /rent must remain nationwide until the user
+    // explicitly selects a city; otherwise crawlers and users see different URLs.
+    if (!routeIntent && !routeState && !state.cityName && state.localities.length === 0) {
+      const preferredCity = getUserPreferredCity();
+      if (preferredCity) {
+        router.replace(buildSearchHref({ ...state, cityName: preferredCity }), { scroll: false });
+        return;
+      }
+
+      void detectUserLocation().then((profile) => {
         if (profile?.city) {
           const next = { ...state, cityName: profile.city };
-          router.replace(`/propertySearch?${buildSearchParams(next).toString()}`, { scroll: false });
+          router.replace(buildSearchHref(next), { scroll: false });
         }
       });
     }
-  }, [state, router]);
+  }, [state, router, routeIntent, routeState]);
 
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = React.useState(false);
@@ -125,7 +145,7 @@ export function SearchPageClient() {
 
   const commit = React.useCallback(
     (next: SearchState) => {
-      router.push(`/propertySearch?${buildSearchParams(next).toString()}`, { scroll: false });
+      router.push(buildSearchHref(next), { scroll: false });
     },
     [router],
   );
@@ -236,7 +256,7 @@ export function SearchPageClient() {
                 ? `Properties in ${[state.localities?.[0]?.label, state.cityName].filter(Boolean).join(", ")}`
                 : "Verified Properties in India"}
               <span className="ml-1.5 font-normal text-slate-500 text-sm dark:text-slate-400 capitalize">
-                • {state.intent === "RENT" ? "Rent" : state.intent === "PG" ? "PG & Co-Living" : state.intent === "COMMERCIAL" ? "Commercial" : "Buy & Rent"}
+                • {state.intent === "RENT" ? "Rent" : state.intent === "PG" ? "PG & Co-Living" : state.intent === "FLATMATE" ? "Flatmate" : state.intent === "COMMERCIAL" ? "Commercial" : "Buy & Rent"}
               </span>
             </h1>
             <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">

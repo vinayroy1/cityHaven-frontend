@@ -33,15 +33,16 @@ interface UserProfile {
 }
 
 const primaryNavLinks = [
-  { label: "Buy", href: "/propertySearch?intent=BUY", icon: Home },
-  { label: "Rent", href: "/propertySearch?intent=RENT", icon: Key },
+  { label: "Buy", href: "/buy", icon: Home },
+  { label: "Rent", href: "/rent", icon: Key },
   { label: "New Projects", href: "/new-projects", icon: Sparkles, isNew: true },
-  { label: "PG / Coliving", href: "/propertySearch?intent=PG", icon: BedDouble },
-  { label: "Commercial", href: "/propertySearch?intent=COMMERCIAL", icon: Building2 },
+  { label: "PG / Coliving", href: "/pg", icon: BedDouble },
+  { label: "Commercial", href: "/commercial", icon: Building2 },
 ];
 
 const secondaryNavLinks = [
-  { label: "Plots & Land", href: "/propertySearch?intent=PLOT", icon: MapPin },
+  { label: "Plots & Land", href: "/plot", icon: MapPin },
+  { label: "Find Flatmates", href: "/flatmate", icon: Users },
   { label: "Find Agents", href: "/agents", icon: Users },
   { label: "Post Project (Builder)", href: "/post-project", icon: Building2 },
 ];

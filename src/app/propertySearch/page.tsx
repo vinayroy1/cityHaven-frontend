@@ -1,7 +1,7 @@
-import React from "react";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { buildCanonical } from "@/constants/seo";
-import { SearchPageClient } from "./SearchPageClient";
+import { SEARCH_INTENT_SLUGS, buildSearchHref, parseSearchParams } from "@/components/search/searchQuery";
 
 type SearchProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -16,7 +16,7 @@ export async function generateMetadata({ searchParams }: SearchProps): Promise<M
   const rawCity = params.cityName || params.city;
   const city = Array.isArray(rawCity) ? rawCity[0] : rawCity;
   const locality = Array.isArray(params.locality) ? params.locality[0] : params.locality;
-  const intent = Array.isArray(params.intent) ? params.intent[0] : params.intent; // buy, rent, pg, commercial
+  const intent = (Array.isArray(params.intent) ? params.intent[0] : params.intent)?.toLowerCase();
 
   const intentLabel =
     intent === "rent"
@@ -51,7 +51,7 @@ export async function generateMetadata({ searchParams }: SearchProps): Promise<M
         countStr = count > 100 ? `${Math.floor(count / 100) * 100}+ ` : `${count} `;
       }
     }
-  } catch (error) {
+  } catch {
     // Fail silently, just won't show the count
   }
   // ------------------------------------------------
@@ -63,9 +63,8 @@ export async function generateMetadata({ searchParams }: SearchProps): Promise<M
   const description =
     `Explore ${countStr || "verified "}apartments, builder floors, houses & commercial real estate ${intentLabel} in ${locationLabel}. Zero brokerage options, RERA certified advisors & transparent pricing on Awasio.`;
 
-  const canonicalPath = city
-    ? `/propertySearch?cityName=${encodeURIComponent(city)}`
-    : "/propertySearch";
+  const intentKey = (intent || "BUY").toUpperCase();
+  const canonicalPath = `/${SEARCH_INTENT_SLUGS[intentKey as keyof typeof SEARCH_INTENT_SLUGS] ?? "buy"}`;
 
   return {
     title,
@@ -86,7 +85,14 @@ export async function generateMetadata({ searchParams }: SearchProps): Promise<M
   };
 }
 
-export default function PropertySearchPage() {
-  return <SearchPageClient />;
-}
+export default async function PropertySearchPage({ searchParams }: SearchProps) {
+  const query = await searchParams;
+  const urlParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (Array.isArray(value)) value.forEach((entry) => urlParams.append(key, entry));
+    else if (value) urlParams.set(key, value);
+  }
 
+  const state = parseSearchParams(urlParams);
+  redirect(buildSearchHref(state));
+}

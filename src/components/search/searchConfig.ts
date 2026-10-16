@@ -85,6 +85,7 @@ export const BUDGET_PRESETS: Record<IntentKey, number[]> = {
   BUY: [10 * L, 20 * L, 30 * L, 50 * L, 75 * L, 1 * CR, 1.5 * CR, 2 * CR, 3 * CR, 5 * CR, 10 * CR],
   RENT: [5_000, 10_000, 15_000, 20_000, 25_000, 30_000, 40_000, 50_000, 75_000, 1 * L],
   PG: [3_000, 5_000, 7_000, 10_000, 12_000, 15_000, 20_000, 25_000],
+  FLATMATE: [3_000, 5_000, 7_000, 10_000, 12_000, 15_000, 20_000, 25_000],
   COMMERCIAL: [25 * L, 50 * L, 1 * CR, 2 * CR, 5 * CR, 10 * CR, 25 * CR, 50 * CR],
   PLOT: [10 * L, 25 * L, 50 * L, 1 * CR, 2 * CR, 5 * CR, 10 * CR, 20 * CR],
 };
@@ -99,11 +100,11 @@ export function formatMoney(v: number): string {
 }
 
 export function budgetConfig(state: Pick<SearchState, "intent" | "transaction">) {
-  const monthly = state.intent === "RENT" || state.intent === "PG" || (state.intent === "COMMERCIAL" && state.transaction === "RENT");
+  const monthly = state.intent === "RENT" || state.intent === "PG" || state.intent === "FLATMATE" || (state.intent === "COMMERCIAL" && state.transaction === "RENT");
   const presets = state.intent === "COMMERCIAL" && monthly
     ? [5_000, 10_000, 20_000, 30_000, 50_000, 75_000, 100_000, 150_000, 200_000, 300_000, 500_000, 1_000_000]
     : BUDGET_PRESETS[state.intent];
-  const label = state.intent === "PG" ? "PG budget / month" : monthly ? "Monthly rent" : state.intent === "COMMERCIAL" ? "Commercial purchase budget" : state.intent === "PLOT" ? "Plot purchase budget" : "Purchase budget";
+  const label = state.intent === "PG" ? "PG budget / month" : state.intent === "FLATMATE" ? "Flatmate budget / month" : monthly ? "Monthly rent" : state.intent === "COMMERCIAL" ? "Commercial purchase budget" : state.intent === "PLOT" ? "Plot purchase budget" : "Purchase budget";
   const format = (value: number) => monthly ? `₹${value.toLocaleString("en-IN")}` : formatMoney(value);
   return { monthly, presets, label, format };
 }
@@ -179,11 +180,12 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
   const isResidential = intent === "BUY" || intent === "RENT";
 
   // Property Type / Accommodation Type
-  const opts = intent === "PLOT" ? propertySubTypes.filter((s) => PLOT_SUBTYPE_SLUGS.includes(s.slug)).map((s) => ({ slug: s.slug, label: s.name })) : intent === "PG" ? subTypesByPropertySlug(["pg"]) : intent === "COMMERCIAL" ? COMMERCIAL_SUBTYPES : RESIDENTIAL_SUBTYPES;
+  const isSharedLiving = intent === "PG" || intent === "FLATMATE";
+  const opts = intent === "PLOT" ? propertySubTypes.filter((s) => PLOT_SUBTYPE_SLUGS.includes(s.slug)).map((s) => ({ slug: s.slug, label: s.name })) : isSharedLiving ? subTypesByPropertySlug(["pg"]) : intent === "COMMERCIAL" ? COMMERCIAL_SUBTYPES : RESIDENTIAL_SUBTYPES;
   if (opts.length) {
     sections.push({
       key: "subType",
-      title: intent === "PG" ? "Accommodation Type" : intent === "PLOT" ? "Land Use" : "Property Type",
+      title: isSharedLiving ? "Accommodation Type" : intent === "PLOT" ? "Land Use" : "Property Type",
       kind: "multi-chips",
       server: false,
       options: opts.map((o) => ({ value: o.slug, label: o.label })),
@@ -191,7 +193,7 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
   }
 
   // Food & Mess Policy (PG / Co-living only)
-  if (intent === "PG") {
+  if (isSharedLiving) {
     sections.push({
       key: "food",
       title: "Food & Mess",
@@ -213,7 +215,7 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
   }
 
   // Furnishing
-  if (isResidential || intent === "PG") {
+  if (isResidential || isSharedLiving) {
     sections.push({
       key: "furnishing",
       title: "Furnishing Status",
@@ -266,7 +268,7 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
   });
 
   // Amenities
-  if (isResidential || intent === "COMMERCIAL" || intent === "PG") {
+  if (isResidential || intent === "COMMERCIAL" || isSharedLiving) {
     sections.push({
       key: "amenities",
       title: "Amenities",

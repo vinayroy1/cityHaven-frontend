@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Loader2, MapPin, Phone, PhoneCall, RotateCcw, SearchX, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SearchBar } from "@/components/search/SearchBar";
-import { buildSearchHref, buildSearchParams, initialSearchState, type SearchState } from "@/components/search/searchQuery";
+import { buildSearchHref, initialSearchState, type SearchState } from "@/components/search/searchQuery";
 import { usePropertySearchInfinite } from "@/features/propertyListing/useQueries";
 import { ResultCard } from "@/app/propertySearch/components/ResultCard";
 import { toResultCardProps } from "@/app/propertySearch/components/propertyCardAdapter";
@@ -69,7 +69,7 @@ export function HomeExperience() {
     if (targetCity) {
       updateCity(targetCity);
     }
-    window.location.href = `/propertySearch?${buildSearchParams(state).toString()}`;
+    window.location.href = buildSearchHref(state);
   };
 
   // Normalize city name for API (matches database entries like 'New Delhi' when 'Delhi' is selected)
@@ -78,8 +78,8 @@ export function HomeExperience() {
     : (selectedCity || undefined);
 
   // Intent-based listing type (if user explicitly chooses RENT or PG in search bar)
-  const queryListingType = searchState.intent === "RENT" || searchState.intent === "PG"
-    ? searchState.intent
+  const queryListingType = searchState.intent === "RENT" || searchState.intent === "PG" || searchState.intent === "FLATMATE"
+    ? searchState.intent === "FLATMATE" ? "PG" : searchState.intent
     : undefined;
 
   // 1. Dedicated query for fresh new listings in the selected city

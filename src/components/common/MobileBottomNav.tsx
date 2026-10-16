@@ -48,11 +48,12 @@ const HIDDEN_ROUTES = [
 ];
 
 const categoryLinks = [
-  { label: "Buy Homes", href: "/propertySearch?intent=BUY", icon: Home },
-  { label: "Rent Properties", href: "/propertySearch?intent=RENT", icon: Key },
-  { label: "PG & Co-living", href: "/propertySearch?intent=PG", icon: BedDouble },
-  { label: "Commercial", href: "/propertySearch?intent=COMMERCIAL", icon: Building2 },
-  { label: "Plots & Land", href: "/propertySearch?intent=PLOT", icon: MapPin },
+  { label: "Buy Homes", href: "/buy", icon: Home },
+  { label: "Rent Properties", href: "/rent", icon: Key },
+  { label: "PG & Co-living", href: "/pg", icon: BedDouble },
+  { label: "Find Flatmates", href: "/flatmate", icon: Users },
+  { label: "Commercial", href: "/commercial", icon: Building2 },
+  { label: "Plots & Land", href: "/plot", icon: MapPin },
   { label: "New Projects", href: "/new-projects", icon: Sparkles, badge: "New" },
   { label: "Find Verified Agents", href: "/agents", icon: Users },
   { label: "Post Project (Builder)", href: "/post-project", icon: Building2 },
@@ -129,7 +130,7 @@ export function MobileBottomNav() {
   if (shouldHide) return null;
 
   const isHomeActive = pathname === "/";
-  const isSearchActive = pathname?.startsWith("/propertySearch");
+  const isSearchActive = pathname?.startsWith("/propertySearch") || pathname?.startsWith("/search/") || ["/buy", "/rent", "/pg", "/flatmate", "/commercial", "/plot"].some((route) => pathname === route || pathname?.startsWith(`${route}/`));
   const isSavedActive = pathname === "/favorites";
 
   const handlePostClick = (e: React.MouseEvent) => {

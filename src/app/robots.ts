@@ -9,6 +9,13 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           "/",
           "/propertySearch",
+          "/search/",
+          "/buy",
+          "/rent",
+          "/pg",
+          "/flatmate",
+          "/commercial",
+          "/plot",
           "/properties/",
           "/agents",
           "/agents/",

@@ -1,0 +1,125 @@
+import type { Metadata } from "next";
+import { notFound, permanentRedirect } from "next/navigation";
+import { SearchPageClient } from "@/app/propertySearch/SearchPageClient";
+import {
+  SEARCH_INTENT_SLUGS,
+  buildSearchHref,
+  fromSearchSlug,
+  intentFromSearchSlug,
+  parseSearchParams,
+  type IntentKey,
+} from "@/components/search/searchQuery";
+import { buildCanonical } from "@/constants/seo";
+
+export type IntentSearchRouteProps = {
+  params: Promise<{ intent: string; segments?: string[] }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+const API_BASE = rawApiUrl.replace(/\/api$/, "");
+const CITY_ALIASES: Record<string, string> = { bangalore: "bengaluru", delhi: "new-delhi", gurgaon: "gurugram" };
+
+type RouteLocation = { state?: string; city?: string; localities: string[] };
+
+function parseLocation(segments: string[] = []): RouteLocation | null {
+  if (segments[0] === "state") {
+    if (segments.length !== 2 || !segments[1]) return null;
+    return { state: fromSearchSlug(segments[1]), localities: [] };
+  }
+  if (segments.length > 3) return null;
+  const [citySegment, ...localitySegments] = segments;
+  return {
+    city: citySegment ? fromSearchSlug(citySegment) : undefined,
+    localities: localitySegments.map(fromSearchSlug).filter(Boolean).slice(0, 2),
+  };
+}
+
+function intentCopy(intent: IntentKey) {
+  switch (intent) {
+    case "RENT": return { listingType: "RENT", label: "Properties for Rent" } as const;
+    case "PG": return { listingType: "PG", label: "PG & Co-Living Spaces" } as const;
+    case "FLATMATE": return { listingType: "PG", label: "Flatmates & Shared Homes" } as const;
+    case "COMMERCIAL": return { listingType: "SELL", label: "Commercial Properties" } as const;
+    case "PLOT": return { listingType: "SELL", label: "Plots & Land" } as const;
+    default: return { listingType: "SELL", label: "Properties for Sale" } as const;
+  }
+}
+
+export async function metadataForIntentSearch({ params }: IntentSearchRouteProps): Promise<Metadata> {
+  const { intent: intentSlug, segments = [] } = await params;
+  const intent = intentFromSearchSlug(intentSlug);
+  const location = parseLocation(segments);
+  if (!intent || !location) return {};
+
+  const copy = intentCopy(intent);
+  const locationLabel = location.state ? location.state : [...location.localities, location.city].filter(Boolean).join(", ") || "India";
+  let countLabel = "";
+  try {
+    const url = new URL(`${API_BASE}/api/v1/propertyListing/search`);
+    url.searchParams.set("pageSize", "1");
+    url.searchParams.set("listingType", copy.listingType);
+    if (location.city) url.searchParams.set("cityName", location.city);
+    if (location.state) url.searchParams.set("q", location.state);
+    for (const locality of location.localities) url.searchParams.append("locality", locality);
+    if (intent === "COMMERCIAL") url.searchParams.set("resCom", "COMMERCIAL");
+    const response = await fetch(url, { next: { revalidate: 3600 } });
+    if (response.ok) {
+      const payload = await response.json();
+      const total = Number(payload?.data?.total ?? payload?.total ?? 0);
+      if (total > 0) countLabel = `${total} `;
+    }
+  } catch {
+    // Static metadata remains useful when the count service is unavailable.
+  }
+
+  const title = `${countLabel}${copy.label} in ${locationLabel} | Awasio`;
+  const description = `Explore verified ${copy.label.toLowerCase()} in ${locationLabel}. Compare prices, essential details and direct-connect listings on Awasio.`;
+  const canonicalPath = `/${SEARCH_INTENT_SLUGS[intent]}${segments.length ? `/${segments.join("/")}` : ""}`;
+  return {
+    title,
+    description,
+    alternates: { canonical: buildCanonical(canonicalPath) },
+    openGraph: { title, description, url: buildCanonical(canonicalPath), type: "website", siteName: "Awasio" },
+  };
+}
+
+export async function IntentSearchRoute({ params, searchParams }: IntentSearchRouteProps) {
+  const { intent: intentSlug, segments = [] } = await params;
+  const query = await searchParams;
+  const intent = intentFromSearchSlug(intentSlug);
+  const location = parseLocation(segments);
+  if (!intent || !location) notFound();
+
+  const canonicalIntent = SEARCH_INTENT_SLUGS[intent];
+  const citySlug = segments[0]?.toLowerCase();
+  const canonicalCity = citySlug && CITY_ALIASES[citySlug];
+  if (intentSlug !== canonicalIntent || canonicalCity) {
+    const normalized = canonicalCity ? [canonicalCity, ...segments.slice(1)] : segments;
+    permanentRedirect(`/${canonicalIntent}${normalized.length ? `/${normalized.join("/")}` : ""}`);
+  }
+
+  const hasLegacyLocationParams = ["city", "cityName", "locality", "localities", "loc", "intent"]
+    .some((key) => query[key] !== undefined);
+  if (hasLegacyLocationParams) {
+    const urlParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      if (Array.isArray(value)) value.forEach((entry) => urlParams.append(key, entry));
+      else if (value) urlParams.set(key, value);
+    }
+    if (location.state) {
+      for (const key of ["city", "cityName", "locality", "localities", "loc", "intent"]) urlParams.delete(key);
+      const remaining = urlParams.toString();
+      permanentRedirect(`/${canonicalIntent}/state/${segments[1]}${remaining ? `?${remaining}` : ""}`);
+    }
+    const normalizedState = parseSearchParams(urlParams);
+    normalizedState.intent = intent;
+    if (location.city) normalizedState.cityName = location.city;
+    if (location.localities.length > 0) {
+      normalizedState.localities = location.localities.map((label) => ({ label, city: location.city }));
+    }
+    permanentRedirect(buildSearchHref(normalizedState));
+  }
+
+  return <SearchPageClient routeIntent={intent} routeCity={location.city} routeLocalities={location.localities} routeState={location.state} />;
+}

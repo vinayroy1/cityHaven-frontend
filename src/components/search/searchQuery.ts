@@ -17,7 +17,7 @@ export type LocalityTag = {
   locality?: string;
 };
 
-export type IntentKey = "BUY" | "RENT" | "PG" | "COMMERCIAL" | "PLOT";
+export type IntentKey = "BUY" | "RENT" | "PG" | "FLATMATE" | "COMMERCIAL" | "PLOT";
 export type SortKey = "relevance" | "newest" | "price_asc" | "price_desc";
 export type ApiListingType = "SELL" | "RENT" | "PG";
 
@@ -55,6 +55,7 @@ export const INTENT_CONFIG: Record<
   BUY: { label: "Buy", listingType: "SELL" },
   RENT: { label: "Rent", listingType: "RENT" },
   PG: { label: "PG / Co-living", listingType: "PG" },
+  FLATMATE: { label: "Flatmate", listingType: "PG" },
   COMMERCIAL: { label: "Commercial", listingType: "SELL", resCom: "COMMERCIAL" },
   PLOT: { label: "Plot / Land", listingType: "SELL", plotOnly: true },
 };
@@ -112,6 +113,8 @@ const legacyListingTypeToIntent = (v: string): IntentKey | undefined => {
       return "RENT";
     case "PG":
       return "PG";
+    case "FLATMATE":
+      return "FLATMATE";
     case "COMMERCIAL":
       return "COMMERCIAL";
     case "PLOT":
@@ -140,7 +143,7 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
     .slice(0, 2)
     .map((label) => ({ label }));
 
-  const intentParam = sp.get("intent");
+  const intentParam = sp.get("intent")?.toUpperCase();
   if (intentParam && INTENT_KEYS.includes(intentParam as IntentKey)) {
     state.intent = intentParam as IntentKey;
   } else {
@@ -211,8 +214,59 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   return sp;
 }
 
-export const buildSearchHref = (state: SearchState): string =>
-  `/propertySearch?${buildSearchParams(state).toString()}`;
+export const toSearchSlug = (value: string): string =>
+  value
+    .trim()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+export const fromSearchSlug = (value: string): string =>
+  decodeURIComponent(value)
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+
+export const SEARCH_INTENT_SLUGS: Record<IntentKey, string> = {
+  BUY: "buy",
+  RENT: "rent",
+  PG: "pg",
+  FLATMATE: "flatmate",
+  COMMERCIAL: "commercial",
+  PLOT: "plot",
+};
+
+export const intentFromSearchSlug = (value: string): IntentKey | undefined => {
+  const normalized = value.trim().toLowerCase();
+  return INTENT_KEYS.find((intent) => SEARCH_INTENT_SLUGS[intent] === normalized);
+};
+
+/** Build the canonical SEO route while keeping non-location filters in query params. */
+export function buildSearchHref(state: SearchState): string {
+  const params = buildSearchParams(state);
+  params.delete("city");
+  params.delete("cityName");
+  params.delete("locality");
+  params.delete("localities");
+  params.delete("loc");
+
+  params.delete("intent");
+
+  const city = state.cityName?.trim();
+  const pathSegments = city ? [toSearchSlug(city)] : [];
+  for (const locality of state.localities.slice(0, 2)) {
+    const slug = toSearchSlug(locality.label);
+    if (slug) pathSegments.push(slug);
+  }
+
+  const query = params.toString();
+  const base = `/${SEARCH_INTENT_SLUGS[state.intent]}`;
+  return `${base}${pathSegments.length ? `/${pathSegments.join("/")}` : ""}${query ? `?${query}` : ""}`;
+}
 
 /** The location text sent to the backend `q` (keyword + locality labels). */
 export function buildQueryText(state: SearchState): string {

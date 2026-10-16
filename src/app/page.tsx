@@ -39,7 +39,7 @@ export default function RootPage() {
             "@type": "SearchAction",
             target: {
               "@type": "EntryPoint",
-              urlTemplate: `${SITE_URL}/propertySearch?search={search_term_string}`,
+              urlTemplate: `${SITE_URL}/buy?q={search_term_string}`,
             },
             "query-input": "required name=search_term_string",
           },

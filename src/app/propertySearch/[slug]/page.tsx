@@ -2,6 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { buildCanonical } from "@/constants/seo";
+import { buildSearchHref, parseSearchParams } from "@/components/search/searchQuery";
 import { SearchPageClient } from "../SearchPageClient";
 
 type Props = {
@@ -23,15 +24,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     );
     const json = await res.json();
     if (json.isSearchSlug && json.seo) {
+      const resolvedParams = new URLSearchParams();
+      if (json.filters?.cityName) resolvedParams.set("city", json.filters.cityName);
+      if (json.filters?.locality) resolvedParams.append("locality", json.filters.locality);
+      if (json.filters?.listingType) resolvedParams.set("listingType", json.filters.listingType);
+      const canonicalPath = buildSearchHref(parseSearchParams(resolvedParams));
       return {
         title: json.seo.title,
         description: json.seo.metaDescription,
         keywords: json.seo.keywords,
-        alternates: { canonical: buildCanonical(`/propertySearch/${slug}`) },
+        alternates: { canonical: buildCanonical(canonicalPath) },
         openGraph: {
           title: json.seo.title,
           description: json.seo.metaDescription,
-          url: buildCanonical(`/propertySearch/${slug}`),
+          url: buildCanonical(canonicalPath),
           type: "website",
           siteName: "Awasio",
         },
@@ -90,8 +96,7 @@ export default async function PropertySearchSlugPage({ params, searchParams }: P
         }
       }
 
-      // Redirect to /propertySearch with pre-selected filters
-      redirect(`/propertySearch?${searchParamsObj.toString()}`);
+      redirect(buildSearchHref(parseSearchParams(searchParamsObj)));
     }
   } catch (err: any) {
     if (err?.message === "NEXT_REDIRECT" || err?.digest?.startsWith("NEXT_REDIRECT")) {
@@ -126,7 +131,7 @@ export default async function PropertySearchSlugPage({ params, searchParams }: P
       }
     }
     
-    redirect(`/propertySearch?${searchParamsObj.toString()}`);
+    redirect(buildSearchHref(parseSearchParams(searchParamsObj)));
   }
 
   return <SearchPageClient />;

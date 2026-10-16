@@ -1,6 +1,9 @@
 import {
   parseSearchParams,
   buildSearchParams,
+  buildSearchHref,
+  fromSearchSlug,
+  toSearchSlug,
   toApiParams,
   applyClientRefinements,
   hasClientRefinements,
@@ -59,6 +62,29 @@ describe("parse <-> build round-trip", () => {
   });
 });
 
+describe("structured SEO search URLs", () => {
+  it("moves city and localities into path segments", () => {
+    const href = buildSearchHref(state({
+      cityName: "New Delhi",
+      localities: [{ label: "Saket" }, { label: "Greater Kailash 1" }],
+      intent: "RENT",
+      priceMax: 50000,
+    }));
+    expect(href).toBe("/rent/new-delhi/saket/greater-kailash-1?priceMax=50000");
+  });
+
+  it("uses the intent landing route when no city is selected", () => {
+    expect(buildSearchHref(state({ cityName: undefined }))).toBe("/buy");
+    expect(buildSearchHref(state({ cityName: undefined, intent: "PG" }))).toBe("/pg");
+    expect(buildSearchHref(state({ cityName: undefined, intent: "FLATMATE" }))).toBe("/flatmate");
+  });
+
+  it("normalizes and restores readable location slugs", () => {
+    expect(toSearchSlug("Gurugram Sector 56")).toBe("gurugram-sector-56");
+    expect(fromSearchSlug("dlf-phase-1")).toBe("Dlf Phase 1");
+  });
+});
+
 describe("toApiParams — backend allow-list only", () => {
   it("emits only keys the backend accepts and never an r.* key", () => {
     const s = state({
@@ -84,6 +110,7 @@ describe("toApiParams — backend allow-list only", () => {
     expect(toApiParams(state({ intent: "COMMERCIAL" }), 12).listingType).toBe("SELL");
     expect(toApiParams(state({ intent: "PLOT" }), 12).listingType).toBe("SELL");
     expect(toApiParams(state({ intent: "PG" }), 12).listingType).toBe("PG");
+    expect(toApiParams(state({ intent: "FLATMATE" }), 12).listingType).toBe("PG");
   });
 
   it("drops sort when relevance", () => {
