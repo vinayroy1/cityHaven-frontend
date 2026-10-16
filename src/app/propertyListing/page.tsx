@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Home, Building2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Home, Building2, ShieldCheck, Users } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PropertyListingFlow } from "@/components/propertyListing/PropertyListingFlow";
 import { Toaster } from "@/components/ui/sonner";
@@ -75,6 +75,30 @@ export default function PropertyListingPage() {
               className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 shrink-0"
             >
               <span>Open Project Portal</span>
+              <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </div>
+
+          {/* Flatmate / Roommate Listing Switch Banner */}
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50/80 via-white to-purple-50/50 p-4 shadow-sm dark:border-indigo-900/40 dark:bg-slate-900 dark:from-slate-900 dark:to-slate-900">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
+                <Users className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                  Looking for a Roommate, Sharing a Room, or Buddying Up?
+                </h3>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Post room availability or roommate requirements with shared lifestyle habits, diet, and zero brokerage.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/flatmates/post"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 px-4 py-2 text-xs font-bold text-white shadow-sm transition shrink-0"
+            >
+              <span>Post Flatmate Need</span>
               <span aria-hidden="true">&rarr;</span>
             </Link>
           </div>

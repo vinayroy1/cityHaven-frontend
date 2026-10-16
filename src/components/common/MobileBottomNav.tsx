@@ -51,7 +51,7 @@ const categoryLinks = [
   { label: "Buy Homes", href: "/buy", icon: Home },
   { label: "Rent Properties", href: "/rent", icon: Key },
   { label: "PG & Co-living", href: "/pg", icon: BedDouble },
-  { label: "Find Flatmates", href: "/flatmate", icon: Users },
+  { label: "Find Flatmates", href: "/flatmates", icon: Users },
   { label: "Commercial", href: "/commercial", icon: Building2 },
   { label: "Plots & Land", href: "/plot", icon: MapPin },
   { label: "New Projects", href: "/new-projects", icon: Sparkles, badge: "New" },
