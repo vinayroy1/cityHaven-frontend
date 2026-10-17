@@ -242,7 +242,7 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
           {isLoading || isFetching ? (
             <FlatmateGridSkeleton count={6} />
           ) : listings.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 sm:gap-4.5">
               {listings.map((item) => (
                 <FlatmateCard key={item.id} listing={item} />
               ))}

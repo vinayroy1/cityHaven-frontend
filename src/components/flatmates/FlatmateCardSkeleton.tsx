@@ -5,59 +5,57 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function FlatmateCardSkeleton() {
   return (
-    <div className="relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
-      <div className="space-y-3.5">
+    <div className="relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs dark:border-slate-800 dark:bg-slate-900 overflow-hidden sm:p-3.5">
+      <div className="space-y-2.5">
         {/* Card Media Banner */}
-        <div className="relative h-40 w-full overflow-hidden rounded-2xl bg-gradient-to-tr from-slate-200/70 via-rose-50/50 to-slate-200/70 sm:h-44 dark:from-slate-800 dark:via-slate-850 dark:to-slate-800 animate-pulse">
+        <div className="relative h-32 w-full overflow-hidden rounded-xl bg-gradient-to-tr from-slate-200/70 via-rose-50/50 to-slate-200/70 sm:h-36 dark:from-slate-800 dark:via-slate-850 dark:to-slate-800 animate-pulse">
           {/* Mode tag placeholder */}
-          <div className="absolute left-3 top-3">
-            <Skeleton className="h-6 w-28 rounded-full bg-white/80 dark:bg-slate-700/80 shadow-xs" />
+          <div className="absolute left-2.5 top-2.5">
+            <Skeleton className="h-5 w-24 rounded-full bg-white/80 dark:bg-slate-700/80 shadow-xs" />
           </div>
           {/* Price badge placeholder */}
-          <div className="absolute bottom-3 left-3">
-            <Skeleton className="h-7 w-28 rounded-xl bg-slate-900/60 dark:bg-slate-950/80" />
+          <div className="absolute bottom-2 left-2.5">
+            <Skeleton className="h-6 w-24 rounded-lg bg-slate-900/60 dark:bg-slate-950/80" />
           </div>
         </div>
 
         {/* Title & Location */}
-        <div className="space-y-2 px-1">
-          <Skeleton className="h-5 w-4/5 rounded-lg dark:bg-slate-800" />
-          <Skeleton className="h-4 w-3/5 rounded-md dark:bg-slate-800" />
-          <div className="flex items-center gap-1.5 pt-0.5">
-            <Skeleton className="h-3.5 w-3.5 rounded-full dark:bg-slate-800" />
-            <Skeleton className="h-3.5 w-32 rounded-md dark:bg-slate-800" />
+        <div className="space-y-1.5 px-0.5">
+          <Skeleton className="h-4 w-4/5 rounded dark:bg-slate-800" />
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-3 w-3 rounded-full dark:bg-slate-800" />
+            <Skeleton className="h-3 w-28 rounded dark:bg-slate-800" />
           </div>
         </div>
 
         {/* Specifications row */}
-        <div className="flex flex-wrap items-center gap-1.5 px-1 pt-1">
-          <Skeleton className="h-6 w-20 rounded-lg dark:bg-slate-800" />
-          <Skeleton className="h-6 w-16 rounded-lg dark:bg-slate-800" />
-          <Skeleton className="h-6 w-24 rounded-lg dark:bg-slate-800" />
+        <div className="flex flex-wrap items-center gap-1 px-0.5 pt-0.5">
+          <Skeleton className="h-5 w-16 rounded-md dark:bg-slate-800" />
+          <Skeleton className="h-5 w-14 rounded-md dark:bg-slate-800" />
+          <Skeleton className="h-5 w-20 rounded-md dark:bg-slate-800" />
         </div>
 
         {/* Decision details box */}
-        <div className="rounded-xl bg-slate-50 p-2.5 dark:bg-slate-800/70 space-y-1.5">
-          <Skeleton className="h-3 w-48 rounded dark:bg-slate-700/70" />
-          <Skeleton className="h-3 w-36 rounded dark:bg-slate-700/70" />
+        <div className="rounded-lg bg-slate-50/90 p-2 dark:bg-slate-800/60 space-y-1">
+          <Skeleton className="h-2.5 w-40 rounded dark:bg-slate-700/70" />
         </div>
 
         {/* Compatibility badge */}
-        <div className="px-1">
-          <Skeleton className="h-5 w-32 rounded-full dark:bg-slate-800" />
+        <div className="px-0.5">
+          <Skeleton className="h-4 w-24 rounded-full dark:bg-slate-800" />
         </div>
       </div>
 
       {/* Poster Footer */}
-      <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800/80">
+      <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 dark:border-slate-800/80">
         <div className="flex items-center gap-2">
-          <Skeleton className="h-8 w-8 rounded-full dark:bg-slate-800" />
-          <div className="space-y-1">
-            <Skeleton className="h-3.5 w-20 rounded dark:bg-slate-800" />
-            <Skeleton className="h-2.5 w-28 rounded dark:bg-slate-800" />
+          <Skeleton className="h-7 w-7 rounded-full dark:bg-slate-800" />
+          <div className="space-y-0.5">
+            <Skeleton className="h-3 w-16 rounded dark:bg-slate-800" />
+            <Skeleton className="h-2 w-24 rounded dark:bg-slate-800" />
           </div>
         </div>
-        <Skeleton className="h-8 w-20 rounded-full bg-rose-200/80 dark:bg-rose-950/60" />
+        <Skeleton className="h-7 w-16 rounded-full bg-rose-200/80 dark:bg-rose-950/60" />
       </div>
     </div>
   );
@@ -65,7 +63,7 @@ export function FlatmateCardSkeleton() {
 
 export function FlatmateGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 sm:gap-4.5">
       {Array.from({ length: count }).map((_, i) => (
         <FlatmateCardSkeleton key={i} />
       ))}
