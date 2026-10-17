@@ -249,15 +249,15 @@ export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent,
         </div>
 
         {/* Semantic H1 & Results Status Bar for Google SEO & UX */}
-        <div className="mt-4 hidden flex-wrap items-baseline justify-between gap-2 border-b border-slate-200/60 pb-3 sm:flex dark:border-slate-800/60">
+        <div className="mt-3 sm:mt-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-200/60 pb-3 dark:border-slate-800/60">
           <div>
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-950 dark:text-white">
+            <h1 className="text-base sm:text-xl font-bold tracking-tight text-slate-950 dark:text-white">
               {state.cityName || state.localities?.[0]?.label
                 ? `${state.intent === "FLATMATE" ? "Flatmates & Shared Homes in" : "Properties in"} ${[state.localities?.[0]?.label, state.cityName].filter(Boolean).join(", ")}`
                 : state.intent === "FLATMATE"
                   ? "Flatmates & Shared Homes in India"
                   : "Verified Properties in India"}
-              <span className="ml-1.5 font-normal text-slate-500 text-sm dark:text-slate-400 capitalize">
+              <span className="ml-1.5 font-normal text-slate-500 text-xs sm:text-sm dark:text-slate-400 capitalize">
                 • {state.intent === "RENT" ? "Rent" : state.intent === "PG" ? "PG & Co-Living" : state.intent === "FLATMATE" ? "Flatmate" : state.intent === "COMMERCIAL" ? "Commercial" : "Buy & Rent"}
               </span>
             </h1>
@@ -269,7 +269,7 @@ export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent,
                   : "Fetching latest verified properties..."}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-3">
             <SortMenu value={state.sort} onChange={(sort) => commit({ ...state, sort })} />
           </div>
         </div>

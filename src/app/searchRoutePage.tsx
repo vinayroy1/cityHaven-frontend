@@ -79,14 +79,30 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
     // Static metadata remains useful when the count service is unavailable.
   }
 
-  const title = `${countLabel}${copy.label} in ${locationLabel} | Awasio`;
+  const pageTitle = `${countLabel}${copy.label} in ${locationLabel}`;
   const description = `Explore verified ${copy.label.toLowerCase()} in ${locationLabel}. Compare prices, essential details and direct-connect listings on Awasio.`;
   const canonicalPath = `/${SEARCH_INTENT_SLUGS[intent]}${segments.length ? `/${segments.join("/")}` : ""}`;
+  const canonicalUrl = buildCanonical(canonicalPath);
+  const socialImage = `${process.env.NEXT_PUBLIC_SITE_URL || "https://awasio.com"}/og-image.png`;
+
   return {
-    title,
+    title: pageTitle,
     description,
-    alternates: { canonical: buildCanonical(canonicalPath) },
-    openGraph: { title, description, url: buildCanonical(canonicalPath), type: "website", siteName: "Awasio" },
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title: `${pageTitle} | Awasio`,
+      description,
+      url: canonicalUrl,
+      type: "website",
+      siteName: "Awasio",
+      images: [{ url: socialImage, width: 1200, height: 630, alt: pageTitle }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${pageTitle} | Awasio`,
+      description,
+      images: [socialImage],
+    },
   };
 }
 
@@ -127,5 +143,42 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
     permanentRedirect(buildSearchHref(normalizedState));
   }
 
-  return <SearchPageClient routeIntent={intent} routeCity={location.city} routeLocalities={location.localities} routeState={location.state} />;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://awasio.com";
+  const copy = intentCopy(intent);
+  const breadcrumbElements: Array<{ "@type": string; position: number; name: string; item: string }> = [
+    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+    { "@type": "ListItem", position: 2, name: copy.label, item: buildCanonical(`/${canonicalIntent}`) },
+  ];
+  if (location.city && segments[0]) {
+    breadcrumbElements.push({
+      "@type": "ListItem",
+      position: 3,
+      name: location.city,
+      item: buildCanonical(`/${canonicalIntent}/${segments[0]}`),
+    });
+  }
+  if (location.localities?.[0] && segments[1]) {
+    breadcrumbElements.push({
+      "@type": "ListItem",
+      position: 4,
+      name: location.localities[0],
+      item: buildCanonical(`/${canonicalIntent}/${segments[0]}/${segments[1]}`),
+    });
+  }
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbElements,
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <SearchPageClient routeIntent={intent} routeCity={location.city} routeLocalities={location.localities} routeState={location.state} />
+    </>
+  );
 }
