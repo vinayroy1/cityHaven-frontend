@@ -114,17 +114,17 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
 
       <main className="flex-1 bg-gradient-to-b from-rose-50/60 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         {/* Hero Header Area */}
-        <section className="relative overflow-hidden border-b border-slate-200/80 bg-white px-4 py-5 dark:border-slate-800 dark:bg-slate-900/60 sm:px-6 sm:py-8 lg:px-8 lg:py-8">
+        <section className="relative overflow-hidden border-b border-slate-200/80 bg-white px-3 py-2.5 dark:border-slate-800 dark:bg-slate-900/60 sm:px-6 sm:py-6 lg:px-8">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(244,63,94,0.08),transparent_40%),radial-gradient(circle_at_85%_30%,rgba(245,158,11,0.08),transparent_40%)]" />
 
           <div className="relative mx-auto max-w-7xl">
             <div className="flex items-center justify-between gap-4">
-              <div className="max-w-2xl space-y-1.5 sm:space-y-2">
-                <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-bold text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 sm:px-3 sm:text-xs">
+              <div className="max-w-2xl space-y-1 sm:space-y-2">
+                <div className="hidden w-fit items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-bold text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 sm:inline-flex sm:px-3 sm:text-xs">
                   <Users className="w-3.5 h-3.5" />
                   <span>Verified Roommate & Flat Sharing Network</span>
                 </div>
-                <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                <h1 className="text-base font-extrabold leading-snug tracking-tight text-slate-900 dark:text-white sm:text-3xl md:text-4xl">
                   Find Roommates Who Share Your Vibes & Lifestyle
                 </h1>
                 <p className="hidden max-w-xl text-sm leading-5 text-slate-600 dark:text-slate-400 sm:line-clamp-2">
@@ -147,9 +147,9 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
         </section>
 
         {/* Filters and Controls */}
-        <section className="mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-6 lg:px-8">
-          <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:gap-4 sm:rounded-3xl sm:p-5">
-            <div className="grid grid-cols-1 gap-2 md:grid-cols-[auto_minmax(12rem,1fr)_auto]">
+        <section className="mx-auto max-w-7xl px-3 py-2 sm:px-6 sm:py-5 lg:px-8">
+          <div className="flex flex-col gap-2 rounded-2xl border border-slate-200/90 bg-white p-2.5 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:gap-4 sm:rounded-3xl sm:p-5">
+            <div className="grid grid-cols-[125px_1fr] gap-2 md:grid-cols-[auto_minmax(12rem,1fr)_auto]">
               <CitySelectorDropdown
                 compact
                 selectedCityName={cityDraft}
@@ -163,7 +163,7 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
                 localities={localityDrafts.map((label) => ({ label, city: cityDraft }))}
                 keyword=""
                 maxLocalities={2}
-                placeholder={cityDraft ? `Search locality in ${cityDraft}` : "Select a city, then search locality"}
+                placeholder={cityDraft ? `Locality in ${cityDraft}` : "Select a city"}
                 onChange={({ localities }) => {
                   setLocalityDrafts(localities.map((item) => item.label));
                 }}
@@ -176,39 +176,32 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
                 <Search className="h-4 w-4" />
                 Search
               </button>
+            </div>
+
+            {/* Mobile Actions: Filters & Search side-by-side to save height */}
+            <div className="grid grid-cols-2 gap-2 md:hidden">
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="flex h-11 w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-left transition hover:border-rose-300 hover:bg-rose-50/50 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-rose-700 dark:hover:bg-rose-950/20 md:hidden"
+                className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2 text-xs font-bold text-slate-800 transition active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
-                <span className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-rose-600 shadow-sm dark:bg-slate-900 dark:text-rose-400">
-                    <SlidersHorizontal className="h-4 w-4" />
+                <SlidersHorizontal className="h-3.5 w-3.5 text-rose-600" />
+                <span>Filters</span>
+                {activeFilterCount > 0 && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-600 px-1.5 text-[9px] font-bold text-white">
+                    {activeFilterCount}
                   </span>
-                  <span>
-                    <span className="block text-xs font-bold text-slate-900 dark:text-white">All filters</span>
-                    <span className="block text-[10px] text-slate-500 dark:text-slate-400">Mode, budget, room and lifestyle</span>
-                  </span>
-                </span>
-                <span className="flex items-center gap-2">
-                  {activeFilterCount > 0 && (
-                    <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-rose-600 px-2 text-[10px] font-bold text-white">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                  <ChevronRight className="h-4 w-4 text-slate-400" />
-                </span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => runSearch()}
+                className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-3 text-xs font-bold text-white shadow-xs transition active:scale-[0.98]"
+              >
+                <Search className="h-3.5 w-3.5" />
+                <span>Search</span>
               </button>
             </div>
-
-            <button
-              type="button"
-              onClick={() => runSearch()}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-rose-600 text-sm font-bold text-white shadow-md shadow-rose-600/20 transition active:scale-[0.99] md:hidden"
-            >
-              <Search className="h-4 w-4" />
-              Search Flatmates
-            </button>
           </div>
 
           <FilterSheet
@@ -223,20 +216,21 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
 
           <div className="flex items-start gap-6">
             <div className="min-w-0 flex-1">
-          {/* Listings count & Active indicator */}
-          <div className="my-5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <div>
-              Showing <span className="font-bold text-slate-900 dark:text-white">{listings.length}</span> of{" "}
-              <span className="font-bold text-slate-900 dark:text-white">{total}</span> flatmate listings in{" "}
-              {city ? <span className="font-semibold text-rose-600">{city}</span> : <span>India</span>}
-            </div>
-            {isFetching && (
-              <div className="flex items-center gap-1.5 rounded-full border border-rose-200/80 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600 shadow-xs dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Finding compatible flatmates...</span>
+              {/* Listings count & Active indicator (hidden on mobile to save height) */}
+              <div className="hidden sm:flex my-4 items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <div>
+                  Showing <span className="font-bold text-slate-900 dark:text-white">{listings.length}</span> of{" "}
+                  <span className="font-bold text-slate-900 dark:text-white">{total}</span> flatmate listings in{" "}
+                  {city ? <span className="font-semibold text-rose-600">{city}</span> : <span>India</span>}
+                </div>
+                {isFetching && (
+                  <div className="flex items-center gap-1.5 rounded-full border border-rose-200/80 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600 shadow-xs dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Finding compatible flatmates...</span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+
 
           {/* Cards Grid */}
           {isLoading || isFetching ? (
