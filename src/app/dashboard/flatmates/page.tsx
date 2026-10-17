@@ -357,6 +357,13 @@ export default function DashboardFlatmatesPage() {
                             Your message: &ldquo;{interest.message}&rdquo;
                           </p>
                         )}
+
+                        {interest.status === "ACCEPTED" && interest.listing?.contact?.mobileNumber && (
+                          <div className="flex flex-wrap items-center gap-3 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                            <span className="flex items-center gap-1"><Phone className="h-3.5 w-3.5" />{interest.listing.contact.mobileNumber}</span>
+                            {interest.listing.contact.email && <span className="flex items-center gap-1"><Mail className="h-3.5 w-3.5" />{interest.listing.contact.email}</span>}
+                          </div>
+                        )}
                       </div>
 
                       {interest.status === "PENDING" && (
@@ -383,7 +390,7 @@ export default function DashboardFlatmatesPage() {
                   </p>
                   <div className="pt-2">
                     <Link
-                      href="/flatmates"
+                      href="/flatmate"
                       className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-md shadow-rose-600/20"
                     >
                       Explore Flatmates

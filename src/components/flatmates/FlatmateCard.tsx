@@ -76,7 +76,7 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
       <div className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-rose-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-rose-900/60">
         <div>
           {/* Card Media / Header Banner */}
-          <div className="relative mb-3.5 h-48 w-full overflow-hidden rounded-2xl bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900">
+          <div className="relative mb-3.5 h-40 w-full overflow-hidden rounded-2xl bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 sm:h-44 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900">
             {photo ? (
               <img
                 src={photo}
@@ -119,6 +119,12 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             {listing.photos?.length > 1 && (
               <div className="absolute bottom-3 right-3 rounded-full bg-slate-950/70 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
                 1 of {listing.photos.length} photos
+              </div>
+            )}
+
+            {listing.compatibilityScore != null && (
+              <div className="absolute right-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-extrabold text-emerald-700 shadow-sm backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
+                {listing.compatibilityScore}% match
               </div>
             )}
           </div>
@@ -165,6 +171,11 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
 
           {/* Lifestyle & Compatibility Badges */}
           <div className="mt-2.5 flex flex-wrap items-center gap-1 px-1">
+            {listing.compatibilityReasons?.slice(0, 2).map((reason) => (
+              <Badge key={reason} variant="outline" className="border-emerald-200 bg-emerald-50/50 text-[10px] font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300">
+                <Sparkles className="mr-0.5 h-2.5 w-2.5" /> {reason}
+              </Badge>
+            ))}
             {listing.preferredGenders?.length > 0 && (
               <Badge
                 variant="outline"

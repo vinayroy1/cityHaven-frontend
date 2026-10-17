@@ -42,7 +42,7 @@ const primaryNavLinks = [
 
 const secondaryNavLinks = [
   { label: "Plots & Land", href: "/plot", icon: MapPin },
-  { label: "Find Flatmates", href: "/flatmates", icon: Users },
+  { label: "Find Flatmates", href: "/flatmate", icon: Users },
   { label: "Find Agents", href: "/agents", icon: Users },
   { label: "Post Project (Builder)", href: "/post-project", icon: Building2 },
 ];

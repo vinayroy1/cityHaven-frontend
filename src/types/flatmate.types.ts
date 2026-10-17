@@ -83,6 +83,13 @@ export interface FlatmateListing {
   _count?: {
     interests?: number;
   };
+  compatibilityScore?: number | null;
+  compatibilityReasons?: string[];
+  contact?: {
+    name?: string | null;
+    mobileNumber?: string;
+    email?: string | null;
+  };
 }
 
 export interface FlatmateSearchParams {

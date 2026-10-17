@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Users,
   Search,
@@ -28,10 +29,16 @@ import type { FlatmateListingMode } from "@/types/flatmate.types";
 
 const POPULAR_CITIES = ["Bengaluru", "Mumbai", "Delhi", "Gurgaon", "Pune", "Hyderabad", "Noida"];
 
-export default function FlatmatesDiscoveryPage() {
+type FlatmatesDiscoveryPageProps = { initialCity?: string; initialLocality?: string };
+
+const locationSlug = (value: string) => value.trim().toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocality = "" }: FlatmatesDiscoveryPageProps) {
+  const router = useRouter();
   const [mode, setMode] = useState<FlatmateListingMode | "ALL">("ALL");
-  const [city, setCity] = useState("Bengaluru");
-  const [locality, setLocality] = useState("");
+  const [city, setCity] = useState(initialCity);
+  const [locality, setLocality] = useState(initialLocality);
+  const [localityDraft, setLocalityDraft] = useState(initialLocality);
   const [gender, setGender] = useState("");
   const [roomType, setRoomType] = useState("");
   const [petsAllowed, setPetsAllowed] = useState<boolean | undefined>(undefined);
@@ -53,11 +60,24 @@ export default function FlatmatesDiscoveryPage() {
   const resetFilters = () => {
     setMode("ALL");
     setLocality("");
+    setLocalityDraft("");
     setGender("");
     setRoomType("");
     setPetsAllowed(undefined);
     setPreferredDiet("");
     setPage(1);
+  };
+
+  const navigateToLocation = (nextCity: string, nextLocality = "") => {
+    const segments = [nextCity, nextLocality].map(locationSlug).filter(Boolean);
+    router.push(`/flatmate${segments.length ? `/${segments.join("/")}` : ""}`);
+  };
+
+  const applyLocality = () => {
+    const next = localityDraft.trim();
+    setLocality(next);
+    setPage(1);
+    navigateToLocation(city, next);
   };
 
   const listings = data?.items || [];
@@ -110,7 +130,9 @@ export default function FlatmatesDiscoveryPage() {
                   onClick={() => {
                     setCity(c);
                     setLocality("");
+                    setLocalityDraft("");
                     setPage(1);
+                    navigateToLocation(c);
                   }}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition ${
                     city.toLowerCase() === c.toLowerCase()
@@ -164,14 +186,20 @@ export default function FlatmatesDiscoveryPage() {
               <div className="relative w-full sm:w-72">
                 <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
                 <Input
-                  value={locality}
-                  onChange={(e) => {
-                    setLocality(e.target.value);
-                    setPage(1);
+                  value={localityDraft}
+                  onChange={(e) => setLocalityDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      applyLocality();
+                    }
                   }}
                   placeholder="Filter by locality (e.g. HSR)..."
-                  className="pl-9 h-9 rounded-2xl text-xs"
+                  className="pl-9 pr-16 h-9 rounded-2xl text-xs"
                 />
+                <button type="button" onClick={applyLocality} className="absolute right-1 top-1 flex h-7 items-center rounded-xl bg-rose-600 px-2.5 text-[10px] font-bold text-white">
+                  Apply
+                </button>
               </div>
             </div>
 
@@ -189,8 +217,8 @@ export default function FlatmatesDiscoveryPage() {
                   className="h-8 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs px-3 font-medium focus:outline-none focus:ring-1 focus:ring-rose-500"
                 >
                   <option value="">Gender: Any</option>
-                  <option value="Female Only">Female Only</option>
-                  <option value="Male Only">Male Only</option>
+                  <option value="Female">Women</option>
+                  <option value="Male">Men</option>
                 </select>
 
                 {/* Room Type */}

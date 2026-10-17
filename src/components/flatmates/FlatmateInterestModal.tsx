@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Send, Sparkles, User, MapPin, HeartHandshake, Loader2 } from "lucide-react";
 import { useExpressFlatmateInterestMutation } from "@/features/flatmates/api";
+import { useRouter } from "next/navigation";
+import { APP_CONFIG } from "@/constants/app-config";
 import type { FlatmateListing } from "@/types/flatmate.types";
 
 interface FlatmateInterestModalProps {
@@ -29,12 +31,18 @@ export function FlatmateInterestModal({
   onSuccess,
 }: FlatmateInterestModalProps) {
   const [message, setMessage] = useState("");
+  const router = useRouter();
   const [expressInterest, { isLoading }] = useExpressFlatmateInterestMutation();
 
   if (!listing) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!window.localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)) {
+      const returnTo = `/flatmates/${listing.slug}`;
+      router.push(`/login?redirect=${encodeURIComponent(returnTo)}`);
+      return;
+    }
     try {
       await expressInterest({
         listingId: listing.id,
@@ -99,6 +107,9 @@ export function FlatmateInterestModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-300">
+            Contact details stay private until the listing owner accepts. Meet in a public place first and never transfer money before verifying the room and agreement.
+          </p>
           <div className="space-y-2">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
               Introduce yourself (optional, but gets 3x faster replies!)

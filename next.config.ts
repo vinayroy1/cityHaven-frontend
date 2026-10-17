@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         destination: "/",
         permanent: true,
       },
+      {
+        source: "/flatmates",
+        destination: "/flatmate",
+        permanent: true,
+      },
     ];
   },
 };

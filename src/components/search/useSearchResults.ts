@@ -56,7 +56,7 @@ export function useSearchResults(state: SearchState): SearchResults {
     if (state.priceMax != null) params.budgetMax = state.priceMax;
     if (state.refine.flatmateMode?.length === 1) params.mode = state.refine.flatmateMode[0];
     if (state.refine.roomType?.length === 1) params.roomType = state.refine.roomType[0];
-    if (state.refine.gender?.length === 1) params.gender = state.refine.gender[0];
+    if (state.refine.gender?.length === 1) params.gender = state.refine.gender[0].replace(/\s+Only$/i, "");
     if (state.refine.diet?.length === 1) params.preferredDiet = state.refine.diet[0];
     if (state.refine.furnishing?.length === 1) params.furnishing = state.refine.furnishing[0];
     if (state.refine.bhkTypes?.length === 1) {

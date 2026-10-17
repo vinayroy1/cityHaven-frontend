@@ -35,9 +35,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { APP_CONFIG } from "@/constants/app-config";
 import { PropertyListingCitySelector, type CitySelection } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector, type LocalitySelection } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { useCreateFlatmateListingMutation } from "@/features/flatmates/api";
+import { useGetPresignedUploadUrlMutation } from "@/features/propertyListing/api";
 import type { FlatmateListingMode, FlatmateListingInput } from "@/types/flatmate.types";
 
 const ROOM_TYPES = ["Private Room", "Shared Room (Twin)", "Shared Room (3+)", "Whole Flat"];
@@ -66,6 +68,7 @@ const SLEEP_SCHEDULE_OPTIONS = ["Flexible", "Early Bird", "Night Owl"];
 export function FlatmateListingWizard() {
   const router = useRouter();
   const [createListing, { isLoading: isSubmitting }] = useCreateFlatmateListingMutation();
+  const [getPresignedUploadUrl] = useGetPresignedUploadUrlMutation();
 
   const [step, setStep] = useState(1);
 
@@ -99,7 +102,7 @@ export function FlatmateListingWizard() {
 
   // Lifestyle & compatibility preferences
   const [preferredGenders, setPreferredGenders] = useState<string[]>(["Any Gender"]);
-  const [preferredOccupations, setPreferredOccupations] = useState<string[]>(["Working Professional"]);
+  const [preferredOccupations, setPreferredOccupations] = useState<string[]>([]);
   const [preferredDiet, setPreferredDiet] = useState<string>("Any Diet");
   const [smokingAllowed, setSmokingAllowed] = useState<boolean>(false);
   const [drinkingAllowed, setDrinkingAllowed] = useState<boolean>(true);
@@ -110,16 +113,22 @@ export function FlatmateListingWizard() {
 
   // Profile and photos
   const [displayName, setDisplayName] = useState("");
+  const [birthYear, setBirthYear] = useState("");
+  const [gender, setGender] = useState("");
   const [occupation, setOccupation] = useState("");
   const [companyOrCollege, setCompanyOrCollege] = useState("");
   const [bio, setBio] = useState("");
-  const [photos, setPhotos] = useState<string[]>([
-    "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
-  ]);
+  const [photos, setPhotos] = useState<string[]>([]);
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
+  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  React.useEffect(() => {
+    if (!window.localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)) {
+      router.replace(`/login?redirect=${encodeURIComponent("/flatmates/post")}`);
+    }
+  }, [router]);
 
   // Toggle helpers
   const toggleAmenity = (item: string) => {
@@ -148,6 +157,31 @@ export function FlatmateListingWizard() {
 
   const removePhoto = (idx: number) => {
     setPhotos((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const uploadPhotos = async (files: FileList | null) => {
+    if (!files?.length) return;
+    const selected = Array.from(files).slice(0, Math.max(0, 8 - photos.length));
+    if (!selected.length) return;
+    if (selected.some((file) => !file.type.startsWith("image/") || file.size > 10 * 1024 * 1024)) {
+      toast.error("Choose image files smaller than 10 MB each");
+      return;
+    }
+    setIsUploadingPhotos(true);
+    try {
+      const uploaded = await Promise.all(selected.map(async (file) => {
+        const presigned = await getPresignedUploadUrl({ fileName: file.name, contentType: file.type, category: "flatmates", subFolder: "photos" }).unwrap();
+        const response = await fetch(presigned.uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
+        if (!response.ok) throw new Error(`Could not upload ${file.name}`);
+        return presigned.publicUrl;
+      }));
+      setPhotos((current) => [...current, ...uploaded].slice(0, 8));
+      toast.success(`${uploaded.length} photo${uploaded.length === 1 ? "" : "s"} uploaded`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Photo upload failed");
+    } finally {
+      setIsUploadingPhotos(false);
+    }
   };
 
   // Smart title generation
@@ -211,9 +245,10 @@ export function FlatmateListingWizard() {
         smokingAllowed,
         drinkingAllowed,
         petsAllowed,
-        profile: displayName
-          ? {
-              displayName,
+        profile: {
+              displayName: displayName || undefined,
+              birthYear: birthYear ? Number(birthYear) : undefined,
+              gender: gender || undefined,
               occupation: occupation || undefined,
               companyOrCollege: companyOrCollege || undefined,
               bio: bio || undefined,
@@ -222,8 +257,7 @@ export function FlatmateListingWizard() {
               sleepSchedule,
               workMode,
               hasPets: petsAllowed,
-            }
-          : undefined,
+            },
       };
 
       const res = await createListing(payload).unwrap();
@@ -759,6 +793,21 @@ export function FlatmateListingWizard() {
 
           {/* Dietary Preference */}
           <div className="space-y-2">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Preferred Occupation <span className="font-normal text-slate-400">(optional)</span></label>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {OCCUPATION_OPTIONS.map((option) => {
+                const selected = preferredOccupations.includes(option);
+                return (
+                  <button key={option} type="button" onClick={() => setPreferredOccupations((current) => selected ? current.filter((item) => item !== option) : [...current, option])} className={`rounded-2xl border p-2.5 text-xs font-semibold transition ${selected ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300" : "border-slate-200 text-slate-600 dark:border-slate-800 dark:text-slate-400"}`}>
+                    {option}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Dietary Preference */}
+          <div className="space-y-2">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
               Dietary Preference
             </label>
@@ -929,12 +978,12 @@ export function FlatmateListingWizard() {
                 About You & Photos
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Flatmate listings with a friendly profile and room photos receive 5x more verified inquiries.
+                A clear profile and recent room photos help people decide whether to start a conversation.
               </p>
             </div>
 
             {/* Profile fields */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Your Name / Display Name
@@ -945,6 +994,22 @@ export function FlatmateListingWizard() {
                   placeholder="e.g. Rahul S."
                   className="rounded-2xl"
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Your Gender</label>
+                <select value={gender} onChange={(e) => setGender(e.target.value)} className="h-10 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm dark:border-slate-800 dark:bg-slate-900">
+                  <option value="">Prefer not to say</option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Non-binary">Non-binary</option>
+                  <option value="Other">Self-described / Other</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Birth Year</label>
+                <Input type="number" inputMode="numeric" min="1940" max={new Date().getFullYear() - 18} value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="e.g. 1998" className="rounded-2xl" />
               </div>
 
               <div className="space-y-1.5">
@@ -990,7 +1055,15 @@ export function FlatmateListingWizard() {
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Room & Flat Photos
               </label>
-              <div className="flex gap-2">
+              <label className={`flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center transition hover:border-rose-400 hover:bg-rose-50/40 dark:border-slate-700 dark:bg-slate-800/50 ${isUploadingPhotos ? "pointer-events-none opacity-70" : ""}`}>
+                {isUploadingPhotos ? <Loader2 className="mb-2 h-6 w-6 animate-spin text-rose-500" /> : <Upload className="mb-2 h-6 w-6 text-rose-500" />}
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{isUploadingPhotos ? "Uploading photos…" : "Choose room or profile photos"}</span>
+                <span className="mt-1 text-[11px] text-slate-500">Up to 8 JPG, PNG or WebP images · 10 MB each</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only" onChange={(e) => void uploadPhotos(e.target.files)} />
+              </label>
+              <details className="rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-800">
+                <summary className="cursor-pointer text-[11px] font-semibold text-slate-500">Or add an image URL</summary>
+                <div className="mt-2 flex gap-2">
                 <Input
                   value={newPhotoUrl}
                   onChange={(e) => setNewPhotoUrl(e.target.value)}
@@ -1006,7 +1079,8 @@ export function FlatmateListingWizard() {
                 <Button type="button" onClick={addPhoto} className="rounded-2xl shrink-0">
                   <Plus className="w-4 h-4 mr-1" /> Add Photo
                 </Button>
-              </div>
+                </div>
+              </details>
 
               {photos.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
