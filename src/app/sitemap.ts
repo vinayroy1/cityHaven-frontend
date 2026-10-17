@@ -1,10 +1,13 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/constants/seo";
+import {
+  SITE_URL,
+  SEO_SEARCH_INTENTS,
+  SEO_CITIES,
+  SEO_TOP_LOCALITIES,
+  type SeoSearchIntent,
+} from "@/constants/seo";
 import { getAllAgentIds } from "@/data/agents";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { toSearchSlug } from "@/components/search/searchQuery";
-
-const CITIES = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
 
 async function getActiveProperties(): Promise<Array<{ id: number; slug?: string | null; updatedAt?: string | null }>> {
   try {
@@ -29,12 +32,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "daily",
       priority: 1.0,
-    },
-    {
-      url: `${SITE_URL}/buy`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.9,
     },
     {
       url: `${SITE_URL}/agents`,
@@ -104,22 +101,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // 2. City-Specific Property Search Landing Pages
-  const searchIntents = ["buy", "rent", "pg", "flatmate", "commercial", "plot"];
-  const intentLandingRoutes: MetadataRoute.Sitemap = searchIntents.slice(1).map((intent) => ({
+  // 2. Intent Landing Pages (e.g. /buy, /rent, /flatmate, /pg, /commercial, /plot)
+  const intentLandingRoutes: MetadataRoute.Sitemap = SEO_SEARCH_INTENTS.map((intent) => ({
     url: `${SITE_URL}/${intent}`,
     lastModified: now,
     changeFrequency: "daily",
     priority: 0.9,
   }));
-  const citySearchRoutes: MetadataRoute.Sitemap = searchIntents.flatMap((intent) => CITIES.map((city) => ({
-    url: `${SITE_URL}/${intent}/${toSearchSlug(city)}`,
-    lastModified: now,
-    changeFrequency: "daily" as const,
-    priority: 0.85,
-  })));
 
-  // 3. Verified Real Estate Advisor Profiles
+  // 3. City-Specific Landing Pages (e.g. /rent/bengaluru, /flatmate/bengaluru)
+  const citySearchRoutes: MetadataRoute.Sitemap = SEO_SEARCH_INTENTS.flatMap((intent) =>
+    SEO_CITIES.map((city) => ({
+      url: `${SITE_URL}/${intent}/${city}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.88,
+    }))
+  );
+
+  // 4. Locality-Specific Landing Pages (e.g. /rent/bengaluru/koramangala, /flatmate/bengaluru/hsr-layout)
+  const highIntentLocalityCategories: SeoSearchIntent[] = ["rent", "flatmate", "pg", "buy"];
+  const localitySearchRoutes: MetadataRoute.Sitemap = highIntentLocalityCategories.flatMap((intent) =>
+    Object.entries(SEO_TOP_LOCALITIES).flatMap(([city, localities]) =>
+      localities.map((locality) => ({
+        url: `${SITE_URL}/${intent}/${city}/${locality}`,
+        lastModified: now,
+        changeFrequency: "daily" as const,
+        priority: 0.82,
+      }))
+    )
+  );
+
+  // 5. Verified Real Estate Advisor Profiles
   const agentIds = getAllAgentIds();
   const agentRoutes: MetadataRoute.Sitemap = agentIds.map((id) => ({
     url: `${SITE_URL}/agents/${id}`,
@@ -128,7 +141,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 4. Dynamic Active Properties with SEO Slugs
+  // 6. Dynamic Active Properties with SEO Slugs
   const properties = await getActiveProperties();
   const propertyRoutes: MetadataRoute.Sitemap = properties.map((prop) => ({
     url: `${SITE_URL}/properties/${prop.slug || prop.id}`,
@@ -137,5 +150,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  return [...staticRoutes, ...intentLandingRoutes, ...citySearchRoutes, ...agentRoutes, ...propertyRoutes];
+  return [
+    ...staticRoutes,
+    ...intentLandingRoutes,
+    ...citySearchRoutes,
+    ...localitySearchRoutes,
+    ...agentRoutes,
+    ...propertyRoutes,
+  ];
 }
+

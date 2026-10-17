@@ -21,8 +21,11 @@
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "seo:crawl": "node scripts/force-crawl.mjs",
+    "seo:google": "node scripts/google-indexing.mjs"
   },
+
   "dependencies": {
     "@jest/globals": "^30.2.0",
     "@radix-ui/react-checkbox": "^1.3.3",
