@@ -290,17 +290,17 @@ export function LocationSearchInput({
   }, [open]);
 
   return (
-    <div className="relative" ref={containerRef}>
-      <div className="flex h-11 items-center gap-1.5 overflow-hidden rounded-xl border border-slate-200 bg-white px-2.5 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:focus-within:border-rose-400 dark:focus-within:ring-rose-500/20">
-        <MapPin className="ml-0.5 h-4 w-4 shrink-0 text-rose-500" />
+    <div className="relative min-w-0 w-full" ref={containerRef}>
+      <div className="flex h-11 min-w-0 w-full items-center gap-1.5 overflow-hidden rounded-xl border border-slate-200 bg-white px-2 sm:px-2.5 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:focus-within:border-rose-400 dark:focus-within:ring-rose-500/20">
+        <MapPin className="ml-0.5 h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-rose-500" />
 
         {/* Selected localities remain inside the field, like a multi-select dropdown. */}
         {localities.map((l) => (
           <span
             key={l.label}
-            className="inline-flex min-w-0 max-w-28 shrink items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200 sm:max-w-40"
+            className="inline-flex min-w-0 max-w-[85px] sm:max-w-40 shrink items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 sm:py-1 text-xs font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200"
           >
-            <span className="max-w-28 truncate sm:max-w-40">{l.label}</span>
+            <span className="truncate">{l.label}</span>
             <button
               type="button"
               onClick={() => removeLocality(l.label)}
@@ -316,8 +316,9 @@ export function LocationSearchInput({
           <>
             <input
               ref={inputRef}
-              className="min-w-0 flex-1 bg-transparent px-1.5 py-0.5 text-base text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500 sm:text-sm"
-              placeholder={localities.length === 1 ? "Add one more locality..." : placeholder}
+              size={1}
+              className="min-w-0 w-full flex-1 bg-transparent px-1 sm:px-1.5 py-0.5 text-xs text-slate-900 outline-none placeholder:text-xs placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500 sm:text-sm sm:placeholder:text-sm"
+              placeholder={localities.length === 1 ? "Add more..." : placeholder}
               value={text}
               onChange={handleInputChange}
               onFocus={() => {
@@ -336,7 +337,7 @@ export function LocationSearchInput({
               autoComplete="off"
             />
             <ChevronDown
-              className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+              className={`h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
             />
           </>
         ) : (
