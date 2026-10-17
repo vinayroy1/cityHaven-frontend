@@ -24,13 +24,14 @@ import {
 import { toast } from "sonner";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
-import { saveNewProject } from "@/data/projectsData";
 import indiaCitiesData from "@/data/india-cities-by-state.json";
 import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import { fetchAwasioSuggestions } from "@/lib/awasioSuggestions";
-import type { ProjectConfiguration, ProjectListing, ProjectStatus } from "@/types/project.types";
+import type { CreateProjectInput, ProjectConfiguration, ProjectStatus } from "@/types/project.types";
+import { useCreateProjectMutation } from "@/features/projects/api";
 import { LocalitySearchDropdown } from "./components/LocalitySearchDropdown";
 import { ProjectMediaUpload, type UploadedBrochure } from "./components/ProjectMediaUpload";
+import { CDN_ASSETS } from "@/config/cdn";
 
 
 
@@ -166,6 +167,7 @@ const BHK_OPTIONS = ["1 RK", "1 BHK", "2 BHK", "2.5 BHK", "3 BHK", "3.5 BHK", "4
 
 export default function PostProjectPage() {
   const router = useRouter();
+  const [createProject, { isLoading: isPublishing }] = useCreateProjectMutation();
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
   // Step 1: Project Identity & Location
@@ -174,14 +176,16 @@ export default function PostProjectPage() {
   const [reraId, setReraId] = useState("");
   const [status, setStatus] = useState<ProjectStatus>("UNDER_CONSTRUCTION");
   const [possessionDate, setPossessionDate] = useState("");
-  const [selectedState, setSelectedState] = useState("Uttar Pradesh");
-  const [city, setCity] = useState("Noida");
+  const [selectedState, setSelectedState] = useState("");
+  const [city, setCity] = useState("");
   const [locality, setLocality] = useState("");
   const [isCustomLocality, setIsCustomLocality] = useState(false);
   const [dynamicLocalities, setDynamicLocalities] = useState<string[]>([]);
   const [siteAddress, setSiteAddress] = useState("");
   const [landmark, setLandmark] = useState("");
   const [pincode, setPincode] = useState("");
+  const [latitude, setLatitude] = useState<number | undefined>();
+  const [longitude, setLongitude] = useState<number | undefined>();
   const [totalLandArea, setTotalLandArea] = useState("");
   const [totalTowers, setTotalTowers] = useState<number | undefined>(undefined);
   const [totalUnits, setTotalUnits] = useState<number | undefined>(undefined);
@@ -268,6 +272,8 @@ export default function PostProjectPage() {
     meta?: { pincode?: string; lat?: number; lng?: number }
   ) => {
     setLocality(newLocality);
+    setLatitude(meta?.lat);
+    setLongitude(meta?.lng);
     if (meta?.pincode && !pincode) {
       setPincode(meta.pincode);
     }
@@ -281,45 +287,23 @@ export default function PostProjectPage() {
     {
       id: "cfg-1",
       bhkType: "2 BHK",
-      carpetArea: 850,
-      superBuiltUpArea: 1150,
-      bathrooms: 2,
-      balconies: 2,
-      priceMin: 6500000,
-      priceMax: 7500000,
-      isAvailable: true,
-    },
-    {
-      id: "cfg-2",
-      bhkType: "3 BHK",
-      carpetArea: 1250,
-      superBuiltUpArea: 1680,
-      bathrooms: 3,
-      balconies: 2,
-      priceMin: 9500000,
-      priceMax: 11000000,
+      carpetArea: 0,
+      bathrooms: 0,
+      priceMin: 0,
       isAvailable: true,
     },
   ]);
 
   // Step 3: Amenities & Media
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([
-    "Grand Clubhouse",
-    "Swimming Pool & Kids Pool",
-    "Fully Equipped Gymnasium",
-    "24/7 Gated Security & CCTV",
-    "100% Power Backup",
-  ]);
-  const [images, setImages] = useState<string[]>([
-    "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop&q=80",
-  ]);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]);
   const [brochureUrl, setBrochureUrl] = useState("");
   const [brochureFile, setBrochureFile] = useState<UploadedBrochure | null>(null);
 
   // Step 4: Sales Office & Concierge Contact
-  const [salesPhone, setSalesPhone] = useState("+91-8848510629");
-  const [salesEmail, setSalesEmail] = useState("contact@awasio.com");
-  const [siteVisitTimings, setSiteVisitTimings] = useState("9:30 AM – 6:30 PM (Mon – Sun)");
+  const [salesPhone, setSalesPhone] = useState("");
+  const [salesEmail, setSalesEmail] = useState("");
+  const [siteVisitTimings, setSiteVisitTimings] = useState("");
 
   function addConfiguration() {
     const newCfg: ProjectConfiguration = {
@@ -379,14 +363,20 @@ export default function PostProjectPage() {
       if (!possessionDate.trim()) return toast.error("Please enter possession timeline (e.g. December 2026 or Ready)");
       if (!city.trim()) return toast.error("Please select a city");
       if (!locality.trim()) return toast.error("Please enter locality or sector");
+      if (!pincode.trim()) return toast.error("Please enter the project pincode");
       setCurrentStep(2);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (currentStep === 2) {
       if (configurations.length === 0) return toast.error("Add at least one configuration");
+      if (configurations.some((item) => item.carpetArea <= 0 || item.bathrooms <= 0 || item.priceMin <= 0)) {
+        return toast.error("Enter valid carpet area, bathrooms and price for every configuration");
+      }
       setCurrentStep(3);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (currentStep === 3) {
       if (images.length === 0) return toast.error("Please upload at least one project photo or render");
+      if (images.some((url) => !url.startsWith("http"))) return toast.error("Please wait for all project photos to finish uploading");
+      if (brochureFile && !brochureFile.uploadedToR2) return toast.error("Please retry the brochure upload before continuing");
       setCurrentStep(4);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -401,16 +391,12 @@ export default function PostProjectPage() {
     const calculatedMax =
       Number(priceMax) || Math.max(...configurations.map((c) => Number(c.priceMax || c.priceMin) || 0));
 
-    const slug = `${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${city.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-
-    const newProject: ProjectListing = {
-      id: `proj-${Date.now()}`,
-      slug,
+    const newProject: CreateProjectInput = {
       name,
       developerName,
       reraId,
       status,
-      possessionDate: possessionDate || "Within 3 Years",
+      possessionDate,
       priceMin: calculatedMin,
       priceMax: calculatedMax,
       pricePerSqFt: Number(pricePerSqFt) || undefined,
@@ -418,34 +404,29 @@ export default function PostProjectPage() {
       locality,
       siteAddress: siteAddress || `${locality}, ${city}`,
       landmark,
-      pincode: pincode || "110001",
-      totalLandArea: totalLandArea || "5 Acres",
+      pincode,
+      latitude,
+      longitude,
+      totalLandArea: totalLandArea || undefined,
       totalTowers: totalTowers ? Number(totalTowers) : undefined,
       totalUnits: totalUnits ? Number(totalUnits) : undefined,
       configurations,
       amenities: selectedAmenities,
-      highlights: [
-        `RERA approved under registration: ${reraId}`,
-        `Master planned residential township by ${developerName}`,
-        `Prime connectivity in ${locality}, ${city}`,
-      ],
-      images:
-        images.length > 0
-          ? images
-          : ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop&q=80"],
+      highlights: [],
+      images,
       brochureUrl: brochureFile?.url || brochureUrl,
       salesPhone,
       salesEmail,
       siteVisitTimings,
-      createdAt: new Date().toISOString(),
     };
 
-    await saveNewProject(newProject);
-    toast.success("Project listed successfully! Redirecting to project master brochure...");
-
-    setTimeout(() => {
-      router.push(`/new-projects/${slug}`);
-    }, 1000);
+    try {
+      const created = await createProject(newProject).unwrap();
+      toast.success("Project submitted successfully.");
+      router.push(`/new-projects/${created.slug || created.id}`);
+    } catch {
+      // The shared API layer displays the backend validation/authentication error.
+    }
   }
 
   return (
@@ -1098,9 +1079,10 @@ export default function PostProjectPage() {
                     <button
                       type="button"
                       onClick={handleSubmit}
-                      className="rounded-full bg-emerald-600 px-7 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-200 transition hover:bg-emerald-700 dark:shadow-none"
+                      disabled={isPublishing}
+                      className="rounded-full bg-emerald-600 px-7 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-200 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60 dark:shadow-none"
                     >
-                      Publish Project to Portal
+                      {isPublishing ? "Publishing…" : "Publish Project to Portal"}
                     </button>
                   )}
                 </div>
@@ -1124,7 +1106,7 @@ export default function PostProjectPage() {
                   <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950">
                     <div className="relative h-36 w-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                       <img
-                        src={images[0] || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop&q=80"}
+                        src={images[0] || CDN_ASSETS.placeholderWebp}
                         alt="Project"
                         className="h-full w-full object-cover"
                       />

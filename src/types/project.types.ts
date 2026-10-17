@@ -49,6 +49,42 @@ export interface ProjectListing {
   createdAt: string;
 }
 
+export type ProjectSort = "featured" | "price_asc" | "price_desc" | "possession_soon" | "newest";
+
+export interface ProjectSearchParams {
+  q?: string;
+  city?: string;
+  locality?: string;
+  status?: ProjectStatus;
+  bhk?: string;
+  budgetMin?: number;
+  budgetMax?: number;
+  verifiedOnly?: boolean;
+  sortBy?: ProjectSort;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface ProjectSearchResponse {
+  items: ProjectListing[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export type CreateProjectInput = Omit<ProjectListing, "id" | "slug" | "createdAt">;
+export type UpdateProjectInput = Partial<CreateProjectInput>;
+
+export interface ProjectInquiryInput {
+  name: string;
+  phone: string;
+  email?: string;
+  message?: string;
+  configurationId?: string;
+  source?: "DETAIL_PAGE" | "SEARCH_CARD" | "HOMEPAGE";
+}
+
 export interface ProjectFilterState {
   city: string;
   status: string;

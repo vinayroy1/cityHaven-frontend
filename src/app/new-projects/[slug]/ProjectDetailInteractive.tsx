@@ -25,6 +25,7 @@ import {
 import { toast } from "sonner";
 import { CDN_ASSETS } from "@/config/cdn";
 import type { ProjectConfiguration, ProjectListing } from "@/types/project.types";
+import { useCreateProjectInquiryMutation } from "@/features/projects/api";
 
 function formatPrice(value?: number) {
   if (!value) return "Price on request";
@@ -34,6 +35,7 @@ function formatPrice(value?: number) {
 }
 
 export function ProjectDetailInteractive({ project }: { project: ProjectListing }) {
+  const [createInquiry, { isLoading: isSubmittingInquiry }] = useCreateProjectInquiryMutation();
   const [selectedBhkTab, setSelectedBhkTab] = useState<string>("ALL");
   const [inquiryModalOpen, setInquiryModalOpen] = useState(false);
   const [selectedConfigForInquiry, setSelectedConfigForInquiry] = useState<ProjectConfiguration | null>(null);
@@ -69,14 +71,29 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
     setInquiryModalOpen(true);
   }
 
-  function handleInquirySubmit(e: React.FormEvent) {
+  async function handleInquirySubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!inquiryName.trim() || !inquiryPhone.trim()) {
       toast.error("Please enter your name and phone number");
       return;
     }
-    setInquirySubmitted(true);
-    toast.success("Inquiry sent to builder sales desk!");
+    try {
+      await createInquiry({
+        projectId: project.id,
+        data: {
+          name: inquiryName.trim(),
+          phone: inquiryPhone.trim(),
+          email: inquiryEmail.trim() || undefined,
+          message: inquiryMessage.trim() || undefined,
+          configurationId: selectedConfigForInquiry?.id,
+          source: "DETAIL_PAGE",
+        },
+      }).unwrap();
+      setInquirySubmitted(true);
+      toast.success("Inquiry sent to builder sales desk!");
+    } catch {
+      // Shared API handling displays the server error.
+    }
   }
 
   return (
@@ -162,7 +179,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
             </button>
 
             <a
-              href={`https://wa.me/918848510629?text=Hi%2C+I+am+interested+in+${encodeURIComponent(project.name)}+in+${encodeURIComponent(project.city)}`}
+              href={`https://wa.me/${project.salesPhone.replace(/\D/g, "")}?text=Hi%2C+I+am+interested+in+${encodeURIComponent(project.name)}+in+${encodeURIComponent(project.city)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800 shadow-sm transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
@@ -474,9 +491,10 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
 
                 <button
                   type="submit"
-                  className="w-full rounded-full bg-rose-600 py-3 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700"
+                  disabled={isSubmittingInquiry}
+                  className="w-full rounded-full bg-rose-600 py-3 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Submit Inquiry to Sales Desk
+                  {isSubmittingInquiry ? "Sending…" : "Send Inquiry to Builder"}
                 </button>
               </form>
             ) : (

@@ -19,15 +19,38 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { cache } from "react";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { buildCanonical, SITE_URL } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
-import { getAllProjects, getProjectBySlug } from "@/data/projectsData";
+import type { ProjectListing } from "@/types/project.types";
 import { ProjectDetailInteractive } from "./ProjectDetailInteractive";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+const getProject = cache(async (slug: string): Promise<ProjectListing | null> => {
+  try {
+    let endpoint = API_ENDPOINTS.projects.detail(encodeURIComponent(slug));
+    if (typeof window === "undefined" && endpoint.includes("localhost:4000")) {
+      const serverBase =
+        process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://awasio-backend:4000/api";
+      endpoint = `${serverBase}/v1/projects/${encodeURIComponent(slug)}`;
+    }
+    const response = await fetch(endpoint, {
+      next: { revalidate: 300 },
+      headers: { Accept: "application/json" },
+    });
+    if (response.status === 404 || !response.ok) return null;
+    const payload = (await response.json()) as { success?: boolean; data?: ProjectListing };
+    return payload.data ?? null;
+  } catch (error) {
+    console.error(`[getProject] Failed to fetch project ${slug}:`, error);
+    return null;
+  }
+});
 
 function formatPrice(value?: number) {
   if (!value) return "Price on request";
@@ -38,7 +61,7 @@ function formatPrice(value?: number) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProject(slug);
 
   if (!project) {
     return {
@@ -67,7 +90,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProject(slug);
 
   if (!project) {
     notFound();

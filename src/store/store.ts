@@ -7,6 +7,7 @@ import { contactVerifyApi } from "@/features/contactVerify/api";
 import { organizationsApi } from "@/features/organizations/api";
 import { advisorsApi } from "@/features/advisors/api";
 import { flatmatesApi } from "@/features/flatmates/api";
+import { projectsApi } from "@/features/projects/api";
 
 export const makeStore = () =>
   configureStore({
@@ -18,6 +19,7 @@ export const makeStore = () =>
       [organizationsApi.reducerPath]: organizationsApi.reducer,
       [advisorsApi.reducerPath]: advisorsApi.reducer,
       [flatmatesApi.reducerPath]: flatmatesApi.reducer,
+      [projectsApi.reducerPath]: projectsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
@@ -26,7 +28,8 @@ export const makeStore = () =>
         contactVerifyApi.middleware,
         organizationsApi.middleware,
         advisorsApi.middleware,
-        flatmatesApi.middleware
+        flatmatesApi.middleware,
+        projectsApi.middleware
       ),
     devTools: true,
   });

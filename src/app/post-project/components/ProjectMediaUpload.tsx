@@ -2,6 +2,7 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import {
+  AlertCircle,
   CheckCircle2,
   CloudCheck,
   FileCheck2,
@@ -9,6 +10,7 @@ import {
   Image as ImageIcon,
   Loader2,
   Plus,
+  RefreshCw,
   Sparkles,
   Star,
   Trash2,
@@ -17,7 +19,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { compressImageWithStats } from "@/lib/utils/imageCompression";
-import { useGetPresignedUploadUrlMutation } from "@/features/propertyListing/api";
+import { useGetProjectMediaUploadUrlMutation } from "@/features/projects/api";
 
 export interface UploadedImageItem {
   id: string;
@@ -28,6 +30,7 @@ export interface UploadedImageItem {
   savedPercentage?: number;
   uploading?: boolean;
   uploadedToR2?: boolean;
+  uploadError?: boolean;
 }
 
 export interface UploadedBrochure {
@@ -37,6 +40,7 @@ export interface UploadedBrochure {
   type: string;
   uploading?: boolean;
   uploadedToR2?: boolean;
+  uploadError?: boolean;
 }
 
 interface ProjectMediaUploadProps {
@@ -59,10 +63,14 @@ export function ProjectMediaUpload({
   brochureUrl,
   onBrochureChange,
 }: ProjectMediaUploadProps) {
-  const [getPresignedUploadUrl] = useGetPresignedUploadUrlMutation();
+  const [getPresignedUploadUrl] = useGetProjectMediaUploadUrlMutation();
 
   const [isCompressing, setIsCompressing] = useState(false);
   const [compressProgress, setCompressProgress] = useState<{ current: number; total: number } | null>(null);
+
+  // Stored raw blobs for retry if upload fails
+  const pendingBlobsRef = useRef<Map<string, { blob: Blob; fileName: string }>>(new Map());
+  const pendingBrochureRef = useRef<File | null>(null);
 
   // Detailed items state for tracking Cloudflare R2 upload status per image
   const [imageItems, setImageItems] = useState<UploadedImageItem[]>(() => {
@@ -100,7 +108,6 @@ export function ProjectMediaUpload({
         const presigned = await getPresignedUploadUrl({
           fileName,
           contentType: "image/webp",
-          category: "properties",
           subFolder: "photos",
         }).unwrap();
 
@@ -113,6 +120,7 @@ export function ProjectMediaUpload({
         });
 
         if (uploadRes.ok && presigned.publicUrl) {
+          pendingBlobsRef.current.delete(localId);
           setImageItems((prev) => {
             const next = prev.map((item) =>
               item.id === localId
@@ -121,38 +129,61 @@ export function ProjectMediaUpload({
                     url: presigned.publicUrl,
                     uploading: false,
                     uploadedToR2: true,
+                    uploadError: false,
                   }
                 : item
             );
-            // Sync final Cloudflare CDN URLs to parent form
-            onImagesChange(next.map((item) => item.url));
+            // Only sync durable Cloudflare CDN URLs to parent form
+            const validUrls = next
+              .filter((item) => item.uploadedToR2 && item.url.startsWith("http") && !item.url.startsWith("data:"))
+              .map((item) => item.url);
+            onImagesChange(validUrls);
             return next;
           });
         } else {
-          // Keep local compressed preview if R2 endpoint is unavailable
           setImageItems((prev) =>
-            prev.map((item) => (item.id === localId ? { ...item, uploading: false } : item))
+            prev.map((item) =>
+              item.id === localId ? { ...item, uploading: false, uploadedToR2: false, uploadError: true } : item
+            )
           );
+          toast.error(`Upload failed for ${fileName}. Click retry to try again.`);
         }
       } catch (err) {
-        // Fallback to local compressed preview
         setImageItems((prev) =>
-          prev.map((item) => (item.id === localId ? { ...item, uploading: false } : item))
+          prev.map((item) =>
+            item.id === localId ? { ...item, uploading: false, uploadedToR2: false, uploadError: true } : item
+          )
         );
+        toast.error(`Upload error for ${fileName}. Click retry to try again.`);
       }
     },
     [getPresignedUploadUrl, onImagesChange]
+  );
+
+  const retryImageUpload = useCallback(
+    (localId: string) => {
+      const pending = pendingBlobsRef.current.get(localId);
+      if (!pending) {
+        toast.error("Original photo data expired. Please re-select the image.");
+        return;
+      }
+      setImageItems((prev) =>
+        prev.map((item) => (item.id === localId ? { ...item, uploading: true, uploadError: false } : item))
+      );
+      uploadImageToR2(pending.blob, localId, pending.fileName);
+    },
+    [uploadImageToR2]
   );
 
   // Cloudflare R2 Upload helper for PDF brochure
   const uploadBrochureToR2 = useCallback(
     async (file: File, localDataUrl: string) => {
       setIsUploadingBrochure(true);
+      pendingBrochureRef.current = file;
       try {
         const presigned = await getPresignedUploadUrl({
           fileName: file.name,
           contentType: file.type || "application/pdf",
-          category: "properties",
           subFolder: "brochures",
         }).unwrap();
 
@@ -165,6 +196,7 @@ export function ProjectMediaUpload({
         });
 
         if (uploadRes.ok && presigned.publicUrl) {
+          pendingBrochureRef.current = null;
           const uploaded: UploadedBrochure = {
             name: file.name,
             size: file.size,
@@ -172,40 +204,53 @@ export function ProjectMediaUpload({
             type: file.type || "application/pdf",
             uploading: false,
             uploadedToR2: true,
+            uploadError: false,
           };
           setBrochureFile(uploaded);
           onBrochureChange(uploaded);
           toast.success("Brochure successfully uploaded to Cloudflare R2 CDN!");
         } else {
-          // Keep local fallback
-          const localFallback: UploadedBrochure = {
+          const failed: UploadedBrochure = {
             name: file.name,
             size: file.size,
             url: localDataUrl,
             type: file.type || "application/pdf",
             uploading: false,
             uploadedToR2: false,
+            uploadError: true,
           };
-          setBrochureFile(localFallback);
-          onBrochureChange(localFallback);
+          setBrochureFile(failed);
+          onBrochureChange(null);
+          toast.error("Failed to upload brochure to CDN. Click retry to try again.");
         }
       } catch (err) {
-        const localFallback: UploadedBrochure = {
+        const failed: UploadedBrochure = {
           name: file.name,
           size: file.size,
           url: localDataUrl,
           type: file.type || "application/pdf",
           uploading: false,
           uploadedToR2: false,
+          uploadError: true,
         };
-        setBrochureFile(localFallback);
-        onBrochureChange(localFallback);
+        setBrochureFile(failed);
+        onBrochureChange(null);
+        toast.error("Failed to upload brochure to CDN. Click retry to try again.");
       } finally {
         setIsUploadingBrochure(false);
       }
     },
     [getPresignedUploadUrl, onBrochureChange]
   );
+
+  const retryBrochureUpload = useCallback(() => {
+    const file = pendingBrochureRef.current;
+    if (!file) {
+      toast.error("Brochure file expired. Please re-select the PDF.");
+      return;
+    }
+    uploadBrochureToR2(file, brochureFile?.url || "");
+  }, [brochureFile, uploadBrochureToR2]);
 
   // Process & compress images, then upload each to Cloudflare R2
   const processImageFiles = async (files: FileList | File[]) => {

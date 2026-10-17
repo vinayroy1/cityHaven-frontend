@@ -50,6 +50,55 @@ interface ProjectFilterSheetProps {
   totalResultsCount?: number;
 }
 
+export function ProjectFilterRail({
+  state,
+  onChange,
+  onReset,
+}: {
+  state: ProjectFilterState;
+  onChange: (next: ProjectFilterState) => void;
+  onReset: () => void;
+}) {
+  const activeCount = Number(state.status !== "ALL") + Number(state.bhk !== "All") + Number(state.budgetMin !== undefined || state.budgetMax !== undefined) + Number(state.verifiedOnly) + Number(state.sortBy !== "featured");
+
+  return (
+    <aside className="sticky top-24 hidden max-h-[calc(100vh-7rem)] w-72 shrink-0 flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex">
+      <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
+        <div className="flex items-center gap-2"><SlidersHorizontal className="h-4 w-4 text-rose-500" /><h2 className="font-bold">Filters {activeCount > 0 && <span className="text-rose-600">({activeCount})</span>}</h2></div>
+        {activeCount > 0 && <button type="button" onClick={onReset} className="text-xs font-semibold text-rose-600">Reset</button>}
+      </div>
+      <div className="space-y-5 overflow-y-auto p-5">
+        <FilterChoice label="Project Status" options={STATUS_OPTIONS} value={state.status} onChange={(status) => onChange({ ...state, status })} />
+        <FilterChoice label="Unit Configuration" options={BHK_OPTIONS.map((value) => ({ label: value, value }))} value={state.bhk} onChange={(bhk) => onChange({ ...state, bhk })} compact />
+        <div>
+          <FilterLabel>Budget Range</FilterLabel>
+          <div className="grid grid-cols-2 gap-2">
+            <BudgetSelect label="Min" value={state.budgetMin} options={BUDGET_MIN_PRESETS} onChange={(budgetMin) => onChange({ ...state, budgetMin })} />
+            <BudgetSelect label="Max" value={state.budgetMax} options={BUDGET_MAX_PRESETS} onChange={(budgetMax) => onChange({ ...state, budgetMax })} />
+          </div>
+        </div>
+        <FilterChoice label="Sort By" options={[{ label: "Featured", value: "featured" }, { label: "Price: Low to High", value: "price_asc" }, { label: "Price: High to Low", value: "price_desc" }]} value={state.sortBy} onChange={(sortBy) => onChange({ ...state, sortBy: sortBy as ProjectFilterState["sortBy"] })} />
+        <label className="flex cursor-pointer items-start justify-between gap-3 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
+          <span><span className="block text-xs font-bold">RERA approved only</span><span className="mt-0.5 block text-[10px] leading-4 text-slate-500">Show projects with valid registration</span></span>
+          <input type="checkbox" checked={state.verifiedOnly} onChange={(event) => onChange({ ...state, verifiedOnly: event.target.checked })} className="mt-0.5 h-4 w-4 accent-rose-600" />
+        </label>
+      </div>
+    </aside>
+  );
+}
+
+function FilterLabel({ children }: { children: React.ReactNode }) {
+  return <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{children}</p>;
+}
+
+function FilterChoice({ label, options, value, onChange, compact = false }: { label: string; options: { label: string; value: string }[]; value: string; onChange: (value: string) => void; compact?: boolean }) {
+  return <div><FilterLabel>{label}</FilterLabel><div className={compact ? "flex flex-wrap gap-1.5" : "grid gap-1.5"}>{options.map((option) => <button key={option.value} type="button" onClick={() => onChange(option.value)} className={`rounded-xl border px-3 py-2 text-left text-xs font-semibold transition ${value === option.value ? "border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"}`}>{option.label}</button>)}</div></div>;
+}
+
+function BudgetSelect({ label, value, options, onChange }: { label: string; value?: number; options: { label: string; value: number | undefined }[]; onChange: (value?: number) => void }) {
+  return <label><span className="mb-1 block text-[10px] font-semibold text-slate-400">{label}</span><select value={value ?? ""} onChange={(event) => onChange(event.target.value ? Number(event.target.value) : undefined)} className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-2 text-xs font-semibold outline-none dark:border-slate-700 dark:bg-slate-800">{options.map((option) => <option key={option.label} value={option.value ?? ""}>{option.label}</option>)}</select></label>;
+}
+
 export function ProjectFilterSheet({
   open,
   onClose,

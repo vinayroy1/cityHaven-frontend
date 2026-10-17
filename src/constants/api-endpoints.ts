@@ -78,6 +78,17 @@ export const API_ENDPOINTS = {
     myInterests: `${BASE}/flatmates/me/interests`,
     updateInterestStatus: (id: number | string) => `${BASE}/flatmates/interests/${id}`,
   },
+  projects: {
+    search: `${BASE}/projects`,
+    create: `${BASE}/projects`,
+    detail: (slugOrId: string | number) => `${BASE}/projects/${slugOrId}`,
+    update: (id: string | number) => `${BASE}/projects/${id}`,
+    archive: (id: string | number) => `${BASE}/projects/${id}`,
+    my: `${BASE}/projects/me`,
+    inquiry: (id: string | number) => `${BASE}/projects/${id}/inquiries`,
+    presignMediaUpload: `${BASE}/projects/media/presign-upload`,
+    media: (id: string | number) => `${BASE}/projects/${id}/media`,
+  },
   properties: {
     list: `${BASE}/properties`,
     detail: `${BASE}/properties/:id`,
@@ -186,4 +197,3 @@ export const API_ENDPOINTS = {
     adminFeature: (id: string | number) => `${BASE}/advisors/admin/${id}/feature`,
   },
 };
-
