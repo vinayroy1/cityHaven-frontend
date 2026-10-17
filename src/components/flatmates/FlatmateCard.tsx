@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   MapPin,
   Calendar,
@@ -11,14 +11,10 @@ import {
   Home,
   Search,
   Users,
-  Cigarette,
   PawPrint,
   Utensils,
-  Moon,
-  Sun,
-  Briefcase,
   BedDouble,
-  ChevronRight,
+  WalletCards,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,7 +26,9 @@ interface FlatmateCardProps {
 }
 
 export function FlatmateCard({ listing }: FlatmateCardProps) {
+  const router = useRouter();
   const [isInterestModalOpen, setIsInterestModalOpen] = useState(false);
+  const detailsHref = `/flatmates/${listing.slug}`;
 
   const modeBadge = () => {
     switch (listing.mode) {
@@ -60,6 +58,9 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
 
   const photo = listing.photos?.[0];
   const profile = listing.profile;
+  const age = profile?.birthYear ? new Date().getFullYear() - profile.birthYear : undefined;
+  const preferredAreas = listing.preferredLocalities?.filter(Boolean).slice(0, 2) || [];
+  const formatMoney = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
 
   const formattedRent = () => {
     if (listing.mode === "HAVE_ROOM") {
@@ -73,7 +74,19 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
 
   return (
     <>
-      <div className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-rose-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-rose-900/60">
+      <article
+        role="link"
+        tabIndex={0}
+        aria-label={`View details for ${listing.title}`}
+        onClick={() => router.push(detailsHref)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            router.push(detailsHref);
+          }
+        }}
+        className="group relative flex cursor-pointer flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-rose-300 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-rose-900/60"
+      >
         <div>
           {/* Card Media / Header Banner */}
           <div className="relative mb-3.5 h-40 w-full overflow-hidden rounded-2xl bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 sm:h-44 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900">
@@ -131,11 +144,9 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
 
           {/* Title & Location */}
           <div className="space-y-1.5 px-1">
-            <Link href={`/flatmates/${listing.slug}`} className="block">
-              <h3 className="line-clamp-1 text-base font-bold text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
-                {listing.title}
-              </h3>
-            </Link>
+            <h3 className="line-clamp-2 min-h-12 text-base font-bold leading-6 text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
+              {listing.title}
+            </h3>
 
             <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
@@ -161,17 +172,49 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             {listing.availableFrom && (
               <span className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                 <Calendar className="h-3 w-3 text-slate-500" />
+                {listing.mode === "HAVE_ROOM" ? "Available " : "Move-in "}
                 {new Date(listing.availableFrom).toLocaleDateString("en-IN", {
                   month: "short",
                   day: "numeric",
                 })}
               </span>
             )}
+            {listing.mode !== "HAVE_ROOM" && listing.bhk && (
+              <span className="rounded-lg bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                {listing.bhk} BHK preferred
+              </span>
+            )}
           </div>
+
+          {/* Mode-specific decision details */}
+          {listing.mode === "HAVE_ROOM" ? (
+            (listing.deposit != null || listing.maintenance != null || listing.currentOccupants != null || listing.spotsAvailable > 0 || listing.minimumStayMonths != null) && (
+              <div className="mt-2.5 space-y-1.5 rounded-xl bg-slate-50 px-2.5 py-2 text-[10px] text-slate-600 dark:bg-slate-800/70 dark:text-slate-300">
+                {(listing.deposit != null || listing.maintenance != null) && (
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <WalletCards className="h-3 w-3 text-slate-400" />
+                    {listing.deposit != null && <span><strong>{formatMoney(listing.deposit)}</strong> deposit</span>}
+                    {listing.maintenance != null && <span><strong>{formatMoney(listing.maintenance)}</strong> maintenance</span>}
+                  </div>
+                )}
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <Users className="h-3 w-3 text-slate-400" />
+                  {listing.currentOccupants != null && <span>{listing.currentOccupants} current occupant{listing.currentOccupants === 1 ? "" : "s"}</span>}
+                  {listing.spotsAvailable > 0 && <span className="font-semibold text-emerald-700 dark:text-emerald-400">{listing.spotsAvailable} spot{listing.spotsAvailable === 1 ? "" : "s"} open</span>}
+                  {listing.minimumStayMonths != null && <span>{listing.minimumStayMonths}+ month stay</span>}
+                </div>
+              </div>
+            )
+          ) : preferredAreas.length > 0 ? (
+            <div className="mt-2.5 flex items-start gap-1.5 rounded-xl bg-indigo-50/70 px-2.5 py-2 text-[10px] text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300">
+              <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
+              <span><strong>Preferred areas:</strong> {preferredAreas.join(" · ")}</span>
+            </div>
+          ) : null}
 
           {/* Lifestyle & Compatibility Badges */}
           <div className="mt-2.5 flex flex-wrap items-center gap-1 px-1">
-            {listing.compatibilityReasons?.slice(0, 2).map((reason) => (
+            {listing.compatibilityReasons?.slice(0, 1).map((reason) => (
               <Badge key={reason} variant="outline" className="border-emerald-200 bg-emerald-50/50 text-[10px] font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300">
                 <Sparkles className="mr-0.5 h-2.5 w-2.5" /> {reason}
               </Badge>
@@ -210,6 +253,11 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
                 <span>Non-smoker</span>
               </Badge>
             )}
+            {listing.drinkingAllowed === false && (
+              <Badge variant="outline" className="border-slate-200 bg-slate-50 text-[10px] font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400">
+                No drinking
+              </Badge>
+            )}
           </div>
         </div>
 
@@ -233,11 +281,14 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
                   {profile?.displayName || "Flatmate"}
                 </span>
                 {profile?.isIdentityVerified && (
-                  <ShieldCheck className="h-3 w-3 shrink-0 text-emerald-500" />
+                  <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    <ShieldCheck className="h-3 w-3 shrink-0" />
+                    <span className="hidden xl:inline">Verified</span>
+                  </span>
                 )}
               </div>
               <p className="line-clamp-1 text-[10px] text-slate-500 dark:text-slate-400">
-                {profile?.occupation || (listing.mode === "HAVE_ROOM" ? "Flat Host" : "Looking to move")}
+                {[profile?.gender, age ? `${age} yrs` : "", profile?.occupation].filter(Boolean).join(" · ") || (listing.mode === "HAVE_ROOM" ? "Flat Host" : "Looking to move")}
               </p>
             </div>
           </div>
@@ -246,22 +297,18 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             <Button
               type="button"
               size="sm"
-              onClick={() => setIsInterestModalOpen(true)}
+              onClick={(event) => {
+                event.stopPropagation();
+                setIsInterestModalOpen(true);
+              }}
               className="h-8 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs px-3 shadow-sm transition-transform active:scale-95"
             >
               <HeartHandshake className="w-3.5 h-3.5 mr-1" />
               Connect
             </Button>
-            <Link
-              href={`/flatmates/${listing.slug}`}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-              aria-label="View flatmate details"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Link>
           </div>
         </div>
-      </div>
+      </article>
 
       <FlatmateInterestModal
         listing={listing}

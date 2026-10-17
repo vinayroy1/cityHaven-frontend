@@ -139,10 +139,12 @@ function SectionBody({
   section,
   draft,
   setDraft,
+  singleSelectKeys,
 }: {
   section: FilterSection;
   draft: SearchState;
   setDraft: (s: SearchState) => void;
+  singleSelectKeys?: ReadonlySet<string>;
 }) {
   if (section.kind === "range") {
     const budget = section.key === "budget";
@@ -194,7 +196,15 @@ function SectionBody({
           size="sm"
           selected={arr.includes(o.value)}
           onClick={() =>
-            setDraft({ ...draft, refine: { ...draft.refine, [section.key]: toggleInArray(arr, o.value) } })
+            setDraft({
+              ...draft,
+              refine: {
+                ...draft.refine,
+                [section.key]: singleSelectKeys?.has(section.key)
+                  ? (arr.includes(o.value) ? [] : [o.value])
+                  : toggleInArray(arr, o.value),
+              },
+            })
           }
         >
           {o.label}
@@ -210,10 +220,12 @@ function OpenSection({
   section,
   draft,
   setDraft,
+  singleSelectKeys,
 }: {
   section: FilterSection;
   draft: SearchState;
   setDraft: (s: SearchState) => void;
+  singleSelectKeys?: ReadonlySet<string>;
 }) {
   const count = sectionActiveCount(section, draft);
   return (
@@ -229,7 +241,7 @@ function OpenSection({
         </span>
       </div>
       <div>
-        <SectionBody section={section} draft={draft} setDraft={setDraft} />
+        <SectionBody section={section} draft={draft} setDraft={setDraft} singleSelectKeys={singleSelectKeys} />
       </div>
     </section>
   );
@@ -238,15 +250,17 @@ function OpenSection({
 export function FilterSectionsEditor({
   draft,
   setDraft,
+  singleSelectKeys,
 }: {
   draft: SearchState;
   setDraft: (s: SearchState) => void;
+  singleSelectKeys?: ReadonlySet<string>;
 }) {
   const sections = filterSectionsFor(draft.intent);
   return (
     <div>
       {sections.map((section) => (
-        <OpenSection key={section.key} section={section} draft={draft} setDraft={setDraft} />
+        <OpenSection key={section.key} section={section} draft={draft} setDraft={setDraft} singleSelectKeys={singleSelectKeys} />
       ))}
     </div>
   );
@@ -257,11 +271,24 @@ export function FilterSectionsEditor({
 export function FilterRail({
   state,
   onChange,
+  singleSelectKeys,
+  deferred = false,
+  onApply,
 }: {
   state: SearchState;
   onChange: (next: SearchState) => void;
+  singleSelectKeys?: ReadonlySet<string>;
+  deferred?: boolean;
+  onApply?: (next: SearchState) => void;
 }) {
-  const count = countActiveFilters(state);
+  const [draft, setDraft] = React.useState(state);
+  React.useEffect(() => setDraft(state), [state]);
+  const displayedState = deferred ? draft : state;
+  const updateState = (next: SearchState) => {
+    if (deferred) setDraft(next);
+    onChange(next);
+  };
+  const count = countActiveFilters(displayedState);
   return (
     <aside className="sticky top-[8.5rem] hidden h-fit max-h-[calc(100vh-10rem)] w-[300px] shrink-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex">
       <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
@@ -269,14 +296,21 @@ export function FilterRail({
           Filters {count > 0 && <span className="ml-1 text-rose-600 dark:text-rose-400">({count})</span>}
         </p>
         {count > 0 && (
-          <button type="button" onClick={() => onChange(clearAllFilters(state))} className={linkButton}>
+          <button type="button" onClick={() => updateState(clearAllFilters(displayedState))} className={linkButton}>
             Clear all
           </button>
         )}
       </div>
       <div className="overflow-y-auto px-5 py-2">
-        <FilterSectionsEditor draft={state} setDraft={onChange} />
+        <FilterSectionsEditor draft={displayedState} setDraft={updateState} singleSelectKeys={singleSelectKeys} />
       </div>
+      {deferred && onApply && (
+        <div className="shrink-0 border-t border-slate-100 p-4 dark:border-slate-800">
+          <button type="button" className={`${primaryButton} w-full`} onClick={() => onApply?.(draft)}>
+            Search
+          </button>
+        </div>
+      )}
     </aside>
   );
 }
@@ -289,12 +323,14 @@ export function FilterSheet({
   state,
   onSubmit,
   onApply,
+  singleSelectKeys,
 }: {
   open: boolean;
   onClose: () => void;
   state: SearchState;
   onSubmit?: (next: SearchState) => void;
   onApply?: (next: SearchState) => void;
+  singleSelectKeys?: ReadonlySet<string>;
   focusKey?: string | null;
   resultCount?: number;
 }) {
@@ -390,7 +426,7 @@ export function FilterSheet({
 
         {/* Scrollable Body: internal scrolling without resizing or pushing bottom sheet container */}
         <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-2">
-          <FilterSectionsEditor draft={draft} setDraft={setDraft} />
+          <FilterSectionsEditor draft={draft} setDraft={setDraft} singleSelectKeys={singleSelectKeys} />
         </div>
 
         {/* Footer */}

@@ -38,6 +38,30 @@ const KNOWN_INDIAN_METROS = new Set([
   "ranchi", "patna", "bhopal", "dehradun"
 ]);
 
+const CITY_CANONICAL_NAMES: Record<string, Pick<CityItem, "name" | "slug" | "state">> = {
+  delhi: { name: "New Delhi", slug: "new-delhi", state: "Delhi" },
+  "new delhi": { name: "New Delhi", slug: "new-delhi", state: "Delhi" },
+  gurgaon: { name: "Gurugram", slug: "gurugram", state: "Haryana" },
+  gurugram: { name: "Gurugram", slug: "gurugram", state: "Haryana" },
+  bangalore: { name: "Bengaluru", slug: "bengaluru", state: "Karnataka" },
+  bengaluru: { name: "Bengaluru", slug: "bengaluru", state: "Karnataka" },
+};
+
+export function canonicalizeCity(city: CityItem): CityItem {
+  const canonical = CITY_CANONICAL_NAMES[city.name?.trim().toLowerCase()];
+  return canonical ? { ...city, ...canonical } : city;
+}
+
+export function dedupeCities(cities: CityItem[]): CityItem[] {
+  const unique = new Map<string, CityItem>();
+  for (const rawCity of cities) {
+    const city = canonicalizeCity(rawCity);
+    const key = `${city.name.trim().toLowerCase()}|${(city.state || "").trim().toLowerCase()}`;
+    if (!unique.has(key)) unique.set(key, city);
+  }
+  return Array.from(unique.values());
+}
+
 interface Props {
   selectedCityName?: string;
   onSelectCity: (city: CityItem) => void;
@@ -68,16 +92,16 @@ export function CitySelectorDropdown({ selectedCityName, onSelectCity, className
         const res = await fetch(url);
         const resJson = await res.json();
         if (resJson?.data && Array.isArray(resJson.data) && resJson.data.length > 0) {
-          const seen = new Set<string>();
-          const unique: CityItem[] = [];
-          for (const c of resJson.data) {
+          const eligible: CityItem[] = [];
+          for (const rawCity of resJson.data) {
+            const c = canonicalizeCity(rawCity);
             const key = c.name?.toLowerCase().trim();
             // Strictly exclude foreign cities (Auckland, Austin, Christchurch, etc.)
-            if (key && KNOWN_INDIAN_METROS.has(key) && !seen.has(key)) {
-              seen.add(key);
-              unique.push(c);
+            if (key && KNOWN_INDIAN_METROS.has(key)) {
+              eligible.push(c);
             }
           }
+          const unique = dedupeCities(eligible);
           if (unique.length >= 4) {
             setPopularCities(unique.slice(0, 14));
           }
@@ -104,7 +128,7 @@ export function CitySelectorDropdown({ selectedCityName, onSelectCity, className
           const res = await fetch(url);
           const resJson = await res.json();
           if (resJson?.data && Array.isArray(resJson.data)) {
-            setSearchResults(resJson.data);
+            setSearchResults(dedupeCities(resJson.data));
           }
         } catch {
           // ignore error

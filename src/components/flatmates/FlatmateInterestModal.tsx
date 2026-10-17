@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Send, Sparkles, User, MapPin, HeartHandshake, Loader2 } from "lucide-react";
+import { Send, Sparkles, User, MapPin, HeartHandshake, Loader2, ShieldCheck, Check } from "lucide-react";
 import { useExpressFlatmateInterestMutation } from "@/features/flatmates/api";
 import { useRouter } from "next/navigation";
 import { APP_CONFIG } from "@/constants/app-config";
@@ -19,9 +19,9 @@ interface FlatmateInterestModalProps {
 }
 
 const INTRO_SUGGESTIONS = [
-  "Hi! I loved your listing. I'm a quiet working professional looking to move in soon.",
-  "Hey there! We seem to have a great lifestyle match. Would love to connect and discuss details.",
-  "Hi! Is this room still available? I would like to schedule a quick video call or visit.",
+  { label: "Introduce yourself", text: "Hi! I loved your listing. I'm a quiet working professional looking to move in soon." },
+  { label: "Mention compatibility", text: "Hey there! We seem to have a great lifestyle match. Would love to connect and discuss details." },
+  { label: "Ask availability", text: "Hi! Is this room still available? I would like to schedule a quick video call or visit." },
 ];
 
 export function FlatmateInterestModal({
@@ -63,103 +63,83 @@ export function FlatmateInterestModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-3xl p-6">
-        <DialogHeader className="space-y-2">
+      <DialogContent className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] flex-col gap-0 overflow-hidden rounded-3xl border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-slate-900 sm:max-h-[min(90dvh,760px)] sm:max-w-lg">
+        <DialogHeader className="shrink-0 space-y-1.5 border-b border-slate-100 px-5 pb-4 pt-5 pr-12 dark:border-slate-800 sm:px-6 sm:pt-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-semibold w-fit">
             <HeartHandshake className="w-3.5 h-3.5" />
-            <span>Connect with Roomie</span>
+            <span>Private connection request</span>
           </div>
-          <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
+          <DialogTitle className="text-xl font-bold leading-tight text-slate-900 dark:text-white">
             Connect with {listing.profile?.displayName || "Flatmate"}
           </DialogTitle>
-          <DialogDescription className="text-sm text-slate-600 dark:text-slate-400">
+          <DialogDescription className="line-clamp-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
             {listing.title} • {listing.locality || listing.cityName}
           </DialogDescription>
         </DialogHeader>
 
-        {/* Listing preview summary */}
-        <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white font-bold shrink-0 shadow-inner">
-            {listing.profile?.profilePhoto ? (
-              <img
-                src={listing.profile.profilePhoto}
-                alt={listing.profile.displayName || "Roomie"}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <User className="w-6 h-6" />
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
-              {listing.profile?.displayName || "Roomie"}
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6">
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-800/60">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 font-bold text-white shadow-inner">
+                {listing.profile?.profilePhoto ? <img src={listing.profile.profilePhoto} alt={listing.profile.displayName || "Roomie"} className="h-full w-full object-cover" /> : <User className="h-5 w-5" />}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-bold text-slate-900 dark:text-slate-100">{listing.profile?.displayName || "Roomie"}</div>
+                <div className="flex items-center gap-1 truncate text-xs text-slate-500 dark:text-slate-400"><MapPin className="h-3 w-3 shrink-0" /><span className="truncate">{listing.locality ? `${listing.locality}, ${listing.cityName}` : listing.cityName}</span></div>
+              </div>
+              <div className="shrink-0 text-right">
+                <p className="text-xs font-bold text-rose-600 dark:text-rose-400">
+                  {listing.mode === "HAVE_ROOM"
+                    ? listing.rent != null ? `₹${listing.rent.toLocaleString("en-IN")}/mo` : "Rent on request"
+                    : listing.budgetMax != null ? `Up to ₹${listing.budgetMax.toLocaleString("en-IN")}` : "Flexible budget"}
+                </p>
+              </div>
             </div>
-            <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate">
-              <MapPin className="w-3 h-3 shrink-0" />
-              <span>{listing.locality ? `${listing.locality}, ${listing.cityName}` : listing.cityName}</span>
-            </div>
-            <div className="text-xs font-semibold text-rose-600 dark:text-rose-400 mt-0.5">
-              {listing.mode === "HAVE_ROOM"
-                ? `Rent: ₹${(listing.rent ?? 0).toLocaleString("en-IN")}/mo`
-                : `Budget: ₹${(listing.budgetMax ?? 0).toLocaleString("en-IN")}/mo`}
-            </div>
-          </div>
-        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-300">
-            Contact details stay private until the listing owner accepts. Meet in a public place first and never transfer money before verifying the room and agreement.
-          </p>
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Introduce yourself (optional, but gets 3x faster replies!)
-            </label>
-            <Textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Tell them a little about yourself, your move-in timeline, occupation..."
-              rows={4}
-              maxLength={500}
-              className="resize-none rounded-2xl border-slate-200 dark:border-slate-800 focus-visible:ring-rose-500 text-sm"
-            />
-            <div className="text-[11px] text-right text-slate-400">
-              {message.length} / 500
+            <div className="flex gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[11px] leading-relaxed text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <p><strong>Stay safe:</strong> Contact details remain private until acceptance. Verify the room and agreement before transferring money.</p>
             </div>
-          </div>
 
-          {/* Quick intro chips */}
-          <div className="space-y-1.5">
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-amber-500" /> Quick suggestions:
-            </span>
-            <div className="space-y-1">
-              {INTRO_SUGGESTIONS.map((suggestion, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setMessage(suggestion)}
-                  className="w-full text-left text-xs p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition line-clamp-1"
-                >
-                  &ldquo;{suggestion}&rdquo;
-                </button>
-              ))}
+            <div className="space-y-2">
+              <div className="flex items-end justify-between gap-3">
+                <label htmlFor="flatmate-introduction" className="text-xs font-bold text-slate-800 dark:text-slate-200">Add a short introduction <span className="font-normal text-slate-400">(optional)</span></label>
+                <span className="text-[10px] tabular-nums text-slate-400">{message.length}/500</span>
+              </div>
+              <Textarea id="flatmate-introduction" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Your occupation, move-in date, and what makes you a good flatmate…" rows={4} maxLength={500} className="min-h-28 resize-none rounded-2xl border-slate-200 text-sm focus-visible:ring-rose-500 dark:border-slate-700" />
+              <p className="text-[10px] text-slate-400">A personal introduction usually gets faster replies.</p>
+            </div>
+
+            <div className="space-y-2">
+              <span className="flex items-center gap-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400"><Sparkles className="h-3 w-3 text-amber-500" /> Use a quick starter</span>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {INTRO_SUGGESTIONS.map((suggestion) => {
+                  const selected = message === suggestion.text;
+                  return (
+                    <button key={suggestion.label} type="button" onClick={() => setMessage(suggestion.text)} className={`rounded-xl border p-2.5 text-left transition ${selected ? "border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-300" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"}`}>
+                      <span className="flex items-center gap-1 text-[11px] font-bold">{selected && <Check className="h-3 w-3" />}{suggestion.label}</span>
+                      <span className="mt-1 line-clamp-2 block text-[10px] leading-4 opacity-80">{suggestion.text}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          <DialogFooter className="pt-2 sm:justify-between gap-2">
+          <DialogFooter className="shrink-0 gap-2 border-t border-slate-100 bg-white px-5 py-4 dark:border-slate-800 dark:bg-slate-900 sm:justify-between sm:px-6">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               disabled={isLoading}
-              className="rounded-full border-slate-200 dark:border-slate-800"
+              className="h-11 rounded-xl border-slate-200 dark:border-slate-700"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="rounded-full bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-md shadow-rose-500/20 px-6"
+              className="h-11 rounded-xl bg-rose-600 px-6 font-semibold text-white shadow-md shadow-rose-500/20 hover:bg-rose-700 sm:min-w-40"
             >
               {isLoading ? (
                 <>

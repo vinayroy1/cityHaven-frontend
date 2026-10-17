@@ -6,78 +6,102 @@ import { useRouter } from "next/navigation";
 import {
   Users,
   Search,
-  Filter,
   PlusCircle,
-  Sparkles,
-  Home,
-  CheckCircle2,
-  Utensils,
-  PawPrint,
-  Cigarette,
-  BedDouble,
-  SlidersHorizontal,
-  RotateCcw,
-  MapPin,
   Loader2,
+  SlidersHorizontal,
+  ChevronRight,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FlatmateCard } from "@/components/flatmates/FlatmateCard";
+import { canonicalizeCity, CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
+import { LocationSearchInput } from "@/components/search/LocationSearchInput";
+import { FilterRail, FilterSheet } from "@/components/search/FilterSheet";
+import { countActiveFilters, initialSearchState, type SearchState } from "@/components/search/searchQuery";
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import type { FlatmateListingMode } from "@/types/flatmate.types";
-
-const POPULAR_CITIES = ["Bengaluru", "Mumbai", "Delhi", "Gurgaon", "Pune", "Hyderabad", "Noida"];
+import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
 
 type FlatmatesDiscoveryPageProps = { initialCity?: string; initialLocality?: string };
 
 const locationSlug = (value: string) => value.trim().toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+const SINGLE_SELECT_FLATMATE_FILTERS = new Set(["flatmateMode", "roomType", "gender", "diet", "bhkTypes", "furnishing"]);
 
 export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocality = "" }: FlatmatesDiscoveryPageProps) {
   const router = useRouter();
-  const [mode, setMode] = useState<FlatmateListingMode | "ALL">("ALL");
   const [city, setCity] = useState(initialCity);
-  const [locality, setLocality] = useState(initialLocality);
-  const [localityDraft, setLocalityDraft] = useState(initialLocality);
-  const [gender, setGender] = useState("");
-  const [roomType, setRoomType] = useState("");
-  const [petsAllowed, setPetsAllowed] = useState<boolean | undefined>(undefined);
-  const [preferredDiet, setPreferredDiet] = useState<string>("");
+  const [localities, setLocalities] = useState<string[]>(initialLocality ? [initialLocality] : []);
+  const [cityDraft, setCityDraft] = useState(initialCity);
+  const [localityDrafts, setLocalityDrafts] = useState<string[]>(initialLocality ? [initialLocality] : []);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterState, setFilterState] = useState<SearchState>(() => ({ ...initialSearchState(""), intent: "FLATMATE" }));
+  const [appliedFilterState, setAppliedFilterState] = useState<SearchState>(() => ({ ...initialSearchState(""), intent: "FLATMATE" }));
   const [page, setPage] = useState(1);
 
+  const refine = appliedFilterState.refine;
+  const mode = refine.flatmateMode?.[0] as FlatmateListingMode | undefined;
+  const gender = refine.gender?.[0]?.replace(" Only", "");
+  const preferredDiet = refine.diet?.[0] === "Any Diet" ? undefined : refine.diet?.[0];
+  const lifestyle = refine.lifestyle || [];
+  const bhkValue = refine.bhkTypes?.[0];
+  const activeFilterCount = countActiveFilters(filterState);
+
+  React.useEffect(() => {
+    if (initialCity) return;
+    let cancelled = false;
+
+    const applyDetectedCity = (rawCity?: string) => {
+      if (cancelled || !rawCity?.trim()) return;
+      const normalized = canonicalizeCity({ id: 0, name: rawCity.trim(), slug: locationSlug(rawCity) }).name;
+      setCity(normalized);
+      setCityDraft(normalized);
+      router.replace(`/flatmate/${locationSlug(normalized)}`);
+    };
+
+    const preferredCity = getUserPreferredCity();
+    if (preferredCity) {
+      applyDetectedCity(preferredCity);
+      return () => { cancelled = true; };
+    }
+
+    void detectUserLocation().then((profile) => applyDetectedCity(profile.city));
+    return () => { cancelled = true; };
+  }, [initialCity, router]);
+
   const { data, isLoading, isFetching } = useSearchFlatmatesQuery({
-    mode: mode === "ALL" ? undefined : mode,
+    mode,
     city: city || undefined,
-    locality: locality.trim() || undefined,
+    locality: localities.length ? localities.join(",") : undefined,
+    budgetMin: appliedFilterState.priceMin,
+    budgetMax: appliedFilterState.priceMax,
     gender: gender || undefined,
-    roomType: roomType || undefined,
-    petsAllowed: petsAllowed,
+    roomType: refine.roomType?.[0] || undefined,
+    furnishing: refine.furnishing?.[0] || undefined,
+    bhk: bhkValue ? Number.parseInt(bhkValue, 10) : undefined,
+    smokingAllowed: lifestyle.includes("SMOKING_ALLOWED")
+      ? true
+      : lifestyle.includes("NON_SMOKER")
+        ? false
+        : undefined,
+    drinkingAllowed: lifestyle.includes("DRINKING_ALLOWED") ? true : undefined,
+    petsAllowed: lifestyle.includes("PET_FRIENDLY") ? true : undefined,
     preferredDiet: preferredDiet || undefined,
     page,
     pageSize: 18,
   });
 
-  const resetFilters = () => {
-    setMode("ALL");
-    setLocality("");
-    setLocalityDraft("");
-    setGender("");
-    setRoomType("");
-    setPetsAllowed(undefined);
-    setPreferredDiet("");
-    setPage(1);
-  };
-
-  const navigateToLocation = (nextCity: string, nextLocality = "") => {
-    const segments = [nextCity, nextLocality].map(locationSlug).filter(Boolean);
+  const navigateToLocation = (nextCity: string, nextLocalities: string[] = []) => {
+    const segments = [nextCity, nextLocalities[0]].map((value) => locationSlug(value || "")).filter(Boolean);
     router.push(`/flatmate${segments.length ? `/${segments.join("/")}` : ""}`);
   };
 
-  const applyLocality = () => {
-    const next = localityDraft.trim();
-    setLocality(next);
+  const runSearch = (nextFilters = filterState) => {
+    setCity(cityDraft);
+    setLocalities(localityDrafts);
+    setFilterState(nextFilters);
+    setAppliedFilterState(nextFilters);
     setPage(1);
-    navigateToLocation(city, next);
+    navigateToLocation(cityDraft, localityDrafts);
+    if (cityDraft && typeof window !== "undefined") window.localStorage.setItem("awasio.home.city", cityDraft);
   };
 
   const listings = data?.items || [];
@@ -89,25 +113,25 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
 
       <main className="flex-1 bg-gradient-to-b from-rose-50/60 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         {/* Hero Header Area */}
-        <section className="relative overflow-hidden border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/60 py-10 px-4 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden border-b border-slate-200/80 bg-white px-4 py-5 dark:border-slate-800 dark:bg-slate-900/60 sm:px-6 sm:py-8 lg:px-8 lg:py-8">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(244,63,94,0.08),transparent_40%),radial-gradient(circle_at_85%_30%,rgba(245,158,11,0.08),transparent_40%)]" />
 
           <div className="relative mx-auto max-w-7xl">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div className="space-y-2 max-w-2xl">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-bold w-fit">
+            <div className="flex items-center justify-between gap-4">
+              <div className="max-w-2xl space-y-1.5 sm:space-y-2">
+                <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-bold text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 sm:px-3 sm:text-xs">
                   <Users className="w-3.5 h-3.5" />
                   <span>Verified Roommate & Flat Sharing Network</span>
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white sm:text-4xl">
                   Find Roommates Who Share Your Vibes & Lifestyle
                 </h1>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="hidden max-w-xl text-sm leading-5 text-slate-600 dark:text-slate-400 sm:line-clamp-2">
                   Search rooms available in flats, connect with people looking for flatmates, or buddy up to rent an apartment together with 100% zero brokerage.
                 </p>
               </div>
 
-              <div className="flex items-center gap-3 shrink-0">
+              <div className="hidden shrink-0 items-center gap-3 sm:flex">
                 <Link
                   href="/flatmates/post"
                   className="inline-flex items-center gap-2 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm px-6 py-3 shadow-lg shadow-rose-600/25 transition active:scale-95"
@@ -118,177 +142,92 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
               </div>
             </div>
 
-            {/* City Quick Pills */}
-            <div className="mt-6 flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-rose-500" /> Popular Cities:
-              </span>
-              {POPULAR_CITIES.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => {
-                    setCity(c);
-                    setLocality("");
-                    setLocalityDraft("");
-                    setPage(1);
-                    navigateToLocation(c);
-                  }}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition ${
-                    city.toLowerCase() === c.toLowerCase()
-                      ? "bg-rose-600 text-white shadow-sm font-semibold"
-                      : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
           </div>
         </section>
 
         {/* Filters and Controls */}
-        <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-4 rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            {/* Mode Tabs */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 pb-4">
-              <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-800">
-                {[
-                  { key: "ALL", label: "All Flatmates", icon: Users },
-                  { key: "HAVE_ROOM", label: "Rooms Available", icon: Home },
-                  { key: "NEED_ROOM", label: "Seeking Rooms", icon: Search },
-                  { key: "BUDDY_UP", label: "Buddy Up", icon: Sparkles },
-                ].map((tab) => {
-                  const Icon = tab.icon;
-                  const active = mode === tab.key;
-                  return (
-                    <button
-                      key={tab.key}
-                      type="button"
-                      onClick={() => {
-                        setMode(tab.key as any);
-                        setPage(1);
-                      }}
-                      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
-                        active
-                          ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
-                          : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-                      }`}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                      <span>{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Locality Search Input */}
-              <div className="relative w-full sm:w-72">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-                <Input
-                  value={localityDraft}
-                  onChange={(e) => setLocalityDraft(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      applyLocality();
-                    }
-                  }}
-                  placeholder="Filter by locality (e.g. HSR)..."
-                  className="pl-9 pr-16 h-9 rounded-2xl text-xs"
-                />
-                <button type="button" onClick={applyLocality} className="absolute right-1 top-1 flex h-7 items-center rounded-xl bg-rose-600 px-2.5 text-[10px] font-bold text-white">
-                  Apply
-                </button>
-              </div>
-            </div>
-
-            {/* Granular Compatibility Filters */}
-            <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
-              <div className="flex flex-wrap items-center gap-2">
-                {/* Gender Filter */}
-                <select
-                  value={gender}
-                  onChange={(e) => {
-                    setGender(e.target.value);
-                    setPage(1);
-                  }}
-                  aria-label="Filter by gender"
-                  className="h-8 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs px-3 font-medium focus:outline-none focus:ring-1 focus:ring-rose-500"
-                >
-                  <option value="">Gender: Any</option>
-                  <option value="Female">Women</option>
-                  <option value="Male">Men</option>
-                </select>
-
-                {/* Room Type */}
-                <select
-                  value={roomType}
-                  onChange={(e) => {
-                    setRoomType(e.target.value);
-                    setPage(1);
-                  }}
-                  aria-label="Filter by room type"
-                  className="h-8 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs px-3 font-medium focus:outline-none focus:ring-1 focus:ring-rose-500"
-                >
-                  <option value="">Room: All Types</option>
-                  <option value="Private Room">Private Room</option>
-                  <option value="Shared Room (Twin)">Shared Room</option>
-                  <option value="Whole Flat">Whole Flat</option>
-                </select>
-
-                {/* Diet */}
-                <select
-                  value={preferredDiet}
-                  onChange={(e) => {
-                    setPreferredDiet(e.target.value);
-                    setPage(1);
-                  }}
-                  aria-label="Filter by dietary preference"
-                  className="h-8 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs px-3 font-medium focus:outline-none focus:ring-1 focus:ring-rose-500"
-                >
-                  <option value="">Diet: Any</option>
-                  <option value="Pure Vegetarian">Pure Vegetarian</option>
-                  <option value="Vegetarian & Eggetarian">Veg / Eggetarian</option>
-                  <option value="Non-Vegetarian">Non-Vegetarian</option>
-                </select>
-
-                {/* Pet Friendly Toggle */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPetsAllowed(petsAllowed === true ? undefined : true);
-                    setPage(1);
-                  }}
-                  className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-medium border transition ${
-                    petsAllowed === true
-                      ? "border-amber-400 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300 font-bold"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
-                  }`}
-                >
-                  <PawPrint className="w-3 h-3" />
-                  <span>Pet-friendly</span>
-                </button>
-              </div>
-
-              {/* Reset button */}
+        <section className="mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-6 lg:px-8">
+          <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:gap-4 sm:rounded-3xl sm:p-5">
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-[auto_minmax(12rem,1fr)_auto]">
+              <CitySelectorDropdown
+                compact
+                selectedCityName={cityDraft}
+                onSelectCity={(selectedCity) => {
+                  setCityDraft(selectedCity.name);
+                  setLocalityDrafts([]);
+                }}
+              />
+              <LocationSearchInput
+                cityName={cityDraft}
+                localities={localityDrafts.map((label) => ({ label, city: cityDraft }))}
+                keyword=""
+                maxLocalities={2}
+                placeholder={cityDraft ? `Search locality in ${cityDraft}` : "Select a city, then search locality"}
+                onChange={({ localities }) => {
+                  setLocalityDrafts(localities.map((item) => item.label));
+                }}
+              />
               <button
                 type="button"
-                onClick={resetFilters}
-                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                onClick={() => runSearch()}
+                className="hidden h-11 items-center justify-center gap-2 rounded-xl bg-rose-600 px-6 text-sm font-bold text-white shadow-md shadow-rose-600/20 transition hover:bg-rose-700 active:scale-[0.98] md:flex"
               >
-                <RotateCcw className="w-3 h-3" />
-                <span>Reset filters</span>
+                <Search className="h-4 w-4" />
+                Search
+              </button>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                className="flex h-11 w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-left transition hover:border-rose-300 hover:bg-rose-50/50 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-rose-700 dark:hover:bg-rose-950/20 md:hidden"
+              >
+                <span className="flex items-center gap-2.5">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-rose-600 shadow-sm dark:bg-slate-900 dark:text-rose-400">
+                    <SlidersHorizontal className="h-4 w-4" />
+                  </span>
+                  <span>
+                    <span className="block text-xs font-bold text-slate-900 dark:text-white">All filters</span>
+                    <span className="block text-[10px] text-slate-500 dark:text-slate-400">Mode, budget, room and lifestyle</span>
+                  </span>
+                </span>
+                <span className="flex items-center gap-2">
+                  {activeFilterCount > 0 && (
+                    <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-rose-600 px-2 text-[10px] font-bold text-white">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                  <ChevronRight className="h-4 w-4 text-slate-400" />
+                </span>
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={() => runSearch()}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-rose-600 text-sm font-bold text-white shadow-md shadow-rose-600/20 transition active:scale-[0.99] md:hidden"
+            >
+              <Search className="h-4 w-4" />
+              Search Flatmates
+            </button>
           </div>
 
+          <FilterSheet
+            open={filtersOpen}
+            onClose={() => setFiltersOpen(false)}
+            state={filterState}
+            singleSelectKeys={SINGLE_SELECT_FLATMATE_FILTERS}
+            onApply={(next) => {
+              setFilterState(next);
+            }}
+          />
+
+          <div className="flex items-start gap-6">
+            <div className="min-w-0 flex-1">
           {/* Listings count & Active indicator */}
           <div className="my-5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <div>
               Showing <span className="font-bold text-slate-900 dark:text-white">{listings.length}</span> of{" "}
               <span className="font-bold text-slate-900 dark:text-white">{total}</span> flatmate listings in{" "}
-              <span className="font-semibold text-rose-600">{city}</span>
+              {city ? <span className="font-semibold text-rose-600">{city}</span> : <span>India</span>}
             </div>
             {isFetching && (
               <div className="flex items-center gap-1 text-rose-600">
@@ -300,7 +239,7 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
 
           {/* Cards Grid */}
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
@@ -313,7 +252,7 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
               ))}
             </div>
           ) : listings.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
               {listings.map((item) => (
                 <FlatmateCard key={item.id} listing={item} />
               ))}
@@ -325,7 +264,7 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
               </div>
               <div className="space-y-1">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  No flatmate listings found in {city} {locality ? `(${locality})` : ""}
+                  No flatmate listings found in {city} {localities.length ? `(${localities.join(", ")})` : ""}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
                   Be the first one to post a room or your requirement in this area and connect with thousands of active room seekers!
@@ -342,6 +281,17 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
               </div>
             </div>
           )}
+            </div>
+
+            <div className="hidden pt-5 md:block">
+              <FilterRail
+                state={filterState}
+                singleSelectKeys={SINGLE_SELECT_FLATMATE_FILTERS}
+                deferred
+                onChange={setFilterState}
+              />
+            </div>
+          </div>
         </section>
       </main>
     </div>

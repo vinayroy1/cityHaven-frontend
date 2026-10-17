@@ -6,11 +6,6 @@ import Link from "next/link";
 import {
   ArrowLeft,
   MapPin,
-  Calendar,
-  IndianRupee,
-  BedDouble,
-  Home,
-  Search,
   Users,
   ShieldCheck,
   HeartHandshake,
@@ -19,13 +14,15 @@ import {
   PawPrint,
   Cigarette,
   Wine,
-  Moon,
   Laptop,
   Check,
   Sparkles,
   User,
   Loader2,
   AlertCircle,
+  Clock3,
+  Languages,
+  BriefcaseBusiness,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,10 +43,17 @@ export default function FlatmateDetailPage() {
   const [isInterestModalOpen, setIsInterestModalOpen] = useState(false);
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
 
-  const handleShare = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
+  const handleShare = async () => {
+    if (typeof window === "undefined") return;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: listing?.title || "Flatmate listing", url: window.location.href });
+        return;
+      }
+      await navigator.clipboard.writeText(window.location.href);
       toast.success("Link copied to clipboard!");
+    } catch {
+      // Closing the native share sheet is not an error the user needs to see.
     }
   };
 
@@ -94,6 +98,8 @@ export default function FlatmateDetailPage() {
 
   const profile = listing.profile;
   const photos = listing.photos?.length ? listing.photos : [];
+  const age = profile?.birthYear ? new Date().getFullYear() - profile.birthYear : undefined;
+  const preferredAreas = listing.preferredLocalities?.filter(Boolean).slice(0, 4) || [];
 
   const formattedRent = () => {
     if (listing.mode === "HAVE_ROOM") {
@@ -109,7 +115,7 @@ export default function FlatmateDetailPage() {
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
       <HeaderNav />
 
-      <main className="flex-1 py-6 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 px-4 pb-32 pt-6 sm:px-6 lg:px-8 lg:pb-6">
         <div className="mx-auto max-w-6xl space-y-6">
           {/* Back & Breadcrumb Bar */}
           <div className="flex items-center justify-between">
@@ -156,6 +162,7 @@ export default function FlatmateDetailPage() {
                           key={idx}
                           type="button"
                           onClick={() => setActivePhotoIdx(idx)}
+                          aria-label={`View photo ${idx + 1} of ${photos.length}`}
                           className={`relative h-16 w-24 shrink-0 rounded-2xl overflow-hidden border-2 transition ${
                             activePhotoIdx === idx ? "border-rose-500 scale-95" : "border-transparent opacity-70"
                           }`}
@@ -210,6 +217,17 @@ export default function FlatmateDetailPage() {
                         : `${listing.cityName}, ${listing.stateName || "India"}`}
                     </span>
                   </div>
+
+                  {listing.mode !== "HAVE_ROOM" && preferredAreas.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Preferred areas:</span>
+                      {preferredAreas.map((area) => (
+                        <span key={area} className="rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
+                          {area}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Key Room Specs */}
@@ -248,6 +266,20 @@ export default function FlatmateDetailPage() {
                       </p>
                     </div>
                   )}
+                  {listing.currentOccupants != null && (
+                    <div className="space-y-0.5">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">Current Flatmates</span>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white">{listing.currentOccupants}</p>
+                    </div>
+                  )}
+                  {listing.spotsAvailable > 0 && (
+                    <div className="space-y-0.5">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">Availability</span>
+                      <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                        {listing.spotsAvailable} spot{listing.spotsAvailable === 1 ? "" : "s"} open
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Description */}
@@ -282,32 +314,46 @@ export default function FlatmateDetailPage() {
                     </div>
                   )}
 
-                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                  {listing.petsAllowed != null && <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
                     <div className="flex items-center gap-1.5 text-xs text-slate-500">
                       <PawPrint className="w-3.5 h-3.5 text-amber-500" /> Pets Policy
                     </div>
                     <p className="text-xs font-bold text-slate-900 dark:text-white">
                       {listing.petsAllowed ? "Pet-Friendly" : "No Pets"}
                     </p>
-                  </div>
+                  </div>}
 
-                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                  {listing.smokingAllowed != null && <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
                     <div className="flex items-center gap-1.5 text-xs text-slate-500">
                       <Cigarette className="w-3.5 h-3.5 text-slate-500" /> Smoking
                     </div>
                     <p className="text-xs font-bold text-slate-900 dark:text-white">
                       {listing.smokingAllowed ? "Smoking Allowed" : "Non-Smoker Only"}
                     </p>
-                  </div>
+                  </div>}
 
-                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                  {listing.drinkingAllowed != null && <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
                     <div className="flex items-center gap-1.5 text-xs text-slate-500">
                       <Wine className="w-3.5 h-3.5 text-rose-500" /> Drinking
                     </div>
                     <p className="text-xs font-bold text-slate-900 dark:text-white">
                       {listing.drinkingAllowed ? "Social Drinking OK" : "No Drinking"}
                     </p>
-                  </div>
+                  </div>}
+
+                  {listing.preferredGenders?.length > 0 && (
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500"><User className="h-3.5 w-3.5 text-rose-500" /> Preferred Gender</div>
+                      <p className="text-xs font-bold text-slate-900 dark:text-white">{listing.preferredGenders.join(" / ")}</p>
+                    </div>
+                  )}
+
+                  {listing.preferredOccupations?.length > 0 && (
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500"><BriefcaseBusiness className="h-3.5 w-3.5 text-blue-500" /> Preferred Profile</div>
+                      <p className="text-xs font-bold text-slate-900 dark:text-white">{listing.preferredOccupations.join(" / ")}</p>
+                    </div>
+                  )}
 
                   {profile?.cleanlinessLevel && (
                     <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
@@ -326,6 +372,13 @@ export default function FlatmateDetailPage() {
                         <Laptop className="w-3.5 h-3.5 text-purple-500" /> Work Mode
                       </div>
                       <p className="text-xs font-bold text-slate-900 dark:text-white">{profile.workMode}</p>
+                    </div>
+                  )}
+
+                  {profile?.sleepSchedule && (
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500"><Clock3 className="h-3.5 w-3.5 text-indigo-500" /> Sleep Schedule</div>
+                      <p className="text-xs font-bold text-slate-900 dark:text-white">{profile.sleepSchedule}</p>
                     </div>
                   )}
                 </div>
@@ -355,7 +408,7 @@ export default function FlatmateDetailPage() {
             {/* Right Column: Pricing Sticky Card + Poster Profile */}
             <div className="space-y-6">
               {/* Connect & Pricing Action Card */}
-              <div className="sticky top-6 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-900 space-y-5">
+              <div className="sticky top-24 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-900 space-y-5">
                 <div className="space-y-1">
                   <span className="text-xs font-semibold text-slate-500">
                     {listing.mode === "HAVE_ROOM" ? "Monthly Rent" : "Target Budget"}
@@ -411,7 +464,9 @@ export default function FlatmateDetailPage() {
                           {profile?.displayName || "Flatmate"}
                         </span>
                         {profile?.isIdentityVerified && (
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                            <ShieldCheck className="h-3 w-3" /> Verified
+                          </span>
                         )}
                       </div>
                       <p className="text-xs text-slate-500 truncate">
@@ -422,8 +477,18 @@ export default function FlatmateDetailPage() {
                           {profile.companyOrCollege}
                         </p>
                       )}
+                      {(profile?.gender || age) && (
+                        <p className="text-[11px] text-slate-400">{[profile?.gender, age ? `${age} yrs` : ""].filter(Boolean).join(" · ")}</p>
+                      )}
                     </div>
                   </div>
+
+                  {profile?.languages && profile.languages.length > 0 && (
+                    <div className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300">
+                      <Languages className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" />
+                      <span>{profile.languages.join(" · ")}</span>
+                    </div>
+                  )}
 
                   {profile?.bio && (
                     <p className="text-xs text-slate-600 dark:text-slate-400 italic bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/80">
@@ -436,6 +501,16 @@ export default function FlatmateDetailPage() {
           </div>
         </div>
       </main>
+
+      <div className="fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] z-30 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-2xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95 lg:hidden">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-black text-slate-900 dark:text-white">{formattedRent()}</p>
+          <p className="text-[10px] text-slate-500">{listing.mode === "HAVE_ROOM" ? "per month" : "target budget"}</p>
+        </div>
+        <Button onClick={() => setIsInterestModalOpen(true)} className="h-11 shrink-0 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white hover:bg-rose-700">
+          <HeartHandshake className="mr-1.5 h-4 w-4" /> Connect
+        </Button>
+      </div>
 
       <FlatmateInterestModal
         listing={listing}

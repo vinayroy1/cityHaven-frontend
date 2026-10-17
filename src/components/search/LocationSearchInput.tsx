@@ -19,6 +19,7 @@ type Props = {
   onChange: (next: { localities: LocalityTag[]; keyword: string }) => void;
   autoFocus?: boolean;
   placeholder?: string;
+  maxLocalities?: number;
 };
 
 export function LocationSearchInput({
@@ -28,6 +29,7 @@ export function LocationSearchInput({
   onChange,
   autoFocus,
   placeholder = "Search city, locality, project or landmark",
+  maxLocalities = 2,
 }: Props) {
   const [text, setText] = React.useState(keyword);
   const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);
@@ -152,7 +154,7 @@ export function LocationSearchInput({
   }, [text, cityName, open, prefetchedSuggestions, prefetchedHasMore, prefetchedNextPage]);
 
   const loadMoreSuggestions = async () => {
-    if (loading || loadingMore || !hasMore || localities.length >= 2) return;
+    if (loading || loadingMore || !hasMore || localities.length >= maxLocalities) return;
 
     const trimmed = text.trim();
     const selectedCity = cityName?.trim();
@@ -209,7 +211,7 @@ export function LocationSearchInput({
 
     onChange({
       keyword: "",
-      localities: [...localities, { label, city: s.suggestion.location.city || undefined }].slice(0, 2),
+      localities: [...localities, { label, city: s.suggestion.location.city || undefined }].slice(0, maxLocalities),
     });
 
     inputRef.current?.focus();
@@ -310,7 +312,7 @@ export function LocationSearchInput({
           </span>
         ))}
 
-        {localities.length < 2 ? (
+        {localities.length < maxLocalities ? (
           <>
             <input
               ref={inputRef}
@@ -338,7 +340,9 @@ export function LocationSearchInput({
             />
           </>
         ) : (
-          <span className="ml-auto shrink-0 text-[10px] font-semibold text-slate-400 dark:text-slate-500">2/2</span>
+          <span className="ml-auto shrink-0 text-[10px] font-semibold text-slate-400 dark:text-slate-500">
+            {localities.length}/{maxLocalities}
+          </span>
         )}
       </div>
 
