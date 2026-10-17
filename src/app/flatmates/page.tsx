@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FlatmateCard } from "@/components/flatmates/FlatmateCard";
+import { FlatmateGridSkeleton } from "@/components/flatmates/FlatmateCardSkeleton";
 import { canonicalizeCity, CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
 import { FilterRail, FilterSheet } from "@/components/search/FilterSheet";
@@ -230,27 +231,16 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
               {city ? <span className="font-semibold text-rose-600">{city}</span> : <span>India</span>}
             </div>
             {isFetching && (
-              <div className="flex items-center gap-1 text-rose-600">
+              <div className="flex items-center gap-1.5 rounded-full border border-rose-200/80 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600 shadow-xs dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Updating...</span>
+                <span>Finding compatible flatmates...</span>
               </div>
             )}
           </div>
 
           {/* Cards Grid */}
-          {isLoading ? (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div
-                  key={i}
-                  className="h-80 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 animate-pulse space-y-4"
-                >
-                  <div className="h-44 w-full rounded-2xl bg-slate-200 dark:bg-slate-800" />
-                  <div className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-800" />
-                  <div className="h-4 w-1/2 rounded bg-slate-200 dark:bg-slate-800" />
-                </div>
-              ))}
-            </div>
+          {isLoading || isFetching ? (
+            <FlatmateGridSkeleton count={6} />
           ) : listings.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
               {listings.map((item) => (
