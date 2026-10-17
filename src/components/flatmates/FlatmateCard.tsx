@@ -219,12 +219,12 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
                 <Sparkles className="mr-0.5 h-2.5 w-2.5" /> {reason}
               </Badge>
             ))}
-            {listing.preferredGenders?.length > 0 && (
+            {(listing.preferredGenders?.length ?? 0) > 0 && (
               <Badge
                 variant="outline"
                 className="border-rose-200 bg-rose-50/50 text-[10px] font-medium text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-300"
               >
-                {listing.preferredGenders.join(" / ")}
+                {listing.preferredGenders?.join(" / ")}
               </Badge>
             )}
             {listing.preferredDiet && (
