@@ -124,7 +124,7 @@ export function NewProjectsClient() {
   };
 
   const { data, isLoading, isFetching, isError, refetch } = useSearchProjectsQuery({
-    city: appliedCity || undefined,
+    city: appliedCity && appliedCity !== "All" ? appliedCity : undefined,
     locality: appliedLocalities.length ? appliedLocalities.join(",") : undefined,
     q: appliedKeyword || undefined,
     status: filterState.status === "ALL" ? undefined : filterState.status as ProjectStatus,
@@ -181,6 +181,8 @@ export function NewProjectsClient() {
                 onSelectCity={(selectedCity) => {
                   setCityDraft(selectedCity.name);
                   setLocalityDrafts([]);
+                  setAppliedCity(selectedCity.name);
+                  setAppliedLocalities([]);
                 }}
               />
               <LocationSearchInput
