@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Building2,
@@ -9,6 +10,7 @@ import {
   CalendarDays,
   Layers3,
   Loader2,
+  Images,
   MapPin,
   PhoneCall,
   Search,
@@ -27,6 +29,7 @@ import {
 import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
 import { useSearchProjectsQuery } from "@/features/projects/api";
 import type { ProjectStatus } from "@/types/project.types";
+import { toSearchSlug } from "@/components/search/searchQuery";
 
 function formatPrice(value?: number) {
   if (!value) return "Price on request";
@@ -35,15 +38,24 @@ function formatPrice(value?: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
 
-export function NewProjectsClient() {
+const buildProjectSearchHref = (city: string, localities: string[] = []) => {
+  const segments = [city, ...localities.slice(0, 2)].map(toSearchSlug).filter(Boolean);
+  return segments.length ? `/new-projects/in/${segments.join("/")}` : "/new-projects";
+};
+
+type NewProjectsClientProps = { initialCity?: string; initialLocalities?: string[] };
+
+export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: NewProjectsClientProps = {}) {
+  const router = useRouter();
+  const initialLocalitiesKey = initialLocalities.join("\u001f");
   // Search inputs state (draft)
-  const [cityDraft, setCityDraft] = useState<string>("");
-  const [localityDrafts, setLocalityDrafts] = useState<string[]>([]);
+  const [cityDraft, setCityDraft] = useState<string>(initialCity);
+  const [localityDrafts, setLocalityDrafts] = useState<string[]>(initialLocalities);
   const [keywordDraft, setKeywordDraft] = useState<string>("");
 
   // Applied search state
-  const [appliedCity, setAppliedCity] = useState<string>("");
-  const [appliedLocalities, setAppliedLocalities] = useState<string[]>([]);
+  const [appliedCity, setAppliedCity] = useState<string>(initialCity);
+  const [appliedLocalities, setAppliedLocalities] = useState<string[]>(initialLocalities);
   const [appliedKeyword, setAppliedKeyword] = useState<string>("");
 
   // Filter drawer state
@@ -57,13 +69,23 @@ export function NewProjectsClient() {
     verifiedOnly: false,
   });
 
+  useEffect(() => {
+    const routeLocalities = initialLocalitiesKey ? initialLocalitiesKey.split("\u001f") : [];
+    setCityDraft(initialCity);
+    setAppliedCity(initialCity);
+    setLocalityDrafts(routeLocalities);
+    setAppliedLocalities(routeLocalities);
+  }, [initialCity, initialLocalitiesKey]);
+
   // Auto-detect user preferred city on initial mount if available
   useEffect(() => {
     let cancelled = false;
+    if (initialCity) return;
     const preferred = getUserPreferredCity();
     if (preferred && preferred.trim()) {
       setCityDraft(preferred.trim());
       setAppliedCity(preferred.trim());
+      router.replace(buildProjectSearchHref(preferred.trim()), { scroll: false });
       return;
     }
 
@@ -71,18 +93,20 @@ export function NewProjectsClient() {
       if (!cancelled && loc?.city) {
         setCityDraft(loc.city.trim());
         setAppliedCity(loc.city.trim());
+        router.replace(buildProjectSearchHref(loc.city.trim()), { scroll: false });
       }
     });
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialCity, router]);
 
   const runSearch = () => {
     setAppliedCity(cityDraft);
     setAppliedLocalities(localityDrafts);
     setAppliedKeyword(keywordDraft);
+    router.push(buildProjectSearchHref(cityDraft, localityDrafts), { scroll: false });
   };
 
   const activeFilterCount = useMemo(() => {
@@ -102,6 +126,7 @@ export function NewProjectsClient() {
     setAppliedCity("");
     setAppliedLocalities([]);
     setAppliedKeyword("");
+    router.push("/new-projects", { scroll: false });
     setFilterState({
       status: "ALL",
       bhk: "All",
@@ -282,101 +307,103 @@ export function NewProjectsClient() {
             <button type="button" onClick={() => refetch()} className="mt-4 rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white">Try again</button>
           </div>
         ) : projects.length > 0 ? (
-          <div className="grid gap-4 xl:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 xl:gap-4">
             {projects.map((project) => (
               <Link
                 key={project.id}
                 href={`/new-projects/${project.slug}`}
-                className="group flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-rose-300 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:bg-slate-900"
+                className="group flex w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:bg-slate-900 sm:rounded-3xl"
               >
                 {/* Project Image */}
-                <div className="relative h-40 w-full overflow-hidden bg-slate-100 sm:h-52 dark:bg-slate-800">
+                <div className="relative h-40 w-full overflow-hidden bg-slate-100 sm:h-44 xl:h-40 dark:bg-slate-800">
                   <img
                     src={project.images[0] || CDN_ASSETS.placeholderWebp}
                     alt={project.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/15" />
 
                   {/* Badges */}
                   <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1.5 sm:left-3 sm:top-3">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-1 text-[10px] font-black text-emerald-700 shadow-sm backdrop-blur-md sm:px-2.5 sm:text-[11px]">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/95 px-2 py-1 text-[9px] font-black text-emerald-700 shadow-sm backdrop-blur-md sm:px-2.5 sm:text-[10px]">
                       <ShieldCheck className="h-3 w-3 text-emerald-600 sm:h-3.5 sm:w-3.5" />
                       <span>RERA Verified</span>
                     </span>
                   </div>
 
                   <div className="absolute right-2.5 top-2.5 sm:right-3 sm:top-3">
-                    <span className="rounded-full bg-slate-950/80 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur-md sm:px-2.5 sm:text-[10px]">
+                    <span className="rounded-full border border-white/15 bg-slate-950/80 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white backdrop-blur-md sm:px-2.5 sm:text-[10px]">
                       {project.status.replace(/_/g, " ")}
                     </span>
                   </div>
 
-                  <div className="absolute bottom-2.5 left-3 right-3 text-white sm:bottom-3">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-rose-300 sm:text-[11px]">
-                      By {project.developerName}
+                  <div className="absolute inset-x-2.5 bottom-2.5 flex items-end justify-between gap-2 sm:inset-x-3 sm:bottom-3">
+                    <div className="rounded-xl bg-slate-950/85 px-3 py-1.5 text-white shadow-lg backdrop-blur-md">
+                      <p className="text-[8px] font-semibold uppercase tracking-wider text-slate-300">Starting from</p>
+                      <p className="text-base font-black leading-tight sm:text-lg">{formatPrice(project.priceMin)}</p>
                     </div>
-                    <h3 className="line-clamp-1 text-lg font-black tracking-tight drop-shadow-sm sm:line-clamp-2 sm:text-xl">
-                      {project.name}
-                    </h3>
+                    {project.images.length > 0 && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/75 px-2 py-1 text-[9px] font-bold text-white backdrop-blur-md">
+                        <Images className="h-3 w-3" /> {project.images.length} photo{project.images.length === 1 ? "" : "s"}
+                      </span>
+                    )}
                   </div>
                 </div>
 
                 {/* Card Body */}
-                <div className="flex flex-1 flex-col p-3 sm:p-5">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                <div className="flex flex-1 flex-col p-3 sm:p-4">
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 sm:text-[10px]">
+                    By {project.developerName}
+                  </p>
+                  <h3 className="mt-0.5 line-clamp-1 text-base font-black tracking-tight text-slate-950 transition-colors group-hover:text-rose-600 dark:text-white sm:text-lg">
+                    {project.name}
+                  </h3>
+                  <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 sm:text-xs">
+                    <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
                     <span className="truncate">{project.locality}, {project.city}</span>
                   </div>
 
                   {/* Specs Pill Strip */}
-                  <div className="mt-2 flex flex-wrap gap-1.5 text-[10px] font-semibold text-slate-600 dark:text-slate-300 sm:mt-3 sm:text-[11px]">
+                  <div className="mt-2.5 grid grid-cols-2 gap-1.5 text-[10px] font-semibold text-slate-600 dark:text-slate-300 sm:text-[11px]">
                     {project.totalLandArea && (
-                      <span className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2 py-1 dark:bg-slate-800">
+                      <span className="inline-flex min-w-0 items-center gap-1 rounded-lg bg-slate-100 px-2 py-1.5 dark:bg-slate-800">
                         <Layers3 className="h-3 w-3" /> {project.totalLandArea}
                       </span>
                     )}
                     {project.totalTowers && (
-                      <span className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2 py-1 dark:bg-slate-800">
+                      <span className="inline-flex min-w-0 items-center gap-1 rounded-lg bg-slate-100 px-2 py-1.5 dark:bg-slate-800">
                         <Building2 className="h-3 w-3" /> {project.totalTowers} Towers
                       </span>
                     )}
-                    <span className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2 py-1 dark:bg-slate-800">
-                      <CalendarDays className="h-3 w-3" /> {project.possessionDate}
-                    </span>
                   </div>
 
                   {/* Configurations Chips */}
-                  <div className="mt-2.5 border-t border-slate-100 pt-2.5 dark:border-slate-800 sm:mt-4 sm:pt-3">
-                    <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 sm:mb-2 sm:text-[11px]">
-                      Configurations
-                    </div>
-                    <div className="flex flex-wrap gap-1">
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
                       {project.configurations.slice(0, 3).map((cfg) => (
                         <span
                           key={cfg.id}
-                          className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 sm:px-2.5 sm:text-[11px]"
+                          className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 sm:text-[11px]"
                         >
-                          <span>{cfg.bhkType}</span><span className="hidden sm:inline"> ({cfg.carpetArea} sq.ft)</span>
+                          {cfg.bhkType}<span className="hidden sm:inline"> · {cfg.carpetArea} sq.ft</span>
                         </span>
                       ))}
-                    </div>
                   </div>
 
                   {/* Price & Action CTA */}
-                  <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800 sm:mt-auto sm:pt-5">
-                    <div>
-                      <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                        Price Range
+                  <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-2.5 dark:border-slate-800 sm:mt-auto">
+                    <div className="min-w-0">
+                      <span className="flex items-center gap-1 text-[9px] font-semibold text-slate-500 sm:text-[10px]">
+                        <CalendarDays className="h-3 w-3 text-slate-400" /> Possession {project.possessionDate}
                       </span>
-                      <span className="text-sm font-black text-slate-950 dark:text-white sm:text-base">
-                        {formatPrice(project.priceMin)} – {formatPrice(project.priceMax)}
-                      </span>
+                      {project.priceMax > project.priceMin && (
+                        <span className="mt-0.5 block truncate text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                          Up to {formatPrice(project.priceMax)}
+                        </span>
+                      )}
                     </div>
 
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-600 px-3 py-2 text-[11px] font-bold text-white shadow-sm transition group-hover:bg-rose-700 sm:px-4 sm:text-xs">
-                      <span>Explore</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
+                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition group-hover:bg-rose-600 group-hover:text-white dark:bg-rose-950/40 dark:text-rose-400">
+                      <ArrowRight className="h-4 w-4" />
                     </span>
                   </div>
                 </div>
