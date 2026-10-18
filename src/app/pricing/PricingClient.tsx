@@ -61,9 +61,9 @@ const CATEGORY_CONFIG: Record<PlanCategory | string, CategoryMeta> = {
     icon: Home,
   },
   AGENCY_BROKER: {
-    label: "Agencies & Brokers",
-    badgeLabel: "Team Subscriptions",
-    subtitle: "Scalable monthly plans for independent agents & multi-member brokerages. High inventory limits and shared team seats.",
+    label: "Multi-Property & Teams",
+    badgeLabel: "High Volume & Shared Workspaces",
+    subtitle: "Scalable monthly plans for multi-unit owners, property managers & team workspaces. 10 to 100 listings, shared credits & multi-agent seats.",
     icon: Building2,
   },
 };
@@ -649,10 +649,30 @@ export function PricingClient() {
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <p className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 mb-1.5">
                   <Building2 className="h-4 w-4 text-rose-600 dark:text-rose-400" />
-                  How do team seats and agency subscriptions work?
+                  How do multi-property plans and team workspaces work?
                 </p>
                 <p>
-                  Agencies and brokerages can subscribe to monthly plans starting at ₹299/mo. Team plans (Agency Pro and Fleet) include shared credit pools and multiple team seats so your agents can manage listings and unlock owner leads collaboratively.
+                  Any user or organization managing multiple properties can subscribe to monthly plans starting at ₹299/mo. Team plans (Agency Pro and Fleet) include shared credit pools and multiple team seats so your team members can manage listings and unlock owner leads collaboratively from their own logins.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <p className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 mb-1.5">
+                  <Sparkles className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                  What about Advisor Profiles on Awasio?
+                </p>
+                <p>
+                  Any verified real estate advisor or RERA consultant can create an Advisor Profile from their dashboard for free. It gives you a public profile page and directory search ranking. Advisors who want premium placement on the homepage carousel can opt for a City Spotlight or Pro Advisor badge.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <p className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 mb-1.5">
+                  <Flame className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                  How does New Project listing work for builders?
+                </p>
+                <p>
+                  Builders, developers, and official project marketing partners can showcase RERA-registered townships, floor plans, and brochures on Awasio via Post Project. Featured projects receive priority discovery in the New Projects directory and direct buyer enquiries.
                 </p>
               </div>
             </div>
