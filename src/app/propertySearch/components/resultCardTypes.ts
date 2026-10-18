@@ -27,13 +27,10 @@ export type ContactStep = "plans" | "contact";
 export const FALLBACK_IMAGE = CDN_ASSETS.placeholderWebp;
 
 export const CONTACT_PLANS = [
-  { id: "trial", name: "Trial", contacts: "1 owner contact", description: "Unlock this listing only.", price: "₹49" },
-  { id: "starter", name: "Starter", contacts: "5 owner contacts", description: "Good for a few shortlisted homes.", price: "₹199" },
-  { id: "basic", name: "Basic", contacts: "10 owner contacts", description: "For one locality search.", price: "₹349" },
-  { id: "power", name: "Power", contacts: "20 owner contacts", description: "Best value for active searchers.", price: "₹499", popular: true },
-  { id: "premium", name: "Premium", contacts: "40 owner contacts", description: "For comparing multiple localities.", price: "₹899" },
-  { id: "assisted", name: "Assisted", contacts: "60 contacts + callback", description: "Priority details and assisted callbacks.", price: "₹1,499" },
-  { id: "concierge", name: "Concierge", contacts: "100 contacts + RM", description: "Dedicated help for serious buyers.", price: "₹2,499" },
+  { id: "buyer_single_29", name: "Instant Single", contacts: "1 verified owner", description: "Instant contact reveal with lifetime dashboard access.", price: "₹29" },
+  { id: "buyer_starter_99", name: "Local Hunter", contacts: "5 verified owners", description: "Ideal for shortlisting homes in 1 locality.", price: "₹99" },
+  { id: "buyer_super_199", name: "Super Hunter", contacts: "15 verified owners", description: "Best value for active house hunters comparing localities.", price: "₹199", popular: true },
+  { id: "buyer_explorer_399", name: "City Explorer", contacts: "40 verified owners", description: "Maximum flexibility with zero expiry.", price: "₹399" },
 ] as const;
 
 export type ContactPlan = {

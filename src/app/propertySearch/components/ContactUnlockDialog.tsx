@@ -88,7 +88,7 @@ export function ContactUnlockDialog({
                 ? isOrgScope
                   ? `Unlocked for all team members in ${activeScopeObj?.name || "your organization"}.`
                   : "Unlocked for your personal account."
-                : "Select a contact pack to instantly unlock verified owner phone & WhatsApp."}
+                : "Select a contact pack to instantly unlock verified owner phone numbers."}
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -242,7 +242,7 @@ export function LeadDetailsStep(props: {
         <div className="mt-3 space-y-2 text-xs text-zinc-600 dark:text-slate-300">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-            <span>Verified owner telephone number &amp; WhatsApp</span>
+            <span>Direct verified owner telephone reveal</span>
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />

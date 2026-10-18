@@ -60,21 +60,24 @@ export function ContactAccessFlow({
 
   const plansQuery = useGetPlansQuery(undefined, { skip: !open || step !== "plans" });
   const plans = (plansQuery.data?.data ?? [])
-    .filter((p) => Number(p.features?.creditsIncluded) > 0)
-    .map((p) => ({
-      dbId: p.id,
-      id: String(p.id),
-      name: p.name,
-      description: p.description || "",
-      credits: Number(p.features?.creditsIncluded),
-      contacts: `${p.features?.creditsIncluded} owner contacts`,
-      price: new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: p.currencyCode || "INR",
-        maximumFractionDigits: 0,
-      }).format(p.price),
-      popular: Boolean(p.features?.popular),
-    }));
+    .filter((p) => (Number(p.contactCredits) > 0 || Number(p.features?.creditsIncluded) > 0) && p.price > 0 && p.isActive !== false)
+    .map((p) => {
+      const credits = p.contactCredits ?? Number(p.features?.creditsIncluded) ?? 1;
+      return {
+        dbId: p.id,
+        id: String(p.id),
+        name: p.name,
+        description: p.tagline || p.description || "",
+        credits,
+        contacts: `${credits} verified owner contact${credits === 1 ? "" : "s"}`,
+        price: new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: p.currencyCode || "INR",
+          maximumFractionDigits: 0,
+        }).format(p.price),
+        popular: Boolean(p.isPopular || p.features?.popular),
+      };
+    });
   const currentPlan = plans.find((p) => p.id === selectedPlanId) ?? plans[0];
 
   const activeOrg = orgs.find((o) => o.id === selectedScope);

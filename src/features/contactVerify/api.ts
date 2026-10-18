@@ -52,14 +52,44 @@ export interface PurchaseCreditsPayload {
   reason?: string;
 }
 
+export type PlanCategory =
+  | "BUYER_TENANT"
+  | "FLATMATE"
+  | "OWNER_LANDLORD"
+  | "AGENCY_BROKER"
+  | "BUILDER_PROJECT";
+
+export interface PlanFeatureItem {
+  text: string;
+  included: boolean;
+  highlight?: boolean;
+}
+
 export interface Plan {
   id: number;
+  code?: string;
+  category?: PlanCategory;
   name: string;
+  badge?: string | null;
+  tagline?: string | null;
   description: string | null;
+  ctaText?: string | null;
+  sortOrder?: number;
+  isPopular?: boolean;
+  isActive?: boolean;
   price: number;
+  originalPrice?: number | null;
   currencyCode: string;
   billingCycle: string;
-  durationDays: number;
+  durationDays: number | null;
+  contactCredits?: number;
+  activeListings?: number;
+  teamSeats?: number;
+  localityBoosts?: number;
+  kycVerification?: boolean;
+  legalAgreement?: boolean;
+  prioritySupport?: boolean;
+  featureList?: PlanFeatureItem[] | null;
   features: {
     creditsIncluded?: number;
     contactsLabel?: string;
@@ -167,10 +197,11 @@ export const contactVerifyApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["ContactVerify", "Credits", "UnlockedContact", "Plans", "BillingSummary", "OrgCredits"],
   endpoints: (builder) => ({
-    getPlans: builder.query<{ success: boolean; data: Plan[] }, void>({
-      query: () => ({
+    getPlans: builder.query<{ success: boolean; data: Plan[] }, { category?: string; all?: boolean } | void>({
+      query: (params) => ({
         url: API_ENDPOINTS.billing.plans,
         method: "GET",
+        params: params ? { category: params.category, all: params.all } : undefined,
       }),
       providesTags: ["Plans"],
     }),

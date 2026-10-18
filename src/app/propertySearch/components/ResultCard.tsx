@@ -55,7 +55,7 @@ export function ResultCard({
   const [ownerContact, setOwnerContact] = React.useState<{ name: string | null; phone: string | null } | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [contactError, setContactError] = React.useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = React.useState("power");
+  const [selectedPlan, setSelectedPlan] = React.useState("buyer_super_199");
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
 
   const openScheduleFlow = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -80,17 +80,26 @@ export function ResultCard({
 
   const plansList = React.useMemo<ContactPlan[]>(() => {
     if (plansResponse?.data?.length) {
-      return plansResponse.data.map((plan) => {
+      const buyerPlans = plansResponse.data.filter(
+        (p) =>
+          p.isActive !== false &&
+          (p.category === "BUYER_TENANT" ||
+            (!p.category && (p.contactCredits || (p.features as any)?.creditsIncluded))) &&
+          p.price > 0
+      );
+      const targetList = buyerPlans.length > 0 ? buyerPlans : plansResponse.data.filter((p) => p.price > 0);
+      return targetList.map((plan) => {
         const features = (plan.features ?? {}) as any;
+        const credits = plan.contactCredits || features.creditsIncluded || 1;
         return {
           dbId: plan.id,
-          id: features.code || String(plan.id),
+          id: plan.code || features.code || String(plan.id),
           name: plan.name,
-          contacts: features.contactsLabel || `${features.creditsIncluded || 1} owner contacts`,
-          credits: features.creditsIncluded || 1,
-          description: plan.description || "",
+          contacts: features.contactsLabel || `${credits} verified contact${credits === 1 ? "" : "s"}`,
+          credits,
+          description: plan.tagline || plan.description || "",
           price: `₹${plan.price.toLocaleString("en-IN")}`,
-          popular: !!features.popular,
+          popular: Boolean(plan.isPopular || features.popular),
         };
       });
     }
