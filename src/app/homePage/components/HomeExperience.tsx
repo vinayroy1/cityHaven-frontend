@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Loader2, MapPin, Phone, PhoneCall, RotateCcw, SearchX, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Loader2, MapPin, Phone, PhoneCall, RotateCcw, SearchX, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SearchBar } from "@/components/search/SearchBar";
 import { buildSearchHref, initialSearchState, type SearchState } from "@/components/search/searchQuery";
@@ -16,6 +16,10 @@ import { ALL_AGENTS, type Agent } from "@/data/agents";
 import { getMergedHomepageFeaturedAgents } from "@/lib/services/agentProfile";
 import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
 import { useGetAdvisorsQuery } from "@/features/advisors/api";
+import { useSearchProjectsQuery } from "@/features/projects/api";
+import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
+import { FlatmateCard } from "@/components/flatmates/FlatmateCard";
+import { CDN_ASSETS } from "@/config/cdn";
 
 const CITY_OPTIONS = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
 const STORAGE_KEY = "awasio.home.city";
@@ -216,7 +220,11 @@ export function HomeExperience() {
           listings={freshListings}
         />
 
+        <FeaturedProjectsSection selectedCity={selectedCity} />
+
         <PreferredAgentsSection selectedCity={selectedCity} />
+
+        <FeaturedFlatmatesSection selectedCity={selectedCity} />
 
         <ListingBlock
           title={
@@ -476,6 +484,205 @@ function ListingBlock({
           <SearchX className="mx-auto h-7 w-7 text-slate-400" />
           <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-200">No approved listings found here yet</p>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Try another city or search a nearby locality.</p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function formatProjectPrice(value?: number) {
+  if (!value) return "Price on request";
+  if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)} Cr`;
+  if (value >= 100000) return `₹${(value / 100000).toFixed(2)} L`;
+  return `₹${value.toLocaleString("en-IN")}`;
+}
+
+function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
+  const normalizedCity = selectedCity?.toLowerCase().includes("delhi")
+    ? "New Delhi"
+    : (selectedCity || undefined);
+
+  // Try local city first, then nationwide fallback
+  const { data: cityData, isLoading: isCityLoading } = useSearchProjectsQuery(
+    normalizedCity ? { city: normalizedCity, pageSize: 6 } : undefined
+  );
+  const { data: fallbackData, isLoading: isFallbackLoading } = useSearchProjectsQuery(
+    { pageSize: 6 }
+  );
+
+  const cityProjects = cityData?.items ?? [];
+  const fallbackProjects = fallbackData?.items ?? [];
+  const projects = cityProjects.length > 0 ? cityProjects : fallbackProjects;
+  const isLoading = isCityLoading && isFallbackLoading;
+
+  if (!isLoading && projects.length === 0) return null;
+
+  return (
+    <section className="mt-6 sm:mt-10">
+      <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+            <Building2 className="h-3.5 w-3.5" />
+            <span>Direct From Top Developers</span>
+          </div>
+          <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+            {cityProjects.length > 0 && selectedCity
+              ? `New Projects in ${selectedCity}`
+              : "Featured New Residential Projects"}
+          </h2>
+        </div>
+        <Link
+          href="/new-projects"
+          className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 shrink-0"
+        >
+          View all <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+
+      {isLoading ? (
+        <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]">
+              <PropertyCardSkeleton />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
+          {projects.slice(0, 8).map((project) => (
+            <div
+              key={project.id}
+              className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]"
+            >
+              <Link
+                href={`/new-projects/${project.slug}`}
+                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+              >
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+                  <img
+                    src={project.images?.[0] || CDN_ASSETS.placeholderWebp}
+                    alt={project.name}
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/10" />
+
+                  <div className="absolute left-2.5 top-2.5 flex items-center gap-1">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/60 bg-white/95 px-2 py-0.5 text-[9px] font-black text-emerald-700 shadow-xs backdrop-blur-md">
+                      <ShieldCheck className="h-3 w-3 text-emerald-600" />
+                      RERA
+                    </span>
+                  </div>
+
+                  <div className="absolute right-2.5 top-2.5">
+                    <span className="rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
+                      {project.status?.replace(/_/g, " ") || "NEW LAUNCH"}
+                    </span>
+                  </div>
+
+                  <div className="absolute inset-x-2.5 bottom-2.5">
+                    <span className="text-[9px] font-bold uppercase text-slate-300">Starts at</span>
+                    <p className="text-sm font-black text-white">{formatProjectPrice(project.priceMin)}</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-1 flex-col p-3">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                    {project.developerName || "Featured Developer"}
+                  </p>
+                  <h3 className="line-clamp-1 text-sm font-bold text-slate-950 group-hover:text-rose-600 transition dark:text-white">
+                    {project.name}
+                  </h3>
+                  <p className="mt-1 flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                    <MapPin className="h-3 w-3 shrink-0 text-rose-500" />
+                    <span className="truncate">
+                      {project.locality ? `${project.locality}, ` : ""}
+                      {project.city || "Top Metros"}
+                    </span>
+                  </p>
+
+                  {project.configurations && project.configurations.length > 0 && (
+                    <div className="mt-2.5 flex flex-wrap gap-1">
+                      {project.configurations.slice(0, 3).map((config: any) => (
+                        <span
+                          key={config.id}
+                          className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                        >
+                          {config.bhkType}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function FeaturedFlatmatesSection({ selectedCity }: { selectedCity: string }) {
+  const normalizedCity = selectedCity?.toLowerCase().includes("delhi")
+    ? "Delhi"
+    : (selectedCity || undefined);
+
+  // Try local city first, then fallback
+  const { data: cityData, isLoading: isCityLoading } = useSearchFlatmatesQuery(
+    normalizedCity ? { city: normalizedCity, pageSize: 6 } : undefined
+  );
+  const { data: fallbackData, isLoading: isFallbackLoading } = useSearchFlatmatesQuery(
+    { pageSize: 6 }
+  );
+
+  const cityFlatmates = cityData?.items ?? [];
+  const fallbackFlatmates = fallbackData?.items ?? [];
+  const flatmates = cityFlatmates.length > 0 ? cityFlatmates : fallbackFlatmates;
+  const isLoading = isCityLoading && isFallbackLoading;
+
+  if (!isLoading && flatmates.length === 0) return null;
+
+  return (
+    <section className="mt-6 sm:mt-10">
+      <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+            <Users className="h-3.5 w-3.5" />
+            <span>Zero Brokerage Co-Living</span>
+          </div>
+          <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+            {cityFlatmates.length > 0 && selectedCity
+              ? `Rooms & Flatmates in ${selectedCity}`
+              : "Verified Flatmates & Shared Rooms"}
+          </h2>
+        </div>
+        <Link
+          href="/flatmates"
+          className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 shrink-0"
+        >
+          Find Roommates <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+
+      {isLoading ? (
+        <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]">
+              <PropertyCardSkeleton />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
+          {flatmates.slice(0, 8).map((item) => (
+            <div
+              key={item.id}
+              className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]"
+            >
+              <FlatmateCard listing={item} />
+            </div>
+          ))}
         </div>
       )}
     </section>
