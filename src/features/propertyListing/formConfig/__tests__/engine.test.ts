@@ -196,6 +196,23 @@ describe("scoring + mapper", () => {
     expect(p.propertyTypeSlug).toBe("commercial");
   });
 
+  test("workflow metadata stays in draftState and is not sent as Prisma property columns", () => {
+    const v = ctx({
+      source: "GOOGLE_SOURCED",
+      isAssistedListing: true,
+      sendOwnerNotification: true,
+    });
+    const p = mapFormToApiPayload(v) as Record<string, any>;
+    expect(p.source).toBeUndefined();
+    expect(p.isAssistedListing).toBeUndefined();
+    expect(p.sendOwnerNotification).toBeUndefined();
+    expect(p.draftState).toMatchObject({
+      source: "GOOGLE_SOURCED",
+      isAssistedListing: true,
+      sendOwnerNotification: true,
+    });
+  });
+
   test("numeric gt operator still works", () => {
     expect(evaluateCondition({ details: { floorsAllowed: 3 } }, { field: "details.floorsAllowed", gt: 1 })).toBe(true);
   });

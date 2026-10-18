@@ -85,9 +85,8 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     ownerName: context.ownerName || undefined,
     ownerContact: context.ownerContact || undefined,
     ownerPassword: context.ownerPassword || undefined,
-    source: context.source || undefined,
-    isAssistedListing: context.isAssistedListing ?? undefined,
-    sendOwnerNotification: context.sendOwnerNotification ?? undefined,
+    // Workflow-only values are persisted in draftState below. They must not be
+    // duplicated at the top level because they are not Property model columns.
     adminNotes: context.adminNotes || undefined,
     status: publishOptions?.status || undefined,
     qcStatus: publishOptions?.qcRequired === false ? "APPROVED" : undefined,

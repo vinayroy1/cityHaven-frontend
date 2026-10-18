@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { useScheduleVisitMutation } from "@/features/propertyListing/api";
 import { APP_CONFIG } from "@/constants/app-config";
+import { getStoredUserContact } from "@/lib/auth/storedUser";
 
 export interface ScheduleVisitDialogProps {
   open: boolean;
@@ -100,6 +101,14 @@ export function ScheduleVisitDialog({
 
   const [scheduleVisit, { isLoading }] = useScheduleVisitMutation();
 
+  React.useEffect(() => {
+    if (!open) return;
+    const user = getStoredUserContact();
+    if (!user) return;
+    setName((current) => current || user.name);
+    setPhone((current) => current || user.mobileNumber);
+  }, [open]);
+
   const activeDateObj = availableDates.find((d) => d.isoDate === selectedDate) || availableDates[0];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -169,13 +178,13 @@ export function ScheduleVisitDialog({
   return (
     <Dialog open={open} onOpenChange={handleResetAndClose}>
       <DialogContent
-        className="max-h-[92vh] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] overflow-hidden border-0 bg-white p-0 shadow-2xl sm:max-w-lg dark:bg-slate-900"
+        className="!top-auto !bottom-0 !translate-y-0 max-h-[calc(100dvh-0.5rem)] w-full max-w-none overflow-hidden rounded-b-none rounded-t-3xl border-0 bg-white p-0 shadow-2xl sm:!top-1/2 sm:!bottom-auto sm:!-translate-y-1/2 sm:max-h-[min(90dvh,760px)] sm:max-w-lg sm:rounded-3xl dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         {!isSuccess ? (
-          <div className="flex max-h-[92vh] min-w-0 flex-col">
+          <div className="flex max-h-[calc(100dvh-0.5rem)] min-w-0 flex-col sm:max-h-[min(90dvh,760px)]">
             {/* Header with Rose Theme */}
-            <div className="shrink-0 bg-gradient-to-r from-rose-600 to-rose-700 p-4 text-white dark:from-rose-700 dark:to-rose-800 sm:p-5">
+            <div className="shrink-0 bg-gradient-to-r from-rose-600 to-rose-700 px-4 pb-3 pt-4 text-white dark:from-rose-700 dark:to-rose-800 sm:p-5">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-semibold backdrop-blur-md">
                   <Sparkles className="h-3 w-3 text-amber-300" />
@@ -186,7 +195,7 @@ export function ScheduleVisitDialog({
                 )}
               </div>
               <DialogHeader className="mt-2 text-left">
-                <DialogTitle className="text-xl font-extrabold text-white">
+                <DialogTitle className="text-lg font-extrabold text-white sm:text-xl">
                   Schedule a Site Visit
                 </DialogTitle>
                 <DialogDescription className="text-xs text-rose-100 line-clamp-1">
@@ -196,7 +205,7 @@ export function ScheduleVisitDialog({
             </div>
 
             <form onSubmit={handleSubmit} className="flex min-h-0 min-w-0 flex-1 flex-col">
-              <div className="min-h-0 min-w-0 flex-1 space-y-4 overflow-x-hidden overflow-y-auto p-4 sm:space-y-5 sm:p-5">
+              <div className="min-h-0 min-w-0 flex-1 space-y-3 overflow-x-hidden overflow-y-auto overscroll-contain p-3.5 pb-6 sm:space-y-5 sm:p-5">
                 {/* Tour Mode Toggle: In-Person vs Video Tour */}
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-slate-400">
@@ -365,7 +374,7 @@ export function ScheduleVisitDialog({
               </div>
 
               {/* Submit CTA */}
-              <div className="shrink-0 space-y-2 border-t border-zinc-100 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5">
+              <div className="shrink-0 space-y-1.5 border-t border-zinc-100 bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-8px_24px_-22px_rgba(15,23,42,0.8)] dark:border-slate-800 dark:bg-slate-900 sm:space-y-2 sm:p-5">
                 <button
                   type="submit"
                   disabled={isLoading}

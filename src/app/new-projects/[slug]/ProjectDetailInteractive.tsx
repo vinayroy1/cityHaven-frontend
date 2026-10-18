@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Building2,
@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import { CDN_ASSETS } from "@/config/cdn";
 import type { ProjectConfiguration, ProjectListing } from "@/types/project.types";
 import { useCreateProjectInquiryMutation } from "@/features/projects/api";
+import { getStoredUserContact } from "@/lib/auth/storedUser";
 
 function formatPrice(value?: number) {
   if (!value) return "Price on request";
@@ -46,6 +47,21 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
   const [inquiryEmail, setInquiryEmail] = useState("");
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!inquiryModalOpen) return;
+    const user = getStoredUserContact();
+    if (user) {
+      setInquiryName((current) => current || user.name);
+      setInquiryPhone((current) => current || user.mobileNumber);
+      setInquiryEmail((current) => current || user.email);
+    }
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [inquiryModalOpen]);
 
   const availableBhkTypes = Array.from(new Set(project.configurations.map((c) => c.bhkType)));
 
@@ -409,21 +425,21 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
 
       {/* Inquiry Dialog Modal */}
       {inquiryModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl dark:bg-slate-900 dark:border dark:border-slate-800">
+        <div role="dialog" aria-modal="true" aria-label={`Inquire about ${project.name}`} className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+          <div className="relative flex max-h-[calc(100dvh-0.5rem)] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl dark:border dark:border-slate-800 dark:bg-slate-900 sm:max-h-[min(90dvh,720px)] sm:rounded-3xl">
             <button
               onClick={() => {
                 setInquiryModalOpen(false);
                 setInquirySubmitted(false);
               }}
-              className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100/90 text-slate-500 shadow-sm hover:text-slate-800 dark:bg-slate-800 dark:text-slate-300 sm:right-4 sm:top-4"
             >
               <X className="h-5 w-5" />
             </button>
 
             {!inquirySubmitted ? (
-              <form onSubmit={handleInquirySubmit} className="space-y-4">
-                <div>
+              <form onSubmit={handleInquirySubmit} className="min-h-0 overflow-y-auto overscroll-contain px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-5 sm:px-8 sm:py-7">
+                <div className="pr-10">
                   <div className="flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-wider">
                     <PhoneCall className="h-4 w-4" />
                     <span>Builder Sales Desk</span>
@@ -436,7 +452,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
                   </p>
                 </div>
 
-                <div>
+                <div className="mt-4">
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Your Full Name *
                   </label>
@@ -450,7 +466,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
                   />
                 </div>
 
-                <div>
+                <div className="mt-3">
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Mobile Number *
                   </label>
@@ -464,7 +480,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
                   />
                 </div>
 
-                <div>
+                <div className="mt-3">
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Email Address (Optional)
                   </label>
@@ -477,7 +493,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
                   />
                 </div>
 
-                <div>
+                <div className="mt-3">
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Requirement Notes
                   </label>
@@ -492,13 +508,13 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
                 <button
                   type="submit"
                   disabled={isSubmittingInquiry}
-                  className="w-full rounded-full bg-rose-600 py-3 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="sticky bottom-0 mt-4 w-full rounded-xl bg-rose-600 py-3 text-xs font-bold text-white shadow-lg shadow-rose-200 transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60 dark:shadow-none"
                 >
                   {isSubmittingInquiry ? "Sending…" : "Send Inquiry to Builder"}
                 </button>
               </form>
             ) : (
-              <div className="py-8 text-center space-y-3">
+              <div className="overflow-y-auto px-5 py-10 text-center space-y-3 sm:p-8">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
