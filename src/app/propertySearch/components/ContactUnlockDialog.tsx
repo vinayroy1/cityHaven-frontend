@@ -16,14 +16,14 @@ type ContactUnlockDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   contactStep: ContactStep;
-  hasActivePlan: boolean;
-  leadName: string;
+  hasActivePlan?: boolean;
+  leadName?: string;
   leadEmail?: string;
-  leadPhone: string;
-  otp: string;
-  otpSent: boolean;
-  otpError: string | null;
-  resendSeconds: number;
+  leadPhone?: string;
+  otp?: string;
+  otpSent?: boolean;
+  otpError?: string | null;
+  resendSeconds?: number;
   loading: boolean;
   plansList: ContactPlan[];
   selectedPlan: string;
@@ -35,12 +35,12 @@ type ContactUnlockDialogProps = {
   scopes?: ScopeOption[];
   selectedScope?: "PERSONAL" | number;
   onScopeChange?: (scope: "PERSONAL" | number) => void;
-  onLeadNameChange: (value: string) => void;
+  onLeadNameChange?: (value: string) => void;
   onLeadEmailChange?: (value: string) => void;
-  onLeadPhoneChange: (value: string) => void;
-  onOtpChange: (value: string) => void;
-  onRequestOtp: () => void;
-  onVerifyLeadDetails: (password?: string, loginId?: string) => void;
+  onLeadPhoneChange?: (value: string) => void;
+  onOtpChange?: (value: string) => void;
+  onRequestOtp?: () => void;
+  onVerifyLeadDetails?: (password?: string, loginId?: string) => void;
   onSaveProfile?: () => void;
   onSelectedPlanChange: (value: string) => void;
   onPurchasePlan: () => void;
@@ -50,14 +50,6 @@ export function ContactUnlockDialog({
   open,
   onOpenChange,
   contactStep,
-  hasActivePlan,
-  leadName,
-  leadEmail = "",
-  leadPhone,
-  otp,
-  otpSent,
-  otpError,
-  resendSeconds,
   loading,
   plansList,
   selectedPlan,
@@ -69,13 +61,6 @@ export function ContactUnlockDialog({
   scopes = [],
   selectedScope = "PERSONAL",
   onScopeChange,
-  onLeadNameChange,
-  onLeadEmailChange,
-  onLeadPhoneChange,
-  onOtpChange,
-  onRequestOtp,
-  onVerifyLeadDetails,
-  onSaveProfile,
   onSelectedPlanChange,
   onPurchasePlan,
 }: ContactUnlockDialogProps) {
@@ -96,27 +81,23 @@ export function ContactUnlockDialog({
             <DialogTitle className="text-xl font-bold">
               {contactStep === "contact"
                 ? "Owner contact details"
-                : contactStep === "profile"
-                  ? "Complete your profile"
-                  : "Contact owner directly"}
+                : "Choose a contact pack"}
             </DialogTitle>
             <DialogDescription className="text-rose-50">
               {contactStep === "contact"
                 ? isOrgScope
                   ? `Unlocked for all team members in ${activeScopeObj?.name || "your organization"}.`
                   : "Unlocked for your personal account."
-                : contactStep === "profile"
-                  ? "Let us know your name so the property owner can connect with you."
-                  : "Sign in to your Awasio account to access direct owner contact details."}
+                : "Select a contact pack to instantly unlock verified owner phone & WhatsApp."}
             </DialogDescription>
           </DialogHeader>
         </div>
 
         <div className="space-y-3 p-5">
-          <StepIndicator contactStep={contactStep} hasActivePlan={hasActivePlan} />
+          <StepIndicator contactStep={contactStep} />
 
           {/* Workspace / Account Scope Selector (when authenticated & has orgs) */}
-          {scopes.length > 1 && contactStep !== "details" && contactStep !== "profile" && onScopeChange && (
+          {scopes.length > 1 && onScopeChange && (
             <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
               <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-2">Active Billing Workspace</p>
               <div className="flex flex-wrap gap-1.5">
@@ -155,33 +136,6 @@ export function ContactUnlockDialog({
                 )}
               </div>
             </div>
-          )}
-
-          {contactStep === "details" && (
-            <LeadDetailsStep
-              leadPhone={leadPhone}
-              otp={otp}
-              otpSent={otpSent}
-              otpError={otpError}
-              resendSeconds={resendSeconds}
-              loading={loading}
-              onLeadPhoneChange={onLeadPhoneChange}
-              onOtpChange={onOtpChange}
-              onRequestOtp={onRequestOtp}
-              onVerifyLeadDetails={onVerifyLeadDetails}
-            />
-          )}
-
-          {contactStep === "profile" && (
-            <ProfileDetailsStep
-              leadName={leadName}
-              leadEmail={leadEmail}
-              loading={loading}
-              error={contactError}
-              onLeadNameChange={onLeadNameChange}
-              onLeadEmailChange={onLeadEmailChange}
-              onSaveProfile={onSaveProfile || onVerifyLeadDetails}
-            />
           )}
 
           {contactStep === "plans" && (
@@ -224,12 +178,12 @@ export function ContactUnlockDialog({
   );
 }
 
-function StepIndicator({ contactStep, hasActivePlan }: { contactStep: ContactStep; hasActivePlan: boolean }) {
+function StepIndicator({ contactStep }: { contactStep: ContactStep }) {
   return (
     <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
       {[
-        ["1", "Sign In", contactStep === "details" || contactStep === "profile"],
-        ["2", hasActivePlan ? "Owner Contact" : "Contact Credits", contactStep === "plans" || contactStep === "contact"],
+        ["1", "Select Plan", contactStep === "plans"],
+        ["2", "Owner Contact", contactStep === "contact"],
       ].map(([num, label, active]) => (
         <div key={label as string} className={`whitespace-nowrap rounded-md px-2 py-2 text-center ${active ? "bg-rose-50 text-rose-700" : "bg-zinc-50 text-zinc-500"}`}>
           <span className="mr-1">{num}</span>

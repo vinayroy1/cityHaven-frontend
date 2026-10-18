@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Bath, BedDouble, Calendar, Heart, MapPin, PhoneCall, Ruler } from "lucide-react";
+import { Bath, BedDouble, Calendar, Heart, Loader2, MapPin, PhoneCall, Ruler } from "lucide-react";
 
 type ResultCardSummaryProps = {
   title?: string;
@@ -19,6 +19,7 @@ type ResultCardSummaryProps = {
   onContactClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onScheduleClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   compact?: boolean;
+  isContactChecking?: boolean;
 };
 
 import { useRouter } from "next/navigation";
@@ -100,6 +101,7 @@ export function ResultCardSummary({
   onContactClick,
   onScheduleClick,
   compact = false,
+  isContactChecking = false,
 }: ResultCardSummaryProps) {
   const isPg = listingType?.toUpperCase() === "PG";
   const displayTitle = compact
@@ -205,11 +207,16 @@ export function ResultCardSummary({
           )}
           <button
             type="button"
-            className={`relative z-20 inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md bg-rose-600 px-2 text-xs font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 sm:px-3 ${compact ? "min-h-8 py-1" : "min-h-9 py-1.5"}`}
+            disabled={isContactChecking}
+            className={`relative z-20 inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md bg-rose-600 px-2 text-xs font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:opacity-75 sm:px-3 ${compact ? "min-h-8 py-1" : "min-h-9 py-1.5"}`}
             onClick={onContactClick}
           >
-            <PhoneCall className="h-3.5 w-3.5" />
-            <span>Contact</span>
+            {isContactChecking ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <PhoneCall className="h-3.5 w-3.5" />
+            )}
+            <span>{isContactChecking ? "Checking..." : "Contact"}</span>
           </button>
         </div>
       </div>

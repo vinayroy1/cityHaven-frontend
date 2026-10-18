@@ -6,8 +6,7 @@ import { APP_CONFIG } from "@/constants/app-config";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { LeadDetailsStep, ProfileDetailsStep, PlanSelectionStep } from "@/app/propertySearch/components/ContactUnlockDialog";
-import { useLoginWithPasswordMutation, useUpdateProfileMutation } from "@/features/auth/api";
+import { PlanSelectionStep } from "@/app/propertySearch/components/ContactUnlockDialog";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import {
   useGetPlansQuery,
@@ -18,7 +17,7 @@ import {
   BillingSummary,
 } from "@/features/contactVerify/api";
 
-type Step = "signin" | "profile" | "check" | "plans" | "confirm";
+type Step = "check" | "plans";
 
 function errorMessage(error: unknown) {
   const value = error as { data?: { message?: string }; message?: string };
@@ -39,12 +38,9 @@ export function ContactAccessFlow({
   triggerLabel = "View owner contact",
 }: ContactAccessFlowProps) {
   const [open, setOpen] = React.useState(false);
-  const [step, setStep] = React.useState<Step>("signin");
+  const [step, setStep] = React.useState<Step>("plans");
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [mobile, setMobile] = React.useState("");
   const [selectedPlanId, setSelectedPlanId] = React.useState("");
 
   // Billing scope: "PERSONAL" | organizationId number
@@ -54,8 +50,6 @@ export function ContactAccessFlow({
 
   const [check] = useLazyCheckUnlockedContactQuery();
   const [fetchSummary] = useLazyGetBillingSummaryQuery();
-  const [loginWithPassword] = useLoginWithPasswordMutation();
-  const [updateProfile] = useUpdateProfileMutation();
   const [purchase] = usePurchaseCreditsByPlanMutation();
   const [unlock] = useUnlockPropertyContactMutation();
 
@@ -140,7 +134,6 @@ export function ContactAccessFlow({
   }, [open, selectedScope, isOrgScope, fetchSummary]);
 
   async function checkAndUnlock() {
-    setStep("check");
     setError(null);
     try {
       // 1. Check if already unlocked
@@ -180,6 +173,7 @@ export function ContactAccessFlow({
 
       // If insufficient credits in chosen scope, show plans
       setStep("plans");
+      setOpen(true);
     } catch (err: any) {
       if (err?.status === 401 || err?.originalStatus === 401) {
         localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
@@ -188,6 +182,7 @@ export function ContactAccessFlow({
         router.push(`/login?redirect=${returnUrl}`);
       } else if (err?.status === 402 || err?.data?.message?.includes("credits") || err?.data?.message?.includes("allowance")) {
         setStep("plans");
+        setOpen(true);
       } else {
         const msg = err?.data?.message || err?.message || "Owner contact not available";
         toast.error(msg);
@@ -219,41 +214,7 @@ export function ContactAccessFlow({
       router.push(`/login?redirect=${returnUrl}`);
       return;
     }
-    setOpen(true);
     void run(checkAndUnlock);
-  }
-
-  async function signIn(inputPassword?: string, loginId?: string) {
-    const effectiveLoginId = (loginId || email || mobile).trim();
-    if (!effectiveLoginId || !inputPassword) return;
-
-    const response = await loginWithPassword({
-      loginId: effectiveLoginId,
-      password: inputPassword,
-    }).unwrap();
-
-    if (!response.accessToken) throw new Error("Sign-in failed");
-    localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, response.accessToken);
-    if (response.refreshToken) {
-      localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, response.refreshToken);
-    }
-    window.dispatchEvent(new Event("auth-change"));
-    window.dispatchEvent(new Event("storage"));
-
-    const userName = response.user?.name;
-    const isNewUser = response.isNewUser || !userName || userName === "New User" || userName === "User";
-
-    if (isNewUser) {
-      setStep("profile");
-    } else {
-      await checkAndUnlock();
-    }
-  }
-
-  async function saveProfile() {
-    if (!name.trim()) return;
-    await updateProfile({ name: name.trim(), email: email.trim() || undefined }).unwrap();
-    await checkAndUnlock();
   }
 
   return (
@@ -261,13 +222,18 @@ export function ContactAccessFlow({
       <button
         type="button"
         onClick={begin}
+        disabled={busy}
         className={
           triggerClassName ??
-          "mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-700 px-3 py-3 text-sm font-semibold text-white hover:bg-emerald-800 shadow-sm"
+          "mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-700 px-3 py-3 text-sm font-semibold text-white hover:bg-emerald-800 shadow-sm disabled:opacity-75"
         }
       >
-        <LockKeyhole className="h-4 w-4 shrink-0" />
-        <span>{triggerLabel}</span>
+        {busy ? (
+          <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+        ) : (
+          <LockKeyhole className="h-4 w-4 shrink-0" />
+        )}
+        <span>{busy ? "Checking access..." : triggerLabel}</span>
       </button>
 
       <Dialog
@@ -279,29 +245,19 @@ export function ContactAccessFlow({
         <DialogContent className={`max-h-[90vh] overflow-y-auto ${step === "plans" ? "sm:max-w-4xl" : "sm:max-w-md"}`}>
           <DialogHeader>
             <DialogTitle>
-              {step === "signin"
-                ? "Sign in to view owner contact"
-                : step === "profile"
-                  ? "Complete your profile"
-                  : step === "plans"
-                    ? "Purchase contact credits"
-                    : "Unlock owner contact"}
+              {step === "plans" ? "Purchase contact credits" : "Unlock owner contact"}
             </DialogTitle>
             <DialogDescription>
-              {step === "signin"
-                ? "Sign in to your account to view verified owner contact details."
-                : step === "profile"
-                  ? "Please enter your details to complete your account."
-                  : step === "plans"
-                    ? isOrgScope
-                      ? `Select a contact pack for ${activeOrg?.name || "your organization"}.`
-                      : "Choose a contact pack for your personal account."
-                    : "Unlocking this property contact..."}
+              {step === "plans"
+                ? isOrgScope
+                  ? `Select a contact pack for ${activeOrg?.name || "your organization"}.`
+                  : "Choose a contact pack for your personal account."
+                : "Checking access..."}
             </DialogDescription>
           </DialogHeader>
 
           {/* Workspace / Account Scope Selector (if member of organizations) */}
-          {orgs.length > 0 && step !== "signin" && step !== "profile" && (
+          {orgs.length > 0 && (
             <div className="mb-2 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-slate-800 dark:bg-slate-800/60">
               <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-slate-400 mb-2">Active Billing Workspace</p>
               <div className="flex flex-wrap gap-2">
@@ -362,33 +318,6 @@ export function ContactAccessFlow({
                 )}
               </div>
             </div>
-          )}
-
-          {step === "signin" && (
-            <LeadDetailsStep
-              leadPhone={mobile}
-              leadLoginId={email || mobile}
-              otpError={error}
-              loading={busy}
-              onLeadPhoneChange={(value) => {
-                setMobile(value);
-                setError(null);
-              }}
-              onVerifyLeadDetails={(pwd?: string, id?: string) => void run(() => signIn(pwd, id))}
-              returnUrl={typeof window !== "undefined" ? `${window.location.pathname}?autoUnlock=true` : undefined}
-            />
-          )}
-
-          {step === "profile" && (
-            <ProfileDetailsStep
-              leadName={name}
-              leadEmail={email}
-              loading={busy}
-              error={error}
-              onLeadNameChange={setName}
-              onLeadEmailChange={setEmail}
-              onSaveProfile={() => void run(saveProfile)}
-            />
           )}
 
           {step === "check" && (
@@ -454,7 +383,7 @@ export function ContactAccessFlow({
             </>
           )}
 
-          {error && step !== "signin" && step !== "profile" && (
+          {error && (
             <div role="alert" className="text-sm text-red-700 mt-2">
               <p>{error}</p>
             </div>

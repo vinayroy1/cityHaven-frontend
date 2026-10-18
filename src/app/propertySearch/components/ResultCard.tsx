@@ -2,7 +2,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/app-config";
-import { useLoginWithPasswordMutation, useMeQuery, useUpdateProfileMutation } from "@/features/auth/api";
+import { useMeQuery } from "@/features/auth/api";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import {
   useGetPlansQuery,
@@ -45,13 +45,8 @@ export function ResultCard({
   const [activeImage, setActiveImage] = React.useState(0);
   const [imageFailed, setImageFailed] = React.useState(false);
   const [contactOpen, setContactOpen] = React.useState(false);
-  const [contactStep, setContactStep] = React.useState<ContactStep>("details");
-  const [leadName, setLeadName] = React.useState("");
-  const [leadEmail, setLeadEmail] = React.useState("");
-  const [leadPhone, setLeadPhone] = React.useState("");
-  const [otp, setOtp] = React.useState("");
-  const [otpSent, setOtpSent] = React.useState(false);
-  const [resendSeconds, setResendSeconds] = React.useState(0);
+  const [contactStep, setContactStep] = React.useState<ContactStep>("plans");
+  const [checkingContact, setCheckingContact] = React.useState(false);
   const [hasActivePlan, setHasActivePlan] = React.useState(false);
   const [credits, setCredits] = React.useState(0);
   const [selectedScope, setSelectedScope] = React.useState<"PERSONAL" | number>("PERSONAL");
@@ -60,8 +55,6 @@ export function ResultCard({
   const [ownerContact, setOwnerContact] = React.useState<{ name: string | null; phone: string | null } | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [contactError, setContactError] = React.useState<string | null>(null);
-  const [otpError, setOtpError] = React.useState<string | null>(null);
-  const [sessionToken, setSessionToken] = React.useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = React.useState("power");
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
 
@@ -71,7 +64,7 @@ export function ResultCard({
     setScheduleOpen(true);
   };
 
-  const getToken = () => sessionToken ?? (typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) ?? "" : "");
+  const getToken = () => (typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) ?? "" : "");
   const { data: meData } = useMeQuery(undefined, { skip: !getToken() });
   const isMyProperty = Boolean(ownerId && meData?.id && Number(ownerId) === Number(meData.id));
 
@@ -79,8 +72,6 @@ export function ResultCard({
   const orgs = orgsData ?? [];
 
   const { data: plansResponse } = useGetPlansQuery();
-  const [loginWithPasswordMutation] = useLoginWithPasswordMutation();
-  const [updateProfileMutation] = useUpdateProfileMutation();
   const [fetchBillingSummary] = useLazyGetBillingSummaryQuery();
   const [triggerCheckUnlocked] = useLazyCheckUnlockedContactQuery();
   const [unlockPropertyContactMutation] = useUnlockPropertyContactMutation();
@@ -144,11 +135,6 @@ export function ResultCard({
     setImageFailed(false);
   }, [safeImages]);
 
-  React.useEffect(() => {
-    if (!otpSent || resendSeconds <= 0) return;
-    const timer = window.setTimeout(() => setResendSeconds((seconds) => Math.max(0, seconds - 1)), 1000);
-    return () => window.clearTimeout(timer);
-  }, [otpSent, resendSeconds]);
 
   const refreshScopes = React.useCallback(async () => {
     try {
@@ -246,7 +232,6 @@ export function ResultCard({
     event.preventDefault();
     event.stopPropagation();
     setContactError(null);
-    setOtpError(null);
     setOwnerContact(null);
 
     const activeToken = getToken();
@@ -258,12 +243,14 @@ export function ResultCard({
       return;
     }
 
-    setContactOpen(true);
+    setCheckingContact(true);
     setLoading(true);
 
     if (isMyProperty) {
       setContactStep("contact");
+      setContactOpen(true);
       await unlockContact();
+      setCheckingContact(false);
       setLoading(false);
       return;
     }
@@ -273,6 +260,8 @@ export function ResultCard({
       if (unlocked?.data?.unlocked) {
         setOwnerContact({ name: unlocked.data.ownerName ?? null, phone: unlocked.data.ownerPhone ?? null });
         setContactStep("contact");
+        setContactOpen(true);
+        setCheckingContact(false);
         setLoading(false);
         return;
       }
@@ -282,19 +271,21 @@ export function ResultCard({
       setHasActivePlan(pCredits > 0);
       if (pCredits > 0) {
         await unlockContact("PERSONAL");
+        setContactStep("contact");
+        setContactOpen(true);
       } else {
         setContactStep("plans");
-        setLoading(false);
+        setContactOpen(true);
       }
     } catch (err: any) {
       const errorMsg = err?.data?.message || err?.message || "Owner contact not available";
       toast.error(errorMsg);
       setContactOpen(false);
+    } finally {
+      setCheckingContact(false);
       setLoading(false);
     }
   };
-
-  const requestOtp = async () => {};
 
   const purchasePlan = async () => {
     setLoading(true);
@@ -317,78 +308,6 @@ export function ResultCard({
       await unlockContact(selectedScope);
     } catch (err: any) {
       setContactError(err?.data?.message || err.message || "Purchase failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const verifyLeadDetails = async (inputPassword?: string, loginId?: string) => {
-    const effectiveLoginId = (loginId || leadPhone).trim();
-    if (!effectiveLoginId || !inputPassword) return;
-    setOtpError(null);
-    setLoading(true);
-    try {
-      const res = await loginWithPasswordMutation({
-        loginId: effectiveLoginId,
-        password: inputPassword,
-      }).unwrap();
-
-      const token = res.accessToken;
-      if (token) {
-        setSessionToken(token);
-        if (typeof window !== "undefined") {
-          localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, token);
-          if (res.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, res.refreshToken);
-          window.dispatchEvent(new Event("storage"));
-          window.dispatchEvent(new Event("auth-change"));
-        }
-      }
-
-      const userName = res.user?.name;
-      const isNewUser = res.isNewUser || !userName || userName === "New User" || userName === "User";
-
-      if (isNewUser) {
-        setContactStep("profile");
-        return;
-      }
-
-      await refreshScopes();
-      const userCredits = res.user?.credits ?? 0;
-      setCredits(userCredits);
-      setHasActivePlan(userCredits > 0);
-      if (userCredits > 0) {
-        await unlockContact("PERSONAL");
-      } else {
-        setContactStep("plans");
-      }
-    } catch (err: any) {
-      setOtpError(err?.data?.message || err.message || "Invalid credentials. Please check your login details.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const saveProfile = async () => {
-    if (!leadName.trim()) return;
-    setLoading(true);
-    setContactError(null);
-    try {
-      await updateProfileMutation({
-        name: leadName.trim(),
-        email: leadEmail.trim() || undefined,
-      }).unwrap();
-
-      await refreshScopes();
-      const userCredits = personalSummary?.credits ?? 0;
-      setCredits(userCredits);
-      setHasActivePlan(userCredits > 0);
-      if (userCredits > 0) {
-        await unlockContact("PERSONAL");
-      } else {
-        setContactStep("plans");
-      }
-    } catch (err: any) {
-      setContactError(err?.data?.message || err.message || "Failed to save profile");
     } finally {
       setLoading(false);
     }
@@ -435,6 +354,7 @@ export function ResultCard({
         onContactClick={openContactFlow}
         onScheduleClick={openScheduleFlow}
         compact={compact}
+        isContactChecking={checkingContact}
       />
       <ScheduleVisitDialog
         open={scheduleOpen}
@@ -452,13 +372,6 @@ export function ResultCard({
         onOpenChange={setContactOpen}
         contactStep={contactStep}
         hasActivePlan={hasActivePlan}
-        leadName={leadName}
-        leadEmail={leadEmail}
-        leadPhone={leadPhone}
-        otp={otp}
-        otpSent={otpSent}
-        otpError={otpError}
-        resendSeconds={resendSeconds}
         loading={loading}
         plansList={plansList}
         selectedPlan={selectedPlan}
@@ -470,16 +383,6 @@ export function ResultCard({
         scopes={scopes}
         selectedScope={selectedScope}
         onScopeChange={(s) => setSelectedScope(s)}
-        onLeadNameChange={setLeadName}
-        onLeadEmailChange={setLeadEmail}
-        onLeadPhoneChange={setLeadPhone}
-        onOtpChange={(value) => {
-          setOtp(value);
-          setOtpError(null);
-        }}
-        onRequestOtp={requestOtp}
-        onVerifyLeadDetails={verifyLeadDetails}
-        onSaveProfile={saveProfile}
         onSelectedPlanChange={setSelectedPlan}
         onPurchasePlan={purchasePlan}
       />

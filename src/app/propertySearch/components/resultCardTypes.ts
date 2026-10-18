@@ -22,7 +22,7 @@ export type ResultCardProps = {
 
 import { CDN_ASSETS } from "@/config/cdn";
 
-export type ContactStep = "details" | "profile" | "plans" | "contact";
+export type ContactStep = "plans" | "contact";
 
 export const FALLBACK_IMAGE = CDN_ASSETS.placeholderWebp;
 
