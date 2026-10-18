@@ -304,8 +304,8 @@ export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent,
           <SearchEditor variant="hero" value={draft} onSubmit={setDraft} onContextChange={setDraft} showSubmit={false} liveChanges />
         )}
         onSubmit={(next) => {
-          setMobileSearchOpen(false);
           commit(next);
+          setMobileSearchOpen(false);
         }}
       />
 

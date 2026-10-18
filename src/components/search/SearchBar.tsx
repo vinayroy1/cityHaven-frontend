@@ -197,9 +197,9 @@ export function SearchBar({
             <SearchEditor variant="hero" value={draft} onSubmit={setDraft} onContextChange={setDraft} showSubmit={false} liveChanges />
           )}
           onSubmit={(next) => {
-            setMobileSearchOpen(false);
             onChange(next);
             onSubmit(next);
+            setMobileSearchOpen(false);
           }}
         />
       </>

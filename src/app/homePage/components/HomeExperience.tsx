@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Loader2, MapPin, Phone, PhoneCall, RotateCcw, SearchX, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SearchBar } from "@/components/search/SearchBar";
@@ -20,6 +21,7 @@ const CITY_OPTIONS = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune
 const STORAGE_KEY = "awasio.home.city";
 
 export function HomeExperience() {
+  const router = useRouter();
   // Server and first client render must match. Browser preferences are restored
   // in the effect below after hydration.
   const [selectedCity, setSelectedCity] = React.useState("");
@@ -69,7 +71,7 @@ export function HomeExperience() {
     if (targetCity) {
       updateCity(targetCity);
     }
-    window.location.href = buildSearchHref(state);
+    router.push(buildSearchHref(state));
   };
 
   // Normalize city name for API (matches database entries like 'New Delhi' when 'Delhi' is selected)
