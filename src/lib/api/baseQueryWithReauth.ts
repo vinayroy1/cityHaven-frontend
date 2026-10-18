@@ -73,7 +73,8 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
       url.includes("/auth/forgot-password") ||
       url.includes("/auth/reset-password") ||
       url.includes("/auth/verify-otp") ||
-      url.includes("/auth/request-otp");
+      url.includes("/auth/request-otp") ||
+      url.includes("/auth/logout");
 
     if (isAuthEndpoint) {
       return result;

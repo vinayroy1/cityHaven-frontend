@@ -32,7 +32,6 @@ import {
   useLoginWithPasswordMutation,
   useSendSignupOtpMutation,
   useSignupMutation,
-  useGoogleAuthMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
 } from "@/features/auth/api";
@@ -167,10 +166,8 @@ function LoginContent() {
   const [attemptsLeft, setAttemptsLeft] = useState(3);
   const [resendCountdown, setResendCountdown] = useState(0);
 
-  const isOtpEnabled = process.env.NEXT_PUBLIC_ENABLE_OTP_FLOW === "true";
-  const [authMode, setAuthMode] = useState<"password" | "mobile_otp">(
-    isOtpEnabled ? "mobile_otp" : "password"
-  );
+  // Mobile OTP login disabled due to carrier SMS costs; password sign-in is standard
+  const [authMode] = useState<"password">("password");
   const [loginId, setLoginId] = useState("");
 
   // Profile completion states
@@ -195,7 +192,6 @@ function LoginContent() {
   const [loginWithPassword, { isLoading: loggingIn }] = useLoginWithPasswordMutation();
   const [sendSignupOtp, { isLoading: sendingSignupOtp }] = useSendSignupOtpMutation();
   const [signupUser, { isLoading: signingUp }] = useSignupMutation();
-  const [googleAuth, { isLoading: authenticatingGoogle }] = useGoogleAuthMutation();
   const [forgotPassword, { isLoading: sendingForgotOtp }] = useForgotPasswordMutation();
   const [resetPassword, { isLoading: resettingPassword }] = useResetPasswordMutation();
 
@@ -220,6 +216,21 @@ function LoginContent() {
       setRedirectingSession(false);
     }
   }, [redirectTo, router]);
+
+  // Sync tab/mode from query parameters
+  useEffect(() => {
+    const mode = searchParams.get("mode") || searchParams.get("tab");
+    if (mode === "forgot" || mode === "reset") {
+      setIsForgotPassword(true);
+      setIsSignup(false);
+    } else if (mode === "signup" || mode === "register") {
+      setIsSignup(true);
+      setIsForgotPassword(false);
+    } else if (mode === "password" || mode === "login") {
+      setIsSignup(false);
+      setIsForgotPassword(false);
+    }
+  }, [searchParams]);
 
   // Resend OTP countdown timer
   useEffect(() => {
@@ -301,7 +312,6 @@ function LoginContent() {
       setConfirmPassword("");
       setLoginId(cleanEmail);
       setPassword("");
-      setAuthMode("password");
     } catch (err: any) {
       // Toast notification is automatically shown by baseQueryWithReauth
     }
@@ -477,20 +487,6 @@ function LoginContent() {
         toast.error(err?.data?.message || err?.message || "Invalid credentials. Please verify and try again.");
       }
     }
-
-  async function handleGoogleLogin() {
-    setErrorMessage(null);
-    setSuccessMessage(null);
-    try {
-      // In web app, we can simulate Google sign-in or prompt for email in development
-      const demoEmail = prompt("Enter your Google Account email for demo login:", "user@gmail.com");
-      if (!demoEmail) return;
-      const tokens = await googleAuth({ email: demoEmail, name: demoEmail.split("@")[0] }).unwrap();
-      handleAuthSuccess(tokens);
-    } catch (err: any) {
-      setErrorMessage(err?.data?.message || err?.message || "Google authentication failed.");
-    }
-  }
 
   async function handleCompleteProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -827,74 +823,10 @@ function LoginContent() {
                   <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-5">
                     {isSignup
                       ? "Join Awasio to discover verified properties, connect with owners, and list properties."
-                      : authMode === "mobile_otp" 
-                        ? "Enter your 10-digit mobile number to access your account instantly without passwords."
-                        : "Enter your credentials to securely access your account."}
+                      : "Enter your registered email address or 10-digit mobile number and password to securely sign in."}
                   </p>
 
-                  {/* Auth Mode Toggle (Only show if OTP is enabled) */}
-                  {!isSignup && isOtpEnabled && (
-                    <div className="flex bg-slate-100 p-1 rounded-xl mb-6 dark:bg-slate-800/50">
-                      <button
-                        onClick={() => setAuthMode("mobile_otp")}
-                        className={`flex-1 text-xs font-bold py-2 rounded-lg transition ${authMode === "mobile_otp" ? "bg-white shadow-sm text-slate-900 dark:bg-slate-950 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}
-                      >
-                        OTP Login
-                      </button>
-                      <button
-                        onClick={() => setAuthMode("password")}
-                        className={`flex-1 text-xs font-bold py-2 rounded-lg transition ${authMode === "password" ? "bg-white shadow-sm text-slate-900 dark:bg-slate-950 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"}`}
-                      >
-                        Password
-                      </button>
-                    </div>
-                  )}
-
-                  {authMode === "mobile_otp" ? (
-                    <form onSubmit={handleSendOtp} className="space-y-4">
-                      <div>
-                        <label htmlFor="mobile" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                          Mobile Number
-                        </label>
-                        <div className="relative flex items-center">
-                          <span className="absolute left-3.5 flex items-center gap-1 text-xs font-black text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800 pr-2.5">
-                            🇮🇳 +91
-                          </span>
-                          <input
-                            id="mobile"
-                            name="mobile"
-                            type="tel"
-                            inputMode="numeric"
-                            maxLength={10}
-                            className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-20 pr-4 text-sm font-bold tracking-wider text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400"
-                            placeholder="98765 43210"
-                            value={mobile}
-                            onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
-                            autoFocus
-                          />
-                        </div>
-                      </div>
-
-                      <button
-                        type="submit"
-                        disabled={sendingOtp || !validMobile}
-                        className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3.5 text-xs font-bold text-white shadow-lg shadow-slate-900/10 transition hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 dark:bg-rose-600 dark:hover:bg-rose-700 dark:shadow-rose-950/50"
-                      >
-                        {sendingOtp ? (
-                          <>
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            Sending OTP...
-                          </>
-                        ) : (
-                          <>
-                            <span>Continue with OTP</span>
-                            <ArrowRight className="h-4 w-4" />
-                          </>
-                        )}
-                      </button>
-                    </form>
-                  ) : (
-                    <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                  <form onSubmit={handlePasswordSubmit} className="space-y-4">
                       {isSignup && (
                         <div>
                           <label htmlFor="fullName" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
@@ -1063,7 +995,6 @@ function LoginContent() {
                         </button>
                       </div>
                     </form>
-                  )}
 
                   <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 pt-5">
                     <Lock className="h-3 w-3 text-slate-400" />
@@ -1314,5 +1245,4 @@ export default function LoginPage() {
     </Suspense>
   );
 }
-
 
