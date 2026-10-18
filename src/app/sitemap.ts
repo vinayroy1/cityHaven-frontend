@@ -22,6 +22,19 @@ async function getActiveProperties(): Promise<Array<{ id: number; slug?: string 
   }
 }
 
+async function getActiveProjects(): Promise<Array<{ slug: string; updatedAt?: string | null }>> {
+  try {
+    const res = await fetch(`${API_ENDPOINTS.projects.search}?pageSize=100`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { data?: { items?: Array<{ slug: string; updatedAt?: string | null }> } };
+    return json?.data?.items ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
@@ -150,6 +163,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
+  // 7. New Projects Canonical City & Locality Landing Pages
+  const newProjectsCityRoutes: MetadataRoute.Sitemap = SEO_CITIES.map((city) => ({
+    url: `${SITE_URL}/new-projects/${city}`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.88,
+  }));
+
+  const newProjectsLocalityRoutes: MetadataRoute.Sitemap = Object.entries(SEO_TOP_LOCALITIES).flatMap(
+    ([city, localities]) =>
+      localities.map((locality) => ({
+        url: `${SITE_URL}/new-projects/${city}/${locality}`,
+        lastModified: now,
+        changeFrequency: "daily" as const,
+        priority: 0.84,
+      }))
+  );
+
+  // 8. Dynamic Active Projects with SEO Slugs
+  const projects = await getActiveProjects();
+  const projectDetailRoutes: MetadataRoute.Sitemap = projects.map((proj) => ({
+    url: `${SITE_URL}/new-projects/${proj.slug}`,
+    lastModified: proj.updatedAt ? new Date(proj.updatedAt) : now,
+    changeFrequency: "weekly",
+    priority: 0.85,
+  }));
+
   return [
     ...staticRoutes,
     ...intentLandingRoutes,
@@ -157,6 +197,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...localitySearchRoutes,
     ...agentRoutes,
     ...propertyRoutes,
+    ...newProjectsCityRoutes,
+    ...newProjectsLocalityRoutes,
+    ...projectDetailRoutes,
   ];
 }
 

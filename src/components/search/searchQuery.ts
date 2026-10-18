@@ -236,8 +236,8 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   return sp;
 }
 
-export const toSearchSlug = (value: string): string =>
-  value
+export const toSearchSlug = (value?: string | null): string =>
+  (value || "")
     .trim()
     .toLowerCase()
     .normalize("NFKD")
@@ -246,8 +246,8 @@ export const toSearchSlug = (value: string): string =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-export const fromSearchSlug = (value: string): string =>
-  decodeURIComponent(value)
+export const fromSearchSlug = (value?: string | null): string =>
+  decodeURIComponent(value || "")
     .split("-")
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))

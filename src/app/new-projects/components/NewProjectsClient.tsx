@@ -40,7 +40,7 @@ function formatPrice(value?: number) {
 
 const buildProjectSearchHref = (city: string, localities: string[] = []) => {
   const segments = [city, ...localities.slice(0, 2)].map(toSearchSlug).filter(Boolean);
-  return segments.length ? `/new-projects/in/${segments.join("/")}` : "/new-projects";
+  return segments.length ? `/new-projects/${segments.join("/")}` : "/new-projects";
 };
 
 type NewProjectsClientProps = { initialCity?: string; initialLocalities?: string[] };
