@@ -1,5 +1,6 @@
 import React from "react";
-import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, AlertCircle, Lock } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { ContactPlan, ContactStep } from "./resultCardTypes";
 
@@ -39,7 +40,7 @@ type ContactUnlockDialogProps = {
   onLeadPhoneChange: (value: string) => void;
   onOtpChange: (value: string) => void;
   onRequestOtp: () => void;
-  onVerifyLeadDetails: (password?: string) => void;
+  onVerifyLeadDetails: (password?: string, loginId?: string) => void;
   onSaveProfile?: () => void;
   onSelectedPlanChange: (value: string) => void;
   onPurchasePlan: () => void;
@@ -106,7 +107,7 @@ export function ContactUnlockDialog({
                   : "Unlocked for your personal account."
                 : contactStep === "profile"
                   ? "Let us know your name so the property owner can connect with you."
-                  : "Verify your mobile number to view owner contact details."}
+                  : "Sign in to your Awasio account to access direct owner contact details."}
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -227,8 +228,8 @@ function StepIndicator({ contactStep, hasActivePlan }: { contactStep: ContactSte
   return (
     <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
       {[
-        ["1", "Verify Mobile", contactStep === "details" || contactStep === "profile"],
-        ["2", hasActivePlan ? "Contact" : "Plan", contactStep === "plans" || contactStep === "contact"],
+        ["1", "Sign In", contactStep === "details" || contactStep === "profile"],
+        ["2", hasActivePlan ? "Owner Contact" : "Contact Credits", contactStep === "plans" || contactStep === "contact"],
       ].map(([num, label, active]) => (
         <div key={label as string} className={`whitespace-nowrap rounded-md px-2 py-2 text-center ${active ? "bg-rose-50 text-rose-700" : "bg-zinc-50 text-zinc-500"}`}>
           <span className="mr-1">{num}</span>
@@ -241,173 +242,135 @@ function StepIndicator({ contactStep, hasActivePlan }: { contactStep: ContactSte
 
 export function LeadDetailsStep(props: {
   leadName?: string;
-  leadPhone: string;
-  otp: string;
-  otpSent: boolean;
-  otpError: string | null;
-  resendSeconds: number;
-  loading: boolean;
-  onLeadPhoneChange: (value: string) => void;
-  onOtpChange: (value: string) => void;
-  onRequestOtp: () => void;
-  onVerifyLeadDetails: (password?: string) => void;
+  leadPhone?: string;
+  leadLoginId?: string;
+  otp?: string;
+  otpSent?: boolean;
+  otpError?: string | null;
+  resendSeconds?: number;
+  loading?: boolean;
+  onLeadPhoneChange?: (value: string) => void;
+  onLeadLoginIdChange?: (value: string) => void;
+  onOtpChange?: (value: string) => void;
+  onRequestOtp?: () => void;
+  onVerifyLeadDetails?: (password?: string, loginId?: string) => void;
+  returnUrl?: string;
 }) {
-  const {
-    leadPhone,
-    otp,
-    otpSent,
-    otpError,
-    resendSeconds,
-    loading,
-    onLeadPhoneChange,
-    onOtpChange,
-    onRequestOtp,
-    onVerifyLeadDetails,
-  } = props;
-
-  const isOtpEnabled = process.env.NEXT_PUBLIC_ENABLE_OTP_FLOW === "true";
+  const [loginId, setLoginId] = React.useState(props.leadPhone || props.leadLoginId || "");
   const [password, setPassword] = React.useState("");
 
-  if (!isOtpEnabled) {
-    return (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onVerifyLeadDetails(password);
-        }}
-        className="rounded-lg border border-zinc-200 p-4 space-y-3"
-      >
-        <p className="text-sm font-semibold text-zinc-950">Quick Sign In to View Contact</p>
-        <p className="text-xs text-zinc-500">Enter your mobile number and password to access owner contacts instantly.</p>
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginId.trim() || !password) return;
+    props.onVerifyLeadDetails?.(password, loginId.trim());
+  };
 
-        <div>
-          <label className="block text-xs font-semibold text-zinc-700 mb-1">Mobile Number</label>
-          <div className="flex rounded-md border border-zinc-200 focus-within:border-rose-400 focus-within:ring-2 focus-within:ring-rose-100">
-            <span className="inline-flex items-center px-3 text-xs font-semibold text-zinc-600 bg-zinc-50 border-r border-zinc-200 rounded-l-md">
-              +91
-            </span>
-            <input
-              value={leadPhone}
-              onChange={(event) => onLeadPhoneChange(event.target.value.replace(/\D/g, "").slice(0, 10))}
-              placeholder="10-digit mobile number"
-              inputMode="tel"
-              required
-              className="h-11 w-full rounded-r-md px-3 text-sm outline-none"
-            />
+  const loginRedirectUrl = props.returnUrl
+    ? `/login?redirect=${encodeURIComponent(props.returnUrl)}`
+    : `/login`;
+  const registerRedirectUrl = props.returnUrl
+    ? `/auth/register?redirect=${encodeURIComponent(props.returnUrl)}`
+    : `/auth/register`;
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-4 dark:border-slate-800 dark:bg-slate-900/60">
+        <div className="flex items-center gap-2.5 text-rose-600 dark:text-rose-400 mb-2">
+          <div className="rounded-lg bg-rose-50 p-2 dark:bg-rose-950/60">
+            <Lock className="h-4 w-4" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-zinc-950 dark:text-white">Sign In Required to View Contact</p>
+            <p className="text-xs text-zinc-500 dark:text-slate-400">Direct owner details require an active account</p>
           </div>
         </div>
 
+        <div className="mt-3 space-y-2 text-xs text-zinc-600 dark:text-slate-300">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+            <span>Verified owner telephone number &amp; WhatsApp</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+            <span>Schedule private site walkthroughs</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+            <span>Zero broker spam guarantee</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
         <div>
-          <label className="block text-xs font-semibold text-zinc-700 mb-1">Password</label>
+          <label className="block text-xs font-semibold text-zinc-700 dark:text-slate-300 mb-1">
+            Email or Mobile Number
+          </label>
+          <input
+            type="text"
+            value={loginId}
+            onChange={(e) => {
+              setLoginId(e.target.value);
+              props.onLeadPhoneChange?.(e.target.value);
+              props.onLeadLoginIdChange?.(e.target.value);
+            }}
+            placeholder="e.g. your.email@example.com or 9876543210"
+            required
+            autoComplete="username"
+            className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-xs font-semibold text-zinc-700 dark:text-slate-300">
+              Password
+            </label>
+            <Link
+              href="/login?mode=forgot"
+              className="text-xs font-medium text-rose-600 hover:underline dark:text-rose-400"
+            >
+              Forgot password?
+            </Link>
+          </div>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             required
-            className="h-11 w-full rounded-md border border-zinc-200 px-3 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
+            autoComplete="current-password"
+            className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
           />
         </div>
 
-        {otpError && (
-          <p className="flex items-center gap-1.5 text-xs font-medium text-red-600">
-            <span>!</span> {otpError}
+        {props.otpError && (
+          <p className="rounded-lg bg-red-50 p-2.5 text-xs font-medium text-red-700 dark:bg-red-950/40 dark:text-red-300">
+            {props.otpError}
           </p>
         )}
 
         <button
           type="submit"
-          disabled={leadPhone.length < 10 || password.length < 4 || loading}
-          className="w-full rounded-md bg-rose-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:shadow-none"
+          disabled={!loginId.trim() || password.length < 4 || props.loading}
+          className="w-full rounded-lg bg-rose-600 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-zinc-300 dark:disabled:bg-slate-800"
         >
-          {loading ? "Authenticating..." : "Continue"}
+          {props.loading ? "Authenticating..." : "Sign In & View Contact"}
         </button>
-      </form>
-    );
-  }
 
-  return (
-    <>
-      <div className="rounded-lg border border-zinc-200 p-4">
-        <p className="text-sm font-semibold text-zinc-950">Enter your mobile number</p>
-        <p className="mt-1 text-xs text-zinc-500">We will verify your mobile number with a one-time password (OTP).</p>
-        <div className="mt-4 space-y-3">
-          <div className="flex rounded-md border border-zinc-200 focus-within:border-rose-400 focus-within:ring-2 focus-within:ring-rose-100">
-            <span className="inline-flex items-center px-3 text-xs font-semibold text-zinc-600 bg-zinc-50 border-r border-zinc-200 rounded-l-md">
-              +91
-            </span>
-            <input
-              value={leadPhone}
-              disabled={otpSent}
-              onChange={(event) => onLeadPhoneChange(event.target.value.replace(/\D/g, "").slice(0, 10))}
-              placeholder="10-digit mobile number"
-              inputMode="tel"
-              className="h-11 w-full rounded-r-md px-3 text-sm outline-none disabled:bg-zinc-100 disabled:text-zinc-600"
-            />
-            {otpSent && (
-              <button
-                type="button"
-                onClick={() => onLeadPhoneChange(leadPhone)}
-                className="px-3 text-xs font-semibold text-rose-600 hover:underline"
-              >
-                Change
-              </button>
-            )}
-          </div>
-
-          {otpSent && (
-            <div className="space-y-2 pt-2 border-t border-zinc-100">
-              <label className="block text-xs font-semibold text-zinc-700">Enter OTP</label>
-              <input
-                value={otp}
-                onChange={(event) => onOtpChange(event.target.value.replace(/\D/g, "").slice(0, 6))}
-                placeholder="6-digit OTP"
-                inputMode="numeric"
-                autoFocus
-                className={`h-11 w-full rounded-md border px-3 text-center text-base font-semibold tracking-[0.25em] outline-none focus:ring-2 focus:ring-rose-100 ${
-                  otpError ? "border-red-400 focus:border-red-400" : "border-zinc-200 focus:border-rose-400"
-                }`}
-              />
-              {otpError && (
-                <p className="flex items-center gap-1.5 text-xs font-medium text-red-600">
-                  <span>!</span> {otpError}
-                </p>
-              )}
-              <div className="flex items-center justify-between gap-3 text-xs">
-                <span className="truncate text-zinc-500">Sent to +91 {leadPhone}</span>
-                <button
-                  type="button"
-                  className="shrink-0 font-semibold text-rose-600 disabled:text-zinc-400"
-                  disabled={resendSeconds > 0 || loading}
-                  onClick={onRequestOtp}
-                >
-                  {resendSeconds > 0 ? `Resend in ${resendSeconds}s` : "Resend OTP"}
-                </button>
-              </div>
-            </div>
-          )}
+        <div className="text-center pt-2">
+          <p className="text-xs text-zinc-500 dark:text-slate-400">
+            New to Awasio?{" "}
+            <Link
+              href={registerRedirectUrl}
+              className="font-bold text-rose-600 hover:underline dark:text-rose-400"
+            >
+              Register with Email OTP
+            </Link>
+          </p>
         </div>
       </div>
-      {!otpSent ? (
-        <button
-          type="button"
-          className="w-full rounded-md bg-rose-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:shadow-none"
-          disabled={leadPhone.length < 10 || loading}
-          onClick={onRequestOtp}
-        >
-          {loading ? "Sending OTP..." : "Get OTP"}
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="w-full rounded-md bg-rose-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:shadow-none"
-          disabled={otp.length < 6 || loading}
-          onClick={() => onVerifyLeadDetails()}
-        >
-          {loading ? "Verifying..." : "Verify & Continue"}
-        </button>
-      )}
-    </>
+    </form>
   );
 }
 

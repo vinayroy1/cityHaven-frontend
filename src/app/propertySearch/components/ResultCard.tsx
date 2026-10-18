@@ -2,7 +2,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/app-config";
-import { useMeQuery, useUpdateProfileMutation } from "@/features/auth/api";
+import { useLoginWithPasswordMutation, useMeQuery, useUpdateProfileMutation } from "@/features/auth/api";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import {
   useGetPlansQuery,
@@ -10,9 +10,7 @@ import {
   useLazyGetBillingSummaryQuery,
   usePurchaseCreditsByPlanMutation,
   usePurchaseCreditsMutation,
-  useRequestContactOtpMutation,
   useUnlockPropertyContactMutation,
-  useVerifyContactOtpMutation,
   BillingSummary,
 } from "@/features/contactVerify/api";
 import { ContactUnlockDialog, ScopeOption } from "./ContactUnlockDialog";
@@ -81,8 +79,7 @@ export function ResultCard({
   const orgs = orgsData ?? [];
 
   const { data: plansResponse } = useGetPlansQuery();
-  const [requestContactOtp] = useRequestContactOtpMutation();
-  const [verifyContactOtp] = useVerifyContactOtpMutation();
+  const [loginWithPasswordMutation] = useLoginWithPasswordMutation();
   const [updateProfileMutation] = useUpdateProfileMutation();
   const [fetchBillingSummary] = useLazyGetBillingSummaryQuery();
   const [triggerCheckUnlocked] = useLazyCheckUnlockedContactQuery();
@@ -297,22 +294,7 @@ export function ResultCard({
     }
   };
 
-  const requestOtp = async () => {
-    if (leadPhone.trim().length < 10) return;
-    setOtpError(null);
-    setLoading(true);
-    try {
-      const data = await requestContactOtp({ mobileNumber: leadPhone.trim() }).unwrap();
-      setOtp("");
-      setOtpSent(true);
-      setResendSeconds(30);
-      if (data.otp) console.info(`[DEV] OTP for ${leadPhone}: ${data.otp}`);
-    } catch (err: any) {
-      setOtpError(err?.data?.message || err.message || "Failed to send OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const requestOtp = async () => {};
 
   const purchasePlan = async () => {
     setLoading(true);
@@ -340,38 +322,30 @@ export function ResultCard({
     }
   };
 
-  const verifyLeadDetails = async (inputPassword?: string) => {
-    const isOtpEnabled = process.env.NEXT_PUBLIC_ENABLE_OTP_FLOW === "true";
-    if (isOtpEnabled) {
-      if (!otpSent || leadPhone.trim().length < 10 || otp.trim().length < 6) return;
-    } else {
-      if (leadPhone.trim().length < 10) return;
-    }
+  const verifyLeadDetails = async (inputPassword?: string, loginId?: string) => {
+    const effectiveLoginId = (loginId || leadPhone).trim();
+    if (!effectiveLoginId || !inputPassword) return;
     setOtpError(null);
     setLoading(true);
     try {
-      const res = await verifyContactOtp({
-        mobileNumber: leadPhone.trim(),
-        otp: isOtpEnabled ? otp.trim() : undefined,
+      const res = await loginWithPasswordMutation({
+        loginId: effectiveLoginId,
         password: inputPassword,
-        propertyId: id,
-        source: "property_search_result_card",
-        city: subtitle || undefined,
       }).unwrap();
 
-      const token = res.data?.accessToken;
+      const token = res.accessToken;
       if (token) {
         setSessionToken(token);
         if (typeof window !== "undefined") {
           localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, token);
-          if (res.data?.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, res.data.refreshToken);
+          if (res.refreshToken) localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, res.refreshToken);
           window.dispatchEvent(new Event("storage"));
           window.dispatchEvent(new Event("auth-change"));
         }
       }
 
-      const userName = res.data?.user?.name;
-      const isNewUser = res.data?.isNewUser || !userName || userName === "New User" || userName === "User";
+      const userName = res.user?.name;
+      const isNewUser = res.isNewUser || !userName || userName === "New User" || userName === "User";
 
       if (isNewUser) {
         setContactStep("profile");
@@ -379,7 +353,7 @@ export function ResultCard({
       }
 
       await refreshScopes();
-      const userCredits = res.data?.user?.credits ?? 0;
+      const userCredits = res.user?.credits ?? 0;
       setCredits(userCredits);
       setHasActivePlan(userCredits > 0);
       if (userCredits > 0) {
@@ -388,7 +362,7 @@ export function ResultCard({
         setContactStep("plans");
       }
     } catch (err: any) {
-      setOtpError(err?.data?.message || err.message || "Invalid OTP. Please try again.");
+      setOtpError(err?.data?.message || err.message || "Invalid credentials. Please check your login details.");
     } finally {
       setLoading(false);
     }

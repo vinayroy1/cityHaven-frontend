@@ -7,14 +7,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { LeadDetailsStep, ProfileDetailsStep, PlanSelectionStep } from "@/app/propertySearch/components/ContactUnlockDialog";
-import { useUpdateProfileMutation } from "@/features/auth/api";
+import { useLoginWithPasswordMutation, useUpdateProfileMutation } from "@/features/auth/api";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import {
   useGetPlansQuery,
   useLazyCheckUnlockedContactQuery,
   useLazyGetBillingSummaryQuery,
-  useRequestContactOtpMutation,
-  useVerifyContactOtpMutation,
   usePurchaseCreditsByPlanMutation,
   useUnlockPropertyContactMutation,
   BillingSummary,
@@ -47,9 +45,6 @@ export function ContactAccessFlow({
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [mobile, setMobile] = React.useState("");
-  const [otp, setOtp] = React.useState("");
-  const [sent, setSent] = React.useState(false);
-  const [seconds, setSeconds] = React.useState(0);
   const [selectedPlanId, setSelectedPlanId] = React.useState("");
 
   // Billing scope: "PERSONAL" | organizationId number
@@ -59,8 +54,7 @@ export function ContactAccessFlow({
 
   const [check] = useLazyCheckUnlockedContactQuery();
   const [fetchSummary] = useLazyGetBillingSummaryQuery();
-  const [requestOtp] = useRequestContactOtpMutation();
-  const [verifyOtp] = useVerifyContactOtpMutation();
+  const [loginWithPassword] = useLoginWithPasswordMutation();
   const [updateProfile] = useUpdateProfileMutation();
   const [purchase] = usePurchaseCreditsByPlanMutation();
   const [unlock] = useUnlockPropertyContactMutation();
@@ -144,12 +138,6 @@ export function ContactAccessFlow({
       active = false;
     };
   }, [open, selectedScope, isOrgScope, fetchSummary]);
-
-  React.useEffect(() => {
-    if (!seconds) return;
-    const timer = window.setTimeout(() => setSeconds((s) => s - 1), 1000);
-    return () => window.clearTimeout(timer);
-  }, [seconds]);
 
   async function checkAndUnlock() {
     setStep("check");
@@ -235,39 +223,25 @@ export function ContactAccessFlow({
     void run(checkAndUnlock);
   }
 
-  async function sendOtp() {
-    if (mobile.trim().length < 10) return;
-    await requestOtp({ mobileNumber: mobile.trim() }).unwrap();
-    setSent(true);
-    setOtp("");
-    setSeconds(30);
-  }
+  async function signIn(inputPassword?: string, loginId?: string) {
+    const effectiveLoginId = (loginId || email || mobile).trim();
+    if (!effectiveLoginId || !inputPassword) return;
 
-  async function signIn(inputPassword?: string) {
-    const isOtpEnabled = process.env.NEXT_PUBLIC_ENABLE_OTP_FLOW === "true";
-    if (isOtpEnabled) {
-      if (mobile.trim().length < 10 || otp.trim().length < 6) return;
-    } else {
-      if (mobile.trim().length < 10) return;
-    }
-    const response = await verifyOtp({
-      mobileNumber: mobile.trim(),
-      otp: isOtpEnabled ? otp.trim() : undefined,
+    const response = await loginWithPassword({
+      loginId: effectiveLoginId,
       password: inputPassword,
-      propertyId: Number(propertyId),
-      source: "property_details",
     }).unwrap();
 
-    if (!response.data?.accessToken) throw new Error("Sign-in failed");
-    localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, response.data.accessToken);
-    if (response.data.refreshToken) {
-      localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, response.data.refreshToken);
+    if (!response.accessToken) throw new Error("Sign-in failed");
+    localStorage.setItem(APP_CONFIG.AUTH.TOKEN_KEY, response.accessToken);
+    if (response.refreshToken) {
+      localStorage.setItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY, response.refreshToken);
     }
     window.dispatchEvent(new Event("auth-change"));
     window.dispatchEvent(new Event("storage"));
 
-    const userName = response.data.user?.name;
-    const isNewUser = response.data.isNewUser || !userName || userName === "New User" || userName === "User";
+    const userName = response.user?.name;
+    const isNewUser = response.isNewUser || !userName || userName === "New User" || userName === "User";
 
     if (isNewUser) {
       setStep("profile");
@@ -315,7 +289,7 @@ export function ContactAccessFlow({
             </DialogTitle>
             <DialogDescription>
               {step === "signin"
-                ? "Enter your mobile number to get started."
+                ? "Sign in to your account to view verified owner contact details."
                 : step === "profile"
                   ? "Please enter your details to complete your account."
                   : step === "plans"
@@ -393,23 +367,15 @@ export function ContactAccessFlow({
           {step === "signin" && (
             <LeadDetailsStep
               leadPhone={mobile}
-              otp={otp}
-              otpSent={sent}
+              leadLoginId={email || mobile}
               otpError={error}
-              resendSeconds={seconds}
               loading={busy}
               onLeadPhoneChange={(value) => {
                 setMobile(value);
-                setSent(false);
-                setOtp("");
                 setError(null);
               }}
-              onOtpChange={(value) => {
-                setOtp(value);
-                setError(null);
-              }}
-              onRequestOtp={() => void run(sendOtp)}
-              onVerifyLeadDetails={(pwd?: string) => void run(() => signIn(pwd))}
+              onVerifyLeadDetails={(pwd?: string, id?: string) => void run(() => signIn(pwd, id))}
+              returnUrl={typeof window !== "undefined" ? `${window.location.pathname}?autoUnlock=true` : undefined}
             />
           )}
 
