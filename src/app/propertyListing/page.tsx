@@ -30,10 +30,10 @@ export default function PropertyListingPage() {
       <main className="relative flex-1 bg-gradient-to-br from-rose-50/70 via-white to-emerald-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(244,63,94,0.10),transparent_38%),radial-gradient(circle_at_92%_0%,rgba(16,185,129,0.10),transparent_34%)]" />
 
-        <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-6xl px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
           {/* Top Breadcrumbs & Back Bar */}
-          <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800 pb-4">
-            <div className="flex items-center gap-3">
+          <div className="mb-3 sm:mb-6 flex flex-row items-center justify-between gap-2 border-b border-slate-200/80 dark:border-slate-800 pb-2.5 sm:pb-4">
+            <div className="flex items-center gap-2 sm:gap-3">
               <BackButton fallbackHref="/dashboard/properties" label="Back" variant="pill" />
 
               <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
@@ -44,58 +44,99 @@ export default function PropertyListingPage() {
               </div>
             </div>
 
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 px-3 py-1 rounded-full w-fit">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>100% Free Listing • Direct Verified Inquiries</span>
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 px-2.5 sm:px-3 py-1 rounded-full shrink-0">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="hidden sm:inline">100% Free Listing • Direct Verified Inquiries</span>
+              <span className="sm:hidden">100% Free Listing</span>
             </div>
           </div>
 
-          {/* Builder / Project Owner Switch Banner */}
-          <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50/80 via-white to-amber-50/50 p-4 shadow-sm dark:border-rose-900/40 dark:bg-slate-900 dark:from-slate-900 dark:to-slate-900">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
-                <Building2 className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                  Listing an entire Project, Township, or Gated Community?
-                </h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Builders and developers can list multiple towers, RERA registration, and configuration floor-plan pricing in one place.
-                </p>
-              </div>
-            </div>
+          {/* Mobile View: Ultra-Compact 2-Column Quick Portal Switcher (~44px height) */}
+          <div className="sm:hidden mb-3 grid grid-cols-2 gap-2">
             <Link
               href="/post-project"
-              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-950 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 shrink-0"
+              className="flex items-center gap-2 rounded-xl border border-rose-200/90 bg-gradient-to-r from-rose-50/90 via-white to-amber-50/60 p-2 shadow-2xs active:scale-[0.98] transition dark:border-rose-900/40 dark:bg-slate-900/90 dark:from-slate-900 dark:to-slate-900"
             >
-              <span>Open Project Portal</span>
-              <span aria-hidden="true">&rarr;</span>
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500 text-white shadow-2xs">
+                <Building2 className="h-3.5 w-3.5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className="block text-[11px] font-bold text-slate-900 dark:text-white truncate leading-tight">
+                  Post Project
+                </span>
+                <span className="block text-[9px] font-semibold text-rose-600 dark:text-rose-400 truncate mt-0.5">
+                  For Builders →
+                </span>
+              </div>
+            </Link>
+
+            <Link
+              href="/flatmates/post"
+              className="flex items-center gap-2 rounded-xl border border-indigo-200/90 bg-gradient-to-r from-indigo-50/90 via-white to-purple-50/60 p-2 shadow-2xs active:scale-[0.98] transition dark:border-indigo-900/40 dark:bg-slate-900/90 dark:from-slate-900 dark:to-slate-900"
+            >
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-2xs">
+                <Users className="h-3.5 w-3.5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className="block text-[11px] font-bold text-slate-900 dark:text-white truncate leading-tight">
+                  Post Flatmate
+                </span>
+                <span className="block text-[9px] font-semibold text-indigo-600 dark:text-indigo-400 truncate mt-0.5">
+                  Find Roommate →
+                </span>
+              </div>
             </Link>
           </div>
 
-          {/* Flatmate / Roommate Listing Switch Banner */}
-          <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50/80 via-white to-purple-50/50 p-4 shadow-sm dark:border-indigo-900/40 dark:bg-slate-900 dark:from-slate-900 dark:to-slate-900">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
-                <Users className="h-5 w-5" />
+          {/* Desktop View: Symmetrical Side-by-Side 2-Column Banner Grid */}
+          <div className="hidden sm:grid sm:grid-cols-2 sm:gap-4 mb-6">
+            {/* Builder / Project Owner Card */}
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-rose-200/90 bg-gradient-to-r from-rose-50/80 via-white to-amber-50/50 p-3.5 shadow-2xs dark:border-rose-900/40 dark:bg-slate-900 dark:from-slate-900 dark:to-slate-900">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
+                  <Building2 className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                    Listing a Project or Township?
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    For builders, towers, floor plans & RERA.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                  Looking for a Roommate, Sharing a Room, or Buddying Up?
-                </h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Post room availability or roommate requirements with shared lifestyle habits, diet, and zero brokerage.
-                </p>
-              </div>
+              <Link
+                href="/post-project"
+                className="inline-flex items-center justify-center gap-1 rounded-full bg-slate-950 px-3 py-1.5 text-xs font-bold text-white shadow-2xs transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 shrink-0"
+              >
+                <span>Project Portal</span>
+                <span aria-hidden="true">&rarr;</span>
+              </Link>
             </div>
-            <Link
-              href="/flatmates/post"
-              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 px-4 py-2 text-xs font-bold text-white shadow-sm transition shrink-0"
-            >
-              <span>Post Flatmate Need</span>
-              <span aria-hidden="true">&rarr;</span>
-            </Link>
+
+            {/* Flatmate / Roommate Card */}
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-indigo-200/90 bg-gradient-to-r from-indigo-50/80 via-white to-purple-50/50 p-3.5 shadow-2xs dark:border-indigo-900/40 dark:bg-slate-900 dark:from-slate-900 dark:to-slate-900">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
+                  <Users className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                    Looking for Flatmates or Sharing?
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    Post room requirements with habits & 0 brokerage.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/flatmates/post"
+                className="inline-flex items-center justify-center gap-1 rounded-full bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 text-xs font-bold text-white shadow-2xs transition shrink-0"
+              >
+                <span>Post Flatmate</span>
+                <span aria-hidden="true">&rarr;</span>
+              </Link>
+            </div>
           </div>
 
           {/* Form Wizard Flow */}
