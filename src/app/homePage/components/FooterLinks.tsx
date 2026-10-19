@@ -5,22 +5,23 @@ import { BrandLogo } from "@/components/common/BrandLogo";
 
 const columns = [
   {
-    title: "Support",
+    title: "Support & Legal",
     links: [
       { label: "Help Centre", href: "/contact" },
+      { label: "Community Forum", href: "/community" },
       { label: "Safety information", href: "/policies" },
       { label: "Privacy policy", href: "/privacy" },
       { label: "Terms & conditions", href: "/terms" },
     ],
   },
   {
-    title: "Awasio",
+    title: "Tools & Portals",
     links: [
-      { label: "About us", href: "/about" },
+      { label: "EMI Calculator", href: "/emi-calculator" },
+      { label: "Home Loans", href: "/home-loans" },
+      { label: "Price Trends", href: "/price-trends" },
+      { label: "Pricing & Plans", href: "/pricing" },
       { label: "Find verified agents", href: "/agents" },
-      { label: "Search properties", href: "/propertySearch" },
-      { label: "Saved properties", href: "/favorites" },
-      { label: "Contact support", href: "/contact" },
     ],
   },
 ];

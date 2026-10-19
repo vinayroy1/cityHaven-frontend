@@ -5,18 +5,26 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Building2,
+  Calculator,
   ChevronDown,
+  CircleHelp,
+  Coins,
   CreditCard,
+  FileText,
   Heart,
   Home,
+  Info,
   Key,
   LayoutDashboard,
   LogOut,
   MapPin,
+  MessageSquare,
   PlusCircle,
   Settings,
+  Shield,
   ShieldCheck,
   Sparkles,
+  TrendingUp,
   User,
   Users,
   BedDouble,
@@ -37,21 +45,56 @@ const primaryNavLinks = [
   { label: "Buy", href: "/buy", icon: Home },
   { label: "Rent", href: "/rent", icon: Key },
   { label: "New Projects", href: "/new-projects", icon: Sparkles, isNew: true },
-  { label: "PG / Coliving", href: "/pg", icon: BedDouble },
+  { label: "PG / Coliving", href: "/pg", icon: BedDouble, xlOnly: true },
   { label: "Commercial", href: "/commercial", icon: Building2 },
 ];
 
-const secondaryNavLinks = [
-  { label: "Plots & Land", href: "/plot", icon: MapPin },
-  { label: "Find Flatmates", href: "/flatmate", icon: Users },
-  { label: "Find Agents", href: "/agents", icon: Users },
-  { label: "Post Project (Builder)", href: "/post-project", icon: Building2 },
+const toolsNavLinks = [
+  {
+    label: "EMI Calculator",
+    href: "/emi-calculator",
+    icon: Calculator,
+    desc: "Calculate loan EMI, interest breakdown & tenure",
+    badge: "Popular",
+  },
+  {
+    label: "Home Loans",
+    href: "/home-loans",
+    icon: Coins,
+    desc: "Compare lowest interest rates from top banks",
+    badge: "Low Rates",
+  },
+  {
+    label: "Price Trends",
+    href: "/price-trends",
+    icon: TrendingUp,
+    desc: "Check locality price index & appreciation rates",
+    badge: "Insights",
+  },
+  {
+    label: "Pricing & Plans",
+    href: "/pricing",
+    icon: Sparkles,
+    desc: "Contact credits & property marketing packages",
+    badge: "PRO",
+  },
 ];
 
-// All links for mobile drawer
-const searchLinks = [
-  ...primaryNavLinks,
-  ...secondaryNavLinks,
+const categoryExploreLinks = [
+  { label: "PG & Co-living", href: "/pg", icon: BedDouble, desc: "Verified hostels & coliving spaces" },
+  { label: "Plots & Land", href: "/plot", icon: MapPin, desc: "Residential & commercial plots" },
+  { label: "Find Flatmates", href: "/flatmate", icon: Users, desc: "Find verified roommates nearby" },
+  { label: "Find Agents", href: "/agents", icon: ShieldCheck, desc: "Connect with verified local brokers" },
+  { label: "Post Project (Builder)", href: "/post-project", icon: Building2, desc: "List new residential & commercial projects" },
+];
+
+const companySupportLinks = [
+  { label: "About Us", href: "/about", icon: Info },
+  { label: "Help Centre & Contact", href: "/contact", icon: CircleHelp },
+  { label: "Community Forum", href: "/community", icon: MessageSquare },
+  { label: "Safety & Policies", href: "/policies", icon: Shield },
+  { label: "Privacy Policy", href: "/privacy", icon: ShieldCheck },
+  { label: "Terms of Service", href: "/terms", icon: FileText },
 ];
 
 interface HeaderNavProps {
@@ -66,11 +109,13 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
   const [accountOpen, setAccountOpen] = React.useState(false);
   const [moreNavOpen, setMoreNavOpen] = React.useState(false);
+  const [toolsNavOpen, setToolsNavOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [currentSearch, setCurrentSearch] = React.useState("");
   const accountRef = React.useRef<HTMLDivElement | null>(null);
   const moreNavRef = React.useRef<HTMLDivElement | null>(null);
+  const toolsNavRef = React.useRef<HTMLDivElement | null>(null);
 
   useModalBackHandler({
     isOpen: accountOpen,
@@ -84,6 +129,13 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     onClose: () => setMoreNavOpen(false),
     pushHistoryState: false,
     name: "HeaderNavMoreDropdown",
+  });
+
+  useModalBackHandler({
+    isOpen: toolsNavOpen,
+    onClose: () => setToolsNavOpen(false),
+    pushHistoryState: false,
+    name: "HeaderNavToolsDropdown",
   });
 
   const loginHref = `/login?redirect=${encodeURIComponent(pathname || "/")}`;
@@ -125,9 +177,9 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close account and more dropdowns when clicking outside
+  // Close account, more, and tools dropdowns when clicking outside
   React.useEffect(() => {
-    if (!accountOpen && !moreNavOpen) return;
+    if (!accountOpen && !moreNavOpen && !toolsNavOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
       if (accountOpen && accountRef.current && !accountRef.current.contains(event.target as Node)) {
         setAccountOpen(false);
@@ -135,11 +187,13 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
       if (moreNavOpen && moreNavRef.current && !moreNavRef.current.contains(event.target as Node)) {
         setMoreNavOpen(false);
       }
+      if (toolsNavOpen && toolsNavRef.current && !toolsNavRef.current.contains(event.target as Node)) {
+        setToolsNavOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [accountOpen, moreNavOpen]);
-
+  }, [accountOpen, moreNavOpen, toolsNavOpen]);
 
   const logout = () => {
     localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
@@ -175,6 +229,8 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     { label: "Organization", href: "/dashboard/organization", icon: ShieldCheck, badge: null },
     { label: "Plans & Credits", href: "/pricing", icon: CreditCard, badge: "PRO" },
     { label: "Saved Properties", href: "/favorites", icon: Heart, badge: null },
+    { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator, badge: null },
+    { label: "Help & Support", href: "/contact", icon: CircleHelp, badge: null },
     { label: "Account Settings", href: "/dashboard/settings", icon: Settings, badge: null },
   ];
 
@@ -220,7 +276,9 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
               <Link
                 key={link.label}
                 href={link.href}
-                className={`relative flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold tracking-wide whitespace-nowrap transition-all duration-200 ${
+                className={`relative items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold tracking-wide whitespace-nowrap transition-all duration-200 ${
+                  link.xlOnly ? "hidden xl:flex" : "flex"
+                } ${
                   active
                     ? "bg-white text-rose-600 shadow-xs dark:bg-slate-800 dark:text-rose-400"
                     : "text-slate-600 hover:text-slate-950 hover:bg-white/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60"
@@ -236,42 +294,236 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
             );
           })}
 
-          {/* More Categories Dropdown */}
-          <div className="relative" ref={moreNavRef}>
+          {/* EMI & Financial Tools Dropdown */}
+          <div className="relative" ref={toolsNavRef}>
             <button
               type="button"
-              onClick={() => setMoreNavOpen((open) => !open)}
-              className={`flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
-                moreNavOpen || secondaryNavLinks.some((l) => isLinkActive(l.href))
+              onClick={() => {
+                setToolsNavOpen((open) => !open);
+                setMoreNavOpen(false);
+                setAccountOpen(false);
+              }}
+              className={`flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                toolsNavOpen || toolsNavLinks.some((l) => isLinkActive(l.href))
                   ? "bg-white text-rose-600 shadow-xs dark:bg-slate-800 dark:text-rose-400"
                   : "text-slate-600 hover:text-slate-950 hover:bg-white/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60"
               }`}
+              aria-label="EMI and Financial Tools Menu"
+              aria-expanded={toolsNavOpen}
+            >
+              <Calculator className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
+              <span>EMI & Tools</span>
+              <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${toolsNavOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {toolsNavOpen && (
+              <div className="absolute left-1/2 -translate-x-1/2 top-10 z-50 w-80 origin-top rounded-2xl border border-slate-200/90 bg-white/95 p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 dark:border-slate-800 dark:bg-slate-950/95">
+                <div className="px-2.5 py-1.5 border-b border-slate-100 dark:border-slate-800/80 mb-1">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Calculators & Financial Tools
+                  </p>
+                </div>
+                <div className="space-y-0.5">
+                  {toolsNavLinks.map((item) => {
+                    const Icon = item.icon;
+                    const active = isLinkActive(item.href);
+                    return (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        onClick={() => setToolsNavOpen(false)}
+                        className={`flex items-start gap-3 rounded-xl p-2.5 transition-all duration-150 ${
+                          active
+                            ? "bg-rose-50/80 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+                            : "text-slate-700 hover:bg-slate-100/80 dark:text-slate-200 dark:hover:bg-slate-900"
+                        }`}
+                      >
+                        <div
+                          className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                            active
+                              ? "bg-rose-100 text-rose-600 dark:bg-rose-900/50 dark:text-rose-300"
+                              : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                          }`}
+                        >
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-xs font-semibold">{item.label}</span>
+                            {item.badge && (
+                              <span className="rounded-full bg-rose-500/10 px-1.5 py-0.2 text-[9px] font-extrabold uppercase tracking-wider text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">
+                                {item.badge}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5 dark:text-slate-400">
+                            {item.desc}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* More Categories & Portals Dropdown */}
+          <div className="relative" ref={moreNavRef}>
+            <button
+              type="button"
+              onClick={() => {
+                setMoreNavOpen((open) => !open);
+                setToolsNavOpen(false);
+                setAccountOpen(false);
+              }}
+              className={`flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                moreNavOpen ||
+                categoryExploreLinks.some((l) => isLinkActive(l.href)) ||
+                companySupportLinks.some((l) => isLinkActive(l.href))
+                  ? "bg-white text-rose-600 shadow-xs dark:bg-slate-800 dark:text-rose-400"
+                  : "text-slate-600 hover:text-slate-950 hover:bg-white/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60"
+              }`}
+              aria-label="More Portals and Pages Menu"
+              aria-expanded={moreNavOpen}
             >
               <span>More</span>
               <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${moreNavOpen ? "rotate-180" : ""}`} />
             </button>
 
             {moreNavOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-10 z-50 w-56 origin-top rounded-2xl border border-slate-200/90 bg-white p-1.5 shadow-xl backdrop-blur-xl animate-in fade-in zoom-in-95 dark:border-slate-800 dark:bg-slate-950">
-                {secondaryNavLinks.map((item) => {
-                  const Icon = item.icon;
-                  const active = isLinkActive(item.href);
-                  return (
+              <div className="absolute right-0 top-10 z-50 w-[540px] max-w-[calc(100vw-32px)] origin-top-right rounded-2xl border border-slate-200/90 bg-white/95 p-3 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 dark:border-slate-800 dark:bg-slate-950/95">
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Section 1: Explore Portals */}
+                  <div>
+                    <div className="px-2 py-1 mb-1">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                        Explore Portals
+                      </p>
+                    </div>
+                    <div className="space-y-0.5">
+                      {categoryExploreLinks.map((item) => {
+                        const Icon = item.icon;
+                        const active = isLinkActive(item.href);
+                        return (
+                          <Link
+                            key={item.label}
+                            href={item.href}
+                            onClick={() => setMoreNavOpen(false)}
+                            className={`flex items-start gap-2.5 rounded-xl p-2 transition-all ${
+                              active
+                                ? "bg-rose-50/80 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+                                : "text-slate-700 hover:bg-slate-100/80 dark:text-slate-200 dark:hover:bg-slate-900"
+                            }`}
+                          >
+                            <div
+                              className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                                active
+                                  ? "bg-rose-100 text-rose-600 dark:bg-rose-900/50 dark:text-rose-300"
+                                  : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                              }`}
+                            >
+                              <Icon className="h-3.5 w-3.5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <span className="text-xs font-semibold block leading-tight">{item.label}</span>
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                                {item.desc}
+                              </span>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Section 2: Calculators & Finance */}
+                  <div>
+                    <div className="px-2 py-1 mb-1">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                        Calculators & Finance
+                      </p>
+                    </div>
+                    <div className="space-y-0.5">
+                      {toolsNavLinks.map((item) => {
+                        const Icon = item.icon;
+                        const active = isLinkActive(item.href);
+                        return (
+                          <Link
+                            key={item.label}
+                            href={item.href}
+                            onClick={() => setMoreNavOpen(false)}
+                            className={`flex items-start gap-2.5 rounded-xl p-2 transition-all ${
+                              active
+                                ? "bg-rose-50/80 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+                                : "text-slate-700 hover:bg-slate-100/80 dark:text-slate-200 dark:hover:bg-slate-900"
+                            }`}
+                          >
+                            <div
+                              className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                                active
+                                  ? "bg-rose-100 text-rose-600 dark:bg-rose-900/50 dark:text-rose-300"
+                                  : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                              }`}
+                            >
+                              <Icon className="h-3.5 w-3.5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-xs font-semibold leading-tight">{item.label}</span>
+                                {item.badge && (
+                                  <span className="rounded-full bg-rose-500/10 px-1 py-0.2 text-[8px] font-extrabold uppercase text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">
+                                    {item.badge}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                                {item.desc}
+                              </span>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 3: Company & Support Bar */}
+                <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                  <div className="px-2 py-0.5 mb-1.5 flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      Company & Support
+                    </span>
                     <Link
-                      key={item.label}
-                      href={item.href}
+                      href="/contact"
                       onClick={() => setMoreNavOpen(false)}
-                      className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold transition ${
-                        active
-                          ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
-                          : "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900"
-                      }`}
+                      className="text-[10px] font-semibold text-rose-600 hover:underline dark:text-rose-400"
                     >
-                      <Icon className="h-4 w-4 shrink-0 text-slate-400" />
-                      <span>{item.label}</span>
+                      Need help? Contact us →
                     </Link>
-                  );
-                })}
+                  </div>
+                  <div className="grid grid-cols-3 gap-1">
+                    {companySupportLinks.map((item) => {
+                      const Icon = item.icon;
+                      const active = isLinkActive(item.href);
+                      return (
+                        <Link
+                          key={item.label}
+                          href={item.href}
+                          onClick={() => setMoreNavOpen(false)}
+                          className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition ${
+                            active
+                              ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+                              : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900"
+                          }`}
+                        >
+                          <Icon className="h-3 w-3 shrink-0 text-slate-400" />
+                          <span className="truncate">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             )}
           </div>
