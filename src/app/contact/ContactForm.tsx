@@ -5,7 +5,6 @@ import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { apiClient } from "@/lib/services/api/client";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { Toaster } from "@/components/ui/sonner";
 
 export const ContactForm: React.FC = () => {
   const [fullName, setFullName] = useState("");
@@ -45,7 +44,6 @@ export const ContactForm: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <Toaster richColors position="top-center" />
       <h2 className="text-lg font-semibold text-slate-900">Send us a note</h2>
       <p className="text-sm text-slate-700">Share your details and we&apos;ll respond within a business day.</p>
       <form className="space-y-3" onSubmit={handleSubmit}>

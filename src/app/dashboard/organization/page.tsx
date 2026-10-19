@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   AlertCircle,
   ArrowLeft,
@@ -141,6 +142,11 @@ function OrganizationDashboardContent() {
     [organizations, selectedOrgId],
   );
 
+  const myRole = selectedOrg?.role?.name;
+  const canManageTeam = myRole === "OWNER" || myRole === "ADMIN";
+  const canTransferOwner = myRole === "OWNER";
+  const shouldEmphasizeCreate = searchParams.get("create") === "1";
+
   const {
     data: members = [],
     isLoading: isMembersLoading,
@@ -153,10 +159,10 @@ function OrganizationDashboardContent() {
     data: invitations = [],
     isFetching: isInvitationsFetching,
     refetch: refetchInvitations,
-  } = useOrganizationInvitationsQuery(selectedOrg?.id ?? 0, { skip: !selectedOrg?.id });
+  } = useOrganizationInvitationsQuery(selectedOrg?.id ?? 0, { skip: !selectedOrg?.id || !canManageTeam });
 
   const { data: activity = [], refetch: refetchActivity } = useOrganizationActivityQuery(selectedOrg?.id ?? 0, {
-    skip: !selectedOrg?.id,
+    skip: !selectedOrg?.id || !canManageTeam,
   });
 
   const {
@@ -186,11 +192,6 @@ function OrganizationDashboardContent() {
   const [updateMember, { isLoading: isUpdatingMember }] = useUpdateOrganizationMemberMutation();
   const [removeMember, { isLoading: isRemovingMember }] = useRemoveOrganizationMemberMutation();
 
-  const myRole = selectedOrg?.role?.name;
-  const canManageTeam = myRole === "OWNER" || myRole === "ADMIN";
-  const canTransferOwner = myRole === "OWNER";
-  const shouldEmphasizeCreate = searchParams.get("create") === "1";
-
   const memberStats = useMemo(() => {
     return members.reduce<Record<string, number>>((acc, member) => {
       const role = member.role?.name || "MEMBER";
@@ -199,7 +200,7 @@ function OrganizationDashboardContent() {
     }, {});
   }, [members]);
 
-  const pendingInvitesCount = invitations.filter((invite) => invite.status === "PENDING").length;
+  const pendingInvitesCount = canManageTeam ? invitations.filter((invite) => invite.status === "PENDING").length : 0;
   const seatsLimit = billingSummary?.allowances?.seats?.limit ?? 2;
   const seatsUsed = members.length + pendingInvitesCount;
   const isSeatFull = seatsUsed >= seatsLimit;
@@ -217,6 +218,7 @@ function OrganizationDashboardContent() {
       setOrgName("");
       setOrgAddress("");
       setSelectedOrgId(org.id);
+      toast.success("Organization workspace created successfully!");
     } catch (error) {
       setActionError(getErrorMessage(error));
     }
@@ -243,8 +245,10 @@ function OrganizationDashboardContent() {
       }
       if (invitation.emailSent) {
         setInviteSuccessMsg(`Invitation email sent directly to ${targetEmail} with joining link!`);
+        toast.success(`Invitation email sent to ${targetEmail}`);
       } else {
         setInviteSuccessMsg(`Invitation created for ${targetEmail}.`);
+        toast.success(`Invitation created for ${targetEmail}`);
       }
       void refetchBilling();
     } catch (error) {
@@ -263,6 +267,7 @@ function OrganizationDashboardContent() {
         setLastInviteLink(`${window.location.origin}/dashboard/organization/invitations/${res.token}`);
       }
       setInviteSuccessMsg(`Invitation email resent to ${email || "member"}!`);
+      toast.success(`Invitation resent to ${email || "member"}`);
       setTimeout(() => setResendSuccessId(null), 3500);
     } catch (error) {
       setActionError(getErrorMessage(error));
@@ -276,6 +281,7 @@ function OrganizationDashboardContent() {
     try {
       await navigator.clipboard.writeText(url);
       setCopiedLink(true);
+      toast.success("Invitation link copied to clipboard");
       setTimeout(() => setCopiedLink(false), 2500);
     } catch {
       // ignore
@@ -287,6 +293,7 @@ function OrganizationDashboardContent() {
     setActionError(null);
     try {
       await transferOwner({ orgId: selectedOrg.id, memberId: member.id }).unwrap();
+      toast.success(`Ownership transferred to ${memberName(member)}`);
     } catch (error) {
       setActionError(getErrorMessage(error));
     }
@@ -297,6 +304,7 @@ function OrganizationDashboardContent() {
     setActionError(null);
     try {
       await revokeInvitation({ orgId: selectedOrg.id, invitationId }).unwrap();
+      toast.success("Invitation revoked");
       void refetchBilling();
     } catch (error) {
       setActionError(getErrorMessage(error));
@@ -308,6 +316,7 @@ function OrganizationDashboardContent() {
     setActionError(null);
     try {
       await updateMember({ orgId: selectedOrg.id, memberId: member.id, role }).unwrap();
+      toast.success(`Role updated to ${roleLabel(role)}`);
     } catch (error) {
       setActionError(getErrorMessage(error));
     }
@@ -319,6 +328,7 @@ function OrganizationDashboardContent() {
     try {
       await removeMember({ orgId: selectedOrg.id, memberId: member.id }).unwrap();
       setMemberToDelete(null);
+      toast.success("Member removed from workspace");
       void refetchBilling();
     } catch (error) {
       setActionError(getErrorMessage(error));
@@ -330,8 +340,10 @@ function OrganizationDashboardContent() {
     if (selectedOrg?.id) {
       refetchMembers();
       refetchProperties();
-      refetchInvitations();
-      refetchActivity();
+      if (canManageTeam) {
+        refetchInvitations();
+        refetchActivity();
+      }
       refetchBilling();
       refetchLedger();
     }
@@ -853,12 +865,12 @@ function OrganizationDashboardContent() {
                                       <Crown className="h-3 w-3" />
                                       Owner
                                     </span>
-                                  ) : (
+                                  ) : canManageTeam ? (
                                     <div className="flex items-center gap-2">
                                       <select
                                         value={role}
                                         onChange={(event) => changeRole(member, event.target.value as OrganizationRole)}
-                                        disabled={!canManageTeam || isUpdatingMember}
+                                        disabled={isUpdatingMember}
                                         className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-800 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                                       >
                                         {assignableRoleOptions.map((option) => (
@@ -871,6 +883,10 @@ function OrganizationDashboardContent() {
                                         {roleLabel(role)}
                                       </span>
                                     </div>
+                                  ) : (
+                                    <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${roleTone[role] || roleTone.VIEWER}`}>
+                                      {roleLabel(role)}
+                                    </span>
                                   )}
                                 </td>
                                 <td className="px-4 py-3.5 text-right">
@@ -904,7 +920,11 @@ function OrganizationDashboardContent() {
                                       <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
                                         Owner
                                       </span>
-                                    ) : null}
+                                    ) : (
+                                      <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
+                                        —
+                                      </span>
+                                    )}
                                   </div>
                                 </td>
                               </tr>
@@ -994,176 +1014,218 @@ function OrganizationDashboardContent() {
                 </div>
 
                 <aside className="flex flex-col gap-3 sm:gap-4">
-                  <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <UserPlus className="h-4 w-4 text-rose-600 dark:text-rose-400" />
-                        <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Invite employee</h2>
-                      </div>
-                      {isSeatFull && (
-                        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
-                          Seats Full
-                        </span>
-                      )}
-                    </div>
-
-                    {isSeatFull ? (
-                      <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
-                        <p className="font-semibold">Seat limit reached ({seatsUsed}/{seatsLimit} in use)</p>
-                        <p className="mt-1 text-amber-700 dark:text-amber-400">
-                          Pending invitations also reserve seats. Upgrade your subscription to invite more team members.
-                        </p>
-                      </div>
-                    ) : (
-                      <form onSubmit={inviteUserToOrg} className="mt-3 space-y-2.5">
-                        <label className="block">
-                          <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Email address</span>
-                          <input
-                            type="email"
-                            value={inviteEmail}
-                            onChange={(event) => setInviteEmail(event.target.value)}
-                            required
-                            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs sm:text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                            placeholder="colleague@company.com"
-                          />
-                        </label>
-                        <label className="block">
-                          <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Role</span>
-                          <select
-                            value={memberRole}
-                            onChange={(event) => setMemberRole(event.target.value as Exclude<OrganizationRole, "OWNER">)}
-                            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs sm:text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                          >
-                            {assignableRoleOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <button
-                          type="submit"
-                          disabled={isInvitingMember || !canManageTeam || !selectedOrg?.id || !inviteEmail.trim()}
-                          className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-slate-950 px-3 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
-                        >
-                          {isInvitingMember ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MailPlus className="h-3.5 w-3.5" />}
-                          Send invite
-                        </button>
-                      </form>
-                    )}
-
-                    {/* Invite feedback & link copy box */}
-                    {inviteSuccessMsg && (
-                      <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50/90 p-3 text-xs text-emerald-950 dark:border-emerald-900/60 dark:bg-emerald-950/60 dark:text-emerald-200">
-                        <div className="flex items-start gap-2.5">
-                          <MailCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                          <div className="min-w-0 flex-1 space-y-2">
-                            <p className="font-bold leading-snug">{inviteSuccessMsg}</p>
-                            {lastInviteLink && (
-                              <div className="space-y-1">
-                                <p className="text-[11px] font-medium text-emerald-800 dark:text-emerald-300">
-                                  Direct join link:
-                                </p>
-                                <div className="flex items-center gap-1.5">
-                                  <input
-                                    type="text"
-                                    readOnly
-                                    value={lastInviteLink}
-                                    className="w-full rounded-lg border border-emerald-300/80 bg-white px-2.5 py-1 text-[11px] text-slate-800 select-all outline-none dark:border-emerald-800 dark:bg-slate-900 dark:text-slate-100"
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => copyInviteLink(lastInviteLink)}
-                                    className="inline-flex items-center gap-1 shrink-0 rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-2xs hover:bg-emerald-700 transition"
-                                  >
-                                    {copiedLink ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                                    <span>{copiedLink ? "Copied" : "Copy"}</span>
-                                  </button>
-                                </div>
-                              </div>
-                            )}
+                  {canManageTeam ? (
+                    <>
+                      <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <UserPlus className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                            <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Invite employee</h2>
                           </div>
+                          {isSeatFull && (
+                            <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
+                              Seats Full
+                            </span>
+                          )}
                         </div>
-                      </div>
-                    )}
-                  </section>
 
-                  <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <MailPlus className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-                        <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Pending invites</h2>
-                      </div>
-                      <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">
-                        {invitations.filter((invite) => invite.status === "PENDING").length}
-                      </span>
-                    </div>
+                        {isSeatFull ? (
+                          <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
+                            <p className="font-semibold">Seat limit reached ({seatsUsed}/{seatsLimit} in use)</p>
+                            <p className="mt-1 text-amber-700 dark:text-amber-400">
+                              Pending invitations also reserve seats. Upgrade your subscription to invite more team members.
+                            </p>
+                          </div>
+                        ) : (
+                          <form onSubmit={inviteUserToOrg} className="mt-3 space-y-2.5">
+                            <label className="block">
+                              <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Email address</span>
+                              <input
+                                type="email"
+                                value={inviteEmail}
+                                onChange={(event) => setInviteEmail(event.target.value)}
+                                required
+                                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs sm:text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                                placeholder="colleague@company.com"
+                              />
+                            </label>
+                            <label className="block">
+                              <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Role</span>
+                              <select
+                                value={memberRole}
+                                onChange={(event) => setMemberRole(event.target.value as Exclude<OrganizationRole, "OWNER">)}
+                                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs sm:text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                              >
+                                {assignableRoleOptions.map((option) => (
+                                  <option key={option.value} value={option.value}>
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                            <button
+                              type="submit"
+                              disabled={isInvitingMember || !canManageTeam || !selectedOrg?.id || !inviteEmail.trim()}
+                              className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-slate-950 px-3 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
+                            >
+                              {isInvitingMember ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MailPlus className="h-3.5 w-3.5" />}
+                              Send invite
+                            </button>
+                          </form>
+                        )}
 
-                    <div className="mt-2.5 space-y-2">
-                      {invitations.filter((invite) => invite.status === "PENDING").map((invite) => {
-                        const isResending = resendingId === invite.id;
-                        const isResent = resendSuccessId === invite.id;
-                        return (
-                          <div key={invite.id} className="rounded-lg border border-slate-100 bg-slate-50 p-2.5 dark:border-slate-800 dark:bg-slate-850">
-                            <div className="flex flex-col gap-2">
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="min-w-0">
-                                  <p className="truncate text-xs font-black text-slate-900 dark:text-white">
-                                    {invite.email || invite.mobileNumber}
-                                  </p>
-                                  <div className="mt-0.5 flex items-center gap-1.5 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
-                                    <span className="font-semibold text-slate-700 dark:text-slate-300">
-                                      {roleLabel(invite.roleName)}
-                                    </span>
-                                    <span>·</span>
-                                    <span>Expires {new Date(invite.expiresAt).toLocaleDateString()}</span>
+                        {/* Invite feedback & link copy box */}
+                        {inviteSuccessMsg && (
+                          <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50/90 p-3 text-xs text-emerald-950 dark:border-emerald-900/60 dark:bg-emerald-950/60 dark:text-emerald-200">
+                            <div className="flex items-start gap-2.5">
+                              <MailCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                              <div className="min-w-0 flex-1 space-y-2">
+                                <p className="font-bold leading-snug">{inviteSuccessMsg}</p>
+                                {lastInviteLink && (
+                                  <div className="space-y-1">
+                                    <p className="text-[11px] font-medium text-emerald-800 dark:text-emerald-300">
+                                      Direct join link:
+                                    </p>
+                                    <div className="flex items-center gap-1.5">
+                                      <input
+                                        type="text"
+                                        readOnly
+                                        value={lastInviteLink}
+                                        className="w-full rounded-lg border border-emerald-300/80 bg-white px-2.5 py-1 text-[11px] text-slate-800 select-all outline-none dark:border-emerald-800 dark:bg-slate-900 dark:text-slate-100"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => copyInviteLink(lastInviteLink)}
+                                        className="inline-flex items-center gap-1 shrink-0 rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-2xs hover:bg-emerald-700 transition"
+                                      >
+                                        {copiedLink ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                        <span>{copiedLink ? "Copied" : "Copy"}</span>
+                                      </button>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-
-                              <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-200/60 dark:border-slate-800">
-                                {invite.email && canManageTeam && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleResendInvitation(invite.id, invite.email)}
-                                    disabled={isResending || isResent}
-                                    className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-bold transition shadow-2xs ${
-                                      isResent
-                                        ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
-                                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                                    }`}
-                                    title="Resend invitation email with joining link"
-                                  >
-                                    {isResending ? (
-                                      <Loader2 className="h-3 w-3 animate-spin text-rose-600" />
-                                    ) : isResent ? (
-                                      <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                                    ) : (
-                                      <Send className="h-3 w-3 text-slate-500 dark:text-slate-400" />
-                                    )}
-                                    <span>{isResending ? "Sending..." : isResent ? "Sent!" : "Resend email"}</span>
-                                  </button>
                                 )}
-                                <button
-                                  type="button"
-                                  onClick={() => revokePendingInvitation(invite.id)}
-                                  disabled={isRevokingInvitation || !canManageTeam}
-                                  className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-bold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-                                >
-                                  Revoke
-                                </button>
                               </div>
                             </div>
                           </div>
-                        );
-                      })}
-                      {!isInvitationsFetching && invitations.filter((invite) => invite.status === "PENDING").length === 0 && (
-                        <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400">
-                          No pending invitations.
+                        )}
+                      </section>
+
+                      <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <MailPlus className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                            <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Pending invites</h2>
+                          </div>
+                          <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                            {invitations.filter((invite) => invite.status === "PENDING").length}
+                          </span>
+                        </div>
+
+                        <div className="mt-2.5 space-y-2">
+                          {invitations.filter((invite) => invite.status === "PENDING").map((invite) => {
+                            const isResending = resendingId === invite.id;
+                            const isResent = resendSuccessId === invite.id;
+                            return (
+                              <div key={invite.id} className="rounded-lg border border-slate-100 bg-slate-50 p-2.5 dark:border-slate-800 dark:bg-slate-850">
+                                <div className="flex flex-col gap-2">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                      <p className="truncate text-xs font-black text-slate-900 dark:text-white">
+                                        {invite.email || invite.mobileNumber}
+                                      </p>
+                                      <div className="mt-0.5 flex items-center gap-1.5 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
+                                        <span className="font-semibold text-slate-700 dark:text-slate-300">
+                                          {roleLabel(invite.roleName)}
+                                        </span>
+                                        <span>·</span>
+                                        <span>Expires {new Date(invite.expiresAt).toLocaleDateString()}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-200/60 dark:border-slate-800">
+                                    {invite.email && (
+                                      <button
+                                        type="button"
+                                        onClick={() => handleResendInvitation(invite.id, invite.email)}
+                                        disabled={isResending || isResent}
+                                        className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-bold transition shadow-2xs ${
+                                          isResent
+                                            ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
+                                            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                                        }`}
+                                        title="Resend invitation email with joining link"
+                                      >
+                                        {isResending ? (
+                                          <Loader2 className="h-3 w-3 animate-spin text-rose-600" />
+                                        ) : isResent ? (
+                                          <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                                        ) : (
+                                          <Send className="h-3 w-3 text-slate-500 dark:text-slate-400" />
+                                        )}
+                                        <span>{isResending ? "Sending..." : isResent ? "Sent!" : "Resend email"}</span>
+                                      </button>
+                                    )}
+                                    <button
+                                      type="button"
+                                      onClick={() => revokePendingInvitation(invite.id)}
+                                      disabled={isRevokingInvitation}
+                                      className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-bold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                                    >
+                                      Revoke
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                          {!isInvitationsFetching && invitations.filter((invite) => invite.status === "PENDING").length === 0 && (
+                            <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400">
+                              No pending invitations.
+                            </p>
+                          )}
+                        </div>
+                      </section>
+                    </>
+                  ) : (
+                    <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                        <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Your Workspace Access</h2>
+                      </div>
+                      <div className="mt-3 rounded-xl border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-850">
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-500 dark:text-slate-400 font-medium">Assigned Role:</span>
+                          <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${roleTone[myRole || "VIEWER"] || roleTone.VIEWER}`}>
+                            {roleLabel(myRole)}
+                          </span>
+                        </div>
+                        <p className="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed text-[11px] sm:text-xs">
+                          {myRole === "AGENT"
+                            ? "You can publish listings under this company brand, access shared contact unlock allowances, and manage your assigned inventory."
+                            : myRole === "MANAGER"
+                            ? "You can oversee team listings, manage assigned agents, and utilize shared team allowances."
+                            : "You have view access to this organization workspace and its public properties."}
                         </p>
-                      )}
-                    </div>
-                  </section>
+                      </div>
+                      <div className="mt-3.5 space-y-2">
+                        <Link
+                          href="/propertyListing"
+                          className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-rose-700"
+                        >
+                          <Building2 className="h-3.5 w-3.5" />
+                          <span>Post property under org</span>
+                        </Link>
+                        <Link
+                          href={selectedOrg?.id ? `/dashboard/properties?scope=org&orgId=${selectedOrg.id}` : "/dashboard/properties?scope=org"}
+                          className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-2xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-750"
+                        >
+                          <span>View organization listings</span>
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        </Link>
+                      </div>
+                    </section>
+                  )}
 
                   {/* Org Contact Unlocks & Usage History */}
                   <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">

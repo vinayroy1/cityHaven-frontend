@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ArrowLeft, Home, Building2, ShieldCheck, Users } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PropertyListingFlow } from "@/components/propertyListing/PropertyListingFlow";
-import { Toaster } from "@/components/ui/sonner";
 import { buildCanonical } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
 
@@ -145,8 +144,6 @@ export default function PropertyListingPage() {
           </Suspense>
         </div>
       </main>
-
-      <Toaster richColors />
     </div>
   );
 }

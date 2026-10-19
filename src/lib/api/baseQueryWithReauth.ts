@@ -106,42 +106,31 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
     }
   }
 
-  // Display user-friendly mobile toast popup for API errors that automatically disappears
+  // Display toast popup for API mutation errors or server failures (deduplicated by message id)
   if (result?.error && typeof window !== "undefined") {
-    const errorData = result.error.data as any;
-    const message =
-      errorData?.message ||
-      errorData?.error ||
-      (typeof result.error.data === "string" ? result.error.data : null) ||
-      (result.error.status === "FETCH_ERROR" ? "Network error. Please check your connection." : "Something went wrong. Please try again.");
-
-    // Ignore abort/silent cancellations
-    if (result.error.status !== "PARSING_ERROR" && message) {
-      toast.error(message, {
-        duration: 3500,
-      });
-    }
-  }
-
-  // Display success toast popup on any POST, PUT, PATCH, or DELETE API response
-  if (!result?.error && typeof window !== "undefined") {
     const method = (typeof args === "string" ? "GET" : (args.method || "GET")).toUpperCase();
-    const url = typeof args === "string" ? args : args.url;
+    const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
+    const status = result.error.status;
 
-    // Filter mutation methods (POST, PUT, PATCH, DELETE) and avoid background heartbeats/refreshes
-    if (["POST", "PUT", "PATCH", "DELETE"].includes(method) && !url.includes("/auth/refresh-token")) {
-      const responseData = result.data as any;
-      const successMessage =
-        responseData?.message ||
-        (method === "DELETE"
-          ? "Item deleted successfully"
-          : method === "PUT" || method === "PATCH"
-          ? "Updated successfully"
-          : "Action completed successfully");
+    // Avoid popping up floating error toasts on silent background GET queries (such as 401 unauthenticated, 403 forbidden, or 404 not found)
+    // Only display toast for user-initiated mutations, network fetch failures, or 500 server errors
+    if (isMutation || status === 500 || status === "FETCH_ERROR") {
+      const errorData = result.error.data as any;
+      const message =
+        errorData?.message ||
+        errorData?.error ||
+        (typeof result.error.data === "string" ? result.error.data : null) ||
+        (status === "FETCH_ERROR"
+          ? "Network error. Please check your connection."
+          : "Something went wrong. Please try again.");
 
-      toast.success(successMessage, {
-        duration: 3500,
-      });
+      // Ignore abort/silent cancellations
+      if (status !== "PARSING_ERROR" && message) {
+        toast.error(message, {
+          id: message,
+          duration: 3500,
+        });
+      }
     }
   }
 
