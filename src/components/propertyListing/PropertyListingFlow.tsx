@@ -46,6 +46,7 @@ import { WorkspacePicker } from "./WorkspacePicker";
 import { MandatoryFieldsTracker } from "./MandatoryFieldsTracker";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import { panel } from "./theme";
+import { registerBackHandler } from "@/lib/navigation/backNavigation";
 
 import { AdminOwnerSourcingCard } from "./AdminOwnerSourcingCard";
 import { AdminDeduplicationAlert } from "./AdminDeduplicationAlert";
@@ -330,6 +331,16 @@ export function PropertyListingFlow({
     setMaxVisited((m) => Math.max(m, i));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Intercept back presses in Expo WebView or browser when in steps > 0
+  useEffect(() => {
+    if (stepIndex <= 0) return;
+    const unregister = registerBackHandler(() => {
+      goToStep(stepIndex - 1);
+      return true; // handled
+    });
+    return unregister;
+  }, [stepIndex]);
 
   const handleNext = async () => {
     if (isViewerInSelectedOrg) {

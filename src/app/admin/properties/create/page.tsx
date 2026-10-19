@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Building2, Sparkles, UserPlus, ShieldCheck } from "lucide-react";
 import { PropertyListingFlow } from "@/components/propertyListing/PropertyListingFlow";
+import { BackButton } from "@/components/common/BackButton";
 
 export default function AdminPropertyCreatePage() {
   return (
@@ -32,13 +33,12 @@ export default function AdminPropertyCreatePage() {
           </p>
         </div>
 
-        <Link
-          href="/admin/properties"
-          className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Back to QC Queue
-        </Link>
+        <BackButton
+          fallbackHref="/admin/properties"
+          label="Back to QC Queue"
+          variant="button"
+          className="self-start sm:self-auto"
+        />
       </div>
 
       {/* Embedded Full-Scope Property Listing Flow in Admin Mode */}

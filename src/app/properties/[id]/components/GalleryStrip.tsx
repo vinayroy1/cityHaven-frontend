@@ -1,6 +1,8 @@
 "use client";
+
 import React, { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Maximize, X } from "lucide-react";
+import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 type GalleryStripProps = {
   images: string[];
@@ -11,6 +13,12 @@ type GalleryStripProps = {
 export function GalleryStrip({ images, title = "Property gallery", subtitle = "Curated by owner • High resolution" }: GalleryStripProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [open, setOpen] = useState(false);
+
+  useModalBackHandler({
+    isOpen: open,
+    onClose: () => setOpen(false),
+    name: "GalleryLightbox",
+  });
 
   const orderedImages = useMemo(() => images.filter(Boolean), [images]);
   const activeImage = orderedImages[activeIndex] ?? orderedImages[0];

@@ -7,6 +7,7 @@ import { ArrowLeft, Heart, Search, SlidersHorizontal } from "lucide-react";
 import { HeaderNav } from "../homePage/components/HeaderNav";
 import { FooterLinks } from "../homePage/components/FooterLinks";
 import { BrandLogo } from "@/components/common/BrandLogo";
+import { BackButton } from "@/components/common/BackButton";
 import { ResultsList } from "./components/ResultsList";
 import { SearchBar, SearchEditor } from "@/components/search/SearchBar";
 import { MobileSearchFlow } from "@/components/search/MobileSearchFlow";
@@ -172,17 +173,7 @@ export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent,
 
       <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 px-2 pb-2 shadow-xs backdrop-blur-xl sm:hidden dark:border-slate-800 dark:bg-slate-950/95">
         <div className="grid h-12 grid-cols-[2.75rem_1fr_2.75rem] items-center">
-          <button
-            type="button"
-            onClick={() => {
-              if (window.history.length > 1) router.back();
-              else router.push("/");
-            }}
-            aria-label="Back"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-slate-700 active:bg-slate-100 dark:text-slate-200 dark:active:bg-slate-800"
-          >
-            <ArrowLeft size={20} />
-          </button>
+          <BackButton fallbackHref="/" variant="ghost" size="md" ariaLabel="Back to Home" />
           <div className="flex justify-center">
             <BrandLogo size="sm" />
           </div>

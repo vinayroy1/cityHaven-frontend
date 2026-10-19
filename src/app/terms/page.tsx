@@ -17,6 +17,7 @@ import {
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { buildCanonical } from "@/constants/seo";
+import { BackButton } from "@/components/common/BackButton";
 
 export const metadata: Metadata = {
   title: "Terms of Service & Regulatory Compliance",
@@ -154,13 +155,7 @@ export default function TermsPage() {
         <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
           {/* Back button */}
           <div>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Back to Home</span>
-            </Link>
+            <BackButton fallbackHref="/" label="Back to Home" variant="pill" size="sm" />
           </div>
 
           {/* Hero Header */}

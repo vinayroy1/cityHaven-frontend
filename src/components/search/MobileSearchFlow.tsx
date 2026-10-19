@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { ArrowLeft, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 import { FilterSectionsEditor } from "./FilterSheet";
 import { clearAllFilters, countActiveFilters, type SearchState } from "./searchQuery";
+import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 type Props = {
   open: boolean;
@@ -19,6 +20,12 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
   const [mounted, setMounted] = React.useState(false);
   const [draft, setDraft] = React.useState(value);
   const [viewportStyle, setViewportStyle] = React.useState<React.CSSProperties>({});
+
+  useModalBackHandler({
+    isOpen: open,
+    onClose,
+    name: "MobileSearchFlow",
+  });
 
   React.useEffect(() => setMounted(true), []);
   React.useEffect(() => {

@@ -2,9 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, Lock, KeyRound } from "lucide-react";
+import { Lock, KeyRound } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
+import { BackButton } from "@/components/common/BackButton";
 
 export default function ResetPasswordPage() {
   return (
@@ -13,13 +14,9 @@ export default function ResetPasswordPage() {
 
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xl dark:border-slate-800 dark:bg-slate-900">
-          <Link
-            href="/login"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors mb-4"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Back to Login</span>
-          </Link>
+          <div className="mb-4">
+            <BackButton fallbackHref="/login" label="Back to Login" variant="ghost" size="sm" />
+          </div>
 
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
             <Lock className="h-6 w-6" />

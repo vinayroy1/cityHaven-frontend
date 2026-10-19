@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
+import { BackButton } from "@/components/common/BackButton";
 
 export const metadata: Metadata = {
   title: "About Awasio - Smarter Real Estate Discovery",
@@ -122,13 +123,7 @@ export default function AboutPage() {
         <div className="relative mx-auto flex max-w-6xl flex-col gap-10 px-4 py-8 sm:px-6 lg:px-8">
           {/* Breadcrumb / Back Button */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm backdrop-blur transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Back to Home</span>
-            </Link>
+            <BackButton fallbackHref="/" label="Back to Home" variant="pill" size="sm" />
           </div>
 
           {/* Hero Section */}

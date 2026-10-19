@@ -3,7 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Edit3, MapPin, Trash2 } from "lucide-react";
+import { Edit3, MapPin, Trash2 } from "lucide-react";
+import { BackButton } from "@/components/common/BackButton";
 import { useDeletePropertyMutation, useGetPropertyQuery } from "@/features/propertyListing/api";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 
@@ -27,13 +28,7 @@ export default function ManagePropertyPage() {
       <HeaderNav />
       <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
         <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back
-          </button>
+          <BackButton fallbackHref="/dashboard/properties" label="Back" variant="pill" />
           <div className="flex gap-2">
             <Link
               href={`/propertyListing?id=${propertyId}`}

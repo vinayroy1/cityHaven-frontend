@@ -15,6 +15,7 @@ import { PropertyDetailsGrid, type DetailGroup } from "./components/PropertyDeta
 import { QuickFactsGrid, type QuickFact } from "./components/QuickFactsGrid";
 import { TransactionCard } from "./components/TransactionCard";
 import { getBrokerageDisplay } from "@/lib/propertyListing/formatBrokerage";
+import { BackButton } from "@/components/common/BackButton";
 
 type PropertyMedia = { url?: string | null; type?: string | null };
 type AmenityGroup = {
@@ -742,7 +743,16 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       <HeaderNav />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:py-7">
-        <nav aria-label="Breadcrumb" className="flex flex-wrap gap-2 text-xs text-zinc-500 dark:text-slate-400"><a href="/" className="hover:text-emerald-700 dark:hover:text-emerald-400">Home</a><span>/</span><a href="/propertySearch" className="hover:text-emerald-700 dark:hover:text-emerald-400">Properties</a><span>/</span><span>{property.propertySubType?.name ?? property.propertyType?.name ?? "Details"}</span></nav>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <BackButton fallbackHref="/propertySearch" label="Back to Search" variant="pill" size="sm" />
+          <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-slate-400">
+            <a href="/" className="hover:text-emerald-700 dark:hover:text-emerald-400">Home</a>
+            <span>/</span>
+            <a href="/propertySearch" className="hover:text-emerald-700 dark:hover:text-emerald-400">Properties</a>
+            <span>/</span>
+            <span className="truncate max-w-[200px] sm:max-w-none">{property.propertySubType?.name ?? property.propertyType?.name ?? "Details"}</span>
+          </nav>
+        </div>
 
         <section className="py-4">
           <HeroHeader

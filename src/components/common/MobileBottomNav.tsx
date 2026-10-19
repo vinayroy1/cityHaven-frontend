@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { ThemeToggle } from "./ThemeToggle";
+import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 interface UserProfile {
   name?: string;
@@ -124,6 +125,12 @@ export function MobileBottomNav() {
       document.body.style.overflow = "";
     };
   }, [drawerOpen]);
+
+  useModalBackHandler({
+    isOpen: drawerOpen,
+    onClose: () => setDrawerOpen(false),
+    name: "MobileBottomNavDrawer",
+  });
 
   // Hide on excluded full-screen paths
   const shouldHide = HIDDEN_ROUTES.some((route) => pathname?.startsWith(route));

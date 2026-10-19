@@ -27,6 +27,7 @@ import type { Agent } from "@/data/agents";
 import { saveVisitBooking } from "@/lib/services/visitBookings";
 import { BookVisitModal } from "@/components/agents/BookVisitModal";
 import { getAgentProfile } from "@/lib/services/agentProfile";
+import { BackButton } from "@/components/common/BackButton";
 
 interface AgentProfileClientProps {
   agent: Agent;
@@ -141,13 +142,7 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
         <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/50 to-transparent" />
 
         <div className="absolute top-4 left-4 sm:left-6 z-10 flex items-center gap-2">
-          <Link
-            href="/agents"
-            className="inline-flex items-center gap-1.5 rounded-full bg-black/50 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur transition hover:bg-black/70"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back to all advisors
-          </Link>
+          <BackButton fallbackHref="/agents" label="Back to all advisors" variant="pill" size="sm" />
         </div>
 
         <div className="absolute top-4 right-4 sm:right-6 z-10 flex items-center gap-2">

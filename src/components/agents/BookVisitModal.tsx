@@ -5,6 +5,7 @@ import { BadgeCheck, Calendar, CheckCircle2, Clock, MapPin, Phone, ShieldCheck, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Agent } from "@/data/agents";
 import { saveVisitBooking } from "@/lib/services/visitBookings";
+import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 interface BookVisitModalProps {
   agent: Agent | null;
@@ -14,6 +15,12 @@ interface BookVisitModalProps {
 }
 
 export function BookVisitModal({ agent, isOpen, onClose, propertyTitle }: BookVisitModalProps) {
+  useModalBackHandler({
+    isOpen,
+    onClose,
+    name: "BookVisitModal",
+  });
+
   const [tourDay, setTourDay] = useState("This Weekend");
   const [tourSlot, setTourSlot] = useState("Afternoon (1 PM - 4 PM)");
   const [clientName, setClientName] = useState("");

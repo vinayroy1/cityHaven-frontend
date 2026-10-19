@@ -1,10 +1,11 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Users, MessageSquare, Sparkles, HelpCircle, ArrowRight } from "lucide-react";
+import { Users, MessageSquare, Sparkles, HelpCircle, ArrowRight } from "lucide-react";
 import { buildCanonical } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
+import { BackButton } from "@/components/common/BackButton";
 
 export const metadata: Metadata = {
   title: "Community Forum - Awasio",
@@ -27,13 +28,9 @@ export default function CommunityPage() {
         {/* Hero Banner */}
         <div className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/50">
           <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors mb-4"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Back to Home</span>
-            </Link>
+            <div className="mb-4">
+              <BackButton fallbackHref="/" label="Back to Home" variant="ghost" size="sm" />
+            </div>
 
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
               <Users className="h-4 w-4" />

@@ -32,6 +32,8 @@ import { useCreateProjectMutation } from "@/features/projects/api";
 import { LocalitySearchDropdown } from "./components/LocalitySearchDropdown";
 import { ProjectMediaUpload, type UploadedBrochure } from "./components/ProjectMediaUpload";
 import { CDN_ASSETS } from "@/config/cdn";
+import { BackButton } from "@/components/common/BackButton";
+import { registerBackHandler } from "@/lib/navigation/backNavigation";
 
 
 
@@ -169,6 +171,17 @@ export default function PostProjectPage() {
   const router = useRouter();
   const [createProject, { isLoading: isPublishing }] = useCreateProjectMutation();
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+
+  // Intercept back presses in Expo WebView or browser to decrement wizard step
+  useEffect(() => {
+    if (currentStep <= 1) return;
+    const unregister = registerBackHandler(() => {
+      setCurrentStep((prev) => (prev > 1 ? ((prev - 1) as 1 | 2 | 3 | 4) : 1));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return true; // handled
+    });
+    return unregister;
+  }, [currentStep]);
 
   // Step 1: Project Identity & Location
   const [name, setName] = useState("");
@@ -438,13 +451,9 @@ export default function PostProjectPage() {
           {/* Top Bar */}
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
-              <Link
-                href="/new-projects"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 transition-colors mb-1.5"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                <span>Back to New Projects</span>
-              </Link>
+              <div className="mb-1.5">
+                <BackButton fallbackHref="/new-projects" label="Back to New Projects" variant="ghost" />
+              </div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white">
                 Builder & Developer Project Portal
               </h1>

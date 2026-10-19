@@ -9,6 +9,7 @@ import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { apiClient } from "@/lib/services/api/client";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { BrandLogo } from "@/components/common/BrandLogo";
+import { BackButton } from "@/components/common/BackButton";
 
 export default function VerifyOtpPage() {
   const router = useRouter();
@@ -83,13 +84,7 @@ export default function VerifyOtpPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-indigo-50/40 text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-150">
       {/* Top Bar with Back Link & Theme Switcher */}
       <header className="flex items-center justify-between px-6 py-4">
-        <Link
-          href="/login"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Back to Login</span>
-        </Link>
+        <BackButton fallbackHref="/login" label="Back to Login" variant="ghost" size="sm" />
         <ThemeToggle />
       </header>
 

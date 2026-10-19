@@ -10,6 +10,7 @@ import { useExpressFlatmateInterestMutation } from "@/features/flatmates/api";
 import { useRouter } from "next/navigation";
 import { APP_CONFIG } from "@/constants/app-config";
 import type { FlatmateListing } from "@/types/flatmate.types";
+import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 interface FlatmateInterestModalProps {
   listing: FlatmateListing | null;
@@ -33,6 +34,12 @@ export function FlatmateInterestModal({
   const [message, setMessage] = useState("");
   const router = useRouter();
   const [expressInterest, { isLoading }] = useExpressFlatmateInterestMutation();
+
+  useModalBackHandler({
+    isOpen,
+    onClose,
+    name: "FlatmateInterestModal",
+  });
 
   if (!listing) return null;
 

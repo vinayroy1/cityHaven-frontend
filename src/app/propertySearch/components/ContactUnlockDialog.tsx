@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, AlertCircle, Lock, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { ContactPlan, ContactStep } from "./resultCardTypes";
+import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 type OwnerContact = { name: string | null; phone: string | null } | null;
 
@@ -66,6 +67,12 @@ export function ContactUnlockDialog({
   onSelectedPlanChange,
   onPurchasePlan,
 }: ContactUnlockDialogProps) {
+  useModalBackHandler({
+    isOpen: open,
+    onClose: () => onOpenChange(false),
+    name: "ContactUnlockDialog",
+  });
+
   const activeScopeObj = scopes.find((s) => s.id === selectedScope);
   const isOrgScope = selectedScope !== "PERSONAL";
 

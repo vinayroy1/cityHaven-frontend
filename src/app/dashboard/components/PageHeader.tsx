@@ -1,6 +1,5 @@
 import React from "react";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { BackButton } from "@/components/common/BackButton";
 
 type PageHeaderProps = {
   tag?: string;
@@ -16,13 +15,12 @@ export function PageHeader({ tag, title, subtitle, actions, backHref, backLabel 
     <div className="flex flex-col gap-3 rounded-3xl border border-white/70 bg-white/90 p-4 sm:px-6 sm:py-5 shadow-[0_16px_50px_-32px_rgba(15,23,42,0.55)] backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 w-full max-w-full">
       {backHref && (
         <div className="mb-1">
-          <Link
-            href={backHref}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>{backLabel}</span>
-          </Link>
+          <BackButton
+            fallbackHref={backHref}
+            label={backLabel}
+            variant="ghost"
+            size="sm"
+          />
         </div>
       )}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">

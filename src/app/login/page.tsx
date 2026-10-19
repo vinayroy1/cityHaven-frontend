@@ -38,6 +38,8 @@ import {
 import { ProfileCompletion } from "./ProfileCompletion";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { BrandLogo } from "@/components/common/BrandLogo";
+import { BackButton } from "@/components/common/BackButton";
+import { registerBackHandler } from "@/lib/navigation/backNavigation";
 
 // 6-digit split OTP input component with auto-focus & paste support
 function SplitOtpInput({
@@ -231,6 +233,31 @@ function LoginContent() {
       setIsForgotPassword(false);
     }
   }, [searchParams]);
+
+  // Handle sub-step back navigation for forgot password & signup flows in Expo / browser
+  useEffect(() => {
+    if (isForgotPassword) {
+      return registerBackHandler(() => {
+        if (forgotStep === "reset_password") {
+          setForgotStep("enter_email");
+        } else {
+          setIsForgotPassword(false);
+        }
+        return true;
+      });
+    }
+
+    if (isSignup) {
+      return registerBackHandler(() => {
+        if (signupStep === "verify_email") {
+          setSignupStep("details");
+        } else {
+          setIsSignup(false);
+        }
+        return true;
+      });
+    }
+  }, [isForgotPassword, forgotStep, isSignup, signupStep]);
 
   // Resend OTP countdown timer
   useEffect(() => {
@@ -522,10 +549,9 @@ function LoginContent() {
         {/* Left Column: Interactive Login/Auth Card */}
         <section className="flex items-center justify-center p-4 sm:p-8 lg:p-12">
           <div className="w-full max-w-md rounded-3xl border border-slate-200/80 bg-white/95 p-6 sm:p-8 shadow-[0_24px_70px_-20px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-black/60">
-            {/* Brand Header */}
-            <div className="mb-6 flex items-center justify-between">
-              <BrandLogo size="md" showTagline taglineText="Verified Real Estate" />
-
+            {/* Top Navigation & Brand Header */}
+            <div className="mb-4 flex items-center justify-between">
+              <BackButton fallbackHref={redirectTo || "/"} label="Back" variant="ghost" size="sm" />
               <div className="flex items-center gap-2">
                 <ThemeToggle compact />
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300">
@@ -533,6 +559,10 @@ function LoginContent() {
                   OTP Secure
                 </span>
               </div>
+            </div>
+
+            <div className="mb-6">
+              <BrandLogo size="md" showTagline taglineText="Verified Real Estate" />
             </div>
 
 

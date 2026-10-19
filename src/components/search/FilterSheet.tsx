@@ -16,6 +16,7 @@ import {
   type FilterSection,
 } from "./searchConfig";
 import { primaryButton, ghostButton, linkButton } from "./theme";
+import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 // --- pure helpers -----------------------------------------------------
 
@@ -337,6 +338,12 @@ export function FilterSheet({
   const [draft, setDraft] = React.useState(state);
   const [mounted, setMounted] = React.useState(false);
   const [mobileViewportStyle, setMobileViewportStyle] = React.useState<React.CSSProperties>({});
+
+  useModalBackHandler({
+    isOpen: open,
+    onClose,
+    name: "FilterSheet",
+  });
 
   React.useEffect(() => {
     setMounted(true);

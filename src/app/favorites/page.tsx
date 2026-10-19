@@ -28,6 +28,7 @@ import {
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { ResultCard } from "@/app/propertySearch/components/ResultCard";
+import { BackButton } from "@/components/common/BackButton";
 
 export default function FavoritesPage() {
   const router = useRouter();
@@ -75,13 +76,7 @@ export default function FavoritesPage() {
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
           {/* Top Breadcrumb & Header */}
           <div className="mb-4">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Back to Dashboard</span>
-            </Link>
+            <BackButton fallbackHref="/dashboard" label="Back to Dashboard" variant="ghost" size="sm" />
           </div>
 
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

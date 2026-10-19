@@ -24,6 +24,7 @@ import {
 import { useScheduleVisitMutation } from "@/features/propertyListing/api";
 import { APP_CONFIG } from "@/constants/app-config";
 import { getStoredUserContact } from "@/lib/auth/storedUser";
+import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 export interface ScheduleVisitDialogProps {
   open: boolean;
@@ -62,6 +63,11 @@ export function ScheduleVisitDialog({
   property,
   initialTourType = "IN_PERSON",
 }: ScheduleVisitDialogProps) {
+  useModalBackHandler({
+    isOpen: open,
+    onClose: () => onOpenChange(false),
+    name: "ScheduleVisitDialog",
+  });
   // Generate next 7 days for the date selector
   const availableDates = useMemo(() => {
     const dates = [];

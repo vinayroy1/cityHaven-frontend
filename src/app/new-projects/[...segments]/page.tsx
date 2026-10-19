@@ -11,6 +11,7 @@ import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import type { ProjectListing } from "@/types/project.types";
 import { ProjectDetailInteractive } from "../components/ProjectDetailInteractive";
 import { NewProjectsClient } from "../components/NewProjectsClient";
+import { BackButton } from "@/components/common/BackButton";
 
 type Props = {
   params: Promise<{ segments: string[] }>;
@@ -189,13 +190,7 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
               {/* Breadcrumb Bar */}
               <div className="mb-4 flex items-center justify-between">
-                <Link
-                  href="/new-projects"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 transition-colors"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  <span>Back to all projects</span>
-                </Link>
+                <BackButton fallbackHref="/new-projects" label="Back to all projects" variant="pill" size="sm" />
 
                 <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400">
                   <Link href="/" className="hover:underline">

@@ -24,6 +24,7 @@ import {
 import { APP_CONFIG } from "@/constants/app-config";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 interface UserProfile {
   name?: string;
@@ -70,6 +71,20 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   const [currentSearch, setCurrentSearch] = React.useState("");
   const accountRef = React.useRef<HTMLDivElement | null>(null);
   const moreNavRef = React.useRef<HTMLDivElement | null>(null);
+
+  useModalBackHandler({
+    isOpen: accountOpen,
+    onClose: () => setAccountOpen(false),
+    pushHistoryState: false,
+    name: "HeaderNavAccountDropdown",
+  });
+
+  useModalBackHandler({
+    isOpen: moreNavOpen,
+    onClose: () => setMoreNavOpen(false),
+    pushHistoryState: false,
+    name: "HeaderNavMoreDropdown",
+  });
 
   const loginHref = `/login?redirect=${encodeURIComponent(pathname || "/")}`;
 

@@ -41,6 +41,7 @@ import { PropertyListingLocalitySelector, type LocalitySelection } from "@/compo
 import { useCreateFlatmateListingMutation } from "@/features/flatmates/api";
 import { useGetPresignedUploadUrlMutation } from "@/features/propertyListing/api";
 import type { FlatmateListingMode, FlatmateListingInput } from "@/types/flatmate.types";
+import { registerBackHandler } from "@/lib/navigation/backNavigation";
 
 const ROOM_TYPES = ["Private Room", "Shared Room (Twin)", "Shared Room (3+)", "Whole Flat"];
 const BHK_OPTIONS = [1, 2, 3, 4, 5];
@@ -71,6 +72,17 @@ export function FlatmateListingWizard() {
   const [getPresignedUploadUrl] = useGetPresignedUploadUrlMutation();
 
   const [step, setStep] = useState(1);
+
+  // Intercept back presses in Expo WebView or browser to decrement wizard step
+  React.useEffect(() => {
+    if (step <= 1) return;
+    const unregister = registerBackHandler(() => {
+      setStep((s) => Math.max(1, s - 1));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return true; // handled
+    });
+    return unregister;
+  }, [step]);
 
   // Form state
   const [mode, setMode] = useState<FlatmateListingMode>("HAVE_ROOM");
