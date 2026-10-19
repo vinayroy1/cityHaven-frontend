@@ -43,6 +43,7 @@ export const API_ENDPOINTS = {
     invitations: (id: number | string) => `${BASE}/organizations/${id}/invitations`,
     invitation: (id: number | string, invitationId: number | string) => `${BASE}/organizations/${id}/invitations/${invitationId}`,
     resendInvitation: (id: number | string, invitationId: number | string) => `${BASE}/organizations/${id}/invitations/${invitationId}/resend`,
+    publicInvitation: (token: string) => `${BASE}/organizations/invitations/${token}`,
     acceptInvitation: (token: string) => `${BASE}/organizations/invitations/${token}/accept`,
     rejectInvitation: (token: string) => `${BASE}/organizations/invitations/${token}/reject`,
     transferOwner: (id: number | string) => `${BASE}/organizations/${id}/transfer-owner`,

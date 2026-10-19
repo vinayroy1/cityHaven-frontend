@@ -67,6 +67,23 @@ export type OrganizationInvitation = {
   invitedBy?: OrganizationMember["user"];
 };
 
+export type PublicOrganizationInvitation = {
+  id: number;
+  organizationId: number;
+  email?: string | null;
+  mobileNumber?: string | null;
+  roleName: Exclude<OrganizationRole, "OWNER">;
+  expiresAt: string;
+  status: string;
+  organization: {
+    id: number;
+    name: string;
+    type?: string | null;
+    logo?: string | null;
+    address?: string | null;
+  };
+};
+
 export type OrganizationActivity = {
   id: number;
   organizationId: number;
@@ -217,6 +234,11 @@ export const organizationsApi = createApi({
         unwrap<OrganizationActivity[]>(response) ?? [],
       providesTags: (_result, _error, orgId) => [{ type: "OrganizationActivity", id: orgId }],
     }),
+    getPublicOrganizationInvitation: builder.query<PublicOrganizationInvitation, string>({
+      query: (token) => ({ url: API_ENDPOINTS.organizations.publicInvitation(token), method: "GET" }),
+      transformResponse: (response: { data?: PublicOrganizationInvitation } | PublicOrganizationInvitation) =>
+        unwrap<PublicOrganizationInvitation>(response),
+    }),
     acceptOrganizationInvitation: builder.mutation<OrganizationMember, string>({
       query: (token) => ({ url: API_ENDPOINTS.organizations.acceptInvitation(token), method: "POST" }),
       transformResponse: (response: { data?: OrganizationMember } | OrganizationMember) => unwrap<OrganizationMember>(response),
@@ -244,6 +266,7 @@ export const {
   useResendOrganizationInvitationMutation,
   useTransferOrganizationOwnerMutation,
   useOrganizationActivityQuery,
+  useGetPublicOrganizationInvitationQuery,
   useAcceptOrganizationInvitationMutation,
   useRejectOrganizationInvitationMutation,
 } = organizationsApi;

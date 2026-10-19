@@ -219,8 +219,14 @@ function LoginContent() {
     }
   }, [redirectTo, router]);
 
-  // Sync tab/mode from query parameters
+  // Sync tab/mode and email from query parameters
   useEffect(() => {
+    const emailParam = searchParams.get("email");
+    if (emailParam) {
+      const cleanEmail = emailParam.trim();
+      setLoginId(cleanEmail);
+      setEmail(cleanEmail);
+    }
     const mode = searchParams.get("mode") || searchParams.get("tab");
     if (mode === "forgot" || mode === "reset") {
       setIsForgotPassword(true);
@@ -568,6 +574,18 @@ function LoginContent() {
 
 
 
+
+            {redirectTo.includes("/dashboard/organization/invitations") && (
+              <div className="mb-4 flex items-start gap-2.5 rounded-2xl border border-sky-200 bg-sky-50/90 p-3.5 text-xs text-sky-900 dark:border-sky-900/60 dark:bg-sky-950/40 dark:text-sky-200 animate-in fade-in slide-in-from-top-1">
+                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400" />
+                <div>
+                  <p className="font-bold">Team Invitation Pending</p>
+                  <p className="mt-0.5 text-[11px] text-sky-700 dark:text-sky-300">
+                    Sign in or create your account{email ? ` with ${email}` : ""} to accept your organization workspace invite.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {successMessage && (
               <div className="mb-4 flex items-start gap-2.5 rounded-2xl border border-emerald-200 bg-emerald-50/90 p-3.5 text-xs text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200 animate-in fade-in slide-in-from-top-1">

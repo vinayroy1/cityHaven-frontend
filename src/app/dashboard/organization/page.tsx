@@ -239,7 +239,7 @@ function OrganizationDashboardContent() {
       setInviteEmail("");
       setMemberRole("AGENT");
       if (invitation.token && typeof window !== "undefined") {
-        setLastInviteLink(`${window.location.origin}/login?redirect=/dashboard/organization/invitations/${invitation.token}`);
+        setLastInviteLink(`${window.location.origin}/dashboard/organization/invitations/${invitation.token}`);
       }
       if (invitation.emailSent) {
         setInviteSuccessMsg(`Invitation email sent directly to ${targetEmail} with joining link!`);
@@ -260,7 +260,7 @@ function OrganizationDashboardContent() {
       const res = await resendInvitation({ orgId: selectedOrg.id, invitationId }).unwrap();
       setResendSuccessId(invitationId);
       if (res?.token && typeof window !== "undefined") {
-        setLastInviteLink(`${window.location.origin}/login?redirect=/dashboard/organization/invitations/${res.token}`);
+        setLastInviteLink(`${window.location.origin}/dashboard/organization/invitations/${res.token}`);
       }
       setInviteSuccessMsg(`Invitation email resent to ${email || "member"}!`);
       setTimeout(() => setResendSuccessId(null), 3500);
