@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, AlertCircle, Lock } from "lucide-react";
+import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, AlertCircle, Lock, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { ContactPlan, ContactStep } from "./resultCardTypes";
 
@@ -35,6 +35,7 @@ type ContactUnlockDialogProps = {
   scopes?: ScopeOption[];
   selectedScope?: "PERSONAL" | number;
   onScopeChange?: (scope: "PERSONAL" | number) => void;
+  onUnlockContact?: () => void;
   onLeadNameChange?: (value: string) => void;
   onLeadEmailChange?: (value: string) => void;
   onLeadPhoneChange?: (value: string) => void;
@@ -61,6 +62,7 @@ export function ContactUnlockDialog({
   scopes = [],
   selectedScope = "PERSONAL",
   onScopeChange,
+  onUnlockContact,
   onSelectedPlanChange,
   onPurchasePlan,
 }: ContactUnlockDialogProps) {
@@ -140,7 +142,32 @@ export function ContactUnlockDialog({
 
           {contactStep === "plans" && (
             <>
-              {isOrgScope && credits === 0 && (
+              {(activeScopeObj?.credits ?? credits) > 0 && onUnlockContact && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50/90 p-4 text-xs text-emerald-900 shadow-sm dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200">
+                  <div className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
+                    <div>
+                      <p className="font-bold text-sm text-emerald-950 dark:text-emerald-100">
+                        {activeScopeObj?.credits ?? credits} Contact Credit{(activeScopeObj?.credits ?? credits) === 1 ? "" : "s"} Available
+                      </p>
+                      <p className="text-emerald-700 dark:text-emerald-300 mt-0.5">
+                        You have active credits in {isOrgScope ? activeScopeObj?.name : "your Personal Account"}. Unlock this owner immediately without purchasing a new pack.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={onUnlockContact}
+                    className="inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60 transition"
+                  >
+                    {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PhoneCall className="h-3.5 w-3.5" />}
+                    <span>Unlock with 1 Credit</span>
+                  </button>
+                </div>
+              )}
+
+              {isOrgScope && (activeScopeObj?.credits ?? credits) === 0 && (
                 <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
                   <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-amber-600" />
                   <div>

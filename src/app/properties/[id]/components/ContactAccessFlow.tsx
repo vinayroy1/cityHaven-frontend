@@ -96,8 +96,10 @@ export function ContactAccessFlow({
       try {
         const contact = await check(propertyId).unwrap();
         if (!active) return;
-        if (contact?.data?.unlocked && contact.data.ownerPhone) {
-          onContact(contact.data.ownerPhone);
+        const isUnlocked = Boolean(contact?.unlocked || contact?.data?.unlocked);
+        const ownerPhone = contact?.data?.ownerPhone || (contact as any)?.ownerPhone;
+        if (isUnlocked && ownerPhone) {
+          onContact(ownerPhone);
           return;
         }
         // If returning from login with autoUnlock, immediately trigger the flow
@@ -141,14 +143,17 @@ export function ContactAccessFlow({
     try {
       // 1. Check if already unlocked
       const contact = await check(propertyId).unwrap();
-      if (contact?.data?.unlocked && contact.data.ownerPhone) {
-        onContact(contact.data.ownerPhone);
+      const isAlreadyUnlocked = Boolean(contact?.unlocked || contact?.data?.unlocked);
+      const ownerPhone = contact?.data?.ownerPhone || (contact as any)?.ownerPhone;
+      if (isAlreadyUnlocked && ownerPhone) {
+        onContact(ownerPhone);
         setOpen(false);
         return;
       }
 
       // 2. Refresh summaries
       const pSum = await fetchSummary({ target: "USER" }).unwrap();
+      const personalCredits = pSum.data.credits ?? 0;
       setPersonalSummary(pSum.data);
 
       let orgBalance = 0;
@@ -158,13 +163,38 @@ export function ContactAccessFlow({
         orgBalance = oSum.data.credits ?? 0;
       }
 
-      const availableBalance = isOrgScope ? orgBalance : (pSum.data.credits ?? 0);
+      let scopeToUse: "PERSONAL" | number = selectedScope;
+      let availableBalance = isOrgScope ? orgBalance : personalCredits;
+
+      // Smart scope fallback if current selected scope has 0 credits
+      if (availableBalance <= 0) {
+        if (personalCredits > 0) {
+          scopeToUse = "PERSONAL";
+          setSelectedScope("PERSONAL");
+          availableBalance = personalCredits;
+        } else if (orgs.length > 0) {
+          for (const org of orgs) {
+            try {
+              const oRes = await fetchSummary({ target: "ORG", organizationId: org.id }).unwrap();
+              if ((oRes.data.credits ?? 0) > 0) {
+                scopeToUse = org.id;
+                setSelectedScope(org.id);
+                availableBalance = oRes.data.credits ?? 0;
+                setOrgSummary(oRes.data);
+                break;
+              }
+            } catch {
+              // ignore
+            }
+          }
+        }
+      }
 
       if (availableBalance > 0) {
         // Unlock contact with active scope
         const res = await unlock({
           propertyId,
-          organizationId: isOrgScope && typeof selectedScope === "number" ? selectedScope : undefined,
+          organizationId: scopeToUse !== "PERSONAL" && typeof scopeToUse === "number" ? scopeToUse : undefined,
         }).unwrap();
 
         if (res.data?.ownerPhone) {

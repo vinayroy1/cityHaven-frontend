@@ -148,8 +148,9 @@ export function ResultCard({
   const refreshScopes = React.useCallback(async () => {
     try {
       const pRes = await fetchBillingSummary({ target: "USER" }).unwrap();
-      setPersonalSummary(pRes.data);
-      setCredits(pRes.data.credits ?? 0);
+      const pData = pRes.data;
+      setPersonalSummary(pData);
+      setCredits(pData.credits ?? 0);
 
       const orgMap: Record<number, BillingSummary> = {};
       for (const org of orgs) {
@@ -161,8 +162,9 @@ export function ResultCard({
         }
       }
       setOrgSummaries(orgMap);
+      return { personal: pData, orgMap };
     } catch {
-      // ignore
+      return null;
     }
   }, [fetchBillingSummary, orgs]);
 
@@ -192,8 +194,10 @@ export function ResultCard({
   const checkAlreadyUnlocked = async () => {
     try {
       const res = await triggerCheckUnlocked(id).unwrap();
-      if (res?.data?.unlocked) {
-        setOwnerContact({ name: res.data.ownerName ?? null, phone: res.data.ownerPhone ?? null });
+      const isUnlocked = Boolean(res?.unlocked || res?.data?.unlocked);
+      if (isUnlocked) {
+        const cData = res?.data ?? (res as any);
+        setOwnerContact({ name: cData?.ownerName ?? null, phone: cData?.ownerPhone ?? null });
         return true;
       }
     } catch {
@@ -202,13 +206,13 @@ export function ResultCard({
     return false;
   };
 
-  const unlockContact = async (scopeToUse = selectedScope) => {
+  const unlockContact = async (scopeToUse = selectedScope): Promise<boolean> => {
     setLoading(true);
     setContactError(null);
     try {
       if (await checkAlreadyUnlocked()) {
         setContactStep("contact");
-        return;
+        return true;
       }
       const isOrg = scopeToUse !== "PERSONAL";
       const res = await unlockPropertyContactMutation({
@@ -219,18 +223,23 @@ export function ResultCard({
       setCredits(res.credits ?? 0);
       setContactStep("contact");
       void refreshScopes();
+      return true;
     } catch (err: any) {
       if (err?.status === 401 || err?.originalStatus === 401) {
         setContactOpen(false);
         const targetUrl = slug ? `/property/${slug}` : `/properties/${id}`;
         const returnUrl = encodeURIComponent(`${targetUrl}?autoUnlock=true`);
         router.push(`/login?redirect=${returnUrl}`);
+        return false;
       } else if (err?.status === 402 || err?.data?.message?.includes("credits") || err?.data?.message?.includes("allowance")) {
         setContactStep("plans");
+        setContactOpen(true);
+        return false;
       } else {
         const errorMsg = err?.data?.message || err?.message || "Owner contact not available";
         toast.error(errorMsg);
         setContactOpen(false);
+        return false;
       }
     } finally {
       setLoading(false);
@@ -265,9 +274,12 @@ export function ResultCard({
     }
 
     try {
+      // 1. Check if already unlocked for this property
       const unlocked = await triggerCheckUnlocked(id).unwrap();
-      if (unlocked?.data?.unlocked) {
-        setOwnerContact({ name: unlocked.data.ownerName ?? null, phone: unlocked.data.ownerPhone ?? null });
+      const isAlreadyUnlocked = Boolean(unlocked?.unlocked || unlocked?.data?.unlocked);
+      if (isAlreadyUnlocked) {
+        const cData = unlocked?.data ?? (unlocked as any);
+        setOwnerContact({ name: cData?.ownerName ?? null, phone: cData?.ownerPhone ?? null });
         setContactStep("contact");
         setContactOpen(true);
         setCheckingContact(false);
@@ -275,14 +287,49 @@ export function ResultCard({
         return;
       }
 
-      await refreshScopes();
-      const pCredits = personalSummary?.credits ?? 0;
-      setHasActivePlan(pCredits > 0);
-      if (pCredits > 0) {
-        await unlockContact("PERSONAL");
-        setContactStep("contact");
-        setContactOpen(true);
+      // 2. Fetch fresh billing summaries directly from API
+      const scopesData = await refreshScopes();
+      const personalCredits = scopesData?.personal?.credits ?? 0;
+
+      // Determine active scope and credits
+      let scopeToUse: "PERSONAL" | number = selectedScope;
+      let effectiveCredits = 0;
+
+      if (typeof selectedScope === "number" && scopesData?.orgMap?.[selectedScope]) {
+        effectiveCredits = scopesData.orgMap[selectedScope]?.credits ?? 0;
       } else {
+        effectiveCredits = personalCredits;
+      }
+
+      // Smart scope fallback if current selected scope has 0 credits
+      if (effectiveCredits <= 0) {
+        if (personalCredits > 0) {
+          scopeToUse = "PERSONAL";
+          setSelectedScope("PERSONAL");
+          effectiveCredits = personalCredits;
+        } else if (scopesData?.orgMap) {
+          const orgWithCredits = Object.entries(scopesData.orgMap).find(
+            ([_, s]) => (s?.credits ?? 0) > 0
+          );
+          if (orgWithCredits) {
+            scopeToUse = Number(orgWithCredits[0]);
+            setSelectedScope(scopeToUse);
+            effectiveCredits = orgWithCredits[1]?.credits ?? 0;
+          }
+        }
+      }
+
+      setHasActivePlan(effectiveCredits > 0);
+
+      if (effectiveCredits > 0) {
+        // User has active credits -> unlock immediately! DO NOT SHOW PLAN/BUY POPUP!
+        const success = await unlockContact(scopeToUse);
+        if (success) {
+          setContactStep("contact");
+          setContactOpen(true);
+        }
+      } else {
+        // Zero credits in all scopes -> open plan selection dialog to purchase
         setContactStep("plans");
         setContactOpen(true);
       }
@@ -392,6 +439,7 @@ export function ResultCard({
         scopes={scopes}
         selectedScope={selectedScope}
         onScopeChange={(s) => setSelectedScope(s)}
+        onUnlockContact={() => void unlockContact(selectedScope)}
         onSelectedPlanChange={setSelectedPlan}
         onPurchasePlan={purchasePlan}
       />

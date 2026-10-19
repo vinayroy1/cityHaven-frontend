@@ -243,11 +243,26 @@ export const contactVerifyApi = createApi({
       }),
       providesTags: (_result, _err, args) => [{ type: "OrgCredits", id: args.organizationId }],
     }),
-    checkUnlockedContact: builder.query<{ success: boolean; data: CheckUnlockedContactResponse }, number | string>({
+    checkUnlockedContact: builder.query<{ success: boolean; unlocked: boolean; data: CheckUnlockedContactResponse }, number | string>({
       query: (propertyId) => ({
         url: API_ENDPOINTS.propertyListing.unlockedContact(propertyId),
         method: "GET",
       }),
+      transformResponse: (res: any) => {
+        const isUnlocked = Boolean(res?.unlocked || res?.data?.unlocked);
+        return {
+          success: Boolean(res?.success),
+          unlocked: isUnlocked,
+          data: {
+            unlocked: isUnlocked,
+            scope: res?.scope || res?.data?.scope,
+            organizationId: res?.organizationId || res?.data?.organizationId,
+            isOwner: Boolean(res?.isOwner || res?.data?.isOwner),
+            ownerName: res?.data?.ownerName ?? res?.ownerName ?? null,
+            ownerPhone: res?.data?.ownerPhone ?? res?.ownerPhone ?? null,
+          },
+        };
+      },
       providesTags: (_result, _err, id) => [{ type: "UnlockedContact", id }],
     }),
     unlockPropertyContact: builder.mutation<
