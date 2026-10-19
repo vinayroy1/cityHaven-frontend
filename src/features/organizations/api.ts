@@ -63,6 +63,7 @@ export type OrganizationInvitation = {
   expiresAt: string;
   createdAt: string;
   token?: string;
+  emailSent?: boolean;
   invitedBy?: OrganizationMember["user"];
 };
 
@@ -188,6 +189,15 @@ export const organizationsApi = createApi({
         { type: "OrganizationActivity", id: args.orgId },
       ],
     }),
+    resendOrganizationInvitation: builder.mutation<OrganizationInvitation, { orgId: number | string; invitationId: number | string }>({
+      query: ({ orgId, invitationId }) => ({ url: API_ENDPOINTS.organizations.resendInvitation(orgId, invitationId), method: "POST" }),
+      transformResponse: (response: { data?: OrganizationInvitation } | OrganizationInvitation) =>
+        unwrap<OrganizationInvitation>(response),
+      invalidatesTags: (_result, _error, args) => [
+        { type: "OrganizationInvitation", id: args.orgId },
+        { type: "OrganizationActivity", id: args.orgId },
+      ],
+    }),
     transferOrganizationOwner: builder.mutation<OrganizationMember, { orgId: number | string; memberId: number | string }>({
       query: ({ orgId, memberId }) => ({ url: API_ENDPOINTS.organizations.transferOwner(orgId), method: "POST", body: { memberId: Number(memberId) } }),
       transformResponse: (response: { data?: OrganizationMember } | OrganizationMember) => unwrap<OrganizationMember>(response),
@@ -227,6 +237,7 @@ export const {
   useOrganizationInvitationsQuery,
   useInviteOrganizationMemberMutation,
   useRevokeOrganizationInvitationMutation,
+  useResendOrganizationInvitationMutation,
   useTransferOrganizationOwnerMutation,
   useOrganizationActivityQuery,
   useAcceptOrganizationInvitationMutation,

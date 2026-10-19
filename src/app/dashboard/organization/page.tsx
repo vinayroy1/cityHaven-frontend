@@ -12,17 +12,21 @@ import {
   ChevronRight,
   Crown,
   Loader2,
-  MailPlus,
-  Plus,
-  RefreshCw,
-  ShieldCheck,
-  Trash2,
-  UserPlus,
-  Users,
+  Check,
+  Copy,
   CreditCard,
   History,
   LockKeyhole,
+  MailCheck,
+  MailPlus,
+  Plus,
+  RefreshCw,
+  Send,
+  ShieldCheck,
   Sparkles,
+  Trash2,
+  UserPlus,
+  Users,
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
@@ -37,6 +41,7 @@ import {
   useOrganizationInvitationsQuery,
   useOrganizationMembersQuery,
   useOrganizationPropertiesQuery,
+  useResendOrganizationInvitationMutation,
   useRevokeOrganizationInvitationMutation,
   useRemoveOrganizationMemberMutation,
   useTransferOrganizationOwnerMutation,
@@ -94,6 +99,10 @@ function OrganizationDashboardContent() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [memberRole, setMemberRole] = useState<Exclude<OrganizationRole, "OWNER">>("AGENT");
   const [lastInviteLink, setLastInviteLink] = useState("");
+  const [inviteSuccessMsg, setInviteSuccessMsg] = useState<string | null>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [resendingId, setResendingId] = useState<number | null>(null);
+  const [resendSuccessId, setResendSuccessId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [memberToDelete, setMemberToDelete] = useState<OrganizationMember | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -161,6 +170,7 @@ function OrganizationDashboardContent() {
   const [createOrganization, { isLoading: isCreatingOrg }] = useCreateOrganizationMutation();
   const [inviteMember, { isLoading: isInvitingMember }] = useInviteOrganizationMemberMutation();
   const [revokeInvitation, { isLoading: isRevokingInvitation }] = useRevokeOrganizationInvitationMutation();
+  const [resendInvitation] = useResendOrganizationInvitationMutation();
   const [transferOwner, { isLoading: isTransferringOwner }] = useTransferOrganizationOwnerMutation();
   const [updateMember, { isLoading: isUpdatingMember }] = useUpdateOrganizationMemberMutation();
   const [removeMember, { isLoading: isRemovingMember }] = useRemoveOrganizationMemberMutation();
@@ -205,17 +215,59 @@ function OrganizationDashboardContent() {
     event.preventDefault();
     if (!selectedOrg?.id) return;
     setActionError(null);
+    setInviteSuccessMsg(null);
     setLastInviteLink("");
+    setCopiedLink(false);
+    const targetEmail = inviteEmail.trim().toLowerCase();
     try {
-      const invitation = await inviteMember({ orgId: selectedOrg.id, email: inviteEmail.trim().toLowerCase(), role: memberRole }).unwrap();
+      const invitation = await inviteMember({
+        orgId: selectedOrg.id,
+        email: targetEmail,
+        role: memberRole,
+      }).unwrap();
       setInviteEmail("");
       setMemberRole("AGENT");
       if (invitation.token && typeof window !== "undefined") {
         setLastInviteLink(`${window.location.origin}/login?redirect=/dashboard/organization/invitations/${invitation.token}`);
       }
+      if (invitation.emailSent) {
+        setInviteSuccessMsg(`Invitation email sent directly to ${targetEmail} with joining link!`);
+      } else {
+        setInviteSuccessMsg(`Invitation created for ${targetEmail}.`);
+      }
       void refetchBilling();
     } catch (error) {
       setActionError(getErrorMessage(error));
+    }
+  };
+
+  const handleResendInvitation = async (invitationId: number, email?: string | null) => {
+    if (!selectedOrg?.id) return;
+    setActionError(null);
+    setResendingId(invitationId);
+    try {
+      const res = await resendInvitation({ orgId: selectedOrg.id, invitationId }).unwrap();
+      setResendSuccessId(invitationId);
+      if (res?.token && typeof window !== "undefined") {
+        setLastInviteLink(`${window.location.origin}/login?redirect=/dashboard/organization/invitations/${res.token}`);
+      }
+      setInviteSuccessMsg(`Invitation email resent to ${email || "member"}!`);
+      setTimeout(() => setResendSuccessId(null), 3500);
+    } catch (error) {
+      setActionError(getErrorMessage(error));
+    } finally {
+      setResendingId(null);
+    }
+  };
+
+  const copyInviteLink = async (url: string) => {
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    } catch {
+      // ignore
     }
   };
 
@@ -989,40 +1041,115 @@ function OrganizationDashboardContent() {
                       </form>
                     )}
 
-                    {lastInviteLink && (
-                      <div className="mt-2.5 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/60 dark:text-emerald-300">
-                        <p className="font-bold">Invite link generated</p>
-                        <p className="mt-1 break-all text-[11px]">{lastInviteLink}</p>
+                    {/* Invite feedback & link copy box */}
+                    {inviteSuccessMsg && (
+                      <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50/90 p-3 text-xs text-emerald-950 dark:border-emerald-900/60 dark:bg-emerald-950/60 dark:text-emerald-200">
+                        <div className="flex items-start gap-2.5">
+                          <MailCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                          <div className="min-w-0 flex-1 space-y-2">
+                            <p className="font-bold leading-snug">{inviteSuccessMsg}</p>
+                            {lastInviteLink && (
+                              <div className="space-y-1">
+                                <p className="text-[11px] font-medium text-emerald-800 dark:text-emerald-300">
+                                  Direct join link:
+                                </p>
+                                <div className="flex items-center gap-1.5">
+                                  <input
+                                    type="text"
+                                    readOnly
+                                    value={lastInviteLink}
+                                    className="w-full rounded-lg border border-emerald-300/80 bg-white px-2.5 py-1 text-[11px] text-slate-800 select-all outline-none dark:border-emerald-800 dark:bg-slate-900 dark:text-slate-100"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => copyInviteLink(lastInviteLink)}
+                                    className="inline-flex items-center gap-1 shrink-0 rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-2xs hover:bg-emerald-700 transition"
+                                  >
+                                    {copiedLink ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                    <span>{copiedLink ? "Copied" : "Copy"}</span>
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     )}
                   </section>
 
                   <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-                    <div className="flex items-center gap-2">
-                      <MailPlus className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-                      <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Pending invites</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <MailPlus className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                        <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Pending invites</h2>
+                      </div>
+                      <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                        {invitations.filter((invite) => invite.status === "PENDING").length}
+                      </span>
                     </div>
+
                     <div className="mt-2.5 space-y-2">
-                      {invitations.filter((invite) => invite.status === "PENDING").map((invite) => (
-                        <div key={invite.id} className="rounded-lg border border-slate-100 bg-slate-50 p-2.5 dark:border-slate-800 dark:bg-slate-850">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="min-w-0">
-                              <p className="truncate text-xs font-black text-slate-900 dark:text-white">{invite.email || invite.mobileNumber}</p>
-                              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">{roleLabel(invite.roleName)} · expires {new Date(invite.expiresAt).toLocaleDateString()}</p>
+                      {invitations.filter((invite) => invite.status === "PENDING").map((invite) => {
+                        const isResending = resendingId === invite.id;
+                        const isResent = resendSuccessId === invite.id;
+                        return (
+                          <div key={invite.id} className="rounded-lg border border-slate-100 bg-slate-50 p-2.5 dark:border-slate-800 dark:bg-slate-850">
+                            <div className="flex flex-col gap-2">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0">
+                                  <p className="truncate text-xs font-black text-slate-900 dark:text-white">
+                                    {invite.email || invite.mobileNumber}
+                                  </p>
+                                  <div className="mt-0.5 flex items-center gap-1.5 flex-wrap text-[11px] text-slate-500 dark:text-slate-400">
+                                    <span className="font-semibold text-slate-700 dark:text-slate-300">
+                                      {roleLabel(invite.roleName)}
+                                    </span>
+                                    <span>·</span>
+                                    <span>Expires {new Date(invite.expiresAt).toLocaleDateString()}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-200/60 dark:border-slate-800">
+                                {invite.email && canManageTeam && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleResendInvitation(invite.id, invite.email)}
+                                    disabled={isResending || isResent}
+                                    className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-bold transition shadow-2xs ${
+                                      isResent
+                                        ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
+                                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                                    }`}
+                                    title="Resend invitation email with joining link"
+                                  >
+                                    {isResending ? (
+                                      <Loader2 className="h-3 w-3 animate-spin text-rose-600" />
+                                    ) : isResent ? (
+                                      <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                                    ) : (
+                                      <Send className="h-3 w-3 text-slate-500 dark:text-slate-400" />
+                                    )}
+                                    <span>{isResending ? "Sending..." : isResent ? "Sent!" : "Resend email"}</span>
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => revokePendingInvitation(invite.id)}
+                                  disabled={isRevokingInvitation || !canManageTeam}
+                                  className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-bold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                                >
+                                  Revoke
+                                </button>
+                              </div>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => revokePendingInvitation(invite.id)}
-                              disabled={isRevokingInvitation || !canManageTeam}
-                              className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-bold text-slate-600 transition hover:bg-white disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                            >
-                              Revoke
-                            </button>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       {!isInvitationsFetching && invitations.filter((invite) => invite.status === "PENDING").length === 0 && (
-                        <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400">No pending invitations.</p>
+                        <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400">
+                          No pending invitations.
+                        </p>
                       )}
                     </div>
                   </section>
