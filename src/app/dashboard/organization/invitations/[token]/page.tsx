@@ -86,8 +86,18 @@ export default function OrganizationInvitationPage() {
     }
   }, []);
 
+  const isEmailMismatch =
+    Boolean(hasToken && currentUser?.email && invitation?.email) &&
+    currentUser!.email!.trim().toLowerCase() !== invitation!.email!.trim().toLowerCase();
+
   const handleAccept = async () => {
     setActionError(null);
+
+    // If another account is logged in, switch to the invited email directly
+    if (isEmailMismatch) {
+      handleSwitchAccount();
+      return;
+    }
 
     // If user is NOT logged in, redirect them to login / signup screen first
     if (!hasToken) {
@@ -96,7 +106,7 @@ export default function OrganizationInvitationPage() {
       return;
     }
 
-    // User is logged in: execute accept invitation API
+    // User is logged in with matching email: execute accept invitation API
     try {
       await acceptInvitation(token).unwrap();
       setIsJoinedSuccess(true);
@@ -130,10 +140,6 @@ export default function OrganizationInvitationPage() {
     const emailQuery = invitation?.email ? `&email=${encodeURIComponent(invitation.email)}` : "";
     router.push(`/login?redirect=/dashboard/organization/invitations/${token}${emailQuery}`);
   };
-
-  const isEmailMismatch =
-    Boolean(hasToken && currentUser?.email && invitation?.email) &&
-    currentUser!.email!.trim().toLowerCase() !== invitation!.email!.trim().toLowerCase();
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col">
@@ -243,19 +249,26 @@ export default function OrganizationInvitationPage() {
 
                 {/* Email Mismatch Notice */}
                 {isEmailMismatch && (
-                  <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
-                    <p className="font-bold">Account mismatch</p>
-                    <p className="mt-1 text-[11px] leading-relaxed">
-                      You are currently logged in as <strong>{currentUser?.email}</strong>. This invitation was specifically sent to <strong>{invitation.email}</strong>.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleSwitchAccount}
-                      className="mt-2.5 inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 dark:text-amber-200 underline hover:no-underline"
-                    >
-                      <span>Switch account & sign in with {invitation.email}</span>
-                      <ArrowRight className="h-3 w-3" />
-                    </button>
+                  <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-xs text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-200 space-y-3">
+                    <div className="flex items-start gap-2.5">
+                      <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-bold">Logged in with a different account</p>
+                        <p className="mt-0.5 text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">
+                          You are currently signed in as <strong>{currentUser?.email}</strong>, but this workspace invitation was sent to <strong>{invitation.email}</strong>.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pt-0.5">
+                      <button
+                        type="button"
+                        onClick={handleSwitchAccount}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-amber-700 transition"
+                      >
+                        <LogIn className="h-3.5 w-3.5" />
+                        <span>Log in or Sign up as {invitation.email}</span>
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -289,6 +302,11 @@ export default function OrganizationInvitationPage() {
                       <>
                         <Loader2 className="h-4 w-4 animate-spin" />
                         <span>Joining Workspace...</span>
+                      </>
+                    ) : isEmailMismatch ? (
+                      <>
+                        <LogIn className="h-4 w-4" />
+                        <span>Log in or Sign up as {invitation.email}</span>
                       </>
                     ) : !hasToken ? (
                       <>
