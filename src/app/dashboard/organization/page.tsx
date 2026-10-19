@@ -96,6 +96,7 @@ function OrganizationDashboardContent() {
   const [lastInviteLink, setLastInviteLink] = useState("");
   const [actionError, setActionError] = useState<string | null>(null);
   const [memberToDelete, setMemberToDelete] = useState<OrganizationMember | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
@@ -280,7 +281,7 @@ function OrganizationDashboardContent() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
       <HeaderNav />
-      <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:gap-5 px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
         <div>
           <Link
             href="/dashboard"
@@ -291,35 +292,35 @@ function OrganizationDashboardContent() {
           </Link>
         </div>
 
-        <div className="flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-slate-800 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-2.5 sm:gap-4 border-b border-slate-200/80 pb-3 sm:pb-5 dark:border-slate-800 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-rose-600">
-              <Building2 className="h-4 w-4" />
-              Organization workspace
+            <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-[0.14em] text-rose-600 dark:text-rose-400">
+              <Building2 className="h-3.5 w-3.5" />
+              <span>Organization workspace</span>
             </div>
-            <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+            <h1 className="mt-0.5 sm:mt-2 text-xl font-black tracking-tight text-slate-950 sm:text-3xl dark:text-white">
               {selectedOrg?.name || "Company & Team Workspace"}
             </h1>
-            <p className="mt-1 max-w-2xl text-sm text-slate-600">
+            <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400 hidden sm:block max-w-2xl">
               Manage agency or builder teams, seat allowances, contact unlocking, and property listings.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center justify-between sm:justify-end gap-2">
             <button
               type="button"
               onClick={refreshAll}
-              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-slate-700 shadow-2xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              <RefreshCw className={`h-4 w-4 ${isOrgFetching || isMembersFetching || isPropertiesFetching ? "animate-spin" : ""}`} />
-              Refresh
+              <RefreshCw className={`h-3.5 w-3.5 ${isOrgFetching || isMembersFetching || isPropertiesFetching ? "animate-spin text-rose-600 dark:text-rose-400" : ""}`} />
+              <span>Refresh</span>
             </button>
             <Link
               href="/dashboard/properties?scope=org"
-              className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-slate-800"
+              className="inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white shadow-2xs transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white shrink-0"
             >
-              Org listings
-              <ChevronRight className="h-4 w-4" />
+              <span>Org listings</span>
+              <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
@@ -331,537 +332,752 @@ function OrganizationDashboardContent() {
           </div>
         )}
 
-        <div className="grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="flex flex-col gap-4">
-            <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-sm font-black text-slate-950">Workspaces</h2>
-                {isOrgLoading && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
+        {isOrgLoading ? (
+          <div className="flex min-h-[300px] flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
+            <Loader2 className="h-6 w-6 animate-spin text-rose-600" />
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Loading organization workspace...</p>
+          </div>
+        ) : organizations.length === 0 ? (
+          <div className="mx-auto w-full max-w-2xl py-2 sm:py-6">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400">
+                  <Building2 className="h-6 w-6" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black text-slate-950 dark:text-white">
+                    Create Your Organization Workspace
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Collaborate with your team, share contact unlock credits, and publish listings under your company brand.
+                  </p>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                {organizations.map((org: Organization) => (
-                  <button
-                    key={org.id}
-                    type="button"
-                    onClick={() => setSelectedOrgId(org.id)}
-                    className={`w-full rounded-lg border p-3 text-left transition ${
-                      selectedOrg?.id === org.id
-                        ? "border-slate-950 bg-slate-950 text-white"
-                        : "border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <BriefcaseBusiness className="h-4 w-4 shrink-0" />
-                      <span className="truncate text-sm font-bold">{org.name}</span>
-                    </div>
-                    <p className={`mt-1 text-xs ${selectedOrg?.id === org.id ? "text-slate-300" : "text-slate-500"}`}>
-                      {org.type || "Organization"} · {roleLabel(org.role?.name)}
-                    </p>
-                  </button>
-                ))}
-
-                {!isOrgLoading && organizations.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600">
-                    No organization found. Create one below to start managing a team.
-                  </div>
-                )}
-              </div>
-            </section>
-
-            {/* Capacity & Quotas Card */}
-            {selectedOrg && (
-              <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="h-4 w-4 text-rose-600" />
-                    <h2 className="text-sm font-black text-slate-950">Plan & Allowances</h2>
-                  </div>
-                  <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700">
-                    {billingSummary?.activeSubscription?.plan?.name || "Free Organization"}
-                  </span>
-                </div>
-
-                <div className="mt-3 space-y-3 text-xs">
-                  <div>
-                    <div className="flex justify-between font-semibold text-slate-700">
-                      <span>Employee Seats</span>
-                      <span>{seatsUsed} / {seatsLimit} used</span>
-                    </div>
-                    <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className={`h-full rounded-full transition-all ${isSeatFull ? "bg-amber-500" : "bg-emerald-500"}`}
-                        style={{ width: `${Math.min(100, (seatsUsed / seatsLimit) * 100)}%` }}
-                      />
-                    </div>
-                    <p className="mt-1 text-[11px] text-slate-500">
-                      {members.length} active + {pendingInvitesCount} pending invite{pendingInvitesCount === 1 ? "" : "s"}
-                    </p>
-                  </div>
-
-                  <div className="border-t border-slate-100 pt-2">
-                    <div className="flex justify-between font-semibold text-slate-700">
-                      <span>Contact Unlocks</span>
-                      <span className="font-bold text-emerald-700">{billingSummary?.credits ?? 0} available</span>
-                    </div>
-                    <p className="mt-0.5 text-[11px] text-slate-500">Shared across all authorized employees</p>
-                  </div>
-
-                  <div className="border-t border-slate-100 pt-2">
-                    <div className="flex justify-between font-semibold text-slate-700">
-                      <span>Active Listings</span>
-                      <span>{billingSummary?.allowances?.listings?.current ?? orgProperties.length} / {billingSummary?.allowances?.listings?.limit ?? 5}</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <Link
-                      href={`/pricing?tab=organization&orgId=${selectedOrg.id}`}
-                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-rose-700"
-                    >
-                      <Sparkles className="h-3.5 w-3.5" />
-                      Upgrade Plan / Buy Contact Packs
-                    </Link>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            <section className={`rounded-lg border bg-white p-4 shadow-sm ${shouldEmphasizeCreate ? "border-rose-300 ring-2 ring-rose-100" : "border-slate-200"}`}>
-              <h2 className="text-sm font-black text-slate-950">Create organization</h2>
-              <form onSubmit={createOrg} className="mt-3 space-y-3">
-                <label className="block">
-                  <span className="text-xs font-bold text-slate-600">Company / agency name</span>
+              <form onSubmit={createOrg} className="mt-5 space-y-3.5">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Company / Agency Name <span className="text-rose-600">*</span>
+                  </label>
                   <input
                     value={orgName}
                     onChange={(event) => setOrgName(event.target.value)}
                     required
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-                    placeholder="Awasio Realty"
+                    placeholder="e.g. Skyline Real Estate, Apex Builders"
+                    className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 outline-none transition focus:border-rose-400 focus:bg-white focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                   />
-                </label>
-                <label className="block">
-                  <span className="text-xs font-bold text-slate-600">Type</span>
-                  <select
-                    value={orgType}
-                    onChange={(event) => setOrgType(event.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-                  >
-                    <option value="AGENCY">Agency</option>
-                    <option value="BUILDER">Builder</option>
-                    <option value="OWNER_COMPANY">Owner company</option>
-                    <option value="COMPANY">Company</option>
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="text-xs font-bold text-slate-600">Office address</span>
-                  <input
-                    value={orgAddress}
-                    onChange={(event) => setOrgAddress(event.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-                    placeholder="Area, city"
-                  />
-                </label>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Workspace Type
+                    </label>
+                    <select
+                      value={orgType}
+                      onChange={(event) => setOrgType(event.target.value)}
+                      className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 outline-none transition focus:border-rose-400 focus:bg-white focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    >
+                      <option value="AGENCY">Agency</option>
+                      <option value="BUILDER">Builder</option>
+                      <option value="OWNER_COMPANY">Owner Company</option>
+                      <option value="COMPANY">Company</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Office Address <span className="text-slate-400 font-normal">(optional)</span>
+                    </label>
+                    <input
+                      value={orgAddress}
+                      onChange={(event) => setOrgAddress(event.target.value)}
+                      placeholder="e.g. Sector 62, Noida"
+                      className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 outline-none transition focus:border-rose-400 focus:bg-white focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                  </div>
+                </div>
+
                 <button
                   type="submit"
                   disabled={isCreatingOrg || !orgName.trim()}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-rose-700 disabled:opacity-60 dark:bg-rose-600 dark:hover:bg-rose-700"
                 >
                   {isCreatingOrg ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                  Create workspace
+                  <span>Create Workspace</span>
                 </button>
               </form>
-            </section>
-          </aside>
 
-          <section className="flex min-w-0 flex-col gap-4">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-                  <Users className="h-4 w-4" />
-                  Seats Used
-                </div>
-                <p className="mt-2 text-2xl font-black text-slate-950">
-                  {seatsUsed} <span className="text-sm font-semibold text-slate-400">/ {seatsLimit}</span>
+              <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-800">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  What you get with an organization
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  {isSeatFull ? "Seat limit reached" : `${seatsLimit - seatsUsed} seat(s) available`}
-                </p>
-              </div>
-
-              <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-                  <LockKeyhole className="h-4 w-4" />
-                  Org Allowance
-                </div>
-                <p className="mt-2 text-2xl font-black text-emerald-700">{billingSummary?.credits ?? 0}</p>
-                <p className="mt-1 text-xs text-slate-500">Shared contact credits</p>
-              </div>
-
-              <Link
-                href={selectedOrg?.id ? `/dashboard/properties?scope=org&orgId=${selectedOrg.id}` : "/dashboard/properties?scope=org"}
-                className="group rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500 group-hover:text-rose-600 dark:text-slate-400">
-                    <Building2 className="h-4 w-4" />
-                    Listings
+                <div className="mt-3 grid gap-2.5 sm:grid-cols-3">
+                  <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-800/80 dark:bg-slate-850">
+                    <Users className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                    <h3 className="mt-1.5 text-xs font-bold text-slate-900 dark:text-white">Team Management</h3>
+                    <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">Invite managers and agents with custom permissions.</p>
                   </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-rose-600" />
+                  <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-800/80 dark:bg-slate-850">
+                    <LockKeyhole className="h-4 w-4 text-amber-500" />
+                    <h3 className="mt-1.5 text-xs font-bold text-slate-900 dark:text-white">Pooled Credits</h3>
+                    <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">Share contact unlocks and lead allowances across all staff.</p>
+                  </div>
+                  <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-800/80 dark:bg-slate-850">
+                    <Building2 className="h-4 w-4 text-indigo-500" />
+                    <h3 className="mt-1.5 text-xs font-bold text-slate-900 dark:text-white">Company Listings</h3>
+                    <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">Publish properties directly under your official brand.</p>
+                  </div>
                 </div>
-                <p className="mt-2 text-2xl font-black text-slate-950 dark:text-white">{orgProperties.length}</p>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Attached to this org · View all →</p>
-              </Link>
-
-              <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-                  <ShieldCheck className="h-4 w-4" />
-                  Agents & Managers
-                </div>
-                <p className="mt-2 text-2xl font-black text-slate-950">{(memberStats.AGENT || 0) + (memberStats.MANAGER || 0)}</p>
-                <p className="mt-1 text-xs text-slate-500">Listing and lead handlers</p>
               </div>
             </div>
-
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-              <div className="flex min-w-0 flex-col gap-4">
-                <section className="rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                  <div className="flex flex-col gap-2 border-b border-slate-200 p-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <h2 className="text-base font-black text-slate-950 dark:text-white">{selectedOrg?.name || "Organization team"}</h2>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Team members and permissions inside this workspace.
-                      </p>
-                    </div>
-                    <Link
-                      href={selectedOrg?.id ? `/propertyListing?orgId=${selectedOrg.id}` : "/propertyListing"}
-                      className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
+            <aside className="order-2 lg:order-1 flex flex-col gap-3 sm:gap-4">
+              <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                <div className="mb-3 flex items-center justify-between">
+                  <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Workspaces</h2>
+                  <div className="flex items-center gap-2">
+                    {isOrgLoading && <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-400" />}
+                    <button
+                      type="button"
+                      onClick={() => setShowCreateForm((prev) => !prev)}
+                      className="text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400"
                     >
-                      Post under org
-                      <ChevronRight className="h-4 w-4" />
-                    </Link>
+                      {showCreateForm ? "Hide" : "+ New"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {organizations.map((org: Organization) => (
+                    <button
+                      key={org.id}
+                      type="button"
+                      onClick={() => setSelectedOrgId(org.id)}
+                      className={`w-full rounded-lg border p-2.5 sm:p-3 text-left transition ${
+                        selectedOrg?.id === org.id
+                          ? "border-slate-950 bg-slate-950 text-white dark:border-rose-600 dark:bg-rose-950/40 dark:text-rose-100"
+                          : "border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-200 dark:hover:bg-slate-800"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <BriefcaseBusiness className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate text-xs sm:text-sm font-bold">{org.name}</span>
+                      </div>
+                      <p className={`mt-0.5 text-[11px] ${selectedOrg?.id === org.id ? "text-slate-300 dark:text-rose-300/80" : "text-slate-500 dark:text-slate-400"}`}>
+                        {org.type || "Organization"} · {roleLabel(org.role?.name)}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+
+                {showCreateForm && (
+                  <form onSubmit={createOrg} className="mt-3.5 border-t border-slate-100 pt-3 dark:border-slate-800 space-y-2.5">
+                    <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200">New workspace</p>
+                    <label className="block">
+                      <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">Company / agency name</span>
+                      <input
+                        value={orgName}
+                        onChange={(event) => setOrgName(event.target.value)}
+                        required
+                        className="mt-1 w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                        placeholder="Awasio Realty"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">Type</span>
+                      <select
+                        value={orgType}
+                        onChange={(event) => setOrgType(event.target.value)}
+                        className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      >
+                        <option value="AGENCY">Agency</option>
+                        <option value="BUILDER">Builder</option>
+                        <option value="OWNER_COMPANY">Owner company</option>
+                        <option value="COMPANY">Company</option>
+                      </select>
+                    </label>
+                    <label className="block">
+                      <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">Office address</span>
+                      <input
+                        value={orgAddress}
+                        onChange={(event) => setOrgAddress(event.target.value)}
+                        className="mt-1 w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                        placeholder="Area, city"
+                      />
+                    </label>
+                    <button
+                      type="submit"
+                      disabled={isCreatingOrg || !orgName.trim()}
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {isCreatingOrg ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+                      Create workspace
+                    </button>
+                  </form>
+                )}
+              </section>
+
+              {/* Capacity & Quotas Card */}
+              {selectedOrg && (
+                <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                      <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Plan & Allowances</h2>
+                    </div>
+                    <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
+                      {billingSummary?.activeSubscription?.plan?.name || "Free Organization"}
+                    </span>
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                      <thead className="bg-slate-50 text-xs uppercase tracking-[0.1em] text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
-                        <tr>
-                          <th className="px-4 py-3 font-bold">Employee</th>
-                          <th className="px-4 py-3 font-bold">Contact</th>
-                          <th className="px-4 py-3 font-bold">Role & Permissions</th>
-                          <th className="px-4 py-3 text-right font-bold">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {members.map((member) => {
-                          const role = member.role?.name || "MEMBER";
-                          const isOwner = role === "OWNER";
-                          return (
-                            <tr key={member.id} className="align-middle hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
-                              <td className="px-4 py-3.5">
-                                <div className="flex items-center gap-3">
-                                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                                    {memberName(member).slice(0, 2).toUpperCase()}
-                                  </div>
-                                  <div className="min-w-0">
-                                    <p className="truncate font-bold text-slate-950 dark:text-white max-w-[160px]">{memberName(member)}</p>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">Member ID #{member.id}</p>
-                                  </div>
+                  <div className="mt-3 space-y-2.5 text-xs">
+                    <div>
+                      <div className="flex justify-between font-semibold text-slate-700 dark:text-slate-300">
+                        <span>Employee Seats</span>
+                        <span>{seatsUsed} / {seatsLimit} used</span>
+                      </div>
+                      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                        <div
+                          className={`h-full rounded-full transition-all ${isSeatFull ? "bg-amber-500" : "bg-emerald-500"}`}
+                          style={{ width: `${Math.min(100, (seatsUsed / seatsLimit) * 100)}%` }}
+                        />
+                      </div>
+                      <p className="mt-1 text-[10px] text-slate-500 dark:text-slate-400">
+                        {members.length} active + {pendingInvitesCount} pending invite{pendingInvitesCount === 1 ? "" : "s"}
+                      </p>
+                    </div>
+
+                    <div className="border-t border-slate-100 pt-2 dark:border-slate-800">
+                      <div className="flex justify-between font-semibold text-slate-700 dark:text-slate-300">
+                        <span>Contact Unlocks</span>
+                        <span className="font-bold text-emerald-700 dark:text-emerald-400">{billingSummary?.credits ?? 0} available</span>
+                      </div>
+                      <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">Shared across all authorized employees</p>
+                    </div>
+
+                    <div className="border-t border-slate-100 pt-2 dark:border-slate-800">
+                      <div className="flex justify-between font-semibold text-slate-700 dark:text-slate-300">
+                        <span>Active Listings</span>
+                        <span>{billingSummary?.allowances?.listings?.current ?? orgProperties.length} / {billingSummary?.allowances?.listings?.limit ?? 5}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-1.5">
+                      <Link
+                        href={`/pricing?tab=organization&orgId=${selectedOrg.id}`}
+                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white shadow-2xs transition hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-700"
+                      >
+                        <Sparkles className="h-3.5 w-3.5" />
+                        Upgrade Plan / Buy Packs
+                      </Link>
+                    </div>
+                  </div>
+                </section>
+              )}
+            </aside>
+
+            <section className="order-1 lg:order-2 flex min-w-0 flex-col gap-3 sm:gap-4">
+              {/* Mobile Workspace Switcher Bar (when multiple orgs exist) */}
+              {organizations.length > 1 && (
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar lg:hidden">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 shrink-0">Org:</span>
+                  {organizations.map((org: Organization) => (
+                    <button
+                      key={org.id}
+                      type="button"
+                      onClick={() => setSelectedOrgId(org.id)}
+                      className={`rounded-full px-2.5 py-1 text-xs font-bold transition whitespace-nowrap shrink-0 ${
+                        selectedOrg?.id === org.id
+                          ? "bg-slate-900 text-white shadow-2xs dark:bg-slate-100 dark:text-slate-950"
+                          : "bg-white text-slate-700 border border-slate-200/90 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800"
+                      }`}
+                    >
+                      {org.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Quick Metrics Bar - Horizontal swipeable on mobile, Grid on desktop */}
+              <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar sm:grid sm:grid-cols-2 xl:grid-cols-4 sm:gap-3">
+                <div className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-2.5 sm:p-4 shadow-2xs min-w-[95px] sm:min-w-0 shrink-0 sm:shrink dark:border-slate-800 dark:bg-slate-900">
+                  <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <Users className="h-3.5 w-3.5 text-rose-500" />
+                    <span className="truncate">Seats</span>
+                  </div>
+                  <p className="mt-1 sm:mt-2 text-lg sm:text-2xl font-black text-slate-950 dark:text-white">
+                    {seatsUsed} <span className="text-xs sm:text-sm font-semibold text-slate-400">/ {seatsLimit}</span>
+                  </p>
+                  <p className="mt-0.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">
+                    {isSeatFull ? "Limit reached" : `${seatsLimit - seatsUsed} available`}
+                  </p>
+                </div>
+
+                <div className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-2.5 sm:p-4 shadow-2xs min-w-[95px] sm:min-w-0 shrink-0 sm:shrink dark:border-slate-800 dark:bg-slate-900">
+                  <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <LockKeyhole className="h-3.5 w-3.5 text-amber-500" />
+                    <span className="truncate">Credits</span>
+                  </div>
+                  <p className="mt-1 sm:mt-2 text-lg sm:text-2xl font-black text-emerald-700 dark:text-emerald-400">{billingSummary?.credits ?? 0}</p>
+                  <p className="mt-0.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">Contact credits</p>
+                </div>
+
+                <Link
+                  href={selectedOrg?.id ? `/dashboard/properties?scope=org&orgId=${selectedOrg.id}` : "/dashboard/properties?scope=org"}
+                  className="group rounded-xl sm:rounded-lg border border-slate-200 bg-white p-2.5 sm:p-4 shadow-2xs transition hover:border-rose-300 hover:shadow-xs min-w-[95px] sm:min-w-0 shrink-0 sm:shrink dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-rose-600 dark:text-slate-400">
+                      <Building2 className="h-3.5 w-3.5 text-indigo-500" />
+                      <span className="truncate">Listings</span>
+                    </div>
+                    <ChevronRight className="h-3 w-3 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-rose-600 hidden sm:block" />
+                  </div>
+                  <p className="mt-1 sm:mt-2 text-lg sm:text-2xl font-black text-slate-950 dark:text-white">{orgProperties.length}</p>
+                  <p className="mt-0.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">View all →</p>
+                </Link>
+
+                <div className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-2.5 sm:p-4 shadow-2xs min-w-[95px] sm:min-w-0 shrink-0 sm:shrink dark:border-slate-800 dark:bg-slate-900">
+                  <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                    <span className="truncate">Team Handlers</span>
+                  </div>
+                  <p className="mt-1 sm:mt-2 text-lg sm:text-2xl font-black text-slate-950 dark:text-white">{(memberStats.AGENT || 0) + (memberStats.MANAGER || 0)}</p>
+                  <p className="mt-0.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">Agents & Managers</p>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+                <div className="flex min-w-0 flex-col gap-3 sm:gap-4">
+                  <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex flex-col gap-2 border-b border-slate-200 p-3.5 sm:p-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <h2 className="text-sm sm:text-base font-black text-slate-950 dark:text-white">{selectedOrg?.name || "Organization team"} ({members.length})</h2>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          Team members and permissions inside this workspace.
+                        </p>
+                      </div>
+                      <Link
+                        href={selectedOrg?.id ? `/propertyListing?orgId=${selectedOrg.id}` : "/propertyListing"}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 self-start sm:self-auto"
+                      >
+                        Post under org
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+
+                    {/* Mobile Card View for Team Members */}
+                    <div className="sm:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                      {members.map((member) => {
+                        const role = member.role?.name || "MEMBER";
+                        const isOwner = role === "OWNER";
+                        return (
+                          <div key={member.id} className="p-3 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                  {memberName(member).slice(0, 2).toUpperCase()}
                                 </div>
-                              </td>
-                              <td className="px-4 py-3.5 text-slate-600 dark:text-slate-300 text-xs">
-                                <p className="font-semibold text-slate-900 dark:text-slate-200">{member.user?.mobileNumber || "Mobile not added"}</p>
-                                <p className="text-slate-400 dark:text-slate-500 truncate max-w-[150px]">{member.user?.email || "Email not added"}</p>
-                              </td>
-                              <td className="px-4 py-3.5">
-                                {isOwner ? (
-                                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
-                                    <Crown className="h-3 w-3" />
-                                    Owner
-                                  </span>
-                                ) : (
-                                  <div className="flex items-center gap-2">
-                                    <select
-                                      value={role}
-                                      onChange={(event) => changeRole(member, event.target.value as OrganizationRole)}
-                                      disabled={!canManageTeam || isUpdatingMember}
-                                      className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-800 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                                    >
-                                      {assignableRoleOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                          {option.label}
-                                        </option>
-                                      ))}
-                                    </select>
-                                    <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${roleTone[role] || roleTone.VIEWER}`}>
-                                      {roleLabel(role)}
-                                    </span>
-                                  </div>
-                                )}
-                              </td>
-                              <td className="px-4 py-3.5 text-right">
-                                <div className="flex justify-end items-center gap-2">
-                                  {canTransferOwner && !isOwner && (
+                                <div className="min-w-0">
+                                  <p className="truncate text-xs font-bold text-slate-950 dark:text-white max-w-[170px]">{memberName(member)}</p>
+                                  <p className="text-[10px] text-slate-400">ID #{member.id}</p>
+                                </div>
+                              </div>
+                              {isOwner ? (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
+                                  <Crown className="h-3 w-3" />
+                                  Owner
+                                </span>
+                              ) : (
+                                <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${roleTone[role] || roleTone.VIEWER}`}>
+                                  {roleLabel(role)}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-800/50 p-2 rounded-lg">
+                              {member.user?.mobileNumber && <span>📞 {member.user.mobileNumber}</span>}
+                              {member.user?.email && <span className="truncate max-w-[190px]">✉️ {member.user.email}</span>}
+                              {!member.user?.mobileNumber && !member.user?.email && <span>No contact added</span>}
+                            </div>
+
+                            {!isOwner && canManageTeam && (
+                              <div className="flex items-center justify-between gap-2 pt-0.5">
+                                <select
+                                  value={role}
+                                  onChange={(event) => changeRole(member, event.target.value as OrganizationRole)}
+                                  disabled={isUpdatingMember}
+                                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-bold text-slate-800 outline-none transition dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                                >
+                                  {assignableRoleOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                      {option.label}
+                                    </option>
+                                  ))}
+                                </select>
+
+                                <div className="flex items-center gap-1.5">
+                                  {canTransferOwner && (
                                     <button
                                       type="button"
                                       onClick={() => transferOwnership(member)}
                                       disabled={isTransferringOwner}
-                                      className="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50/70 px-2.5 py-1 text-xs font-bold text-amber-700 transition hover:border-amber-300 hover:bg-amber-100 disabled:opacity-50 dark:border-amber-900/60 dark:bg-amber-950/50 dark:text-amber-300"
-                                      aria-label={`Transfer ownership to ${memberName(member)}`}
-                                      title="Transfer organization ownership"
+                                      className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-bold text-amber-700 transition hover:bg-amber-100 disabled:opacity-50 dark:border-amber-900/60 dark:bg-amber-950/50 dark:text-amber-300"
                                     >
-                                      <Crown className="h-3.5 w-3.5" />
-                                      <span className="hidden sm:inline">Make Owner</span>
+                                      Make Owner
                                     </button>
                                   )}
-                                  {!isOwner && canManageTeam ? (
-                                    <button
-                                      type="button"
-                                      onClick={() => setMemberToDelete(member)}
-                                      disabled={isRemovingMember}
-                                      className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100 disabled:opacity-50 dark:border-rose-900/80 dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-900/60"
-                                      aria-label={`Remove ${memberName(member)}`}
-                                      title="Remove from organization"
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5" />
-                                      <span>Remove</span>
-                                    </button>
-                                  ) : isOwner ? (
-                                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
+                                  <button
+                                    type="button"
+                                    onClick={() => setMemberToDelete(member)}
+                                    disabled={isRemovingMember}
+                                    className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1 text-[11px] font-bold text-rose-700 transition hover:bg-rose-100 disabled:opacity-50 dark:border-rose-900/80 dark:bg-rose-950/60 dark:text-rose-300"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+
+                      {!isMembersLoading && members.length === 0 && (
+                        <div className="p-6 text-center text-xs text-slate-500 dark:text-slate-400">
+                          No team members returned for this organization.
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Desktop Table for Team Members */}
+                    <div className="hidden sm:block overflow-x-auto">
+                      <table className="w-full text-left text-sm">
+                        <thead className="bg-slate-50 text-xs uppercase tracking-[0.1em] text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
+                          <tr>
+                            <th className="px-4 py-3 font-bold">Employee</th>
+                            <th className="px-4 py-3 font-bold">Contact</th>
+                            <th className="px-4 py-3 font-bold">Role & Permissions</th>
+                            <th className="px-4 py-3 text-right font-bold">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                          {members.map((member) => {
+                            const role = member.role?.name || "MEMBER";
+                            const isOwner = role === "OWNER";
+                            return (
+                              <tr key={member.id} className="align-middle hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
+                                <td className="px-4 py-3.5">
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                      {memberName(member).slice(0, 2).toUpperCase()}
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="truncate font-bold text-slate-950 dark:text-white max-w-[160px]">{memberName(member)}</p>
+                                      <p className="text-xs text-slate-500 dark:text-slate-400">Member ID #{member.id}</p>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3.5 text-slate-600 dark:text-slate-300 text-xs">
+                                  <p className="font-semibold text-slate-900 dark:text-slate-200">{member.user?.mobileNumber || "Mobile not added"}</p>
+                                  <p className="text-slate-400 dark:text-slate-500 truncate max-w-[150px]">{member.user?.email || "Email not added"}</p>
+                                </td>
+                                <td className="px-4 py-3.5">
+                                  {isOwner ? (
+                                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
+                                      <Crown className="h-3 w-3" />
                                       Owner
                                     </span>
-                                  ) : null}
-                                </div>
+                                  ) : (
+                                    <div className="flex items-center gap-2">
+                                      <select
+                                        value={role}
+                                        onChange={(event) => changeRole(member, event.target.value as OrganizationRole)}
+                                        disabled={!canManageTeam || isUpdatingMember}
+                                        className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-800 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                                      >
+                                        {assignableRoleOptions.map((option) => (
+                                          <option key={option.value} value={option.value}>
+                                            {option.label}
+                                          </option>
+                                        ))}
+                                      </select>
+                                      <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${roleTone[role] || roleTone.VIEWER}`}>
+                                        {roleLabel(role)}
+                                      </span>
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="px-4 py-3.5 text-right">
+                                  <div className="flex justify-end items-center gap-2">
+                                    {canTransferOwner && !isOwner && (
+                                      <button
+                                        type="button"
+                                        onClick={() => transferOwnership(member)}
+                                        disabled={isTransferringOwner}
+                                        className="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50/70 px-2.5 py-1 text-xs font-bold text-amber-700 transition hover:border-amber-300 hover:bg-amber-100 disabled:opacity-50 dark:border-amber-900/60 dark:bg-amber-950/50 dark:text-amber-300"
+                                        aria-label={`Transfer ownership to ${memberName(member)}`}
+                                        title="Transfer organization ownership"
+                                      >
+                                        <Crown className="h-3.5 w-3.5" />
+                                        <span className="hidden sm:inline">Make Owner</span>
+                                      </button>
+                                    )}
+                                    {!isOwner && canManageTeam ? (
+                                      <button
+                                        type="button"
+                                        onClick={() => setMemberToDelete(member)}
+                                        disabled={isRemovingMember}
+                                        className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100 disabled:opacity-50 dark:border-rose-900/80 dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-900/60"
+                                        aria-label={`Remove ${memberName(member)}`}
+                                        title="Remove from organization"
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                        <span>Remove</span>
+                                      </button>
+                                    ) : isOwner ? (
+                                      <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
+                                        Owner
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+
+                          {!isMembersLoading && members.length === 0 && (
+                            <tr>
+                              <td colSpan={4} className="px-4 py-10 text-center text-sm text-slate-500 dark:text-slate-400">
+                                No team members returned for this organization.
                               </td>
                             </tr>
-                          );
-                        })}
-
-                        {!isMembersLoading && members.length === 0 && (
-                          <tr>
-                            <td colSpan={4} className="px-4 py-10 text-center text-sm text-slate-500 dark:text-slate-400">
-                              No team members returned for this organization.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-
-                {/* Organization Properties Section */}
-                <section className="rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                  <div className="flex flex-col gap-2 border-b border-slate-200 p-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-rose-600" />
-                      <div>
-                        <h2 className="text-base font-black text-slate-950 dark:text-white">Organization Properties ({orgProperties.length})</h2>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Listings published and managed under this organization workspace.
-                        </p>
-                      </div>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
-                    <Link
-                      href={selectedOrg?.id ? `/dashboard/properties?scope=org&orgId=${selectedOrg.id}` : "/dashboard/properties?scope=org"}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400"
-                    >
-                      View all in properties manager →
-                    </Link>
-                  </div>
+                  </section>
 
-                  <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                    {orgProperties.map((property: any) => (
-                      <div key={property.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400">
-                            <Building2 className="h-5 w-5" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-slate-950 dark:text-white truncate max-w-sm sm:max-w-md">
-                              {property.title || `Property #${property.id}`}
-                            </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5 mt-0.5">
-                              <span>{property.locality ? `${property.locality}, ` : ""}{property.cityName || "India"}</span>
-                              <span>·</span>
-                              <span className="font-semibold text-slate-700 dark:text-slate-300">{property.listingType || "SELL"}</span>
-                              {property.price && (
-                                <>
-                                  <span>·</span>
-                                  <span className="font-bold text-rose-600 dark:text-rose-400">
-                                    ₹{Number(property.price).toLocaleString("en-IN")}
-                                  </span>
-                                </>
-                              )}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
-                          <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            {property.status || "DRAFT"}
-                          </span>
-                          <Link
-                            href={`/propertyListing?id=${property.id}`}
-                            className="rounded-lg border border-slate-200 px-3 py-1 text-xs font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                          >
-                            Edit
-                          </Link>
+                  {/* Organization Properties Section */}
+                  <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex flex-col gap-2 border-b border-slate-200 p-3.5 sm:p-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                        <div>
+                          <h2 className="text-sm sm:text-base font-black text-slate-950 dark:text-white">Organization Properties ({orgProperties.length})</h2>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            Listings published and managed under this organization workspace.
+                          </p>
                         </div>
                       </div>
-                    ))}
-
-                    {orgProperties.length === 0 && (
-                      <div className="p-8 text-center text-xs text-slate-500 dark:text-slate-400">
-                        No listings currently attached to this organization. Click &quot;Post under org&quot; to create one.
-                      </div>
-                    )}
-                  </div>
-                </section>
-              </div>
-
-              <aside className="flex flex-col gap-4">
-                <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <UserPlus className="h-4 w-4 text-rose-600" />
-                      <h2 className="text-sm font-black text-slate-950">Invite employee</h2>
-                    </div>
-                    {isSeatFull && (
-                      <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">
-                        Seats Full
-                      </span>
-                    )}
-                  </div>
-
-                  {isSeatFull ? (
-                    <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
-                      <p className="font-semibold">Seat limit reached ({seatsUsed}/{seatsLimit} in use)</p>
-                      <p className="mt-1 text-amber-700">
-                        Pending invitations also reserve seats. Upgrade your organization subscription to invite more team members.
-                      </p>
-                    </div>
-                  ) : (
-                    <form onSubmit={inviteUserToOrg} className="mt-3 space-y-3">
-                      <label className="block">
-                        <span className="text-xs font-bold text-slate-600">Email address</span>
-                        <input
-                          type="email"
-                          value={inviteEmail}
-                          onChange={(event) => setInviteEmail(event.target.value)}
-                          required
-                          className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-                          placeholder="colleague@company.com"
-                        />
-                      </label>
-                      <label className="block">
-                        <span className="text-xs font-bold text-slate-600">Role</span>
-                        <select
-                          value={memberRole}
-                          onChange={(event) => setMemberRole(event.target.value as Exclude<OrganizationRole, "OWNER">)}
-                          className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-                        >
-                          {assignableRoleOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <button
-                        type="submit"
-                        disabled={isInvitingMember || !canManageTeam || !selectedOrg?.id || !inviteEmail.trim()}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                      <Link
+                        href={selectedOrg?.id ? `/dashboard/properties?scope=org&orgId=${selectedOrg.id}` : "/dashboard/properties?scope=org"}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400"
                       >
-                        {isInvitingMember ? <Loader2 className="h-4 w-4 animate-spin" /> : <MailPlus className="h-4 w-4" />}
-                        Send invite
-                      </button>
-                    </form>
-                  )}
-
-                  {lastInviteLink && (
-                    <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900">
-                      <p className="font-bold">Invite link generated</p>
-                      <p className="mt-1 break-all">{lastInviteLink}</p>
+                        View all in properties manager →
+                      </Link>
                     </div>
-                  )}
-                </section>
 
-                <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <MailPlus className="h-4 w-4 text-slate-600" />
-                    <h2 className="text-sm font-black text-slate-950">Pending invites</h2>
-                  </div>
-                  <div className="mt-3 space-y-2">
-                    {invitations.filter((invite) => invite.status === "PENDING").map((invite) => (
-                      <div key={invite.id} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0">
-                            <p className="truncate text-xs font-black text-slate-900">{invite.email || invite.mobileNumber}</p>
-                            <p className="mt-1 text-xs text-slate-500">{roleLabel(invite.roleName)} · expires {new Date(invite.expiresAt).toLocaleDateString()}</p>
+                    <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {orgProperties.map((property: any) => (
+                        <div key={property.id} className="flex flex-col gap-2.5 p-3 sm:p-4 sm:flex-row sm:items-center sm:justify-between hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400">
+                              <Building2 className="h-4 w-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-bold text-xs sm:text-sm text-slate-950 dark:text-white truncate max-w-sm sm:max-w-md">
+                                {property.title || `Property #${property.id}`}
+                              </p>
+                              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5 mt-0.5">
+                                <span>{property.locality ? `${property.locality}, ` : ""}{property.cityName || "India"}</span>
+                                <span>·</span>
+                                <span className="font-semibold text-slate-700 dark:text-slate-300">{property.listingType || "SELL"}</span>
+                                {property.price && (
+                                  <>
+                                    <span>·</span>
+                                    <span className="font-bold text-rose-600 dark:text-rose-400">
+                                      ₹{Number(property.price).toLocaleString("en-IN")}
+                                    </span>
+                                  </>
+                                )}
+                              </p>
+                            </div>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => revokePendingInvitation(invite.id)}
-                            disabled={isRevokingInvitation || !canManageTeam}
-                            className="rounded-md border border-slate-200 px-2 py-1 text-xs font-bold text-slate-600 transition hover:bg-white disabled:opacity-50"
-                          >
-                            Revoke
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                    {!isInvitationsFetching && invitations.filter((invite) => invite.status === "PENDING").length === 0 && (
-                      <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">No pending invitations.</p>
-                    )}
-                  </div>
-                </section>
 
-                {/* Org Contact Unlocks & Usage History */}
-                <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <History className="h-4 w-4 text-slate-600" />
-                    <h2 className="text-sm font-black text-slate-950">Shared Contact Unlocks</h2>
-                  </div>
-                  <p className="mt-1 text-xs text-slate-500">Contacts unlocked with organization allowance:</p>
-                  <div className="mt-3 space-y-2">
-                    {creditLedger.filter((item) => item.creditChange < 0).slice(0, 5).map((item) => (
-                      <div key={item.id} className="rounded-lg border border-slate-100 bg-slate-50 p-2.5 text-xs">
-                        <div className="flex justify-between font-semibold text-slate-900">
-                          <span className="truncate">{item.meta?.propertyTitle ? item.meta.propertyTitle : `Property #${item.meta?.propertyId || ""}`}</span>
-                          <span className="text-rose-600 font-bold">{item.creditChange} credit</span>
+                          <div className="flex shrink-0 items-center gap-2 self-start sm:self-center">
+                            <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                              {property.status || "DRAFT"}
+                            </span>
+                            <Link
+                              href={`/propertyListing?id=${property.id}`}
+                              className="rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                            >
+                              Edit
+                            </Link>
+                          </div>
                         </div>
-                        <p className="mt-1 text-[11px] text-slate-500">
-                          Unlocked by <strong className="text-slate-700">{item.user?.name || item.meta?.actorName || `User #${item.userId}`}</strong>
+                      ))}
+
+                      {orgProperties.length === 0 && (
+                        <div className="p-6 text-center text-xs text-slate-500 dark:text-slate-400">
+                          No listings currently attached to this organization. Click &quot;Post under org&quot; to create one.
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                </div>
+
+                <aside className="flex flex-col gap-3 sm:gap-4">
+                  <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <UserPlus className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                        <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Invite employee</h2>
+                      </div>
+                      {isSeatFull && (
+                        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
+                          Seats Full
+                        </span>
+                      )}
+                    </div>
+
+                    {isSeatFull ? (
+                      <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
+                        <p className="font-semibold">Seat limit reached ({seatsUsed}/{seatsLimit} in use)</p>
+                        <p className="mt-1 text-amber-700 dark:text-amber-400">
+                          Pending invitations also reserve seats. Upgrade your subscription to invite more team members.
                         </p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">{new Date(item.createdAt).toLocaleString()}</p>
                       </div>
-                    ))}
-                    {creditLedger.filter((item) => item.creditChange < 0).length === 0 && (
-                      <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
-                        No contacts unlocked by team yet.
-                      </p>
+                    ) : (
+                      <form onSubmit={inviteUserToOrg} className="mt-3 space-y-2.5">
+                        <label className="block">
+                          <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Email address</span>
+                          <input
+                            type="email"
+                            value={inviteEmail}
+                            onChange={(event) => setInviteEmail(event.target.value)}
+                            required
+                            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs sm:text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                            placeholder="colleague@company.com"
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Role</span>
+                          <select
+                            value={memberRole}
+                            onChange={(event) => setMemberRole(event.target.value as Exclude<OrganizationRole, "OWNER">)}
+                            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs sm:text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                          >
+                            {assignableRoleOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <button
+                          type="submit"
+                          disabled={isInvitingMember || !canManageTeam || !selectedOrg?.id || !inviteEmail.trim()}
+                          className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-slate-950 px-3 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
+                        >
+                          {isInvitingMember ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MailPlus className="h-3.5 w-3.5" />}
+                          Send invite
+                        </button>
+                      </form>
                     )}
-                  </div>
-                </section>
 
-                <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <h2 className="text-sm font-black text-slate-950">Role model</h2>
-                  </div>
-                  <div className="mt-3 space-y-2">
-                    {roleOptions.map((role) => (
-                      <div key={role.value} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-                        <p className="text-xs font-black text-slate-900">{role.label}</p>
-                        <p className="mt-1 text-xs text-slate-500">{role.description}</p>
+                    {lastInviteLink && (
+                      <div className="mt-2.5 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/60 dark:text-emerald-300">
+                        <p className="font-bold">Invite link generated</p>
+                        <p className="mt-1 break-all text-[11px]">{lastInviteLink}</p>
                       </div>
-                    ))}
-                  </div>
-                </section>
-              </aside>
-            </div>
-          </section>
-        </div>
+                    )}
+                  </section>
+
+                  <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex items-center gap-2">
+                      <MailPlus className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                      <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Pending invites</h2>
+                    </div>
+                    <div className="mt-2.5 space-y-2">
+                      {invitations.filter((invite) => invite.status === "PENDING").map((invite) => (
+                        <div key={invite.id} className="rounded-lg border border-slate-100 bg-slate-50 p-2.5 dark:border-slate-800 dark:bg-slate-850">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <p className="truncate text-xs font-black text-slate-900 dark:text-white">{invite.email || invite.mobileNumber}</p>
+                              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">{roleLabel(invite.roleName)} · expires {new Date(invite.expiresAt).toLocaleDateString()}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => revokePendingInvitation(invite.id)}
+                              disabled={isRevokingInvitation || !canManageTeam}
+                              className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-bold text-slate-600 transition hover:bg-white disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                            >
+                              Revoke
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      {!isInvitationsFetching && invitations.filter((invite) => invite.status === "PENDING").length === 0 && (
+                        <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400">No pending invitations.</p>
+                      )}
+                    </div>
+                  </section>
+
+                  {/* Org Contact Unlocks & Usage History */}
+                  <section className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex items-center gap-2">
+                      <History className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                      <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Shared Contact Unlocks</h2>
+                    </div>
+                    <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Contacts unlocked with organization allowance:</p>
+                    <div className="mt-2.5 space-y-2">
+                      {creditLedger.filter((item) => item.creditChange < 0).slice(0, 5).map((item) => (
+                        <div key={item.id} className="rounded-lg border border-slate-100 bg-slate-50 p-2.5 text-xs dark:border-slate-800 dark:bg-slate-850">
+                          <div className="flex justify-between font-semibold text-slate-900 dark:text-white">
+                            <span className="truncate">{item.meta?.propertyTitle ? item.meta.propertyTitle : `Property #${item.meta?.propertyId || ""}`}</span>
+                            <span className="text-rose-600 font-bold dark:text-rose-400">{item.creditChange} credit</span>
+                          </div>
+                          <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                            Unlocked by <strong className="text-slate-700 dark:text-slate-200">{item.user?.name || item.meta?.actorName || `User #${item.userId}`}</strong>
+                          </p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">{new Date(item.createdAt).toLocaleString()}</p>
+                        </div>
+                      ))}
+                      {creditLedger.filter((item) => item.creditChange < 0).length === 0 && (
+                        <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400">
+                          No contacts unlocked by team yet.
+                        </p>
+                      )}
+                    </div>
+                  </section>
+
+                  {/* Collapsible Role Permissions Guide */}
+                  <details className="group rounded-xl sm:rounded-lg border border-slate-200 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+                    <summary className="flex cursor-pointer items-center justify-between text-xs sm:text-sm font-black text-slate-950 dark:text-white list-none select-none">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        <span>Role permissions guide</span>
+                      </div>
+                      <ChevronRight className="h-3.5 w-3.5 text-slate-400 transition-transform group-open:rotate-90" />
+                    </summary>
+                    <div className="mt-3 space-y-2">
+                      {roleOptions.map((role) => (
+                        <div key={role.value} className="rounded-lg border border-slate-100 bg-slate-50 p-2 text-xs dark:border-slate-800 dark:bg-slate-850">
+                          <p className="font-bold text-slate-900 dark:text-white">{role.label}</p>
+                          <p className="mt-0.5 text-slate-500 dark:text-slate-400">{role.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                </aside>
+              </div>
+            </section>
+          </div>
+        )}
       </div>
 
       {/* Remove Member Confirmation Modal */}
