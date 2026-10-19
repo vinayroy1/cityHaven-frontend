@@ -414,18 +414,18 @@ function PropertiesContent() {
       )}
 
       <main className="flex-1">
-        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="mx-auto max-w-6xl px-3 sm:px-6 py-3 sm:py-8">
           {/* Header Banner */}
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-3 sm:mb-6 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-                <Building2 className="h-4 w-4" />
+              <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                <Building2 className="h-3.5 w-3.5" />
                 <span>Inventory & Billing Scope</span>
               </div>
-              <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">
+              <h1 className="mt-0.5 text-xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">
                 {scope === "org" ? "Organization Listings" : "My Personal Properties"}
               </h1>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400 hidden sm:block">
                 {scope === "org"
                   ? "Properties listed under your active organization workspace. Publishing charges the organization package."
                   : "Properties owned personally. Publishing charges your personal subscription package."}
@@ -433,190 +433,197 @@ function PropertiesContent() {
             </div>
 
             {/* Actions */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex items-center justify-between sm:justify-end gap-2">
               {/* Scope Switcher */}
-              <div className="flex rounded-full border border-slate-200 bg-white p-1 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex rounded-full border border-slate-200 bg-white p-0.5 sm:p-1 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
                 <button
                   type="button"
                   onClick={() => router.push("/dashboard/properties")}
-                  className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
-                    scope !== "org" ? "bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-900" : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+                  className={`flex items-center gap-1 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-xs font-bold transition ${
+                    scope !== "org" ? "bg-slate-900 text-white shadow-xs dark:bg-slate-100 dark:text-slate-900" : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
                   }`}
                 >
-                  <User className="h-3.5 w-3.5" />
-                  Personal
+                  <User className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <span>Personal</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => router.push("/dashboard/properties?scope=org")}
-                  className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
-                    scope === "org" ? "bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-900" : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+                  className={`flex items-center gap-1 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-xs font-bold transition ${
+                    scope === "org" ? "bg-slate-900 text-white shadow-xs dark:bg-slate-100 dark:text-slate-900" : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
                   }`}
                 >
-                  <Building2 className="h-3.5 w-3.5" />
-                  Organization
+                  <Building2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <span>Organization</span>
                 </button>
               </div>
 
-              <button
-                type="button"
-                onClick={() => (scope === "org" ? (orgQuery.refetch(), refetchOrgProperties()) : refetch())}
-                disabled={isMyFetching || orgQuery.isFetching || isOrgPropertiesFetching}
-                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-              >
-                <RefreshCw className={`h-3.5 w-3.5 ${(isMyFetching || orgQuery.isFetching || isOrgPropertiesFetching) ? "animate-spin text-rose-600 dark:text-rose-400" : ""}`} />
-                <span>Refresh</span>
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => (scope === "org" ? (orgQuery.refetch(), refetchOrgProperties()) : refetch())}
+                  disabled={isMyFetching || orgQuery.isFetching || isOrgPropertiesFetching}
+                  className="inline-flex items-center justify-center h-8 w-8 sm:h-auto sm:w-auto sm:gap-2 rounded-full border border-slate-200 bg-white sm:px-3.5 sm:py-2 text-xs font-bold text-slate-700 shadow-2xs transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                  title="Refresh listings"
+                  aria-label="Refresh listings"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${(isMyFetching || orgQuery.isFetching || isOrgPropertiesFetching) ? "animate-spin text-rose-600 dark:text-rose-400" : ""}`} />
+                  <span className="hidden sm:inline">Refresh</span>
+                </button>
 
-              <Link
-                href={scope === "org" ? `/propertyListing?scope=org${orgId ? `&orgId=${orgId}` : ""}` : "/propertyListing"}
-                className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 hover:shadow-lg active:scale-95 dark:shadow-none"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Post {scope === "org" ? "org property" : "personal property"}</span>
-              </Link>
+                <Link
+                  href={scope === "org" ? `/propertyListing?scope=org${orgId ? `&orgId=${orgId}` : ""}` : "/propertyListing"}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-rose-600 px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 hover:shadow-md active:scale-95 dark:shadow-none shrink-0"
+                >
+                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>Post Property</span>
+                </Link>
+              </div>
             </div>
           </div>
 
           {/* Subscription Expiry / Package Listing Credit Banner */}
           {isSubscriptionExpired ? (
-            <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-rose-300 bg-gradient-to-r from-rose-50 via-rose-100/60 to-amber-50 p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between dark:border-rose-900/60 dark:from-rose-950/40 dark:via-rose-950/20 dark:to-slate-900">
-              <div className="flex items-start gap-3.5">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-600 text-white shadow-md shadow-rose-300 dark:shadow-none">
-                  <AlertCircle className="h-6 w-6" />
+            <div className="mb-3 sm:mb-6 flex flex-col gap-2.5 sm:gap-3 rounded-2xl border border-rose-300 bg-gradient-to-r from-rose-50 via-rose-100/60 to-amber-50 p-3 sm:p-5 shadow-2xs sm:flex-row sm:items-center sm:justify-between dark:border-rose-900/60 dark:from-rose-950/40 dark:via-rose-950/20 dark:to-slate-900">
+              <div className="flex items-start gap-2.5 sm:gap-3.5">
+                <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-rose-600 text-white shadow-xs sm:shadow-md shadow-rose-300 dark:shadow-none">
+                  <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-rose-600 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
-                      Subscription Expired
+                    <span className="rounded-md bg-rose-600 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-white">
+                      Expired
                     </span>
-                    <span className="text-xs font-bold text-rose-800 dark:text-rose-300">All properties inactive</span>
+                    <span className="text-[11px] sm:text-xs font-bold text-rose-800 dark:text-rose-300">Properties inactive</span>
                   </div>
-                  <h3 className="mt-1 text-base font-black text-slate-900 dark:text-white">
-                    Your listing package has expired
+                  <h3 className="mt-0.5 text-xs sm:text-base font-black text-slate-900 dark:text-white">
+                    Listing package expired
                   </h3>
-                  <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400 max-w-2xl">
-                    All your properties are currently <strong>Inactive</strong> and hidden from buyers. Purchase or renew a package to receive listing credits and activate your properties.
+                  <p className="mt-0.5 text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 hidden sm:block">
+                    All your properties are currently <strong>Inactive</strong> and hidden from buyers. Purchase or renew a package to receive listing credits.
                   </p>
                 </div>
               </div>
               <Link
                 href="/pricing"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-rose-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-300 transition hover:bg-rose-700 hover:shadow-lg active:scale-95 dark:shadow-none whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-1.5 rounded-full bg-rose-600 px-3.5 sm:px-5 py-1.5 sm:py-2.5 text-xs font-bold text-white shadow-xs transition hover:bg-rose-700 active:scale-95 whitespace-nowrap self-start sm:self-auto"
               >
-                <Sparkles className="h-4 w-4" />
-                <span>Purchase Package</span>
-                <ArrowRight className="h-3.5 w-3.5" />
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Renew Package</span>
+                <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
           ) : (
-            <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-start gap-3.5">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-200 dark:shadow-none">
-                  <Zap className="h-6 w-6" />
-                </div>
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
-                      {activeSub?.plan?.name || "Active Package"}
-                    </span>
-                    {activeSub?.endsAt && (
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                        Valid until {new Date(activeSub.endsAt).toLocaleDateString()}
-                      </span>
-                    )}
+            <div className="mb-3 sm:mb-6 rounded-2xl border border-slate-200 bg-white p-3 sm:p-5 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                  <div className="flex h-8 w-8 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-emerald-600 text-white shadow-xs sm:shadow-md shadow-emerald-200 dark:shadow-none">
+                    <Zap className="h-4 w-4 sm:h-6 sm:w-6" />
                   </div>
-                  <p className="mt-1 text-sm font-bold text-slate-900 dark:text-white">
-                    Available Listing Credits:{" "}
-                    <span className="text-emerald-600 font-black dark:text-emerald-400">
-                      {availableCredits}
-                    </span>{" "}
-                    / {packageListingLimit} credits remaining
-                  </p>
-                  <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                    <Lock className="h-3 w-3 text-slate-400" />
-                    <span>Strict Policy: 1 credit consumed permanently per activation. No slot swapping permitted.</span>
-                  </p>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                      <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
+                        {activeSub?.plan?.name || "Active Package"}
+                      </span>
+                      {activeSub?.endsAt && (
+                        <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">
+                          Valid until {new Date(activeSub.endsAt).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-0.5 text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+                      Credits:{" "}
+                      <span className="text-emerald-600 font-black dark:text-emerald-400">
+                        {availableCredits}
+                      </span>{" "}
+                      / {packageListingLimit} remaining
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <Link
+                    href="/pricing"
+                    className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-slate-800 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 whitespace-nowrap"
+                  >
+                    <Plus className="h-3 w-3 text-rose-600" />
+                    <span>Buy Credits</span>
+                  </Link>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/pricing"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-800 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 whitespace-nowrap"
-                >
-                  <Plus className="h-3.5 w-3.5 text-rose-600" />
-                  <span>Buy More Credits</span>
-                </Link>
-              </div>
+              <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 hidden sm:flex items-center gap-1.5">
+                <Lock className="h-3 w-3 text-slate-400" />
+                <span>Strict Policy: 1 credit consumed permanently per activation. No slot swapping permitted.</span>
+              </p>
             </div>
           )}
 
-          {/* Quick Metrics Bar */}
-          <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
+          {/* Quick Metrics Bar - Horizontal Scrollable on Mobile, Grid on Desktop */}
+          <div className="mb-3 sm:mb-6 flex gap-2 overflow-x-auto pb-1 no-scrollbar sm:grid sm:grid-cols-5 sm:gap-3">
             <button
               type="button"
               onClick={() => setStatusFilter("ALL")}
-              className={`flex flex-col items-start rounded-2xl border p-4 text-left transition shadow-sm hover:-translate-y-0.5 ${
+              className={`flex flex-col items-start rounded-xl sm:rounded-2xl border p-2 sm:p-4 text-left transition shadow-2xs min-w-[75px] sm:min-w-0 shrink-0 sm:shrink ${
                 statusFilter === "ALL" ? "border-slate-900 bg-white ring-2 ring-slate-900/10 dark:border-slate-100 dark:bg-slate-900 dark:ring-slate-100/10" : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
               }`}
             >
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total</span>
-              <span className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{stats.total}</span>
-              <span className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">All inventory</span>
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total</span>
+              <span className="mt-0.5 sm:mt-1 text-base sm:text-2xl font-black text-slate-900 dark:text-white">{stats.total}</span>
+              <span className="hidden sm:block mt-1 text-[11px] text-slate-400 dark:text-slate-500">All inventory</span>
             </button>
 
             <button
               type="button"
               onClick={() => setStatusFilter("ACTIVE")}
-              className={`flex flex-col items-start rounded-2xl border p-4 text-left transition shadow-sm hover:-translate-y-0.5 ${
+              className={`flex flex-col items-start rounded-xl sm:rounded-2xl border p-2 sm:p-4 text-left transition shadow-2xs min-w-[75px] sm:min-w-0 shrink-0 sm:shrink ${
                 statusFilter === "ACTIVE" ? "border-emerald-500 bg-emerald-50/50 ring-2 ring-emerald-500/20 dark:border-emerald-600 dark:bg-emerald-950/40" : "border-emerald-200 bg-emerald-50/20 dark:border-emerald-900/60 dark:bg-emerald-950/20"
               }`}
             >
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Active Live</span>
-              <span className="mt-1 text-2xl font-black text-emerald-800 dark:text-emerald-300">{stats.active}</span>
-              <span className="mt-1 text-[11px] text-emerald-600 dark:text-emerald-500">Visible to buyers</span>
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Active</span>
+              <span className="mt-0.5 sm:mt-1 text-base sm:text-2xl font-black text-emerald-800 dark:text-emerald-300">{stats.active}</span>
+              <span className="hidden sm:block mt-1 text-[11px] text-emerald-600 dark:text-emerald-500">Visible to buyers</span>
             </button>
 
             <button
               type="button"
               onClick={() => setStatusFilter("INACTIVE")}
-              className={`flex flex-col items-start rounded-2xl border p-4 text-left transition shadow-sm hover:-translate-y-0.5 ${
+              className={`flex flex-col items-start rounded-xl sm:rounded-2xl border p-2 sm:p-4 text-left transition shadow-2xs min-w-[75px] sm:min-w-0 shrink-0 sm:shrink ${
                 statusFilter === "INACTIVE" ? "border-slate-700 bg-slate-100 ring-2 ring-slate-700/20 dark:border-slate-500 dark:bg-slate-800" : "border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900"
               }`}
             >
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Inactive</span>
-              <span className="mt-1 text-2xl font-black text-slate-800 dark:text-slate-200">{stats.inactive}</span>
-              <span className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Needs activation</span>
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Inactive</span>
+              <span className="mt-0.5 sm:mt-1 text-base sm:text-2xl font-black text-slate-800 dark:text-slate-200">{stats.inactive}</span>
+              <span className="hidden sm:block mt-1 text-[11px] text-slate-500 dark:text-slate-400">Needs activation</span>
             </button>
 
             <button
               type="button"
               onClick={() => setStatusFilter("UNDER_REVIEW")}
-              className={`flex flex-col items-start rounded-2xl border p-4 text-left transition shadow-sm hover:-translate-y-0.5 ${
+              className={`flex flex-col items-start rounded-xl sm:rounded-2xl border p-2 sm:p-4 text-left transition shadow-2xs min-w-[75px] sm:min-w-0 shrink-0 sm:shrink ${
                 statusFilter === "UNDER_REVIEW" ? "border-amber-500 bg-amber-50/50 ring-2 ring-amber-500/20 dark:border-amber-600 dark:bg-amber-950/40" : "border-amber-200 bg-amber-50/20 dark:border-amber-900/60 dark:bg-amber-950/20"
               }`}
             >
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">Under Review</span>
-              <span className="mt-1 text-2xl font-black text-amber-800 dark:text-amber-300">{stats.underReview}</span>
-              <span className="mt-1 text-[11px] text-amber-600 dark:text-amber-500">Verification</span>
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">Review</span>
+              <span className="mt-0.5 sm:mt-1 text-base sm:text-2xl font-black text-amber-800 dark:text-amber-300">{stats.underReview}</span>
+              <span className="hidden sm:block mt-1 text-[11px] text-amber-600 dark:text-amber-500">Verification</span>
             </button>
 
             <button
               type="button"
               onClick={() => setStatusFilter("DRAFT")}
-              className={`flex flex-col items-start rounded-2xl border p-4 text-left transition shadow-sm hover:-translate-y-0.5 ${
+              className={`flex flex-col items-start rounded-xl sm:rounded-2xl border p-2 sm:p-4 text-left transition shadow-2xs min-w-[75px] sm:min-w-0 shrink-0 sm:shrink ${
                 statusFilter === "DRAFT" ? "border-slate-500 bg-slate-100 ring-2 ring-slate-500/20 dark:border-slate-600 dark:bg-slate-800" : "border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900"
               }`}
             >
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Drafts</span>
-              <span className="mt-1 text-2xl font-black text-slate-800 dark:text-slate-200">{stats.drafts}</span>
-              <span className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Unpublished</span>
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Drafts</span>
+              <span className="mt-0.5 sm:mt-1 text-base sm:text-2xl font-black text-slate-800 dark:text-slate-200">{stats.drafts}</span>
+              <span className="hidden sm:block mt-1 text-[11px] text-slate-500 dark:text-slate-400">Unpublished</span>
             </button>
           </div>
 
           {/* Search, Filter Tabs & View Mode Switcher */}
-          <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900">
+          <div className="mb-4 sm:mb-6 flex flex-col gap-2.5 rounded-2xl border border-slate-200 bg-white p-2.5 sm:p-3.5 shadow-2xs sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900">
             {/* Search Input */}
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
@@ -625,13 +632,13 @@ function PropertiesContent() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by title, city, locality, or property ID..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pl-10 pr-4 text-sm text-slate-900 outline-none transition focus:border-rose-400 focus:bg-white focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-rose-500 dark:focus:bg-slate-800 dark:focus:ring-rose-500/20"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2 sm:py-2.5 pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-slate-900 outline-none transition focus:border-rose-400 focus:bg-white focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-rose-500 dark:focus:bg-slate-800 dark:focus:ring-rose-500/20"
               />
             </div>
 
             {/* Status Filter Tabs & Layout switcher */}
-            <div className="flex flex-wrap items-center justify-between gap-2 sm:justify-end">
-              <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex items-center justify-between gap-2 overflow-x-auto pb-0.5 no-scrollbar sm:justify-end">
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                 {(
                   [
                     { key: "ALL", label: "All" },
@@ -646,9 +653,9 @@ function PropertiesContent() {
                     key={tab.key}
                     type="button"
                     onClick={() => setStatusFilter(tab.key)}
-                    className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
+                    className={`rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold transition whitespace-nowrap ${
                       statusFilter === tab.key
-                        ? "bg-slate-900 text-white shadow-sm dark:bg-slate-100 dark:text-slate-900"
+                        ? "bg-slate-900 text-white shadow-xs dark:bg-slate-100 dark:text-slate-900"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
                     }`}
                   >
