@@ -168,10 +168,14 @@ export const organizationsApi = createApi({
       providesTags: (_result, _error, orgId) => [{ type: "OrganizationInvitation", id: orgId }],
     }),
     inviteOrganizationMember: builder.mutation<OrganizationInvitation, InviteOrganizationMemberPayload>({
-      query: ({ orgId, mobileNumber, role }) => ({
+      query: ({ orgId, email, mobileNumber, role }) => ({
         url: API_ENDPOINTS.organizations.invitations(orgId),
         method: "POST",
-        body: { mobileNumber, role },
+        body: {
+          email: email?.trim() ? email.trim() : undefined,
+          mobileNumber: mobileNumber?.trim() ? mobileNumber.trim() : undefined,
+          role,
+        },
       }),
       transformResponse: (response: { data?: OrganizationInvitation } | OrganizationInvitation) =>
         unwrap<OrganizationInvitation>(response),

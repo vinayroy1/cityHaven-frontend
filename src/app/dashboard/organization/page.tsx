@@ -75,7 +75,18 @@ const roleTone: Record<string, string> = {
 };
 
 function getErrorMessage(error: unknown) {
-  const err = error as { data?: { message?: string }; message?: string; status?: string | number };
+  const err = error as {
+    data?: {
+      message?: string;
+      errors?: Array<{ message?: string; path?: string }>;
+    };
+    message?: string;
+    status?: string | number;
+  };
+  if (err?.data?.errors && Array.isArray(err.data.errors) && err.data.errors.length > 0) {
+    const errorDetails = err.data.errors.map((e) => e.message).filter(Boolean).join(". ");
+    if (errorDetails) return errorDetails;
+  }
   return err?.data?.message || err?.message || (err?.status ? `Request failed (${err.status})` : "Something went wrong");
 }
 
