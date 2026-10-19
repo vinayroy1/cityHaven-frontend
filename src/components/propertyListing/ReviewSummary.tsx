@@ -127,7 +127,7 @@ export function ReviewSummary({ values, uploadedPhotos: explicitPhotos, onEditSt
 
           {/* Title & Location over banner */}
           <div className="absolute bottom-4 left-4 right-4 text-white">
-            <h2 className="text-lg font-extrabold sm:text-2xl line-clamp-1">
+            <h2 className="text-lg font-extrabold sm:text-2xl line-clamp-2 leading-tight">
               {meta.title || "Untitled Property Listing"}
             </h2>
             <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-slate-200">

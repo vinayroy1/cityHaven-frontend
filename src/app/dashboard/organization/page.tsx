@@ -91,7 +91,7 @@ function OrganizationDashboardContent() {
   const [orgName, setOrgName] = useState("");
   const [orgType, setOrgType] = useState("AGENCY");
   const [orgAddress, setOrgAddress] = useState("");
-  const [inviteMobile, setInviteMobile] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
   const [memberRole, setMemberRole] = useState<Exclude<OrganizationRole, "OWNER">>("AGENT");
   const [lastInviteLink, setLastInviteLink] = useState("");
   const [actionError, setActionError] = useState<string | null>(null);
@@ -206,8 +206,8 @@ function OrganizationDashboardContent() {
     setActionError(null);
     setLastInviteLink("");
     try {
-      const invitation = await inviteMember({ orgId: selectedOrg.id, mobileNumber: inviteMobile.trim(), role: memberRole }).unwrap();
-      setInviteMobile("");
+      const invitation = await inviteMember({ orgId: selectedOrg.id, email: inviteEmail.trim().toLowerCase(), role: memberRole }).unwrap();
+      setInviteEmail("");
       setMemberRole("AGENT");
       if (invitation.token && typeof window !== "undefined") {
         setLastInviteLink(`${window.location.origin}/login?redirect=/dashboard/organization/invitations/${invitation.token}`);
@@ -743,14 +743,14 @@ function OrganizationDashboardContent() {
                   ) : (
                     <form onSubmit={inviteUserToOrg} className="mt-3 space-y-3">
                       <label className="block">
-                        <span className="text-xs font-bold text-slate-600">Mobile number</span>
+                        <span className="text-xs font-bold text-slate-600">Email address</span>
                         <input
-                          value={inviteMobile}
-                          onChange={(event) => setInviteMobile(event.target.value)}
+                          type="email"
+                          value={inviteEmail}
+                          onChange={(event) => setInviteEmail(event.target.value)}
                           required
-                          inputMode="tel"
                           className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-                          placeholder="9876543210"
+                          placeholder="colleague@company.com"
                         />
                       </label>
                       <label className="block">
@@ -769,7 +769,7 @@ function OrganizationDashboardContent() {
                       </label>
                       <button
                         type="submit"
-                        disabled={isInvitingMember || !canManageTeam || !selectedOrg?.id || !inviteMobile.trim()}
+                        disabled={isInvitingMember || !canManageTeam || !selectedOrg?.id || !inviteEmail.trim()}
                         className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {isInvitingMember ? <Loader2 className="h-4 w-4 animate-spin" /> : <MailPlus className="h-4 w-4" />}
@@ -796,7 +796,7 @@ function OrganizationDashboardContent() {
                       <div key={invite.id} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="truncate text-xs font-black text-slate-900">{invite.mobileNumber}</p>
+                            <p className="truncate text-xs font-black text-slate-900">{invite.email || invite.mobileNumber}</p>
                             <p className="mt-1 text-xs text-slate-500">{roleLabel(invite.roleName)} · expires {new Date(invite.expiresAt).toLocaleDateString()}</p>
                           </div>
                           <button

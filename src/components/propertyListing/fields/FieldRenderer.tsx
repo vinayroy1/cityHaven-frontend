@@ -19,7 +19,7 @@ import { cn } from "@/components/ui/utils";
 import { evaluateCondition } from "@/features/propertyListing/formConfig/conditions";
 import { areaUnitOptions, monthOptions } from "@/features/propertyListing/formConfig/options";
 import type { FieldConfig, FormValues, Option } from "@/features/propertyListing/formConfig/types";
-import { suggestDescription } from "@/features/propertyListing/formConfig/derive";
+import { suggestDescription, suggestTitle } from "@/features/propertyListing/formConfig/derive";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import { chip as chipCls, errorText, fieldLabel, helpText as helpCls } from "../theme";
 import { amountToWords } from "./numberToWords";
@@ -142,7 +142,9 @@ export function FieldRenderer({ field, values }: Props) {
         />
       );
 
-    case "textarea":
+    case "textarea": {
+      const isTitle = field.id === "meta.title";
+      const isDesc = field.id === "meta.description";
       return (
         <Controller
           name={field.id}
@@ -163,7 +165,23 @@ export function FieldRenderer({ field, values }: Props) {
                     </span>
                   )}
                 </label>
-                {field.id === "meta.description" && (
+                {isTitle && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const autoTitle = suggestTitle(values as PropertyListingFormValues);
+                      if (autoTitle) {
+                        rhf.onChange(autoTitle);
+                        toast.success("Suggested title generated from your property details!");
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Suggest Title
+                  </button>
+                )}
+                {isDesc && (
                   <button
                     type="button"
                     onClick={() => {
@@ -181,7 +199,11 @@ export function FieldRenderer({ field, values }: Props) {
               <Textarea
                 placeholder={field.placeholder}
                 disabled={disabled}
-                rows={4}
+                rows={field.rows ?? (isTitle ? 2 : 4)}
+                className={cn(
+                  "resize-y transition-colors",
+                  isTitle && "min-h-[58px] font-medium leading-relaxed rounded-xl text-slate-900 dark:text-white"
+                )}
                 value={rhf.value ?? ""}
                 onChange={(e) => rhf.onChange(e.target.value)}
                 onBlur={rhf.onBlur}
@@ -191,6 +213,7 @@ export function FieldRenderer({ field, values }: Props) {
           )}
         />
       );
+    }
 
     case "select":
       return (

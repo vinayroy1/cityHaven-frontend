@@ -58,6 +58,7 @@ export type FieldConfig = {
   id: string;
   label: string;
   type: FieldType;
+  rows?: number;
   placeholder?: string;
   helpText?: string;
   required?: boolean;

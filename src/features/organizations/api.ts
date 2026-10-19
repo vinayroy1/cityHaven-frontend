@@ -56,7 +56,8 @@ export type AddOrganizationMemberPayload = {
 export type OrganizationInvitation = {
   id: number;
   organizationId: number;
-  mobileNumber: string;
+  email?: string | null;
+  mobileNumber?: string;
   roleName: Exclude<OrganizationRole, "OWNER">;
   status: "PENDING" | "ACCEPTED" | "REJECTED" | "REVOKED" | "EXPIRED" | string;
   expiresAt: string;
@@ -87,7 +88,8 @@ export type OrganizationPropertySummary = {
 
 export type InviteOrganizationMemberPayload = {
   orgId: number | string;
-  mobileNumber: string;
+  email?: string;
+  mobileNumber?: string;
   role: Exclude<OrganizationRole, "OWNER">;
 };
 

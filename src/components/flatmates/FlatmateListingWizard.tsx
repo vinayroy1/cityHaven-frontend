@@ -1107,14 +1107,24 @@ export function FlatmateListingWizard() {
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Listing Title
                   </label>
-                  <span className="text-[11px] text-slate-400">
-                    Auto-generated from your details
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTitle(computedTitle());
+                      toast.success("Reset to auto-generated title!");
+                    }}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-600 hover:text-rose-700 hover:underline"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    Auto-generate
+                  </button>
                 </div>
-                <Input
+                <Textarea
                   value={title || computedTitle()}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="rounded-2xl font-medium"
+                  rows={2}
+                  className="rounded-2xl font-medium text-sm resize-y min-h-[58px] leading-relaxed border-slate-200 dark:border-slate-700 focus-visible:ring-rose-500"
+                  placeholder="e.g. Spacious Private Room with Balcony in 3 BHK Gated Society"
                 />
               </div>
 

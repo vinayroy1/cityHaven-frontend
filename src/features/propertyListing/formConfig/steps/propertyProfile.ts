@@ -89,10 +89,11 @@ export const propertyProfileStep: StepConfig = {
         {
           id: "meta.title",
           label: "Property title",
-          type: "text",
+          type: "textarea",
+          rows: 2,
           required: true,
-          placeholder: "e.g. Spacious 3 BHK in Green View Residency",
-          helpText: "A clear title with configuration + locality gets more views.",
+          placeholder: "e.g. Spacious 3 BHK Apartment in Green View Residency, Koramangala",
+          helpText: "A clear title with configuration + locality gets more views. Complete title is visible and editable.",
         },
         {
           id: "meta.description",

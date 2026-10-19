@@ -520,17 +520,22 @@ export default function PostProjectPage() {
                       </p>
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-4">
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                          Project Name *
-                        </label>
-                        <input
-                          type="text"
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                            Project Name *
+                          </label>
+                          <span className="text-[11px] text-slate-400">
+                            Township, community, or development name
+                          </span>
+                        </div>
+                        <textarea
+                          rows={2}
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="e.g. Godrej Woods, DLF Privana"
-                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:border-rose-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                          placeholder="e.g. Godrej Woods - Luxury High-Rise Residences, Sector 43"
+                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:border-rose-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white resize-y min-h-[58px] leading-relaxed"
                         />
                       </div>
 
