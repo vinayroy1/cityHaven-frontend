@@ -86,7 +86,7 @@ pipeline {
                 sh '''
                     echo "Waiting for ${APP_NAME} to initialize..."
                     for i in $(seq 1 15); do
-                        if curl -fsSL http://127.0.0.1:3000/api/health > /dev/null 2>&1; then
+                        if docker exec ${APP_NAME} node -e "require('http').get('http://127.0.0.1:3000', r => process.exit(r.statusCode === 200 ? 0 : 1))" > /dev/null 2>&1; then
                             echo "✅ Frontend is healthy and responding (attempt ${i})!"
                             docker logs --tail 10 ${APP_NAME}
                             exit 0
