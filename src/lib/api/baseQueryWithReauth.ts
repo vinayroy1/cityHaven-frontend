@@ -23,6 +23,7 @@ const clearTokens = () => {
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: `${APP_CONFIG.API.BASE_URL}/v1`,
+  credentials: "include",
   prepareHeaders: (headers) => {
     const token = getAccessToken();
     if (token) headers.set("authorization", `Bearer ${token}`);
@@ -32,12 +33,11 @@ const rawBaseQuery = fetchBaseQuery({
 
 const refreshAccessToken = async (): Promise<string | null> => {
   const refreshToken = getRefreshToken();
-  if (!refreshToken) return null;
   const result = await rawBaseQuery(
     {
       url: API_ENDPOINTS.auth.refreshToken,
       method: "POST",
-      body: { refreshToken },
+      body: refreshToken ? { refreshToken } : {},
     },
     {} as any,
     {} as any,
@@ -52,7 +52,8 @@ const refreshAccessToken = async (): Promise<string | null> => {
     setTokens(tokens.accessToken, tokens.refreshToken);
     return tokens.accessToken;
   }
-  return null;
+  // When using HttpOnly cookies, successful 200 response means cookies were updated
+  return "cookie-valid";
 };
 
 export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
@@ -94,10 +95,16 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
     if (newToken) {
       const retryArgs =
         typeof args === "string"
-          ? { url: args, headers: { authorization: `Bearer ${newToken}` } }
+          ? {
+              url: args,
+              ...(newToken !== "cookie-valid" ? { headers: { authorization: `Bearer ${newToken}` } } : {}),
+            }
           : {
               ...args,
-              headers: { ...(args.headers || {}), authorization: `Bearer ${newToken}` },
+              headers: {
+                ...(args.headers || {}),
+                ...(newToken !== "cookie-valid" ? { authorization: `Bearer ${newToken}` } : {}),
+              },
             };
       result = await rawBaseQuery(retryArgs, api, extraOptions);
     } else {

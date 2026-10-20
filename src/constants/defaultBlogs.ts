@@ -65,9 +65,6 @@ export const DEFAULT_POSTS: BlogPost[] = [
         type: "callout",
         tone: "warning",
         title: "Beware of Pre-Launch Pitfalls",
-      },
-      {
-        type: "paragraph",
         text: "Never invest in 'soft-launch' or 'expression of interest' proposals that do not possess an active K-RERA registration number. It is unlawful under Section 3 of RERA for promoters to market or invite bookings prior to registration.",
       },
       {
@@ -159,9 +156,6 @@ export const DEFAULT_POSTS: BlogPost[] = [
         type: "callout",
         tone: "tip",
         title: "Pro Tip: Separate Security Deposit Allocation",
-      },
-      {
-        type: "paragraph",
         text: "Ensure the owner's rental agreement explicitly names each occupant with individual deposit contributions and notice period provisions. That way, if one person transfers cities, the remaining tenants are not burdened with refunding the deposit out of pocket.",
       },
       {
@@ -283,9 +277,6 @@ export const DEFAULT_POSTS: BlogPost[] = [
         type: "callout",
         tone: "info",
         title: "Consult an Independent Property Advocate",
-      },
-      {
-        type: "paragraph",
         text: "Always hire an independent advocate who has no commercial affiliation with the builder or marketing broker. A comprehensive title clearance report costs a fraction of 1% of the property value and provides lifelong peace of mind.",
       },
     ],

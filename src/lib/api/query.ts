@@ -36,6 +36,7 @@ export async function apiFetch<T = any>({ url, params, init }: FetchParams): Pro
   const targetUrl = resolveClientUrl(url);
   const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
   const res = await fetch(search ? `${targetUrl}?${search.toString()}` : targetUrl, {
+    credentials: "include",
     ...init,
     headers: {
       "Content-Type": "application/json",
