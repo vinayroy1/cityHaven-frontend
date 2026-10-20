@@ -6,26 +6,40 @@ import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { buildCanonical } from "@/constants/seo";
+import { getDefaultBlogListResponse } from "@/constants/defaultBlogs";
 import type { BlogListResponse } from "@/types/blog.types";
 
 export const metadata: Metadata = {
-  title: "Real Estate Insights, Guides & Market Trends",
+  title: "Real Estate Insights, Guides & Market Trends | Awasio",
   description: "Practical property buying, renting, flatmate, investment and neighborhood guides from Awasio's real estate editorial team.",
   alternates: { canonical: buildCanonical("/blog") },
-  openGraph: { title: "Awasio Insights", description: "Better property decisions start with better information.", url: buildCanonical("/blog"), type: "website" },
+  openGraph: { title: "Awasio Insights - Property Guides & Market Intelligence", description: "Better property decisions start with better information.", url: buildCanonical("/blog"), type: "website" },
 };
 
 type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 const one = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
 
-async function getPosts(params: URLSearchParams): Promise<BlogListResponse | null> {
+async function getPosts(params: URLSearchParams): Promise<BlogListResponse> {
   try {
     const response = await fetch(`${API_ENDPOINTS.blog.list}?${params.toString()}`, { next: { revalidate: 300, tags: ["blog"] } });
-    if (!response.ok) return null;
-    const json = await response.json();
-    return json.data ?? null;
-  } catch { return null; }
+    if (response.ok) {
+      const json = await response.json();
+      if (json.data && json.data.items && json.data.items.length > 0) {
+        return json.data;
+      }
+    }
+  } catch {
+    // fallback gracefully to curated insights
+  }
+  return getDefaultBlogListResponse({
+    q: params.get("q") || undefined,
+    category: params.get("category") || undefined,
+    tag: params.get("tag") || undefined,
+    sort: params.get("sort") || undefined,
+    page: Number(params.get("page")) || 1,
+    pageSize: Number(params.get("pageSize")) || 12,
+  });
 }
 
 export default async function BlogPage({ searchParams }: PageProps) {

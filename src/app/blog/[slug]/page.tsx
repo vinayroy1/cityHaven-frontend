@@ -9,13 +9,26 @@ import { BlogContent } from "@/components/blog/BlogContent";
 import { ShareArticleButton } from "@/components/blog/ShareArticleButton";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { buildCanonical } from "@/constants/seo";
+import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 import type { BlogPost } from "@/types/blog.types";
 
 type DetailData = { post: BlogPost; related: BlogPost[] };
 type Props = { params: Promise<{ slug: string }> };
 
 async function getArticle(slug: string): Promise<DetailData | null> {
-  try { const response = await fetch(API_ENDPOINTS.blog.detail(slug), { next: { revalidate: 300, tags: [`blog-${slug}`] } }); if (!response.ok) return null; return (await response.json()).data ?? null; } catch { return null; }
+  try {
+    const response = await fetch(API_ENDPOINTS.blog.detail(slug), { next: { revalidate: 300, tags: [`blog-${slug}`] } });
+    if (response.ok) {
+      const json = await response.json();
+      if (json.data && json.data.post) return json.data;
+    }
+  } catch {
+    // fallback
+  }
+  const post = DEFAULT_POSTS.find((p) => p.slug === slug);
+  if (!post) return null;
+  const related = DEFAULT_POSTS.filter((p) => p.id !== post.id).slice(0, 3);
+  return { post, related };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
