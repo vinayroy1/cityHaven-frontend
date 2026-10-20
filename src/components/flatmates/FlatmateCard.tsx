@@ -85,11 +85,11 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             router.push(detailsHref);
           }
         }}
-        className="group relative flex cursor-pointer flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 sm:p-3.5 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-rose-900/60"
+        className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-rose-900/60"
       >
         <div>
-          {/* Card Media / Header Banner */}
-          <div className="relative mb-2.5 h-32 w-full overflow-hidden rounded-xl bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 sm:h-36 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900">
+          {/* Card Media / Header Banner - Full-bleed Property Details Card Style */}
+          <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900">
             {photo ? (
               <img
                 src={photo}
@@ -98,28 +98,38 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
                 loading="lazy"
               />
             ) : (
-              <div className="flex h-full w-full flex-col items-center justify-center p-3 text-center">
-                <div className="mb-1.5 flex h-10 w-10 items-center justify-center rounded-xl bg-white/80 shadow-xs backdrop-blur dark:bg-slate-800/80">
+              <div className="flex h-full w-full flex-col items-center justify-center p-4 text-center">
+                <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/80 shadow-xs backdrop-blur dark:bg-slate-800/80">
                   <ModeIcon className="h-5 w-5 text-rose-500" />
                 </div>
-                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {listing.mode === "HAVE_ROOM" ? "Room in Shared Flat" : "Roommate Seeking Flat"}
                 </span>
               </div>
             )}
 
+            {/* Gradient Scrim for readable badges */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/30" />
+
             {/* Mode Tag */}
-            <div className="absolute left-2.5 top-2.5">
+            <div className="absolute left-2.5 top-2.5 sm:left-3 sm:top-3">
               <span
-                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-xs backdrop-blur-md ${badge.className}`}
+                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold shadow-xs backdrop-blur-md ${badge.className}`}
               >
                 <ModeIcon className="h-2.5 w-2.5" />
                 <span>{badge.label}</span>
               </span>
             </div>
 
+            {/* Compatibility Score */}
+            {listing.compatibilityScore != null && (
+              <div className="absolute right-2.5 top-2.5 sm:right-3 sm:top-3 rounded-full bg-white/95 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-700 shadow-xs backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
+                {listing.compatibilityScore}% match
+              </div>
+            )}
+
             {/* Price Badge */}
-            <div className="absolute bottom-2 left-2.5">
+            <div className="absolute bottom-2.5 left-2.5 sm:left-3 sm:bottom-3">
               <div className="rounded-lg bg-slate-950/85 px-2.5 py-1 text-white backdrop-blur-md shadow-md">
                 <span className="text-sm font-extrabold tracking-tight sm:text-base">{formattedRent()}</span>
                 <span className="text-[10px] font-medium text-slate-300 ml-1">
@@ -129,35 +139,31 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             </div>
 
             {/* Photo count badge */}
-            {listing.photos?.length > 1 && (
-              <div className="absolute bottom-2 right-2.5 rounded-full bg-slate-950/70 px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur">
+            {listing.photos && listing.photos.length > 1 && (
+              <div className="absolute bottom-2.5 right-2.5 sm:right-3 sm:bottom-3 rounded-full bg-slate-950/70 px-2.5 py-0.5 text-[9px] font-bold text-white backdrop-blur">
                 1 of {listing.photos.length} photos
               </div>
             )}
+          </div>
 
-            {listing.compatibilityScore != null && (
-              <div className="absolute right-2.5 top-2.5 rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700 shadow-xs backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
-                {listing.compatibilityScore}% match
+          {/* Card Body Content with Spacing */}
+          <div className="space-y-2 p-3 sm:p-3.5">
+            {/* Title & Location */}
+            <div className="space-y-1">
+              <h3 className="line-clamp-1 text-sm font-bold text-slate-900 transition-colors group-hover:text-rose-600 sm:text-base dark:text-white dark:group-hover:text-rose-400">
+                {listing.title}
+              </h3>
+
+              <div className="flex items-center gap-1 text-[11px] text-slate-500 sm:text-xs dark:text-slate-400">
+                <MapPin className="h-3 w-3 shrink-0 text-rose-500" />
+                <span className="line-clamp-1">
+                  {listing.locality ? `${listing.locality}, ${listing.cityName}` : listing.cityName}
+                </span>
               </div>
-            )}
-          </div>
-
-          {/* Title & Location */}
-          <div className="space-y-1 px-0.5">
-            <h3 className="line-clamp-1 text-sm font-bold text-slate-900 transition-colors group-hover:text-rose-600 sm:text-base dark:text-white dark:group-hover:text-rose-400">
-              {listing.title}
-            </h3>
-
-            <div className="flex items-center gap-1 text-[11px] text-slate-500 sm:text-xs dark:text-slate-400">
-              <MapPin className="h-3 w-3 shrink-0 text-rose-500" />
-              <span className="line-clamp-1">
-                {listing.locality ? `${listing.locality}, ${listing.cityName}` : listing.cityName}
-              </span>
             </div>
-          </div>
 
-          {/* Quick Specifications Row */}
-          <div className="mt-2 flex flex-wrap items-center gap-1 px-0.5 text-[10px] sm:text-[11px]">
+            {/* Quick Specifications Row */}
+            <div className="flex flex-wrap items-center gap-1 text-[10px] sm:text-[11px]">
             {listing.roomType && (
               <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                 <BedDouble className="h-2.5 w-2.5 text-slate-500" />
@@ -274,9 +280,10 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             )}
           </div>
         </div>
+      </div>
 
-        {/* Card Footer: Poster Mini Profile + Connect Button */}
-        <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 dark:border-slate-800/80">
+      {/* Card Footer: Poster Mini Profile + Connect Button */}
+        <div className="flex items-center justify-between border-t border-slate-100 p-3 pt-2.5 sm:p-3.5 sm:pt-2.5 dark:border-slate-800/80">
           <div className="flex items-center gap-2 min-w-0">
             <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 font-bold text-white shadow-inner flex items-center justify-center text-[11px]">
               {profile?.profilePhoto ? (
