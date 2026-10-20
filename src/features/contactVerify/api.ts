@@ -243,7 +243,7 @@ export const contactVerifyApi = createApi({
       }),
       providesTags: (_result, _err, args) => [{ type: "OrgCredits", id: args.organizationId }],
     }),
-    checkUnlockedContact: builder.query<{ success: boolean; unlocked: boolean; data: CheckUnlockedContactResponse }, number | string>({
+    checkUnlockedContact: builder.query<{ success: boolean; unlocked: boolean; credits?: number; data: CheckUnlockedContactResponse }, number | string>({
       query: (propertyId) => ({
         url: API_ENDPOINTS.propertyListing.unlockedContact(propertyId),
         method: "GET",
@@ -253,6 +253,7 @@ export const contactVerifyApi = createApi({
         return {
           success: Boolean(res?.success),
           unlocked: isUnlocked,
+          credits: typeof res?.credits === "number" ? res.credits : typeof res?.data?.credits === "number" ? res.data.credits : undefined,
           data: {
             unlocked: isUnlocked,
             scope: res?.scope || res?.data?.scope,

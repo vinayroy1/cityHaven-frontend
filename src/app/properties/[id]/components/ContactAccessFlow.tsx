@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { PlanSelectionStep } from "@/app/propertySearch/components/ContactUnlockDialog";
+import { useMeQuery } from "@/features/auth/api";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import {
   useGetPlansQuery,
@@ -80,10 +81,13 @@ export function ContactAccessFlow({
     });
   const currentPlan = plans.find((p) => p.id === selectedPlanId) ?? plans[0];
 
+  const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) ?? "" : "";
+  const { data: meData } = useMeQuery(undefined, { skip: !token });
+
   const activeOrg = orgs.find((o) => o.id === selectedScope);
   const isOrgScope = selectedScope !== "PERSONAL" && Boolean(activeOrg);
-  const activeSummary = isOrgScope ? orgSummary : personalSummary;
-  const currentCredits = activeSummary?.credits ?? 0;
+  const personalCredits = personalSummary?.credits ?? meData?.credits ?? 0;
+  const currentCredits = isOrgScope ? (orgSummary?.credits ?? 0) : personalCredits;
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -304,7 +308,7 @@ export function ContactAccessFlow({
                   }`}
                 >
                   <User className="h-3.5 w-3.5" />
-                  Personal ({personalSummary?.credits ?? 0} credits)
+                  Personal ({personalCredits} credits)
                 </button>
                 {orgs.map((org) => {
                   const active = selectedScope === org.id;
@@ -342,7 +346,7 @@ export function ContactAccessFlow({
                   <div className="space-y-1">
                     <p className="font-semibold text-zinc-950 dark:text-white flex items-center gap-1.5">
                       <User className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                      Using your Personal Account balance ({personalSummary?.credits ?? 0} credits)
+                      Using your Personal Account balance ({personalCredits} credits)
                     </p>
                     <p className="text-[11px] text-zinc-500 dark:text-slate-400">
                       This unlock is saved to your personal account only.

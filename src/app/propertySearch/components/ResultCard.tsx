@@ -47,8 +47,12 @@ export function ResultCard({
   const [contactOpen, setContactOpen] = React.useState(false);
   const [contactStep, setContactStep] = React.useState<ContactStep>("plans");
   const [checkingContact, setCheckingContact] = React.useState(false);
+  const getToken = () => (typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) ?? "" : "");
+  const { data: meData } = useMeQuery(undefined, { skip: !getToken() });
+  const isMyProperty = Boolean(ownerId && meData?.id && Number(ownerId) === Number(meData.id));
+
   const [hasActivePlan, setHasActivePlan] = React.useState(false);
-  const [credits, setCredits] = React.useState(0);
+  const [credits, setCredits] = React.useState<number>(meData?.credits ?? 0);
   const [selectedScope, setSelectedScope] = React.useState<"PERSONAL" | number>("PERSONAL");
   const [personalSummary, setPersonalSummary] = React.useState<BillingSummary | null>(null);
   const [orgSummaries, setOrgSummaries] = React.useState<Record<number, BillingSummary>>({});
@@ -58,15 +62,17 @@ export function ResultCard({
   const [selectedPlan, setSelectedPlan] = React.useState("buyer_super_199");
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
 
+  React.useEffect(() => {
+    if (typeof meData?.credits === "number" && credits === 0) {
+      setCredits(meData.credits);
+    }
+  }, [meData?.credits]);
+
   const openScheduleFlow = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
     setScheduleOpen(true);
   };
-
-  const getToken = () => (typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) ?? "" : "");
-  const { data: meData } = useMeQuery(undefined, { skip: !getToken() });
-  const isMyProperty = Boolean(ownerId && meData?.id && Number(ownerId) === Number(meData.id));
 
   const { data: orgsData } = useMyOrganizationsQuery(undefined, { skip: !getToken() });
   const orgs = orgsData ?? [];
@@ -122,11 +128,12 @@ export function ResultCard({
             : null;
 
   const scopes = React.useMemo<ScopeOption[]>(() => {
+    const personalCredits = personalSummary?.credits ?? meData?.credits ?? credits;
     const list: ScopeOption[] = [
       {
         id: "PERSONAL",
         name: "Personal Account",
-        credits: personalSummary?.credits ?? credits,
+        credits: personalCredits,
       },
     ];
     for (const org of orgs) {
@@ -137,7 +144,7 @@ export function ResultCard({
       });
     }
     return list;
-  }, [personalSummary, credits, orgs, orgSummaries]);
+  }, [personalSummary, credits, orgs, orgSummaries, meData?.credits]);
 
   React.useEffect(() => {
     setActiveImage(0);
@@ -198,6 +205,10 @@ export function ResultCard({
       if (isUnlocked) {
         const cData = res?.data ?? (res as any);
         setOwnerContact({ name: cData?.ownerName ?? null, phone: cData?.ownerPhone ?? null });
+        const remaining = res?.credits ?? meData?.credits ?? personalSummary?.credits;
+        if (typeof remaining === "number") {
+          setCredits(remaining);
+        }
         return true;
       }
     } catch {
@@ -280,8 +291,13 @@ export function ResultCard({
       if (isAlreadyUnlocked) {
         const cData = unlocked?.data ?? (unlocked as any);
         setOwnerContact({ name: cData?.ownerName ?? null, phone: cData?.ownerPhone ?? null });
+        const remaining = unlocked?.credits ?? meData?.credits ?? personalSummary?.credits;
+        if (typeof remaining === "number") {
+          setCredits(remaining);
+        }
         setContactStep("contact");
         setContactOpen(true);
+        void refreshScopes();
         setCheckingContact(false);
         setLoading(false);
         return;
@@ -435,10 +451,21 @@ export function ResultCard({
         contactError={contactError}
         ownerContact={ownerContact}
         owner={owner}
-        credits={credits}
+        credits={
+          selectedScope === "PERSONAL"
+            ? (personalSummary?.credits ?? meData?.credits ?? credits)
+            : (orgSummaries[selectedScope]?.credits ?? 0)
+        }
         scopes={scopes}
         selectedScope={selectedScope}
-        onScopeChange={(s) => setSelectedScope(s)}
+        onScopeChange={(s) => {
+          setSelectedScope(s);
+          if (s === "PERSONAL") {
+            setCredits(personalSummary?.credits ?? meData?.credits ?? credits);
+          } else {
+            setCredits(orgSummaries[s]?.credits ?? 0);
+          }
+        }}
         onUnlockContact={() => void unlockContact(selectedScope)}
         onSelectedPlanChange={setSelectedPlan}
         onPurchasePlan={purchasePlan}

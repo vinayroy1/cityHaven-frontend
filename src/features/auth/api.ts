@@ -17,7 +17,7 @@ export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
-    me: builder.query<{ id?: number; email?: string; name?: string }, void>({
+    me: builder.query<{ id?: number; email?: string; name?: string; credits?: number; mobileNumber?: string; systemRole?: any; organizations?: any[] }, void>({
       query: () => ({
         url: API_ENDPOINTS.auth.me,
         method: "GET",
