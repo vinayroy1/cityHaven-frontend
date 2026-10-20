@@ -342,6 +342,7 @@ export function FilterSheet({
   useModalBackHandler({
     isOpen: open,
     onClose,
+    pushHistoryState: false,
     name: "FilterSheet",
   });
 

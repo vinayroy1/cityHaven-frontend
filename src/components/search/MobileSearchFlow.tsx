@@ -24,6 +24,7 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
   useModalBackHandler({
     isOpen: open,
     onClose,
+    pushHistoryState: false,
     name: "MobileSearchFlow",
   });
 
