@@ -5,16 +5,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function FlatmateCardSkeleton() {
   return (
-    <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900 animate-pulse">
+    <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900 animate-pulse">
       <div>
         {/* Full-bleed Media skeleton */}
-        <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full bg-gradient-to-tr from-slate-200/70 via-rose-50/50 to-slate-200/70 dark:from-slate-800 dark:via-slate-850 dark:to-slate-800">
+        <div className="relative h-32 sm:h-36 w-full bg-gradient-to-tr from-slate-200/70 via-rose-50/50 to-slate-200/70 dark:from-slate-800 dark:via-slate-850 dark:to-slate-800">
           {/* Mode tag placeholder */}
-          <div className="absolute left-2.5 top-2.5 sm:left-3 sm:top-3">
+          <div className="absolute left-2.5 top-2.5">
             <Skeleton className="h-5 w-24 rounded-full bg-white/80 dark:bg-slate-700/80 shadow-xs" />
           </div>
           {/* Price badge placeholder */}
-          <div className="absolute bottom-2.5 left-2.5 sm:left-3 sm:bottom-3">
+          <div className="absolute bottom-2 left-2.5">
             <Skeleton className="h-6 w-24 rounded-lg bg-slate-900/60 dark:bg-slate-950/80" />
           </div>
         </div>

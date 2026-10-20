@@ -661,7 +661,7 @@ function FeaturedFlatmatesSection({ selectedCity }: { selectedCity: string }) {
           href="/flatmates"
           className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 shrink-0"
         >
-          Find Roommates <ArrowRight className="h-4 w-4" />
+          View all <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
 
