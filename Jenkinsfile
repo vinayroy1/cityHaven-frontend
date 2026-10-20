@@ -32,6 +32,10 @@ pipeline {
             steps {
                 echo "🔨 [Build] Compiling Next.js production Docker image without cache..."
                 sh '''
+                    if [ -f /opt/awasio/.env.frontend ]; then
+                        cp /opt/awasio/.env.frontend .env.production
+                        echo "Injected server-side production environment from /opt/awasio/.env.frontend"
+                    fi
                     DOCKER_BUILDKIT=1 docker build \
                         --no-cache \
                         --progress=plain \
@@ -39,6 +43,7 @@ pipeline {
                         --label awasio.app=${APP_NAME} \
                         --label awasio.build=${BUILD_NUMBER} \
                         -t ${DOCKER_IMAGE} .
+                    rm -f .env.production
                 '''
             }
         }
@@ -61,6 +66,11 @@ pipeline {
                 sh '''
                     docker stop ${APP_NAME} || true
                     docker rm ${APP_NAME} || true
+                    ENV_OPT=""
+                    if [ -f /opt/awasio/.env.frontend ]; then
+                        ENV_OPT="--env-file /opt/awasio/.env.frontend"
+                        echo "Using server-side environment file /opt/awasio/.env.frontend"
+                    fi
                     docker run -d \
                         --name ${APP_NAME} \
                         --restart always \
@@ -73,6 +83,7 @@ pipeline {
                         --cpus 1.5 \
                         -p 127.0.0.1:3000:3000 \
                         --network ${NETWORK_NAME} \
+                        ${ENV_OPT} \
                         -e PORT=3000 \
                         -e NEXT_PUBLIC_API_URL='https://awasio.com/api' \
                         ${DOCKER_IMAGE}
