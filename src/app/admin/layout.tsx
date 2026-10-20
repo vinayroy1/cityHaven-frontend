@@ -30,6 +30,7 @@ import {
   Flame,
   Zap,
   Sliders,
+  BookOpen,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -71,6 +72,12 @@ const NAV_ITEMS = [
     icon: Building2,
     allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SENIOR_QC_LEAD", "QC_REVIEWER", "CATALOG_SPECIALIST", "ANALYST_AUDITOR"],
     badgeKey: "properties",
+  },
+  {
+    label: "Blog Studio",
+    href: "/admin/blog",
+    icon: BookOpen,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "CATALOG_SPECIALIST"],
   },
   {
     label: "Org Verification",

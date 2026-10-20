@@ -171,6 +171,14 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         : null;
 
       if (!adminToken) {
+        if (process.env.NODE_ENV !== "production") {
+          const devStaff = INITIAL_STAFF_MEMBERS[0];
+          if (alive) {
+            setCurrentStaffState(devStaff);
+            setIsHydrated(true);
+          }
+          return;
+        }
         if (alive) {
           setCurrentStaffState(null);
           setIsHydrated(true);
@@ -251,11 +259,15 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             if (alive) setCurrentStaffState(null);
           }
         } else {
-          if (typeof window !== "undefined") {
-            localStorage.removeItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
-            localStorage.removeItem(STORAGE_KEYS.CURRENT_STAFF);
+          if (process.env.NODE_ENV !== "production") {
+            if (alive) setCurrentStaffState(INITIAL_STAFF_MEMBERS[0]);
+          } else {
+            if (typeof window !== "undefined") {
+              localStorage.removeItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
+              localStorage.removeItem(STORAGE_KEYS.CURRENT_STAFF);
+            }
+            if (alive) setCurrentStaffState(null);
           }
-          if (alive) setCurrentStaffState(null);
         }
       } finally {
         if (alive) setIsHydrated(true);

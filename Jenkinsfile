@@ -10,7 +10,7 @@ pipeline {
     environment {
         APP_NAME     = "awasio-frontend"
         DOCKER_IMAGE = "awasio-frontend:latest"
-        NETWORK_NAME = "awasio_awasio-net"
+        NETWORK_NAME = "awasio-frontend-net"
     }
 
     stages {
@@ -22,6 +22,7 @@ pipeline {
                     echo "Git Commit: $(git rev-parse --short HEAD)"
                     echo "Git Branch: $(git rev-parse --abbrev-ref HEAD)"
                     docker info > /dev/null || (echo "Docker engine unreachable" && exit 1)
+                    docker network inspect ${NETWORK_NAME} > /dev/null 2>&1 || docker network create ${NETWORK_NAME}
                     echo "Validation passed."
                 '''
             }
@@ -29,9 +30,10 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo "🔨 [Build] Compiling Next.js production Docker image..."
+                echo "🔨 [Build] Compiling Next.js production Docker image without cache..."
                 sh '''
                     DOCKER_BUILDKIT=1 docker build \
+                        --no-cache \
                         --progress=plain \
                         --build-arg NEXT_PUBLIC_API_URL=https://awasio.com/api \
                         --label awasio.app=${APP_NAME} \
@@ -55,14 +57,21 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo "🚀 [Deploy] Deploying ${APP_NAME} container on Contabo VPS..."
+                echo "🚀 [Deploy] Deploying hardened ${APP_NAME} container on Contabo VPS..."
                 sh '''
                     docker stop ${APP_NAME} || true
                     docker rm ${APP_NAME} || true
                     docker run -d \
                         --name ${APP_NAME} \
                         --restart always \
-                        -p 3000:3000 \
+                        --read-only \
+                        --tmpfs /tmp:rw,noexec,nosuid,size=64m \
+                        --tmpfs /app/.next/cache:rw,noexec,nosuid,size=128m \
+                        --cap-drop ALL \
+                        --security-opt no-new-privileges:true \
+                        --memory 1g \
+                        --cpus 1.5 \
+                        -p 127.0.0.1:3000:3000 \
                         --network ${NETWORK_NAME} \
                         -e PORT=3000 \
                         -e NEXT_PUBLIC_API_URL='https://awasio.com/api' \
@@ -77,7 +86,7 @@ pipeline {
                 sh '''
                     echo "Waiting for ${APP_NAME} to initialize..."
                     for i in $(seq 1 15); do
-                        if curl -fsSL http://${APP_NAME}:3000/api/health > /dev/null 2>&1 || curl -fsSL http://95.111.252.156:3000/api/health > /dev/null 2>&1; then
+                        if curl -fsSL http://127.0.0.1:3000/api/health > /dev/null 2>&1; then
                             echo "✅ Frontend is healthy and responding (attempt ${i})!"
                             docker logs --tail 10 ${APP_NAME}
                             exit 0

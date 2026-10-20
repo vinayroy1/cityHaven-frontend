@@ -92,6 +92,7 @@ const companySupportLinks = [
   { label: "About Us", href: "/about", icon: Info },
   { label: "Help Centre & Contact", href: "/contact", icon: CircleHelp },
   { label: "Community Forum", href: "/community", icon: MessageSquare },
+  { label: "Property Guides", href: "/blog", icon: FileText },
   { label: "Safety & Policies", href: "/policies", icon: Shield },
   { label: "Privacy Policy", href: "/privacy", icon: ShieldCheck },
   { label: "Terms of Service", href: "/terms", icon: FileText },

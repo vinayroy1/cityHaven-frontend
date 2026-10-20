@@ -35,6 +35,15 @@ async function getActiveProjects(): Promise<Array<{ slug: string; updatedAt?: st
   }
 }
 
+async function getPublishedBlogPosts(): Promise<Array<{ slug: string; updatedAt?: string | null }>> {
+  try {
+    const res = await fetch(`${API_ENDPOINTS.blog.list}?pageSize=50`, { next: { revalidate: 1800 } });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { data?: { items?: Array<{ slug: string; updatedAt?: string | null }> } };
+    return json?.data?.items ?? [];
+  } catch { return []; }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
@@ -57,6 +66,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/blog`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.85,
     },
     {
       url: `${SITE_URL}/price-trends`,
@@ -190,6 +205,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
+  const blogPosts = await getPublishedBlogPosts();
+  const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+    url: `${SITE_URL}/blog/${post.slug}`,
+    lastModified: post.updatedAt ? new Date(post.updatedAt) : now,
+    changeFrequency: "weekly",
+    priority: 0.78,
+  }));
+
   return [
     ...staticRoutes,
     ...intentLandingRoutes,
@@ -200,6 +223,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...newProjectsCityRoutes,
     ...newProjectsLocalityRoutes,
     ...projectDetailRoutes,
+    ...blogRoutes,
   ];
 }
-

@@ -91,6 +91,14 @@ export const API_ENDPOINTS = {
     presignMediaUpload: `${BASE}/projects/media/presign-upload`,
     media: (id: string | number) => `${BASE}/projects/${id}/media`,
   },
+  blog: {
+    list: `${BASE}/blog`,
+    detail: (slug: string) => `${BASE}/blog/${slug}`,
+    adminList: `${BASE}/blog/admin/posts`,
+    adminCreate: `${BASE}/blog/admin/posts`,
+    adminPost: (id: number | string) => `${BASE}/blog/admin/posts/${id}`,
+    presignMediaUpload: `${BASE}/blog/admin/media/presign-upload`,
+  },
   properties: {
     list: `${BASE}/properties`,
     detail: `${BASE}/properties/:id`,
