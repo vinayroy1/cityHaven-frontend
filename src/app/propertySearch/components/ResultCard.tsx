@@ -238,7 +238,7 @@ export function ResultCard({
     } catch (err: any) {
       if (err?.status === 401 || err?.originalStatus === 401) {
         setContactOpen(false);
-        const targetUrl = slug ? `/property/${slug}` : `/properties/${id}`;
+        const targetUrl = `/properties/${slug || id}`;
         const returnUrl = encodeURIComponent(`${targetUrl}?autoUnlock=true`);
         router.push(`/login?redirect=${returnUrl}`);
         return false;
@@ -266,7 +266,7 @@ export function ResultCard({
     const activeToken = getToken();
     if (!activeToken) {
       // Unauthenticated user -> redirect directly to login page with return URL (no login popup)
-      const targetUrl = slug ? `/property/${slug}` : `/properties/${id}`;
+      const targetUrl = `/properties/${slug || id}`;
       const returnUrl = encodeURIComponent(`${targetUrl}?autoUnlock=true`);
       router.push(`/login?redirect=${returnUrl}`);
       return;

@@ -3,6 +3,9 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  turbopack: {
+    root: __dirname,
+  },
   // The app does not depend on compiler-specific semantics. Enabling the React
   // Compiler transforms every component and substantially increases CI time.
   reactCompiler: false,
