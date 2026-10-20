@@ -47,9 +47,10 @@ const primaryNavLinks = [
   { label: "New Projects", href: "/new-projects", icon: Sparkles, isNew: true },
   { label: "PG / Coliving", href: "/pg", icon: BedDouble, xlOnly: true },
   { label: "Commercial", href: "/commercial", icon: Building2 },
+  { label: "Plans", href: "/pricing", icon: CreditCard, badge: "PRO" },
 ];
 
-const toolsNavLinks = [
+const emiCalculatorLinks = [
   {
     label: "EMI Calculator",
     href: "/emi-calculator",
@@ -64,25 +65,12 @@ const toolsNavLinks = [
     desc: "Compare lowest interest rates from top banks",
     badge: "Low Rates",
   },
-  {
-    label: "Price Trends",
-    href: "/price-trends",
-    icon: TrendingUp,
-    desc: "Check locality price index & appreciation rates",
-    badge: "Insights",
-  },
-  {
-    label: "Pricing & Plans",
-    href: "/pricing",
-    icon: Sparkles,
-    desc: "Contact credits & property marketing packages",
-    badge: "PRO",
-  },
 ];
 
 const categoryExploreLinks = [
   { label: "PG & Co-living", href: "/pg", icon: BedDouble, desc: "Verified hostels & coliving spaces" },
   { label: "Plots & Land", href: "/plot", icon: MapPin, desc: "Residential & commercial plots" },
+  { label: "Price Trends", href: "/price-trends", icon: TrendingUp, desc: "Locality price index & appreciation rates" },
   { label: "Find Flatmates", href: "/flatmate", icon: Users, desc: "Find verified roommates nearby" },
   { label: "Find Agents", href: "/agents", icon: ShieldCheck, desc: "Connect with verified local brokers" },
   { label: "Post Project (Builder)", href: "/post-project", icon: Building2, desc: "List new residential & commercial projects" },
@@ -110,13 +98,11 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
   const [accountOpen, setAccountOpen] = React.useState(false);
   const [moreNavOpen, setMoreNavOpen] = React.useState(false);
-  const [toolsNavOpen, setToolsNavOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [currentSearch, setCurrentSearch] = React.useState("");
   const accountRef = React.useRef<HTMLDivElement | null>(null);
   const moreNavRef = React.useRef<HTMLDivElement | null>(null);
-  const toolsNavRef = React.useRef<HTMLDivElement | null>(null);
 
   useModalBackHandler({
     isOpen: accountOpen,
@@ -130,13 +116,6 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     onClose: () => setMoreNavOpen(false),
     pushHistoryState: false,
     name: "HeaderNavMoreDropdown",
-  });
-
-  useModalBackHandler({
-    isOpen: toolsNavOpen,
-    onClose: () => setToolsNavOpen(false),
-    pushHistoryState: false,
-    name: "HeaderNavToolsDropdown",
   });
 
   const loginHref = `/login?redirect=${encodeURIComponent(pathname || "/")}`;
@@ -178,9 +157,9 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close account, more, and tools dropdowns when clicking outside
+  // Close account and more dropdowns when clicking outside
   React.useEffect(() => {
-    if (!accountOpen && !moreNavOpen && !toolsNavOpen) return;
+    if (!accountOpen && !moreNavOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
       if (accountOpen && accountRef.current && !accountRef.current.contains(event.target as Node)) {
         setAccountOpen(false);
@@ -188,13 +167,10 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
       if (moreNavOpen && moreNavRef.current && !moreNavRef.current.contains(event.target as Node)) {
         setMoreNavOpen(false);
       }
-      if (toolsNavOpen && toolsNavRef.current && !toolsNavRef.current.contains(event.target as Node)) {
-        setToolsNavOpen(false);
-      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [accountOpen, moreNavOpen, toolsNavOpen]);
+  }, [accountOpen, moreNavOpen]);
 
   const logout = () => {
     localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
@@ -278,7 +254,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                 key={link.label}
                 href={link.href}
                 className={`relative items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold tracking-wide whitespace-nowrap transition-all duration-200 ${
-                  link.xlOnly ? "hidden xl:flex" : "flex"
+                  "xlOnly" in link && link.xlOnly ? "hidden xl:flex" : "flex"
                 } ${
                   active
                     ? "bg-white text-rose-600 shadow-xs dark:bg-slate-800 dark:text-rose-400"
@@ -291,83 +267,14 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                     New
                   </span>
                 )}
+                {"badge" in link && link.badge && (
+                  <span className="rounded-full bg-rose-500/10 px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">
+                    {link.badge}
+                  </span>
+                )}
               </Link>
             );
           })}
-
-          {/* EMI & Financial Tools Dropdown */}
-          <div className="relative" ref={toolsNavRef}>
-            <button
-              type="button"
-              onClick={() => {
-                setToolsNavOpen((open) => !open);
-                setMoreNavOpen(false);
-                setAccountOpen(false);
-              }}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
-                toolsNavOpen || toolsNavLinks.some((l) => isLinkActive(l.href))
-                  ? "bg-white text-rose-600 shadow-xs dark:bg-slate-800 dark:text-rose-400"
-                  : "text-slate-600 hover:text-slate-950 hover:bg-white/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60"
-              }`}
-              aria-label="EMI and Financial Tools Menu"
-              aria-expanded={toolsNavOpen}
-            >
-              <Calculator className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
-              <span>EMI & Tools</span>
-              <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${toolsNavOpen ? "rotate-180" : ""}`} />
-            </button>
-
-            {toolsNavOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-10 z-50 w-80 origin-top rounded-2xl border border-slate-200/90 bg-white/95 p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 dark:border-slate-800 dark:bg-slate-950/95">
-                <div className="px-2.5 py-1.5 border-b border-slate-100 dark:border-slate-800/80 mb-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Calculators & Financial Tools
-                  </p>
-                </div>
-                <div className="space-y-0.5">
-                  {toolsNavLinks.map((item) => {
-                    const Icon = item.icon;
-                    const active = isLinkActive(item.href);
-                    return (
-                      <Link
-                        key={item.label}
-                        href={item.href}
-                        onClick={() => setToolsNavOpen(false)}
-                        className={`flex items-start gap-3 rounded-xl p-2.5 transition-all duration-150 ${
-                          active
-                            ? "bg-rose-50/80 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
-                            : "text-slate-700 hover:bg-slate-100/80 dark:text-slate-200 dark:hover:bg-slate-900"
-                        }`}
-                      >
-                        <div
-                          className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                            active
-                              ? "bg-rose-100 text-rose-600 dark:bg-rose-900/50 dark:text-rose-300"
-                              : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                          }`}
-                        >
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="text-xs font-semibold">{item.label}</span>
-                            {item.badge && (
-                              <span className="rounded-full bg-rose-500/10 px-1.5 py-0.2 text-[9px] font-extrabold uppercase tracking-wider text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">
-                                {item.badge}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5 dark:text-slate-400">
-                            {item.desc}
-                          </p>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
 
           {/* More Categories & Portals Dropdown */}
           <div className="relative" ref={moreNavRef}>
@@ -375,13 +282,13 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
               type="button"
               onClick={() => {
                 setMoreNavOpen((open) => !open);
-                setToolsNavOpen(false);
                 setAccountOpen(false);
               }}
               className={`flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
                 moreNavOpen ||
                 categoryExploreLinks.some((l) => isLinkActive(l.href)) ||
-                companySupportLinks.some((l) => isLinkActive(l.href))
+                companySupportLinks.some((l) => isLinkActive(l.href)) ||
+                emiCalculatorLinks.some((l) => isLinkActive(l.href))
                   ? "bg-white text-rose-600 shadow-xs dark:bg-slate-800 dark:text-rose-400"
                   : "text-slate-600 hover:text-slate-950 hover:bg-white/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60"
               }`}
@@ -438,15 +345,15 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                     </div>
                   </div>
 
-                  {/* Section 2: Calculators & Finance */}
+                  {/* Section 2: EMI & Calculators */}
                   <div>
                     <div className="px-2 py-1 mb-1">
                       <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                        Calculators & Finance
+                        EMI & Loan Calculators
                       </p>
                     </div>
                     <div className="space-y-0.5">
-                      {toolsNavLinks.map((item) => {
+                      {emiCalculatorLinks.map((item) => {
                         const Icon = item.icon;
                         const active = isLinkActive(item.href);
                         return (
@@ -547,14 +454,6 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
             </span>
           </Link>
 
-          {/* Plans Pill Button (Desktop only) */}
-          <Link
-            href={isAuthed ? "/pricing" : "/login?redirect=/pricing"}
-            className="group hidden items-center gap-1.5 rounded-full border border-slate-200/90 bg-white/80 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs backdrop-blur-sm transition-all duration-200 hover:border-amber-400/80 hover:bg-amber-50/50 hover:text-amber-700 md:inline-flex dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-amber-500/50 dark:hover:bg-amber-950/30 dark:hover:text-amber-300"
-          >
-            <Sparkles className="h-3.5 w-3.5 text-amber-500 transition-transform group-hover:scale-110" />
-            <span>Plans</span>
-          </Link>
 
           {/* Saved Properties Heart Icon (Visible on sm+ screens, available in mobile drawer) */}
           <Link
