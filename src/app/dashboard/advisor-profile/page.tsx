@@ -1,20 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
   Building2,
+  Camera,
   CheckCircle2,
   Crown,
   Globe2,
+  Loader2,
   MapPin,
   Phone,
   Save,
   Send,
   ShieldCheck,
   Sparkles,
+  UploadCloud,
   User,
   X,
 } from "lucide-react";
@@ -55,6 +58,10 @@ export default function AdvisorProfilePage() {
   const [profile, setProfile] = useState<AgentProfileData>(DEFAULT_PROFILE);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"profile" | "plans">("profile");
+  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
+
+  const libraryInputRef = useRef<HTMLInputElement | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const data = getAgentProfile();
@@ -70,6 +77,67 @@ export default function AdvisorProfilePage() {
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      showToast("Please select a valid image file (PNG, JPG, WEBP)");
+      return;
+    }
+
+    setIsProcessingPhoto(true);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        // Optimize / compress to max 600px width/height for fast loading & smooth storage
+        const maxDimension = 600;
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxDimension) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          }
+        } else {
+          if (height > maxDimension) {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+          handleFieldChange("avatar", dataUrl);
+          showToast("Profile headshot updated successfully!");
+        } else {
+          handleFieldChange("avatar", event.target?.result as string);
+          showToast("Profile headshot updated!");
+        }
+        setIsProcessingPhoto(false);
+      };
+      img.onerror = () => {
+        setIsProcessingPhoto(false);
+        showToast("Failed to process image. Please try another photo.");
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.onerror = () => {
+      setIsProcessingPhoto(false);
+      showToast("Failed to read image file.");
+    };
+    reader.readAsDataURL(file);
+
+    e.target.value = "";
   };
 
   const handleFieldChange = (field: keyof AgentProfileData, val: any) => {
@@ -328,31 +396,93 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Profile Headshot Photo</label>
-                    <div className="mt-1.5 flex flex-col xs:flex-row items-start xs:items-center gap-2.5 sm:gap-3.5">
-                      <img
-                        src={profile.avatar}
-                        alt={profile.name}
-                        className="h-12 w-12 sm:h-14 sm:w-14 rounded-full object-cover ring-2 ring-rose-200 dark:ring-slate-700 shadow-xs shrink-0"
-                      />
-                      <div className="w-full flex-1 space-y-1.5">
-                        <input
-                          type="url"
-                          value={profile.avatar}
-                          onChange={(e) => handleFieldChange("avatar", e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                          placeholder="Image URL or pick sample below"
-                        />
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                      Profile Headshot Photo
+                    </label>
+
+                    {/* Hidden Native File Inputs */}
+                    <input
+                      ref={libraryInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileChange}
+                      className="hidden"
+                    />
+                    <input
+                      ref={cameraInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="user"
+                      onChange={handleImageFileChange}
+                      className="hidden"
+                    />
+
+                    <div className="mt-2 flex flex-col xs:flex-row items-start xs:items-center gap-3 sm:gap-4">
+                      {/* Avatar preview with upload overlay / status */}
+                      <div className="relative group shrink-0">
+                        <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full overflow-hidden ring-2 ring-rose-200 dark:ring-slate-700 bg-slate-100 dark:bg-slate-800 shadow-sm flex items-center justify-center">
+                          {profile.avatar ? (
+                            <img
+                              src={profile.avatar}
+                              alt={profile.name || "Advisor"}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <User className="h-8 w-8 text-slate-400" />
+                          )}
+                        </div>
+
+                        {isProcessingPhoto && (
+                          <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center backdrop-blur-xs">
+                            <Loader2 className="h-6 w-6 text-white animate-spin" />
+                          </div>
+                        )}
+
+                        <span className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-rose-600 text-white shadow-md border-2 border-white dark:border-slate-900">
+                          <Camera className="h-3 w-3" />
+                        </span>
+                      </div>
+
+                      {/* Upload Action Buttons */}
+                      <div className="flex-1 space-y-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {/* Library Upload Button */}
+                          <button
+                            type="button"
+                            onClick={() => libraryInputRef.current?.click()}
+                            disabled={isProcessingPhoto}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 shadow-xs hover:border-rose-400 hover:bg-rose-50/50 hover:text-rose-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-rose-500 dark:hover:text-rose-400 active:scale-95 transition"
+                          >
+                            <UploadCloud className="h-4 w-4 text-rose-500 shrink-0" />
+                            <span>Upload from Library</span>
+                          </button>
+
+                          {/* Camera Upload Button */}
+                          <button
+                            type="button"
+                            onClick={() => cameraInputRef.current?.click()}
+                            disabled={isProcessingPhoto}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50/80 px-3 py-2 text-xs font-semibold text-rose-700 shadow-xs hover:bg-rose-100 hover:border-rose-300 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/60 active:scale-95 transition"
+                          >
+                            <Camera className="h-4 w-4 text-rose-600 shrink-0" />
+                            <span>Take Photo</span>
+                          </button>
+                        </div>
+
+                        {/* Quick Presets */}
                         <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
-                          <span className="font-medium text-slate-400">Quick avatars:</span>
+                          <span className="font-medium text-slate-400">Sample photos:</span>
                           {SAMPLE_AVATARS.map((s, idx) => (
                             <button
                               key={s.label}
                               type="button"
-                              onClick={() => handleFieldChange("avatar", s.url)}
-                              className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] hover:border-rose-300 dark:border-slate-700 dark:bg-slate-800"
+                              onClick={() => {
+                                handleFieldChange("avatar", s.url);
+                                showToast(`Selected sample photo #${idx + 1}`);
+                              }}
+                              className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-medium hover:border-rose-300 dark:border-slate-700 dark:bg-slate-800"
                             >
-                              Photo #{idx + 1}
+                              Sample #{idx + 1}
                             </button>
                           ))}
                         </div>
@@ -374,7 +504,7 @@ export default function AdvisorProfilePage() {
                   </div>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-3.5">
                   <div>
                     <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Primary City *</label>
                     <div className="mt-1">
@@ -390,28 +520,6 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Years of Experience *</label>
-                    <div className="relative mt-1">
-                      <input
-                        type="number"
-                        min={0}
-                        max={60}
-                        required
-                        value={profile.experienceYears || ""}
-                        onChange={(e) => {
-                          const val = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
-                          handleFieldChange("experienceYears", isNaN(val) ? 0 : Math.max(0, val));
-                        }}
-                        placeholder="e.g. 9"
-                        className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 pr-14 text-xs font-semibold text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                      />
-                      <span className="pointer-events-none absolute right-3 top-2.5 text-xs font-medium text-slate-400">
-                        years
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
                     <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
                       Key Operating Localities / Neighborhoods *
                     </label>
@@ -426,26 +534,50 @@ export default function AdvisorProfilePage() {
                     </div>
                   </div>
 
-                  <div className="sm:col-span-2">
-                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Languages Spoken</label>
-                    <div className="mt-1.5 flex flex-wrap gap-1.5">
-                      {ALL_LANGUAGES.map((lang) => {
-                        const isSelected = (profile.languages || []).includes(lang);
-                        return (
-                          <button
-                            key={lang}
-                            type="button"
-                            onClick={() => toggleLanguage(lang)}
-                            className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition ${
-                              isSelected
-                                ? "bg-rose-600 text-white"
-                                : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
-                            }`}
-                          >
-                            {lang}
-                          </button>
-                        );
-                      })}
+                  <div className="grid gap-3 sm:grid-cols-2 pt-1 border-t border-slate-100 dark:border-slate-800/80">
+                    <div>
+                      <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Years of Experience *</label>
+                      <div className="relative mt-1">
+                        <input
+                          type="number"
+                          min={0}
+                          max={60}
+                          required
+                          value={profile.experienceYears || ""}
+                          onChange={(e) => {
+                            const val = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
+                            handleFieldChange("experienceYears", isNaN(val) ? 0 : Math.max(0, val));
+                          }}
+                          placeholder="e.g. 9"
+                          className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 pr-14 text-xs font-semibold text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                        />
+                        <span className="pointer-events-none absolute right-3 top-2.5 text-xs font-medium text-slate-400">
+                          years
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Languages Spoken</label>
+                      <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        {ALL_LANGUAGES.map((lang) => {
+                          const isSelected = (profile.languages || []).includes(lang);
+                          return (
+                            <button
+                              key={lang}
+                              type="button"
+                              onClick={() => toggleLanguage(lang)}
+                              className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition ${
+                                isSelected
+                                  ? "bg-rose-600 text-white"
+                                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                              }`}
+                            >
+                              {lang}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>

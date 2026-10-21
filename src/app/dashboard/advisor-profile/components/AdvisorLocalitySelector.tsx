@@ -620,11 +620,6 @@ export function AdvisorLocalitySelector({
           </div>
         )}
       </div>
-
-      <p className="text-[10px] text-slate-400">
-        Localities you select will appear on your public advisor profile and help
-        clients in {cleanCity || "your city"} find you.
-      </p>
     </div>
   );
 }
