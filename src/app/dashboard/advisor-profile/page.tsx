@@ -36,6 +36,8 @@ import {
   type AgentProfileData,
 } from "@/lib/services/agentProfile";
 import type { AgentSubscriptionTier } from "@/data/agents";
+import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
+import { AdvisorLocalitySelector } from "./components/AdvisorLocalitySelector";
 
 const INDIAN_STATES = [
   "Delhi",
@@ -71,7 +73,6 @@ const SAMPLE_AVATARS = [
 export default function AdvisorProfilePage() {
   const [profile, setProfile] = useState<AgentProfileData>(DEFAULT_PROFILE);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [newLocality, setNewLocality] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<"profile" | "plans">("profile");
 
@@ -161,20 +162,27 @@ export default function AdvisorProfilePage() {
     handleFieldChange("languages", updated);
   };
 
-  const handleAddLocality = () => {
-    if (!newLocality.trim()) return;
-    const currentAreas = profile.area ? profile.area.split(" & ") : [];
-    if (!currentAreas.includes(newLocality.trim())) {
-      const updated = [...currentAreas, newLocality.trim()].join(" & ");
+  const handleAddLocality = (localityName: string) => {
+    const trimmed = localityName?.trim();
+    if (!trimmed) return;
+    const currentAreas = profile.area ? profile.area.split(" & ").filter(Boolean) : [];
+    if (!currentAreas.some((a) => a.toLowerCase() === trimmed.toLowerCase())) {
+      const updated = [...currentAreas, trimmed].join(" & ");
       handleFieldChange("area", updated);
+      showToast(`Added locality: ${trimmed}`);
     }
-    setNewLocality("");
   };
 
   const handleRemoveArea = (item: string) => {
-    const currentAreas = profile.area ? profile.area.split(" & ") : [];
-    const updated = currentAreas.filter((a) => a !== item).join(" & ");
+    const currentAreas = profile.area ? profile.area.split(" & ").filter(Boolean) : [];
+    const updated = currentAreas.filter((a) => a.toLowerCase() !== item.toLowerCase()).join(" & ");
     handleFieldChange("area", updated);
+    showToast(`Removed locality: ${item}`);
+  };
+
+  const handleClearAllAreas = () => {
+    handleFieldChange("area", "");
+    showToast("Cleared operating localities");
   };
 
   const handleMockUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -496,25 +504,24 @@ export default function AdvisorProfilePage() {
                   </div>
                 </div>
 
-                <div className="grid gap-2.5 sm:gap-3 sm:grid-cols-2">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <div>
                     <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Primary City *</label>
-                    <select
-                      value={profile.city}
-                      onChange={(e) => handleFieldChange("city", e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                    >
-                      {CITIES.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="mt-1">
+                      <CitySelectorDropdown
+                        selectedCityName={profile.city}
+                        onSelectCity={(cityItem) => {
+                          handleFieldChange("city", cityItem.name);
+                          showToast(`Primary city set to ${cityItem.name}`);
+                        }}
+                        className="w-full [&>button]:w-full [&>button]:h-10 [&>button]:justify-between [&>button]:text-xs [&>button]:bg-white dark:[&>button]:bg-slate-800 dark:[&>button]:border-slate-700 [&_span]:max-w-none"
+                      />
+                    </div>
                   </div>
 
                   <div>
                     <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Years of Experience *</label>
-                    <div className="mt-1 flex items-center gap-2.5">
+                    <div className="mt-1 flex items-center gap-2.5 h-10">
                       <input
                         type="range"
                         min={1}
@@ -531,48 +538,16 @@ export default function AdvisorProfilePage() {
 
                   <div className="sm:col-span-2">
                     <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                      Key Operating Localities / Neighborhoods
+                      Key Operating Localities / Neighborhoods *
                     </label>
-                    <div className="mt-1.5 flex flex-wrap gap-1.5">
-                      {localitiesList.map((loc) => (
-                        <span
-                          key={loc}
-                          className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800 dark:bg-slate-800 dark:text-slate-200"
-                        >
-                          <MapPin className="h-3 w-3 text-rose-500 shrink-0" />
-                          <span>{loc}</span>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveArea(loc)}
-                            className="rounded-full hover:text-rose-600 ml-0.5"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="mt-2 flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={newLocality}
-                        onChange={(e) => setNewLocality(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            handleAddLocality();
-                          }
-                        }}
-                        placeholder="Add locality (e.g. Vasant Kunj)"
-                        className="flex-1 min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    <div className="mt-1.5">
+                      <AdvisorLocalitySelector
+                        cityName={profile.city}
+                        selectedLocalities={localitiesList}
+                        onAddLocality={handleAddLocality}
+                        onRemoveLocality={handleRemoveArea}
+                        onClearAll={handleClearAllAreas}
                       />
-                      <button
-                        type="button"
-                        onClick={handleAddLocality}
-                        className="shrink-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                      >
-                        Add
-                      </button>
                     </div>
                   </div>
 
