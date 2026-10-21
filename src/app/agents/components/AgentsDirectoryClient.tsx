@@ -95,18 +95,18 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
   return (
     <div>
       {/* Filter & Search Bar */}
-      <section className="sticky top-14 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 py-3 shadow-xs">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+      <section className="sticky top-14 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 py-2 sm:py-3 shadow-xs">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 space-y-2 sm:space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
             {/* Search Input */}
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search by agent name, agency, or locality (e.g., Bandra, South Delhi)..."
+                placeholder="Search by agent name, agency, or locality..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/80 py-2.5 pl-10 pr-4 text-xs sm:text-sm text-slate-900 outline-none transition focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/80 py-2 sm:py-2.5 pl-10 pr-4 text-xs sm:text-sm text-slate-900 outline-none transition focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
               {searchQuery && (
                 <button
@@ -125,7 +125,7 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
                 value={selectedSpecialty}
                 onChange={(e) => setSelectedSpecialty(e.target.value)}
                 aria-label="Filter by property type"
-                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="flex-1 sm:flex-initial rounded-xl border border-slate-200 bg-slate-50 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
                 {SPECIALTIES.map((sp) => (
                   <option key={sp} value={sp}>
@@ -138,7 +138,7 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
                 aria-label="Sort advisors"
-                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="flex-1 sm:flex-initial rounded-xl border border-slate-200 bg-slate-50 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
                 <option value="experience">Most Experienced</option>
                 <option value="tours">Most Walkthroughs</option>
@@ -147,14 +147,14 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
           </div>
 
           {/* City Selection Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-0.5 sm:pb-1 no-scrollbar text-[11px] sm:text-xs">
             <span className="font-semibold text-slate-500 shrink-0">City:</span>
             {CITIES.map((city) => (
               <button
                 key={city}
                 type="button"
                 onClick={() => setSelectedCity(city)}
-                className={`rounded-full px-3 py-1 font-semibold whitespace-nowrap transition ${
+                className={`rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 font-semibold whitespace-nowrap transition ${
                   selectedCity === city
                     ? "bg-rose-600 text-white shadow-xs"
                     : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
@@ -168,9 +168,9 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
       </section>
 
       {/* Directory Results */}
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+      <main className="mx-auto max-w-6xl px-4 pt-2.5 pb-8 sm:py-8 sm:px-6">
+        <div className="mb-2.5 sm:mb-6 flex items-center justify-between text-xs sm:text-sm">
+          <p className="font-semibold text-slate-700 dark:text-slate-300">
             Showing <span className="font-bold text-slate-950 dark:text-white">{filteredAgents.length}</span> verified advisors
             {selectedCity !== "All Cities" && ` in ${selectedCity}`}
           </p>
@@ -178,16 +178,16 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
             <button
               type="button"
               onClick={resetFilters}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400"
+              className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RotateCcw className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               Reset filters
             </button>
           )}
         </div>
 
-        {/* Advisor Partner Network Banner */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-rose-100 bg-linear-to-r from-rose-50/70 via-white to-amber-50/70 p-4 dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/70 shadow-xs">
+        {/* Advisor Partner Network Banner (Desktop View: Above Cards) */}
+        <div className="hidden sm:flex sm:mb-6 sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-rose-100 bg-linear-to-r from-rose-50/70 via-white to-amber-50/70 p-4 dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/70 shadow-xs">
           <div className="flex items-center gap-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white shadow-xs">
               <ShieldCheck className="h-5 w-5" />
@@ -226,24 +226,24 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
             </button>
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredAgents.map((agent) => (
               <article
                 key={agent.id}
-                className="flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs transition-all duration-200 hover:border-rose-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+                className="flex flex-col justify-between rounded-xl sm:rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-5 shadow-xs transition-all duration-200 hover:border-rose-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
               >
                 <div>
                   {/* Header */}
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3 sm:gap-4">
                     <div className="relative shrink-0">
                       <img
                         src={agent.avatar}
                         alt={agent.name}
-                        className="h-16 w-16 rounded-full object-cover ring-2 ring-slate-100 shadow-xs dark:ring-slate-800"
+                        className="h-12 w-12 sm:h-16 sm:w-16 rounded-full object-cover ring-2 ring-slate-100 shadow-xs dark:ring-slate-800"
                       />
                       <span
                         title="Available for in-person tours"
-                        className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"
+                        className="absolute bottom-0 right-0 h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"
                       />
                     </div>
 
@@ -251,51 +251,51 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
                       <div className="flex items-center gap-1.5">
                         <Link
                           href={`/agents/${agent.id}`}
-                          className="truncate text-base font-bold text-slate-950 hover:text-rose-600 transition dark:text-white dark:hover:text-rose-400"
+                          className="truncate text-sm sm:text-base font-bold text-slate-950 hover:text-rose-600 transition dark:text-white dark:hover:text-rose-400"
                         >
                           {agent.name}
                         </Link>
-                        <BadgeCheck className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                        <BadgeCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-rose-600 dark:text-rose-400" />
                       </div>
-                      <p className="truncate text-xs font-semibold text-slate-600 dark:text-slate-400">
+                      <p className="truncate text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-400">
                         {agent.role}
                       </p>
-                      <p className="truncate text-xs text-slate-400 dark:text-slate-500">
+                      <p className="truncate text-[10px] sm:text-xs text-slate-400 dark:text-slate-500">
                         {agent.agency}
                       </p>
                     </div>
                   </div>
 
                   {/* Badge & Verification */}
-                  <div className="mt-3.5 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-slate-800/80">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
-                      <Sparkles className="h-3 w-3" />
+                  <div className="mt-2 sm:mt-3 flex items-center justify-between border-t border-slate-100 pt-1.5 sm:pt-2.5 dark:border-slate-800/80">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       {agent.badge}
                     </span>
 
-                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                      <ShieldCheck className="h-3.5 w-3.5" />
+                    <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                      <ShieldCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       RERA Verified
                     </span>
                   </div>
 
                   {/* Area & RERA */}
-                  <div className="mt-3 space-y-1">
-                    <p className="flex items-center gap-1 text-xs text-slate-700 dark:text-slate-300 font-medium truncate">
-                      <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
+                  <div className="mt-1.5 sm:mt-2.5 flex items-center justify-between gap-1 text-xs">
+                    <p className="flex items-center gap-1 text-[11px] sm:text-xs text-slate-700 dark:text-slate-300 font-medium truncate">
+                      <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-rose-500" />
                       <span className="truncate">{agent.area}, {agent.city}</span>
                     </p>
-                    <p className="text-[10px] text-slate-400 font-mono">
+                    <p className="text-[9px] sm:text-[10px] text-slate-400 font-mono shrink-0">
                       RERA: {agent.reraId}
                     </p>
                   </div>
 
                   {/* Services Chips */}
-                  <div className="mt-3 flex flex-wrap gap-1.5">
+                  <div className="mt-1.5 sm:mt-2.5 flex flex-wrap gap-1 sm:gap-1.5">
                     {agent.services.slice(0, 3).map((srv) => (
                       <span
                         key={srv}
-                        className="inline-flex items-center rounded-md bg-slate-100/90 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:bg-slate-800/80 dark:text-slate-300"
+                        className="inline-flex items-center rounded-md bg-slate-100/90 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-slate-700 dark:bg-slate-800/80 dark:text-slate-300"
                       >
                         • {srv}
                       </span>
@@ -303,44 +303,44 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
                   </div>
 
                   {/* Stats Matrix */}
-                  <div className="mt-4 grid grid-cols-3 gap-1.5 text-center">
-                    <div className="rounded-xl bg-slate-50 py-2 px-1 dark:bg-slate-800/60">
-                      <p className="text-xs font-bold text-slate-950 dark:text-white">{agent.experience}</p>
-                      <p className="text-[10px] text-slate-500">Experience</p>
+                  <div className="mt-2 sm:mt-3.5 grid grid-cols-3 gap-1 sm:gap-1.5 text-center">
+                    <div className="rounded-lg sm:rounded-xl bg-slate-50 py-1 sm:py-2 px-1 dark:bg-slate-800/60">
+                      <p className="text-[11px] sm:text-xs font-bold text-slate-950 dark:text-white">{agent.experience}</p>
+                      <p className="text-[9px] sm:text-[10px] text-slate-500">Experience</p>
                     </div>
-                    <div className="rounded-xl bg-slate-50 py-2 px-1 dark:bg-slate-800/60">
-                      <p className="text-xs font-bold text-slate-950 dark:text-white">{agent.tours}</p>
-                      <p className="text-[10px] text-slate-500">Walkthroughs</p>
+                    <div className="rounded-lg sm:rounded-xl bg-slate-50 py-1 sm:py-2 px-1 dark:bg-slate-800/60">
+                      <p className="text-[11px] sm:text-xs font-bold text-slate-950 dark:text-white">{agent.tours}</p>
+                      <p className="text-[9px] sm:text-[10px] text-slate-500">Walkthroughs</p>
                     </div>
-                    <div className="rounded-xl bg-slate-50 py-2 px-1 dark:bg-slate-800/60">
-                      <p className="text-xs font-bold text-slate-950 dark:text-white">{agent.listingsCount}</p>
-                      <p className="text-[10px] text-slate-500">Active Homes</p>
+                    <div className="rounded-lg sm:rounded-xl bg-slate-50 py-1 sm:py-2 px-1 dark:bg-slate-800/60">
+                      <p className="text-[11px] sm:text-xs font-bold text-slate-950 dark:text-white">{agent.listingsCount}</p>
+                      <p className="text-[9px] sm:text-[10px] text-slate-500">Active Homes</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="mt-5 space-y-2 border-t border-slate-100 pt-3 dark:border-slate-800/80">
-                  <div className="flex items-center gap-2">
+                <div className="mt-2.5 sm:mt-4 space-y-1 sm:space-y-1.5 border-t border-slate-100 pt-2 sm:pt-2.5 dark:border-slate-800/80">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
                       type="button"
                       onClick={() => setBookingAgent(agent)}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-3 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-rose-700 active:scale-95"
+                      className="flex-1 inline-flex items-center justify-center gap-1 sm:gap-1.5 rounded-lg sm:rounded-xl bg-rose-600 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-white shadow-xs transition hover:bg-rose-700 active:scale-95"
                     >
-                      <Calendar className="h-3.5 w-3.5" />
+                      <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       Book Site Visit
                     </button>
                     <a
                       href={`tel:${agent.phone.replace(/\s+/g, "")}`}
                       aria-label={`Call ${agent.name}`}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 text-slate-700 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 shrink-0"
+                      className="inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl border border-slate-200 text-slate-700 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 shrink-0"
                     >
-                      <Phone className="h-3.5 w-3.5" />
+                      <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     </a>
                   </div>
                   <Link
                     href={`/agents/${agent.id}`}
-                    className="block text-center text-xs font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 py-1"
+                    className="block text-center text-[10px] sm:text-xs font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 py-0.5"
                   >
                     View full advisor profile & listings →
                   </Link>
@@ -349,6 +349,30 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
             ))}
           </div>
         )}
+
+        {/* Advisor Partner Network Banner (Mobile View: Below Cards) */}
+        <div className="mt-6 flex flex-col sm:hidden gap-3 rounded-2xl border border-rose-100 bg-linear-to-r from-rose-50/70 via-white to-amber-50/70 p-4 dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/70 shadow-xs">
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white shadow-xs">
+              <ShieldCheck className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-xs font-bold text-slate-950 dark:text-white">
+                Are you a Government RERA-Registered Property Advisor?
+              </p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Join our certified advisor network to receive verified in-person buyer and tenant walkthrough requests.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/dashboard/advisor-profile"
+            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-slate-800 transition dark:bg-rose-600 dark:hover:bg-rose-700"
+          >
+            <span>Join Advisor Network</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
       </main>
 
       {/* Book Site Visit Modal */}
