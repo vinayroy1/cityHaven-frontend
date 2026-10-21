@@ -5,17 +5,14 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  BadgeCheck,
   Building2,
   CheckCircle2,
-  Clock,
   Crown,
   Globe2,
   MapPin,
   Phone,
   Save,
   Send,
-  ShieldAlert,
   ShieldCheck,
   Sparkles,
   User,
@@ -27,7 +24,6 @@ import {
   getAgentProfile,
   saveAgentProfile,
   submitAgentForVerification,
-  setAgentVerificationStatus,
   updateAgentSubscription,
   type AgentProfileData,
 } from "@/lib/services/agentProfile";
@@ -96,27 +92,7 @@ export default function AdvisorProfilePage() {
     showToast("Submitted advisor profile for verification!");
   };
 
-  const handleSimulateApproval = () => {
-    const updated = setAgentVerificationStatus(profile.id, "VERIFIED");
-    setProfile(updated);
-    showToast("Admin Action: Advisor successfully verified and listed!");
-  };
 
-  const handleSimulateReject = () => {
-    const updated = setAgentVerificationStatus(
-      profile.id,
-      "REJECTED",
-      "RERA Certificate blurred or license registration expired. Please re-upload current year cert."
-    );
-    setProfile(updated);
-    showToast("Admin Action: Status set to Rejected.");
-  };
-
-  const handleSimulateReset = () => {
-    const updated = setAgentVerificationStatus(profile.id, "DRAFT");
-    setProfile(updated);
-    showToast("Reset to Draft state.");
-  };
 
   const handleSelectTier = (tier: AgentSubscriptionTier) => {
     const updated = updateAgentSubscription(profile.id, tier);
@@ -760,76 +736,6 @@ export default function AdvisorProfilePage() {
             </div>
           </div>
         )}
-
-        {/* Collapsible Sandbox Simulation (Non-intrusive testing tool) */}
-        <details className="group rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-2.5 text-xs dark:border-slate-800 dark:bg-slate-900/60">
-          <summary className="cursor-pointer font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-between list-none">
-            <span className="flex items-center gap-1.5">
-              <BadgeCheck className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-              <span>Compliance Sandbox Simulation (Dev Tools)</span>
-            </span>
-            <span className="text-[10px] text-slate-400 group-open:rotate-180 transition">▼</span>
-          </summary>
-          <div className="mt-2.5 flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Status:</span>
-            <button
-              type="button"
-              onClick={handleSimulateApproval}
-              className="rounded-md bg-emerald-600 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-emerald-700 shadow-xs"
-            >
-              ✓ Verify
-            </button>
-            <button
-              type="button"
-              onClick={handleSimulateReject}
-              className="rounded-md bg-rose-600 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-rose-700 shadow-xs"
-            >
-              ✕ Reject
-            </button>
-            <button
-              type="button"
-              onClick={handleSimulateReset}
-              className="rounded-md border border-slate-300 bg-white px-2 py-0.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-            >
-              Draft
-            </button>
-
-            <span className="text-[10px] font-bold text-slate-400 uppercase ml-1 sm:ml-2">Tier:</span>
-            <button
-              type="button"
-              onClick={() => handleSelectTier("FREE_VERIFIED")}
-              className={`rounded-md px-2 py-0.5 text-[10px] font-semibold transition ${
-                profile.subscriptionTier === "FREE_VERIFIED"
-                  ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
-                  : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-              }`}
-            >
-              Free
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSelectTier("CITY_SPOTLIGHT")}
-              className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition ${
-                profile.subscriptionTier === "CITY_SPOTLIGHT"
-                  ? "bg-rose-600 text-white shadow-xs"
-                  : "border border-rose-300 bg-white text-rose-700 hover:bg-rose-50 dark:border-rose-800 dark:bg-slate-800 dark:text-rose-400"
-              }`}
-            >
-              Spotlight
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSelectTier("PRO_ADVISOR")}
-              className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition ${
-                profile.subscriptionTier === "PRO_ADVISOR"
-                  ? "bg-amber-600 text-white shadow-xs"
-                  : "border border-amber-300 bg-white text-amber-800 hover:bg-amber-50 dark:border-amber-800 dark:bg-slate-800 dark:text-amber-400"
-              }`}
-            >
-              Pro
-            </button>
-          </div>
-        </details>
       </div>
     </main>
   );
