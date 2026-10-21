@@ -31,6 +31,12 @@ async function getArticle(slug: string): Promise<DetailData | null> {
   return { post, related };
 }
 
+export async function generateStaticParams() {
+  return DEFAULT_POSTS.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params; const data = await getArticle(slug); if (!data) return { title: "Article not found" };
   const { post } = data; const canonical = post.canonicalUrl || buildCanonical(`/blog/${post.slug}`); const image = post.ogImage || post.coverImage || undefined;

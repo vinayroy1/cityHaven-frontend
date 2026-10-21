@@ -29,6 +29,7 @@ import {
   FileText,
   Mail,
   Phone,
+  BookOpenText,
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { ThemeToggle } from "./ThemeToggle";
@@ -65,6 +66,7 @@ const resourceLinks = [
   { label: "Home Loans", href: "/home-loans", icon: Coins },
   { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator },
   { label: "Pricing & Plans", href: "/pricing", icon: Sparkles },
+  { label: "Blog & Guides", href: "/blog", icon: BookOpenText },
 ];
 
 const companyAndSupportLinks = [

@@ -22,6 +22,7 @@ const columns = [
       { label: "Price Trends", href: "/price-trends" },
       { label: "Pricing & Plans", href: "/pricing" },
       { label: "Find verified agents", href: "/agents" },
+      { label: "Blog & Guides", href: "/blog" },
     ],
   },
 ];
