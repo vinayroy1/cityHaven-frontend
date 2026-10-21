@@ -12,7 +12,12 @@ export const APP_CONFIG = {
           return `${window.location.protocol}//${window.location.host}/api`;
         }
       }
-      return process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+      return (
+        process.env.INTERNAL_API_URL ||
+        (process.env.NODE_ENV === "production"
+          ? "http://awasio-backend:4000/api"
+          : process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api")
+      );
     },
     TIMEOUT: 30000,
     RETRIES: 3,
