@@ -124,34 +124,19 @@ export default function AgentsDirectoryPage() {
         <HeaderNav />
 
         {/* Hero Header */}
-        <section className="border-b border-slate-200/80 bg-white py-3 sm:py-8 dark:border-slate-800 dark:bg-slate-900/60">
+        <section className="border-b border-slate-200/80 bg-white py-2.5 sm:py-8 dark:border-slate-800 dark:bg-slate-900/60">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 mb-1.5 sm:mb-3">
+            <div className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 mb-1 sm:mb-3">
               <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span>Awasio Certified Advisor Network</span>
             </div>
-            <h1 className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
+            <h1 className="text-base sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
               Find Verified Local Real Estate Advisors
             </h1>
-            <p className="mt-1 sm:mt-2 text-xs sm:text-base text-slate-600 dark:text-slate-400 max-w-3xl line-clamp-1 sm:line-clamp-none">
-              Connect with experienced, RERA-registered local experts for physical property walkthroughs, price negotiation, and registry diligence.
+            {/* Description hidden on mobile view per user request */}
+            <p className="hidden sm:block mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-3xl">
+              Connect with experienced, RERA-registered local experts for physical property walkthroughs, price negotiation, and registry diligence across top Indian metros.
             </p>
-
-            {/* Mobile Compact Trust Strip */}
-            <div className="mt-2 flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px] sm:hidden">
-              <span className="inline-flex items-center gap-1 rounded-md bg-slate-100/90 px-2 py-0.5 font-medium text-slate-700 dark:bg-slate-800/80 dark:text-slate-300 shrink-0">
-                <span className="font-bold text-slate-950 dark:text-white">100%</span> RERA Vetted
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-md bg-slate-100/90 px-2 py-0.5 font-medium text-slate-700 dark:bg-slate-800/80 dark:text-slate-300 shrink-0">
-                <span className="font-bold text-slate-950 dark:text-white">₹0 Fee</span> Walkthroughs
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-md bg-slate-100/90 px-2 py-0.5 font-medium text-slate-700 dark:bg-slate-800/80 dark:text-slate-300 shrink-0">
-                <span className="font-bold text-slate-950 dark:text-white">850+</span> Visits
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-md bg-slate-100/90 px-2 py-0.5 font-medium text-slate-700 dark:bg-slate-800/80 dark:text-slate-300 shrink-0">
-                <span className="font-bold text-slate-950 dark:text-white">7+</span> Cities
-              </span>
-            </div>
 
             {/* Desktop Metrics Grid */}
             <div className="mt-6 hidden sm:grid sm:grid-cols-4 gap-3 max-w-3xl">

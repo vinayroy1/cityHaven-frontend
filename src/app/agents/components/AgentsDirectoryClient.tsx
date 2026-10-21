@@ -22,8 +22,9 @@ import {
 import { ALL_AGENTS, type Agent } from "@/data/agents";
 import { BookVisitModal } from "@/components/agents/BookVisitModal";
 import { getMergedAgentsList } from "@/lib/services/agentProfile";
+import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
+import { LocationSearchInput } from "@/components/search/LocationSearchInput";
 
-const CITIES = ["All Cities", "Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune"];
 const SPECIALTIES = [
   "All Specialties",
   "Builder floors",
@@ -37,8 +38,11 @@ interface AgentsDirectoryClientProps {
   initialCity?: string;
 }
 
-export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDirectoryClientProps) {
-  const [selectedCity, setSelectedCity] = useState(initialCity);
+export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClientProps) {
+  const [selectedCity, setSelectedCity] = useState(
+    initialCity && initialCity !== "All Cities" ? initialCity : ""
+  );
+  const [selectedLocalities, setSelectedLocalities] = useState<string[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState("All Specialties");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"experience" | "tours">("experience");
@@ -56,20 +60,37 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
 
   const filteredAgents = useMemo(() => {
     return agentsList.filter((agent) => {
+      // City match
       const matchCity =
-        selectedCity === "All Cities" || agent.city.toLowerCase() === selectedCity.toLowerCase();
+        !selectedCity ||
+        selectedCity === "All Cities" ||
+        agent.city.toLowerCase().includes(selectedCity.toLowerCase()) ||
+        selectedCity.toLowerCase().includes(agent.city.toLowerCase());
+
+      // Locality match
+      const matchLocality =
+        selectedLocalities.length === 0 ||
+        selectedLocalities.some(
+          (loc) =>
+            agent.area.toLowerCase().includes(loc.toLowerCase()) ||
+            loc.toLowerCase().includes(agent.area.toLowerCase()) ||
+            agent.city.toLowerCase().includes(loc.toLowerCase())
+        );
+
       const matchSpecialty =
         selectedSpecialty === "All Specialties" ||
         agent.focus.toLowerCase().includes(selectedSpecialty.toLowerCase());
+
       const query = searchQuery.trim().toLowerCase();
       const matchQuery =
         !query ||
         agent.name.toLowerCase().includes(query) ||
         agent.agency.toLowerCase().includes(query) ||
         agent.area.toLowerCase().includes(query) ||
-        agent.city.toLowerCase().includes(query);
+        agent.city.toLowerCase().includes(query) ||
+        agent.focus.toLowerCase().includes(query);
 
-      return matchCity && matchSpecialty && matchQuery;
+      return matchCity && matchLocality && matchSpecialty && matchQuery;
     }).sort((a, b) => {
       // Primary sort: Spotlight/Pro subscribers appear on top!
       const tierRank: Record<string, number> = {
@@ -83,10 +104,11 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
       if (sortBy === "tours") return parseInt(b.tours) - parseInt(a.tours);
       return parseInt(b.experience) - parseInt(a.experience);
     });
-  }, [agentsList, selectedCity, selectedSpecialty, searchQuery, sortBy]);
+  }, [agentsList, selectedCity, selectedLocalities, selectedSpecialty, searchQuery, sortBy]);
 
   const resetFilters = () => {
-    setSelectedCity("All Cities");
+    setSelectedCity("");
+    setSelectedLocalities([]);
     setSelectedSpecialty("All Specialties");
     setSearchQuery("");
     setSortBy("experience");
@@ -94,38 +116,64 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
 
   return (
     <div>
-      {/* Filter & Search Bar */}
+      {/* Search & Location Bar matching other search pages */}
       <section className="sticky top-14 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 py-2 sm:py-3 shadow-xs">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 space-y-2 sm:space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-            {/* Search Input */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search by agent name, agency, or locality..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/80 py-2 sm:py-2.5 pl-10 pr-4 text-xs sm:text-sm text-slate-900 outline-none transition focus:border-rose-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+        <div className="mx-auto max-w-6xl px-3 sm:px-6">
+          <div className="flex flex-col gap-2 rounded-2xl border border-slate-200/90 bg-white p-2 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:rounded-2xl sm:p-3">
+            {/* Row 1: City Dropdown + Locality Search Input */}
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-2 min-w-0 md:grid-cols-[auto_minmax(12rem,1fr)_auto]">
+              <CitySelectorDropdown
+                compact
+                selectedCityName={selectedCity}
+                onSelectCity={(city) => {
+                  setSelectedCity(city.name);
+                  setSelectedLocalities([]);
+                }}
               />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+              <LocationSearchInput
+                cityName={selectedCity}
+                localities={selectedLocalities.map((label) => ({ label, city: selectedCity }))}
+                keyword={searchQuery}
+                maxLocalities={2}
+                placeholder={selectedCity ? `Locality or advisor in ${selectedCity}...` : "Search locality, advisor, or agency..."}
+                onChange={({ localities, keyword }) => {
+                  setSelectedLocalities(localities.map((item) => item.label));
+                  setSearchQuery(keyword);
+                }}
+              />
+              <div className="hidden md:flex items-center gap-2">
+                <select
+                  value={selectedSpecialty}
+                  onChange={(e) => setSelectedSpecialty(e.target.value)}
+                  aria-label="Filter by property type"
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 >
-                  Clear
-                </button>
-              )}
+                  {SPECIALTIES.map((sp) => (
+                    <option key={sp} value={sp}>
+                      {sp}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  aria-label="Sort advisors"
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                >
+                  <option value="experience">Most Experienced</option>
+                  <option value="tours">Most Walkthroughs</option>
+                </select>
+              </div>
             </div>
 
-            {/* Specialty & Sort */}
-            <div className="flex items-center gap-2 shrink-0">
+            {/* Row 2 on Mobile: Specialty + Sort Filters */}
+            <div className="flex md:hidden items-center gap-2 pt-0.5">
               <select
                 value={selectedSpecialty}
                 onChange={(e) => setSelectedSpecialty(e.target.value)}
                 aria-label="Filter by property type"
-                className="flex-1 sm:flex-initial rounded-xl border border-slate-200 bg-slate-50 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[11px] font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
                 {SPECIALTIES.map((sp) => (
                   <option key={sp} value={sp}>
@@ -138,31 +186,12 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
                 aria-label="Sort advisors"
-                className="flex-1 sm:flex-initial rounded-xl border border-slate-200 bg-slate-50 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[11px] font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
                 <option value="experience">Most Experienced</option>
                 <option value="tours">Most Walkthroughs</option>
               </select>
             </div>
-          </div>
-
-          {/* City Selection Pills */}
-          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-0.5 sm:pb-1 no-scrollbar text-[11px] sm:text-xs">
-            <span className="font-semibold text-slate-500 shrink-0">City:</span>
-            {CITIES.map((city) => (
-              <button
-                key={city}
-                type="button"
-                onClick={() => setSelectedCity(city)}
-                className={`rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 font-semibold whitespace-nowrap transition ${
-                  selectedCity === city
-                    ? "bg-rose-600 text-white shadow-xs"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-                }`}
-              >
-                {city}
-              </button>
-            ))}
           </div>
         </div>
       </section>
@@ -172,9 +201,10 @@ export function AgentsDirectoryClient({ initialCity = "All Cities" }: AgentsDire
         <div className="mb-2.5 sm:mb-6 flex items-center justify-between text-xs sm:text-sm">
           <p className="font-semibold text-slate-700 dark:text-slate-300">
             Showing <span className="font-bold text-slate-950 dark:text-white">{filteredAgents.length}</span> verified advisors
-            {selectedCity !== "All Cities" && ` in ${selectedCity}`}
+            {selectedCity ? ` in ${selectedCity}` : ""}
+            {selectedLocalities.length > 0 ? ` (${selectedLocalities.join(", ")})` : ""}
           </p>
-          {(selectedCity !== "All Cities" || selectedSpecialty !== "All Specialties" || searchQuery) && (
+          {(Boolean(selectedCity) || selectedLocalities.length > 0 || selectedSpecialty !== "All Specialties" || Boolean(searchQuery)) && (
             <button
               type="button"
               onClick={resetFilters}
