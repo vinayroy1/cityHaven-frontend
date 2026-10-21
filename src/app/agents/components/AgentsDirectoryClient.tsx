@@ -39,13 +39,21 @@ interface AgentsDirectoryClientProps {
 }
 
 export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClientProps) {
-  const [selectedCity, setSelectedCity] = useState(
+  // Draft state (user selections before pressing Search)
+  const [cityDraft, setCityDraft] = useState(
     initialCity && initialCity !== "All Cities" ? initialCity : ""
   );
-  const [selectedLocalities, setSelectedLocalities] = useState<string[]>([]);
-  const [selectedSpecialty, setSelectedSpecialty] = useState("All Specialties");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [localitiesDraft, setLocalitiesDraft] = useState<string[]>([]);
+  const [specialtyDraft, setSpecialtyDraft] = useState("All Specialties");
+  const [queryDraft, setQueryDraft] = useState("");
   const [sortBy, setSortBy] = useState<"experience" | "tours">("experience");
+
+  // Applied state (only updated on clicking dedicated Search button or Reset)
+  const [appliedCity, setAppliedCity] = useState(cityDraft);
+  const [appliedLocalities, setAppliedLocalities] = useState<string[]>([]);
+  const [appliedSpecialty, setAppliedSpecialty] = useState("All Specialties");
+  const [appliedQuery, setAppliedQuery] = useState("");
+
   const [bookingAgent, setBookingAgent] = useState<Agent | null>(null);
   const [agentsList, setAgentsList] = useState<Agent[]>(ALL_AGENTS);
 
@@ -58,19 +66,26 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
     return () => window.removeEventListener("awasio:agent-profile-updated", updateList);
   }, []);
 
+  const handleSearch = () => {
+    setAppliedCity(cityDraft);
+    setAppliedLocalities(localitiesDraft);
+    setAppliedSpecialty(specialtyDraft);
+    setAppliedQuery(queryDraft);
+  };
+
   const filteredAgents = useMemo(() => {
     return agentsList.filter((agent) => {
       // City match
       const matchCity =
-        !selectedCity ||
-        selectedCity === "All Cities" ||
-        agent.city.toLowerCase().includes(selectedCity.toLowerCase()) ||
-        selectedCity.toLowerCase().includes(agent.city.toLowerCase());
+        !appliedCity ||
+        appliedCity === "All Cities" ||
+        agent.city.toLowerCase().includes(appliedCity.toLowerCase()) ||
+        appliedCity.toLowerCase().includes(agent.city.toLowerCase());
 
       // Locality match
       const matchLocality =
-        selectedLocalities.length === 0 ||
-        selectedLocalities.some(
+        appliedLocalities.length === 0 ||
+        appliedLocalities.some(
           (loc) =>
             agent.area.toLowerCase().includes(loc.toLowerCase()) ||
             loc.toLowerCase().includes(agent.area.toLowerCase()) ||
@@ -78,10 +93,10 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
         );
 
       const matchSpecialty =
-        selectedSpecialty === "All Specialties" ||
-        agent.focus.toLowerCase().includes(selectedSpecialty.toLowerCase());
+        appliedSpecialty === "All Specialties" ||
+        agent.focus.toLowerCase().includes(appliedSpecialty.toLowerCase());
 
-      const query = searchQuery.trim().toLowerCase();
+      const query = appliedQuery.trim().toLowerCase();
       const matchQuery =
         !query ||
         agent.name.toLowerCase().includes(query) ||
@@ -104,49 +119,76 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
       if (sortBy === "tours") return parseInt(b.tours) - parseInt(a.tours);
       return parseInt(b.experience) - parseInt(a.experience);
     });
-  }, [agentsList, selectedCity, selectedLocalities, selectedSpecialty, searchQuery, sortBy]);
+  }, [agentsList, appliedCity, appliedLocalities, appliedSpecialty, appliedQuery, sortBy]);
 
   const resetFilters = () => {
-    setSelectedCity("");
-    setSelectedLocalities([]);
-    setSelectedSpecialty("All Specialties");
-    setSearchQuery("");
+    setCityDraft("");
+    setLocalitiesDraft([]);
+    setSpecialtyDraft("All Specialties");
+    setQueryDraft("");
     setSortBy("experience");
+
+    setAppliedCity("");
+    setAppliedLocalities([]);
+    setAppliedSpecialty("All Specialties");
+    setAppliedQuery("");
   };
+
+  const hasActiveFilters =
+    Boolean(appliedCity) ||
+    appliedLocalities.length > 0 ||
+    appliedSpecialty !== "All Specialties" ||
+    Boolean(appliedQuery) ||
+    Boolean(cityDraft) ||
+    localitiesDraft.length > 0 ||
+    specialtyDraft !== "All Specialties" ||
+    Boolean(queryDraft);
 
   return (
     <div>
       {/* Search & Location Bar matching other search pages */}
-      <section className="sticky top-14 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 py-2 sm:py-3 shadow-xs">
+      <section className="sticky top-14 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 py-2 sm:py-2.5 shadow-xs">
         <div className="mx-auto max-w-6xl px-3 sm:px-6">
-          <div className="flex flex-col gap-2 rounded-2xl border border-slate-200/90 bg-white p-2 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:rounded-2xl sm:p-3">
-            {/* Row 1: City Dropdown + Locality Search Input */}
-            <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-2 min-w-0 md:grid-cols-[auto_minmax(12rem,1fr)_auto]">
+          <div
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
+            className="flex flex-col gap-2 rounded-2xl border border-slate-200/90 bg-white p-2 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:rounded-2xl sm:p-2.5"
+          >
+            {/* Row 1: City Dropdown + Locality Search Input + Desktop Controls */}
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-2 min-w-0 md:grid-cols-[auto_minmax(10rem,1fr)_auto_auto_auto]">
               <CitySelectorDropdown
                 compact
-                selectedCityName={selectedCity}
+                className="[&>button]:h-9 sm:[&>button]:h-9.5 [&>button]:text-[11px] sm:[&>button]:text-xs [&>button]:font-medium [&>button]:px-2.5 shrink-0"
+                selectedCityName={cityDraft}
                 onSelectCity={(city) => {
-                  setSelectedCity(city.name);
-                  setSelectedLocalities([]);
+                  setCityDraft(city.name);
+                  setLocalitiesDraft([]);
                 }}
               />
-              <LocationSearchInput
-                cityName={selectedCity}
-                localities={selectedLocalities.map((label) => ({ label, city: selectedCity }))}
-                keyword={searchQuery}
-                maxLocalities={2}
-                placeholder={selectedCity ? `Locality or advisor in ${selectedCity}...` : "Search locality, advisor, or agency..."}
-                onChange={({ localities, keyword }) => {
-                  setSelectedLocalities(localities.map((item) => item.label));
-                  setSearchQuery(keyword);
-                }}
-              />
-              <div className="hidden md:flex items-center gap-2">
+              <div className="min-w-0 flex-1 [&>div]:h-9 sm:[&>div]:h-9.5 [&_input]:text-[11px] sm:[&_input]:text-xs [&_input]:placeholder:text-[11px] sm:[&_input]:placeholder:text-xs">
+                <LocationSearchInput
+                  cityName={cityDraft}
+                  localities={localitiesDraft.map((label) => ({ label, city: cityDraft }))}
+                  keyword={queryDraft}
+                  maxLocalities={2}
+                  placeholder={cityDraft ? `Locality or advisor in ${cityDraft}...` : "Search locality, advisor, agency..."}
+                  onChange={({ localities, keyword }) => {
+                    setLocalitiesDraft(localities.map((item) => item.label));
+                    setQueryDraft(keyword);
+                  }}
+                />
+              </div>
+
+              {/* Desktop Filters & Dedicated Search Button */}
+              <div className="hidden md:flex items-center gap-1.5 shrink-0">
                 <select
-                  value={selectedSpecialty}
-                  onChange={(e) => setSelectedSpecialty(e.target.value)}
+                  value={specialtyDraft}
+                  onChange={(e) => setSpecialtyDraft(e.target.value)}
                   aria-label="Filter by property type"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                  className="h-9 sm:h-9.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-[11px] sm:text-xs font-medium text-slate-700 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 >
                   {SPECIALTIES.map((sp) => (
                     <option key={sp} value={sp}>
@@ -159,21 +201,31 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
                   aria-label="Sort advisors"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                  className="h-9 sm:h-9.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-[11px] sm:text-xs font-medium text-slate-700 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 >
                   <option value="experience">Most Experienced</option>
                   <option value="tours">Most Walkthroughs</option>
                 </select>
+
+                {/* Dedicated Desktop Search Button */}
+                <button
+                  type="button"
+                  onClick={handleSearch}
+                  className="inline-flex h-9 sm:h-9.5 items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-4 text-xs font-bold text-white shadow-xs hover:bg-rose-700 active:scale-95 transition"
+                >
+                  <Search className="h-3.5 w-3.5" />
+                  <span>Search</span>
+                </button>
               </div>
             </div>
 
-            {/* Row 2 on Mobile: Specialty + Sort Filters */}
-            <div className="flex md:hidden items-center gap-2 pt-0.5">
+            {/* Row 2 on Mobile: Specialty + Sort Filters + Dedicated Mobile Search Button */}
+            <div className="flex md:hidden items-center gap-1.5 pt-0.5">
               <select
-                value={selectedSpecialty}
-                onChange={(e) => setSelectedSpecialty(e.target.value)}
+                value={specialtyDraft}
+                onChange={(e) => setSpecialtyDraft(e.target.value)}
                 aria-label="Filter by property type"
-                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[11px] font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="flex-1 h-8 rounded-xl border border-slate-200 bg-slate-50 px-2 text-[11px] font-medium text-slate-700 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
                 {SPECIALTIES.map((sp) => (
                   <option key={sp} value={sp}>
@@ -186,11 +238,21 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
                 aria-label="Sort advisors"
-                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[11px] font-semibold text-slate-800 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="flex-1 h-8 rounded-xl border border-slate-200 bg-slate-50 px-2 text-[11px] font-medium text-slate-700 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
-                <option value="experience">Most Experienced</option>
-                <option value="tours">Most Walkthroughs</option>
+                <option value="experience">Most Exp</option>
+                <option value="tours">Most Tours</option>
               </select>
+
+              {/* Dedicated Mobile Search Button */}
+              <button
+                type="button"
+                onClick={handleSearch}
+                className="inline-flex h-8 items-center justify-center gap-1 rounded-xl bg-rose-600 px-3 text-[11px] font-bold text-white shadow-xs hover:bg-rose-700 active:scale-95 transition shrink-0"
+              >
+                <Search className="h-3 w-3" />
+                <span>Search</span>
+              </button>
             </div>
           </div>
         </div>
@@ -201,10 +263,10 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
         <div className="mb-2.5 sm:mb-6 flex items-center justify-between text-xs sm:text-sm">
           <p className="font-semibold text-slate-700 dark:text-slate-300">
             Showing <span className="font-bold text-slate-950 dark:text-white">{filteredAgents.length}</span> verified advisors
-            {selectedCity ? ` in ${selectedCity}` : ""}
-            {selectedLocalities.length > 0 ? ` (${selectedLocalities.join(", ")})` : ""}
+            {appliedCity ? ` in ${appliedCity}` : ""}
+            {appliedLocalities.length > 0 ? ` (${appliedLocalities.join(", ")})` : ""}
           </p>
-          {(Boolean(selectedCity) || selectedLocalities.length > 0 || selectedSpecialty !== "All Specialties" || Boolean(searchQuery)) && (
+          {hasActiveFilters && (
             <button
               type="button"
               onClick={resetFilters}
