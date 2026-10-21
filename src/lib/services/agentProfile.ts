@@ -35,7 +35,7 @@ const STORAGE_KEY = "awasio:agent_profiles";
 const CURRENT_AGENT_ID_KEY = "awasio:current_agent_id";
 
 // Default initial agent profile (pre-filled with Aarav Kapoor for rich out-of-the-box experience)
-const DEFAULT_PROFILE: AgentProfileData = {
+export const DEFAULT_PROFILE: AgentProfileData = {
   id: "aarav-kapoor",
   name: "Aarav Kapoor",
   role: "Senior Property Advisor",

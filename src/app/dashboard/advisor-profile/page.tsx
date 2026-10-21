@@ -26,8 +26,8 @@ import {
   X,
 } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
-import { PageHeader } from "../components/PageHeader";
 import {
+  DEFAULT_PROFILE,
   getAgentProfile,
   saveAgentProfile,
   submitAgentForVerification,
@@ -69,7 +69,7 @@ const SAMPLE_AVATARS = [
 ];
 
 export default function AdvisorProfilePage() {
-  const [profile, setProfile] = useState<AgentProfileData | null>(null);
+  const [profile, setProfile] = useState<AgentProfileData>(DEFAULT_PROFILE);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [newLocality, setNewLocality] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -91,14 +91,11 @@ export default function AdvisorProfilePage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  if (!profile) return null;
-
   const handleFieldChange = (field: keyof AgentProfileData, val: any) => {
-    setProfile((prev) => (prev ? { ...prev, [field]: val } : null));
+    setProfile((prev) => ({ ...prev, [field]: val }));
   };
 
   const handleSave = () => {
-    if (!profile) return;
     saveAgentProfile(profile);
     showToast("Profile details saved successfully.");
   };
@@ -137,15 +134,14 @@ export default function AdvisorProfilePage() {
   };
 
   const handleSelectTier = (tier: AgentSubscriptionTier) => {
-    if (!profile) return;
     const updated = updateAgentSubscription(profile.id, tier);
     setProfile(updated);
     if (tier === "FREE_VERIFIED") {
       showToast("Subscription set to Free Verified Directory Listing.");
     } else if (tier === "CITY_SPOTLIGHT") {
-      showToast("Activated City Spotlight! You are now featured on the Homepage.");
+      showToast("Activated City Spotlight! Featured on Homepage.");
     } else {
-      showToast("Upgraded to Pro Advisor! #1 Homepage placement & Priority leads active.");
+      showToast("Upgraded to Pro Advisor! #1 Homepage placement active.");
     }
   };
 
@@ -195,194 +191,133 @@ export default function AdvisorProfilePage() {
   const localitiesList = profile.area ? profile.area.split(" & ").filter(Boolean) : [];
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-rose-50/50 via-white to-amber-50/40 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100 transition-colors duration-150">
+    <main className="min-h-screen w-full overflow-x-hidden bg-gradient-to-b from-rose-50/50 via-white to-amber-50/40 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100 transition-colors duration-150">
       <HeaderNav />
 
       {/* Floating Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-50 flex items-center gap-2.5 rounded-2xl border border-slate-800 bg-slate-950/95 px-4 sm:px-5 py-2.5 sm:py-3 text-xs font-semibold text-white shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-[90vw]">
+        <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-50 flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-950/95 px-4 py-2.5 text-xs font-semibold text-white shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-[90vw]">
           <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
           <span className="truncate">{toastMessage}</span>
         </div>
       )}
 
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-3.5 sm:gap-6 px-3 sm:px-6 pt-3 sm:pt-6 pb-28 sm:pb-12">
-        {/* Compact Responsive Page Header */}
-        <PageHeader
-          tag="Advisor Verification"
-          title="Advisor Profile & RERA"
-          subtitle="Manage your certified advisor profile, RERA registration, operating zones, and public walkthrough services."
-          backHref="/dashboard"
-          actions={
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+      <div className="w-full max-w-5xl mx-auto flex flex-col gap-3 sm:gap-5 px-3 sm:px-6 pt-2.5 sm:pt-6 pb-28 sm:pb-12 min-w-0">
+        
+        {/* =========================================================================
+            UNIFIED COMPACT HEADER CARD (Replaces previous 4 bloated top banners)
+            Takes only ~75px on mobile, giving immediate access to profile form
+           ========================================================================= */}
+        <section className="w-full rounded-2xl border border-slate-200/90 bg-white/95 p-3 sm:p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-2.5">
+          {/* Top Row: Back Link + Quick Actions */}
+          <div className="flex items-center justify-between gap-2">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span>Dashboard</span>
+            </Link>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              {/* RERA Status Pill */}
+              <span
+                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                  profile.status === "VERIFIED"
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800"
+                    : profile.status === "PENDING_VERIFICATION"
+                    ? "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800"
+                    : "bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                }`}
+              >
+                <ShieldCheck className="h-3 w-3 shrink-0" />
+                <span>{profile.status === "VERIFIED" ? "RERA Verified" : profile.status.replace("_", " ")}</span>
+              </span>
+
+              {/* View Live Profile Link */}
               <Link
                 href={`/agents/${profile.id}`}
                 target="_blank"
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
-                <span>Live Profile</span>
+                <span>Live</span>
                 <ArrowRight className="h-3 w-3" />
               </Link>
+
+              {/* Quick Save Draft Button */}
               <button
                 type="button"
                 onClick={handleSave}
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-full bg-rose-600 px-4 py-1.5 text-xs font-bold text-white shadow-xs transition hover:bg-rose-700"
+                className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-3 py-1 text-[11px] font-bold text-white shadow-xs hover:bg-rose-700 active:scale-95 transition"
               >
-                <Save className="h-3.5 w-3.5" />
-                <span>Save Draft</span>
+                <Save className="h-3 w-3" />
+                <span>Save</span>
               </button>
             </div>
-          }
-        />
+          </div>
 
-        {/* Compact Verification Status Banner */}
-        <div
-          className={`rounded-2xl sm:rounded-3xl border p-3 sm:p-4 shadow-xs transition-all w-full ${
-            profile.status === "VERIFIED"
-              ? "border-emerald-200 bg-emerald-50/80 dark:border-emerald-900/60 dark:bg-emerald-950/30"
-              : profile.status === "PENDING_VERIFICATION"
-              ? "border-amber-200 bg-amber-50/80 dark:border-amber-900/60 dark:bg-amber-950/30"
-              : profile.status === "REJECTED"
-              ? "border-rose-200 bg-rose-50/80 dark:border-rose-900/60 dark:bg-rose-950/30"
-              : "border-slate-200 bg-slate-50/80 dark:border-slate-800 dark:bg-slate-900/40"
-          }`}
-        >
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span
-                className={`mt-0.5 flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl shadow-inner ${
-                  profile.status === "VERIFIED"
-                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/80 dark:text-emerald-300"
-                    : profile.status === "PENDING_VERIFICATION"
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-900/80 dark:text-amber-300"
-                    : profile.status === "REJECTED"
-                    ? "bg-rose-100 text-rose-700 dark:bg-rose-900/80 dark:text-rose-300"
-                    : "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                }`}
-              >
-                {profile.status === "VERIFIED" && <ShieldCheck className="h-4.5 w-4.5 sm:h-5 sm:w-5" />}
-                {profile.status === "PENDING_VERIFICATION" && <Clock className="h-4.5 w-4.5 sm:h-5 sm:w-5" />}
-                {profile.status === "REJECTED" && <ShieldAlert className="h-4.5 w-4.5 sm:h-5 sm:w-5" />}
-                {profile.status === "DRAFT" && <FileCheck2 className="h-4.5 w-4.5 sm:h-5 sm:w-5" />}
-              </span>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-950 dark:text-white break-words">
-                    {profile.status === "VERIFIED" && "Government RERA Verified Advisor"}
-                    {profile.status === "PENDING_VERIFICATION" && "RERA Verification in Progress (< 24h SLA)"}
-                    {profile.status === "REJECTED" && "Compliance Verification Needs Attention"}
-                    {profile.status === "DRAFT" && "Profile Incomplete - Submit RERA Details"}
-                  </h3>
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider shrink-0 ${
-                      profile.status === "VERIFIED"
-                        ? "bg-emerald-600 text-white"
-                        : profile.status === "PENDING_VERIFICATION"
-                        ? "bg-amber-500 text-white"
-                        : profile.status === "REJECTED"
-                        ? "bg-rose-600 text-white"
-                        : "bg-slate-600 text-white"
-                    }`}
-                  >
-                    {profile.status.replace("_", " ")}
-                  </span>
-                </div>
-
-                <p className="mt-0.5 text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 line-clamp-2 sm:line-clamp-none break-words">
-                  {profile.status === "VERIFIED" &&
-                    `Live on /agents directory and homepage. In-person walkthrough bookings route directly to your leads.`}
-                  {profile.status === "PENDING_VERIFICATION" &&
-                    `Validating RERA ID (${profile.reraId}) against state registry. Notification will be sent upon approval.`}
-                  {profile.status === "REJECTED" &&
-                    (profile.rejectionReason || "Please verify your license number and upload a clear state RERA certificate.")}
-                  {profile.status === "DRAFT" &&
-                    "Provide RERA credentials and operating areas below to receive verified visitor walkthrough bookings."}
-                </p>
-              </div>
+          {/* Bottom Row: Page Title + Minimal Segmented Switcher */}
+          <div className="flex items-center justify-between border-t border-slate-100 pt-2 dark:border-slate-800">
+            <div className="min-w-0 pr-2">
+              <h1 className="text-sm sm:text-lg font-bold text-slate-950 dark:text-white truncate">
+                Advisor Profile & RERA
+              </h1>
             </div>
 
-            {profile.status !== "VERIFIED" && (
+            {/* Segmented View Switcher */}
+            <div className="inline-flex items-center rounded-xl bg-slate-100 p-0.5 dark:bg-slate-800 shrink-0">
               <button
                 type="button"
-                onClick={handleSubmitVerification}
-                className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-rose-600 dark:hover:bg-rose-700 w-full sm:w-auto"
+                onClick={() => setActiveTab("profile")}
+                className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
+                  activeTab === "profile"
+                    ? "bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-white"
+                    : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
+                }`}
               >
-                <Send className="h-3.5 w-3.5" />
-                <span>Submit Verification</span>
+                Profile Form
               </button>
-            )}
-          </div>
-        </div>
-
-        {/* Tab Navigation: Eliminates huge vertical clutter on mobile */}
-        <div className="flex items-center gap-1.5 sm:gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-          <button
-            type="button"
-            onClick={() => setActiveTab("profile")}
-            className={`inline-flex items-center gap-1.5 rounded-xl px-3 sm:px-4 py-2 text-xs font-bold transition flex-1 sm:flex-initial justify-center ${
-              activeTab === "profile"
-                ? "bg-slate-900 text-white shadow-xs dark:bg-rose-600"
-                : "bg-white text-slate-600 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
-            }`}
-          >
-            <User className="h-3.5 w-3.5" />
-            <span>Profile & RERA</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("plans")}
-            className={`inline-flex items-center gap-1.5 rounded-xl px-3 sm:px-4 py-2 text-xs font-bold transition flex-1 sm:flex-initial justify-center ${
-              activeTab === "plans"
-                ? "bg-slate-900 text-white shadow-xs dark:bg-rose-600"
-                : "bg-white text-slate-600 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
-            }`}
-          >
-            <Crown className="h-3.5 w-3.5 text-amber-500" />
-            <span>Visibility Tiers</span>
-            <span className="rounded-full bg-amber-100 px-1.5 py-0.2 text-[9px] font-extrabold text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">
-              {profile.subscriptionTier === "PRO_ADVISOR" ? "Pro" : profile.subscriptionTier === "CITY_SPOTLIGHT" ? "Spotlight" : "Free"}
-            </span>
-          </button>
-        </div>
-
-        {/* TAB 1: PROFILE & RERA FORM (Direct access, zero bloat on mobile) */}
-        {activeTab === "profile" && (
-          <div className="space-y-4 sm:space-y-6">
-            {/* Ultra-compact 1-line Plan Status Bar with quick switch */}
-            <div className="flex items-center justify-between rounded-xl border border-amber-200/80 bg-amber-50/60 px-3 py-2 text-xs dark:border-amber-900/60 dark:bg-amber-950/20">
-              <div className="flex items-center gap-2 min-w-0">
-                <Crown className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-                <span className="text-[11px] sm:text-xs text-slate-700 dark:text-slate-300 truncate">
-                  Listing Tier: <strong className="text-slate-900 dark:text-white">{profile.subscriptionTier === "PRO_ADVISOR" ? "👑 Pro Advisor" : profile.subscriptionTier === "CITY_SPOTLIGHT" ? "⭐ City Spotlight" : "Free Verified Directory"}</strong>
-                </span>
-              </div>
               <button
                 type="button"
                 onClick={() => setActiveTab("plans")}
-                className="shrink-0 text-[11px] font-bold text-amber-700 hover:text-amber-800 dark:text-amber-400 hover:underline ml-2"
+                className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
+                  activeTab === "plans"
+                    ? "bg-white text-rose-600 shadow-xs dark:bg-slate-900 dark:text-rose-400"
+                    : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
+                }`}
               >
-                Change Tier →
+                <Crown className="h-3 w-3 text-amber-500" />
+                <span>Plans</span>
+                <span className="rounded-full bg-amber-100 px-1 py-0.2 text-[9px] font-black text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">
+                  {profile.subscriptionTier === "PRO_ADVISOR" ? "Pro" : profile.subscriptionTier === "CITY_SPOTLIGHT" ? "Spotlight" : "Free"}
+                </span>
               </button>
             </div>
+          </div>
+        </section>
 
-            <form onSubmit={handleSubmitVerification} className="space-y-4 sm:space-y-6">
+        {/* =========================================================================
+            TAB 1: ADVISOR PROFILE FORM (Immediate Access, No Overhead)
+           ========================================================================= */}
+        {activeTab === "profile" && (
+          <div className="space-y-3 sm:space-y-5">
+            <form onSubmit={handleSubmitVerification} className="space-y-3 sm:space-y-5">
+              
               {/* Section 1: Identity & Brokerage Firm */}
-              <div className="rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900/95">
-                <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3 sm:pb-4 dark:border-slate-800">
-                  <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400 shrink-0">
-                    <User className="h-4 w-4" />
+              <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-3">
+                <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 dark:border-slate-800">
+                  <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400 shrink-0">
+                    <User className="h-3.5 w-3.5" />
                   </span>
                   <div>
                     <h2 className="text-xs sm:text-sm font-bold text-slate-950 dark:text-white">1. Identity & Brokerage Firm</h2>
-                    <p className="text-[11px] sm:text-xs text-slate-500">Public identity displayed to property buyers and investors.</p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-500">Public identity displayed to property buyers and investors.</p>
                   </div>
                 </div>
 
-                <div className="mt-3.5 sm:mt-5 grid gap-3 sm:gap-4 sm:grid-cols-2">
+                <div className="grid gap-2.5 sm:gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">Full Name *</label>
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Full Name *</label>
                     <input
                       type="text"
                       required
@@ -394,7 +329,7 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">Designation / Role *</label>
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Designation / Role *</label>
                     <input
                       type="text"
                       required
@@ -406,7 +341,7 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">Agency / Brokerage Firm *</label>
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Agency / Brokerage Firm *</label>
                     <div className="relative mt-1">
                       <Building2 className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
                       <input
@@ -421,7 +356,7 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">Direct Phone (Site Visit WhatsApp) *</label>
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Direct Phone (Site Visit WhatsApp) *</label>
                     <div className="relative mt-1">
                       <Phone className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
                       <input
@@ -436,12 +371,12 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">Profile Headshot Photo</label>
-                    <div className="mt-2 flex flex-col xs:flex-row items-start xs:items-center gap-3 sm:gap-4">
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Profile Headshot Photo</label>
+                    <div className="mt-1.5 flex flex-col xs:flex-row items-start xs:items-center gap-2.5 sm:gap-3.5">
                       <img
                         src={profile.avatar}
                         alt={profile.name}
-                        className="h-14 w-14 sm:h-16 sm:w-16 rounded-full object-cover ring-2 ring-rose-200 dark:ring-slate-700 shadow-xs shrink-0"
+                        className="h-12 w-12 sm:h-14 sm:w-14 rounded-full object-cover ring-2 ring-rose-200 dark:ring-slate-700 shadow-xs shrink-0"
                       />
                       <div className="w-full flex-1 space-y-1.5">
                         <input
@@ -458,7 +393,7 @@ export default function AdvisorProfilePage() {
                               key={s.label}
                               type="button"
                               onClick={() => handleFieldChange("avatar", s.url)}
-                              className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] hover:border-rose-300 dark:border-slate-700 dark:bg-slate-800"
+                              className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] hover:border-rose-300 dark:border-slate-700 dark:bg-slate-800"
                             >
                               Photo #{idx + 1}
                             </button>
@@ -470,21 +405,21 @@ export default function AdvisorProfilePage() {
                 </div>
               </div>
 
-              {/* Section 2: RERA Legal Compliance & Document Upload */}
-              <div className="rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900/95">
-                <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3 sm:pb-4 dark:border-slate-800">
-                  <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 shrink-0">
-                    <ShieldCheck className="h-4 w-4" />
+              {/* Section 2: Government RERA Compliance */}
+              <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-3">
+                <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 dark:border-slate-800">
+                  <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 shrink-0">
+                    <ShieldCheck className="h-3.5 w-3.5" />
                   </span>
                   <div>
                     <h2 className="text-xs sm:text-sm font-bold text-slate-950 dark:text-white">2. Government RERA Legal Compliance</h2>
-                    <p className="text-[11px] sm:text-xs text-slate-500">Mandatory under Real Estate (Regulation and Development) Act.</p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-500">Mandatory under Real Estate (Regulation and Development) Act.</p>
                   </div>
                 </div>
 
-                <div className="mt-3.5 sm:mt-5 grid gap-3 sm:gap-4 sm:grid-cols-2">
+                <div className="grid gap-2.5 sm:gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">RERA Authority State *</label>
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">RERA Authority State *</label>
                     <select
                       value={profile.reraState || profile.city}
                       onChange={(e) => handleFieldChange("reraState", e.target.value)}
@@ -499,7 +434,7 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
                       RERA Registration Number *
                     </label>
                     <div className="relative mt-1">
@@ -516,17 +451,17 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
                       RERA Certificate Document (PDF / JPG)
                     </label>
-                    <div className="mt-2 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/70 p-4 sm:p-6 text-center transition hover:border-rose-300 dark:border-slate-700 dark:bg-slate-800/40">
+                    <div className="mt-1.5 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/70 p-3 sm:p-5 text-center transition hover:border-rose-300 dark:border-slate-700 dark:bg-slate-800/40">
                       {profile.reraDocumentName ? (
-                        <div className="flex items-center gap-2.5 sm:gap-3 rounded-xl bg-white p-2.5 sm:p-3 shadow-xs dark:bg-slate-800 border border-slate-100 dark:border-slate-700 w-full">
-                          <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600 shrink-0" />
+                        <div className="flex items-center gap-2.5 rounded-xl bg-white p-2.5 shadow-xs dark:bg-slate-800 border border-slate-100 dark:border-slate-700 w-full min-w-0">
+                          <FileText className="h-5 w-5 text-emerald-600 shrink-0" />
                           <div className="min-w-0 flex-1 text-left">
                             <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{profile.reraDocumentName}</p>
                             <p className="text-[10px] text-emerald-600 font-medium flex items-center gap-1">
-                              <CheckCircle2 className="h-3 w-3 shrink-0" /> Attached & ready for audit
+                              <CheckCircle2 className="h-3 w-3 shrink-0" /> Document attached
                             </p>
                           </div>
                           <label className="shrink-0 ml-2 cursor-pointer text-xs font-semibold text-rose-600 hover:underline">
@@ -535,12 +470,12 @@ export default function AdvisorProfilePage() {
                           </label>
                         </div>
                       ) : (
-                        <label className="cursor-pointer py-2">
-                          <Upload className="mx-auto h-7 w-7 text-slate-400" />
-                          <p className="mt-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+                        <label className="cursor-pointer py-1.5">
+                          <Upload className="mx-auto h-6 w-6 text-slate-400" />
+                          <p className="mt-1 text-xs font-bold text-slate-800 dark:text-slate-200">
                             {isUploading ? "Uploading certificate..." : "Tap to upload RERA Certificate"}
                           </p>
-                          <p className="mt-0.5 text-[10px] sm:text-[11px] text-slate-400">PDF, JPG, PNG up to 10MB</p>
+                          <p className="mt-0.5 text-[10px] text-slate-400">PDF, JPG, PNG up to 10MB</p>
                           <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleMockUpload} />
                         </label>
                       )}
@@ -550,20 +485,20 @@ export default function AdvisorProfilePage() {
               </div>
 
               {/* Section 3: Operating Territory & Specialization */}
-              <div className="rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900/95">
-                <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3 sm:pb-4 dark:border-slate-800">
-                  <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 shrink-0">
-                    <MapPin className="h-4 w-4" />
+              <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-3">
+                <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 dark:border-slate-800">
+                  <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 shrink-0">
+                    <MapPin className="h-3.5 w-3.5" />
                   </span>
                   <div>
                     <h2 className="text-xs sm:text-sm font-bold text-slate-950 dark:text-white">3. Operating Territory & Specialization</h2>
-                    <p className="text-[11px] sm:text-xs text-slate-500">Specify neighborhoods where you conduct in-person tours.</p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-500">Specify neighborhoods where you conduct in-person tours.</p>
                   </div>
                 </div>
 
-                <div className="mt-3.5 sm:mt-5 grid gap-3 sm:gap-4 sm:grid-cols-2">
+                <div className="grid gap-2.5 sm:gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">Primary City *</label>
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Primary City *</label>
                     <select
                       value={profile.city}
                       onChange={(e) => handleFieldChange("city", e.target.value)}
@@ -578,8 +513,8 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">Years of Experience *</label>
-                    <div className="mt-1 flex items-center gap-3">
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Years of Experience *</label>
+                    <div className="mt-1 flex items-center gap-2.5">
                       <input
                         type="range"
                         min={1}
@@ -588,14 +523,14 @@ export default function AdvisorProfilePage() {
                         onChange={(e) => handleFieldChange("experienceYears", parseInt(e.target.value))}
                         className="flex-1 accent-rose-600"
                       />
-                      <span className="min-w-[65px] rounded-lg bg-rose-50 px-2 py-1 text-center text-xs font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 shrink-0">
+                      <span className="min-w-[60px] rounded-lg bg-rose-50 px-2 py-1 text-center text-xs font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 shrink-0">
                         {profile.experienceYears}+ yrs
                       </span>
                     </div>
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
                       Key Operating Localities / Neighborhoods
                     </label>
                     <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -634,7 +569,7 @@ export default function AdvisorProfilePage() {
                       <button
                         type="button"
                         onClick={handleAddLocality}
-                        className="shrink-0 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                        className="shrink-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                       >
                         Add
                       </button>
@@ -642,7 +577,7 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">Languages Spoken</label>
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Languages Spoken</label>
                     <div className="mt-1.5 flex flex-wrap gap-1.5">
                       {ALL_LANGUAGES.map((lang) => {
                         const isSelected = (profile.languages || []).includes(lang);
@@ -667,20 +602,20 @@ export default function AdvisorProfilePage() {
               </div>
 
               {/* Section 4: Services Offered & Bio */}
-              <div className="rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900/95">
-                <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3 sm:pb-4 dark:border-slate-800">
-                  <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400 shrink-0">
-                    <Globe2 className="h-4 w-4" />
+              <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-3">
+                <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 dark:border-slate-800">
+                  <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400 shrink-0">
+                    <Globe2 className="h-3.5 w-3.5" />
                   </span>
                   <div>
                     <h2 className="text-xs sm:text-sm font-bold text-slate-950 dark:text-white">4. Services & About You</h2>
-                    <p className="text-[11px] sm:text-xs text-slate-500">Highlight on-ground services you provide during site visits.</p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-500">Highlight on-ground services you provide during site visits.</p>
                   </div>
                 </div>
 
-                <div className="mt-3.5 sm:mt-5 space-y-3.5">
+                <div className="space-y-3">
                   <div>
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">Select Services Offered</label>
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Select Services Offered</label>
                     <div className="mt-1.5 grid gap-2 sm:grid-cols-2">
                       {AVAILABLE_SERVICES.map((srv) => {
                         const active = (profile.services || []).includes(srv);
@@ -688,7 +623,7 @@ export default function AdvisorProfilePage() {
                           <label
                             key={srv}
                             onClick={() => toggleService(srv)}
-                            className={`flex cursor-pointer items-center gap-2.5 rounded-xl border p-2.5 text-xs font-medium transition ${
+                            className={`flex cursor-pointer items-center gap-2 rounded-xl border p-2.5 text-xs font-medium transition ${
                               active
                                 ? "border-rose-400 bg-rose-50/60 text-rose-950 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200"
                                 : "border-slate-200 bg-slate-50/50 text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-300"
@@ -711,7 +646,7 @@ export default function AdvisorProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
                       Professional Bio / About *
                     </label>
                     <textarea
@@ -719,15 +654,15 @@ export default function AdvisorProfilePage() {
                       required
                       value={profile.bio}
                       onChange={(e) => handleFieldChange("bio", e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-slate-200 bg-white p-3 text-xs leading-relaxed text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      className="mt-1 w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs leading-relaxed text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                       placeholder="Describe your background, deals handled, and in-person walkthrough assistance..."
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Form Submit Footer - Fully Responsive, no horizontal overflow */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl sm:rounded-3xl border border-slate-200 bg-white/95 p-3.5 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+              {/* Form Submit Footer - Guaranteed Single Row on Mobile */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 p-3.5 sm:p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
                 <Link
                   href="/dashboard"
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
@@ -740,15 +675,15 @@ export default function AdvisorProfilePage() {
                   <button
                     type="button"
                     onClick={handleSave}
-                    className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 text-center"
+                    className="rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 text-center"
                   >
                     Save Draft
                   </button>
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-rose-700 text-center"
+                    className="inline-flex items-center justify-center gap-1 rounded-full bg-rose-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-rose-700 text-center"
                   >
-                    <Send className="h-3.5 w-3.5 shrink-0" />
+                    <Send className="h-3 w-3 shrink-0" />
                     <span className="truncate">Submit Verification</span>
                   </button>
                 </div>
@@ -757,9 +692,11 @@ export default function AdvisorProfilePage() {
           </div>
         )}
 
-        {/* TAB 2: PLACEMENT & HOMEPAGE VISIBILITY TIERS */}
+        {/* =========================================================================
+            TAB 2: PLACEMENT & HOMEPAGE VISIBILITY TIERS
+           ========================================================================= */}
         {activeTab === "plans" && (
-          <div className="rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white/95 p-4 sm:p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-4">
+          <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-4 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-3.5">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
               <div className="min-w-0 flex-1">
                 <div className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
@@ -770,13 +707,13 @@ export default function AdvisorProfilePage() {
                   Homepage Featured Carousel & Lead Boost
                 </h2>
                 <p className="mt-0.5 text-xs text-slate-500 break-words">
-                  Upgrade to City Spotlight or Pro Advisor to be featured on the homepage carousel and get priority walkthrough leads.
+                  Upgrade to City Spotlight or Pro Advisor to be featured on the homepage carousel.
                 </p>
               </div>
 
               <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 pt-1 sm:pt-0">
                 <span className="text-xs font-semibold text-slate-500">Current Plan:</span>
-                <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-bold text-white dark:bg-rose-600">
+                <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-xs font-bold text-white dark:bg-rose-600">
                   {profile.subscriptionTier === "PRO_ADVISOR"
                     ? "👑 Pro Advisor"
                     : profile.subscriptionTier === "CITY_SPOTLIGHT"
@@ -786,10 +723,10 @@ export default function AdvisorProfilePage() {
               </div>
             </div>
 
-            <div className="grid gap-3.5 md:grid-cols-3 pt-2">
+            <div className="grid gap-3 md:grid-cols-3 pt-1">
               {/* Tier 1: Free Verified */}
               <div
-                className={`rounded-2xl border p-4 sm:p-5 flex flex-col justify-between transition ${
+                className={`rounded-2xl border p-4 flex flex-col justify-between transition ${
                   profile.subscriptionTier === "FREE_VERIFIED"
                     ? "border-slate-900 bg-slate-50/80 ring-2 ring-slate-900/10 dark:border-slate-100 dark:bg-slate-800/80"
                     : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900"
@@ -802,11 +739,11 @@ export default function AdvisorProfilePage() {
                       Standard
                     </span>
                   </div>
-                  <h3 className="mt-1.5 text-base sm:text-lg font-extrabold text-slate-950 dark:text-white">Directory Only</h3>
-                  <p className="mt-0.5 text-xl sm:text-2xl font-black text-slate-900 dark:text-white">₹0</p>
+                  <h3 className="mt-1 text-base font-extrabold text-slate-950 dark:text-white">Directory Only</h3>
+                  <p className="mt-0.5 text-xl font-black text-slate-900 dark:text-white">₹0</p>
                   <p className="text-[11px] text-slate-400">Free forever for RERA agents</p>
 
-                  <ul className="mt-3.5 space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                  <ul className="mt-3 space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                       <span>Public Profile Page (`/agents/[id]`)</span>
@@ -841,7 +778,7 @@ export default function AdvisorProfilePage() {
 
               {/* Tier 2: City Spotlight */}
               <div
-                className={`rounded-2xl border p-4 sm:p-5 flex flex-col justify-between relative transition ${
+                className={`rounded-2xl border p-4 flex flex-col justify-between relative transition ${
                   profile.subscriptionTier === "CITY_SPOTLIGHT"
                     ? "border-rose-500 bg-rose-50/40 ring-2 ring-rose-500/20 dark:border-rose-600 dark:bg-rose-950/20"
                     : "border-rose-200 bg-white hover:border-rose-300 dark:border-slate-800 dark:bg-slate-900"
@@ -856,11 +793,11 @@ export default function AdvisorProfilePage() {
                       Popular
                     </span>
                   </div>
-                  <h3 className="mt-1.5 text-base sm:text-lg font-extrabold text-slate-950 dark:text-white">Homepage Feature</h3>
-                  <p className="mt-0.5 text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400">₹4,999<span className="text-xs font-normal text-slate-500">/mo</span></p>
+                  <h3 className="mt-1 text-base font-extrabold text-slate-950 dark:text-white">Homepage Feature</h3>
+                  <p className="mt-0.5 text-xl font-black text-rose-600 dark:text-rose-400">₹4,999<span className="text-xs font-normal text-slate-500">/mo</span></p>
                   <p className="text-[11px] text-slate-400">Billed monthly or quarterly</p>
 
-                  <ul className="mt-3.5 space-y-2 text-xs text-slate-700 dark:text-slate-200 font-medium">
+                  <ul className="mt-3 space-y-1.5 text-xs text-slate-700 dark:text-slate-200 font-medium">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                       <span><strong>Featured on Homepage</strong> Carousel</span>
@@ -895,7 +832,7 @@ export default function AdvisorProfilePage() {
 
               {/* Tier 3: Pro Advisor */}
               <div
-                className={`rounded-2xl border p-4 sm:p-5 flex flex-col justify-between relative transition ${
+                className={`rounded-2xl border p-4 flex flex-col justify-between relative transition ${
                   profile.subscriptionTier === "PRO_ADVISOR"
                     ? "border-amber-500 bg-amber-50/40 ring-2 ring-amber-500/20 dark:border-amber-600 dark:bg-amber-950/20"
                     : "border-slate-200 bg-white hover:border-amber-300 dark:border-slate-800 dark:bg-slate-900"
@@ -910,11 +847,11 @@ export default function AdvisorProfilePage() {
                       Maximum Leads
                     </span>
                   </div>
-                  <h3 className="mt-1.5 text-base sm:text-lg font-extrabold text-slate-950 dark:text-white">Elite Showcase</h3>
-                  <p className="mt-0.5 text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400">₹9,999<span className="text-xs font-normal text-slate-500">/mo</span></p>
+                  <h3 className="mt-1 text-base font-extrabold text-slate-950 dark:text-white">Elite Showcase</h3>
+                  <p className="mt-0.5 text-xl font-black text-amber-600 dark:text-amber-400">₹9,999<span className="text-xs font-normal text-slate-500">/mo</span></p>
                   <p className="text-[11px] text-slate-400">Includes all VIP partner perks</p>
 
-                  <ul className="mt-3.5 space-y-2 text-xs text-slate-700 dark:text-slate-200 font-medium">
+                  <ul className="mt-3 space-y-1.5 text-xs text-slate-700 dark:text-slate-200 font-medium">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                       <span><strong>#1 Priority Rank</strong> on Homepage</span>
@@ -950,75 +887,75 @@ export default function AdvisorProfilePage() {
           </div>
         )}
 
-        {/* Admin Simulation & Testing Toolbar (Compact & Non-intrusive) */}
-        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-3 sm:p-4 dark:border-slate-800 dark:bg-slate-900/60">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
-            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
+        {/* Collapsible Sandbox Simulation (Non-intrusive testing tool) */}
+        <details className="group rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-2.5 text-xs dark:border-slate-800 dark:bg-slate-900/60">
+          <summary className="cursor-pointer font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-between list-none">
+            <span className="flex items-center gap-1.5">
               <BadgeCheck className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-              <span>Compliance Sandbox Simulation:</span>
-            </div>
+              <span>Compliance Sandbox Simulation (Dev Tools)</span>
+            </span>
+            <span className="text-[10px] text-slate-400 group-open:rotate-180 transition">▼</span>
+          </summary>
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] font-bold text-slate-400 uppercase">Status:</span>
+            <button
+              type="button"
+              onClick={handleSimulateApproval}
+              className="rounded-md bg-emerald-600 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-emerald-700 shadow-xs"
+            >
+              ✓ Verify
+            </button>
+            <button
+              type="button"
+              onClick={handleSimulateReject}
+              className="rounded-md bg-rose-600 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-rose-700 shadow-xs"
+            >
+              ✕ Reject
+            </button>
+            <button
+              type="button"
+              onClick={handleSimulateReset}
+              className="rounded-md border border-slate-300 bg-white px-2 py-0.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+            >
+              Draft
+            </button>
 
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Status:</span>
-              <button
-                type="button"
-                onClick={handleSimulateApproval}
-                className="rounded-md bg-emerald-600 px-2 py-0.5 text-[10px] font-bold text-white transition hover:bg-emerald-700 shadow-xs"
-              >
-                ✓ Verify
-              </button>
-              <button
-                type="button"
-                onClick={handleSimulateReject}
-                className="rounded-md bg-rose-600 px-2 py-0.5 text-[10px] font-bold text-white transition hover:bg-rose-700 shadow-xs"
-              >
-                ✕ Reject
-              </button>
-              <button
-                type="button"
-                onClick={handleSimulateReset}
-                className="rounded-md border border-slate-300 bg-white px-2 py-0.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-              >
-                Draft
-              </button>
-
-              <span className="text-[10px] font-bold text-slate-400 uppercase ml-1 sm:ml-2">Tier:</span>
-              <button
-                type="button"
-                onClick={() => handleSelectTier("FREE_VERIFIED")}
-                className={`rounded-md px-2 py-0.5 text-[10px] font-semibold transition ${
-                  profile.subscriptionTier === "FREE_VERIFIED"
-                    ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
-                    : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                }`}
-              >
-                Free
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectTier("CITY_SPOTLIGHT")}
-                className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition ${
-                  profile.subscriptionTier === "CITY_SPOTLIGHT"
-                    ? "bg-rose-600 text-white shadow-xs"
-                    : "border border-rose-300 bg-white text-rose-700 hover:bg-rose-50 dark:border-rose-800 dark:bg-slate-800 dark:text-rose-400"
-                }`}
-              >
-                Spotlight
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectTier("PRO_ADVISOR")}
-                className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition ${
-                  profile.subscriptionTier === "PRO_ADVISOR"
-                    ? "bg-amber-600 text-white shadow-xs"
-                    : "border border-amber-300 bg-white text-amber-800 hover:bg-amber-50 dark:border-amber-800 dark:bg-slate-800 dark:text-amber-400"
-                }`}
-              >
-                Pro
-              </button>
-            </div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase ml-1 sm:ml-2">Tier:</span>
+            <button
+              type="button"
+              onClick={() => handleSelectTier("FREE_VERIFIED")}
+              className={`rounded-md px-2 py-0.5 text-[10px] font-semibold transition ${
+                profile.subscriptionTier === "FREE_VERIFIED"
+                  ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+                  : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+              }`}
+            >
+              Free
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSelectTier("CITY_SPOTLIGHT")}
+              className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition ${
+                profile.subscriptionTier === "CITY_SPOTLIGHT"
+                  ? "bg-rose-600 text-white shadow-xs"
+                  : "border border-rose-300 bg-white text-rose-700 hover:bg-rose-50 dark:border-rose-800 dark:bg-slate-800 dark:text-rose-400"
+              }`}
+            >
+              Spotlight
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSelectTier("PRO_ADVISOR")}
+              className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition ${
+                profile.subscriptionTier === "PRO_ADVISOR"
+                  ? "bg-amber-600 text-white shadow-xs"
+                  : "border border-amber-300 bg-white text-amber-800 hover:bg-amber-50 dark:border-amber-800 dark:bg-slate-800 dark:text-amber-400"
+              }`}
+            >
+              Pro
+            </button>
           </div>
-        </div>
+        </details>
       </div>
     </main>
   );
