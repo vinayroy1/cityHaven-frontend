@@ -5,6 +5,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { BadgeCheck, Bath, BedDouble, Building2, CalendarClock, ChevronRight, Home, Landmark, Maximize } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { buildCanonical, SITE_URL } from "@/constants/seo";
 import { AboutHighlights } from "./components/AboutHighlights";
 import { GalleryStrip } from "./components/GalleryStrip";
@@ -130,14 +131,11 @@ const FALLBACK_IMAGES = [CDN_ASSETS.placeholderWebp];
 
 const getProperty = cache(async (id: string): Promise<PropertyDetails | null> => {
   try {
-    let endpoint = API_ENDPOINTS.propertyListing.update(id);
-    // If running server-side inside Docker and endpoint points to localhost, rewrite to internal backend service or public URL
-    if (typeof window === "undefined" && endpoint.includes("localhost:4000")) {
-      const serverBase = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://awasio-backend:4000/api";
-      endpoint = `${serverBase}/v1/propertyListing/${id}`;
-    }
+    const rawEndpoint = API_ENDPOINTS.propertyListing.update(id);
+    const endpoint = toInternalApiUrl(rawEndpoint);
     const response = await fetch(endpoint, {
       next: { revalidate: 60 },
+      headers: { Accept: "application/json" },
     });
     if (response.status === 404) return null;
     if (!response.ok) return null;

@@ -10,6 +10,7 @@ import {
   type IntentKey,
 } from "@/components/search/searchQuery";
 import { buildCanonical } from "@/constants/seo";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 
 export type IntentSearchRouteProps = {
   params: Promise<{ intent: string; segments?: string[] }>;
@@ -57,7 +58,8 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
   let countLabel = "";
   try {
     const isFlatmate = intent === "FLATMATE";
-    const url = new URL(isFlatmate ? `${API_BASE}/api/v1/flatmates` : `${API_BASE}/api/v1/propertyListing/search`);
+    const endpoint = toInternalApiUrl(isFlatmate ? `${API_BASE}/api/v1/flatmates` : `${API_BASE}/api/v1/propertyListing/search`);
+    const url = new URL(endpoint);
     url.searchParams.set("pageSize", "1");
     if (isFlatmate) {
       if (location.city) url.searchParams.set("city", location.city);

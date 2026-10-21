@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 
 /**
  * Reverse geocode lat/lng to a city and locality using the backend suggestion engine.
@@ -16,7 +17,8 @@ export async function GET(req: NextRequest) {
   try {
     // Delegate to backend detect-city endpoint if available
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-    const res = await fetch(`${backendUrl}/v1/detect-city?lat=${lat}&lng=${lng}`, {
+    const endpoint = toInternalApiUrl(`${backendUrl}/v1/detect-city?lat=${lat}&lng=${lng}`);
+    const res = await fetch(endpoint, {
       cache: "no-store",
       signal: AbortSignal.timeout(2000),
     });

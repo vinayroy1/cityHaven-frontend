@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 
 export const revalidate = 86400; // Cache for 24 hours (24 * 60 * 60)
 
@@ -12,7 +13,8 @@ export async function GET(request: Request) {
 
   try {
     // We only need the total count, so pageSize=1 is sufficient
-    const backendUrl = new URL(`${API_BASE}/api/v1/propertyListing/search`);
+    const endpoint = toInternalApiUrl(`${API_BASE}/api/v1/propertyListing/search`);
+    const backendUrl = new URL(endpoint);
     backendUrl.searchParams.set("pageSize", "1");
     backendUrl.searchParams.set("listingType", listingType);
     

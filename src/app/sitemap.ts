@@ -8,12 +8,14 @@ import {
 } from "@/constants/seo";
 import { getAllAgentIds } from "@/data/agents";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 
 import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 
 async function getActiveProperties(): Promise<Array<{ id: number; slug?: string | null; updatedAt?: string | null }>> {
   try {
-    const res = await fetch(`${API_ENDPOINTS.propertyListing.search}?pageSize=100`, {
+    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.propertyListing.search}?pageSize=100`);
+    const res = await fetch(endpoint, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return [];
@@ -26,7 +28,8 @@ async function getActiveProperties(): Promise<Array<{ id: number; slug?: string 
 
 async function getActiveProjects(): Promise<Array<{ slug: string; updatedAt?: string | null }>> {
   try {
-    const res = await fetch(`${API_ENDPOINTS.projects.search}?pageSize=100`, {
+    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.projects.search}?pageSize=100`);
+    const res = await fetch(endpoint, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return [];
@@ -39,7 +42,8 @@ async function getActiveProjects(): Promise<Array<{ slug: string; updatedAt?: st
 
 async function getPublishedBlogPosts(): Promise<Array<{ slug: string; updatedAt?: string | null }>> {
   try {
-    const res = await fetch(`${API_ENDPOINTS.blog.list}?pageSize=100`, { next: { revalidate: 1800 } });
+    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.blog.list}?pageSize=100`);
+    const res = await fetch(endpoint, { next: { revalidate: 1800 } });
     if (res.ok) {
       const json = (await res.json()) as { data?: { items?: Array<{ slug: string; updatedAt?: string | null }> } };
       if (json?.data?.items && json.data.items.length > 0) {

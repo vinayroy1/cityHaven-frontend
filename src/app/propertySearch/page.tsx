@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { buildCanonical } from "@/constants/seo";
 import { SEARCH_INTENT_SLUGS, buildSearchHref, parseSearchParams } from "@/components/search/searchQuery";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 
 type SearchProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -33,7 +34,8 @@ export async function generateMetadata({ searchParams }: SearchProps): Promise<M
   let countStr = "";
   try {
     const listingType = intent === "rent" ? "RENT" : intent === "pg" ? "PG" : "SELL";
-    const backendUrl = new URL(`${API_BASE}/api/v1/propertyListing/search`);
+    const endpoint = toInternalApiUrl(`${API_BASE}/api/v1/propertyListing/search`);
+    const backendUrl = new URL(endpoint);
     backendUrl.searchParams.set("pageSize", "1");
     backendUrl.searchParams.set("listingType", listingType);
     if (city) backendUrl.searchParams.set("cityName", city);

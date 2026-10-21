@@ -8,6 +8,7 @@ import { BlogCard } from "@/components/blog/BlogCard";
 import { BlogContent } from "@/components/blog/BlogContent";
 import { ShareArticleButton } from "@/components/blog/ShareArticleButton";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { buildCanonical } from "@/constants/seo";
 import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 import type { BlogPost } from "@/types/blog.types";
@@ -17,7 +18,8 @@ type Props = { params: Promise<{ slug: string }> };
 
 async function getArticle(slug: string): Promise<DetailData | null> {
   try {
-    const response = await fetch(API_ENDPOINTS.blog.detail(slug), { next: { revalidate: 300, tags: [`blog-${slug}`] } });
+    const endpoint = toInternalApiUrl(API_ENDPOINTS.blog.detail(slug));
+    const response = await fetch(endpoint, { next: { revalidate: 300, tags: [`blog-${slug}`] } });
     if (response.ok) {
       const json = await response.json();
       if (json.data && json.data.post) return json.data;

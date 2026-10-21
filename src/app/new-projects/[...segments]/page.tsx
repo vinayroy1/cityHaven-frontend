@@ -4,6 +4,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { buildCanonical, SITE_URL } from "@/constants/seo";
 import { fromSearchSlug, toSearchSlug } from "@/components/search/searchQuery";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
@@ -28,12 +29,8 @@ const CITY_ALIASES: Record<string, string> = {
 
 const getProject = cache(async (slug: string): Promise<ProjectListing | null> => {
   try {
-    let endpoint = API_ENDPOINTS.projects.detail(encodeURIComponent(slug));
-    if (typeof window === "undefined" && endpoint.includes("localhost:4000")) {
-      const serverBase =
-        process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://awasio-backend:4000/api";
-      endpoint = `${serverBase}/v1/projects/${encodeURIComponent(slug)}`;
-    }
+    const rawEndpoint = API_ENDPOINTS.projects.detail(encodeURIComponent(slug));
+    const endpoint = toInternalApiUrl(rawEndpoint);
     const response = await fetch(endpoint, {
       next: { revalidate: 300 },
       headers: { Accept: "application/json" },
@@ -49,12 +46,8 @@ const getProject = cache(async (slug: string): Promise<ProjectListing | null> =>
 
 async function getProjectCount(city: string, localities: string[] = []): Promise<number | null> {
   try {
-    let endpoint = API_ENDPOINTS.projects.search;
-    if (endpoint.includes("localhost:4000")) {
-      const serverBase =
-        process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://awasio-backend:4000/api";
-      endpoint = `${serverBase}/v1/projects`;
-    }
+    const rawEndpoint = API_ENDPOINTS.projects.search;
+    const endpoint = toInternalApiUrl(rawEndpoint);
     const url = new URL(endpoint);
     url.searchParams.set("city", city);
     if (localities.length) url.searchParams.set("locality", localities.join(","));

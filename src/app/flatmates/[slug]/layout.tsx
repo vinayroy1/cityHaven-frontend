@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { buildCanonical } from "@/constants/seo";
 import type { FlatmateListing } from "@/types/flatmate.types";
 
@@ -8,7 +9,8 @@ type Props = { children: React.ReactNode; params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Omit<Props, "children">): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const response = await fetch(API_ENDPOINTS.flatmates.detail(slug), { next: { revalidate: 300 } });
+    const endpoint = toInternalApiUrl(API_ENDPOINTS.flatmates.detail(slug));
+    const response = await fetch(endpoint, { next: { revalidate: 300 } });
     if (response.ok) {
       const payload = await response.json() as { data?: FlatmateListing };
       const listing = payload.data;

@@ -37,6 +37,7 @@ pipeline {
                         --no-cache \
                         --progress=plain \
                         --build-arg NEXT_PUBLIC_API_URL=https://awasio.com/api \
+                        --build-arg INTERNAL_API_URL=http://awasio-backend:4000/api \
                         --label awasio.app=${APP_NAME} \
                         --label awasio.build=${BUILD_NUMBER} \
                         -t ${DOCKER_IMAGE} .
@@ -82,6 +83,7 @@ pipeline {
                         ${ENV_OPT} \
                         -e PORT=3000 \
                         -e NEXT_PUBLIC_API_URL='https://awasio.com/api' \
+                        -e INTERNAL_API_URL='http://awasio-backend:4000/api' \
                         ${DOCKER_IMAGE}
                 '''
             }

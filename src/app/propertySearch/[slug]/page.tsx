@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { buildCanonical } from "@/constants/seo";
 import { buildSearchHref, parseSearchParams } from "@/components/search/searchQuery";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { SearchPageClient } from "../SearchPageClient";
 
 type Props = {
@@ -18,10 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
   try {
-    const res = await fetch(
-      `${API_BASE}/api/v1/propertyListing/resolve-seo-slug?slug=${encodeURIComponent(slug)}`,
-      { next: { revalidate: 120 } }
+    const endpoint = toInternalApiUrl(
+      `${API_BASE}/api/v1/propertyListing/resolve-seo-slug?slug=${encodeURIComponent(slug)}`
     );
+    const res = await fetch(endpoint, { next: { revalidate: 120 } });
     const json = await res.json();
     if (json.isSearchSlug && json.seo) {
       const resolvedParams = new URLSearchParams();
@@ -64,10 +65,10 @@ export default async function PropertySearchSlugPage({ params, searchParams }: P
 
   // Resolve filters from backend
   try {
-    const res = await fetch(
-      `${API_BASE}/api/v1/propertyListing/resolve-seo-slug?slug=${encodeURIComponent(slug)}`,
-      { next: { revalidate: 120 } }
+    const endpoint = toInternalApiUrl(
+      `${API_BASE}/api/v1/propertyListing/resolve-seo-slug?slug=${encodeURIComponent(slug)}`
     );
+    const res = await fetch(endpoint, { next: { revalidate: 120 } });
     const json = await res.json();
 
     if (json.isSearchSlug && json.filters) {

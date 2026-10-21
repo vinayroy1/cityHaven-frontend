@@ -5,6 +5,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { buildCanonical } from "@/constants/seo";
 import { getDefaultBlogListResponse } from "@/constants/defaultBlogs";
 import type { BlogListResponse } from "@/types/blog.types";
@@ -22,7 +23,9 @@ const one = (value: string | string[] | undefined) => Array.isArray(value) ? val
 
 async function getPosts(params: URLSearchParams): Promise<BlogListResponse> {
   try {
-    const response = await fetch(`${API_ENDPOINTS.blog.list}?${params.toString()}`, { next: { revalidate: 300, tags: ["blog"] } });
+    const rawEndpoint = `${API_ENDPOINTS.blog.list}?${params.toString()}`;
+    const endpoint = toInternalApiUrl(rawEndpoint);
+    const response = await fetch(endpoint, { next: { revalidate: 300, tags: ["blog"] } });
     if (response.ok) {
       const json = await response.json();
       if (json.data && json.data.items && json.data.items.length > 0) {
