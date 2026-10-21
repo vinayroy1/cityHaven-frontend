@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -18,7 +18,6 @@ import {
   Check,
   Sparkles,
   User,
-  Loader2,
   AlertCircle,
   Clock3,
   Languages,
@@ -31,12 +30,11 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FlatmateInterestModal } from "@/components/flatmates/FlatmateInterestModal";
 import { useGetFlatmateListingQuery } from "@/features/flatmates/api";
 import { BackButton } from "@/components/common/BackButton";
+import { FlatmateDetailSkeleton } from "@/components/flatmates/FlatmateDetailSkeleton";
 
 export default function FlatmateDetailPage() {
   const params = useParams();
   const slug = String(params?.slug || "");
-  const router = useRouter();
-
   const { data: listing, isLoading, error } = useGetFlatmateListingQuery(slug, {
     skip: !slug,
   });
@@ -59,17 +57,7 @@ export default function FlatmateDetailPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
-        <HeaderNav />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-2 text-slate-500">
-            <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
-            <span className="text-xs">Loading flatmate details...</span>
-          </div>
-        </div>
-      </div>
-    );
+    return <FlatmateDetailSkeleton />;
   }
 
   if (error || !listing) {

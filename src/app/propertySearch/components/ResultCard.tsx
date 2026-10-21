@@ -41,6 +41,8 @@ export function ResultCard({
   compact = false,
 }: ResultCardProps) {
   const router = useRouter();
+  const [isNavigating, setIsNavigating] = React.useState(false);
+  const detailsHref = `/properties/${slug || id}`;
   const safeImages = React.useMemo(() => images.filter(Boolean), [images]);
   const [activeImage, setActiveImage] = React.useState(0);
   const [imageFailed, setImageFailed] = React.useState(false);
@@ -190,7 +192,11 @@ export function ResultCard({
     setActiveImage(index);
   };
 
-  const openDetails = () => router.push(`/properties/${slug || id}`);
+  const openDetails = () => {
+    if (isNavigating) return;
+    setIsNavigating(true);
+    router.push(detailsHref);
+  };
   const handleCardKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.target !== event.currentTarget) return;
     if (event.key !== "Enter" && event.key !== " ") return;
@@ -391,8 +397,21 @@ export function ResultCard({
       tabIndex={0}
       onClick={openDetails}
       onKeyDown={handleCardKeyDown}
-      className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-200 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
+      aria-busy={isNavigating}
+      className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-200 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 ${isNavigating ? "pointer-events-none scale-[0.995] opacity-80" : ""}`}
     >
+      {isNavigating && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-white/80 backdrop-blur-sm dark:bg-slate-950/80"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-semibold text-slate-700 shadow-xl dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+            <span className="h-5 w-5 animate-spin rounded-full border-2 border-rose-200 border-t-rose-600" aria-hidden="true" />
+            Opening property details…
+          </div>
+        </div>
+      )}
       <ResultCardMedia
         image={image}
         title={title}

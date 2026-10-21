@@ -23,6 +23,7 @@ pipeline {
                     echo "Git Branch: $(git rev-parse --abbrev-ref HEAD)"
                     docker info > /dev/null || (echo "Docker engine unreachable" && exit 1)
                     docker network inspect ${NETWORK_NAME} > /dev/null 2>&1 || docker network create ${NETWORK_NAME}
+                    docker network connect ${NETWORK_NAME} awasio-backend 2>/dev/null || true
                     echo "Validation passed."
                 '''
             }
@@ -32,10 +33,6 @@ pipeline {
             steps {
                 echo "🔨 [Build] Compiling Next.js production Docker image without cache..."
                 sh '''
-                    if [ -f /opt/awasio/.env.frontend ]; then
-                        cp /opt/awasio/.env.frontend .env.production
-                        echo "Injected server-side production environment from /opt/awasio/.env.frontend"
-                    fi
                     DOCKER_BUILDKIT=1 docker build \
                         --no-cache \
                         --progress=plain \
@@ -43,7 +40,6 @@ pipeline {
                         --label awasio.app=${APP_NAME} \
                         --label awasio.build=${BUILD_NUMBER} \
                         -t ${DOCKER_IMAGE} .
-                    rm -f .env.production
                 '''
             }
         }
