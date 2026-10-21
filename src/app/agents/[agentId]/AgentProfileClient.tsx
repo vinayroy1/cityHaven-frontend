@@ -105,8 +105,8 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
 
   return (
     <div>
-      {/* Breadcrumbs Navigation */}
-      <div className="border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/60 py-2.5">
+      {/* Breadcrumbs Navigation (Desktop only to prevent vertical clutter on mobile) */}
+      <div className="hidden sm:block border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/60 py-2.5">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
             <Link href="/" className="hover:text-rose-600 transition">
@@ -128,8 +128,8 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
         </div>
       </div>
 
-      {/* Hero Cover Banner */}
-      <div className="relative h-52 sm:h-72 w-full bg-slate-900 overflow-hidden">
+      {/* Hero Cover Banner (Compact on mobile to save vertical space) */}
+      <div className="relative h-24 sm:h-64 w-full bg-slate-900 overflow-hidden">
         {agent.coverImage ? (
           <img
             src={agent.coverImage}
@@ -141,125 +141,181 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
         )}
         <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/50 to-transparent" />
 
-        <div className="absolute top-4 left-4 sm:left-6 z-10 flex items-center gap-2">
-          <BackButton fallbackHref="/agents" label="Back to all advisors" variant="pill" size="sm" />
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-6 z-10 flex items-center gap-2">
+          <BackButton fallbackHref="/agents" label="Advisors" variant="pill" size="sm" />
         </div>
 
-        <div className="absolute top-4 right-4 sm:right-6 z-10 flex items-center gap-2">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-6 z-10 flex items-center gap-2">
           <Link
             href="/dashboard/advisor-profile"
-            className="inline-flex items-center gap-1.5 rounded-full bg-white/20 hover:bg-white/30 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur transition border border-white/20"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white/20 hover:bg-white/30 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur transition border border-white/20"
           >
             <span>Edit Profile</span>
           </Link>
           <button
             type="button"
             onClick={handleShare}
-            className="inline-flex items-center gap-1.5 rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur transition hover:bg-black/70"
+            className="inline-flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold text-white backdrop-blur transition hover:bg-black/70"
           >
-            <Share2 className="h-3.5 w-3.5" />
-            {copiedLink ? "Link Copied!" : "Share Profile"}
+            <Share2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+            <span>{copiedLink ? "Copied!" : "Share"}</span>
           </button>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <main className="mx-auto max-w-6xl px-4 sm:px-6 -mt-20 sm:-mt-24 relative z-20 pb-16">
-        <div className="grid gap-8 lg:grid-cols-12">
+      <main className="mx-auto max-w-6xl px-3 sm:px-6 -mt-10 sm:-mt-20 relative z-20 pb-20 sm:pb-16">
+        <div className="grid gap-5 sm:gap-8 lg:grid-cols-12">
           {/* Left Column: 8 Cols */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-4 sm:space-y-6">
             {/* Identity Card */}
-            <article className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-                <div className="relative shrink-0 self-start">
+            <article className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-start sm:items-center gap-3.5 sm:gap-5">
+                <div className="relative shrink-0">
                   <img
                     src={agent.avatar}
                     alt={agent.name}
-                    className="h-24 w-24 sm:h-28 sm:w-28 rounded-full object-cover ring-4 ring-white shadow-md dark:ring-slate-800"
+                    className="h-16 w-16 sm:h-28 sm:w-28 rounded-full object-cover ring-2 sm:ring-4 ring-white shadow-md dark:ring-slate-800"
                   />
                   <span
                     title="Online and available for in-person tours"
-                    className="absolute bottom-1 right-1 h-5 w-5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"
+                    className="absolute bottom-0 right-0 sm:bottom-1 sm:right-1 h-3.5 w-3.5 sm:h-5 sm:w-5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"
                   />
                 </div>
 
-                <div className="min-w-0 flex-1 space-y-1.5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="text-xl sm:text-2xl font-extrabold text-slate-950 dark:text-white">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <h1 className="text-base sm:text-2xl font-extrabold text-slate-950 dark:text-white">
                       {agent.name}
                     </h1>
-                    <BadgeCheck className="h-5 w-5 text-rose-600 dark:text-rose-400" />
-                    <span className="rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
+                    <BadgeCheck className="h-4 w-4 sm:h-5 sm:w-5 text-rose-600 dark:text-rose-400 shrink-0" />
+                    <span className="rounded-full bg-rose-50 px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
                       {agent.badge}
                     </span>
                   </div>
 
-                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                  <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 truncate">
                     {agent.role} • <span className="text-slate-900 dark:text-white">{agent.agency}</span>
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-y-1.5 gap-x-4 text-xs text-slate-500 dark:text-slate-400 pt-1">
+                  <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 pt-0.5">
                     <span className="flex items-center gap-1 font-medium text-slate-800 dark:text-slate-200">
-                      <MapPin className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+                      <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-rose-500 shrink-0" />
                       {agent.area}, {agent.city}
                     </span>
-                    <span className="font-mono text-[11px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                    <span className="font-mono text-[10px] sm:text-[11px] bg-slate-100 dark:bg-slate-800 px-1.5 sm:px-2 py-0.5 rounded-md">
                       RERA: {agent.reraId}
                     </span>
-                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-                      <Clock className="h-3.5 w-3.5 shrink-0" />
-                      Avg response: {agent.responseTime}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 pt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                    <ShieldCheck className="h-4 w-4 shrink-0" />
-                    <span>Government RERA Registered & Awasio Certified Advisor</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Direct Quick Actions: Call, WhatsApp, Schedule Visit right in the top card */}
+              <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedPropertyModal(agent.focus)}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-3 py-2 text-xs font-bold text-white shadow-xs hover:bg-rose-700 active:scale-95 transition"
+                >
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>Book Site Visit</span>
+                </button>
+                <a
+                  href={`tel:${agent.phone.replace(/\s+/g, "")}`}
+                  className="inline-flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 sm:px-3 text-xs font-bold text-slate-800 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition"
+                >
+                  <PhoneCall className="h-3.5 w-3.5 text-rose-500" />
+                  <span className="hidden xs:inline">Call</span>
+                </a>
+                <a
+                  href={`https://wa.me/${agent.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
+                    `Hi ${agent.name}, I found your verified advisor profile on Awasio and would like to inquire about properties in ${agent.area}.`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 sm:px-3 text-xs font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 transition"
+                >
+                  <MessageSquare className="h-3.5 w-3.5 text-emerald-600" />
+                  <span className="hidden xs:inline">WhatsApp</span>
+                </a>
               </div>
 
               {/* Performance Stats Matrix */}
-              <div className="mt-6 grid grid-cols-3 gap-3 border-t border-slate-100 pt-5 dark:border-slate-800 text-center">
-                <div className="rounded-xl bg-slate-50 py-3 dark:bg-slate-800/60">
-                  <p className="text-base sm:text-xl font-extrabold text-slate-950 dark:text-white">
+              <div className="mt-3 grid grid-cols-3 gap-1.5 sm:gap-3 border-t border-slate-100 pt-3 dark:border-slate-800 text-center">
+                <div className="rounded-xl bg-slate-50 py-2 sm:py-3 dark:bg-slate-800/60">
+                  <p className="text-sm sm:text-xl font-extrabold text-slate-950 dark:text-white">
                     {agent.experience}
                   </p>
-                  <p className="text-xs text-slate-500">Market Experience</p>
+                  <p className="text-[10px] sm:text-xs text-slate-500">Market Experience</p>
                 </div>
-                <div className="rounded-xl bg-slate-50 py-3 dark:bg-slate-800/60">
-                  <p className="text-base sm:text-xl font-extrabold text-slate-950 dark:text-white">
+                <div className="rounded-xl bg-slate-50 py-2 sm:py-3 dark:bg-slate-800/60">
+                  <p className="text-sm sm:text-xl font-extrabold text-slate-950 dark:text-white">
                     {agent.tours}
                   </p>
-                  <p className="text-xs text-slate-500">Private Walkthroughs</p>
+                  <p className="text-[10px] sm:text-xs text-slate-500">Walkthroughs</p>
                 </div>
-                <div className="rounded-xl bg-slate-50 py-3 dark:bg-slate-800/60">
-                  <p className="text-base sm:text-xl font-extrabold text-slate-950 dark:text-white">
+                <div className="rounded-xl bg-slate-50 py-2 sm:py-3 dark:bg-slate-800/60">
+                  <p className="text-sm sm:text-xl font-extrabold text-slate-950 dark:text-white">
                     {agent.listingsCount}
                   </p>
-                  <p className="text-xs text-slate-500">Active Properties</p>
+                  <p className="text-[10px] sm:text-xs text-slate-500">Active Properties</p>
                 </div>
+              </div>
+
+              {/* Trust Footer Bar */}
+              <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-850 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
+                  <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+                  RERA Registered & Certified
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3 w-3 text-slate-400" />
+                  Avg response: {agent.responseTime}
+                </span>
               </div>
             </article>
 
-            {/* About & Verified Services */}
-            <section className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-4">
-              <h2 className="text-lg font-bold text-slate-950 dark:text-white">
-                About {agent.name}
-              </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            {/* About & Verified Services (Enhanced UI) */}
+            <section className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base sm:text-lg font-bold text-slate-950 dark:text-white">
+                  About {agent.name}
+                </h2>
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Verified Specialist
+                </span>
+              </div>
+
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                 {agent.bio}
               </p>
+
+              {/* Enhanced Key Facts Dossier Grid */}
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 pt-1">
+                <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2.5 dark:border-slate-800 dark:bg-slate-850">
+                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Coverage Area</p>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate mt-0.5">{agent.area}</p>
+                </div>
+                <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2.5 dark:border-slate-800 dark:bg-slate-850">
+                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Languages</p>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate mt-0.5">{agent.languages.join(", ")}</p>
+                </div>
+                <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2.5 dark:border-slate-800 dark:bg-slate-850 col-span-2 sm:col-span-1">
+                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Site Visit Fee</p>
+                  <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 truncate mt-0.5">₹0 (100% Free)</p>
+                </div>
+              </div>
 
               <div className="pt-2">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
                   Verified Local Advisory Services
                 </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {agent.services.map((srv) => (
                     <span
                       key={srv}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-rose-50/80 px-2.5 py-1 text-[11px] sm:text-xs font-semibold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300"
                     >
                       <CheckCircle2 className="h-3.5 w-3.5 text-rose-600" />
                       {srv}
@@ -268,15 +324,9 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-6 text-xs text-slate-600 dark:text-slate-400">
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-slate-400" />
-                  <span>Languages: <strong className="text-slate-800 dark:text-slate-200">{agent.languages.join(", ")}</strong></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-slate-400" />
-                  <span>Specialization: <strong className="text-slate-800 dark:text-slate-200">{agent.focus}</strong></span>
-                </div>
+              <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
+                <span>Primary Specialization: <strong className="text-slate-800 dark:text-slate-200">{agent.focus}</strong></span>
               </div>
             </section>
 
