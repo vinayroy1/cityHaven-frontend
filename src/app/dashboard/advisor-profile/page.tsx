@@ -10,10 +10,7 @@ import {
   CheckCircle2,
   Clock,
   Crown,
-  FileCheck2,
-  FileText,
   Globe2,
-  IdCard,
   MapPin,
   Phone,
   Save,
@@ -21,7 +18,6 @@ import {
   ShieldAlert,
   ShieldCheck,
   Sparkles,
-  Upload,
   User,
   X,
 } from "lucide-react";
@@ -38,17 +34,6 @@ import {
 import type { AgentSubscriptionTier } from "@/data/agents";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { AdvisorLocalitySelector } from "./components/AdvisorLocalitySelector";
-
-const INDIAN_STATES = [
-  "Delhi",
-  "Haryana",
-  "Uttar Pradesh",
-  "Maharashtra",
-  "Karnataka",
-  "Telangana",
-  "Tamil Nadu",
-  "West Bengal",
-];
 
 const CITIES = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
 
@@ -73,7 +58,6 @@ const SAMPLE_AVATARS = [
 export default function AdvisorProfilePage() {
   const [profile, setProfile] = useState<AgentProfileData>(DEFAULT_PROFILE);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<"profile" | "plans">("profile");
 
   useEffect(() => {
@@ -103,13 +87,13 @@ export default function AdvisorProfilePage() {
 
   const handleSubmitVerification = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!profile.reraId.trim()) {
-      showToast("Please enter a valid RERA Registration Number.");
+    if (!profile.name?.trim()) {
+      showToast("Please enter your Full Name.");
       return;
     }
     const updated = submitAgentForVerification(profile.id);
     setProfile(updated);
-    showToast("Submitted for RERA compliance verification!");
+    showToast("Submitted advisor profile for verification!");
   };
 
   const handleSimulateApproval = () => {
@@ -183,17 +167,6 @@ export default function AdvisorProfilePage() {
   const handleClearAllAreas = () => {
     handleFieldChange("area", "");
     showToast("Cleared operating localities");
-  };
-
-  const handleMockUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploading(true);
-    setTimeout(() => {
-      setIsUploading(false);
-      handleFieldChange("reraDocumentName", file.name);
-      showToast(`Uploaded document: ${file.name}`);
-    }, 900);
   };
 
   const localitiesList = profile.area ? profile.area.split(" & ").filter(Boolean) : [];
@@ -413,93 +386,14 @@ export default function AdvisorProfilePage() {
                 </div>
               </div>
 
-              {/* Section 2: Government RERA Compliance */}
-              <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-3">
-                <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 dark:border-slate-800">
-                  <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 shrink-0">
-                    <ShieldCheck className="h-3.5 w-3.5" />
-                  </span>
-                  <div>
-                    <h2 className="text-xs sm:text-sm font-bold text-slate-950 dark:text-white">2. Government RERA Legal Compliance</h2>
-                    <p className="text-[10px] sm:text-[11px] text-slate-500">Mandatory under Real Estate (Regulation and Development) Act.</p>
-                  </div>
-                </div>
-
-                <div className="grid gap-2.5 sm:gap-3 sm:grid-cols-2">
-                  <div>
-                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">RERA Authority State *</label>
-                    <select
-                      value={profile.reraState || profile.city}
-                      onChange={(e) => handleFieldChange("reraState", e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                    >
-                      {INDIAN_STATES.map((st) => (
-                        <option key={st} value={st}>
-                          {st} RERA
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                      RERA Registration Number *
-                    </label>
-                    <div className="relative mt-1">
-                      <IdCard className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
-                      <input
-                        type="text"
-                        required
-                        value={profile.reraId}
-                        onChange={(e) => handleFieldChange("reraId", e.target.value.toUpperCase())}
-                        className="w-full uppercase tracking-wider rounded-xl border border-slate-200 bg-white pl-8 pr-3 py-2 text-xs font-semibold text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                        placeholder="e.g. DLRERA2021A0042"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                      RERA Certificate Document (PDF / JPG)
-                    </label>
-                    <div className="mt-1.5 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/70 p-3 sm:p-5 text-center transition hover:border-rose-300 dark:border-slate-700 dark:bg-slate-800/40">
-                      {profile.reraDocumentName ? (
-                        <div className="flex items-center gap-2.5 rounded-xl bg-white p-2.5 shadow-xs dark:bg-slate-800 border border-slate-100 dark:border-slate-700 w-full min-w-0">
-                          <FileText className="h-5 w-5 text-emerald-600 shrink-0" />
-                          <div className="min-w-0 flex-1 text-left">
-                            <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{profile.reraDocumentName}</p>
-                            <p className="text-[10px] text-emerald-600 font-medium flex items-center gap-1">
-                              <CheckCircle2 className="h-3 w-3 shrink-0" /> Document attached
-                            </p>
-                          </div>
-                          <label className="shrink-0 ml-2 cursor-pointer text-xs font-semibold text-rose-600 hover:underline">
-                            Replace
-                            <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleMockUpload} />
-                          </label>
-                        </div>
-                      ) : (
-                        <label className="cursor-pointer py-1.5">
-                          <Upload className="mx-auto h-6 w-6 text-slate-400" />
-                          <p className="mt-1 text-xs font-bold text-slate-800 dark:text-slate-200">
-                            {isUploading ? "Uploading certificate..." : "Tap to upload RERA Certificate"}
-                          </p>
-                          <p className="mt-0.5 text-[10px] text-slate-400">PDF, JPG, PNG up to 10MB</p>
-                          <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleMockUpload} />
-                        </label>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 3: Operating Territory & Specialization */}
+              {/* Section 2: Operating Territory & Specialization */}
               <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-3">
                 <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 dark:border-slate-800">
                   <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 shrink-0">
                     <MapPin className="h-3.5 w-3.5" />
                   </span>
                   <div>
-                    <h2 className="text-xs sm:text-sm font-bold text-slate-950 dark:text-white">3. Operating Territory & Specialization</h2>
+                    <h2 className="text-xs sm:text-sm font-bold text-slate-950 dark:text-white">2. Operating Territory & Specialization</h2>
                     <p className="text-[10px] sm:text-[11px] text-slate-500">Specify neighborhoods where you conduct in-person tours.</p>
                   </div>
                 </div>
@@ -521,17 +415,22 @@ export default function AdvisorProfilePage() {
 
                   <div>
                     <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Years of Experience *</label>
-                    <div className="mt-1 flex items-center gap-2.5 h-10">
+                    <div className="relative mt-1">
                       <input
-                        type="range"
-                        min={1}
-                        max={25}
-                        value={profile.experienceYears}
-                        onChange={(e) => handleFieldChange("experienceYears", parseInt(e.target.value))}
-                        className="flex-1 accent-rose-600"
+                        type="number"
+                        min={0}
+                        max={60}
+                        required
+                        value={profile.experienceYears || ""}
+                        onChange={(e) => {
+                          const val = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
+                          handleFieldChange("experienceYears", isNaN(val) ? 0 : Math.max(0, val));
+                        }}
+                        placeholder="e.g. 9"
+                        className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 pr-14 text-xs font-semibold text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                       />
-                      <span className="min-w-[60px] rounded-lg bg-rose-50 px-2 py-1 text-center text-xs font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 shrink-0">
-                        {profile.experienceYears}+ yrs
+                      <span className="pointer-events-none absolute right-3 top-2.5 text-xs font-medium text-slate-400">
+                        years
                       </span>
                     </div>
                   </div>
@@ -576,14 +475,14 @@ export default function AdvisorProfilePage() {
                 </div>
               </div>
 
-              {/* Section 4: Services Offered & Bio */}
+              {/* Section 3: Services Offered & Bio */}
               <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-3">
                 <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 dark:border-slate-800">
                   <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400 shrink-0">
                     <Globe2 className="h-3.5 w-3.5" />
                   </span>
                   <div>
-                    <h2 className="text-xs sm:text-sm font-bold text-slate-950 dark:text-white">4. Services & About You</h2>
+                    <h2 className="text-xs sm:text-sm font-bold text-slate-950 dark:text-white">3. Services & About You</h2>
                     <p className="text-[10px] sm:text-[11px] text-slate-500">Highlight on-ground services you provide during site visits.</p>
                   </div>
                 </div>
