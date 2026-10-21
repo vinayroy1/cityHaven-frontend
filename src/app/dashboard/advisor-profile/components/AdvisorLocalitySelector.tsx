@@ -393,103 +393,91 @@ export function AdvisorLocalitySelector({
   };
 
   return (
-    <div className={`space-y-2.5 ${className}`} ref={containerRef}>
-      {/* Selected Localities Chips */}
-      <div className="flex flex-wrap items-center gap-1.5 min-h-[28px]">
-        {selectedLocalities.length === 0 ? (
-          <span className="text-xs text-slate-400 dark:text-slate-500 italic">
-            No operating localities added yet. Pick from the dropdown below.
-          </span>
-        ) : (
-          selectedLocalities.map((loc) => (
-            <span
-              key={loc}
-              className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-800 shadow-2xs transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-600"
-            >
-              <MapPin className="h-3 w-3 text-rose-500 shrink-0" />
-              <span className="max-w-[140px] truncate">{loc}</span>
-              <button
-                type="button"
-                onClick={() => onRemoveLocality(loc)}
-                className="ml-0.5 rounded-full p-0.5 text-slate-400 hover:bg-slate-200 hover:text-rose-600 dark:hover:bg-slate-700 dark:hover:text-rose-400"
-                aria-label={`Remove ${loc}`}
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          ))
-        )}
-
-        {selectedLocalities.length > 1 && onClearAll && (
-          <button
-            type="button"
-            onClick={onClearAll}
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-rose-600 dark:text-slate-500 dark:hover:text-rose-400 ml-1"
-          >
-            <Trash2 className="h-3 w-3" />
-            <span>Clear all</span>
-          </button>
-        )}
-      </div>
-
-      {/* Interactive Dropdown Search Trigger */}
-      <div className="relative">
-        <div
-          onClick={() => {
-            if (!cleanCity) return;
-            setIsOpen(true);
-            inputRef.current?.focus();
-          }}
-          className={`flex h-10 items-center gap-2 rounded-xl border bg-white px-3 text-xs transition-colors dark:bg-slate-800 ${
-            !cleanCity
-              ? "cursor-not-allowed opacity-60 border-slate-200 dark:border-slate-800"
-              : isOpen
-              ? "border-rose-500 ring-2 ring-rose-500/20 dark:border-rose-500"
-              : "border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600"
+    <div className={`relative ${className}`} ref={containerRef}>
+      {/* Interactive Dropdown Search Trigger with Integrated Chips */}
+      <div
+        onClick={() => {
+          if (!cleanCity) return;
+          setIsOpen(true);
+          inputRef.current?.focus();
+        }}
+        className={`flex min-h-10 flex-wrap items-center gap-1.5 rounded-xl border bg-white p-1.5 pl-2.5 text-xs transition-colors dark:bg-slate-800 ${
+          !cleanCity
+            ? "cursor-not-allowed opacity-60 border-slate-200 dark:border-slate-800"
+            : isOpen
+            ? "border-rose-500 ring-2 ring-rose-500/20 dark:border-rose-500"
+            : "border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600"
+        }`}
+      >
+        <MapPin
+          className={`h-3.5 w-3.5 shrink-0 ${
+            cleanCity ? "text-rose-500" : "text-slate-400"
           }`}
-        >
-          <MapPin
-            className={`h-3.5 w-3.5 shrink-0 ${
-              cleanCity ? "text-rose-500" : "text-slate-400"
-            }`}
-          />
+        />
 
-          <input
-            ref={inputRef}
-            type="text"
-            disabled={!cleanCity}
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              if (cleanCity && !isOpen) setIsOpen(true);
-            }}
-            onFocus={() => {
-              if (cleanCity) setIsOpen(true);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                if (currentQuery) {
-                  // If single exact or first match exists, add it or add custom
-                  if (displayList.length === 1) {
-                    handleSelect(displayList[0]);
-                  } else {
-                    handleAddCustom();
-                  }
+        {/* Selected Chips inside Search Box */}
+        {selectedLocalities.map((loc) => (
+          <span
+            key={loc}
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-800 shadow-2xs transition dark:border-slate-700 dark:bg-slate-700/80 dark:text-slate-200"
+          >
+            <span className="max-w-[130px] truncate">{loc}</span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemoveLocality(loc);
+              }}
+              className="rounded-full p-0.5 text-slate-400 hover:bg-slate-200 hover:text-rose-600 dark:hover:bg-slate-600 dark:hover:text-rose-400"
+              aria-label={`Remove ${loc}`}
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </span>
+        ))}
+
+        <input
+          ref={inputRef}
+          type="text"
+          disabled={!cleanCity}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            if (cleanCity && !isOpen) setIsOpen(true);
+          }}
+          onFocus={() => {
+            if (cleanCity) setIsOpen(true);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Backspace" && !search && selectedLocalities.length > 0) {
+              e.preventDefault();
+              onRemoveLocality(selectedLocalities[selectedLocalities.length - 1]);
+            } else if (e.key === "Enter") {
+              e.preventDefault();
+              if (currentQuery) {
+                // If single exact or first match exists, add it or add custom
+                if (displayList.length === 1) {
+                  handleSelect(displayList[0]);
+                } else {
+                  handleAddCustom();
                 }
-              } else if (e.key === "Escape") {
-                setIsOpen(false);
               }
-            }}
-            placeholder={
-              cleanCity
-                ? `Search & select localities in ${cleanCity}...`
-                : "Select a Primary City first"
+            } else if (e.key === "Escape") {
+              setIsOpen(false);
             }
-            className="min-w-0 flex-1 bg-transparent text-xs text-slate-900 outline-none placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-500 disabled:cursor-not-allowed"
-          />
+          }}
+          placeholder={
+            !cleanCity
+              ? "Select a Primary City first"
+              : selectedLocalities.length === 0
+              ? `Search & select localities in ${cleanCity}...`
+              : "Add more localities..."
+          }
+          className="min-w-[110px] flex-1 bg-transparent py-0.5 text-xs text-slate-900 outline-none placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-500 disabled:cursor-not-allowed"
+        />
 
-          {search && (
+        <div className="ml-auto flex items-center gap-1 shrink-0">
+          {search ? (
             <button
               type="button"
               onClick={(e) => {
@@ -501,7 +489,19 @@ export function AdvisorLocalitySelector({
             >
               <X className="h-3 w-3" />
             </button>
-          )}
+          ) : selectedLocalities.length > 0 && onClearAll ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClearAll();
+              }}
+              title="Clear all localities"
+              className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-slate-700 dark:hover:text-rose-400"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          ) : null}
 
           {loading ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-500 shrink-0" />
@@ -513,6 +513,7 @@ export function AdvisorLocalitySelector({
             />
           )}
         </div>
+      </div>
 
         {/* Dropdown Floating Panel */}
         {isOpen && cleanCity && (
@@ -620,6 +621,5 @@ export function AdvisorLocalitySelector({
           </div>
         )}
       </div>
-    </div>
   );
 }
