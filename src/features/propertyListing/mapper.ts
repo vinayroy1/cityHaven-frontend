@@ -69,6 +69,21 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     amenities.reservedParking && typeof amenities.reservedParking === "object" ? amenities.reservedParking : undefined;
   const safeOtherRooms = details.otherRooms && typeof details.otherRooms === "object" ? details.otherRooms : undefined;
 
+  const isPgListing = context.listingType === "PG" || resolvedTypeSlug === "pg";
+  const rawBedrooms = details.bedrooms;
+  const cleanBedrooms = isPgListing
+    ? undefined
+    : rawBedrooms !== undefined && rawBedrooms !== null && !isNaN(Number(rawBedrooms)) && Number(rawBedrooms) > 0
+      ? Math.round(Number(rawBedrooms))
+      : undefined;
+
+  const rawBalconies = details.balconies;
+  const cleanBalconies = isPgListing
+    ? undefined
+    : rawBalconies !== undefined && rawBalconies !== null && !isNaN(Number(rawBalconies))
+      ? Math.round(Number(rawBalconies))
+      : undefined;
+
   const base = {
     title: baseTitle,
     description: meta.description?.trim() || undefined,
@@ -142,9 +157,9 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     entranceWidthUnit: details.entranceWidthUnit || undefined,
     ceilingWidth: details.ceilingWidth ?? undefined,
     ceilingWidthUnit: details.ceilingWidthUnit || undefined,
-    bedrooms: (context.listingType === "PG" || resolvedTypeSlug === "pg") ? undefined : (details.bedrooms ?? undefined),
+    bedrooms: cleanBedrooms,
     bathrooms: details.bathrooms ?? undefined,
-    balconies: details.balconies ?? undefined,
+    balconies: cleanBalconies,
     otherRooms: safeOtherRooms,
     totalFloors: details.totalFloors ?? undefined,
     floorNumber: floorEnumFromValue(details.floorNumber),
@@ -261,9 +276,9 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
 
     aiMetadata: meta.aiMetadata ?? undefined,
     structure: stripEmpty({
-      bedrooms: details.bedrooms ?? undefined,
+      bedrooms: cleanBedrooms,
       bathrooms: details.bathrooms ?? undefined,
-      balconies: details.balconies ?? undefined,
+      balconies: cleanBalconies,
       washrooms: details.washrooms ?? undefined,
       meetingRooms: details.meetingRooms ?? undefined,
       cabins: details.cabins ?? undefined,

@@ -275,6 +275,10 @@ export function FieldRenderer({ field, values }: Props) {
                           if (nextVal === "PG" || rhf.value === "PG") {
                             form.setValue("context.propertySubTypeSlug", "", { shouldDirty: true });
                             form.clearErrors(["context.propertySubTypeSlug"]);
+                            if (nextVal === "PG") {
+                              form.setValue("details.bedrooms", undefined, { shouldDirty: true });
+                              form.setValue("details.balconies", undefined, { shouldDirty: true });
+                            }
                           }
                         } else if (field.id === "context.propertySubTypeSlug" && nextVal !== rhf.value) {
                           if (!["office", "retail"].includes(String(nextVal))) {

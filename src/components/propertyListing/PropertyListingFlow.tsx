@@ -220,6 +220,8 @@ export function PropertyListingFlow({
         form.setValue("context.propertySubTypeSlug", "", { shouldDirty: true });
         form.clearErrors(["context.propertySubTypeSlug"]);
       }
+      form.setValue("details.bedrooms", undefined, { shouldDirty: true });
+      form.setValue("details.balconies", undefined, { shouldDirty: true });
     } else if (listingTypeChanged && subType && PG_SUBTYPES.includes(subType)) {
       form.setValue("context.propertySubTypeSlug", "", { shouldDirty: true });
       form.clearErrors(["context.propertySubTypeSlug"]);
