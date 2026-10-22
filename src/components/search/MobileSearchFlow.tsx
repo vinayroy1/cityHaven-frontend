@@ -2,7 +2,6 @@
 
 import React from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
 import { ArrowLeft, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 import { FilterSectionsEditor } from "./FilterSheet";
 import { clearAllFilters, countActiveFilters, type SearchState } from "./searchQuery";
@@ -111,13 +110,13 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
 
       <footer className="relative z-20 shrink-0 border-t border-slate-200 bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_-20px_rgba(15,23,42,0.5)] dark:border-slate-800 dark:bg-slate-900">
         {submitHref ? (
-          <Link
+          <a
             href={submitHref(draft)}
             className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 active:scale-[0.99]"
           >
             <Search size={18} />
             {resultCount == null ? "Search properties" : "Apply & search"}
-          </Link>
+          </a>
         ) : (
           <button
             type="button"
