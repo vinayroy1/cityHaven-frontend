@@ -30,20 +30,18 @@ describe("listing search context", () => {
     expect(screen.getByRole("dialog", { name: "Search and filter properties" })).toBeTruthy();
     expect(screen.getByText("Choose location and filters")).toBeTruthy();
     expect(screen.getByText("Property filters")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Search properties" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Search properties" })).toBeTruthy();
   });
 
-  it("submits the selected mobile intent without tearing down the flow first", () => {
+  it("puts the selected mobile filters in a real navigation link", () => {
     window.scrollTo = jest.fn();
-    const onSubmit = jest.fn();
-    render(<SearchBar variant="hero" value={initialSearchState()} onChange={jest.fn()} onSubmit={onSubmit} />);
+    render(<SearchBar variant="hero" value={initialSearchState()} onChange={jest.fn()} onSubmit={jest.fn()} />);
 
     fireEvent.click(screen.getByText("Search by locality, project or landmark").closest("button")!);
     const dialog = screen.getByRole("dialog", { name: "Search and filter properties" });
     fireEvent.click(within(dialog).getByRole("button", { name: /^Rent$/ }));
-    fireEvent.click(within(dialog).getByRole("button", { name: "Search properties" }));
+    const submitLink = within(dialog).getByRole("link", { name: "Search properties" });
 
-    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ intent: "RENT" }));
-    expect(screen.getByRole("dialog", { name: "Search and filter properties" })).toBeTruthy();
+    expect(submitLink.getAttribute("href")).toBe("/rent/delhi");
   });
 });

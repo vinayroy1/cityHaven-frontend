@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 import { LocationSearchInput } from "./LocationSearchInput";
 import { CitySelectorDropdown } from "./CitySelectorDropdown";
 import { MobileSearchFlow } from "./MobileSearchFlow";
-import { INTENT_CONFIG, INTENT_KEYS, clearAllFilters, type SearchState } from "./searchQuery";
+import { buildSearchHref, INTENT_CONFIG, INTENT_KEYS, clearAllFilters, type SearchState } from "./searchQuery";
 import { primaryButton } from "./theme";
 
 import { resolveSearchQueryToState } from "@/lib/search/intentParser";
@@ -193,16 +193,10 @@ export function SearchBar({
           open={mobileSearchOpen}
           onClose={() => setMobileSearchOpen(false)}
           value={value}
+          submitHref={buildSearchHref}
           renderSearchEditor={(draft, setDraft) => (
             <SearchEditor variant="hero" value={draft} onSubmit={setDraft} onContextChange={setDraft} showSubmit={false} liveChanges />
           )}
-          onSubmit={(next) => {
-            onChange(next);
-            onSubmit(next);
-            // On the home page the route transition unmounts this overlay.
-            // Closing it synchronously here can race router.push on mobile
-            // production builds and leave the user on the home page.
-          }}
         />
       </>
     );

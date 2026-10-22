@@ -64,18 +64,23 @@ export function HomeExperience() {
   const updateCity = (city: string) => {
     setSelectedCity(city);
     setSearchState((prev) => ({ ...prev, cityName: city || undefined }));
-    if (city) window.localStorage.setItem(STORAGE_KEY, city);
-    else window.localStorage.removeItem(STORAGE_KEY);
+    try {
+      if (city) window.localStorage.setItem(STORAGE_KEY, city);
+      else window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Storage may be unavailable in private/restricted browser contexts.
+      // Search and navigation must remain functional without persistence.
+    }
   };
 
   const submit = (next: SearchState) => {
     const targetCity = next.cityName || selectedCity || undefined;
     const state = { ...next, cityName: targetCity };
+    router.push(buildSearchHref(state));
     setSearchState(state);
     if (targetCity) {
       updateCity(targetCity);
     }
-    router.push(buildSearchHref(state));
   };
 
   // Normalize city name for API (matches database entries like 'New Delhi' when 'Delhi' is selected)
