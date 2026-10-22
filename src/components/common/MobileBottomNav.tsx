@@ -135,18 +135,13 @@ export function MobileBottomNav() {
     name: "MobileBottomNavDrawer",
   });
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
-      setDrawerOpen(false);
-      return;
-    }
-    if (href.startsWith("mailto:") || href.startsWith("tel:") || href.startsWith("http")) {
-      setDrawerOpen(false);
-      return;
-    }
-    e.preventDefault();
-    setDrawerOpen(false);
-    router.push(href);
+  // Let Next's Link own the navigation. Closing the portalled drawer in the
+  // same click used to unmount the link before mobile browsers/production
+  // builds had committed the route transition. onNavigate only runs for an
+  // actual client-side navigation; deferring teardown keeps that transition
+  // alive and also preserves modified-click/new-tab behaviour.
+  const closeAfterNavigation = () => {
+    window.requestAnimationFrame(() => setDrawerOpen(false));
   };
 
   // Hide on excluded full-screen paths
@@ -362,7 +357,7 @@ export function MobileBottomNav() {
                       </div>
                       <Link
                         href="/dashboard"
-                        onClick={(e) => handleLinkClick(e, "/dashboard")}
+                        onNavigate={closeAfterNavigation}
                         className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-850 dark:text-white"
                       >
                         Dashboard
@@ -381,7 +376,7 @@ export function MobileBottomNav() {
                     </div>
                     <Link
                       href={`/login?redirect=${encodeURIComponent(pathname || "/")}`}
-                      onClick={(e) => handleLinkClick(e, `/login?redirect=${encodeURIComponent(pathname || "/")}`)}
+                      onNavigate={closeAfterNavigation}
                       className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-rose-700 transition"
                     >
                       <User className="h-3.5 w-3.5" />
@@ -402,7 +397,7 @@ export function MobileBottomNav() {
                         <Link
                           key={item.label}
                           href={item.href}
-                          onClick={(e) => handleLinkClick(e, item.href)}
+                          onNavigate={closeAfterNavigation}
                           className="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50/70 p-2.5 text-xs font-semibold text-slate-700 hover:border-slate-200 hover:bg-slate-100/80 dark:border-slate-850 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:border-slate-800 dark:hover:bg-slate-850 transition"
                         >
                           <Icon className="h-4 w-4 text-rose-500 shrink-0" />
@@ -430,7 +425,7 @@ export function MobileBottomNav() {
                         <Link
                           key={item.label}
                           href={item.href}
-                          onClick={(e) => handleLinkClick(e, item.href)}
+                          onNavigate={closeAfterNavigation}
                           className="flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900 transition"
                         >
                           <div className="flex items-center gap-2.5">
@@ -455,7 +450,8 @@ export function MobileBottomNav() {
                         <Link
                           key={item.label}
                           href={item.href}
-                          onClick={(e) => handleLinkClick(e, item.href)}
+                          onClick={item.href.startsWith("mailto:") || item.href.startsWith("tel:") ? () => setDrawerOpen(false) : undefined}
+                          onNavigate={closeAfterNavigation}
                           className="flex min-w-0 items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900"
                         >
                           <Icon className="h-4 w-4 shrink-0 text-slate-400" />

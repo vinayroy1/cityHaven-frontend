@@ -199,7 +199,9 @@ export function SearchBar({
           onSubmit={(next) => {
             onChange(next);
             onSubmit(next);
-            setMobileSearchOpen(false);
+            // On the home page the route transition unmounts this overlay.
+            // Closing it synchronously here can race router.push on mobile
+            // production builds and leave the user on the home page.
           }}
         />
       </>

@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { SearchBar } from "../SearchBar";
 import { initialSearchState } from "../searchQuery";
 
@@ -31,5 +31,19 @@ describe("listing search context", () => {
     expect(screen.getByText("Choose location and filters")).toBeTruthy();
     expect(screen.getByText("Property filters")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Search properties" })).toBeTruthy();
+  });
+
+  it("submits the selected mobile intent without tearing down the flow first", () => {
+    window.scrollTo = jest.fn();
+    const onSubmit = jest.fn();
+    render(<SearchBar variant="hero" value={initialSearchState()} onChange={jest.fn()} onSubmit={onSubmit} />);
+
+    fireEvent.click(screen.getByText("Search by locality, project or landmark").closest("button")!);
+    const dialog = screen.getByRole("dialog", { name: "Search and filter properties" });
+    fireEvent.click(within(dialog).getByRole("button", { name: /^Rent$/ }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "Search properties" }));
+
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ intent: "RENT" }));
+    expect(screen.getByRole("dialog", { name: "Search and filter properties" })).toBeTruthy();
   });
 });

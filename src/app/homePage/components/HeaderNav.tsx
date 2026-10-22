@@ -182,21 +182,11 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     router.push("/");
   };
 
-  const handleDropdownLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+  const closeMenusAfterNavigation = () => {
+    window.requestAnimationFrame(() => {
       setMoreNavOpen(false);
       setAccountOpen(false);
-      return;
-    }
-    if (href.startsWith("mailto:") || href.startsWith("tel:") || href.startsWith("http")) {
-      setMoreNavOpen(false);
-      setAccountOpen(false);
-      return;
-    }
-    e.preventDefault();
-    setMoreNavOpen(false);
-    setAccountOpen(false);
-    router.push(href);
+    });
   };
 
   // Keep active route indicator in sync with URL search params after navigation
@@ -334,7 +324,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                           <Link
                             key={item.label}
                             href={item.href}
-                            onClick={(e) => handleDropdownLinkClick(e, item.href)}
+                            onNavigate={closeMenusAfterNavigation}
                             className={`flex items-start gap-2.5 rounded-xl p-2 transition-all ${
                               active
                                 ? "bg-rose-50/80 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
@@ -377,7 +367,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                           <Link
                             key={item.label}
                             href={item.href}
-                            onClick={(e) => handleDropdownLinkClick(e, item.href)}
+                            onNavigate={closeMenusAfterNavigation}
                             className={`flex items-start gap-2.5 rounded-xl p-2 transition-all ${
                               active
                                 ? "bg-rose-50/80 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
@@ -421,7 +411,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                     </span>
                     <Link
                       href="/contact"
-                      onClick={(e) => handleDropdownLinkClick(e, "/contact")}
+                      onNavigate={closeMenusAfterNavigation}
                       className="text-[10px] font-semibold text-rose-600 hover:underline dark:text-rose-400"
                     >
                       Need help? Contact us →
@@ -435,7 +425,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                         <Link
                           key={item.label}
                           href={item.href}
-                          onClick={(e) => handleDropdownLinkClick(e, item.href)}
+                          onNavigate={closeMenusAfterNavigation}
                           className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition ${
                             active
                               ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
@@ -542,7 +532,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                         <Link
                           key={item.href}
                           href={item.href}
-                          onClick={(e) => handleDropdownLinkClick(e, item.href)}
+                          onNavigate={closeMenusAfterNavigation}
                           className="flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-850 dark:hover:text-white"
                         >
                           <div className="flex items-center gap-2.5">
