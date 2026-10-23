@@ -1,0 +1,1874 @@
+[
+  {
+    "name": "Sobha City",
+    "slug": "sobha-city-sector-108-dwarka-expressway-gurugram",
+    "developerName": "Sobha Limited",
+    "cityName": "Gurugram",
+    "cityId": 16,
+    "stateName": "Haryana",
+    "locality": "Sector 108",
+    "siteAddress": "Sector 108, Dwarka Expressway, Gurugram, Haryana",
+    "landmark": "Directly abutting Dwarka Expressway, near Delhi Border",
+    "location": "Sector 108, Gurugram",
+    "latitude": 28.5287,
+    "longitude": 77.0125,
+    "priceMin": 22000000,
+    "priceMax": 48000000,
+    "pricePerSqFt": 14500,
+    "possessionDate": "2025-06-30T00:00:00.000Z",
+    "status": "UNDER_CONSTRUCTION",
+    "reraStatus": "VERIFIED",
+    "reraId": "HRERA-PKL-GGM-112-2018",
+    "totalUnits": 1728,
+    "availableUnits": 55,
+    "totalTowers": 22,
+    "totalFloors": 25,
+    "totalLandArea": "39.0 Acres",
+    "salesPhone": "9812411220",
+    "salesEmail": "sales.sobhacity@sobha.com",
+    "searchKeywords": [
+      "Dwarka Expressway flat",
+      "Sector 108 Gurugram flat",
+      "Gurgaon apartment"
+    ],
+    "description": "Sobha City is an iconic 39-acre urban park township along the Dwarka Expressway featuring two grand 40,000 sq.ft. clubhouses, an Olympic-size swimming pool, and an 8.5-acre contiguous central green park.",
+    "amenities": [
+      "Dual 40,000 Sq.Ft Clubhouses",
+      "Olympic Size 50m Pool",
+      "Full Size Cricket Ground",
+      "Tennis & Squash Courts",
+      "Half-Marathon Track",
+      "24/7 Monitored Gate Security"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 1381,
+        "superBuiltUpArea": 1795,
+        "bathrooms": 2,
+        "priceMin": 22000000,
+        "priceMax": 22000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1711,
+        "superBuiltUpArea": 2224,
+        "bathrooms": 3,
+        "priceMin": 29500000,
+        "priceMax": 29500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK Luxury",
+        "carpetArea": 2343,
+        "superBuiltUpArea": 3045,
+        "bathrooms": 4,
+        "priceMin": 48000000,
+        "priceMax": 48000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/sobha-city-sector-108-dwarka-expressway-gurugram/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/sobha-city-sector-108-dwarka-expressway-gurugram/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/sobha-city-sector-108-dwarka-expressway-gurugram/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/sobha-city-sector-108-dwarka-expressway-gurugram/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/sobha-city-sector-108-dwarka-expressway-gurugram/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Tata Primanti",
+    "slug": "tata-primanti-sector-72-spr-gurugram",
+    "developerName": "Tata Housing",
+    "cityName": "Gurugram",
+    "cityId": 16,
+    "stateName": "Haryana",
+    "locality": "Sector 72",
+    "siteAddress": "Sector 72, Southern Peripheral Road (SPR), Gurugram, Haryana",
+    "landmark": "Close to Sohna Road & Vatika Chowk",
+    "location": "Sector 72, Gurugram",
+    "latitude": 28.4087,
+    "longitude": 77.0398,
+    "priceMin": 32000000,
+    "priceMax": 68000000,
+    "pricePerSqFt": 13800,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "HRERA-PKL-GGM-084-2018",
+    "totalUnits": 1064,
+    "availableUnits": 32,
+    "totalTowers": 7,
+    "totalFloors": 40,
+    "totalLandArea": "36.0 Acres",
+    "salesPhone": "9812422330",
+    "salesEmail": "sales.primanti@tatahousing.com",
+    "searchKeywords": [
+      "Sector 72 Gurgaon flat",
+      "SPR Gurugram flat",
+      "Sohna Road apartment"
+    ],
+    "description": "Tata Primanti is a 36-acre European-inspired luxury enclave on Southern Peripheral Road offering executive floors, rooftop infinity pool, and private garden villas designed with verdant orchards.",
+    "amenities": [
+      "25,000 Sq.Ft Clubhouse",
+      "Temperature Controlled Indoor Pool",
+      "Outdoor Lagoon Pool",
+      "Squash & Tennis Courts",
+      "Cigar & Snooker Lounge",
+      "Private Lift Access"
+    ],
+    "configurations": [
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 2185,
+        "superBuiltUpArea": 2840,
+        "bathrooms": 3,
+        "priceMin": 32000000,
+        "priceMax": 32000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 2905,
+        "superBuiltUpArea": 3776,
+        "bathrooms": 4,
+        "priceMin": 46000000,
+        "priceMax": 46000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK Penthouse",
+        "carpetArea": 4200,
+        "superBuiltUpArea": 5460,
+        "bathrooms": 5,
+        "priceMin": 68000000,
+        "priceMax": 68000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/tata-primanti-sector-72-spr-gurugram/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/tata-primanti-sector-72-spr-gurugram/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/tata-primanti-sector-72-spr-gurugram/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/tata-primanti-sector-72-spr-gurugram/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/tata-primanti-sector-72-spr-gurugram/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Puri The Aravallis",
+    "slug": "puri-the-aravallis-sector-61-golf-course-ext-gurugram",
+    "developerName": "Puri Construction",
+    "cityName": "Gurugram",
+    "cityId": 16,
+    "stateName": "Haryana",
+    "locality": "Sector 61",
+    "siteAddress": "Golf Course Extension Road, Sector 61, Gurugram, Haryana",
+    "landmark": "Directly opposite Grand Hyatt Residences",
+    "location": "Sector 61, Gurugram",
+    "latitude": 28.4065,
+    "longitude": 77.0874,
+    "priceMin": 38000000,
+    "priceMax": 72000000,
+    "pricePerSqFt": 16800,
+    "possessionDate": "2026-12-31T00:00:00.000Z",
+    "status": "UNDER_CONSTRUCTION",
+    "reraStatus": "VERIFIED",
+    "reraId": "HRERA-PKL-GGM-1358-2022",
+    "totalUnits": 580,
+    "availableUnits": 40,
+    "totalTowers": 4,
+    "totalFloors": 42,
+    "totalLandArea": "10.0 Acres",
+    "salesPhone": "9812433440",
+    "salesEmail": "sales.thearavallis@puriconstructions.com",
+    "searchKeywords": [
+      "Golf Course Extension flat",
+      "Sector 61 Gurgaon flat",
+      "Gurugram luxury apartment"
+    ],
+    "description": "Puri The Aravallis is an ultra-luxury residential retreat on Golf Course Extension Road framing unobstructed views of the Aravalli hills, featuring Japanese Zen gardens and world-class club lifestyle.",
+    "amenities": [
+      "Aravalli View Sky Deck",
+      "Double Height Grand Entrance Lobby",
+      "Heated Swimming Pool",
+      "Bowling Alley",
+      "Private Dining Banquet",
+      "High-Tech EV Stations"
+    ],
+    "configurations": [
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 2250,
+        "superBuiltUpArea": 2925,
+        "bathrooms": 3,
+        "priceMin": 38000000,
+        "priceMax": 38000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 2750,
+        "superBuiltUpArea": 3575,
+        "bathrooms": 4,
+        "priceMin": 54000000,
+        "priceMax": 54000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK Luxury",
+        "carpetArea": 3400,
+        "superBuiltUpArea": 4420,
+        "bathrooms": 5,
+        "priceMin": 72000000,
+        "priceMax": 72000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/puri-the-aravallis-sector-61-golf-course-ext-gurugram/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/puri-the-aravallis-sector-61-golf-course-ext-gurugram/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/puri-the-aravallis-sector-61-golf-course-ext-gurugram/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/puri-the-aravallis-sector-61-golf-course-ext-gurugram/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/puri-the-aravallis-sector-61-golf-course-ext-gurugram/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Godrej Meridien",
+    "slug": "godrej-meridien-sector-106-dwarka-expressway-gurugram",
+    "developerName": "Godrej Properties",
+    "cityName": "Gurugram",
+    "cityId": 16,
+    "stateName": "Haryana",
+    "locality": "Sector 106",
+    "siteAddress": "Sector 106, Dwarka Expressway, Gurugram, Haryana",
+    "landmark": "Near proposed ISBT and Diplomatic Enclave II",
+    "location": "Sector 106, Gurugram",
+    "latitude": 28.5142,
+    "longitude": 77.0189,
+    "priceMin": 21500000,
+    "priceMax": 45000000,
+    "pricePerSqFt": 13500,
+    "possessionDate": "2025-08-31T00:00:00.000Z",
+    "status": "UNDER_CONSTRUCTION",
+    "reraStatus": "VERIFIED",
+    "reraId": "HRERA-PKL-GGM-116-2018",
+    "totalUnits": 700,
+    "availableUnits": 36,
+    "totalTowers": 7,
+    "totalFloors": 34,
+    "totalLandArea": "14.5 Acres",
+    "salesPhone": "9812444550",
+    "salesEmail": "sales.meridien@godrejproperties.com",
+    "searchKeywords": [
+      "Sector 106 Gurgaon flat",
+      "Dwarka Expressway apartment",
+      "Gurgaon flat"
+    ],
+    "description": "Godrej Meridien brings hospitality-driven living to Dwarka Expressway with a 66,000 sq.ft clubhouse (Club Meridien), concierge by Les Clefs d'Or, and Olympic sports coaching.",
+    "amenities": [
+      "66,000 Sq.Ft Clubhouse",
+      "Olympic Sized Swimming Pool",
+      "All-Weather Indoor Pool",
+      "Fine Dine Restaurant",
+      "Wine Tasting Library",
+      "Art Academy & Music Studio"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 1366,
+        "superBuiltUpArea": 1775,
+        "bathrooms": 2,
+        "priceMin": 21500000,
+        "priceMax": 21500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1855,
+        "superBuiltUpArea": 2411,
+        "bathrooms": 3,
+        "priceMin": 29000000,
+        "priceMax": 29000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 2720,
+        "superBuiltUpArea": 3536,
+        "bathrooms": 4,
+        "priceMin": 45000000,
+        "priceMax": 45000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/godrej-meridien-sector-106-dwarka-expressway-gurugram/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/godrej-meridien-sector-106-dwarka-expressway-gurugram/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/godrej-meridien-sector-106-dwarka-expressway-gurugram/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/godrej-meridien-sector-106-dwarka-expressway-gurugram/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/godrej-meridien-sector-106-dwarka-expressway-gurugram/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Mahagun Manorialle",
+    "slug": "mahagun-manorialle-sector-128-noida-expressway",
+    "developerName": "Mahagun Group",
+    "cityName": "Noida",
+    "cityId": 13,
+    "stateName": "Uttar Pradesh",
+    "locality": "Sector 128",
+    "siteAddress": "Sector 128, Noida-Greater Noida Expressway, Noida, Uttar Pradesh",
+    "landmark": "Directly overlooking Jaypee Greens Golf Course",
+    "location": "Sector 128, Noida",
+    "latitude": 28.5281,
+    "longitude": 77.3712,
+    "priceMin": 39000000,
+    "priceMax": 95000000,
+    "pricePerSqFt": 14500,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ2051",
+    "totalUnits": 380,
+    "availableUnits": 25,
+    "totalTowers": 6,
+    "totalFloors": 40,
+    "totalLandArea": "4.0 Acres",
+    "salesPhone": "9812011220",
+    "salesEmail": "sales.manorialle@mahagunindia.com",
+    "searchKeywords": [
+      "Sector 128 Noida flat",
+      "Noida Expressway flat",
+      "Golf course view Noida apartment"
+    ],
+    "description": "Mahagun Manorialle is an ultra-luxury golf condominium in Sector 128 overlooking the 18-hole Graham Cooke golf course with 40-storey panoramic residences and rooftop sky lounge.",
+    "amenities": [
+      "18-Hole Golf Course View",
+      "Rooftop Glass Infinity Pool",
+      "Private Elevators with Personal Foyer",
+      "Golf Simulator & Squash Court",
+      "Concierge Butler Service",
+      "Fully Air Conditioned Club"
+    ],
+    "configurations": [
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 2700,
+        "superBuiltUpArea": 3510,
+        "bathrooms": 3,
+        "priceMin": 39000000,
+        "priceMax": 39000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 3450,
+        "superBuiltUpArea": 4485,
+        "bathrooms": 4,
+        "priceMin": 55000000,
+        "priceMax": 55000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "5 BHK Penthouse",
+        "carpetArea": 5900,
+        "superBuiltUpArea": 7670,
+        "bathrooms": 5,
+        "priceMin": 95000000,
+        "priceMax": 95000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/mahagun-manorialle-sector-128-noida-expressway/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/mahagun-manorialle-sector-128-noida-expressway/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/mahagun-manorialle-sector-128-noida-expressway/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/mahagun-manorialle-sector-128-noida-expressway/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/mahagun-manorialle-sector-128-noida-expressway/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Gulshan Dynasty",
+    "slug": "gulshan-dynasty-sector-144-noida-expressway",
+    "developerName": "Gulshan Homz",
+    "cityName": "Noida",
+    "cityId": 13,
+    "stateName": "Uttar Pradesh",
+    "locality": "Sector 144",
+    "siteAddress": "Sector 144, Noida Expressway, Noida, Uttar Pradesh",
+    "landmark": "Near Sector 144 Metro Station & Oxygen Business Park",
+    "location": "Sector 144, Noida",
+    "latitude": 28.4876,
+    "longitude": 77.4241,
+    "priceMin": 45000000,
+    "priceMax": 85000000,
+    "pricePerSqFt": 13500,
+    "possessionDate": "2025-06-30T00:00:00.000Z",
+    "status": "UNDER_CONSTRUCTION",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ9588",
+    "totalUnits": 204,
+    "availableUnits": 18,
+    "totalTowers": 3,
+    "totalFloors": 34,
+    "totalLandArea": "5.8 Acres",
+    "salesPhone": "9812022330",
+    "salesEmail": "sales.dynasty@gulshan.com",
+    "searchKeywords": [
+      "Sector 144 Noida flat",
+      "Noida Expressway luxury flat",
+      "Noida flat"
+    ],
+    "description": "Gulshan Dynasty represents Noida's first wellness-curated luxury estate with only 204 palatial residences spread across nearly 6 acres, featuring certified hydroponic organic farming on campus.",
+    "amenities": [
+      "Hydroponic Organic Farm",
+      "Pet Spa & Grooming Lounge",
+      "Heated Swimming Pool",
+      "Banquet Hall with Professional Kitchen",
+      "Jogging Sky Track",
+      "7-Tier Biometric Security"
+    ],
+    "configurations": [
+      {
+        "bhkType": "4 BHK Luxury",
+        "carpetArea": 3350,
+        "superBuiltUpArea": 4355,
+        "bathrooms": 4,
+        "priceMin": 45000000,
+        "priceMax": 45000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK Royal",
+        "carpetArea": 4700,
+        "superBuiltUpArea": 6110,
+        "bathrooms": 5,
+        "priceMin": 68000000,
+        "priceMax": 68000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "5 BHK Penthouse",
+        "carpetArea": 6200,
+        "superBuiltUpArea": 8060,
+        "bathrooms": 5,
+        "priceMin": 85000000,
+        "priceMax": 85000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/gulshan-dynasty-sector-144-noida-expressway/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/gulshan-dynasty-sector-144-noida-expressway/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/gulshan-dynasty-sector-144-noida-expressway/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/gulshan-dynasty-sector-144-noida-expressway/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/gulshan-dynasty-sector-144-noida-expressway/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Prateek Edifice",
+    "slug": "prateek-edifice-sector-107-noida",
+    "developerName": "Prateek Group",
+    "cityName": "Noida",
+    "cityId": 13,
+    "stateName": "Uttar Pradesh",
+    "locality": "Sector 107",
+    "siteAddress": "Sector 107, Noida, Uttar Pradesh",
+    "landmark": "Directly opposite Pathway School",
+    "location": "Sector 107, Noida",
+    "latitude": 28.5432,
+    "longitude": 77.3687,
+    "priceMin": 28000000,
+    "priceMax": 62000000,
+    "pricePerSqFt": 12200,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ1890",
+    "totalUnits": 426,
+    "availableUnits": 14,
+    "totalTowers": 8,
+    "totalFloors": 28,
+    "totalLandArea": "7.0 Acres",
+    "salesPhone": "9812033440",
+    "salesEmail": "sales.edifice@prateekgroup.com",
+    "searchKeywords": [
+      "Sector 107 Noida flat",
+      "Central Noida flat",
+      "Noida ready flat"
+    ],
+    "description": "Prateek Edifice in Sector 107 is an IGBC Gold Certified luxury residential development featuring neoclassical European architecture, 3 side open panoramic apartments, and high ceiling rooms.",
+    "amenities": [
+      "Rooftop Swimming Pool",
+      "Club Edifice with Squash & Billiards",
+      "Private Mini Theatre",
+      "Steam, Sauna & Jacuzzi",
+      "Lush Landscaped Theme Gardens",
+      "Full Solar Backed Lighting"
+    ],
+    "configurations": [
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 2070,
+        "superBuiltUpArea": 2690,
+        "bathrooms": 3,
+        "priceMin": 28000000,
+        "priceMax": 28000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 2850,
+        "superBuiltUpArea": 3705,
+        "bathrooms": 4,
+        "priceMin": 42000000,
+        "priceMax": 42000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "5 BHK Penthouse",
+        "carpetArea": 4300,
+        "superBuiltUpArea": 5590,
+        "bathrooms": 5,
+        "priceMin": 62000000,
+        "priceMax": 62000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/prateek-edifice-sector-107-noida/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/prateek-edifice-sector-107-noida/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/prateek-edifice-sector-107-noida/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/prateek-edifice-sector-107-noida/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/prateek-edifice-sector-107-noida/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Godrej Woods",
+    "slug": "godrej-woods-sector-43-noida",
+    "developerName": "Godrej Properties",
+    "cityName": "Noida",
+    "cityId": 13,
+    "stateName": "Uttar Pradesh",
+    "locality": "Sector 43",
+    "siteAddress": "Sector 43, Central Noida, Uttar Pradesh",
+    "landmark": "Near Botanical Garden Metro Station & Golf Course",
+    "location": "Sector 43, Noida",
+    "latitude": 28.5638,
+    "longitude": 77.3412,
+    "priceMin": 23500000,
+    "priceMax": 54000000,
+    "pricePerSqFt": 13900,
+    "possessionDate": "2026-03-31T00:00:00.000Z",
+    "status": "UNDER_CONSTRUCTION",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ704730",
+    "totalUnits": 1200,
+    "availableUnits": 50,
+    "totalTowers": 10,
+    "totalFloors": 34,
+    "totalLandArea": "11.0 Acres",
+    "salesPhone": "9812044550",
+    "salesEmail": "sales.woods@godrejproperties.com",
+    "searchKeywords": [
+      "Sector 43 Noida flat",
+      "Central Noida apartment",
+      "Botanical Garden flat"
+    ],
+    "description": "Godrej Woods offers an enchanted forest living experience right in the heart of Central Noida with over 600 natural trees, sky walk bridges, and an infinity edge pool overlooking lush woods.",
+    "amenities": [
+      "Forest Walk Sky Bridges",
+      "Infinity Edge Swimming Pool",
+      "Urban Forest Canopy with 600+ Trees",
+      "Clubhouse with Café & Co-Working",
+      "Tennis & Basketball Courts",
+      "Kids Adventure Park"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 1055,
+        "superBuiltUpArea": 1370,
+        "bathrooms": 2,
+        "priceMin": 23500000,
+        "priceMax": 23500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1540,
+        "superBuiltUpArea": 2002,
+        "bathrooms": 3,
+        "priceMin": 33500000,
+        "priceMax": 33500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 2470,
+        "superBuiltUpArea": 3211,
+        "bathrooms": 4,
+        "priceMin": 54000000,
+        "priceMax": 54000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/godrej-woods-sector-43-noida/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/godrej-woods-sector-43-noida/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/godrej-woods-sector-43-noida/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/godrej-woods-sector-43-noida/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/godrej-woods-sector-43-noida/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Stellar Jeevan",
+    "slug": "stellar-jeevan-sector-1-greater-noida-west",
+    "developerName": "Stellar Group",
+    "cityName": "Greater Noida",
+    "cityId": 14,
+    "stateName": "Uttar Pradesh",
+    "locality": "Sector 1 Greater Noida West",
+    "siteAddress": "Sector 1, Greater Noida West (Noida Extension), Uttar Pradesh",
+    "landmark": "Directly on 130m Expressway, near Bisrakh",
+    "location": "Sector 1, Greater Noida",
+    "latitude": 28.5841,
+    "longitude": 77.4528,
+    "priceMin": 6800000,
+    "priceMax": 14500000,
+    "pricePerSqFt": 6200,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ3210",
+    "totalUnits": 1800,
+    "availableUnits": 38,
+    "totalTowers": 18,
+    "totalFloors": 14,
+    "totalLandArea": "18.0 Acres",
+    "salesPhone": "9812055660",
+    "salesEmail": "sales.jeevan@stellargroup.com",
+    "searchKeywords": [
+      "Noida Extension flat",
+      "Greater Noida West flat",
+      "Sector 1 Greater Noida flat"
+    ],
+    "description": "Stellar Jeevan is a ready-to-move 18-acre township in Greater Noida West delivering 80% open lush green spaces, dual swimming pools, school and shopping plaza within the campus.",
+    "amenities": [
+      "Shopping Plaza & Supermarket on Campus",
+      "Two Large Swimming Pools",
+      "Cricket Pitch & Skating Rink",
+      "Well-Equipped Gymnasium",
+      "Community Hall",
+      "24/7 Power Backup"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 920,
+        "superBuiltUpArea": 1196,
+        "bathrooms": 2,
+        "priceMin": 6800000,
+        "priceMax": 6800000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1340,
+        "superBuiltUpArea": 1742,
+        "bathrooms": 3,
+        "priceMin": 9800000,
+        "priceMax": 9800000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 1850,
+        "superBuiltUpArea": 2405,
+        "bathrooms": 4,
+        "priceMin": 14500000,
+        "priceMax": 14500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/stellar-jeevan-sector-1-greater-noida-west/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/stellar-jeevan-sector-1-greater-noida-west/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/stellar-jeevan-sector-1-greater-noida-west/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/stellar-jeevan-sector-1-greater-noida-west/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/stellar-jeevan-sector-1-greater-noida-west/photo_5.webp"
+    ]
+  },
+  {
+    "name": "ATS Dolce",
+    "slug": "ats-dolce-zeta-1-greater-noida",
+    "developerName": "ATS Greens",
+    "cityName": "Greater Noida",
+    "cityId": 14,
+    "stateName": "Uttar Pradesh",
+    "locality": "Zeta 1",
+    "siteAddress": "Sector Zeta 1, Greater Noida, Uttar Pradesh",
+    "landmark": "Near Pari Chowk & Delta 1 Metro Station",
+    "location": "Zeta 1, Greater Noida",
+    "latitude": 28.4984,
+    "longitude": 77.5112,
+    "priceMin": 8500000,
+    "priceMax": 19500000,
+    "pricePerSqFt": 6800,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ3774",
+    "totalUnits": 1400,
+    "availableUnits": 30,
+    "totalTowers": 14,
+    "totalFloors": 28,
+    "totalLandArea": "14.0 Acres",
+    "salesPhone": "9812066770",
+    "salesEmail": "sales.dolce@atsgreens.com",
+    "searchKeywords": [
+      "Zeta 1 Greater Noida flat",
+      "Pari Chowk flat",
+      "Greater Noida apartment"
+    ],
+    "description": "ATS Dolce in Zeta 1 is an exquisite residential development near Pari Chowk offering classic Mediterranean architecture, high-end clubhouse amenities, and sprawling green central parks.",
+    "amenities": [
+      "Signature ATS Clubhouse",
+      "Swimming Pool with Kid's Splash Pool",
+      "Tennis, Squash & Badminton Courts",
+      "Jogging Track in Landscaped Gardens",
+      "Convenience Retail Stores",
+      "Gated Biometric Security"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 1045,
+        "superBuiltUpArea": 1358,
+        "bathrooms": 2,
+        "priceMin": 8500000,
+        "priceMax": 8500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1485,
+        "superBuiltUpArea": 1930,
+        "bathrooms": 3,
+        "priceMin": 12500000,
+        "priceMax": 12500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 2150,
+        "superBuiltUpArea": 2795,
+        "bathrooms": 4,
+        "priceMin": 19500000,
+        "priceMax": 19500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/ats-dolce-zeta-1-greater-noida/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/ats-dolce-zeta-1-greater-noida/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/ats-dolce-zeta-1-greater-noida/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/ats-dolce-zeta-1-greater-noida/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/ats-dolce-zeta-1-greater-noida/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Purvanchal Royal City",
+    "slug": "purvanchal-royal-city-chi-5-greater-noida",
+    "developerName": "Purvanchal Projects",
+    "cityName": "Greater Noida",
+    "cityId": 14,
+    "stateName": "Uttar Pradesh",
+    "locality": "CHI V",
+    "siteAddress": "Sector CHI V, Greater Noida, Uttar Pradesh",
+    "landmark": "Directly off Noida-Greater Noida Expressway, near Knowledge Park",
+    "location": "CHI V, Greater Noida",
+    "latitude": 28.4682,
+    "longitude": 77.5245,
+    "priceMin": 11500000,
+    "priceMax": 26500000,
+    "pricePerSqFt": 7200,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ3137",
+    "totalUnits": 1600,
+    "availableUnits": 28,
+    "totalTowers": 18,
+    "totalFloors": 25,
+    "totalLandArea": "22.0 Acres",
+    "salesPhone": "9812077880",
+    "salesEmail": "sales.royalcity@purvanchalprojects.com",
+    "searchKeywords": [
+      "Chi 5 Greater Noida flat",
+      "Greater Noida expressway flat",
+      "Purvanchal Royal City"
+    ],
+    "description": "Purvanchal Royal City in Sector CHI V is a grand 22-acre Roman architecture enclave boasting over 80% open spaces, private dancing fountains, and an opulent 50,000 sq.ft royal clubhouse.",
+    "amenities": [
+      "50,000 Sq.Ft Royal Club",
+      "Olympic Size All-Weather Pool",
+      "Musical Dancing Fountains",
+      "Cricket Academy & Pitch",
+      "Luxury Spa with Sauna",
+      "Fine Dining Multi-Cuisine Restaurant"
+    ],
+    "configurations": [
+      {
+        "bhkType": "3 BHK Regular",
+        "carpetArea": 1395,
+        "superBuiltUpArea": 1815,
+        "bathrooms": 3,
+        "priceMin": 11500000,
+        "priceMax": 11500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK Large",
+        "carpetArea": 1690,
+        "superBuiltUpArea": 2197,
+        "bathrooms": 3,
+        "priceMin": 15500000,
+        "priceMax": 15500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK Royal",
+        "carpetArea": 2470,
+        "superBuiltUpArea": 3211,
+        "bathrooms": 4,
+        "priceMin": 26500000,
+        "priceMax": 26500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/purvanchal-royal-city-chi-5-greater-noida/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/purvanchal-royal-city-chi-5-greater-noida/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/purvanchal-royal-city-chi-5-greater-noida/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/purvanchal-royal-city-chi-5-greater-noida/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/purvanchal-royal-city-chi-5-greater-noida/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Paramount Golf Foreste",
+    "slug": "paramount-golf-foreste-site-c-greater-noida",
+    "developerName": "Paramount Group",
+    "cityName": "Greater Noida",
+    "cityId": 14,
+    "stateName": "Uttar Pradesh",
+    "locality": "Site C",
+    "siteAddress": "Sector Site C, Opp. Zeta 1, Greater Noida, Uttar Pradesh",
+    "landmark": "Directly opposite Delta 1 Metro Station",
+    "location": "Site C, Greater Noida",
+    "latitude": 28.5021,
+    "longitude": 77.5187,
+    "priceMin": 9200000,
+    "priceMax": 24500000,
+    "pricePerSqFt": 6400,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ1350",
+    "totalUnits": 1200,
+    "availableUnits": 22,
+    "totalTowers": 12,
+    "totalFloors": 22,
+    "totalLandArea": "104.0 Acres",
+    "salesPhone": "9812088990",
+    "salesEmail": "sales.golfforeste@paramountgroup.co.in",
+    "searchKeywords": [
+      "Site C Greater Noida flat",
+      "Golf Foreste flat",
+      "Delta Greater Noida apartment"
+    ],
+    "description": "Paramount Golf Foreste is a monumental 104-acre integrated golf villa and apartment township in Greater Noida featuring a 6-hole executive golf course, artificial wave pool, and toy train.",
+    "amenities": [
+      "6-Hole Executive Golf Course",
+      "Artificial Wave Pool",
+      "Kids Toy Train Ride",
+      "State-of-the-Art Clubhouse",
+      "Helipad Facility",
+      "Complete Gated Surveillance"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 1080,
+        "superBuiltUpArea": 1404,
+        "bathrooms": 2,
+        "priceMin": 9200000,
+        "priceMax": 9200000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1560,
+        "superBuiltUpArea": 2028,
+        "bathrooms": 3,
+        "priceMin": 14500000,
+        "priceMax": 14500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK Villa",
+        "carpetArea": 2650,
+        "superBuiltUpArea": 3445,
+        "bathrooms": 4,
+        "priceMin": 24500000,
+        "priceMax": 24500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/paramount-golf-foreste-site-c-greater-noida/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/paramount-golf-foreste-site-c-greater-noida/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/paramount-golf-foreste-site-c-greater-noida/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/paramount-golf-foreste-site-c-greater-noida/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/paramount-golf-foreste-site-c-greater-noida/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Omaxe The Lake",
+    "slug": "omaxe-the-lake-new-chandigarh-mullanpur",
+    "developerName": "Omaxe Limited",
+    "cityName": "Chandigarh",
+    "cityId": 14313,
+    "stateName": "Punjab",
+    "locality": "New Chandigarh (Mullanpur)",
+    "siteAddress": "New Chandigarh, Mullanpur, Chandigarh Tri-city, Punjab",
+    "landmark": "Near Cricket Stadium & Medicity New Chandigarh",
+    "location": "New Chandigarh, Chandigarh",
+    "latitude": 30.7984,
+    "longitude": 76.7321,
+    "priceMin": 8500000,
+    "priceMax": 21500000,
+    "pricePerSqFt": 6500,
+    "possessionDate": "2025-06-30T00:00:00.000Z",
+    "status": "UNDER_CONSTRUCTION",
+    "reraStatus": "VERIFIED",
+    "reraId": "PBRERA-SAS80-PR0040",
+    "totalUnits": 1300,
+    "availableUnits": 45,
+    "totalTowers": 16,
+    "totalFloors": 24,
+    "totalLandArea": "25.0 Acres",
+    "salesPhone": "9817211220",
+    "salesEmail": "sales.thelake@omaxe.com",
+    "searchKeywords": [
+      "New Chandigarh flat",
+      "Mullanpur flat",
+      "Chandigarh apartment"
+    ],
+    "description": "Omaxe The Lake is a scenic waterfront lifestyle development in New Chandigarh spanning 25 acres, centered around multiple water bodies and theme lakes with contemporary towers.",
+    "amenities": [
+      "Theme Water Lakes & Cascades",
+      "Luxury Floating Cabanas",
+      "Club Lotus with Spa",
+      "Tennis & Basketball Courts",
+      "Jogging Deck along Water",
+      "24/7 Security & CCTV"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 980,
+        "superBuiltUpArea": 1274,
+        "bathrooms": 2,
+        "priceMin": 8500000,
+        "priceMax": 8500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1450,
+        "superBuiltUpArea": 1885,
+        "bathrooms": 3,
+        "priceMin": 13500000,
+        "priceMax": 13500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK Penthouse",
+        "carpetArea": 2350,
+        "superBuiltUpArea": 3055,
+        "bathrooms": 4,
+        "priceMin": 21500000,
+        "priceMax": 21500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/omaxe-the-lake-new-chandigarh-mullanpur/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/omaxe-the-lake-new-chandigarh-mullanpur/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/omaxe-the-lake-new-chandigarh-mullanpur/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/omaxe-the-lake-new-chandigarh-mullanpur/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/omaxe-the-lake-new-chandigarh-mullanpur/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Beverly Golf Avenue",
+    "slug": "beverly-golf-avenue-sector-65-mohali-chandigarh",
+    "developerName": "MB Infrabuild",
+    "cityName": "Chandigarh",
+    "cityId": 14313,
+    "stateName": "Punjab",
+    "locality": "Sector 65 Mohali",
+    "siteAddress": "Sector 65, Mohali, Adjacent to Chandigarh Sector 48, Punjab",
+    "landmark": "Directly adjoining Mohali Golf Range",
+    "location": "Sector 65 Mohali, Chandigarh",
+    "latitude": 30.6894,
+    "longitude": 76.7548,
+    "priceMin": 14500000,
+    "priceMax": 32000000,
+    "pricePerSqFt": 8800,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "PBRERA-SAS81-PR0128",
+    "totalUnits": 424,
+    "availableUnits": 19,
+    "totalTowers": 6,
+    "totalFloors": 14,
+    "totalLandArea": "7.5 Acres",
+    "salesPhone": "9817222330",
+    "salesEmail": "sales.beverly@golfavenue.in",
+    "searchKeywords": [
+      "Mohali flat",
+      "Sector 65 Mohali flat",
+      "Chandigarh luxury flat"
+    ],
+    "description": "Beverly Golf Avenue is an elite residential condominium right next to the Mohali Golf Range, offering picturesque panoramic green vistas, 10-foot ceilings, and high-end marble finishes.",
+    "amenities": [
+      "Adjoining Golf Range Vistas",
+      "Temperature Controlled Swimming Pool",
+      "Squash & Tennis Courts",
+      "State of the Art Fitness Suite",
+      "Open Air Amphitheatre",
+      "Gated Controlled Access"
+    ],
+    "configurations": [
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1580,
+        "superBuiltUpArea": 2054,
+        "bathrooms": 3,
+        "priceMin": 14500000,
+        "priceMax": 14500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 2450,
+        "superBuiltUpArea": 3185,
+        "bathrooms": 4,
+        "priceMin": 23500000,
+        "priceMax": 23500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK Penthouse",
+        "carpetArea": 3200,
+        "superBuiltUpArea": 4160,
+        "bathrooms": 5,
+        "priceMin": 32000000,
+        "priceMax": 32000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/beverly-golf-avenue-sector-65-mohali-chandigarh/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/beverly-golf-avenue-sector-65-mohali-chandigarh/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/beverly-golf-avenue-sector-65-mohali-chandigarh/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/beverly-golf-avenue-sector-65-mohali-chandigarh/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/beverly-golf-avenue-sector-65-mohali-chandigarh/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Sushma Belleza",
+    "slug": "sushma-belleza-zirakpur-chandigarh-tricity",
+    "developerName": "Sushma Buildtech",
+    "cityName": "Chandigarh",
+    "cityId": 14313,
+    "stateName": "Punjab",
+    "locality": "Zirakpur",
+    "siteAddress": "PR-7 Airport Ring Road, Zirakpur, Chandigarh Tri-city, Punjab",
+    "landmark": "Directly on PR-7 International Airport Ring Road",
+    "location": "Zirakpur, Chandigarh",
+    "latitude": 30.6432,
+    "longitude": 76.8198,
+    "priceMin": 9800000,
+    "priceMax": 22000000,
+    "pricePerSqFt": 6900,
+    "possessionDate": "2026-06-30T00:00:00.000Z",
+    "status": "UNDER_CONSTRUCTION",
+    "reraStatus": "VERIFIED",
+    "reraId": "PBRERA-SAS79-PR0680",
+    "totalUnits": 480,
+    "availableUnits": 34,
+    "totalTowers": 6,
+    "totalFloors": 19,
+    "totalLandArea": "12.0 Acres",
+    "salesPhone": "9817233440",
+    "salesEmail": "sales.belleza@sushmabuildtech.com",
+    "searchKeywords": [
+      "Zirakpur flat",
+      "Airport Road Chandigarh flat",
+      "Mohali apartment"
+    ],
+    "description": "Sushma Belleza on PR-7 Airport Ring Road is a gold standard high-rise residential enclave featuring high ceilings, podium landscaping, and immediate high-speed access to Chandigarh International Airport.",
+    "amenities": [
+      "Airport Expressway Connectivity",
+      "Infinity Swimming Pool",
+      "Clubhouse with Card & Billiards Room",
+      "Badminton & Squash Courts",
+      "Lush Central Gazebos",
+      "Underground Parking"
+    ],
+    "configurations": [
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1420,
+        "superBuiltUpArea": 1846,
+        "bathrooms": 3,
+        "priceMin": 9800000,
+        "priceMax": 9800000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK Grande",
+        "carpetArea": 1780,
+        "superBuiltUpArea": 2314,
+        "bathrooms": 3,
+        "priceMin": 14500000,
+        "priceMax": 14500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK Luxury",
+        "carpetArea": 2450,
+        "superBuiltUpArea": 3185,
+        "bathrooms": 4,
+        "priceMin": 22000000,
+        "priceMax": 22000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/sushma-belleza-zirakpur-chandigarh-tricity/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/sushma-belleza-zirakpur-chandigarh-tricity/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/sushma-belleza-zirakpur-chandigarh-tricity/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/sushma-belleza-zirakpur-chandigarh-tricity/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/sushma-belleza-zirakpur-chandigarh-tricity/photo_5.webp"
+    ]
+  },
+  {
+    "name": "TDI Wellington Heights",
+    "slug": "tdi-wellington-heights-sector-117-mohali-chandigarh",
+    "developerName": "TDI Infratech",
+    "cityName": "Chandigarh",
+    "cityId": 14313,
+    "stateName": "Punjab",
+    "locality": "Sector 117 Mohali",
+    "siteAddress": "TDI City, Sector 117, Mohali, Chandigarh Tri-city, Punjab",
+    "landmark": "Near Max Super Speciality Hospital & North Country Mall",
+    "location": "Sector 117 Mohali, Chandigarh",
+    "latitude": 30.7241,
+    "longitude": 76.6892,
+    "priceMin": 6200000,
+    "priceMax": 13500000,
+    "pricePerSqFt": 5400,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "PBRERA-SAS80-PR0095",
+    "totalUnits": 720,
+    "availableUnits": 26,
+    "totalTowers": 8,
+    "totalFloors": 14,
+    "totalLandArea": "10.0 Acres",
+    "salesPhone": "9817244550",
+    "salesEmail": "sales.wellington@tdigroup.net",
+    "searchKeywords": [
+      "Sector 117 Mohali flat",
+      "TDI City Mohali flat",
+      "Chandigarh Tri-city flat"
+    ],
+    "description": "TDI Wellington Heights is a ready-to-move apartment township in Sector 117 Mohali providing well-planned cross-ventilated homes with landscaped gardens, club facilities, and prime connectivity to Kharar Highway.",
+    "amenities": [
+      "Residents Clubhouse",
+      "Swimming Pool & Kid's Splash Pool",
+      "Gymnasium & Table Tennis",
+      "Landscaped Central Park",
+      "Commercial Shopping Arcade",
+      "24/7 Security Guarded Gates"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 890,
+        "superBuiltUpArea": 1157,
+        "bathrooms": 2,
+        "priceMin": 6200000,
+        "priceMax": 6200000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1320,
+        "superBuiltUpArea": 1716,
+        "bathrooms": 3,
+        "priceMin": 8900000,
+        "priceMax": 8900000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 1950,
+        "superBuiltUpArea": 2535,
+        "bathrooms": 4,
+        "priceMin": 13500000,
+        "priceMax": 13500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/tdi-wellington-heights-sector-117-mohali-chandigarh/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/tdi-wellington-heights-sector-117-mohali-chandigarh/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/tdi-wellington-heights-sector-117-mohali-chandigarh/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/tdi-wellington-heights-sector-117-mohali-chandigarh/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/tdi-wellington-heights-sector-117-mohali-chandigarh/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Trehan Vivanta",
+    "slug": "trehan-vivanta-jagatpura-jaipur",
+    "developerName": "Trehan Group",
+    "cityName": "Jaipur",
+    "cityId": 4423,
+    "stateName": "Rajasthan",
+    "locality": "Jagatpura",
+    "siteAddress": "Near Akshay Patra Temple, Mahal Road, Jagatpura, Jaipur, Rajasthan",
+    "landmark": "Directly opposite Akshay Patra Temple",
+    "location": "Jagatpura, Jaipur",
+    "latitude": 26.8184,
+    "longitude": 75.8492,
+    "priceMin": 4800000,
+    "priceMax": 11500000,
+    "pricePerSqFt": 4800,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "RAJ/P/2017/088",
+    "totalUnits": 650,
+    "availableUnits": 28,
+    "totalTowers": 6,
+    "totalFloors": 12,
+    "totalLandArea": "7.0 Acres",
+    "salesPhone": "9829111220",
+    "salesEmail": "sales.vivanta@trehaniris.com",
+    "searchKeywords": [
+      "Jagatpura flat",
+      "Mahal Road Jaipur flat",
+      "Akshay Patra Jaipur apartment"
+    ],
+    "description": "Trehan Vivanta in Jagatpura offers serene high-quality residential living right across the iconic Akshay Patra temple with 70% open landscape, club amenities, and direct access to Jaipur Airport.",
+    "amenities": [
+      "Temple View Rooftop Deck",
+      "Clubhouse with Gymnasium",
+      "Swimming Pool with Deck",
+      "Children Play Arena",
+      "Jogging Track",
+      "Power Backup & Intercom"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 820,
+        "superBuiltUpArea": 1066,
+        "bathrooms": 2,
+        "priceMin": 4800000,
+        "priceMax": 4800000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1240,
+        "superBuiltUpArea": 1612,
+        "bathrooms": 3,
+        "priceMin": 7400000,
+        "priceMax": 7400000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 1780,
+        "superBuiltUpArea": 2314,
+        "bathrooms": 4,
+        "priceMin": 11500000,
+        "priceMax": 11500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/trehan-vivanta-jagatpura-jaipur/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/trehan-vivanta-jagatpura-jaipur/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/trehan-vivanta-jagatpura-jaipur/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/trehan-vivanta-jagatpura-jaipur/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/trehan-vivanta-jagatpura-jaipur/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Manglam Grand City",
+    "slug": "manglam-grand-city-ajmer-road-jaipur",
+    "developerName": "Manglam Group",
+    "cityName": "Jaipur",
+    "cityId": 4423,
+    "stateName": "Rajasthan",
+    "locality": "Ajmer Road",
+    "siteAddress": "Near Mahindra World City (SEZ), Ajmer Road, Jaipur, Rajasthan",
+    "landmark": "Direct access to Ajmer-Jaipur National Highway & Mahindra SEZ",
+    "location": "Ajmer Road, Jaipur",
+    "latitude": 26.8392,
+    "longitude": 75.6412,
+    "priceMin": 3800000,
+    "priceMax": 8800000,
+    "pricePerSqFt": 4200,
+    "possessionDate": "2025-03-31T00:00:00.000Z",
+    "status": "UNDER_CONSTRUCTION",
+    "reraStatus": "VERIFIED",
+    "reraId": "RAJ/P/2019/945",
+    "totalUnits": 1200,
+    "availableUnits": 42,
+    "totalTowers": 10,
+    "totalFloors": 14,
+    "totalLandArea": "15.0 Acres",
+    "salesPhone": "9829122330",
+    "salesEmail": "sales.grandcity@manglamgroup.com",
+    "searchKeywords": [
+      "Ajmer Road Jaipur flat",
+      "Mahindra SEZ Jaipur flat",
+      "Jaipur flat"
+    ],
+    "description": "Manglam Grand City is a planned township along Ajmer Road close to Mahindra World City featuring modern homes, grand central clubhouse, shopping street, and lush green open spaces.",
+    "amenities": [
+      "Grand Clubhouse with Banquet",
+      "Swimming Pool with Gazebo",
+      "Badminton & Basketball Courts",
+      "Commercial Shopping Plaza",
+      "Lush Landscaped Theme Parks",
+      "24/7 Security"
+    ],
+    "configurations": [
+      {
+        "bhkType": "1 BHK",
+        "carpetArea": 520,
+        "superBuiltUpArea": 676,
+        "bathrooms": 1,
+        "priceMin": 3800000,
+        "priceMax": 3800000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 860,
+        "superBuiltUpArea": 1118,
+        "bathrooms": 2,
+        "priceMin": 5400000,
+        "priceMax": 5400000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1320,
+        "superBuiltUpArea": 1716,
+        "bathrooms": 3,
+        "priceMin": 8800000,
+        "priceMax": 8800000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/manglam-grand-city-ajmer-road-jaipur/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/manglam-grand-city-ajmer-road-jaipur/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/manglam-grand-city-ajmer-road-jaipur/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/manglam-grand-city-ajmer-road-jaipur/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/manglam-grand-city-ajmer-road-jaipur/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Melange by Felicity",
+    "slug": "melange-by-felicity-tonk-road-jaipur",
+    "developerName": "Felicity Group",
+    "cityName": "Jaipur",
+    "cityId": 4423,
+    "stateName": "Rajasthan",
+    "locality": "Tonk Road",
+    "siteAddress": "Tonk Road, Near B2 Bypass, Jaipur, Rajasthan",
+    "landmark": "Near Marriott Hotel & Jawahar Circle",
+    "location": "Tonk Road, Jaipur",
+    "latitude": 26.8482,
+    "longitude": 75.7981,
+    "priceMin": 8500000,
+    "priceMax": 19500000,
+    "pricePerSqFt": 7200,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "RAJ/P/2018/612",
+    "totalUnits": 340,
+    "availableUnits": 16,
+    "totalTowers": 3,
+    "totalFloors": 14,
+    "totalLandArea": "3.5 Acres",
+    "salesPhone": "9829133440",
+    "salesEmail": "sales.melange@felicityestates.com",
+    "searchKeywords": [
+      "Tonk Road Jaipur flat",
+      "Jawahar Circle flat",
+      "Jaipur luxury apartment"
+    ],
+    "description": "Melange by Felicity brings high-end cosmopolitan living to prime Tonk Road near Jawahar Circle with panoramic city skyline views, imported marble living rooms, and private club amenities.",
+    "amenities": [
+      "Rooftop Infinity Edge Pool",
+      "Sky Lounge with City Views",
+      "Fully Equipped Gym & Spa",
+      "Indoor Squash Court",
+      "Grand Air-Conditioned Foyer",
+      "Basement Reserved Parking"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 1040,
+        "superBuiltUpArea": 1352,
+        "bathrooms": 2,
+        "priceMin": 8500000,
+        "priceMax": 8500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1550,
+        "superBuiltUpArea": 2015,
+        "bathrooms": 3,
+        "priceMin": 13500000,
+        "priceMax": 13500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 2280,
+        "superBuiltUpArea": 2964,
+        "bathrooms": 4,
+        "priceMin": 19500000,
+        "priceMax": 19500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/melange-by-felicity-tonk-road-jaipur/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/melange-by-felicity-tonk-road-jaipur/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/melange-by-felicity-tonk-road-jaipur/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/melange-by-felicity-tonk-road-jaipur/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/melange-by-felicity-tonk-road-jaipur/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Unique Apex Tower",
+    "slug": "unique-apex-tower-tonk-road-jaipur",
+    "developerName": "Unique Builders",
+    "cityName": "Jaipur",
+    "cityId": 4423,
+    "stateName": "Rajasthan",
+    "locality": "Tonk Road",
+    "siteAddress": "Main Tonk Road, Sanganer, Jaipur, Rajasthan",
+    "landmark": "Near Jaipur International Airport Cargo Terminal",
+    "location": "Tonk Road, Jaipur",
+    "latitude": 26.8091,
+    "longitude": 75.8124,
+    "priceMin": 5500000,
+    "priceMax": 12500000,
+    "pricePerSqFt": 5200,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "RAJ/P/2017/234",
+    "totalUnits": 480,
+    "availableUnits": 20,
+    "totalTowers": 4,
+    "totalFloors": 12,
+    "totalLandArea": "4.5 Acres",
+    "salesPhone": "9829144550",
+    "salesEmail": "sales.apextower@uniquegroup.in",
+    "searchKeywords": [
+      "Sanganer flat",
+      "Tonk Road apartment Jaipur",
+      "Airport Jaipur flat"
+    ],
+    "description": "Unique Apex Tower on Tonk Road offers contemporary high-rise residences minutes away from Jaipur International Airport, boasting a complete lifestyle club, badminton courts, and roof gardens.",
+    "amenities": [
+      "Residents Lifestyle Club",
+      "Swimming Pool",
+      "Indoor Badminton & Table Tennis",
+      "Landscaped Roof Gardens",
+      "Children Play Zone",
+      "24/7 Security Surveillance"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 890,
+        "superBuiltUpArea": 1157,
+        "bathrooms": 2,
+        "priceMin": 5500000,
+        "priceMax": 5500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1340,
+        "superBuiltUpArea": 1742,
+        "bathrooms": 3,
+        "priceMin": 8400000,
+        "priceMax": 8400000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 1890,
+        "superBuiltUpArea": 2457,
+        "bathrooms": 4,
+        "priceMin": 12500000,
+        "priceMax": 12500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/unique-apex-tower-tonk-road-jaipur/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/unique-apex-tower-tonk-road-jaipur/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/unique-apex-tower-tonk-road-jaipur/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/unique-apex-tower-tonk-road-jaipur/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/unique-apex-tower-tonk-road-jaipur/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Shalimar Grand Residences",
+    "slug": "shalimar-grand-residences-jockey-club-lucknow",
+    "developerName": "Shalimar Corp",
+    "cityName": "Lucknow",
+    "cityId": 51,
+    "stateName": "Uttar Pradesh",
+    "locality": "Gomti Nagar",
+    "siteAddress": "Near Jockey Club, Butler Colony, Gomti Nagar, Lucknow, Uttar Pradesh",
+    "landmark": "Directly overlooking Lucknow Jockey Club & Gomti Riverfront",
+    "location": "Gomti Nagar, Lucknow",
+    "latitude": 26.8524,
+    "longitude": 80.9678,
+    "priceMin": 22000000,
+    "priceMax": 55000000,
+    "pricePerSqFt": 11500,
+    "possessionDate": "2025-12-31T00:00:00.000Z",
+    "status": "UNDER_CONSTRUCTION",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ873322",
+    "totalUnits": 280,
+    "availableUnits": 22,
+    "totalTowers": 4,
+    "totalFloors": 26,
+    "totalLandArea": "5.0 Acres",
+    "salesPhone": "9839111220",
+    "salesEmail": "sales.grand@shalimar.org",
+    "searchKeywords": [
+      "Gomti Nagar flat",
+      "Gomti Riverfront flat",
+      "Lucknow luxury apartment"
+    ],
+    "description": "Shalimar Grand Residences represents Awadh's premier royal luxury condominium overlooking the Lucknow Jockey Club and Gomti River, featuring sprawling balconies and 5-star club privileges.",
+    "amenities": [
+      "Jockey Club & Riverfront Vistas",
+      "Temperature Controlled All-Weather Pool",
+      "Banquet Hall with Butler Pantry",
+      "Squash & Tennis Courts",
+      "Private Screening Theatre",
+      "5-Tier Security Access"
+    ],
+    "configurations": [
+      {
+        "bhkType": "3 BHK Luxury",
+        "carpetArea": 1850,
+        "superBuiltUpArea": 2405,
+        "bathrooms": 3,
+        "priceMin": 22000000,
+        "priceMax": 22000000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK Royal",
+        "carpetArea": 2750,
+        "superBuiltUpArea": 3575,
+        "bathrooms": 4,
+        "priceMin": 34500000,
+        "priceMax": 34500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "5 BHK Penthouse",
+        "carpetArea": 4200,
+        "superBuiltUpArea": 5460,
+        "bathrooms": 5,
+        "priceMin": 55000000,
+        "priceMax": 55000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/shalimar-grand-residences-jockey-club-lucknow/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/shalimar-grand-residences-jockey-club-lucknow/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/shalimar-grand-residences-jockey-club-lucknow/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/shalimar-grand-residences-jockey-club-lucknow/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/shalimar-grand-residences-jockey-club-lucknow/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Eldeco Twin Towers",
+    "slug": "eldeco-twin-towers-shaheed-path-lucknow",
+    "developerName": "Eldeco Group",
+    "cityName": "Lucknow",
+    "cityId": 51,
+    "stateName": "Uttar Pradesh",
+    "locality": "Amar Shaheed Path",
+    "siteAddress": "Amar Shaheed Path, Near Ekana Cricket Stadium, Lucknow, Uttar Pradesh",
+    "landmark": "Directly opposite Ekana International Cricket Stadium & Phoenix Palassio",
+    "location": "Shaheed Path, Lucknow",
+    "latitude": 26.8041,
+    "longitude": 80.9984,
+    "priceMin": 11500000,
+    "priceMax": 26000000,
+    "pricePerSqFt": 7800,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ1458",
+    "totalUnits": 360,
+    "availableUnits": 18,
+    "totalTowers": 2,
+    "totalFloors": 24,
+    "totalLandArea": "3.5 Acres",
+    "salesPhone": "9839122330",
+    "salesEmail": "sales.twintowers@eldecogroup.com",
+    "searchKeywords": [
+      "Shaheed Path Lucknow flat",
+      "Ekana Stadium flat",
+      "Phoenix Palassio apartment"
+    ],
+    "description": "Eldeco Twin Towers on Amar Shaheed Path is a ready luxury high-rise situated opposite Ekana Cricket Stadium and Phoenix Palassio Mall, offering panoramic city views and modern clubhouse amenities.",
+    "amenities": [
+      "Cricket Stadium View Sundeck",
+      "Swimming Pool with Lounge Chairs",
+      "Modern Gym & Yoga Studio",
+      "Indoor Badminton & Billiards",
+      "Children Adventure Park",
+      "Multi-Level Basement Parking"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 1050,
+        "superBuiltUpArea": 1365,
+        "bathrooms": 2,
+        "priceMin": 11500000,
+        "priceMax": 11500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1580,
+        "superBuiltUpArea": 2054,
+        "bathrooms": 3,
+        "priceMin": 16800000,
+        "priceMax": 16800000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 2250,
+        "superBuiltUpArea": 2925,
+        "bathrooms": 4,
+        "priceMin": 26000000,
+        "priceMax": 26000000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/eldeco-twin-towers-shaheed-path-lucknow/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/eldeco-twin-towers-shaheed-path-lucknow/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/eldeco-twin-towers-shaheed-path-lucknow/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/eldeco-twin-towers-shaheed-path-lucknow/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/eldeco-twin-towers-shaheed-path-lucknow/photo_5.webp"
+    ]
+  },
+  {
+    "name": "Rohtas Presidential Towers",
+    "slug": "rohtas-presidential-towers-vibhuti-khand-lucknow",
+    "developerName": "Rohtas Group",
+    "cityName": "Lucknow",
+    "cityId": 51,
+    "stateName": "Uttar Pradesh",
+    "locality": "Vibhuti Khand",
+    "siteAddress": "Vibhuti Khand, Gomti Nagar, Lucknow, Uttar Pradesh",
+    "landmark": "Near One Awadh Center Mall & Hyatt Regency",
+    "location": "Vibhuti Khand, Lucknow",
+    "latitude": 26.8682,
+    "longitude": 80.9942,
+    "priceMin": 12500000,
+    "priceMax": 28500000,
+    "pricePerSqFt": 8200,
+    "possessionDate": "Ready to Move",
+    "status": "READY_TO_MOVE",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ2911",
+    "totalUnits": 410,
+    "availableUnits": 15,
+    "totalTowers": 3,
+    "totalFloors": 22,
+    "totalLandArea": "4.0 Acres",
+    "salesPhone": "9839133440",
+    "salesEmail": "sales.presidential@rohtas.com",
+    "searchKeywords": [
+      "Vibhuti Khand flat",
+      "Gomti Nagar Lucknow flat",
+      "One Awadh Center flat"
+    ],
+    "description": "Rohtas Presidential Towers in Gomti Nagar's commercial epicenter of Vibhuti Khand offers luxury executive apartments with floor-to-ceiling glass, infinity swimming pool, and immediate walking distance to 5-star hotels.",
+    "amenities": [
+      "Executive Business Lounge",
+      "Swimming Pool with Wooden Deck",
+      "Squash & Table Tennis Courts",
+      "Fitness Gym & Steam Room",
+      "Gated Controlled Security",
+      "High Speed Passenger Elevators"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 1120,
+        "superBuiltUpArea": 1456,
+        "bathrooms": 2,
+        "priceMin": 12500000,
+        "priceMax": 12500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1640,
+        "superBuiltUpArea": 2132,
+        "bathrooms": 3,
+        "priceMin": 18500000,
+        "priceMax": 18500000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 2420,
+        "superBuiltUpArea": 3146,
+        "bathrooms": 4,
+        "priceMin": 28500000,
+        "priceMax": 28500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/rohtas-presidential-towers-vibhuti-khand-lucknow/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/rohtas-presidential-towers-vibhuti-khand-lucknow/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/rohtas-presidential-towers-vibhuti-khand-lucknow/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/rohtas-presidential-towers-vibhuti-khand-lucknow/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/rohtas-presidential-towers-vibhuti-khand-lucknow/photo_5.webp"
+    ]
+  },
+  {
+    "name": "MI Central Park",
+    "slug": "mi-central-park-sultanpur-road-lucknow",
+    "developerName": "MI Group",
+    "cityName": "Lucknow",
+    "cityId": 51,
+    "stateName": "Uttar Pradesh",
+    "locality": "Sultanpur Road",
+    "siteAddress": "Sultanpur Road, Near HCL IT City, Lucknow, Uttar Pradesh",
+    "landmark": "Close to HCL IT City & Medanta Hospital",
+    "location": "Sultanpur Road, Lucknow",
+    "latitude": 26.7924,
+    "longitude": 81.0212,
+    "priceMin": 5800000,
+    "priceMax": 13500000,
+    "pricePerSqFt": 5600,
+    "possessionDate": "2025-09-30T00:00:00.000Z",
+    "status": "UNDER_CONSTRUCTION",
+    "reraStatus": "VERIFIED",
+    "reraId": "UPRERAPRJ645512",
+    "totalUnits": 850,
+    "availableUnits": 38,
+    "totalTowers": 8,
+    "totalFloors": 18,
+    "totalLandArea": "10.0 Acres",
+    "salesPhone": "9839144550",
+    "salesEmail": "sales.centralpark@migroup.in",
+    "searchKeywords": [
+      "Sultanpur Road Lucknow flat",
+      "HCL IT City flat",
+      "Medanta Lucknow apartment"
+    ],
+    "description": "MI Central Park is an expansive green township situated along Sultanpur Road close to HCL IT City, featuring lush Central Park themed landscapes, clubhouse, and modern sports facilities.",
+    "amenities": [
+      "Central Park Landscaped Lawns",
+      "Swimming Pool with Deck",
+      "Badminton & Basketball Courts",
+      "Gymnasium & Aerobics Room",
+      "Commercial Convenience Shops",
+      "24/7 Power Backup"
+    ],
+    "configurations": [
+      {
+        "bhkType": "2 BHK",
+        "carpetArea": 860,
+        "superBuiltUpArea": 1118,
+        "bathrooms": 2,
+        "priceMin": 5800000,
+        "priceMax": 5800000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "3 BHK",
+        "carpetArea": 1280,
+        "superBuiltUpArea": 1664,
+        "bathrooms": 3,
+        "priceMin": 8900000,
+        "priceMax": 8900000,
+        "isAvailable": true
+      },
+      {
+        "bhkType": "4 BHK",
+        "carpetArea": 1840,
+        "superBuiltUpArea": 2392,
+        "bathrooms": 4,
+        "priceMin": 13500000,
+        "priceMax": 13500000,
+        "isAvailable": true
+      }
+    ],
+    "images": [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/mi-central-park-sultanpur-road-lucknow/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/mi-central-park-sultanpur-road-lucknow/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/mi-central-park-sultanpur-road-lucknow/photo_3.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/mi-central-park-sultanpur-road-lucknow/photo_4.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/mi-central-park-sultanpur-road-lucknow/photo_5.webp"
+    ]
+  }
+]
