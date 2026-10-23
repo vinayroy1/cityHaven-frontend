@@ -17,7 +17,11 @@ import {
   ShieldCheck,
   Sparkles,
   SlidersHorizontal,
+  X,
+  Copy,
+  Check,
 } from "lucide-react";
+import { toast } from "sonner";
 import { CDN_ASSETS } from "@/config/cdn";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
@@ -28,7 +32,7 @@ import {
 } from "./ProjectFilterSheet";
 import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
 import { useSearchProjectsQuery } from "@/features/projects/api";
-import type { ProjectStatus } from "@/types/project.types";
+import type { ProjectListing, ProjectStatus } from "@/types/project.types";
 import { toSearchSlug } from "@/components/search/searchQuery";
 
 function formatPrice(value?: number) {
@@ -68,6 +72,9 @@ export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: 
     sortBy: "featured",
     verifiedOnly: false,
   });
+
+  const [contactModalProject, setContactModalProject] = useState<ProjectListing | null>(null);
+  const [copiedCardPhone, setCopiedCardPhone] = useState(false);
 
   useEffect(() => {
     const routeLocalities = initialLocalitiesKey ? initialLocalitiesKey.split("\u001f") : [];
@@ -405,9 +412,25 @@ export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: 
                       ) : null}
                     </div>
 
-                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition group-hover:bg-rose-600 group-hover:text-white dark:bg-rose-950/40 dark:text-rose-400">
-                      <ArrowRight className="h-4 w-4" />
-                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {project.salesPhone && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setContactModalProject(project);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-700 transition hover:bg-rose-100 hover:border-rose-300 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"
+                        >
+                          <PhoneCall className="h-3 w-3 text-rose-600" />
+                          <span>View Contact</span>
+                        </button>
+                      )}
+                      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition group-hover:bg-rose-600 group-hover:text-white dark:bg-rose-950/40 dark:text-rose-400">
+                        <ArrowRight className="h-4 w-4" />
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Link>
@@ -465,6 +488,94 @@ export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: 
           </div>
         </div>
       </div>
+
+      {/* Contact Details Modal for Listing Cards */}
+      {contactModalProject && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Contact details for ${contactModalProject.name}`}
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+        >
+          <div className="relative flex max-h-[calc(100dvh-0.5rem)] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-white p-6 shadow-2xl dark:border dark:border-slate-800 dark:bg-slate-900 sm:rounded-3xl">
+            <button
+              onClick={() => setContactModalProject(null)}
+              className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 shadow-sm hover:text-slate-800 dark:bg-slate-800 dark:text-slate-300"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-wider">
+              <PhoneCall className="h-4 w-4" />
+              <span>Direct Sales Contact</span>
+            </div>
+
+            <h3 className="mt-1.5 text-xl font-black text-slate-950 dark:text-white">
+              {contactModalProject.name}
+            </h3>
+            <p className="text-xs font-semibold text-rose-600 dark:text-rose-400">
+              By {contactModalProject.developerName}
+            </p>
+
+            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Official Sales Desk Phone
+              </span>
+              <div className="mt-1 flex items-center justify-between">
+                <span className="text-lg font-black text-slate-950 dark:text-white">
+                  +91 {contactModalProject.salesPhone}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(contactModalProject.salesPhone || "");
+                    setCopiedCardPhone(true);
+                    toast.success("Phone number copied!");
+                    setTimeout(() => setCopiedCardPhone(false), 2000);
+                  }}
+                  className="rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-sm border border-slate-200 transition hover:bg-slate-50 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600"
+                >
+                  {copiedCardPhone ? "Copied!" : "Copy"}
+                </button>
+              </div>
+              <a
+                href={`tel:+91${(contactModalProject.salesPhone || "").replace(/\D/g, "")}`}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 active:scale-95 dark:shadow-none"
+              >
+                <PhoneCall className="h-4 w-4" />
+                <span>Call Sales Desk Now</span>
+              </a>
+            </div>
+
+            {contactModalProject.salesEmail && (
+              <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/40">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Sales Email
+                </span>
+                <div className="mt-0.5 font-bold text-slate-800 dark:text-slate-200">
+                  <a href={`mailto:${contactModalProject.salesEmail}`} className="hover:underline">
+                    {contactModalProject.salesEmail}
+                  </a>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-3 space-y-1 text-xs text-slate-500">
+              <p>📍 {contactModalProject.siteAddress || `${contactModalProject.locality}, ${typeof contactModalProject.city === "string" ? contactModalProject.city : contactModalProject.cityName}`}</p>
+              {contactModalProject.siteVisitTimings && (
+                <p>⏰ Office Timings: {contactModalProject.siteVisitTimings}</p>
+              )}
+            </div>
+
+            <Link
+              href={`/new-projects/${contactModalProject.slug}`}
+              className="mt-4 block w-full text-center rounded-xl border border-slate-200 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              View Full Floor Plans & Pricing
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,7 +5,9 @@ import Link from "next/link";
 import {
   Building2,
   Calendar,
+  Check,
   CheckCircle2,
+  Copy,
   Download,
   Eye,
   FileCheck2,
@@ -13,6 +15,7 @@ import {
   HelpCircle,
   IndianRupee,
   Layers,
+  Mail,
   MapPin,
   MessageSquare,
   Navigation,
@@ -47,6 +50,8 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
   const [inquiryEmail, setInquiryEmail] = useState("");
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [copiedPhone, setCopiedPhone] = useState(false);
 
   useEffect(() => {
     if (!inquiryModalOpen) return;
@@ -196,15 +201,14 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
             </button>
 
             {project.salesPhone && (
-              <a
-                href={`https://wa.me/${project.salesPhone.replace(/\D/g, "")}?text=Hi%2C+I+am+interested+in+${encodeURIComponent(project.name)}+in+${encodeURIComponent(cityName)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800 shadow-sm transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+              <button
+                type="button"
+                onClick={() => setContactModalOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-rose-300 bg-rose-50 px-4 py-2 text-xs font-bold text-rose-800 shadow-sm transition hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-950/60 dark:text-rose-300"
               >
-                <MessageSquare className="h-3.5 w-3.5 text-emerald-600" />
-                <span>WhatsApp Sales Desk</span>
-              </a>
+                <PhoneCall className="h-3.5 w-3.5 text-rose-600" />
+                <span>View Contact</span>
+              </button>
             )}
 
             <button
@@ -538,6 +542,91 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* View Contact Dialog Modal */}
+      {contactModalOpen && (
+        <div role="dialog" aria-modal="true" aria-label={`Contact details for ${project.name}`} className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+          <div className="relative flex max-h-[calc(100dvh-0.5rem)] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-white p-6 shadow-2xl dark:border dark:border-slate-800 dark:bg-slate-900 sm:rounded-3xl">
+            <button
+              onClick={() => setContactModalOpen(false)}
+              className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 shadow-sm hover:text-slate-800 dark:bg-slate-800 dark:text-slate-300"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-wider">
+              <PhoneCall className="h-4 w-4" />
+              <span>Direct Sales Contact</span>
+            </div>
+
+            <h3 className="mt-1.5 text-xl font-black text-slate-950 dark:text-white">
+              {project.name}
+            </h3>
+            <p className="text-xs font-semibold text-rose-600 dark:text-rose-400">
+              By {project.developerName}
+            </p>
+
+            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Official Sales Phone
+              </span>
+              <div className="mt-1 flex items-center justify-between">
+                <span className="text-lg font-black text-slate-950 dark:text-white">
+                  +91 {project.salesPhone}
+                </span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(project.salesPhone || "");
+                    setCopiedPhone(true);
+                    toast.success("Phone number copied!");
+                    setTimeout(() => setCopiedPhone(false), 2000);
+                  }}
+                  className="rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-sm border border-slate-200 transition hover:bg-slate-50 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600"
+                >
+                  {copiedPhone ? "Copied!" : "Copy"}
+                </button>
+              </div>
+              <a
+                href={`tel:+91${(project.salesPhone || "").replace(/\D/g, "")}`}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 active:scale-95 dark:shadow-none"
+              >
+                <PhoneCall className="h-4 w-4" />
+                <span>Call Sales Desk Now</span>
+              </a>
+            </div>
+
+            {project.salesEmail && (
+              <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/40">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Sales Email
+                </span>
+                <div className="mt-0.5 font-bold text-slate-800 dark:text-slate-200">
+                  <a href={`mailto:${project.salesEmail}`} className="hover:underline">
+                    {project.salesEmail}
+                  </a>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-3 space-y-1 text-xs text-slate-500">
+              <p>📍 {project.siteAddress || [project.locality, cityName].filter(Boolean).join(", ")}</p>
+              {project.siteVisitTimings && (
+                <p>⏰ Office Timings: {project.siteVisitTimings}</p>
+              )}
+            </div>
+
+            <button
+              onClick={() => {
+                setContactModalOpen(false);
+                handleOpenInquiry();
+              }}
+              className="mt-4 w-full rounded-xl border border-slate-200 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              Or Leave Callback Request / Site Visit
+            </button>
           </div>
         </div>
       )}
