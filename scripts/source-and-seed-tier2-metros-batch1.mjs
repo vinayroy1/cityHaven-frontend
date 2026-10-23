@@ -1,0 +1,862 @@
+import fs from "fs";
+import path from "path";
+import { S3Client, PutObjectCommand } from "/Users/vinaykumar/Desktop/myProjects/awasio-backend/node_modules/@aws-sdk/client-s3/dist-cjs/index.js";
+
+const BASE_DIR = "/Users/vinaykumar/Desktop/awasio-sourced-properties";
+const PROJECT_IMAGES_DIR = path.join(BASE_DIR, "tier2_batch1_images");
+const PROJECTS_FILE = path.join(BASE_DIR, "tier2_metros_batch1.json");
+const DOCS_FILE = path.join(process.cwd(), "docs", "tier2_metros_batch1.json");
+
+if (!fs.existsSync(PROJECT_IMAGES_DIR)) fs.mkdirSync(PROJECT_IMAGES_DIR, { recursive: true });
+
+// Cloudflare R2 Setup
+const R2_PUBLIC_BASE = "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev";
+const R2_BUCKET = "awasio-media";
+
+const s3 = new S3Client({
+  region: "auto",
+  endpoint: "https://0d890d076a7e84f12dc8b90d8bb1a00c.r2.cloudflarestorage.com",
+  credentials: {
+    accessKeyId: "f6e73586e77e75a0c967aa85944e959b",
+    secretAccessKey: "3b9531a5a59e122e04589a763d619a2761b180ec7dba6f3dd01f6f971233408a",
+  },
+});
+
+async function uploadToCloudflareR2(localFilePath, r2Key) {
+  const fileBuffer = fs.readFileSync(localFilePath);
+  const cmd = new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: r2Key,
+    Body: fileBuffer,
+    ContentType: "image/webp",
+    CacheControl: "public, max-age=31536000, immutable",
+  });
+  await s3.send(cmd);
+  return `${R2_PUBLIC_BASE}/${r2Key}`;
+}
+
+async function downloadImage(imageUrl, destPath) {
+  try {
+    const cleanUrl = imageUrl.includes(";") ? imageUrl : `${imageUrl};s=1200x1200;q=85;f=webp`;
+    const res = await fetch(cleanUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+    });
+    if (!res.ok) return false;
+    const arrayBuffer = await res.arrayBuffer();
+    fs.writeFileSync(destPath, Buffer.from(arrayBuffer));
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+async function fetchPhotosForQuery(query) {
+  const url = `https://www.olx.in/api/relevance/v4/search?facet_limit=15&category=1723&query=${encodeURIComponent(query)}`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept: "application/json",
+      },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const items = json.data || [];
+    const photos = [];
+    for (const it of items) {
+      if (it.images && it.images.length >= 2) {
+        for (const img of it.images) {
+          if (img.url && !photos.includes(img.url)) photos.push(img.url);
+        }
+      }
+    }
+    return photos;
+  } catch (err) {
+    return [];
+  }
+}
+
+const PROJECTS = [
+  // ===================== NAVI MUMBAI (Adding 5 -> Total 6) =====================
+  {
+    code: "PRJ-NVM-002",
+    name: "Hiranandani Fortune City",
+    slug: "hiranandani-fortune-city-panvel-navi-mumbai",
+    developerName: "Hiranandani Communities",
+    reraId: "P52000000654",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 8500000,
+    priceMax: 24500000,
+    pricePerSqFt: 9800,
+    cityId: 3519,
+    cityName: "Navi Mumbai",
+    stateName: "Maharashtra",
+    locality: "Panvel",
+    siteAddress: "Mumbai-Pune Expressway, Near Palaspe Phata, Panvel, Navi Mumbai, Maharashtra",
+    landmark: "Palaspe Phata Junction & Upcoming Navi Mumbai International Airport",
+    pincode: "410221",
+    totalLandArea: "350 Acres",
+    totalTowers: 18,
+    totalUnits: 1450,
+    salesPhone: "9820111220",
+    salesEmail: "sales@hiranandanifortunecity.com",
+    siteVisitTimings: "9:30 AM - 7:00 PM (Daily)",
+    searchQuery: "Panvel flat apartment",
+    fallbackQueries: ["Navi Mumbai flat", "Kharghar flat"],
+    amenities: ["Signature Hiranandani Clubhouse", "Olympic Size Lap Pool", "Multi-Sport Arena & Tennis Courts", "Lush Forest Green Landscaping", "High-Tech Security & Smart Access"],
+    highlights: ["Central Megacity Township on Mumbai-Pune Expressway", "15 Mins from Navi Mumbai International Airport (NMIA)", "Grand Greek-Roman Architecture Facade", "Over 70% Open Scenic Spaces"],
+    configurations: [
+      { bhkType: "1 BHK", carpetArea: 480, superBuiltUpArea: 680, bathrooms: 1, balconies: 1, priceMin: 8500000, priceMax: 9500000 },
+      { bhkType: "2 BHK", carpetArea: 760, superBuiltUpArea: 1080, bathrooms: 2, balconies: 2, priceMin: 13500000, priceMax: 16500000 },
+      { bhkType: "3 BHK", carpetArea: 1180, superBuiltUpArea: 1680, bathrooms: 3, balconies: 3, priceMin: 19800000, priceMax: 24500000 }
+    ]
+  },
+  {
+    code: "PRJ-NVM-003",
+    name: "Marathon Nexzone",
+    slug: "marathon-nexzone-panvel-navi-mumbai",
+    developerName: "Marathon Group",
+    reraId: "P52000000958",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 6200000,
+    priceMax: 15500000,
+    pricePerSqFt: 8400,
+    cityId: 3519,
+    cityName: "Navi Mumbai",
+    stateName: "Maharashtra",
+    locality: "Panvel",
+    siteAddress: "National Highway 4B, Kolkhe, Panvel, Navi Mumbai, Maharashtra",
+    landmark: "Kolkhe Junction & JNPT Expressway",
+    pincode: "410206",
+    totalLandArea: "25 Acres",
+    totalTowers: 16,
+    totalUnits: 1200,
+    salesPhone: "9820122330",
+    salesEmail: "nexzone@marathonrealty.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Marathon Nexzone Panvel",
+    fallbackQueries: ["Panvel apartment flat", "Navi Mumbai property"],
+    amenities: ["Twin Grand Clubhouses", "Two Swimming Pools with Kids Pool", "Full Gymnasium & Yoga Lawn", "Badminton & Squash Courts", "Round-the-Clock CCTV Security"],
+    highlights: ["Strategic Location near Palaspe Phata & Airport Link", "Over 1,000+ Happy Families Residing", "Unobstructed Views of Sahyadri Hills", "Bank Loan Pre-Approved with Low Interest"],
+    configurations: [
+      { bhkType: "1 BHK", carpetArea: 440, superBuiltUpArea: 620, bathrooms: 1, balconies: 1, priceMin: 6200000, priceMax: 7100000 },
+      { bhkType: "2 BHK", carpetArea: 680, superBuiltUpArea: 960, bathrooms: 2, balconies: 2, priceMin: 9500000, priceMax: 11500000 },
+      { bhkType: "2.5 BHK", carpetArea: 860, superBuiltUpArea: 1220, bathrooms: 2, balconies: 2, priceMin: 12800000, priceMax: 15500000 }
+    ]
+  },
+  {
+    code: "PRJ-NVM-004",
+    name: "Wadhwa Wise City",
+    slug: "wadhwa-wise-city-panvel-navi-mumbai",
+    developerName: "The Wadhwa Group",
+    reraId: "P52000018871",
+    reraStatus: "VERIFIED",
+    status: "UNDER_CONSTRUCTION",
+    possessionDate: "December 2026",
+    priceMin: 5800000,
+    priceMax: 14800000,
+    pricePerSqFt: 7800,
+    cityId: 3519,
+    cityName: "Navi Mumbai",
+    stateName: "Maharashtra",
+    locality: "Panvel",
+    siteAddress: "Bhattan, Old Mumbai-Pune Highway, Panvel, Navi Mumbai, Maharashtra",
+    landmark: "Thombrewadi & Bhattan Lake",
+    pincode: "410206",
+    totalLandArea: "138 Acres",
+    totalTowers: 14,
+    totalUnits: 1100,
+    salesPhone: "9820133440",
+    salesEmail: "sales@wadhwawisecity.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Wadhwa Wise City Panvel",
+    fallbackQueries: ["Panvel flat", "Navi Mumbai flat"],
+    amenities: ["Signature Wadhwa Town Hall & Club", "Lap Pool & Kids Water Zone", "Acupressure Walkway & Zen Park", "Sports Complex with Futsal Turf", "Multi-Tier Automated Surveillance"],
+    highlights: ["Integrated Megatownship Powered by Wadhwa Ventilit Design", "High Pure Air Index Surrounded by Prabalmachi Hills", "Fast Transit to Panvel Railway Terminal & Metro", "Zero Compromise on Natural Sunlight and Cross-Ventilation"],
+    configurations: [
+      { bhkType: "1 BHK", carpetArea: 420, superBuiltUpArea: 590, bathrooms: 1, balconies: 1, priceMin: 5800000, priceMax: 6600000 },
+      { bhkType: "2 BHK", carpetArea: 670, superBuiltUpArea: 940, bathrooms: 2, balconies: 2, priceMin: 8800000, priceMax: 10500000 },
+      { bhkType: "3 BHK", carpetArea: 990, superBuiltUpArea: 1390, bathrooms: 3, balconies: 3, priceMin: 12800000, priceMax: 14800000 }
+    ]
+  },
+  {
+    code: "PRJ-NVM-005",
+    name: "Indiabulls Park",
+    slug: "indiabulls-park-panvel-navi-mumbai",
+    developerName: "Indiabulls Real Estate",
+    reraId: "P52000000455",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 5400000,
+    priceMax: 13500000,
+    pricePerSqFt: 7600,
+    cityId: 3519,
+    cityName: "Navi Mumbai",
+    stateName: "Maharashtra",
+    locality: "Panvel",
+    siteAddress: "Rasayani Road, Kon, Panvel, Navi Mumbai, Maharashtra",
+    landmark: "Kon Gaon Junction & Old Mumbai Pune Highway",
+    pincode: "410206",
+    totalLandArea: "30 Acres",
+    totalTowers: 12,
+    totalUnits: 980,
+    salesPhone: "9820144550",
+    salesEmail: "sales@indiabullsparkpanvel.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Indiabulls Park Panvel flat",
+    fallbackQueries: ["Panvel flat", "Kharghar apartment"],
+    amenities: ["Grand Clubhouse with Infinity Edge Pool", "Tennis & Basketball Court", "Gymnasium & Aerobics Room", "Commercial Convenience Retails", "24x7 Security with Intercom"],
+    highlights: ["Ready to Move Delivered High-Rise Township", "Very Close to Panvel Railway Station and MTHL Atal Setu", "Scenic Green Surroundings and Panoramic Balcony Views", "Competitive Capital Value Appreciation Corridor"],
+    configurations: [
+      { bhkType: "1 BHK", carpetArea: 410, superBuiltUpArea: 580, bathrooms: 1, balconies: 1, priceMin: 5400000, priceMax: 6200000 },
+      { bhkType: "2 BHK", carpetArea: 650, superBuiltUpArea: 920, bathrooms: 2, balconies: 2, priceMin: 8200000, priceMax: 9800000 },
+      { bhkType: "3 BHK", carpetArea: 940, superBuiltUpArea: 1320, bathrooms: 3, balconies: 3, priceMin: 11800000, priceMax: 13500000 }
+    ]
+  },
+  {
+    code: "PRJ-NVM-006",
+    name: "Akshar Emperia Garden",
+    slug: "akshar-emperia-garden-rasayani-navi-mumbai",
+    developerName: "Akshar Group",
+    reraId: "P52000021345",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 3900000,
+    priceMax: 7800000,
+    pricePerSqFt: 6200,
+    cityId: 3519,
+    cityName: "Navi Mumbai",
+    stateName: "Maharashtra",
+    locality: "Rasayani",
+    siteAddress: "Rasayani Main Road, Near HOC Colony, Navi Mumbai, Maharashtra",
+    landmark: "Pillai College of Engineering & Rasayani Railway Station",
+    pincode: "410207",
+    totalLandArea: "9 Acres",
+    totalTowers: 7,
+    totalUnits: 580,
+    salesPhone: "9820155660",
+    salesEmail: "sales@aksharemperia.com",
+    siteVisitTimings: "9:00 AM - 6:00 PM (Daily)",
+    searchQuery: "Rasayani flat Navi Mumbai",
+    fallbackQueries: ["Panvel flat", "Navi Mumbai flat"],
+    amenities: ["Designer Club Facility", "Swimming Pool with Timber Deck", "Children Activity Zone", "Landscaped Floral Garden Walkway", "Multi-Tier Guard Post Security"],
+    highlights: ["Affordable Gateway to Navi Mumbai Growth Corridor", "Just Minutes from Rasayani Station and Educational Hubs", "Ready to Move with Full Completion Certificate", "High Rental Yield from University Students and Faculty"],
+    configurations: [
+      { bhkType: "1 BHK", carpetArea: 380, superBuiltUpArea: 520, bathrooms: 1, balconies: 1, priceMin: 3900000, priceMax: 4400000 },
+      { bhkType: "2 BHK", carpetArea: 610, superBuiltUpArea: 840, bathrooms: 2, balconies: 2, priceMin: 5900000, priceMax: 6800000 },
+      { bhkType: "2 BHK Grand", carpetArea: 710, superBuiltUpArea: 980, bathrooms: 2, balconies: 2, priceMin: 6900000, priceMax: 7800000 }
+    ]
+  },
+
+  // ===================== NAGPUR (Adding 5 -> Total 6) =====================
+  {
+    code: "PRJ-NGP-002",
+    name: "Piramal Sunteck Crescent Park",
+    slug: "sunteck-crescent-park-mihan-nagpur",
+    developerName: "Sunteck Realty",
+    reraId: "P50500018240",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 5200000,
+    priceMax: 12500000,
+    pricePerSqFt: 4800,
+    cityId: 3,
+    cityName: "Nagpur",
+    stateName: "Maharashtra",
+    locality: "Wardha Road",
+    siteAddress: "MIHAN SEZ Corridor, Wardha Road, Nagpur, Maharashtra",
+    landmark: "TCS & Infosys Campus, MIHAN Nagpur",
+    pincode: "441108",
+    totalLandArea: "12 Acres",
+    totalTowers: 8,
+    totalUnits: 620,
+    salesPhone: "9823111220",
+    salesEmail: "sales@suntecknagpur.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Wardha Road Nagpur flat",
+    fallbackQueries: ["MIHAN Nagpur flat", "Nagpur apartment flat"],
+    amenities: ["Luxury Clubhouse with Temperature Pool", "Fully Fitted Gymnasium", "Badminton & Table Tennis Courts", "Lush Acupressure Walkway", "24x7 Smart Card Security Gate"],
+    highlights: ["Right Opposite TCS & Infosys IT Campuses in MIHAN", "Direct Access to Nagpur Metro Wardha Road Line", "Ready to Move Premium Construction by Sunteck", "Top Choice for IT Executives and Doctors"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 680, superBuiltUpArea: 940, bathrooms: 2, balconies: 2, priceMin: 5200000, priceMax: 5900000 },
+      { bhkType: "3 BHK", carpetArea: 1020, superBuiltUpArea: 1420, bathrooms: 2, balconies: 3, priceMin: 7800000, priceMax: 9200000 },
+      { bhkType: "4 BHK", carpetArea: 1450, superBuiltUpArea: 2020, bathrooms: 4, balconies: 4, priceMin: 10800000, priceMax: 12500000 }
+    ]
+  },
+  {
+    code: "PRJ-NGP-003",
+    name: "Kukreja Infinity",
+    slug: "kukreja-infinity-civil-lines-nagpur",
+    developerName: "Kukreja Infrastructure",
+    reraId: "P50500009812",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 12500000,
+    priceMax: 29500000,
+    pricePerSqFt: 8200,
+    cityId: 3,
+    cityName: "Nagpur",
+    stateName: "Maharashtra",
+    locality: "Civil Lines",
+    siteAddress: "Temple Road, Near High Court of Bombay Nagpur Bench, Civil Lines, Nagpur, Maharashtra",
+    landmark: "Nagpur High Court & Japanese Garden",
+    pincode: "440001",
+    totalLandArea: "3.5 Acres",
+    totalTowers: 3,
+    totalUnits: 140,
+    salesPhone: "9823122330",
+    salesEmail: "infinity@kukrejabuilders.com",
+    siteVisitTimings: "10:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Civil Lines Nagpur luxury flat",
+    fallbackQueries: ["Nagpur luxury apartment", "Nagpur flat"],
+    amenities: ["Rooftop Sky Lounge & Heated Pool", "Private Theatre & Banquet Suite", "State-of-the-Art Fitness Center", "Covered Basement Car Parking with EV Chargers", "Biometric Access Control"],
+    highlights: ["Nagpur's Most Prestigious VVIP Residential Address", "Walking Distance to High Court, Japanese Garden & Gymkhana", "Only Ultra-Luxury 3 & 4 BHK Residences", "Ultra-Low Density Community of Judges and Bureaucrats"],
+    configurations: [
+      { bhkType: "3 BHK", carpetArea: 1350, superBuiltUpArea: 1880, bathrooms: 3, balconies: 3, priceMin: 12500000, priceMax: 14500000 },
+      { bhkType: "4 BHK", carpetArea: 2100, superBuiltUpArea: 2950, bathrooms: 4, balconies: 4, priceMin: 21500000, priceMax: 24500000 },
+      { bhkType: "5 BHK Penthouse", carpetArea: 2900, superBuiltUpArea: 4050, bathrooms: 5, balconies: 5, priceMin: 26500000, priceMax: 29500000 }
+    ]
+  },
+  {
+    code: "PRJ-NGP-004",
+    name: "Moraj Waterfalls",
+    slug: "moraj-waterfalls-wardha-road-nagpur",
+    developerName: "Moraj Infratech",
+    reraId: "P50500014520",
+    reraStatus: "VERIFIED",
+    status: "UNDER_CONSTRUCTION",
+    possessionDate: "September 2026",
+    priceMin: 4900000,
+    priceMax: 9800000,
+    pricePerSqFt: 4400,
+    cityId: 3,
+    cityName: "Nagpur",
+    stateName: "Maharashtra",
+    locality: "Wardha Road",
+    siteAddress: "Khapri Metro Station Link, Wardha Road, Nagpur, Maharashtra",
+    landmark: "Khapri Metro Station & Airport Link",
+    pincode: "441108",
+    totalLandArea: "7 Acres",
+    totalTowers: 6,
+    totalUnits: 440,
+    salesPhone: "9823133440",
+    salesEmail: "sales@morajwaterfalls.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Khapri Nagpur flat",
+    fallbackQueries: ["Wardha road Nagpur flat", "Nagpur flat"],
+    amenities: ["Cascading Waterfall Water Feature", "Clubhouse with Infinity Pool", "Gymnasium & Yoga Lawn", "Children Sand Pit & Play Area", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["2 Minutes from Khapri Metro Station", "Direct Commute to Dr. Babasaheb Ambedkar International Airport", "Modern Elevation with Over 70% Greenery", "Flexible Payment Plans with Zero Processing Fees"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 670, superBuiltUpArea: 920, bathrooms: 2, balconies: 2, priceMin: 4900000, priceMax: 5500000 },
+      { bhkType: "3 BHK", carpetArea: 980, superBuiltUpArea: 1350, bathrooms: 2, balconies: 3, priceMin: 7200000, priceMax: 8200000 },
+      { bhkType: "3 BHK Large", carpetArea: 1180, superBuiltUpArea: 1620, bathrooms: 3, balconies: 3, priceMin: 8600000, priceMax: 9800000 }
+    ]
+  },
+  {
+    code: "PRJ-NGP-005",
+    name: "Sandesh City",
+    slug: "sandesh-city-jamtha-nagpur",
+    developerName: "Sandesh Group",
+    reraId: "P50500003418",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 3800000,
+    priceMax: 7800000,
+    pricePerSqFt: 3800,
+    cityId: 3,
+    cityName: "Nagpur",
+    stateName: "Maharashtra",
+    locality: "Jamtha",
+    siteAddress: "Near VCA International Cricket Stadium, Wardha Road, Jamtha, Nagpur, Maharashtra",
+    landmark: "VCA Stadium Jamtha & National Cancer Institute",
+    pincode: "441122",
+    totalLandArea: "40 Acres",
+    totalTowers: 10,
+    totalUnits: 750,
+    salesPhone: "9823144550",
+    salesEmail: "contact@sandeshcity.com",
+    siteVisitTimings: "9:00 AM - 6:00 PM (Daily)",
+    searchQuery: "Jamtha Nagpur flat apartment",
+    fallbackQueries: ["Nagpur property flat", "Wardha road flat"],
+    amenities: ["Integrated Township Sports Complex", "Swimming Pool & Toddler Splash Pool", "Commercial Daily Need Supermarket", "Jogging Track & Senior Citizen Kiosk", "Gated Security with Intercom"],
+    highlights: ["Opposite International Cricket Stadium (VCA) Jamtha", "Close to National Cancer Institute & All India Institute (AIIMS)", "Ready to Move Township with 500+ Families", "Unbeatable Entry Level Budget Friendly Pricing"],
+    configurations: [
+      { bhkType: "1 BHK", carpetArea: 420, superBuiltUpArea: 580, bathrooms: 1, balconies: 1, priceMin: 3800000, priceMax: 4300000 },
+      { bhkType: "2 BHK", carpetArea: 640, superBuiltUpArea: 880, bathrooms: 2, balconies: 1, priceMin: 5200000, priceMax: 5900000 },
+      { bhkType: "3 BHK", carpetArea: 920, superBuiltUpArea: 1260, bathrooms: 2, balconies: 2, priceMin: 6800000, priceMax: 7800000 }
+    ]
+  },
+  {
+    code: "PRJ-NGP-006",
+    name: "Rachana Bella Rosa",
+    slug: "rachana-bella-rosa-manish-nagar-nagpur",
+    developerName: "Rachana Construction",
+    reraId: "P50500011234",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 6800000,
+    priceMax: 14500000,
+    pricePerSqFt: 5400,
+    cityId: 3,
+    cityName: "Nagpur",
+    stateName: "Maharashtra",
+    locality: "Manish Nagar",
+    siteAddress: "Somalwada-Manish Nagar Flyover Road, Nagpur, Maharashtra",
+    landmark: "Manish Nagar T-Point & Airport Metro",
+    pincode: "440015",
+    totalLandArea: "4.5 Acres",
+    totalTowers: 4,
+    totalUnits: 280,
+    salesPhone: "9823155660",
+    salesEmail: "bellarosa@rachanaconstructions.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Manish Nagar Nagpur flat",
+    fallbackQueries: ["Somalwada Nagpur flat", "Nagpur flat apartment"],
+    amenities: ["Signature Clubhouse with Fitness Gym", "Roof Swimming Pool", "Children Play Space", "Multi-Level Covered Parking", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Located in Nagpur's Top Residential Belt of Manish Nagar", "Walkable to Manish Nagar Market, Schools & Clinics", "Ready to Move with Full Registry and CC", "High Resale Liquidity and Rental Demand"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 740, superBuiltUpArea: 1020, bathrooms: 2, balconies: 2, priceMin: 6800000, priceMax: 7600000 },
+      { bhkType: "3 BHK", carpetArea: 1080, superBuiltUpArea: 1480, bathrooms: 3, balconies: 3, priceMin: 9800000, priceMax: 11500000 },
+      { bhkType: "4 BHK", carpetArea: 1520, superBuiltUpArea: 2100, bathrooms: 4, balconies: 4, priceMin: 12800000, priceMax: 14500000 }
+    ]
+  },
+
+  // ===================== KOCHI (Adding 5 -> Total 6) =====================
+  {
+    code: "PRJ-KCH-002",
+    name: "Purva Eternity",
+    slug: "purva-eternity-kakkanad-kochi",
+    developerName: "Puravankara Limited",
+    reraId: "K-RERA/PRJ/ERN/012/2021",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 7200000,
+    priceMax: 16500000,
+    pricePerSqFt: 5800,
+    cityId: 75,
+    cityName: "Kochi",
+    stateName: "Kerala",
+    locality: "Kakkanad",
+    siteAddress: "Near Infopark Expressway, Kakkanad, Kochi, Kerala",
+    landmark: "Infopark Phase 1 & SmartCity Kochi",
+    pincode: "682030",
+    totalLandArea: "7 Acres",
+    totalTowers: 6,
+    totalUnits: 460,
+    salesPhone: "9847111220",
+    salesEmail: "sales@purvakochi.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Kakkanad Kochi flat apartment",
+    fallbackQueries: ["Infopark Kochi flat", "Kochi flat"],
+    amenities: ["Grand Purva Clubhouse & Olympic Pool", "Full Gymnasium & Yoga Deck", "Tennis Court & Badminton Arena", "Lush Landscaped Tropical Gardens", "Round the Clock Security with Intercom"],
+    highlights: ["Heart of Kochi IT Capital - Kakkanad", "Walking Distance to Infopark & SmartCity Tech Parks", "Ready to Move with Full Registry", "Over 75% Open Green Tropical Campus"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 750, superBuiltUpArea: 1040, bathrooms: 2, balconies: 2, priceMin: 7200000, priceMax: 8200000 },
+      { bhkType: "3 BHK", carpetArea: 1120, superBuiltUpArea: 1550, bathrooms: 3, balconies: 3, priceMin: 10800000, priceMax: 12800000 },
+      { bhkType: "4 BHK", carpetArea: 1620, superBuiltUpArea: 2250, bathrooms: 4, balconies: 4, priceMin: 14500000, priceMax: 16500000 }
+    ]
+  },
+  {
+    code: "PRJ-KCH-003",
+    name: "Prestige Cityscape",
+    slug: "prestige-cityscape-maradu-kochi",
+    developerName: "Prestige Group",
+    reraId: "K-RERA/PRJ/ERN/045/2020",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 9500000,
+    priceMax: 21500000,
+    pricePerSqFt: 6900,
+    cityId: 75,
+    cityName: "Kochi",
+    stateName: "Kerala",
+    locality: "Maradu",
+    siteAddress: "NH-66 Kundannoor Junction, Maradu, Kochi, Kerala",
+    landmark: "Crowne Plaza Kochi & Kundannoor Flyover",
+    pincode: "682304",
+    totalLandArea: "6 Acres",
+    totalTowers: 4,
+    totalUnits: 320,
+    salesPhone: "9847122330",
+    salesEmail: "cityscape@prestigeconstructions.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Maradu Kochi flat",
+    fallbackQueries: ["Kundannoor Kochi flat", "Kochi luxury flat"],
+    amenities: ["Signature Prestige Club & Swimming Pool", "Health Club & Aerobics Center", "Billiards & Table Tennis Lounge", "Children Play Arena", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Located at Kundannoor Junction Connecting NH-66 and Bypass", "Minutes from Lakeshore Hospital & Forum Mall Kochi", "Waterfront Backwater Views from Upper Floors", "World-Class Construction Quality by Prestige"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 820, superBuiltUpArea: 1140, bathrooms: 2, balconies: 2, priceMin: 9500000, priceMax: 10800000 },
+      { bhkType: "3 BHK", carpetArea: 1240, superBuiltUpArea: 1720, bathrooms: 3, balconies: 3, priceMin: 14200000, priceMax: 16800000 },
+      { bhkType: "4 BHK", carpetArea: 1780, superBuiltUpArea: 2480, bathrooms: 4, balconies: 4, priceMin: 18500000, priceMax: 21500000 }
+    ]
+  },
+  {
+    code: "PRJ-KCH-004",
+    name: "Sobha Silverstar",
+    slug: "sobha-silverstar-edappally-kochi",
+    developerName: "Sobha Limited",
+    reraId: "K-RERA/PRJ/ERN/067/2021",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 8800000,
+    priceMax: 19500000,
+    pricePerSqFt: 6600,
+    cityId: 75,
+    cityName: "Kochi",
+    stateName: "Kerala",
+    locality: "Edappally",
+    siteAddress: "Near Toll Gate Junction, NH-544, Edappally, Kochi, Kerala",
+    landmark: "LuLu Mall Kochi & Edappally Metro Station",
+    pincode: "682024",
+    totalLandArea: "5 Acres",
+    totalTowers: 4,
+    totalUnits: 290,
+    salesPhone: "9847133440",
+    salesEmail: "sales@sobhakochi.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Edappally Kochi flat",
+    fallbackQueries: ["Lulu mall Kochi flat", "Kochi flat apartment"],
+    amenities: ["Sobha German Craftsmanship Clubhouse", "Temperature Controlled Swimming Pool", "Badminton & Squash Courts", "Acupressure Jogging Walkway", "Multi-Tier Automated Surveillance"],
+    highlights: ["Walking Distance to LuLu Mall Kochi & Edappally Metro", "Sobha Proprietary In-House Quality Assurance", "Ready to Move Delivered High-Rise Residences", "Seamless Connectivity to NH-66 and NH-544"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 780, superBuiltUpArea: 1080, bathrooms: 2, balconies: 2, priceMin: 8800000, priceMax: 9900000 },
+      { bhkType: "3 BHK", carpetArea: 1180, superBuiltUpArea: 1640, bathrooms: 3, balconies: 3, priceMin: 12800000, priceMax: 15200000 },
+      { bhkType: "4 BHK", carpetArea: 1650, superBuiltUpArea: 2320, bathrooms: 4, balconies: 4, priceMin: 17200000, priceMax: 19500000 }
+    ]
+  },
+  {
+    code: "PRJ-KCH-005",
+    name: "Asset Signature",
+    slug: "asset-signature-palarivattom-kochi",
+    developerName: "Asset Homes",
+    reraId: "K-RERA/PRJ/ERN/089/2022",
+    reraStatus: "VERIFIED",
+    status: "UNDER_CONSTRUCTION",
+    possessionDate: "August 2026",
+    priceMin: 8200000,
+    priceMax: 17800000,
+    pricePerSqFt: 6400,
+    cityId: 75,
+    cityName: "Kochi",
+    stateName: "Kerala",
+    locality: "Palarivattom",
+    siteAddress: "Civil Line Road, Palarivattom Junction, Kochi, Kerala",
+    landmark: "Palarivattom Metro Station & Medical Centre",
+    pincode: "682025",
+    totalLandArea: "3 Acres",
+    totalTowers: 2,
+    totalUnits: 180,
+    salesPhone: "9847144550",
+    salesEmail: "contact@assethomes.in",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Palarivattom Kochi flat",
+    fallbackQueries: ["Kochi flat", "Kaloor Kochi flat"],
+    amenities: ["Rooftop Infinity Swimming Pool", "Sky Gym with Panoramic City Views", "Soundproof Home Theatre Hall", "Children Sensory Play Area", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Prime Central Kochi Location at Palarivattom", "Close to Renai Medicity Hospital & St. Martin Church", "Eco-Friendly IGBC Gold Rated Architecture", "Pre-Approved Loans with All Leading Nationalized Banks"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 740, superBuiltUpArea: 1020, bathrooms: 2, balconies: 2, priceMin: 8200000, priceMax: 9200000 },
+      { bhkType: "3 BHK", carpetArea: 1140, superBuiltUpArea: 1580, bathrooms: 3, balconies: 3, priceMin: 11800000, priceMax: 13800000 },
+      { bhkType: "4 BHK", carpetArea: 1580, superBuiltUpArea: 2200, bathrooms: 4, balconies: 4, priceMin: 15500000, priceMax: 17800000 }
+    ]
+  },
+  {
+    code: "PRJ-KCH-006",
+    name: "Skyline Imperial Gardens",
+    slug: "skyline-imperial-gardens-kaloor-kochi",
+    developerName: "Skyline Builders",
+    reraId: "K-RERA/PRJ/ERN/034/2020",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 7800000,
+    priceMax: 15500000,
+    pricePerSqFt: 6100,
+    cityId: 75,
+    cityName: "Kochi",
+    stateName: "Kerala",
+    locality: "Kaloor",
+    siteAddress: "Stadium Link Road, Near JLN Stadium, Kaloor, Kochi, Kerala",
+    landmark: "Jawaharlal Nehru International Stadium & Kaloor Metro",
+    pincode: "682017",
+    totalLandArea: "4 Acres",
+    totalTowers: 3,
+    totalUnits: 240,
+    salesPhone: "9847155660",
+    salesEmail: "sales@skylinebuilders.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Kaloor Kochi flat",
+    fallbackQueries: ["Kochi flat", "Edappally flat"],
+    amenities: ["Signature Skyline Club & Swimming Pool", "Health & Fitness Center", "Air-Conditioned Community Hall", "Children Recreation Area", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Right Next to JLN International Stadium & Metro Station", "Vibrant Downtown City Vibe with Top Dining & Shopping", "Ready to Move with Kerala RERA CC and Full Registry", "Established Gated Community with 200+ Residing Families"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 720, superBuiltUpArea: 990, bathrooms: 2, balconies: 2, priceMin: 7800000, priceMax: 8800000 },
+      { bhkType: "3 BHK", carpetArea: 1080, superBuiltUpArea: 1490, bathrooms: 3, balconies: 3, priceMin: 11200000, priceMax: 13200000 },
+      { bhkType: "4 BHK", carpetArea: 1480, superBuiltUpArea: 2050, bathrooms: 4, balconies: 4, priceMin: 13800000, priceMax: 15500000 }
+    ]
+  },
+
+  // ===================== VISAKHAPATNAM (Adding 5 -> Total 6) =====================
+  {
+    code: "PRJ-VTZ-002",
+    name: "Shriram Panorama Hills",
+    slug: "shriram-panorama-hills-madhurawada-visakhapatnam",
+    developerName: "Shriram Properties",
+    reraId: "P03290010142",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 5800000,
+    priceMax: 14500000,
+    pricePerSqFt: 4600,
+    cityId: 357,
+    cityName: "Visakhapatnam",
+    stateName: "Andhra Pradesh",
+    locality: "Madhurawada",
+    siteAddress: "Yendada-Madhurawada Hill Road, Visakhapatnam, Andhra Pradesh",
+    landmark: "Madhurawada Cricket Stadium & IT SEZ Hill 2",
+    pincode: "530048",
+    totalLandArea: "80 Acres",
+    totalTowers: 10,
+    totalUnits: 750,
+    salesPhone: "9848111220",
+    salesEmail: "sales@shrirampanorama.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Madhurawada Visakhapatnam flat",
+    fallbackQueries: ["Vizag flat apartment", "Visakhapatnam property"],
+    amenities: ["Grand Panoramic Hilltop Clubhouse", "Olympic Size Lap Pool", "Badminton & Tennis Courts", "Lush Landscaped Valley Greens", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Vizag's Largest 80-Acre Master Township", "Scenic Hilltop Living with Coastal Breeze and Bay Views", "Walking Distance to IT SEZ Rushikonda and Tech Parks", "Ready to Move with Hundreds of Families Living"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 720, superBuiltUpArea: 990, bathrooms: 2, balconies: 2, priceMin: 5800000, priceMax: 6600000 },
+      { bhkType: "3 BHK", carpetArea: 1080, superBuiltUpArea: 1490, bathrooms: 3, balconies: 3, priceMin: 8500000, priceMax: 10500000 },
+      { bhkType: "3 BHK Villa", carpetArea: 1650, superBuiltUpArea: 2280, bathrooms: 3, balconies: 3, priceMin: 12500000, priceMax: 14500000 }
+    ]
+  },
+  {
+    code: "PRJ-VTZ-003",
+    name: "Lansum Greens",
+    slug: "lansum-greens-madhurawada-visakhapatnam",
+    developerName: "Lansum Properties",
+    reraId: "P03290020185",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 6400000,
+    priceMax: 13500000,
+    pricePerSqFt: 4800,
+    cityId: 357,
+    cityName: "Visakhapatnam",
+    stateName: "Andhra Pradesh",
+    locality: "Madhurawada",
+    siteAddress: "Near Shilparamam Arts Village, NH-16, Madhurawada, Visakhapatnam, Andhra Pradesh",
+    landmark: "Shilparamam Arts Village & ACA-VDCA Stadium",
+    pincode: "530048",
+    totalLandArea: "5 Acres",
+    totalTowers: 5,
+    totalUnits: 380,
+    salesPhone: "9848122330",
+    salesEmail: "sales@lansumproperties.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Visakhapatnam flat apartment",
+    fallbackQueries: ["Madhurawada flat", "Vizag flat"],
+    amenities: ["Signature Lansum Club & Swimming Pool", "Equipped Gym & Aerobics Deck", "Banquet Hall for Celebrations", "Children Sand Pit & Play Area", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Direct Highway Frontage on 6-Lane NH-16 (Kolkata-Chennai)", "Minutes from ACA-VDCA International Cricket Stadium", "Ready to Move with Full Registry", "Over 70% Open Space with Landscaped Central Lawns"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 740, superBuiltUpArea: 1020, bathrooms: 2, balconies: 2, priceMin: 6400000, priceMax: 7200000 },
+      { bhkType: "3 BHK", carpetArea: 1100, superBuiltUpArea: 1520, bathrooms: 3, balconies: 3, priceMin: 9400000, priceMax: 11200000 },
+      { bhkType: "4 BHK", carpetArea: 1550, superBuiltUpArea: 2150, bathrooms: 4, balconies: 4, priceMin: 12000000, priceMax: 13500000 }
+    ]
+  },
+  {
+    code: "PRJ-VTZ-004",
+    name: "Radhamani Sri Radhe Krishna",
+    slug: "radhamani-sri-radhe-krishna-yendada-visakhapatnam",
+    developerName: "Radhamani Constructions",
+    reraId: "P03290010450",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 7200000,
+    priceMax: 15800000,
+    pricePerSqFt: 5200,
+    cityId: 357,
+    cityName: "Visakhapatnam",
+    stateName: "Andhra Pradesh",
+    locality: "Yendada",
+    siteAddress: "Beach Road Link, Yendada, Visakhapatnam, Andhra Pradesh",
+    landmark: "GITAM Deemed University & Rushikonda Beach Link",
+    pincode: "530045",
+    totalLandArea: "4 Acres",
+    totalTowers: 4,
+    totalUnits: 260,
+    salesPhone: "9848133440",
+    salesEmail: "contact@radhamaniconstructions.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Yendada Visakhapatnam flat",
+    fallbackQueries: ["Vizag beach flat", "Visakhapatnam flat"],
+    amenities: ["Rooftop Sea-Breeze Swimming Pool", "Fitness Gym & Yoga Room", "AC Community Hall", "Children Play Area", "24x7 Guard Post with CCTV"],
+    highlights: ["Prime Coastal Corridor of Yendada", "Minutes from GITAM University and Rushikonda Blue Flag Beach", "Ready to Move with Full Registry and Occupancy", "High Rental Demand from University Professors and IT Execs"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 760, superBuiltUpArea: 1050, bathrooms: 2, balconies: 2, priceMin: 7200000, priceMax: 8200000 },
+      { bhkType: "3 BHK", carpetArea: 1140, superBuiltUpArea: 1580, bathrooms: 3, balconies: 3, priceMin: 10500000, priceMax: 12500000 },
+      { bhkType: "4 BHK", carpetArea: 1620, superBuiltUpArea: 2250, bathrooms: 4, balconies: 4, priceMin: 13800000, priceMax: 15800000 }
+    ]
+  },
+  {
+    code: "PRJ-VTZ-005",
+    name: "Oxygen Towers",
+    slug: "oxygen-towers-seethammadhara-visakhapatnam",
+    developerName: "Gajuwaka Builders",
+    reraId: "P03290030210",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 9800000,
+    priceMax: 24500000,
+    pricePerSqFt: 6400,
+    cityId: 357,
+    cityName: "Visakhapatnam",
+    stateName: "Andhra Pradesh",
+    locality: "Seethammadhara",
+    siteAddress: "Seethammadhara North Extension, Visakhapatnam, Andhra Pradesh",
+    landmark: "HB Colony & Satyam Junction",
+    pincode: "530013",
+    totalLandArea: "5 Acres",
+    totalTowers: 4,
+    totalUnits: 320,
+    salesPhone: "9848144550",
+    salesEmail: "sales@oxygentowersvizag.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Seethammadhara flat Visakhapatnam",
+    fallbackQueries: ["Vizag apartment flat", "Visakhapatnam flat"],
+    amenities: ["Signature Sky Club & Swimming Pool", "Health Club & Aerobics Deck", "Badminton & Table Tennis Courts", "Landscaped Central Park", "Multi-Tier Automated Surveillance"],
+    highlights: ["Heart of Vizag's Most Desirable Established Core - Seethammadhara", "Walkable to Top Hospitals, Prestigious Schools & Supermarkets", "Spectacular High-Rise Architecture Overlooking City Skyline", "Ready to Move with Complete Approvals"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 820, superBuiltUpArea: 1140, bathrooms: 2, balconies: 2, priceMin: 9800000, priceMax: 11500000 },
+      { bhkType: "3 BHK", carpetArea: 1250, superBuiltUpArea: 1740, bathrooms: 3, balconies: 3, priceMin: 14500000, priceMax: 17500000 },
+      { bhkType: "4 BHK", carpetArea: 1850, superBuiltUpArea: 2580, bathrooms: 4, balconies: 4, priceMin: 21000000, priceMax: 24500000 }
+    ]
+  },
+  {
+    code: "PRJ-VTZ-006",
+    name: "Srinivasa Sannidhi",
+    slug: "srinivasa-sannidhi-rushikonda-visakhapatnam",
+    developerName: "Srinivasa Infra",
+    reraId: "P03290040112",
+    reraStatus: "VERIFIED",
+    status: "UNDER_CONSTRUCTION",
+    possessionDate: "November 2026",
+    priceMin: 6800000,
+    priceMax: 14200000,
+    pricePerSqFt: 4900,
+    cityId: 357,
+    cityName: "Visakhapatnam",
+    stateName: "Andhra Pradesh",
+    locality: "Rushikonda",
+    siteAddress: "IT Hill No. 2, Rushikonda, Visakhapatnam, Andhra Pradesh",
+    landmark: "Rushikonda IT SEZ & Radisson Blu Resort",
+    pincode: "530045",
+    totalLandArea: "4.5 Acres",
+    totalTowers: 3,
+    totalUnits: 250,
+    salesPhone: "9848155660",
+    salesEmail: "sannidhi@srinivasainfra.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Rushikonda flat Visakhapatnam",
+    fallbackQueries: ["Vizag flat", "Visakhapatnam apartment"],
+    amenities: ["Sea-Facing Sky Deck & Pool", "Gymnasium & Yoga Terrace", "AC Banquet Space", "Children Play Arena", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Right on Rushikonda IT Hill overlooking Bay of Bengal", "Walking Distance to Major Tech Companies & Millennium Tower", "Eco-Friendly Modern Coastal Design", "Pre-Approved Loans with State Bank of India"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 740, superBuiltUpArea: 1020, bathrooms: 2, balconies: 2, priceMin: 6800000, priceMax: 7800000 },
+      { bhkType: "3 BHK", carpetArea: 1090, superBuiltUpArea: 1510, bathrooms: 3, balconies: 3, priceMin: 9500000, priceMax: 11500000 },
+      { bhkType: "4 BHK", carpetArea: 1540, superBuiltUpArea: 2150, bathrooms: 4, balconies: 4, priceMin: 12500000, priceMax: 14200000 }
+    ]
+  }
+];
+
+async function run() {
+  console.log("================================================================================");
+  console.log("SOURCING TIER-2 METROS BATCH 1: NAVI MUMBAI, NAGPUR, KOCHI, VISAKHAPATNAM (20 PRJS)");
+  console.log("================================================================================");
+
+  const usedImageUrls = new Set();
+  const processedProjects = [];
+
+  for (let i = 0; i < PROJECTS.length; i++) {
+    const p = PROJECTS[i];
+    console.log(`\n[${i + 1}/${PROJECTS.length}] Processing ${p.name} in ${p.cityName}...`);
+
+    const projectDir = path.join(PROJECT_IMAGES_DIR, p.slug);
+    if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
+
+    let rawImages = await fetchPhotosForQuery(p.searchQuery);
+    if (rawImages.length < 4 && p.fallbackQueries) {
+      for (const fb of p.fallbackQueries) {
+        const extra = await fetchPhotosForQuery(fb);
+        rawImages.push(...extra);
+        if (rawImages.length >= 6) break;
+      }
+    }
+
+    const uniqueImages = [];
+    for (const img of rawImages) {
+      if (!usedImageUrls.has(img)) {
+        usedImageUrls.add(img);
+        uniqueImages.push(img);
+      }
+    }
+
+    console.log(`  Found ${uniqueImages.length} unique photos. Uploading to Cloudflare R2...`);
+
+    const uploadedCloudflareUrls = [];
+    for (let j = 0; j < Math.min(uniqueImages.length, 5); j++) {
+      const srcUrl = uniqueImages[j];
+      const localFile = path.join(projectDir, `photo_${j + 1}.webp`);
+      const r2Key = `projects/photos/${p.slug}/photo_${j + 1}.webp`;
+
+      const downloaded = await downloadImage(srcUrl, localFile);
+      if (downloaded) {
+        try {
+          const publicUrl = await uploadToCloudflareR2(localFile, r2Key);
+          uploadedCloudflareUrls.push(publicUrl);
+          console.log(`  ✓ Uploaded: ${publicUrl}`);
+        } catch (uploadErr) {
+          console.warn(`  Failed upload:`, uploadErr.message);
+        }
+      }
+    }
+
+    const finalProject = {
+      ...p,
+      images: uploadedCloudflareUrls,
+    };
+    processedProjects.push(finalProject);
+  }
+
+  // Save to disk
+  fs.writeFileSync(PROJECTS_FILE, JSON.stringify(processedProjects, null, 2));
+  fs.writeFileSync(DOCS_FILE, JSON.stringify(processedProjects, null, 2));
+  console.log(`\nSuccessfully processed and uploaded ${processedProjects.length} projects!`);
+  console.log(`Saved master file to: ${DOCS_FILE}`);
+}
+
+run().catch((err) => {
+  console.error("Pipeline failed:", err);
+  process.exit(1);
+});

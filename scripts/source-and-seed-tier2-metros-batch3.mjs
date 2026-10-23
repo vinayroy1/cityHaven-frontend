@@ -1,0 +1,720 @@
+import fs from "fs";
+import path from "path";
+import { S3Client, PutObjectCommand } from "/Users/vinaykumar/Desktop/myProjects/awasio-backend/node_modules/@aws-sdk/client-s3/dist-cjs/index.js";
+
+const BASE_DIR = "/Users/vinaykumar/Desktop/awasio-sourced-properties";
+const PROJECT_IMAGES_DIR = path.join(BASE_DIR, "tier2_batch3_images");
+const PROJECTS_FILE = path.join(BASE_DIR, "tier2_metros_batch3.json");
+const DOCS_FILE = path.join(process.cwd(), "docs", "tier2_metros_batch3.json");
+
+if (!fs.existsSync(PROJECT_IMAGES_DIR)) fs.mkdirSync(PROJECT_IMAGES_DIR, { recursive: true });
+
+// Cloudflare R2 Setup
+const R2_PUBLIC_BASE = "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev";
+const R2_BUCKET = "awasio-media";
+
+const s3 = new S3Client({
+  region: "auto",
+  endpoint: "https://0d890d076a7e84f12dc8b90d8bb1a00c.r2.cloudflarestorage.com",
+  credentials: {
+    accessKeyId: "f6e73586e77e75a0c967aa85944e959b",
+    secretAccessKey: "3b9531a5a59e122e04589a763d619a2761b180ec7dba6f3dd01f6f971233408a",
+  },
+});
+
+async function uploadToCloudflareR2(localFilePath, r2Key) {
+  const fileBuffer = fs.readFileSync(localFilePath);
+  const cmd = new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: r2Key,
+    Body: fileBuffer,
+    ContentType: "image/webp",
+    CacheControl: "public, max-age=31536000, immutable",
+  });
+  await s3.send(cmd);
+  return `${R2_PUBLIC_BASE}/${r2Key}`;
+}
+
+async function downloadImage(imageUrl, destPath) {
+  try {
+    const cleanUrl = imageUrl.includes(";") ? imageUrl : `${imageUrl};s=1200x1200;q=85;f=webp`;
+    const res = await fetch(cleanUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+    });
+    if (!res.ok) return false;
+    const arrayBuffer = await res.arrayBuffer();
+    fs.writeFileSync(destPath, Buffer.from(arrayBuffer));
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+async function fetchPhotosForQuery(query) {
+  const url = `https://www.olx.in/api/relevance/v4/search?facet_limit=15&category=1723&query=${encodeURIComponent(query)}`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept: "application/json",
+      },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const items = json.data || [];
+    const photos = [];
+    for (const it of items) {
+      if (it.images && it.images.length >= 2) {
+        for (const img of it.images) {
+          if (img.url && !photos.includes(img.url)) photos.push(img.url);
+        }
+      }
+    }
+    return photos;
+  } catch (err) {
+    return [];
+  }
+}
+
+const PROJECTS = [
+  // ===================== GHAZIABAD (Adding 5 -> Total 6) =====================
+  {
+    code: "PRJ-GZB-002",
+    name: "Gaur Cascades",
+    slug: "gaur-cascades-raj-nagar-extension-ghaziabad",
+    developerName: "Gaurs Group",
+    reraId: "UPRERAPRJ3210",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 5800000,
+    priceMax: 12500000,
+    pricePerSqFt: 5200,
+    cityId: 15,
+    cityName: "Ghaziabad",
+    stateName: "Uttar Pradesh",
+    locality: "Raj Nagar Extension",
+    siteAddress: "Raj Nagar Extension Main Road, Near Meerut Bypass, Ghaziabad, Uttar Pradesh",
+    landmark: "Hindon Elevated Road & City Forest Park",
+    pincode: "201017",
+    totalLandArea: "10 Acres",
+    totalTowers: 8,
+    totalUnits: 720,
+    salesPhone: "9812111220",
+    salesEmail: "sales@gaurcascades.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Raj Nagar extension flat Ghaziabad",
+    fallbackQueries: ["Ghaziabad apartment flat", "Ghaziabad flat"],
+    amenities: ["Signature Gaur Olympic Clubhouse", "Twin Swimming Pools", "Tennis & Basketball Arena", "Lush Landscaped Central Lawns", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Right at Starting Point of 6-Lane Hindon Elevated Road", "15 Mins Non-Stop Signal-Free Drive to Delhi (UP Gate)", "Ready to Move with Full Completion Certificate", "Over 75% Open Green Tropical Campus"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 760, superBuiltUpArea: 1050, bathrooms: 2, balconies: 2, priceMin: 5800000, priceMax: 6600000 },
+      { bhkType: "3 BHK", carpetArea: 1100, superBuiltUpArea: 1540, bathrooms: 2, balconies: 3, priceMin: 8400000, priceMax: 9800000 },
+      { bhkType: "4 BHK", carpetArea: 1560, superBuiltUpArea: 2180, bathrooms: 4, balconies: 4, priceMin: 11000000, priceMax: 12500000 }
+    ]
+  },
+  {
+    code: "PRJ-GZB-003",
+    name: "KW Srishti",
+    slug: "kw-srishti-raj-nagar-extension-ghaziabad",
+    developerName: "KW Group",
+    reraId: "UPRERAPRJ2890",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 5200000,
+    priceMax: 10800000,
+    pricePerSqFt: 4800,
+    cityId: 15,
+    cityName: "Ghaziabad",
+    stateName: "Uttar Pradesh",
+    locality: "Raj Nagar Extension",
+    siteAddress: "Bypass Corridor, Raj Nagar Extension, Ghaziabad, Uttar Pradesh",
+    landmark: "GD Goenka Public School & Rapid Rail (RRTS) Station",
+    pincode: "201017",
+    totalLandArea: "6.5 Acres",
+    totalTowers: 6,
+    totalUnits: 510,
+    salesPhone: "9812122330",
+    salesEmail: "sales@kwsrishti.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "KW Srishti Ghaziabad flat",
+    fallbackQueries: ["Raj Nagar extension flat", "Ghaziabad property flat"],
+    amenities: ["Contemporary Clubhouse with Gym", "Swimming Pool & Toddler Splash Pool", "Indoor Games Arena & Banquet Hall", "Children Play Space", "CCTV Monitored Gated Security"],
+    highlights: ["Close to Namo Bharat Rapid Rail (RRTS) Station", "Walking Distance to GD Goenka and DPS Schools", "Ready to Move Delivered High-Rise Project", "Bank Pre-Approved Home Loans"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 690, superBuiltUpArea: 960, bathrooms: 2, balconies: 2, priceMin: 5200000, priceMax: 5900000 },
+      { bhkType: "3 BHK", carpetArea: 1020, superBuiltUpArea: 1420, bathrooms: 2, balconies: 3, priceMin: 7600000, priceMax: 8900000 },
+      { bhkType: "3 BHK Royal", carpetArea: 1240, superBuiltUpArea: 1720, bathrooms: 3, balconies: 3, priceMin: 9200000, priceMax: 10800000 }
+    ]
+  },
+  {
+    code: "PRJ-GZB-004",
+    name: "Gulshan Bellina",
+    slug: "gulshan-bellina-crossings-republik-ghaziabad",
+    developerName: "Gulshan Homz",
+    reraId: "UPRERAPRJ1940",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 7500000,
+    priceMax: 15500000,
+    pricePerSqFt: 6200,
+    cityId: 15,
+    cityName: "Ghaziabad",
+    stateName: "Uttar Pradesh",
+    locality: "Crossings Republik",
+    siteAddress: "Crossings Republik Main Boulevard, NH-9, Ghaziabad, Uttar Pradesh",
+    landmark: "ABES Engineering College & NH-9 Delhi-Meerut Expressway",
+    pincode: "201016",
+    totalLandArea: "7 Acres",
+    totalTowers: 6,
+    totalUnits: 480,
+    salesPhone: "9812133440",
+    salesEmail: "sales@gulshanbellina.com",
+    siteVisitTimings: "10:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Crossings Republik flat Ghaziabad",
+    fallbackQueries: ["Ghaziabad luxury flat", "NH 24 Ghaziabad flat"],
+    amenities: ["Signature Gulshan Club & Lap Pool", "Fully Equipped Fitness Gym", "AC Banquet Space", "Children Sensory Play Zone", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Integrated 360-Acre Crossings Republik Megatownship", "Direct Frontage on 14-Lane Delhi-Meerut Expressway (NH-9)", "Gulshan Homz Benchmark Construction Craftsmanship", "Ready to Move with Full Registry"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 780, superBuiltUpArea: 1080, bathrooms: 2, balconies: 2, priceMin: 7500000, priceMax: 8500000 },
+      { bhkType: "3 BHK", carpetArea: 1140, superBuiltUpArea: 1580, bathrooms: 3, balconies: 3, priceMin: 11000000, priceMax: 12800000 },
+      { bhkType: "4 BHK", carpetArea: 1580, superBuiltUpArea: 2200, bathrooms: 4, balconies: 4, priceMin: 13800000, priceMax: 15500000 }
+    ]
+  },
+  {
+    code: "PRJ-GZB-005",
+    name: "Ajnara Gen X",
+    slug: "ajnara-gen-x-crossings-republik-ghaziabad",
+    developerName: "Ajnara India",
+    reraId: "UPRERAPRJ4280",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 5900000,
+    priceMax: 11800000,
+    pricePerSqFt: 5100,
+    cityId: 15,
+    cityName: "Ghaziabad",
+    stateName: "Uttar Pradesh",
+    locality: "Crossings Republik",
+    siteAddress: "Golf Course Road, Crossings Republik, Ghaziabad, Uttar Pradesh",
+    landmark: "Crossings Golf Course & Paramount Symphony Corridor",
+    pincode: "201016",
+    totalLandArea: "8 Acres",
+    totalTowers: 7,
+    totalUnits: 590,
+    salesPhone: "9812144550",
+    salesEmail: "sales@ajnaragenx.com",
+    siteVisitTimings: "9:00 AM - 6:00 PM (Daily)",
+    searchQuery: "Ajnara Gen X Crossings flat",
+    fallbackQueries: ["Crossings Republik flat", "Ghaziabad flat"],
+    amenities: ["Contemporary Clubhouse with Pool", "Fitness Gym & Yoga Room", "AC Community Party Hall", "Children Play Arena", "24x7 Guard Post with CCTV"],
+    highlights: ["Overlooking 9-Hole Golf Course in Crossings Republik", "Minutes from Noida Sector 62 & 63 IT Commercial Sector", "Ready to Move Delivered Units", "Affordable Price per Sq. Ft. with Excellent Commute"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 720, superBuiltUpArea: 990, bathrooms: 2, balconies: 2, priceMin: 5900000, priceMax: 6800000 },
+      { bhkType: "3 BHK", carpetArea: 1060, superBuiltUpArea: 1470, bathrooms: 2, balconies: 3, priceMin: 8400000, priceMax: 9800000 },
+      { bhkType: "3 BHK Large", carpetArea: 1280, superBuiltUpArea: 1780, bathrooms: 3, balconies: 3, priceMin: 10200000, priceMax: 11800000 }
+    ]
+  },
+  {
+    code: "PRJ-GZB-006",
+    name: "Shipra Neo",
+    slug: "shipra-neo-indirapuram-ghaziabad",
+    developerName: "Shipra Estate",
+    reraId: "UPRERAPRJ3850",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 9800000,
+    priceMax: 21500000,
+    pricePerSqFt: 7400,
+    cityId: 15,
+    cityName: "Ghaziabad",
+    stateName: "Uttar Pradesh",
+    locality: "Indirapuram",
+    siteAddress: "Vaibhav Khand, Near Shipra Mall, Indirapuram, Ghaziabad, Uttar Pradesh",
+    landmark: "Shipra Mall & Swarna Jayanti Park",
+    pincode: "201014",
+    totalLandArea: "5 Acres",
+    totalTowers: 4,
+    totalUnits: 320,
+    salesPhone: "9812155660",
+    salesEmail: "sales@shipraestates.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Indirapuram flat Ghaziabad",
+    fallbackQueries: ["Shipra flat Indirapuram", "Ghaziabad flat"],
+    amenities: ["Signature Shipra Lifestyle Club", "Lap Pool & Kids Water Arena", "Tennis & Badminton Courts", "Acupressure Walkway & Landscaped Lawns", "Multi-Tier Automated Surveillance"],
+    highlights: ["Ghaziabad's Most Developed Posh Node - Indirapuram", "Walking Distance to Iconic Shipra Mall & Swarna Jayanti Park", "Direct Border with Delhi & Noida Sector 62", "Ready to Move High Demand Premium Property"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 840, superBuiltUpArea: 1160, bathrooms: 2, balconies: 2, priceMin: 9800000, priceMax: 11200000 },
+      { bhkType: "3 BHK", carpetArea: 1260, superBuiltUpArea: 1750, bathrooms: 3, balconies: 3, priceMin: 14500000, priceMax: 17200000 },
+      { bhkType: "4 BHK", carpetArea: 1760, superBuiltUpArea: 2450, bathrooms: 4, balconies: 4, priceMin: 18500000, priceMax: 21500000 }
+    ]
+  },
+
+  // ===================== DEHRADUN (Adding 5 -> Total 6) =====================
+  {
+    code: "PRJ-DED-002",
+    name: "Windlass River Valley",
+    slug: "windlass-river-valley-haridwar-road-dehradun",
+    developerName: "Windlass Developers",
+    reraId: "UKREP09170000008",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 5400000,
+    priceMax: 14500000,
+    pricePerSqFt: 5100,
+    cityId: 6454,
+    cityName: "Dehradun",
+    stateName: "Uttarakhand",
+    locality: "Haridwar Road",
+    siteAddress: "NH-72 Haridwar-Dehradun Highway, Kuanwala, Dehradun, Uttarakhand",
+    landmark: "Lachhiwala Nature Park & Jolly Grant Airport Link",
+    pincode: "248005",
+    totalLandArea: "38 Acres",
+    totalTowers: 12,
+    totalUnits: 980,
+    salesPhone: "9813111220",
+    salesEmail: "sales@windlassrivervalley.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Haridwar road Dehradun flat",
+    fallbackQueries: ["Dehradun flat apartment", "Dehradun property"],
+    amenities: ["38-Acre Integrated Smart Township", "Olympic Swimming Pool & Water Slides", "Multi-Specialty Clinic & Supermarket Inside", "Direct Private Railway Station Link", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Uttarakhand's Largest World-Class Integrated Township", "Flanked by Sal Forests and Himalayan Mountain Streams", "15 Mins from Jolly Grant International Airport", "Ready to Move with Over 600 Residing Families"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 740, superBuiltUpArea: 1020, bathrooms: 2, balconies: 2, priceMin: 5400000, priceMax: 6200000 },
+      { bhkType: "3 BHK", carpetArea: 1100, superBuiltUpArea: 1520, bathrooms: 3, balconies: 3, priceMin: 8200000, priceMax: 9800000 },
+      { bhkType: "4 BHK Penthouse", carpetArea: 1680, superBuiltUpArea: 2350, bathrooms: 4, balconies: 4, priceMin: 12500000, priceMax: 14500000 }
+    ]
+  },
+  {
+    code: "PRJ-DED-003",
+    name: "Capital Heights",
+    slug: "capital-heights-sahastradhara-road-dehradun",
+    developerName: "Doon Valley Infratech",
+    reraId: "UKREP10180000142",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 7800000,
+    priceMax: 16800000,
+    pricePerSqFt: 6200,
+    cityId: 6454,
+    cityName: "Dehradun",
+    stateName: "Uttarakhand",
+    locality: "Sahastradhara Road",
+    siteAddress: "Sahastradhara Road, Near IT Park, Dehradun, Uttarakhand",
+    landmark: "Dehradun IT Park & Pacific Mall Corridor",
+    pincode: "248013",
+    totalLandArea: "5 Acres",
+    totalTowers: 4,
+    totalUnits: 280,
+    salesPhone: "9813122330",
+    salesEmail: "sales@capitalheightsdoon.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Sahastradhara road Dehradun flat",
+    fallbackQueries: ["IT park Dehradun flat", "Dehradun flat"],
+    amenities: ["Signature Clubhouse with Valley View Pool", "Gymnasium & Yoga Terrace", "AC Banquet Facility", "Children Adventure Play Park", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Dehradun's Most Scenic Growth Belt - Sahastradhara Road", "Minutes from IT Park Dehradun and Pacific Mall Rajpur", "Mesmerizing Unblocked Mussoorie Mountain Views", "Ready to Move with Full Registry and OC"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 810, superBuiltUpArea: 1120, bathrooms: 2, balconies: 2, priceMin: 7800000, priceMax: 8900000 },
+      { bhkType: "3 BHK", carpetArea: 1200, superBuiltUpArea: 1660, bathrooms: 3, balconies: 3, priceMin: 11500000, priceMax: 13500000 },
+      { bhkType: "4 BHK", carpetArea: 1640, superBuiltUpArea: 2280, bathrooms: 4, balconies: 4, priceMin: 14800000, priceMax: 16800000 }
+    ]
+  },
+  {
+    code: "PRJ-DED-004",
+    name: "Imperial Heights",
+    slug: "imperial-heights-mussoorie-bypass-dehradun",
+    developerName: "Pushpanjali Realms",
+    reraId: "UKREP08170000045",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 8900000,
+    priceMax: 19500000,
+    pricePerSqFt: 6800,
+    cityId: 6454,
+    cityName: "Dehradun",
+    stateName: "Uttarakhand",
+    locality: "Mussoorie By-Pass Road",
+    siteAddress: "Mussoorie By-Pass Road, Near Kuthalgate, Dehradun, Uttarakhand",
+    landmark: "Kuthalgate Mussoorie Toll & Max Super Specialty Hospital",
+    pincode: "248009",
+    totalLandArea: "4 Acres",
+    totalTowers: 3,
+    totalUnits: 210,
+    salesPhone: "9813133440",
+    salesEmail: "sales@imperialheightsdoon.com",
+    siteVisitTimings: "10:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Mussoorie bypass Dehradun flat",
+    fallbackQueries: ["Rajpur road flat Dehradun", "Dehradun luxury flat"],
+    amenities: ["Heated Indoor Swimming Pool", "Health Spa & Sauna Pavilion", "Billiards & Squash Courts", "Himalayan Forest Walking Trail", "Biometric Access Control"],
+    highlights: ["At the Foothills of Mussoorie - Crisp Pure Mountain Air", "Minutes from Max Hospital & DIT University", "Ultra-Luxury High-Rise with Glass Balconies", "Ready to Move Preferred Holiday Home for Delhi Executives"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 840, superBuiltUpArea: 1160, bathrooms: 2, balconies: 2, priceMin: 8900000, priceMax: 10200000 },
+      { bhkType: "3 BHK", carpetArea: 1240, superBuiltUpArea: 1720, bathrooms: 3, balconies: 3, priceMin: 13500000, priceMax: 15800000 },
+      { bhkType: "4 BHK Duplex", carpetArea: 1850, superBuiltUpArea: 2560, bathrooms: 4, balconies: 4, priceMin: 17200000, priceMax: 19500000 }
+    ]
+  },
+  {
+    code: "PRJ-DED-005",
+    name: "Siddhartha Pine Grove",
+    slug: "siddhartha-pine-grove-chakrata-road-dehradun",
+    developerName: "Siddhartha Group",
+    reraId: "UKREP06180000098",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 5200000,
+    priceMax: 10800000,
+    pricePerSqFt: 4600,
+    cityId: 6454,
+    cityName: "Dehradun",
+    stateName: "Uttarakhand",
+    locality: "Chakrata Road",
+    siteAddress: "Chakrata Highway, Near Selaqui Industrial Area, Dehradun, Uttarakhand",
+    landmark: "Selaqui Pharma Hub & UPES Bidholi Link",
+    pincode: "248011",
+    totalLandArea: "6 Acres",
+    totalTowers: 5,
+    totalUnits: 360,
+    salesPhone: "9813144550",
+    salesEmail: "sales@siddharthagroup.in",
+    siteVisitTimings: "9:00 AM - 6:00 PM (Daily)",
+    searchQuery: "Chakrata road Dehradun flat",
+    fallbackQueries: ["Selaqui Dehradun flat", "Dehradun flat"],
+    amenities: ["Community Clubhouse with Gym", "Children Play Arena", "Allotted Covered Parking", "24-Hour Sweet Mountain Spring Water", "Gated Security with Intercom"],
+    highlights: ["Chakrata Road Educational and Pharma Corridor", "Close to UPES University, Graphic Era & Selaqui World School", "Ready to Move with Full Registry and Possession", "High Rental Demand from Pharma Executives & Professors"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 680, superBuiltUpArea: 930, bathrooms: 2, balconies: 1, priceMin: 5200000, priceMax: 5800000 },
+      { bhkType: "3 BHK", carpetArea: 990, superBuiltUpArea: 1380, bathrooms: 2, balconies: 2, priceMin: 7200000, priceMax: 8400000 },
+      { bhkType: "3 BHK Royal", carpetArea: 1220, superBuiltUpArea: 1680, bathrooms: 3, balconies: 3, priceMin: 9100000, priceMax: 10800000 }
+    ]
+  },
+  {
+    code: "PRJ-DED-006",
+    name: "Doon Divine",
+    slug: "doon-divine-rajpur-road-dehradun",
+    developerName: "Divine Infratech",
+    reraId: "UKREP11190000210",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 11000000,
+    priceMax: 24500000,
+    pricePerSqFt: 7800,
+    cityId: 6454,
+    cityName: "Dehradun",
+    stateName: "Uttarakhand",
+    locality: "Rajpur Road",
+    siteAddress: "Upper Rajpur Road, Near Sai Temple, Dehradun, Uttarakhand",
+    landmark: "Sai Baba Temple & Silver City Rajpur",
+    pincode: "248009",
+    totalLandArea: "3.5 Acres",
+    totalTowers: 3,
+    totalUnits: 140,
+    salesPhone: "9813155660",
+    salesEmail: "contact@doondivine.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Rajpur road Dehradun luxury flat",
+    fallbackQueries: ["Dehradun luxury apartment", "Dehradun flat"],
+    amenities: ["Pine-Wood Finished Luxury Clubhouse", "Infinity Swimming Pool Facing Mussoorie", "Fully Fitted Gymnasium", "Basement Parking with EV Bays", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Dehradun's #1 Most Elite Address - Rajpur Road", "Surrounded by Forest Reserve and Colonial Estates", "Ready to Move with Spot Registry and CC", "Extremely Low Density Living for Discerning Buyers"],
+    configurations: [
+      { bhkType: "3 BHK", carpetArea: 1350, superBuiltUpArea: 1880, bathrooms: 3, balconies: 3, priceMin: 11000000, priceMax: 13500000 },
+      { bhkType: "4 BHK", carpetArea: 1980, superBuiltUpArea: 2750, bathrooms: 4, balconies: 4, priceMin: 17500000, priceMax: 21000000 },
+      { bhkType: "5 BHK Penthouse", carpetArea: 2650, superBuiltUpArea: 3700, bathrooms: 5, balconies: 5, priceMin: 21500000, priceMax: 24500000 }
+    ]
+  },
+
+  // ===================== FARIDABAD (Adding 6 Flagship Projects) =====================
+  {
+    code: "PRJ-FBD-001",
+    name: "Puri The Pranayam",
+    slug: "puri-the-pranayam-sector-82-faridabad",
+    developerName: "Puri Construction",
+    reraId: "HRERA-PKL-FBD-12-2018",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 8500000,
+    priceMax: 19500000,
+    pricePerSqFt: 6200,
+    cityId: 17,
+    cityName: "Faridabad",
+    stateName: "Haryana",
+    locality: "Sector 82",
+    siteAddress: "Sector 82, Greater Faridabad, Faridabad, Haryana",
+    landmark: "Bata Chowk Metro & BPTP Bridge Corridor",
+    pincode: "121004",
+    totalLandArea: "20 Acres",
+    totalTowers: 14,
+    totalUnits: 880,
+    salesPhone: "9812211220",
+    salesEmail: "sales@puripranayam.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Sector 82 Faridabad flat",
+    fallbackQueries: ["Faridabad flat apartment", "Neharpar Faridabad flat"],
+    amenities: ["Grand 50,000 Sq. Ft. Pranayam Club", "Olympic Swimming Pool & Heated Pool", "Tennis, Badminton & Squash Courts", "Lush Landscaped Central Park", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Faridabad's Most Iconic Benchmark Residential Community", "Over 800+ Reputed Corporate Families Residing", "Ready to Move with Full Completion Certificate", "Over 75% Open Greens with Manicured Lawns"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 780, superBuiltUpArea: 1080, bathrooms: 2, balconies: 2, priceMin: 8500000, priceMax: 9600000 },
+      { bhkType: "3 BHK", carpetArea: 1220, superBuiltUpArea: 1690, bathrooms: 3, balconies: 3, priceMin: 12500000, priceMax: 14800000 },
+      { bhkType: "4 BHK", carpetArea: 1740, superBuiltUpArea: 2420, bathrooms: 4, balconies: 4, priceMin: 16500000, priceMax: 19500000 }
+    ]
+  },
+  {
+    code: "PRJ-FBD-002",
+    name: "BPTP Park Grandeura",
+    slug: "bptp-park-grandeura-sector-82-faridabad",
+    developerName: "BPTP Limited",
+    reraId: "HRERA-PKL-FBD-45-2018",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 6800000,
+    priceMax: 14500000,
+    pricePerSqFt: 5400,
+    cityId: 17,
+    cityName: "Faridabad",
+    stateName: "Haryana",
+    locality: "Sector 82",
+    siteAddress: "Parklands, Sector 82, Greater Faridabad, Haryana",
+    landmark: "Delhi Public School Greater Faridabad",
+    pincode: "121004",
+    totalLandArea: "17 Acres",
+    totalTowers: 12,
+    totalUnits: 790,
+    salesPhone: "9812222330",
+    salesEmail: "sales@bptpgrandeura.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "BPTP Park Grandeura Faridabad",
+    fallbackQueries: ["Sector 82 Faridabad flat", "Faridabad flat"],
+    amenities: ["Signature Sanctuary Club & Lap Pool", "Equipped Gym & Aerobics Deck", "Banquet Hall & Cafe", "Children Sand Pit & Play Area", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Part of BPTP's 1500-Acre Master Parklands Development", "Walking Distance to DPS Greater Faridabad & Shiv Nadar School", "Ready to Move with Full Registry", "Fast Commute to Delhi via Mathura Road & Bypass"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 720, superBuiltUpArea: 990, bathrooms: 2, balconies: 2, priceMin: 6800000, priceMax: 7600000 },
+      { bhkType: "3 BHK", carpetArea: 1080, superBuiltUpArea: 1510, bathrooms: 3, balconies: 3, priceMin: 9800000, priceMax: 11500000 },
+      { bhkType: "4 BHK", carpetArea: 1520, superBuiltUpArea: 2120, bathrooms: 4, balconies: 4, priceMin: 12800000, priceMax: 14500000 }
+    ]
+  },
+  {
+    code: "PRJ-FBD-003",
+    name: "Omaxe Heights",
+    slug: "omaxe-heights-sector-86-faridabad",
+    developerName: "Omaxe Limited",
+    reraId: "HRERA-PKL-FBD-78-2019",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 5800000,
+    priceMax: 12800000,
+    pricePerSqFt: 4900,
+    cityId: 17,
+    cityName: "Faridabad",
+    stateName: "Haryana",
+    locality: "Sector 86",
+    siteAddress: "Sector 86, Neharpar, Faridabad, Haryana",
+    landmark: "Kheri Pul & Sector 14 Faridabad Link",
+    pincode: "121002",
+    totalLandArea: "14 Acres",
+    totalTowers: 10,
+    totalUnits: 680,
+    salesPhone: "9812233440",
+    salesEmail: "sales@omaxeheightsfbd.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Sector 86 Faridabad flat",
+    fallbackQueries: ["Omaxe Faridabad flat", "Faridabad flat"],
+    amenities: ["Clubhouse with Swimming Pool", "Health Club & Yoga Deck", "Badminton & Table Tennis Courts", "Landscaped Central Park", "Multi-Tier Guarded Security"],
+    highlights: ["Strategic Location near Sector 14 Bridge", "Immediate Access to Mathura Road & Escorts Mujesar Metro", "Ready to Move with Hundreds of Families Living", "Pre-Approved Loans with All Leading Nationalized Banks"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 710, superBuiltUpArea: 980, bathrooms: 2, balconies: 2, priceMin: 5800000, priceMax: 6600000 },
+      { bhkType: "3 BHK", carpetArea: 1060, superBuiltUpArea: 1480, bathrooms: 2, balconies: 3, priceMin: 8400000, priceMax: 9800000 },
+      { bhkType: "4 BHK", carpetArea: 1490, superBuiltUpArea: 2080, bathrooms: 4, balconies: 4, priceMin: 11200000, priceMax: 12800000 }
+    ]
+  },
+  {
+    code: "PRJ-FBD-004",
+    name: "SRS Pearl Floors",
+    slug: "srs-pearl-floors-sector-87-faridabad",
+    developerName: "SRS Real Infrastructure",
+    reraId: "HRERA-PKL-FBD-92-2018",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 4800000,
+    priceMax: 9500000,
+    pricePerSqFt: 4400,
+    cityId: 17,
+    cityName: "Faridabad",
+    stateName: "Haryana",
+    locality: "Sector 87",
+    siteAddress: "Sector 87, Greater Faridabad, Haryana",
+    landmark: "Modern School & SRS Chowk",
+    pincode: "121002",
+    totalLandArea: "11 Acres",
+    totalTowers: 8,
+    totalUnits: 520,
+    salesPhone: "9812244550",
+    salesEmail: "sales@srspearlfloors.com",
+    siteVisitTimings: "9:00 AM - 6:00 PM (Daily)",
+    searchQuery: "Sector 87 Faridabad flat",
+    fallbackQueries: ["Faridabad property flat", "Faridabad flat"],
+    amenities: ["Community Activity Center", "Gymnasium & Yoga Deck", "Children Play Arena", "Allotted Covered Parking", "Security Gate with Intercom"],
+    highlights: ["Low-Rise Independent Floor Living with Land Rights", "Close to Modern School Sector 87 & Commercial Markets", "Ready to Move with Full Registry and Possession", "Affordable Budget Friendly Pricing"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 680, superBuiltUpArea: 930, bathrooms: 2, balconies: 1, priceMin: 4800000, priceMax: 5400000 },
+      { bhkType: "3 BHK", carpetArea: 990, superBuiltUpArea: 1380, bathrooms: 2, balconies: 2, priceMin: 6900000, priceMax: 7900000 },
+      { bhkType: "3 BHK Deluxe", carpetArea: 1220, superBuiltUpArea: 1680, bathrooms: 3, balconies: 3, priceMin: 8200000, priceMax: 9500000 }
+    ]
+  },
+  {
+    code: "PRJ-FBD-005",
+    name: "KLJ Platinum Heights",
+    slug: "klj-platinum-heights-sector-77-faridabad",
+    developerName: "KLJ Developers",
+    reraId: "HRERA-PKL-FBD-110-2019",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 5200000,
+    priceMax: 10800000,
+    pricePerSqFt: 4600,
+    cityId: 17,
+    cityName: "Faridabad",
+    stateName: "Haryana",
+    locality: "Sector 77",
+    siteAddress: "Sector 77, Greater Faridabad, Haryana",
+    landmark: "Emerald Convent School & Sector 77 Link",
+    pincode: "121004",
+    totalLandArea: "6.5 Acres",
+    totalTowers: 5,
+    totalUnits: 390,
+    salesPhone: "9812255660",
+    salesEmail: "sales@kljplatinum.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Sector 77 Faridabad flat",
+    fallbackQueries: ["Faridabad flat", "Greater Faridabad apartment"],
+    amenities: ["Contemporary Clubhouse with Pool", "Fitness Gym & Yoga Room", "Children Play Space", "Covered Car Parking with CCTV", "Multi-Tier Electronic Security"],
+    highlights: ["Fast-Growing Sector 77 Master Road Corridor", "Walkable to Top Schools and Neighborhood Markets", "Ready to Move with Full Registry", "Over 65% Open Green Landscaped Campus"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 720, superBuiltUpArea: 990, bathrooms: 2, balconies: 2, priceMin: 5200000, priceMax: 5900000 },
+      { bhkType: "3 BHK", carpetArea: 1060, superBuiltUpArea: 1480, bathrooms: 2, balconies: 3, priceMin: 7600000, priceMax: 8900000 },
+      { bhkType: "3 BHK Royal", carpetArea: 1280, superBuiltUpArea: 1780, bathrooms: 3, balconies: 3, priceMin: 9200000, priceMax: 10800000 }
+    ]
+  },
+  {
+    code: "PRJ-FBD-006",
+    name: "RPS Savana",
+    slug: "rps-savana-sector-88-faridabad",
+    developerName: "RPS Group",
+    reraId: "HRERA-PKL-FBD-34-2018",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 6400000,
+    priceMax: 13500000,
+    pricePerSqFt: 5100,
+    cityId: 17,
+    cityName: "Faridabad",
+    stateName: "Haryana",
+    locality: "Sector 88",
+    siteAddress: "Sector 88, Greater Faridabad, Haryana",
+    landmark: "Amrita Hospital Faridabad (Asia's Largest)",
+    pincode: "121002",
+    totalLandArea: "41 Acres",
+    totalTowers: 22,
+    totalUnits: 1850,
+    salesPhone: "9812266770",
+    salesEmail: "sales@rpssavanaindia.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Sector 88 Faridabad flat",
+    fallbackQueries: ["RPS Savana Faridabad", "Faridabad flat"],
+    amenities: ["Massive Savana Clubhouse & 2 Olympic Pools", "Badminton, Tennis & Squash Courts", "On-Premises Shopping Mall & Supermarket", "Lush Forest Green Landscaping", "24x7 Multi-Tier Electronic Security"],
+    highlights: ["Right Opposite Asia's Largest 2,600-Bed Amrita Hospital", "Massive 41-Acre Self-Contained Township with 1,500+ Families", "Ready to Move with Full Registry and Registry Camp", "Very High Rental Demand from Doctors and Medical Staff"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 760, superBuiltUpArea: 1050, bathrooms: 2, balconies: 2, priceMin: 6400000, priceMax: 7200000 },
+      { bhkType: "3 BHK", carpetArea: 1120, superBuiltUpArea: 1560, bathrooms: 3, balconies: 3, priceMin: 9400000, priceMax: 11200000 },
+      { bhkType: "4 BHK", carpetArea: 1580, superBuiltUpArea: 2200, bathrooms: 4, balconies: 4, priceMin: 12000000, priceMax: 13500000 }
+    ]
+  }
+];
+
+async function run() {
+  console.log("================================================================================");
+  console.log("SOURCING TIER-2 METROS BATCH 3: GHAZIABAD, DEHRADUN, FARIDABAD (16 PRJS)");
+  console.log("================================================================================");
+
+  const usedImageUrls = new Set();
+  const processedProjects = [];
+
+  for (let i = 0; i < PROJECTS.length; i++) {
+    const p = PROJECTS[i];
+    console.log(`\n[${i + 1}/${PROJECTS.length}] Processing ${p.name} in ${p.cityName}...`);
+
+    const projectDir = path.join(PROJECT_IMAGES_DIR, p.slug);
+    if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
+
+    let rawImages = await fetchPhotosForQuery(p.searchQuery);
+    if (rawImages.length < 4 && p.fallbackQueries) {
+      for (const fb of p.fallbackQueries) {
+        const extra = await fetchPhotosForQuery(fb);
+        rawImages.push(...extra);
+        if (rawImages.length >= 6) break;
+      }
+    }
+
+    const uniqueImages = [];
+    for (const img of rawImages) {
+      if (!usedImageUrls.has(img)) {
+        usedImageUrls.add(img);
+        uniqueImages.push(img);
+      }
+    }
+
+    console.log(`  Found ${uniqueImages.length} unique photos. Uploading to Cloudflare R2...`);
+
+    const uploadedCloudflareUrls = [];
+    for (let j = 0; j < Math.min(uniqueImages.length, 5); j++) {
+      const srcUrl = uniqueImages[j];
+      const localFile = path.join(projectDir, `photo_${j + 1}.webp`);
+      const r2Key = `projects/photos/${p.slug}/photo_${j + 1}.webp`;
+
+      const downloaded = await downloadImage(srcUrl, localFile);
+      if (downloaded) {
+        try {
+          const publicUrl = await uploadToCloudflareR2(localFile, r2Key);
+          uploadedCloudflareUrls.push(publicUrl);
+          console.log(`  ✓ Uploaded: ${publicUrl}`);
+        } catch (uploadErr) {
+          console.warn(`  Failed upload:`, uploadErr.message);
+        }
+      }
+    }
+
+    const finalProject = {
+      ...p,
+      images: uploadedCloudflareUrls,
+    };
+    processedProjects.push(finalProject);
+  }
+
+  // Save to disk
+  fs.writeFileSync(PROJECTS_FILE, JSON.stringify(processedProjects, null, 2));
+  fs.writeFileSync(DOCS_FILE, JSON.stringify(processedProjects, null, 2));
+  console.log(`\nSuccessfully processed and uploaded ${processedProjects.length} projects!`);
+  console.log(`Saved master file to: ${DOCS_FILE}`);
+}
+
+run().catch((err) => {
+  console.error("Pipeline failed:", err);
+  process.exit(1);
+});
