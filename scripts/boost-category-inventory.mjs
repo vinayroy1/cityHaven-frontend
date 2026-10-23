@@ -91,6 +91,9 @@ const CITY_QUERY_MAP = {
   "Kolkata": "Kolkata",
   "Navi Mumbai": "Navi Mumbai",
   "Greater Noida": "Greater Noida",
+  "Visakhapatnam": "Vizag",
+  "Kochi": "Kochi",
+  "Thiruvananthapuram": "Trivandrum",
 };
 
 const CAT_QUERY = {
@@ -314,6 +317,50 @@ export async function runBoostPipeline(phase = 1) {
       for (const cat of CATEGORIES) {
         try {
           const props = await sourceMultipleProperties(city, cat, 5, seenIds, seenImages);
+          collectedProperties.push(...props);
+          console.log(`   + Added ${props.length}x [${cat.key}] in ${city.cityName}`);
+        } catch (err) {
+          console.error(`   ! Failed for ${city.cityName} - ${cat.key}:`, err.message);
+        }
+      }
+    }
+  } else if (phase === 3) {
+    // PHASE 3: Fill remaining category gaps across top metros and high-growth Tier-2 hubs to achieve 8-10+ per category
+    const specificTargets = [
+      { cityName: "Pune", categories: ["RESIDENTIAL_SELL"], count: 5 },
+      { cityName: "Hyderabad", categories: ["RESIDENTIAL_SELL", "COMMERCIAL_SELL"], count: 4 },
+      { cityName: "Gurugram", categories: ["COMMERCIAL_SELL"], count: 3 },
+      { cityName: "New Delhi", categories: ["COMMERCIAL_SELL"], count: 3 },
+      { cityName: "Mumbai", categories: ["COMMERCIAL_SELL"], count: 3 },
+      { cityName: "Bengaluru", categories: ["COMMERCIAL_SELL"], count: 4 },
+      { cityName: "Lucknow", categories: ["RESIDENTIAL_SELL"], count: 3 },
+      { cityName: "Chandigarh", categories: ["RESIDENTIAL_SELL", "COMMERCIAL_RENT"], count: 4 },
+      { cityName: "Noida", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL"], count: 4 },
+      { cityName: "Jaipur", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 4 },
+      { cityName: "Kolkata", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 4 },
+      { cityName: "Chennai", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 5 },
+      { cityName: "Ahmedabad", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 5 },
+      // Tier-2 regional hubs
+      { cityName: "Thane", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 4 },
+      { cityName: "Navi Mumbai", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 4 },
+      { cityName: "Surat", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 4 },
+      { cityName: "Vadodara", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 4 },
+      { cityName: "Kochi", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 4 },
+      { cityName: "Bhopal", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 4 },
+      { cityName: "Visakhapatnam", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 4 },
+      { cityName: "Varanasi", categories: ["RESIDENTIAL_RENT", "RESIDENTIAL_SELL", "COMMERCIAL_RENT", "COMMERCIAL_SELL", "PLOT_LAND"], count: 4 },
+    ];
+
+    for (const target of specificTargets) {
+      const city = CITIES_59.find(c => c.cityName === target.cityName);
+      if (!city) continue;
+      console.log(`\n>>> Processing Target City: ${city.cityName} (ID: ${city.cityId})`);
+
+      for (const catKey of target.categories) {
+        const cat = CATEGORIES.find(c => c.key === catKey);
+        if (!cat) continue;
+        try {
+          const props = await sourceMultipleProperties(city, cat, target.count, seenIds, seenImages);
           collectedProperties.push(...props);
           console.log(`   + Added ${props.length}x [${cat.key}] in ${city.cityName}`);
         } catch (err) {
