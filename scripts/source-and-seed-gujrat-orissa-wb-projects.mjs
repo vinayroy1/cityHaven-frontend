@@ -1,0 +1,1065 @@
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+import { S3Client, PutObjectCommand } from "/Users/vinaykumar/Desktop/myProjects/awasio-backend/node_modules/@aws-sdk/client-s3/dist-cjs/index.js";
+
+const BASE_DIR = "/Users/vinaykumar/Desktop/awasio-sourced-properties";
+const PROJECT_IMAGES_DIR = path.join(BASE_DIR, "gujrat_orissa_wb_project_images");
+const PROJECTS_FILE = path.join(BASE_DIR, "gujrat_orissa_wb_projects.json");
+const DOCS_DIR = path.join(process.cwd(), "docs");
+
+if (!fs.existsSync(PROJECT_IMAGES_DIR)) fs.mkdirSync(PROJECT_IMAGES_DIR, { recursive: true });
+if (!fs.existsSync(DOCS_DIR)) fs.mkdirSync(DOCS_DIR, { recursive: true });
+
+// Cloudflare R2 Setup
+const R2_PUBLIC_BASE = "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev";
+const R2_BUCKET = "awasio-media";
+
+const s3 = new S3Client({
+  region: "auto",
+  endpoint: "https://0d890d076a7e84f12dc8b90d8bb1a00c.r2.cloudflarestorage.com",
+  credentials: {
+    accessKeyId: "f6e73586e77e75a0c967aa85944e959b",
+    secretAccessKey: "3b9531a5a59e122e04589a763d619a2761b180ec7dba6f3dd01f6f971233408a",
+  },
+});
+
+async function uploadToCloudflareR2(localFilePath, r2Key) {
+  const fileBuffer = fs.readFileSync(localFilePath);
+  const cmd = new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: r2Key,
+    Body: fileBuffer,
+    ContentType: "image/webp",
+    CacheControl: "public, max-age=31536000, immutable",
+  });
+  await s3.send(cmd);
+  return `${R2_PUBLIC_BASE}/${r2Key}`;
+}
+
+async function downloadImage(imageUrl, destPath) {
+  try {
+    const cleanUrl = imageUrl.includes(";") ? imageUrl : `${imageUrl};s=1200x1200;q=85;f=webp`;
+    const res = await fetch(cleanUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+    });
+    if (!res.ok) return false;
+    const arrayBuffer = await res.arrayBuffer();
+    fs.writeFileSync(destPath, Buffer.from(arrayBuffer));
+    return true;
+  } catch (err) {
+    console.error(`  Failed to download image:`, err.message);
+    return false;
+  }
+}
+
+// 12 Flagship Projects for Gujarat, Odisha, and West Bengal
+const PROJECTS = [
+  // ===================== GUJARAT: SURAT (id: 36) =====================
+  {
+    code: "PRJ-STV-001",
+    name: "Sangini Arise",
+    slug: "sangini-arise-vesu-surat",
+    developerName: "Sangini Group",
+    reraId: "PR/GJ/SURAT/SURAT CITY/SUDA/RAA07123/200620",
+    reraStatus: "VERIFIED",
+    status: "UNDER_CONSTRUCTION",
+    possessionDate: "December 2026",
+    priceMin: 11000000,
+    priceMax: 24000000,
+    pricePerSqFt: 5600,
+    cityId: 36,
+    cityName: "Surat",
+    stateName: "Gujarat",
+    locality: "Vesu",
+    siteAddress: "Near GD Goenka School, VIP Road, Vesu, Surat, Gujarat",
+    landmark: "VIP Road Vesu & Surat Airport Access",
+    pincode: "395007",
+    totalLandArea: "4.5 Acres",
+    totalTowers: 4,
+    totalUnits: 220,
+    salesPhone: "9825145620",
+    salesEmail: "sales@sanginigroup.com",
+    siteVisitTimings: "9:30 AM - 7:00 PM (All 7 Days)",
+    searchQuery: "Vesu Surat flat apartment",
+    fallbackQueries: ["Surat luxury flat", "Surat apartment flat"],
+    amenities: [
+      "Signature Lifestyle Clubhouse with Infinity Pool",
+      "Air-Conditioned Banquet Hall & Preview Theatre",
+      "Tennis, Badminton & Squash Courts",
+      "Multi-Tier Security with Smart Card Elevators",
+      "EV Charging Stations in Multi-Level Parking",
+      "Landscaped Aroma Gardens & Jogging Track"
+    ],
+    highlights: [
+      "Surat's Most Elite Vesu VIP Road Luxury Address",
+      "Double Height Grand Air-Conditioned Entrance Foyer",
+      "Vastu-Compliant 3 & 4 BHK Palatial Residences",
+      "IGBC Green Homes Gold Pre-Certified"
+    ],
+    configurations: [
+      {
+        bhkType: "3 BHK",
+        carpetArea: 1350,
+        superBuiltUpArea: 1960,
+        bathrooms: 3,
+        balconies: 2,
+        priceMin: 11000000,
+        priceMax: 13500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      },
+      {
+        bhkType: "4 BHK",
+        carpetArea: 1980,
+        superBuiltUpArea: 2850,
+        bathrooms: 4,
+        balconies: 3,
+        priceMin: 16500000,
+        priceMax: 19500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/4bhk-luxury.webp",
+      },
+      {
+        bhkType: "4.5 BHK Penthouse",
+        carpetArea: 2550,
+        superBuiltUpArea: 3650,
+        bathrooms: 5,
+        balconies: 4,
+        priceMin: 21500000,
+        priceMax: 24000000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/4bhk-luxury.webp",
+      }
+    ]
+  },
+  {
+    code: "PRJ-STV-002",
+    name: "Happy Elanza",
+    slug: "happy-elanza-pal-surat",
+    developerName: "Happy Home Group",
+    reraId: "PR/GJ/SURAT/SURAT CITY/SUDA/MAA06541/150120",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 6500000,
+    priceMax: 12500000,
+    pricePerSqFt: 4400,
+    cityId: 36,
+    cityName: "Surat",
+    stateName: "Gujarat",
+    locality: "Pal",
+    siteAddress: "Near Rajhans Cinema, Pal - Hazira Road, Pal, Surat, Gujarat",
+    landmark: "Rajhans Multiplex & Gaurav Path",
+    pincode: "394510",
+    totalLandArea: "5 Acres",
+    totalTowers: 5,
+    totalUnits: 320,
+    salesPhone: "9825238910",
+    salesEmail: "contact@happyhomegroup.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Pal Surat apartment flat",
+    fallbackQueries: ["Adajan Surat flat", "Surat residential flat"],
+    amenities: [
+      "Full Sized Gymnasium & Aerobics Deck",
+      "Swimming Pool with Kids Splash Arena",
+      "Clubhouse with Indoor Snooker & Table Tennis",
+      "Landscaped Podium Garden with Gazebos",
+      "24x7 Tier-2 Security with Video Door Phones",
+      "Spacious Covered Allotted Car Parking"
+    ],
+    highlights: [
+      "Prime Residential Node in Pal with Excellent Civic Amenities",
+      "Wide 45-Meter Gaurav Path Direct Connectivity",
+      "Ready to Move with Immediate Registry & Loan Approvals",
+      "Over 70% Open Space with Designer Landscaping"
+    ],
+    configurations: [
+      {
+        bhkType: "2 BHK",
+        carpetArea: 840,
+        superBuiltUpArea: 1180,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 6500000,
+        priceMax: 7200000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "3 BHK",
+        carpetArea: 1150,
+        superBuiltUpArea: 1620,
+        bathrooms: 3,
+        balconies: 2,
+        priceMin: 8800000,
+        priceMax: 9800000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      },
+      {
+        bhkType: "3 BHK Royal",
+        carpetArea: 1420,
+        superBuiltUpArea: 1980,
+        bathrooms: 3,
+        balconies: 3,
+        priceMin: 11000000,
+        priceMax: 12500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-large.webp",
+      }
+    ]
+  },
+
+  // ===================== GUJARAT: VADODARA (id: 37) =====================
+  {
+    code: "PRJ-BDQ-001",
+    name: "Shree Balaji Wind Park",
+    slug: "shree-balaji-wind-park-gotri-vadodara",
+    developerName: "Shree Balaji Group",
+    reraId: "PR/GJ/VADODARA/VADODARA/VUDA/RAA04812/120219",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 7200000,
+    priceMax: 15500000,
+    pricePerSqFt: 4500,
+    cityId: 37,
+    cityName: "Vadodara",
+    stateName: "Gujarat",
+    locality: "Gotri",
+    siteAddress: "Gotri - Sevasi 30-Meter Main Road, Gotri, Vadodara, Gujarat",
+    landmark: "Sevasi Canal Road & Gotri Lake",
+    pincode: "390021",
+    totalLandArea: "6 Acres",
+    totalTowers: 6,
+    totalUnits: 360,
+    salesPhone: "9825310874",
+    salesEmail: "sales@shreebalajigroup.com",
+    siteVisitTimings: "9:00 AM - 7:00 PM (Daily)",
+    searchQuery: "Gotri Vadodara flat apartment",
+    fallbackQueries: ["Vadodara luxury flat", "Bhayli Vadodara flat"],
+    amenities: [
+      "Ultra-Modern Club Balaji with Temperature-Controlled Pool",
+      "Full Squash Court & Badminton Hall",
+      "Open Air Amphitheatre & Sunset Gazebo",
+      "High-Tech Fitness Gym with Personal Trainers",
+      "Multi-Tier Electronic Security with RFID Vehicle Tags",
+      "Basement Parking with Individual EV Charging Outlets"
+    ],
+    highlights: [
+      "Vadodara's Most Prestigious Gotri-Sevasi Growth Corridor",
+      "Over 75% Lush Greenery & Wind-Engineered Tower Layout",
+      "Walking Distance to International Schools & Healthcare Hubs",
+      "Ready to Move with Full VUDA BU Permission"
+    ],
+    configurations: [
+      {
+        bhkType: "3 BHK",
+        carpetArea: 1120,
+        superBuiltUpArea: 1600,
+        bathrooms: 3,
+        balconies: 2,
+        priceMin: 7200000,
+        priceMax: 8500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      },
+      {
+        bhkType: "3.5 BHK",
+        carpetArea: 1380,
+        superBuiltUpArea: 1980,
+        bathrooms: 3,
+        balconies: 3,
+        priceMin: 9800000,
+        priceMax: 11500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-large.webp",
+      },
+      {
+        bhkType: "4 BHK Penthouse",
+        carpetArea: 1850,
+        superBuiltUpArea: 2650,
+        bathrooms: 4,
+        balconies: 4,
+        priceMin: 13500000,
+        priceMax: 15500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/4bhk-luxury.webp",
+      }
+    ]
+  },
+  {
+    code: "PRJ-BDQ-002",
+    name: "Vihav Supremus",
+    slug: "vihav-supremus-bhayli-vadodara",
+    developerName: "Vihav Group",
+    reraId: "PR/GJ/VADODARA/VADODARA/VUDA/MAA05910/220819",
+    reraStatus: "VERIFIED",
+    status: "UNDER_CONSTRUCTION",
+    possessionDate: "September 2026",
+    priceMin: 5800000,
+    priceMax: 11500000,
+    pricePerSqFt: 4100,
+    cityId: 37,
+    cityName: "Vadodara",
+    stateName: "Gujarat",
+    locality: "Bhayli",
+    siteAddress: "Vasna - Bhayli Main Canal Road, Bhayli, Vadodara, Gujarat",
+    landmark: "Near Bright Day School & Nilamber Palms",
+    pincode: "391410",
+    totalLandArea: "3.5 Acres",
+    totalTowers: 4,
+    totalUnits: 190,
+    salesPhone: "9825422340",
+    salesEmail: "inquiries@vihavgroup.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Bhayli Vadodara flat apartment",
+    fallbackQueries: ["Vasna Vadodara flat", "Vadodara residential flat"],
+    amenities: [
+      "Rooftop Infinity Sky Lounge with Panoramic City Views",
+      "Modern Health Club & Aerobics Room",
+      "Automatic High-Speed Elevators with Battery Rescue",
+      "Dedicated Children Play Zone & Sand Pit",
+      "24x7 CCTV Monitored Security",
+      "Allotted Stilt & Basement Vehicle Parking"
+    ],
+    highlights: [
+      "Heart of Vadodara's Rapidly Appreciating Bhayli Suburb",
+      "3-Side Open Architectural Design with Abundant Sunlight",
+      "Minutes from Premier Schools, Supermarkets & Dining",
+      "Flexible Construction-Linked Payment Milestones"
+    ],
+    configurations: [
+      {
+        bhkType: "2 BHK",
+        carpetArea: 780,
+        superBuiltUpArea: 1080,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 5800000,
+        priceMax: 6500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "3 BHK",
+        carpetArea: 1080,
+        superBuiltUpArea: 1520,
+        bathrooms: 3,
+        balconies: 2,
+        priceMin: 7800000,
+        priceMax: 8800000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      },
+      {
+        bhkType: "3 BHK Deluxe",
+        carpetArea: 1320,
+        superBuiltUpArea: 1850,
+        bathrooms: 3,
+        balconies: 3,
+        priceMin: 9800000,
+        priceMax: 11500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-large.webp",
+      }
+    ]
+  },
+
+  // ===================== GUJARAT: RAJKOT (id: 38) =====================
+  {
+    code: "PRJ-RAJ-001",
+    name: "Rk Silver Oak",
+    slug: "rk-silver-oak-150-feet-ring-road-rajkot",
+    developerName: "RK Group Rajkot",
+    reraId: "PR/GJ/RAJKOT/RAJKOT/RUDA/RAA08125/110321",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 6200000,
+    priceMax: 13500000,
+    pricePerSqFt: 4200,
+    cityId: 38,
+    cityName: "Rajkot",
+    stateName: "Gujarat",
+    locality: "150 Feet Ring Road",
+    siteAddress: "Near Big Bazaar Chowk, 150 Feet Ring Road, Rajkot, Gujarat",
+    landmark: "Big Bazaar & Kalawad Road Junction",
+    pincode: "360005",
+    totalLandArea: "4.2 Acres",
+    totalTowers: 4,
+    totalUnits: 240,
+    salesPhone: "9825535670",
+    salesEmail: "sales@rkgrouprajkot.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Rajkot flat apartment",
+    fallbackQueries: ["150 feet ring road Rajkot flat", "Gujarat residential apartment"],
+    amenities: [
+      "Air-Conditioned Community Banquet Space",
+      "Modern Gymnasium & Yoga Studio",
+      "High-Speed Automatic Elevators",
+      "Landscaped Terrace Garden with Seating",
+      "24x7 Electronic Security Surveillance",
+      "Allotted Covered Parking with Wide Driveways"
+    ],
+    highlights: [
+      "Prime 150 Feet Ring Road Commercial & Residential Hub",
+      "Walking Distance to Major Shopping Malls, Theatres & Hospitals",
+      "Ready to Move with Reputed Builder Warranty & RUDA Sanction",
+      "Vastu-Compliant East-Facing Entrance Layouts"
+    ],
+    configurations: [
+      {
+        bhkType: "2 BHK",
+        carpetArea: 820,
+        superBuiltUpArea: 1140,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 6200000,
+        priceMax: 6900000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "3 BHK",
+        carpetArea: 1120,
+        superBuiltUpArea: 1560,
+        bathrooms: 3,
+        balconies: 2,
+        priceMin: 8500000,
+        priceMax: 9800000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      },
+      {
+        bhkType: "4 BHK Royal",
+        carpetArea: 1650,
+        superBuiltUpArea: 2280,
+        bathrooms: 4,
+        balconies: 3,
+        priceMin: 11800000,
+        priceMax: 13500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/4bhk-luxury.webp",
+      }
+    ]
+  },
+
+  // ===================== ODISHA: BHUBANESWAR (id: 71) =====================
+  {
+    code: "PRJ-BBI-001",
+    name: "DN Pallaciya",
+    slug: "dn-pallaciya-patia-bhubaneswar",
+    developerName: "DN Homes",
+    reraId: "RP/19/2021/00512",
+    reraStatus: "VERIFIED",
+    status: "UNDER_CONSTRUCTION",
+    possessionDate: "March 2027",
+    priceMin: 8500000,
+    priceMax: 18500000,
+    pricePerSqFt: 5800,
+    cityId: 71,
+    cityName: "Bhubaneswar",
+    stateName: "Odisha",
+    locality: "Patia",
+    siteAddress: "KIIT Square to Infocity Main Boulevard, Patia, Bhubaneswar, Odisha",
+    landmark: "Near Infocity Tech SEZ & KIIT Campus",
+    pincode: "751024",
+    totalLandArea: "7 Acres",
+    totalTowers: 5,
+    totalUnits: 380,
+    salesPhone: "9437145620",
+    salesEmail: "sales@dnhomes.net",
+    siteVisitTimings: "9:00 AM - 7:00 PM (All 7 Days)",
+    searchQuery: "Patia Bhubaneswar flat apartment",
+    fallbackQueries: ["Bhubaneswar luxury flat", "Odisha residential apartment"],
+    amenities: [
+      "Palatial 30,000 sq.ft Clubhouse with Resort Pool",
+      "Indoor Squash & Badminton Courts",
+      "Executive Co-Working Lounge & Cafe",
+      "Full Fitness Gym & Aerobics Center",
+      "Multi-Tier Biometric Security & Smart Access",
+      "Dedicated EV Fast Charging Bays"
+    ],
+    highlights: [
+      "Bhubaneswar's Flagship Luxury Tech Corridor Address",
+      "Walking Distance from Top IT Giants in Infocity",
+      "Over 75% Open Greens & Zen Landscaped Courtyards",
+      "Approved by SBI, HDFC & ICICI with Maximum Loan LTV"
+    ],
+    configurations: [
+      {
+        bhkType: "2 BHK",
+        carpetArea: 860,
+        superBuiltUpArea: 1190,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 8500000,
+        priceMax: 9200000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "3 BHK",
+        carpetArea: 1180,
+        superBuiltUpArea: 1650,
+        bathrooms: 3,
+        balconies: 3,
+        priceMin: 11500000,
+        priceMax: 13500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      },
+      {
+        bhkType: "4 BHK Sky Suite",
+        carpetArea: 1820,
+        superBuiltUpArea: 2550,
+        bathrooms: 4,
+        balconies: 4,
+        priceMin: 16500000,
+        priceMax: 18500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/4bhk-luxury.webp",
+      }
+    ]
+  },
+  {
+    code: "PRJ-BBI-002",
+    name: "Utkal Levels",
+    slug: "utkal-levels-pahal-bhubaneswar",
+    developerName: "Utkal Builders",
+    reraId: "RP/19/2020/00421",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 7000000,
+    priceMax: 14500000,
+    pricePerSqFt: 4950,
+    cityId: 71,
+    cityName: "Bhubaneswar",
+    stateName: "Odisha",
+    locality: "Pahal",
+    siteAddress: "NH-16 Cuttack - Bhubaneswar Highway, Pahal, Bhubaneswar, Odisha",
+    landmark: "Pahal Sweets Corridor & NH-16 Highway Frontage",
+    pincode: "752101",
+    totalLandArea: "5.5 Acres",
+    totalTowers: 4,
+    totalUnits: 290,
+    salesPhone: "9437238910",
+    salesEmail: "contact@utkalbuilders.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Pahal Bhubaneswar apartment flat",
+    fallbackQueries: ["Bhubaneswar flat apartment", "Cuttack residential flat"],
+    amenities: [
+      "Clubhouse with Rooftop Swimming Pool",
+      "Modern Gymnasium & Yoga Studio",
+      "Landscaped Central Park with Jogging Track",
+      "Multi-Purpose Community Banquet Hall",
+      "24x7 Multi-Tier Electronic Security & Intercom",
+      "Covered Stilt & Open Allotted Parking"
+    ],
+    highlights: [
+      "Twin-City Strategic Location on NH-16 Connecting Bhubaneswar & Cuttack",
+      "Ready to Move with Full Occupancy Certificate",
+      "Direct Rapid Highway Commute to Railway Station & Airport",
+      "Low Density Tower Layout with Optimum Natural Ventilation"
+    ],
+    configurations: [
+      {
+        bhkType: "2 BHK",
+        carpetArea: 790,
+        superBuiltUpArea: 1100,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 7000000,
+        priceMax: 7800000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "3 BHK",
+        carpetArea: 1090,
+        superBuiltUpArea: 1540,
+        bathrooms: 3,
+        balconies: 2,
+        priceMin: 9500000,
+        priceMax: 10800000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      },
+      {
+        bhkType: "4 BHK",
+        carpetArea: 1540,
+        superBuiltUpArea: 2180,
+        bathrooms: 4,
+        balconies: 3,
+        priceMin: 12800000,
+        priceMax: 14500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/4bhk-luxury.webp",
+      }
+    ]
+  },
+
+  // ===================== ODISHA: CUTTACK (id: 72) =====================
+  {
+    code: "PRJ-CTC-001",
+    name: "Metro Satellite City",
+    slug: "metro-satellite-city-trisulia-cuttack",
+    developerName: "Metro Builders Odisha",
+    reraId: "RP/19/2020/00388",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 4800000,
+    priceMax: 9500000,
+    pricePerSqFt: 3800,
+    cityId: 72,
+    cityName: "Cuttack",
+    stateName: "Odisha",
+    locality: "Trisulia",
+    siteAddress: "Trisulia Bridge Link Road, Kathajodi Riverfront, Cuttack, Odisha",
+    landmark: "Trisulia Bridge & Judicial Academy Corridor",
+    pincode: "754005",
+    totalLandArea: "10 Acres",
+    totalTowers: 6,
+    totalUnits: 450,
+    salesPhone: "9437310874",
+    salesEmail: "sales@metrobuildersodisha.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (Daily)",
+    searchQuery: "Cuttack flat apartment",
+    fallbackQueries: ["Trisulia Cuttack flat", "Bhubaneswar flat apartment"],
+    amenities: [
+      "Integrated 10-Acre Township with Sports Complex",
+      "Clubhouse with Swimming Pool & Indoor Games",
+      "Commercial Supermarket & Pharmacy in Premises",
+      "Tennis & Basketball Courts",
+      "24x7 Uninterrupted Water & Generator Power Backup",
+      "RFID Monitored Gated Security"
+    ],
+    highlights: [
+      "Kathajodi Riverfront Scenic Living Environment",
+      "Seamless 15-Minute Link to Bhubaneswar via Netaji Subhash Chandra Bose Setu",
+      "Ready to Move with Over 300 Happy Families",
+      "Approved for 90% Home Loans from Top Nationalized Banks"
+    ],
+    configurations: [
+      {
+        bhkType: "2 BHK",
+        carpetArea: 720,
+        superBuiltUpArea: 980,
+        bathrooms: 2,
+        balconies: 1,
+        priceMin: 4800000,
+        priceMax: 5400000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "3 BHK",
+        carpetArea: 1020,
+        superBuiltUpArea: 1380,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 6800000,
+        priceMax: 7600000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      },
+      {
+        bhkType: "3 BHK Royal",
+        carpetArea: 1280,
+        superBuiltUpArea: 1750,
+        bathrooms: 3,
+        balconies: 3,
+        priceMin: 8500000,
+        priceMax: 9500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-large.webp",
+      }
+    ]
+  },
+
+  // ===================== ODISHA: PURI (id: 4037) =====================
+  {
+    code: "PRJ-PUI-001",
+    name: "Suryam Sea Breeze",
+    slug: "suryam-sea-breeze-marine-drive-puri",
+    developerName: "Suryam Infratech",
+    reraId: "RP/19/2021/00495",
+    reraStatus: "VERIFIED",
+    status: "UNDER_CONSTRUCTION",
+    possessionDate: "December 2026",
+    priceMin: 4500000,
+    priceMax: 8800000,
+    pricePerSqFt: 4400,
+    cityId: 4037,
+    cityName: "Puri",
+    stateName: "Odisha",
+    locality: "Sipasarubali Marine Drive",
+    siteAddress: "Puri - Konark New Marine Drive Road, Sipasarubali, Puri, Odisha",
+    landmark: "Puri Sea Beach & Marine Drive Corridor",
+    pincode: "752002",
+    totalLandArea: "3.2 Acres",
+    totalTowers: 3,
+    totalUnits: 150,
+    salesPhone: "9437422340",
+    salesEmail: "contact@suryaminfratech.com",
+    siteVisitTimings: "9:00 AM - 6:30 PM (All 7 Days)",
+    searchQuery: "Puri flat apartment",
+    fallbackQueries: ["Puri sea view apartment", "Bhubaneswar flat apartment"],
+    amenities: [
+      "Sea View Terrace Meditation & Yoga Pavilion",
+      "Swimming Pool with Sea Breeze Sun Deck",
+      "Clubhouse with Fitness Center & AC Banquet Hall",
+      "Vastu Compliant Coastal Architecture",
+      "Anti-Corrosion Marine Proof RCC Construction",
+      "24x7 Guarded Security with CCTV Surveillance"
+    ],
+    highlights: [
+      "Exclusive Beachside Living on Puri New Marine Drive",
+      "Quick 10-Minute Drive to Jagannath Temple & Swargadwar Beach",
+      "High Holiday Rental Yield from Pilgrims & Coastal Tourists",
+      "Clear Title with Full ORERA Sanctions"
+    ],
+    configurations: [
+      {
+        bhkType: "1 BHK Studio",
+        carpetArea: 480,
+        superBuiltUpArea: 650,
+        bathrooms: 1,
+        balconies: 1,
+        priceMin: 4500000,
+        priceMax: 4800000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "2 BHK",
+        carpetArea: 740,
+        superBuiltUpArea: 1020,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 6200000,
+        priceMax: 6900000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "3 BHK Sea View",
+        carpetArea: 1080,
+        superBuiltUpArea: 1480,
+        bathrooms: 3,
+        balconies: 3,
+        priceMin: 7800000,
+        priceMax: 8800000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      }
+    ]
+  },
+
+  // ===================== WEST BENGAL: HOWRAH (id: 47) =====================
+  {
+    code: "PRJ-HWH-001",
+    name: "Joyville Howrah",
+    slug: "joyville-howrah-salap-junction",
+    developerName: "Shapoorji Pallonji Real Estate",
+    reraId: "HIRA/P/HOW/2018/000164",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 3800000,
+    priceMax: 7800000,
+    pricePerSqFt: 4200,
+    cityId: 47,
+    cityName: "Howrah",
+    stateName: "West Bengal",
+    locality: "Salap",
+    siteAddress: "Kona Expressway & Bombay Road Junction, Salap, Howrah, West Bengal",
+    landmark: "Salap Junction & Kona Expressway",
+    pincode: "711403",
+    totalLandArea: "30 Acres",
+    totalTowers: 14,
+    totalUnits: 1200,
+    salesPhone: "9830145620",
+    salesEmail: "sales@joyvillehomes.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (All 7 Days)",
+    searchQuery: "Howrah flat apartment",
+    fallbackQueries: ["Salap Howrah flat", "Kolkata residential apartment"],
+    amenities: [
+      "Massive 22,000 sq.ft Clubhouse with Grand Swimming Pool",
+      "Football Turf & Full Cricket Practice Net",
+      "Retail High Street Arcade with Pharmacy & Grocery",
+      "Air-Conditioned Gym, Aerobics & Yoga Studio",
+      "24x7 Multi-Tier Electronic Security & Access Control",
+      "Dedicated Shuttle Bus Service to Key Transit Hubs"
+    ],
+    highlights: [
+      "Shapoorji Pallonji's 30-Acre Master-Planned Mega Township",
+      "Over 75% Open Landscaped Green Lawns",
+      "Direct Kona Expressway Access to Vidyasagar Setu (20 Mins to Central Kolkata)",
+      "Ready to Move with Over 800 Families Residing"
+    ],
+    configurations: [
+      {
+        bhkType: "1 BHK",
+        carpetArea: 440,
+        superBuiltUpArea: 610,
+        bathrooms: 1,
+        balconies: 1,
+        priceMin: 3800000,
+        priceMax: 4100000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "2 BHK",
+        carpetArea: 680,
+        superBuiltUpArea: 920,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 5200000,
+        priceMax: 5900000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "3 BHK",
+        carpetArea: 950,
+        superBuiltUpArea: 1320,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 6900000,
+        priceMax: 7800000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      }
+    ]
+  },
+
+  // ===================== WEST BENGAL: SILIGURI (id: 48) =====================
+  {
+    code: "PRJ-IXB-001",
+    name: "Utsodha Greens",
+    slug: "utsodha-greens-matigara-siliguri",
+    developerName: "Utsodha Promoters",
+    reraId: "WBRERA/P/DAR/2023/000215",
+    reraStatus: "VERIFIED",
+    status: "UNDER_CONSTRUCTION",
+    possessionDate: "September 2026",
+    priceMin: 4200000,
+    priceMax: 8900000,
+    pricePerSqFt: 3600,
+    cityId: 48,
+    cityName: "Siliguri",
+    stateName: "West Bengal",
+    locality: "Matigara",
+    siteAddress: "Khaprail Road, Near City Centre Mall, Matigara, Siliguri, West Bengal",
+    landmark: "City Centre Mall & Uttarayon Township",
+    pincode: "734010",
+    totalLandArea: "4 Acres",
+    totalTowers: 4,
+    totalUnits: 180,
+    salesPhone: "9830238910",
+    salesEmail: "info@utsodhagreens.com",
+    siteVisitTimings: "9:00 AM - 6:00 PM (Daily)",
+    searchQuery: "Siliguri flat apartment",
+    fallbackQueries: ["Matigara Siliguri flat", "Kolkata flat apartment"],
+    amenities: [
+      "Himalayan Tea-Garden View Terrace Lounge",
+      "Clubhouse with Swimming Pool & Kids Pool",
+      "Fully Equipped Health Club & Gymnasium",
+      "Table Tennis & Indoor Games Hall",
+      "24x7 Security Surveillance with Monitored Boom Barrier",
+      "Automatic High-Speed Elevators with Power Backup"
+    ],
+    highlights: [
+      "Gateway to North Bengal: Prime Matigara Location",
+      "Walking Distance to City Centre Mall & Multi-Cuisine Restaurants",
+      "Unobstructed Panoramic Views of Kanchenjunga on Clear Days",
+      "Vastu-Compliant 2 & 3 BHK Layouts with Large Balconies"
+    ],
+    configurations: [
+      {
+        bhkType: "2 BHK",
+        carpetArea: 690,
+        superBuiltUpArea: 940,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 4200000,
+        priceMax: 4800000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "3 BHK",
+        carpetArea: 1020,
+        superBuiltUpArea: 1390,
+        bathrooms: 2,
+        balconies: 3,
+        priceMin: 6200000,
+        priceMax: 7100000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      },
+      {
+        bhkType: "3 BHK Penthouse",
+        carpetArea: 1280,
+        superBuiltUpArea: 1750,
+        bathrooms: 3,
+        balconies: 3,
+        priceMin: 7800000,
+        priceMax: 8900000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-large.webp",
+      }
+    ]
+  },
+
+  // ===================== WEST BENGAL: DURGAPUR (id: 49) =====================
+  {
+    code: "PRJ-DGP-001",
+    name: "Bengal Shristi City Center",
+    slug: "bengal-shristi-city-center-durgapur",
+    developerName: "Shristi Infrastructure",
+    reraId: "HIRA/P/PAS/2019/000412",
+    reraStatus: "VERIFIED",
+    status: "READY_TO_MOVE",
+    possessionDate: "Ready to Move",
+    priceMin: 3600000,
+    priceMax: 7500000,
+    pricePerSqFt: 3100,
+    cityId: 49,
+    cityName: "Durgapur",
+    stateName: "West Bengal",
+    locality: "City Center",
+    siteAddress: "Grand Trunk Road, City Center Commercial Hub, Durgapur, West Bengal",
+    landmark: "City Center Junction & Junction Mall",
+    pincode: "713216",
+    totalLandArea: "6.5 Acres",
+    totalTowers: 5,
+    totalUnits: 320,
+    salesPhone: "9830310874",
+    salesEmail: "sales@shristicitycenter.com",
+    siteVisitTimings: "9:30 AM - 6:30 PM (Daily)",
+    searchQuery: "Durgapur flat apartment",
+    fallbackQueries: ["City Center Durgapur flat", "Asansol apartment flat"],
+    amenities: [
+      "Modern Community Lifestyle Clubhouse",
+      "Swimming Pool & Kids Splash Pool",
+      "Gymnasium with Modern Cardio Equipment",
+      "Community Activity & Banquet Hall",
+      "24x7 Multi-Tier Security with CCTV",
+      "Covered Stilt Allotted Car Parking"
+    ],
+    highlights: [
+      "Prime Urban Core of Durgapur's City Center",
+      "Walking Distance to Junction Mall, Theatres & Hospitals",
+      "Ready to Move with Full Registry and Bank Loan Sanctions",
+      "Low Density Tower Layout with Vast Open Lawns"
+    ],
+    configurations: [
+      {
+        bhkType: "2 BHK",
+        carpetArea: 680,
+        superBuiltUpArea: 920,
+        bathrooms: 2,
+        balconies: 2,
+        priceMin: 3600000,
+        priceMax: 4100000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/2bhk-compact.webp",
+      },
+      {
+        bhkType: "3 BHK",
+        carpetArea: 980,
+        superBuiltUpArea: 1320,
+        bathrooms: 2,
+        balconies: 3,
+        priceMin: 5200000,
+        priceMax: 6000000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-standard.webp",
+      },
+      {
+        bhkType: "3 BHK Royal",
+        carpetArea: 1220,
+        superBuiltUpArea: 1650,
+        bathrooms: 3,
+        balconies: 3,
+        priceMin: 6800000,
+        priceMax: 7500000,
+        floorPlanImage: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/floorplans/3bhk-large.webp",
+      }
+    ]
+  }
+];
+
+// Helper to fetch photos from real listings
+async function fetchPhotosForQuery(query) {
+  const url = `https://www.olx.in/api/relevance/v4/search?facet_limit=15&category=1723&query=${encodeURIComponent(query)}`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept: "application/json",
+      },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const items = json.data || [];
+    const photos = [];
+    for (const it of items) {
+      if (it.images && it.images.length >= 2) {
+        for (const img of it.images) {
+          if (img.url && !photos.includes(img.url)) photos.push(img.url);
+        }
+      }
+    }
+    return photos;
+  } catch (err) {
+    return [];
+  }
+}
+
+async function run() {
+  console.log("================================================================================");
+  console.log("SOURCING PROJECTS: GUJARAT, ODISHA, WEST BENGAL");
+  console.log("================================================================================");
+
+  const usedImageUrls = new Set();
+  const processedProjects = [];
+
+  for (let i = 0; i < PROJECTS.length; i++) {
+    const p = PROJECTS[i];
+    console.log(`\n[${i + 1}/${PROJECTS.length}] Processing ${p.name} in ${p.cityName}...`);
+
+    const projectDir = path.join(PROJECT_IMAGES_DIR, p.slug);
+    if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
+
+    let rawImages = await fetchPhotosForQuery(p.searchQuery);
+    if (rawImages.length < 4 && p.fallbackQueries) {
+      for (const fb of p.fallbackQueries) {
+        const extra = await fetchPhotosForQuery(fb);
+        rawImages.push(...extra);
+        if (rawImages.length >= 6) break;
+      }
+    }
+
+    const uniqueImages = [];
+    for (const img of rawImages) {
+      if (!usedImageUrls.has(img)) {
+        usedImageUrls.add(img);
+        uniqueImages.push(img);
+      }
+    }
+
+    console.log(`  Found ${uniqueImages.length} unique photos. Uploading to Cloudflare R2...`);
+
+    const uploadedCloudflareUrls = [];
+    for (let j = 0; j < Math.min(uniqueImages.length, 5); j++) {
+      const srcUrl = uniqueImages[j];
+      const localFile = path.join(projectDir, `photo_${j + 1}.webp`);
+      const r2Key = `projects/photos/${p.slug}/photo_${j + 1}.webp`;
+
+      const downloaded = await downloadImage(srcUrl, localFile);
+      if (downloaded) {
+        try {
+          const publicUrl = await uploadToCloudflareR2(localFile, r2Key);
+          uploadedCloudflareUrls.push(publicUrl);
+          console.log(`  ✓ Uploaded: ${publicUrl}`);
+        } catch (uploadErr) {
+          console.warn(`  Failed upload:`, uploadErr.message);
+        }
+      }
+    }
+
+    const finalProject = {
+      ...p,
+      images: uploadedCloudflareUrls,
+    };
+    processedProjects.push(finalProject);
+  }
+
+  // Save to disk
+  fs.writeFileSync(PROJECTS_FILE, JSON.stringify(processedProjects, null, 2));
+  fs.writeFileSync(path.join(DOCS_DIR, "gujrat_orissa_wb_projects.json"), JSON.stringify(processedProjects, null, 2));
+  console.log(`\nSuccessfully processed and uploaded ${processedProjects.length} projects!`);
+  console.log(`Saved master file to: ${PROJECTS_FILE}`);
+}
+
+run().catch((err) => {
+  console.error("Pipeline failed:", err);
+  process.exit(1);
+});
