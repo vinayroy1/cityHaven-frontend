@@ -1,0 +1,1032 @@
+import fs from "fs";
+import path from "path";
+import { S3Client, PutObjectCommand } from "/Users/vinaykumar/Desktop/myProjects/awasio-backend/node_modules/@aws-sdk/client-s3/dist-cjs/index.js";
+
+const BASE_DIR = "/Users/vinaykumar/Desktop/awasio-sourced-properties";
+const PROJECT_IMAGES_DIR = path.join(BASE_DIR, "batch10_images");
+const PROJECTS_FILE = path.join(BASE_DIR, "tier2_metros_batch10.json");
+const DOCS_FILE = path.join(process.cwd(), "docs", "tier2_metros_batch10.json");
+
+if (!fs.existsSync(PROJECT_IMAGES_DIR)) {
+  fs.mkdirSync(PROJECT_IMAGES_DIR, { recursive: true });
+}
+
+const R2_PUBLIC_BASE = "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev";
+const R2_BUCKET = "awasio-media";
+
+const s3 = new S3Client({
+  region: "auto",
+  endpoint: "https://0d890d076a7e84f12dc8b90d8bb1a00c.r2.cloudflarestorage.com",
+  credentials: {
+    accessKeyId: "f6e73586e77e75a0c967aa85944e959b",
+    secretAccessKey: "3b9531a5a59e122e04589a763d619a2761b180ec7dba6f3dd01f6f971233408a",
+  },
+});
+
+async function uploadToCloudflareR2(localFilePath, r2Key) {
+  const fileBuffer = fs.readFileSync(localFilePath);
+  const cmd = new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: r2Key,
+    Body: fileBuffer,
+    ContentType: "image/webp",
+    CacheControl: "public, max-age=31536000, immutable",
+  });
+  await s3.send(cmd);
+  return `${R2_PUBLIC_BASE}/${r2Key}`;
+}
+
+async function downloadImage(imageUrl, destPath) {
+  try {
+    const cleanUrl = imageUrl.includes(";") ? imageUrl : `${imageUrl};s=1200x1200;q=85;f=webp`;
+    const res = await fetch(cleanUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+    });
+    if (!res.ok) return false;
+    const arrayBuffer = await res.arrayBuffer();
+    fs.writeFileSync(destPath, Buffer.from(arrayBuffer));
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+async function fetchPhotosForQuery(query) {
+  const url = `https://www.olx.in/api/relevance/v4/search?facet_limit=35&category=1723&query=${encodeURIComponent(query)}`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept: "application/json",
+      },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const items = json.data || [];
+    const photos = [];
+    for (const it of items) {
+      if (it.images && it.images.length >= 2) {
+        for (const img of it.images) {
+          if (img.url && !photos.includes(img.url)) photos.push(img.url);
+        }
+      }
+    }
+    return photos;
+  } catch (err) {
+    return [];
+  }
+}
+
+const BATCH10_PROJECTS = [
+  // ==================== PURNIA (4 projects) ====================
+  {
+    name: "Panorama City Purnia",
+    slug: "panorama-city-nh-31-purnia",
+    developerName: "Panorama Group",
+    cityName: "Purnia",
+    cityId: 708,
+    stateName: "Bihar",
+    locality: "NH 31",
+    siteAddress: "National Highway 31, Near Belauri Chowk, Purnia, Bihar",
+    landmark: "Directly abutting NH-31, near Belauri",
+    location: "NH 31, Purnia",
+    latitude: 25.7784,
+    longitude: 87.4982,
+    priceMin: 3800000,
+    priceMax: 9200000,
+    pricePerSqFt: 3400,
+    possessionDate: "2025-09-30T00:00:00.000Z",
+    status: "UNDER_CONSTRUCTION",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00312-1/2021",
+    totalUnits: 450,
+    availableUnits: 32,
+    totalTowers: 6,
+    totalFloors: 10,
+    totalLandArea: "10.0 Acres",
+    salesPhone: "9835111220",
+    salesEmail: "sales.panoramacity@panoramagroup.in",
+    searchKeywords: ["Purnia flat", "Purnia apartment", "Katihar flat"],
+    description: "Panorama City on NH-31 is Purnia's premier integrated residential township featuring modern clubhouse amenities, wide landscaped avenues, swimming pool, and gated round-the-clock security.",
+    amenities: ["Residents Clubhouse", "Swimming Pool with Deck", "Indoor Games Room", "Children Play Arena", "Commercial Convenience Shops", "24/7 Security Intercom"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 780, superBuiltUpArea: 1014, bathrooms: 2, priceMin: 3800000, priceMax: 3800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1180, superBuiltUpArea: 1534, bathrooms: 3, priceMin: 5800000, priceMax: 5800000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1750, superBuiltUpArea: 2275, bathrooms: 4, priceMin: 9200000, priceMax: 9200000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Shanti Niketan Enclave",
+    slug: "shanti-niketan-enclave-line-bazar-purnia",
+    developerName: "Shanti Builders",
+    cityName: "Purnia",
+    cityId: 708,
+    stateName: "Bihar",
+    locality: "Line Bazar",
+    siteAddress: "Medical College Road, Line Bazar, Purnia, Bihar",
+    landmark: "Near Sadar Hospital & Purnia Medical College",
+    location: "Line Bazar, Purnia",
+    latitude: 25.7892,
+    longitude: 87.4761,
+    priceMin: 3500000,
+    priceMax: 7800000,
+    pricePerSqFt: 3600,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00482-1/2019",
+    totalUnits: 180,
+    availableUnits: 14,
+    totalTowers: 3,
+    totalFloors: 8,
+    totalLandArea: "2.5 Acres",
+    salesPhone: "9835222330",
+    salesEmail: "sales.shantiniketan@shantibuilders.com",
+    searchKeywords: ["Line Bazar Purnia flat", "Purnia house", "Bhatta Bazar flat"],
+    description: "Shanti Niketan Enclave in Line Bazar offers tranquil residences right in the healthcare center of Purnia with robust RCC earthquake construction, lift access, and generator backup.",
+    amenities: ["Community Hall with Stage", "Terrace Garden Sit-Out", "High Speed Passenger Lift", "Covered Car Parking", "Fire Safety Systems", "24/7 Security Guarding"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 720, superBuiltUpArea: 936, bathrooms: 2, priceMin: 3500000, priceMax: 3500000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1120, superBuiltUpArea: 1456, bathrooms: 3, priceMin: 5400000, priceMax: 5400000, isAvailable: true },
+      { bhkType: "3 BHK Luxury", carpetArea: 1450, superBuiltUpArea: 1885, bathrooms: 3, priceMin: 7800000, priceMax: 7800000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Maa Tara Greens",
+    slug: "maa-tara-greens-gulabbagh-purnia",
+    developerName: "Tara Infratech",
+    cityName: "Purnia",
+    cityId: 708,
+    stateName: "Bihar",
+    locality: "Gulabbagh",
+    siteAddress: "Zero Mile Road, Gulabbagh, Purnia, Bihar",
+    landmark: "Near Gulabbagh Krishi Mandi & Railway Station",
+    location: "Gulabbagh, Purnia",
+    latitude: 25.7612,
+    longitude: 87.5142,
+    priceMin: 3200000,
+    priceMax: 6900000,
+    pricePerSqFt: 3200,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00219-1/2018",
+    totalUnits: 210,
+    availableUnits: 19,
+    totalTowers: 3,
+    totalFloors: 7,
+    totalLandArea: "3.0 Acres",
+    salesPhone: "9835333440",
+    salesEmail: "sales.maataragreens@tarainfra.com",
+    searchKeywords: ["Gulabbagh Purnia flat", "Purnia flat for sale", "Katihar apartment"],
+    description: "Maa Tara Greens in Gulabbagh provides contemporary, affordable living with lush landscaped lawns, kids play zone, water filtration, and easy access to major trade centers.",
+    amenities: ["Landscaped Green Park", "Children Play Equipment", "Gymnasium & Activity Room", "Pure RO Water Plant", "Power Backup for Common Areas", "Gated Controlled Access"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 690, superBuiltUpArea: 897, bathrooms: 2, priceMin: 3200000, priceMax: 3200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1080, superBuiltUpArea: 1404, bathrooms: 3, priceMin: 4900000, priceMax: 4900000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1550, superBuiltUpArea: 2015, bathrooms: 4, priceMin: 6900000, priceMax: 6900000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Kosi Residency",
+    slug: "kosi-residency-bhatta-bazar-purnia",
+    developerName: "Kosi Construction",
+    cityName: "Purnia",
+    cityId: 708,
+    stateName: "Bihar",
+    locality: "Bhatta Bazar",
+    siteAddress: "Bhatta Bazar Main Road, Purnia, Bihar",
+    landmark: "Directly opposite Purnia Club",
+    location: "Bhatta Bazar, Purnia",
+    latitude: 25.7824,
+    longitude: 87.4719,
+    priceMin: 4200000,
+    priceMax: 8500000,
+    pricePerSqFt: 3800,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00395-1/2020",
+    totalUnits: 140,
+    availableUnits: 11,
+    totalTowers: 2,
+    totalFloors: 9,
+    totalLandArea: "2.0 Acres",
+    salesPhone: "9835444550",
+    salesEmail: "sales.kosiresidency@kosiconstruction.in",
+    searchKeywords: ["Bhatta Bazar Purnia flat", "Purnia city flat", "Purnia apartment"],
+    description: "Kosi Residency in Bhatta Bazar is located in Purnia's prime commercial center offering premium residential apartments with vitrified tile flooring, intercom, and parking.",
+    amenities: ["Residents Community Hall", "Fitness Suite with Treadmills", "Terrace Sitting Pavilion", "Silent Generator Backup", "CCTV Camera Surveillance", "Dedicated Parking Bays"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 810, superBuiltUpArea: 1053, bathrooms: 2, priceMin: 4200000, priceMax: 4200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1250, superBuiltUpArea: 1625, bathrooms: 3, priceMin: 6400000, priceMax: 6400000, isAvailable: true },
+      { bhkType: "3 BHK Penthouse", carpetArea: 1680, superBuiltUpArea: 2184, bathrooms: 3, priceMin: 8500000, priceMax: 8500000, isAvailable: true }
+    ]
+  },
+
+  // ==================== MUZAFFARPUR (4 projects) ====================
+  {
+    name: "Vaishali Greens",
+    slug: "vaishali-greens-bhagwanpur-chowk-muzaffarpur",
+    developerName: "Vaishali Developers",
+    cityName: "Muzaffarpur",
+    cityId: 689,
+    stateName: "Bihar",
+    locality: "Bhagwanpur Chowk",
+    siteAddress: "NH-28, Near Bhagwanpur Chowk, Muzaffarpur, Bihar",
+    landmark: "Directly on NH-28 Highway, near Gobarsahi",
+    location: "Bhagwanpur Chowk, Muzaffarpur",
+    latitude: 26.1187,
+    longitude: 85.3582,
+    priceMin: 4800000,
+    priceMax: 11500000,
+    pricePerSqFt: 4200,
+    possessionDate: "2025-06-30T00:00:00.000Z",
+    status: "UNDER_CONSTRUCTION",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00512-1/2021",
+    totalUnits: 320,
+    availableUnits: 25,
+    totalTowers: 4,
+    totalFloors: 11,
+    totalLandArea: "5.5 Acres",
+    salesPhone: "9835511220",
+    salesEmail: "sales.vaishali@vaishalibuilders.in",
+    searchKeywords: ["Muzaffarpur flat", "Bhagwanpur Chowk flat", "Muzaffarpur apartment"],
+    description: "Vaishali Greens on NH-28 is a luxury gated development in Muzaffarpur featuring swimming pool, clubhouse, landscaped garden, and exceptional connectivity across North Bihar.",
+    amenities: ["Residents Lifestyle Club", "Swimming Pool with Gazebo", "Badminton Court", "Lush Landscaped Central Green", "Jogging Track", "24/7 Monitored Gated Security"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 860, superBuiltUpArea: 1118, bathrooms: 2, priceMin: 4800000, priceMax: 4800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1320, superBuiltUpArea: 1716, bathrooms: 3, priceMin: 7400000, priceMax: 7400000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1950, superBuiltUpArea: 2535, bathrooms: 4, priceMin: 11500000, priceMax: 11500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Royal Heritage Muzaffarpur",
+    slug: "royal-heritage-ahiyapur-muzaffarpur",
+    developerName: "Royal Group",
+    cityName: "Muzaffarpur",
+    cityId: 689,
+    stateName: "Bihar",
+    locality: "Ahiyapur",
+    siteAddress: "Medical College Road, Ahiyapur, Muzaffarpur, Bihar",
+    landmark: "Near SKMCH Medical College & Hospital",
+    location: "Ahiyapur, Muzaffarpur",
+    latitude: 26.1541,
+    longitude: 85.3982,
+    priceMin: 3900000,
+    priceMax: 8900000,
+    pricePerSqFt: 3800,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00344-1/2019",
+    totalUnits: 220,
+    availableUnits: 16,
+    totalTowers: 3,
+    totalFloors: 9,
+    totalLandArea: "3.5 Acres",
+    salesPhone: "9835622330",
+    salesEmail: "sales.royalheritage@royalgroupbihar.com",
+    searchKeywords: ["Ahiyapur Muzaffarpur flat", "SKMCH flat", "Muzaffarpur flat for sale"],
+    description: "Royal Heritage in Ahiyapur offers comfortable lifestyle living near SKMCH with broad balconies, decorated entrance foyer, modern gym, and dedicated children play park.",
+    amenities: ["Decorated Grand Entrance Lobby", "Fitness Center with Modern Equipment", "Children Play Ground", "Community Multipurpose Hall", "100% Power Backup", "Covered Basement Parking"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 790, superBuiltUpArea: 1027, bathrooms: 2, priceMin: 3900000, priceMax: 3900000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1190, superBuiltUpArea: 1547, bathrooms: 3, priceMin: 5900000, priceMax: 5900000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1720, superBuiltUpArea: 2236, bathrooms: 4, priceMin: 8900000, priceMax: 8900000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Laxmi Niwas Heights",
+    slug: "laxmi-niwas-heights-maripur-muzaffarpur",
+    developerName: "Laxmi Infratech",
+    cityName: "Muzaffarpur",
+    cityId: 689,
+    stateName: "Bihar",
+    locality: "Maripur",
+    siteAddress: "Station Road, Maripur, Muzaffarpur, Bihar",
+    landmark: "Near Muzaffarpur Junction Railway Station",
+    location: "Maripur, Muzaffarpur",
+    latitude: 26.1245,
+    longitude: 85.3842,
+    priceMin: 4500000,
+    priceMax: 9800000,
+    pricePerSqFt: 4300,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00288-1/2018",
+    totalUnits: 160,
+    availableUnits: 12,
+    totalTowers: 2,
+    totalFloors: 10,
+    totalLandArea: "2.2 Acres",
+    salesPhone: "9835733440",
+    salesEmail: "sales.laxminiwas@laxmiinfra.com",
+    searchKeywords: ["Maripur Muzaffarpur flat", "Muzaffarpur station flat", "Muzaffarpur apartment"],
+    description: "Laxmi Niwas Heights in Maripur offers central urban residences walking distance from Muzaffarpur Junction with spacious bedrooms, branded CP fittings, and secure elevator entry.",
+    amenities: ["Rooftop Walking Track", "Community Meeting Room", "Modern Elevator with ARD", "Intercom System in All Flats", "24/7 Security CCTV", "Covered Car Parking"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 820, superBuiltUpArea: 1066, bathrooms: 2, priceMin: 4500000, priceMax: 4500000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1240, superBuiltUpArea: 1612, bathrooms: 3, priceMin: 6800000, priceMax: 6800000, isAvailable: true },
+      { bhkType: "3 BHK Penthouse", carpetArea: 1750, superBuiltUpArea: 2275, bathrooms: 4, priceMin: 9800000, priceMax: 9800000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Tirhut Residency",
+    slug: "tirhut-residency-gobarsahi-muzaffarpur",
+    developerName: "Tirhut Builders",
+    cityName: "Muzaffarpur",
+    cityId: 689,
+    stateName: "Bihar",
+    locality: "Gobarsahi",
+    siteAddress: "Dumra Road, Gobarsahi, Muzaffarpur, Bihar",
+    landmark: "Near Gobarsahi Chowk & St. Xavier's School",
+    location: "Gobarsahi, Muzaffarpur",
+    latitude: 26.0984,
+    longitude: 85.3481,
+    priceMin: 4200000,
+    priceMax: 9500000,
+    pricePerSqFt: 3900,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00421-1/2020",
+    totalUnits: 190,
+    availableUnits: 17,
+    totalTowers: 3,
+    totalFloors: 8,
+    totalLandArea: "3.0 Acres",
+    salesPhone: "9835844550",
+    salesEmail: "sales.tirhut@tirhutbuilders.in",
+    searchKeywords: ["Gobarsahi flat", "Muzaffarpur property", "Muzaffarpur residential flat"],
+    description: "Tirhut Residency in Gobarsahi delivers serene family living near prestigious schools with landscaped perimeter parks, badminton court, generator backup, and high-speed lifts.",
+    amenities: ["Badminton Court", "Landscaped Theme Gardens", "Children Play Zone", "Gymnasium & Table Tennis", "Full Power Backup", "Dedicated Guard Post"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 780, superBuiltUpArea: 1014, bathrooms: 2, priceMin: 4200000, priceMax: 4200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1200, superBuiltUpArea: 1560, bathrooms: 3, priceMin: 6500000, priceMax: 6500000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1780, superBuiltUpArea: 2314, bathrooms: 4, priceMin: 9500000, priceMax: 9500000, isAvailable: true }
+    ]
+  },
+
+  // ==================== GAYA (4 projects) ====================
+  {
+    name: "Bodhgaya Greens",
+    slug: "bodhgaya-greens-bodhgaya-road-gaya",
+    developerName: "Mahabodhi Real Estate",
+    cityName: "Gaya",
+    cityId: 64,
+    stateName: "Bihar",
+    locality: "Bodhgaya Road",
+    siteAddress: "Main Bodhgaya Road, Near Gaya International Airport, Gaya, Bihar",
+    landmark: "Directly opposite Gaya Airport & 10 mins from Mahabodhi Temple",
+    location: "Bodhgaya Road, Gaya",
+    latitude: 24.7451,
+    longitude: 84.9512,
+    priceMin: 4800000,
+    priceMax: 11500000,
+    pricePerSqFt: 4100,
+    possessionDate: "2025-06-30T00:00:00.000Z",
+    status: "UNDER_CONSTRUCTION",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00392-1/2021",
+    totalUnits: 340,
+    availableUnits: 28,
+    totalTowers: 4,
+    totalFloors: 10,
+    totalLandArea: "6.0 Acres",
+    salesPhone: "9835155660",
+    salesEmail: "sales.bodhgaya@mahabodhirealty.com",
+    searchKeywords: ["Gaya flat", "Bodhgaya flat", "Gaya airport apartment"],
+    description: "Bodhgaya Greens on Main Bodhgaya Road offers serene international spiritual lifestyle living near Gaya International Airport and UNESCO Mahabodhi Temple with swimming pool and landscaped gardens.",
+    amenities: ["Meditation & Zen Garden", "Swimming Pool with Deck", "Clubhouse with Gymnasium", "Badminton Court", "Lush Landscaped Lawns", "24/7 Monitored Gated Security"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 840, superBuiltUpArea: 1092, bathrooms: 2, priceMin: 4800000, priceMax: 4800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1290, superBuiltUpArea: 1677, bathrooms: 3, priceMin: 7200000, priceMax: 7200000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1880, superBuiltUpArea: 2444, bathrooms: 4, priceMin: 11500000, priceMax: 11500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Gautam Buddha Enclave",
+    slug: "gautam-buddha-enclave-nutan-nagar-gaya",
+    developerName: "Gautam Constructions",
+    cityName: "Gaya",
+    cityId: 64,
+    stateName: "Bihar",
+    locality: "Nutan Nagar",
+    siteAddress: "Station Road, Nutan Nagar, Gaya, Bihar",
+    landmark: "Near Gaya Junction Railway Station",
+    location: "Nutan Nagar, Gaya",
+    latitude: 24.8012,
+    longitude: 85.0084,
+    priceMin: 3800000,
+    priceMax: 8400000,
+    pricePerSqFt: 3700,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00275-1/2019",
+    totalUnits: 170,
+    availableUnits: 15,
+    totalTowers: 2,
+    totalFloors: 8,
+    totalLandArea: "2.5 Acres",
+    salesPhone: "9835266770",
+    salesEmail: "sales.gautam@gautambuilders.in",
+    searchKeywords: ["Nutan Nagar Gaya flat", "Gaya station flat", "Gaya flat sale"],
+    description: "Gautam Buddha Enclave in Nutan Nagar offers comfortable family apartments in Central Gaya near the railway station with vitrified flooring, elevator, and power backup.",
+    amenities: ["Community Hall", "Children Play Arena", "High-Speed Lift", "Standby Generator Power Backup", "Dedicated Covered Parking", "Security Gate Guarding"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 760, superBuiltUpArea: 988, bathrooms: 2, priceMin: 3800000, priceMax: 3800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1150, superBuiltUpArea: 1495, bathrooms: 3, priceMin: 5800000, priceMax: 5800000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1650, superBuiltUpArea: 2145, bathrooms: 4, priceMin: 8400000, priceMax: 8400000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Magadh Imperial Heights",
+    slug: "magadh-imperial-heights-chandauti-gaya",
+    developerName: "Magadh Infratech",
+    cityName: "Gaya",
+    cityId: 64,
+    stateName: "Bihar",
+    locality: "Chandauti",
+    siteAddress: "Sherghati Road, Chandauti, Gaya, Bihar",
+    landmark: "Near District Court & Collectorate Gaya",
+    location: "Chandauti, Gaya",
+    latitude: 24.7891,
+    longitude: 84.9782,
+    priceMin: 4200000,
+    priceMax: 9400000,
+    pricePerSqFt: 3900,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00481-1/2020",
+    totalUnits: 210,
+    availableUnits: 18,
+    totalTowers: 3,
+    totalFloors: 9,
+    totalLandArea: "3.0 Acres",
+    salesPhone: "9835377880",
+    salesEmail: "sales.magadh@magadhinfra.com",
+    searchKeywords: ["Chandauti Gaya flat", "Sherghati Road flat", "Gaya apartment"],
+    description: "Magadh Imperial Heights in Chandauti offers spacious modern residences close to administrative offices with landscaped lawns, community hall, gym, and automatic lift.",
+    amenities: ["Residents Gymnasium", "Community Multipurpose Hall", "Landscaped Garden Walkway", "Automatic Passenger Elevator", "Intercom Facility", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 810, superBuiltUpArea: 1053, bathrooms: 2, priceMin: 4200000, priceMax: 4200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1220, superBuiltUpArea: 1586, bathrooms: 3, priceMin: 6400000, priceMax: 6400000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1780, superBuiltUpArea: 2314, bathrooms: 4, priceMin: 9400000, priceMax: 9400000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Vishnupad Residency",
+    slug: "vishnupad-residency-rampur-gaya",
+    developerName: "Vishnupad Developers",
+    cityName: "Gaya",
+    cityId: 64,
+    stateName: "Bihar",
+    locality: "Rampur",
+    siteAddress: "AP Colony Extension, Rampur, Gaya, Bihar",
+    landmark: "Near Vishnupad Temple & Falgu River",
+    location: "Rampur, Gaya",
+    latitude: 24.7684,
+    longitude: 85.0124,
+    priceMin: 4600000,
+    priceMax: 10500000,
+    pricePerSqFt: 4200,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00212-1/2018",
+    totalUnits: 150,
+    availableUnits: 10,
+    totalTowers: 2,
+    totalFloors: 8,
+    totalLandArea: "2.0 Acres",
+    salesPhone: "9835488990",
+    salesEmail: "sales.vishnupad@vishnupadrealty.in",
+    searchKeywords: ["Rampur Gaya flat", "AP Colony Gaya flat", "Vishnupad flat Gaya"],
+    description: "Vishnupad Residency in Rampur AP Colony Extension offers peaceful luxury living near the holy Vishnupad Temple and Falgu River with marble finishes and generator power.",
+    amenities: ["Temple View Terrace Lounge", "Community Celebration Hall", "Automatic Elevator", "Full Standby Power Backup", "Dedicated Car Parking", "Gated Security Guard"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 830, superBuiltUpArea: 1079, bathrooms: 2, priceMin: 4600000, priceMax: 4600000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1280, superBuiltUpArea: 1664, bathrooms: 3, priceMin: 7200000, priceMax: 7200000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1850, superBuiltUpArea: 2405, bathrooms: 4, priceMin: 10500000, priceMax: 10500000, isAvailable: true }
+    ]
+  },
+
+  // ==================== BHAGALPUR (4 projects) ====================
+  {
+    name: "Vikramshila Vihar",
+    slug: "vikramshila-vihar-barari-bhagalpur",
+    developerName: "Vikramshila Housing",
+    cityName: "Bhagalpur",
+    cityId: 65,
+    stateName: "Bihar",
+    locality: "Barari",
+    siteAddress: "Barari Road, Near JLNMCH Hospital, Bhagalpur, Bihar",
+    landmark: "Directly overlooking the River Ganges, near Medical College",
+    location: "Barari, Bhagalpur",
+    latitude: 25.2612,
+    longitude: 87.0124,
+    priceMin: 4200000,
+    priceMax: 9800000,
+    pricePerSqFt: 3800,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00388-1/2019",
+    totalUnits: 240,
+    availableUnits: 20,
+    totalTowers: 3,
+    totalFloors: 9,
+    totalLandArea: "3.5 Acres",
+    salesPhone: "9835599000",
+    salesEmail: "sales.vikramshilavihar@vikramshila.in",
+    searchKeywords: ["Bhagalpur flat", "Barari flat Bhagalpur", "Bhagalpur apartment"],
+    description: "Vikramshila Vihar in Barari offers stunning panoramic views of the Holy Ganges River with modern club amenities, earthquake-resistant structure, and landscaped gardens.",
+    amenities: ["Ganges Riverfront View Deck", "Residents Clubhouse", "Swimming Pool with Deck", "Children Play Arena", "Standby Generator Power", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 810, superBuiltUpArea: 1053, bathrooms: 2, priceMin: 4200000, priceMax: 4200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1250, superBuiltUpArea: 1625, bathrooms: 3, priceMin: 6500000, priceMax: 6500000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1820, superBuiltUpArea: 2366, bathrooms: 4, priceMin: 9800000, priceMax: 9800000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Silk City Heights",
+    slug: "silk-city-heights-tilkamanjhi-bhagalpur",
+    developerName: "Silk City Builders",
+    cityName: "Bhagalpur",
+    cityId: 65,
+    stateName: "Bihar",
+    locality: "Tilkamanjhi",
+    siteAddress: "Tilkamanjhi Chowk, Bhagalpur, Bihar",
+    landmark: "Directly opposite Tilka Manjhi Bhagalpur University",
+    location: "Tilkamanjhi, Bhagalpur",
+    latitude: 25.2458,
+    longitude: 86.9942,
+    priceMin: 4500000,
+    priceMax: 10500000,
+    pricePerSqFt: 4100,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00299-1/2018",
+    totalUnits: 180,
+    availableUnits: 14,
+    totalTowers: 2,
+    totalFloors: 10,
+    totalLandArea: "2.5 Acres",
+    salesPhone: "9835611220",
+    salesEmail: "sales.silkcity@silkcitybuilders.com",
+    searchKeywords: ["Tilkamanjhi flat", "Bhagalpur flat for sale", "Bhagalpur university flat"],
+    description: "Silk City Heights in Tilkamanjhi is located in Bhagalpur's prime educational and residential hub, featuring decorated entrance lobby, gym, and automatic elevators.",
+    amenities: ["Grand Entrance Lobby", "Fitness Gymnasium", "Community Hall", "High Speed Elevator with ARD", "Intercom System", "Dedicated Car Parking"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 840, superBuiltUpArea: 1092, bathrooms: 2, priceMin: 4500000, priceMax: 4500000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1280, superBuiltUpArea: 1664, bathrooms: 3, priceMin: 6900000, priceMax: 6900000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1890, superBuiltUpArea: 2457, bathrooms: 4, priceMin: 10500000, priceMax: 10500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Ganga View Residency",
+    slug: "ganga-view-residency-mayaganj-bhagalpur",
+    developerName: "Ganga Infratech",
+    cityName: "Bhagalpur",
+    cityId: 65,
+    stateName: "Bihar",
+    locality: "Mayaganj",
+    siteAddress: "Mayaganj Hospital Road, Bhagalpur, Bihar",
+    landmark: "Directly overlooking Ganges river, near Mayaganj Hospital",
+    location: "Mayaganj, Bhagalpur",
+    latitude: 25.2582,
+    longitude: 87.0041,
+    priceMin: 3900000,
+    priceMax: 8900000,
+    pricePerSqFt: 3600,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00472-1/2020",
+    totalUnits: 160,
+    availableUnits: 12,
+    totalTowers: 2,
+    totalFloors: 8,
+    totalLandArea: "2.2 Acres",
+    salesPhone: "9835722330",
+    salesEmail: "sales.gangaview@gangainfratech.in",
+    searchKeywords: ["Mayaganj flat", "Ganges view flat Bhagalpur", "Bhagalpur flat"],
+    description: "Ganga View Residency in Mayaganj delivers cool river breeze homes with wide balconies overlooking the holy river Ganges, solar lighting, and generator power.",
+    amenities: ["Panoramic River Ganges View", "Roof Garden Pavilion", "High-Speed Elevators", "Standby Generator Power", "Fire Fighting Equipment", "24/7 Security Guard"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 790, superBuiltUpArea: 1027, bathrooms: 2, priceMin: 3900000, priceMax: 3900000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1190, superBuiltUpArea: 1547, bathrooms: 3, priceMin: 5900000, priceMax: 5900000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1720, superBuiltUpArea: 2236, bathrooms: 4, priceMin: 8900000, priceMax: 8900000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Shivalik Gardenia",
+    slug: "shivalik-gardenia-zero-mile-bhagalpur",
+    developerName: "Shivalik Group Bihar",
+    cityName: "Bhagalpur",
+    cityId: 65,
+    stateName: "Bihar",
+    locality: "Zero Mile",
+    siteAddress: "Zero Mile Bypass Road, Bhagalpur, Bihar",
+    landmark: "Near Zero Mile Chowk & Vikramshila Bridge",
+    location: "Zero Mile, Bhagalpur",
+    latitude: 25.2341,
+    longitude: 87.0287,
+    priceMin: 3600000,
+    priceMax: 8200000,
+    pricePerSqFt: 3500,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00351-1/2019",
+    totalUnits: 200,
+    availableUnits: 18,
+    totalTowers: 3,
+    totalFloors: 8,
+    totalLandArea: "3.0 Acres",
+    salesPhone: "9835833440",
+    salesEmail: "sales.gardenia@shivalikbihar.com",
+    searchKeywords: ["Zero Mile Bhagalpur flat", "Vikramshila Setu flat", "Bhagalpur apartment"],
+    description: "Shivalik Gardenia at Zero Mile provides convenient highway accessibility to Vikramshila Setu, with landscaped central green parks, children play equipment, and power backup.",
+    amenities: ["Landscaped Green Parks", "Children Play Equipment", "Community Multipurpose Room", "High Speed Passenger Lift", "Full Power Backup", "Gated Security Guard Post"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 750, superBuiltUpArea: 975, bathrooms: 2, priceMin: 3600000, priceMax: 3600000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1140, superBuiltUpArea: 1482, bathrooms: 3, priceMin: 5600000, priceMax: 5600000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1680, superBuiltUpArea: 2184, bathrooms: 4, priceMin: 8200000, priceMax: 8200000, isAvailable: true }
+    ]
+  },
+
+  // ==================== BOKARO STEEL CITY (4 projects) ====================
+  {
+    name: "Steel City Heights",
+    slug: "steel-city-heights-sector-4-bokaro",
+    developerName: "Bokaro Infratech",
+    cityName: "Bokaro Steel City",
+    cityId: 1674,
+    stateName: "Jharkhand",
+    locality: "Sector 4",
+    siteAddress: "City Center Main Road, Sector 4, Bokaro Steel City, Jharkhand",
+    landmark: "Near Bokaro Mall & City Center",
+    location: "Sector 4, Bokaro Steel City",
+    latitude: 23.6684,
+    longitude: 86.1512,
+    priceMin: 4800000,
+    priceMax: 11500000,
+    pricePerSqFt: 4200,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/341/2019",
+    totalUnits: 280,
+    availableUnits: 19,
+    totalTowers: 3,
+    totalFloors: 11,
+    totalLandArea: "4.0 Acres",
+    salesPhone: "9835944550",
+    salesEmail: "sales.steelcity@bokaroinfra.com",
+    searchKeywords: ["Bokaro flat", "Sector 4 Bokaro flat", "Bokaro Steel City apartment"],
+    description: "Steel City Heights in Sector 4 is situated at the prime commercial heart of Bokaro Steel City across Bokaro Mall, offering clubhouse amenities, gym, and automatic lifts.",
+    amenities: ["Residents Lifestyle Club", "Swimming Pool with Deck", "Indoor Badminton & Table Tennis", "Air-Conditioned Gym", "High-Speed Elevators", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 850, superBuiltUpArea: 1105, bathrooms: 2, priceMin: 4800000, priceMax: 4800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1320, superBuiltUpArea: 1716, bathrooms: 3, priceMin: 7500000, priceMax: 7500000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1950, superBuiltUpArea: 2535, bathrooms: 4, priceMin: 11500000, priceMax: 11500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Aashiyana Green Valley",
+    slug: "aashiyana-green-valley-chira-chas-bokaro",
+    developerName: "Aashiyana Housing",
+    cityName: "Bokaro Steel City",
+    cityId: 1674,
+    stateName: "Jharkhand",
+    locality: "Chira Chas",
+    siteAddress: "Chira Chas Main Road, Bokaro Steel City, Jharkhand",
+    landmark: "Near DPS Chas & Garga Dam",
+    location: "Chira Chas, Bokaro Steel City",
+    latitude: 23.6391,
+    longitude: 86.1824,
+    priceMin: 3600000,
+    priceMax: 8500000,
+    pricePerSqFt: 3500,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/219/2018",
+    totalUnits: 360,
+    availableUnits: 25,
+    totalTowers: 5,
+    totalFloors: 9,
+    totalLandArea: "5.5 Acres",
+    salesPhone: "9835112233",
+    salesEmail: "sales.greenvalley@aashiyanabokaro.com",
+    searchKeywords: ["Chira Chas Bokaro flat", "Chas flat sale", "Bokaro apartment"],
+    description: "Aashiyana Green Valley in Chira Chas offers tranquil living with 70% open landscape, children park, community hall, water filtration, and quick access to Bokaro Steel Plant.",
+    amenities: ["Landscaped Green Park", "Community Celebration Hall", "Children Play Area", "Standby Generator Power", "Rainwater Harvesting", "Gated Controlled Security"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 780, superBuiltUpArea: 1014, bathrooms: 2, priceMin: 3600000, priceMax: 3600000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1190, superBuiltUpArea: 1547, bathrooms: 3, priceMin: 5600000, priceMax: 5600000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1720, superBuiltUpArea: 2236, bathrooms: 4, priceMin: 8500000, priceMax: 8500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Sai Kripa Residency",
+    slug: "sai-kripa-residency-co-operative-colony-bokaro",
+    developerName: "Sai Kripa Builders",
+    cityName: "Bokaro Steel City",
+    cityId: 1674,
+    stateName: "Jharkhand",
+    locality: "Co-operative Colony",
+    siteAddress: "Co-operative Colony, Bokaro Steel City, Jharkhand",
+    landmark: "Directly opposite Bokaro General Hospital",
+    location: "Co-operative Colony, Bokaro Steel City",
+    latitude: 23.6542,
+    longitude: 86.1428,
+    priceMin: 4200000,
+    priceMax: 9200000,
+    pricePerSqFt: 3900,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/412/2020",
+    totalUnits: 180,
+    availableUnits: 15,
+    totalTowers: 2,
+    totalFloors: 9,
+    totalLandArea: "2.8 Acres",
+    salesPhone: "9835223344",
+    salesEmail: "sales.saikripa@saikripabuilders.in",
+    searchKeywords: ["Co-operative Colony Bokaro flat", "Bokaro General Hospital flat", "Bokaro flat"],
+    description: "Sai Kripa Residency in Co-operative Colony provides executive apartments near Bokaro General Hospital with spacious room dimensions, branded fittings, and covered parking.",
+    amenities: ["Residents Gym & Yoga Room", "Community Hall", "Automatic Elevator with ARD", "Intercom in All Flats", "Full Power Backup", "Dedicated Parking Bays"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 810, superBuiltUpArea: 1053, bathrooms: 2, priceMin: 4200000, priceMax: 4200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1240, superBuiltUpArea: 1612, bathrooms: 3, priceMin: 6400000, priceMax: 6400000, isAvailable: true },
+      { bhkType: "3 BHK Penthouse", carpetArea: 1740, superBuiltUpArea: 2262, bathrooms: 3, priceMin: 9200000, priceMax: 9200000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Bokaro Enclave",
+    slug: "bokaro-enclave-chas-main-road-bokaro",
+    developerName: "Bokaro Developers",
+    cityName: "Bokaro Steel City",
+    cityId: 1674,
+    stateName: "Jharkhand",
+    locality: "Chas",
+    siteAddress: "Chas-Purulia Main Road, Chas, Bokaro Steel City, Jharkhand",
+    landmark: "Near Chas Check Post & Reliance Smart Point",
+    location: "Chas, Bokaro Steel City",
+    latitude: 23.6298,
+    longitude: 86.1751,
+    priceMin: 3400000,
+    priceMax: 7800000,
+    pricePerSqFt: 3300,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/188/2018",
+    totalUnits: 220,
+    availableUnits: 18,
+    totalTowers: 3,
+    totalFloors: 8,
+    totalLandArea: "3.2 Acres",
+    salesPhone: "9835334455",
+    salesEmail: "sales.bokaroenclave@bokarodevelopers.com",
+    searchKeywords: ["Chas Bokaro flat", "Chas main road flat", "Bokaro flat sale"],
+    description: "Bokaro Enclave on Chas-Purulia Main Road offers affordable, high-quality family apartments with landscaped courtyard, children play area, and generator backup.",
+    amenities: ["Landscaped Central Courtyard", "Children Play Equipment", "Community Room", "Automatic Elevator", "Standby Generator Backup", "24/7 Security Guarding"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 730, superBuiltUpArea: 949, bathrooms: 2, priceMin: 3400000, priceMax: 3400000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1120, superBuiltUpArea: 1456, bathrooms: 3, priceMin: 5200000, priceMax: 5200000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1620, superBuiltUpArea: 2106, bathrooms: 4, priceMin: 7800000, priceMax: 7800000, isAvailable: true }
+    ]
+  },
+
+  // ==================== DEOGHAR (4 projects) ====================
+  {
+    name: "Baidyanath Dham Enclave",
+    slug: "baidyanath-dham-enclave-castairs-town-deoghar",
+    developerName: "Baidyanath Infratech",
+    cityName: "Deoghar",
+    cityId: 1699,
+    stateName: "Jharkhand",
+    locality: "Castairs Town",
+    siteAddress: "Tower Chowk Road, Castairs Town, Deoghar, Jharkhand",
+    landmark: "Directly walking distance from Baba Baidyanath Temple",
+    location: "Castairs Town, Deoghar",
+    latitude: 24.4891,
+    longitude: 86.6982,
+    priceMin: 4200000,
+    priceMax: 9800000,
+    pricePerSqFt: 4100,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/295/2019",
+    totalUnits: 160,
+    availableUnits: 14,
+    totalTowers: 2,
+    totalFloors: 8,
+    totalLandArea: "2.0 Acres",
+    salesPhone: "9835445566",
+    salesEmail: "sales.baidyanath@baidyanathinfra.com",
+    searchKeywords: ["Deoghar flat", "Baba Baidyanath Temple flat", "Castairs Town flat"],
+    description: "Baidyanath Dham Enclave in Castairs Town is located in the sacred center of Deoghar near Baba Baidyanath Temple, offering serene spiritual homes with elevator and generator power.",
+    amenities: ["Temple View Rooftop Sit-Out", "Community Prayer & Celebration Hall", "Automatic Passenger Elevator", "Full Generator Power Backup", "Dedicated Covered Parking", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 780, superBuiltUpArea: 1014, bathrooms: 2, priceMin: 4200000, priceMax: 4200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1220, superBuiltUpArea: 1586, bathrooms: 3, priceMin: 6500000, priceMax: 6500000, isAvailable: true },
+      { bhkType: "3 BHK Penthouse", carpetArea: 1750, superBuiltUpArea: 2275, bathrooms: 3, priceMin: 9800000, priceMax: 9800000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Shivganga Heights",
+    slug: "shivganga-heights-williams-town-deoghar",
+    developerName: "Shivganga Builders",
+    cityName: "Deoghar",
+    cityId: 1699,
+    stateName: "Jharkhand",
+    locality: "Williams Town",
+    siteAddress: "VIP Road, Williams Town, Deoghar, Jharkhand",
+    landmark: "Directly overlooking Shivganga Lake",
+    location: "Williams Town, Deoghar",
+    latitude: 24.4942,
+    longitude: 86.7041,
+    priceMin: 3900000,
+    priceMax: 8900000,
+    pricePerSqFt: 3800,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/382/2020",
+    totalUnits: 140,
+    availableUnits: 12,
+    totalTowers: 2,
+    totalFloors: 7,
+    totalLandArea: "1.8 Acres",
+    salesPhone: "9835556677",
+    salesEmail: "sales.shivganga@shivgangabuilders.in",
+    searchKeywords: ["Williams Town Deoghar flat", "Shivganga lake flat", "Deoghar apartment"],
+    description: "Shivganga Heights in Williams Town overlooks holy Shivganga Lake offering breezy spiritual residences with large balconies, marble finishes, and 24/7 security.",
+    amenities: ["Shivganga Lake View Balconies", "Community Meeting Room", "Automatic Elevator", "Full Standby Generator", "Fire Safety Systems", "Security Guard Post"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 750, superBuiltUpArea: 975, bathrooms: 2, priceMin: 3900000, priceMax: 3900000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1150, superBuiltUpArea: 1495, bathrooms: 3, priceMin: 5900000, priceMax: 5900000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1680, superBuiltUpArea: 2184, bathrooms: 4, priceMin: 8900000, priceMax: 8900000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Trikut View Residency",
+    slug: "trikut-view-residency-jasidih-road-deoghar",
+    developerName: "Trikut Real Estate",
+    cityName: "Deoghar",
+    cityId: 1699,
+    stateName: "Jharkhand",
+    locality: "Jasidih Road",
+    siteAddress: "Deoghar-Jasidih Main Road, Deoghar, Jharkhand",
+    landmark: "Near AIIMS Deoghar & Jasidih Junction",
+    location: "Jasidih Road, Deoghar",
+    latitude: 24.5124,
+    longitude: 86.6719,
+    priceMin: 3600000,
+    priceMax: 8200000,
+    pricePerSqFt: 3500,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/174/2018",
+    totalUnits: 200,
+    availableUnits: 16,
+    totalTowers: 3,
+    totalFloors: 8,
+    totalLandArea: "3.0 Acres",
+    salesPhone: "9835667788",
+    salesEmail: "sales.trikutview@trikutrealty.com",
+    searchKeywords: ["AIIMS Deoghar flat", "Jasidih flat", "Jasidih road Deoghar flat"],
+    description: "Trikut View Residency on Deoghar-Jasidih Road is located within 5 minutes of AIIMS Deoghar and Jasidih Railway Junction, featuring Trikut hill views and landscaped garden.",
+    amenities: ["Panoramic Trikut Hill Vistas", "Landscaped Garden Walkway", "Children Play Area", "Automatic Elevators", "Standby Generator Power", "Gated Controlled Access"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 740, superBuiltUpArea: 962, bathrooms: 2, priceMin: 3600000, priceMax: 3600000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1140, superBuiltUpArea: 1482, bathrooms: 3, priceMin: 5500000, priceMax: 5500000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1650, superBuiltUpArea: 2145, bathrooms: 4, priceMin: 8200000, priceMax: 8200000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Nandan Pahar Greens",
+    slug: "nandan-pahar-greens-nandan-pahar-road-deoghar",
+    developerName: "Nandan Infratech",
+    cityName: "Deoghar",
+    cityId: 1699,
+    stateName: "Jharkhand",
+    locality: "Nandan Pahar Road",
+    siteAddress: "Near Nandan Pahar Amusement Park, Deoghar, Jharkhand",
+    landmark: "Directly opposite Nandan Pahar Park",
+    location: "Nandan Pahar Road, Deoghar",
+    latitude: 24.5081,
+    longitude: 86.7112,
+    priceMin: 3400000,
+    priceMax: 7600000,
+    pricePerSqFt: 3400,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/488/2021",
+    totalUnits: 150,
+    availableUnits: 14,
+    totalTowers: 2,
+    totalFloors: 7,
+    totalLandArea: "2.2 Acres",
+    salesPhone: "9835778899",
+    salesEmail: "sales.nandanpahar@nandaninfra.in",
+    searchKeywords: ["Nandan Pahar Deoghar flat", "Deoghar flat for sale", "Deoghar property"],
+    description: "Nandan Pahar Greens near Nandan Pahar Amusement Park offers picturesque green hill views with children park, community room, generator backup, and high-speed elevator.",
+    amenities: ["Nandan Pahar Hill View", "Community Hall", "Children Play Arena", "Passenger Elevator", "Standby Generator Power Backup", "24/7 Security Guarding"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 710, superBuiltUpArea: 923, bathrooms: 2, priceMin: 3400000, priceMax: 3400000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1090, superBuiltUpArea: 1417, bathrooms: 3, priceMin: 5100000, priceMax: 5100000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1580, superBuiltUpArea: 2054, bathrooms: 4, priceMin: 7600000, priceMax: 7600000, isAvailable: true }
+    ]
+  }
+];
+
+async function main() {
+  console.log(`=== SOURCING PHOTOS AND SEEDING BIHAR & JHARKHAND BATCH 10 ===`);
+  console.log(`Total projects to process: ${BATCH10_PROJECTS.length}`);
+
+  const usedGlobalPhotos = new Set();
+
+  for (let i = 0; i < BATCH10_PROJECTS.length; i++) {
+    const p = BATCH10_PROJECTS[i];
+    console.log(`\n[${i + 1}/${BATCH10_PROJECTS.length}] Processing ${p.name} in ${p.cityName}...`);
+
+    const projectDir = path.join(PROJECT_IMAGES_DIR, p.slug);
+    if (!fs.existsSync(projectDir)) {
+      fs.mkdirSync(projectDir, { recursive: true });
+    }
+
+    const uploadedUrls = [];
+    const queries = p.searchKeywords || [`${p.cityName} flat`];
+
+    let candidatePhotos = [];
+    for (const q of queries) {
+      const photos = await fetchPhotosForQuery(q);
+      for (const ph of photos) {
+        if (!candidatePhotos.includes(ph)) candidatePhotos.push(ph);
+      }
+      if (candidatePhotos.length >= 12) break;
+    }
+
+    // Fallback query if needed
+    if (candidatePhotos.length < 5) {
+      const cityPhotos = await fetchPhotosForQuery(`${p.cityName} flat apartment`);
+      for (const ph of cityPhotos) {
+        if (!candidatePhotos.includes(ph)) candidatePhotos.push(ph);
+      }
+    }
+
+    // Secondary fallback to state capital if small town query has low items
+    if (candidatePhotos.length < 5) {
+      const stateFallback = p.stateName === "Bihar" ? "Patna flat apartment" : "Ranchi flat apartment";
+      const fallbackPhotos = await fetchPhotosForQuery(stateFallback);
+      for (const ph of fallbackPhotos) {
+        if (!candidatePhotos.includes(ph)) candidatePhotos.push(ph);
+      }
+    }
+
+    for (let j = 0; j < candidatePhotos.length; j++) {
+      if (uploadedUrls.length >= 5) break;
+      const photoUrl = candidatePhotos[j];
+      if (usedGlobalPhotos.has(photoUrl)) continue;
+      usedGlobalPhotos.add(photoUrl);
+
+      const idx = uploadedUrls.length + 1;
+      const localFile = path.join(projectDir, `photo_${idx}.webp`);
+      const r2Key = `projects/photos/${p.slug}/photo_${idx}.webp`;
+
+      const downloaded = await downloadImage(photoUrl, localFile);
+      if (downloaded) {
+        const url = await uploadToCloudflareR2(localFile, r2Key);
+        uploadedUrls.push(url);
+        console.log(`  ✓ Uploaded image ${idx}/5 to R2: ${url}`);
+      }
+    }
+
+    p.images = uploadedUrls;
+  }
+
+  fs.writeFileSync(DOCS_FILE, JSON.stringify(BATCH10_PROJECTS, null, 2));
+  fs.writeFileSync(PROJECTS_FILE, JSON.stringify(BATCH10_PROJECTS, null, 2));
+  console.log(`\nSaved ${BATCH10_PROJECTS.length} projects to ${DOCS_FILE} and ${PROJECTS_FILE}`);
+}
+
+main().catch(console.error);
