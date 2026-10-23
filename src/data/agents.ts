@@ -1,3 +1,5 @@
+import { CITY_ADVISORS } from "./city_advisors";
+
 export interface AgentListing {
   id: number;
   title: string;
@@ -12,6 +14,7 @@ export type AgentSubscriptionTier = "FREE_VERIFIED" | "CITY_SPOTLIGHT" | "PRO_AD
 
 export interface Agent {
   id: string;
+  slug?: string;
   name: string;
   role: string;
   agency: string;
@@ -19,8 +22,11 @@ export interface Agent {
   avatar: string;
   coverImage?: string;
   city: string;
+  cityName?: string;
   area: string;
+  primaryArea?: string;
   experience: string;
+  experienceYears?: number;
   tours: string;
   listingsCount: number;
   rating: string;
@@ -33,6 +39,8 @@ export interface Agent {
   languages: string[];
   bio: string;
   responseTime: string;
+  responseTimeText?: string;
+  featuredOrder?: number;
   featuredListings: AgentListing[];
   reviews: {
     author: string;
@@ -44,7 +52,7 @@ export interface Agent {
   isHomepageFeatured: boolean;
 }
 
-export const ALL_AGENTS: Agent[] = [
+export const INITIAL_FEATURED_AGENTS: Agent[] = [
   {
     id: "aarav-kapoor",
     name: "Aarav Kapoor",
@@ -348,6 +356,13 @@ export const ALL_AGENTS: Agent[] = [
     subscriptionTier: "FREE_VERIFIED",
     isHomepageFeatured: false,
   },
+];
+
+export const ALL_AGENTS: Agent[] = [
+  ...INITIAL_FEATURED_AGENTS,
+  ...CITY_ADVISORS.filter(
+    (advisor) => !INITIAL_FEATURED_AGENTS.some((existing) => existing.id === advisor.id)
+  ),
 ];
 
 export function getAgentById(id: string): Agent | undefined {

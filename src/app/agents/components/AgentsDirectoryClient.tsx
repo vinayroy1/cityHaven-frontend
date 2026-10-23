@@ -12,6 +12,7 @@ import {
   Compass,
   Filter,
   MapPin,
+  Mail,
   Phone,
   RotateCcw,
   Search,
@@ -425,10 +426,21 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                     <a
                       href={`tel:${agent.phone.replace(/\s+/g, "")}`}
                       aria-label={`Call ${agent.name}`}
+                      title={`Call ${agent.phone}`}
                       className="inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl border border-slate-200 text-slate-700 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 shrink-0"
                     >
                       <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     </a>
+                    {agent.email && (
+                      <a
+                        href={`mailto:${agent.email}`}
+                        aria-label={`Email ${agent.name}`}
+                        title={`Email ${agent.email}`}
+                        className="inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl border border-slate-200 text-slate-700 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 shrink-0"
+                      >
+                        <Mail className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      </a>
+                    )}
                   </div>
                   <Link
                     href={`/agents/${agent.id}`}
