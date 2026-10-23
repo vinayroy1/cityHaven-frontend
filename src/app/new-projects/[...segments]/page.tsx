@@ -111,7 +111,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const location = parseLocation(segments);
     if (!location) return {};
     const count = await getProjectCount(location.city);
-    const countLabel = count !== null && count > 0 ? `${count} ` : "";
+    const hasResults = count !== null && count > 0;
+    const countLabel = hasResults ? `${count} ` : "";
     const title = `${countLabel}New Residential Projects in ${location.city} | Awasio`;
     const description = `Explore ${countLabel || "verified "}new residential projects, luxury apartments, and township developments in ${location.city} with RERA verification, floor plans, and developer pricing.`;
     const canonical = buildCanonical(`/new-projects/${toSearchSlug(location.city)}`);
@@ -120,6 +121,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       alternates: { canonical },
+      robots: {
+        index: hasResults,
+        follow: true,
+      },
       openGraph: { title, description, url: canonical, type: "website" },
     };
   }
@@ -129,7 +134,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!location) return {};
   const label = [...location.localities, location.city].join(", ");
   const count = await getProjectCount(location.city, location.localities);
-  const countLabel = count !== null && count > 0 ? `${count} ` : "";
+  const hasResults = count !== null && count > 0;
+  const countLabel = hasResults ? `${count} ` : "";
   const title = `${countLabel}New Projects in ${label} | Price & Floor Plans | Awasio`;
   const description = `Browse ${countLabel || "verified "}new residential projects, high-rises and gated societies in ${label}. Compare RERA IDs, amenities, price per sqft and developer reputation.`;
   const canonical = buildCanonical(`/new-projects/${segments.join("/")}`);
@@ -138,6 +144,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: { canonical },
+    robots: {
+      index: hasResults,
+      follow: true,
+    },
     openGraph: { title, description, url: canonical, type: "website" },
   };
 }

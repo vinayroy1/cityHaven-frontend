@@ -193,6 +193,7 @@ export function SearchBar({
           open={mobileSearchOpen}
           onClose={() => setMobileSearchOpen(false)}
           value={value}
+          onSubmit={onSubmit}
           submitHref={buildSearchHref}
           renderSearchEditor={(draft, setDraft) => (
             <SearchEditor variant="hero" value={draft} onSubmit={setDraft} onContextChange={setDraft} showSubmit={false} liveChanges />

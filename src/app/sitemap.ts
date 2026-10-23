@@ -2,38 +2,53 @@ import type { MetadataRoute } from "next";
 import {
   SITE_URL,
   SEO_SEARCH_INTENTS,
-  SEO_CITIES,
-  SEO_TOP_LOCALITIES,
-  type SeoSearchIntent,
 } from "@/constants/seo";
+import { toSearchSlug } from "@/components/search/searchQuery";
 import { getAllAgentIds } from "@/data/agents";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
-
 import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 
-async function getActiveProperties(): Promise<Array<{ id: number; slug?: string | null; updatedAt?: string | null }>> {
+async function getActiveProperties(): Promise<Array<{
+  id: number;
+  slug?: string | null;
+  cityName?: string | null;
+  locality?: string | null;
+  listingType?: string | null;
+  updatedAt?: string | null;
+}>> {
   try {
     const endpoint = toInternalApiUrl(`${API_ENDPOINTS.propertyListing.search}?pageSize=100`);
     const res = await fetch(endpoint, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return [];
-    const json = (await res.json()) as { data?: { items?: Array<{ id: number; slug?: string | null; updatedAt?: string | null }> } };
+    const json = (await res.json()) as {
+      data?: {
+        items?: Array<{
+          id: number;
+          slug?: string | null;
+          cityName?: string | null;
+          locality?: string | null;
+          listingType?: string | null;
+          updatedAt?: string | null;
+        }>;
+      };
+    };
     return json?.data?.items ?? [];
   } catch {
     return [];
   }
 }
 
-async function getActiveProjects(): Promise<Array<{ slug: string; updatedAt?: string | null }>> {
+async function getActiveProjects(): Promise<Array<{ slug: string; city?: string | null; updatedAt?: string | null }>> {
   try {
     const endpoint = toInternalApiUrl(`${API_ENDPOINTS.projects.search}?pageSize=100`);
     const res = await fetch(endpoint, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return [];
-    const json = (await res.json()) as { data?: { items?: Array<{ slug: string; updatedAt?: string | null }> } };
+    const json = (await res.json()) as { data?: { items?: Array<{ slug: string; city?: string | null; updatedAt?: string | null }> } };
     return json?.data?.items ?? [];
   } catch {
     return [];
@@ -62,7 +77,7 @@ async function getPublishedBlogPosts(): Promise<Array<{ slug: string; updatedAt?
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
-  // 1. Core Top-Level Routes
+  // 1. Core High-Value Top-Level Routes
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: `${SITE_URL}/`,
@@ -152,27 +167,51 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  // 3. City-Specific Landing Pages (e.g. /rent/bengaluru, /flatmate/bengaluru)
-  const citySearchRoutes: MetadataRoute.Sitemap = SEO_SEARCH_INTENTS.flatMap((intent) =>
-    SEO_CITIES.map((city) => ({
+  // 3. Dynamic Active Properties with SEO Slugs
+  const properties = await getActiveProperties();
+  const propertyRoutes: MetadataRoute.Sitemap = properties.map((prop) => ({
+    url: `${SITE_URL}/properties/${prop.slug || prop.id}`,
+    lastModified: prop.updatedAt ? new Date(prop.updatedAt) : now,
+    changeFrequency: "daily",
+    priority: 0.85,
+  }));
+
+  // 4. Populated City & Locality Landing Pages (ONLY for cities/localities with active inventory!)
+  const activeCitiesSet = new Set<string>();
+  const activeLocalityPairs: Array<{ city: string; locality: string }> = [];
+
+  for (const prop of properties) {
+    if (prop.cityName) {
+      const citySlug = toSearchSlug(prop.cityName);
+      if (citySlug) {
+        activeCitiesSet.add(citySlug);
+        if (prop.locality) {
+          const locSlug = toSearchSlug(prop.locality);
+          if (locSlug && !activeLocalityPairs.some((p) => p.city === citySlug && p.locality === locSlug)) {
+            activeLocalityPairs.push({ city: citySlug, locality: locSlug });
+          }
+        }
+      }
+    }
+  }
+
+  const activeCities = Array.from(activeCitiesSet);
+  const citySearchRoutes: MetadataRoute.Sitemap = ["rent", "buy", "pg", "flatmate"].flatMap((intent) =>
+    activeCities.map((city) => ({
       url: `${SITE_URL}/${intent}/${city}`,
       lastModified: now,
       changeFrequency: "daily" as const,
-      priority: 0.88,
+      priority: 0.85,
     }))
   );
 
-  // 4. Locality-Specific Landing Pages (e.g. /rent/bengaluru/koramangala, /flatmate/bengaluru/hsr-layout)
-  const highIntentLocalityCategories: SeoSearchIntent[] = ["rent", "flatmate", "pg", "buy"];
-  const localitySearchRoutes: MetadataRoute.Sitemap = highIntentLocalityCategories.flatMap((intent) =>
-    Object.entries(SEO_TOP_LOCALITIES).flatMap(([city, localities]) =>
-      localities.map((locality) => ({
-        url: `${SITE_URL}/${intent}/${city}/${locality}`,
-        lastModified: now,
-        changeFrequency: "daily" as const,
-        priority: 0.82,
-      }))
-    )
+  const localitySearchRoutes: MetadataRoute.Sitemap = ["rent", "buy", "pg"].flatMap((intent) =>
+    activeLocalityPairs.map(({ city, locality }) => ({
+      url: `${SITE_URL}/${intent}/${city}/${locality}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    }))
   );
 
   // 5. Verified Real Estate Advisor Profiles
@@ -184,34 +223,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 6. Dynamic Active Properties with SEO Slugs
-  const properties = await getActiveProperties();
-  const propertyRoutes: MetadataRoute.Sitemap = properties.map((prop) => ({
-    url: `${SITE_URL}/properties/${prop.slug || prop.id}`,
-    lastModified: prop.updatedAt ? new Date(prop.updatedAt) : now,
-    changeFrequency: "daily",
-    priority: 0.85,
-  }));
-
-  // 7. New Projects Canonical City & Locality Landing Pages
-  const newProjectsCityRoutes: MetadataRoute.Sitemap = SEO_CITIES.map((city) => ({
-    url: `${SITE_URL}/new-projects/${city}`,
-    lastModified: now,
-    changeFrequency: "daily" as const,
-    priority: 0.88,
-  }));
-
-  const newProjectsLocalityRoutes: MetadataRoute.Sitemap = Object.entries(SEO_TOP_LOCALITIES).flatMap(
-    ([city, localities]) =>
-      localities.map((locality) => ({
-        url: `${SITE_URL}/new-projects/${city}/${locality}`,
-        lastModified: now,
-        changeFrequency: "daily" as const,
-        priority: 0.84,
-      }))
-  );
-
-  // 8. Dynamic Active Projects with SEO Slugs
+  // 6. Dynamic Active Projects with SEO Slugs
   const projects = await getActiveProjects();
   const projectDetailRoutes: MetadataRoute.Sitemap = projects.map((proj) => ({
     url: `${SITE_URL}/new-projects/${proj.slug}`,
@@ -220,6 +232,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
+  // Populated new project city landing pages
+  const projectCities = Array.from(
+    new Set(projects.map((p) => (p.city ? toSearchSlug(p.city) : null)).filter(Boolean) as string[])
+  );
+  const newProjectsCityRoutes: MetadataRoute.Sitemap = projectCities.map((city) => ({
+    url: `${SITE_URL}/new-projects/${city}`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.85,
+  }));
+
+  // 7. Published Blog Posts
   const blogPosts = await getPublishedBlogPosts();
   const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
@@ -236,7 +260,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...agentRoutes,
     ...propertyRoutes,
     ...newProjectsCityRoutes,
-    ...newProjectsLocalityRoutes,
     ...projectDetailRoutes,
     ...blogRoutes,
   ];

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import FlatmatesDiscoveryPage from "@/app/flatmates/page";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, SITE_URL } from "@/constants/seo";
 import { fromSearchSlug } from "@/components/search/searchQuery";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 
 type Props = { params: Promise<{ segments?: string[] }> };
 
@@ -19,10 +20,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const canonicalUrl = buildCanonical(path);
   const socialImage = `${process.env.NEXT_PUBLIC_SITE_URL || "https://awasio.com"}/og-image.png`;
 
+  let hasResults = true;
+  if (segments.length > 0) {
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://awasio.com/api";
+      const endpoint = toInternalApiUrl(`${apiBase}/v1/flatmates?pageSize=1${city !== "India" ? `&city=${encodeURIComponent(city)}` : ""}`);
+      const res = await fetch(endpoint, { next: { revalidate: 3600 } });
+      if (res.ok) {
+        const payload = await res.json();
+        const total = Number(payload?.data?.total ?? payload?.total ?? 0);
+        if (total === 0) hasResults = false;
+      }
+    } catch {
+      // Keep indexing if count check fails
+    }
+  }
+
   return {
     title: pageTitle,
     description,
     alternates: { canonical: canonicalUrl },
+    robots: {
+      index: hasResults,
+      follow: true,
+      googleBot: {
+        index: hasResults,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
     openGraph: {
       title: `${pageTitle} | Awasio`,
       description,
@@ -51,7 +79,7 @@ export default async function FlatmateSearchPage({ params }: Props) {
   const locality = segments[1] ? fromSearchSlug(segments[1]) : "";
   const breadcrumbElements: Array<{ "@type": string; position: number; name: string; item: string }> = [
     { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-    { "@type": "ListItem", position: 2, name: "Flatmates", item: buildCanonical("/flatmates") },
+    { "@type": "ListItem", position: 2, name: "Flatmates", item: buildCanonical("/flatmate") },
   ];
   if (city && segments[0]) {
     breadcrumbElements.push({

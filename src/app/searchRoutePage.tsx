@@ -56,6 +56,7 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
   const copy = intentCopy(intent);
   const locationLabel = location.state ? location.state : [...location.localities, location.city].filter(Boolean).join(", ") || "India";
   let countLabel = "";
+  let hasResults = true;
   try {
     const isFlatmate = intent === "FLATMATE";
     const endpoint = toInternalApiUrl(isFlatmate ? `${API_BASE}/api/v1/flatmates` : `${API_BASE}/api/v1/propertyListing/search`);
@@ -75,7 +76,11 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
     if (response.ok) {
       const payload = await response.json();
       const total = Number(payload?.data?.total ?? payload?.total ?? 0);
-      if (total > 0) countLabel = `${total} `;
+      if (total > 0) {
+        countLabel = `${total} `;
+      } else if (segments.length > 0) {
+        hasResults = false;
+      }
     }
   } catch {
     // Static metadata remains useful when the count service is unavailable.
@@ -91,6 +96,17 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
     title: pageTitle,
     description,
     alternates: { canonical: canonicalUrl },
+    robots: {
+      index: hasResults,
+      follow: true,
+      googleBot: {
+        index: hasResults,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
     openGraph: {
       title: `${pageTitle} | Awasio`,
       description,

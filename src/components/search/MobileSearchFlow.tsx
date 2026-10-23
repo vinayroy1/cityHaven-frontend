@@ -2,6 +2,7 @@
 
 import React from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 import { FilterSectionsEditor } from "./FilterSheet";
 import { clearAllFilters, countActiveFilters, type SearchState } from "./searchQuery";
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, submitHref, renderSearchEditor }: Props) {
+  const router = useRouter();
   const [mounted, setMounted] = React.useState(false);
   const [draft, setDraft] = React.useState(value);
   const [viewportStyle, setViewportStyle] = React.useState<React.CSSProperties>({});
@@ -66,6 +68,14 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
 
   if (!open || !mounted || typeof document === "undefined") return null;
 
+  const handleApply = (e?: React.MouseEvent) => {
+    onClose();
+    if (onSubmit) {
+      e?.preventDefault();
+      onSubmit(draft);
+    }
+  };
+
   const activeCount = countActiveFilters(draft);
   return createPortal(
     <div
@@ -112,7 +122,8 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
         {submitHref ? (
           <a
             href={submitHref(draft)}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 active:scale-[0.99]"
+            onClick={handleApply}
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 active:scale-[0.99] cursor-pointer"
           >
             <Search size={18} />
             {resultCount == null ? "Search properties" : "Apply & search"}
@@ -120,8 +131,8 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
         ) : (
           <button
             type="button"
-            onClick={() => onSubmit?.(draft)}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 active:scale-[0.99]"
+            onClick={handleApply}
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 active:scale-[0.99] cursor-pointer"
           >
             <Search size={18} />
             {resultCount == null ? "Search properties" : "Apply & search"}

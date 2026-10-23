@@ -8,59 +8,41 @@ const INDEXNOW_KEY = "a0c7e5b29f1d43a88b6c4e09f5127d3e";
 const HOST = "awasio.com";
 const SITE_URL = "https://awasio.com";
 
-const SEO_SEARCH_INTENTS = ["rent", "buy", "flatmate", "pg", "commercial", "plot"];
-const SEO_CITIES = ["bengaluru", "delhi", "gurugram", "noida", "mumbai", "pune", "hyderabad"];
+async function generateUrls() {
+  try {
+    const res = await fetch("https://awasio.com/sitemap.xml");
+    if (res.ok) {
+      const xml = await res.text();
+      const locMatches = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
+      if (locMatches.length > 0) {
+        return locMatches;
+      }
+    }
+  } catch {
+    // fallback to core top routes
+  }
 
-const SEO_TOP_LOCALITIES = {
-  bengaluru: ["koramangala", "hsr-layout", "indiranagar", "whitefield", "bellandur", "electronic-city", "marathahalli", "jayanagar", "sarjapur-road"],
-  gurugram: ["dlf-phase-5", "golf-course-road", "sohna-road", "dlf-phase-1", "sector-56", "cyber-city"],
-  delhi: ["dwarka", "saket", "south-delhi", "rohini", "greater-kailash", "connaught-place", "janakpuri", "vasant-kunj"],
-  noida: ["sector-62", "sector-18", "noida-extension", "sector-137", "sector-76"],
-  mumbai: ["bandra-west", "andheri-west", "powai", "worli", "juhu", "thane-west"],
-  pune: ["hinjewadi", "baner", "wakad", "viman-nagar", "kothrud"],
-  hyderabad: ["hitech-city", "gachibowli", "kondapur", "madhapur", "jubilee-hills"],
-};
-
-function generateUrls() {
-  const urls = [
+  return [
     `${SITE_URL}/`,
     `${SITE_URL}/about`,
     `${SITE_URL}/contact`,
     `${SITE_URL}/agents`,
+    `${SITE_URL}/blog`,
     `${SITE_URL}/new-projects`,
     `${SITE_URL}/price-trends`,
     `${SITE_URL}/pricing`,
     `${SITE_URL}/policies`,
     `${SITE_URL}/privacy`,
     `${SITE_URL}/terms`,
+    `${SITE_URL}/buy`,
+    `${SITE_URL}/rent`,
+    `${SITE_URL}/pg`,
+    `${SITE_URL}/flatmate`,
   ];
-
-  // Intents
-  for (const intent of SEO_SEARCH_INTENTS) {
-    urls.push(`${SITE_URL}/${intent}`);
-  }
-
-  // City pages
-  for (const intent of SEO_SEARCH_INTENTS) {
-    for (const city of SEO_CITIES) {
-      urls.push(`${SITE_URL}/${intent}/${city}`);
-    }
-  }
-
-  // Locality pages
-  for (const intent of ["rent", "flatmate", "pg", "buy"]) {
-    for (const [city, localities] of Object.entries(SEO_TOP_LOCALITIES)) {
-      for (const loc of localities) {
-        urls.push(`${SITE_URL}/${intent}/${city}/${loc}`);
-      }
-    }
-  }
-
-  return Array.from(new Set(urls));
 }
 
 async function main() {
-  const urls = generateUrls();
+  const urls = await generateUrls();
   console.log(`\n========================================`);
   console.log(`  AWASIO SEO FORCE CRAWLER & INDEXER   `);
   console.log(`========================================`);
