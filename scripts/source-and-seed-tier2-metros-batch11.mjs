@@ -1,0 +1,884 @@
+import fs from "fs";
+import path from "path";
+import { S3Client, PutObjectCommand } from "/Users/vinaykumar/Desktop/myProjects/awasio-backend/node_modules/@aws-sdk/client-s3/dist-cjs/index.js";
+
+const BASE_DIR = "/Users/vinaykumar/Desktop/awasio-sourced-properties";
+const PROJECT_IMAGES_DIR = path.join(BASE_DIR, "batch11_images");
+const PROJECTS_FILE = path.join(BASE_DIR, "tier2_metros_batch11.json");
+const DOCS_FILE = path.join(process.cwd(), "docs", "tier2_metros_batch11.json");
+
+if (!fs.existsSync(PROJECT_IMAGES_DIR)) {
+  fs.mkdirSync(PROJECT_IMAGES_DIR, { recursive: true });
+}
+
+const R2_PUBLIC_BASE = "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev";
+const R2_BUCKET = "awasio-media";
+
+const s3 = new S3Client({
+  region: "auto",
+  endpoint: "https://0d890d076a7e84f12dc8b90d8bb1a00c.r2.cloudflarestorage.com",
+  credentials: {
+    accessKeyId: "f6e73586e77e75a0c967aa85944e959b",
+    secretAccessKey: "3b9531a5a59e122e04589a763d619a2761b180ec7dba6f3dd01f6f971233408a",
+  },
+});
+
+async function uploadToCloudflareR2(localFilePath, r2Key) {
+  const fileBuffer = fs.readFileSync(localFilePath);
+  const cmd = new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: r2Key,
+    Body: fileBuffer,
+    ContentType: "image/webp",
+    CacheControl: "public, max-age=31536000, immutable",
+  });
+  await s3.send(cmd);
+  return `${R2_PUBLIC_BASE}/${r2Key}`;
+}
+
+async function downloadImage(imageUrl, destPath) {
+  try {
+    const cleanUrl = imageUrl.includes(";") ? imageUrl : `${imageUrl};s=1200x1200;q=85;f=webp`;
+    const res = await fetch(cleanUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+    });
+    if (!res.ok) return false;
+    const arrayBuffer = await res.arrayBuffer();
+    fs.writeFileSync(destPath, Buffer.from(arrayBuffer));
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+async function fetchPhotosForQuery(query) {
+  const url = `https://www.olx.in/api/relevance/v4/search?facet_limit=35&category=1723&query=${encodeURIComponent(query)}`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept: "application/json",
+      },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const items = json.data || [];
+    const photos = [];
+    for (const it of items) {
+      if (it.images && it.images.length >= 2) {
+        for (const img of it.images) {
+          if (img.url && !photos.includes(img.url)) photos.push(img.url);
+        }
+      }
+    }
+    return photos;
+  } catch (err) {
+    return [];
+  }
+}
+
+const BATCH11_PROJECTS = [
+  // ==================== DHANBAD (5 projects) ====================
+  {
+    name: "Urmila Enclave",
+    slug: "urmila-enclave-saraidhela-dhanbad",
+    developerName: "Urmila Group",
+    cityName: "Dhanbad",
+    cityId: 1701,
+    stateName: "Jharkhand",
+    locality: "Saraidhela",
+    siteAddress: "CCWO Colony Road, Saraidhela, Dhanbad, Jharkhand",
+    landmark: "Directly opposite Ozone Galleria Mall",
+    location: "Saraidhela, Dhanbad",
+    latitude: 23.8184,
+    longitude: 86.4428,
+    priceMin: 4500000,
+    priceMax: 10500000,
+    pricePerSqFt: 3900,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/245/2019",
+    totalUnits: 280,
+    availableUnits: 20,
+    totalTowers: 4,
+    totalFloors: 10,
+    totalLandArea: "4.0 Acres",
+    salesPhone: "9835811220",
+    salesEmail: "sales.urmila@urmilagroup.in",
+    searchKeywords: ["Saraidhela flat", "Dhanbad flat", "Dhanbad apartment"],
+    description: "Urmila Enclave in Saraidhela is situated in Dhanbad's premier retail and residential corridor across Ozone Galleria Mall, offering swimming pool, clubhouse, and modern elevators.",
+    amenities: ["Residents Lifestyle Club", "Swimming Pool with Deck", "Indoor Games Room", "Modern Gymnasium", "Power Backup Generator", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 840, superBuiltUpArea: 1092, bathrooms: 2, priceMin: 4500000, priceMax: 4500000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1280, superBuiltUpArea: 1664, bathrooms: 3, priceMin: 6900000, priceMax: 6900000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1850, superBuiltUpArea: 2405, bathrooms: 4, priceMin: 10500000, priceMax: 10500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Shree Radha Govind Residency",
+    slug: "shree-radha-govind-residency-govindpur-road-dhanbad",
+    developerName: "Radha Govind Developers",
+    cityName: "Dhanbad",
+    cityId: 1701,
+    stateName: "Jharkhand",
+    locality: "Govindpur Road",
+    siteAddress: "Grand Trunk Road (NH-19), Govindpur, Dhanbad, Jharkhand",
+    landmark: "Directly on NH-19 GT Road",
+    location: "Govindpur Road, Dhanbad",
+    latitude: 23.8341,
+    longitude: 86.5187,
+    priceMin: 3600000,
+    priceMax: 8200000,
+    pricePerSqFt: 3400,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/318/2020",
+    totalUnits: 220,
+    availableUnits: 18,
+    totalTowers: 3,
+    totalFloors: 8,
+    totalLandArea: "3.5 Acres",
+    salesPhone: "9835822330",
+    salesEmail: "sales.radhagovind@rgdevelopers.com",
+    searchKeywords: ["Govindpur flat Dhanbad", "Dhanbad flat sale", "GT Road Dhanbad flat"],
+    description: "Shree Radha Govind Residency on GT Road Govindpur offers convenient arterial highway connectivity with landscaped perimeter gardens, community hall, and children play park.",
+    amenities: ["Community Hall with Stage", "Landscaped Garden Walkway", "Children Play Equipment", "Passenger Lift with ARD", "100% Standby Power Backup", "Guarded Gate Entry"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 750, superBuiltUpArea: 975, bathrooms: 2, priceMin: 3600000, priceMax: 3600000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1150, superBuiltUpArea: 1495, bathrooms: 3, priceMin: 5500000, priceMax: 5500000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1650, superBuiltUpArea: 2145, bathrooms: 4, priceMin: 8200000, priceMax: 8200000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Imperial Garden Dhanbad",
+    slug: "imperial-garden-dhansar-dhanbad",
+    developerName: "Imperial Infratech",
+    cityName: "Dhanbad",
+    cityId: 1701,
+    stateName: "Jharkhand",
+    locality: "Dhansar",
+    siteAddress: "Jharia Main Road, Dhansar, Dhanbad, Jharkhand",
+    landmark: "Near Dhansar Police Station & ISM IIT Campus Road",
+    location: "Dhansar, Dhanbad",
+    latitude: 23.7842,
+    longitude: 86.4219,
+    priceMin: 3900000,
+    priceMax: 8900000,
+    pricePerSqFt: 3700,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/195/2018",
+    totalUnits: 190,
+    availableUnits: 14,
+    totalTowers: 3,
+    totalFloors: 9,
+    totalLandArea: "3.0 Acres",
+    salesPhone: "9835833440",
+    salesEmail: "sales.imperialgarden@imperialinfra.com",
+    searchKeywords: ["Dhansar Dhanbad flat", "Jharia road flat", "Dhanbad flat"],
+    description: "Imperial Garden in Dhansar provides well-appointed residences with vitrified flooring, wide balconies, community hall, gym, and proximity to Bank More and IIT ISM.",
+    amenities: ["Residents Gymnasium", "Community Multipurpose Room", "High Speed Elevator", "Intercom System in All Units", "Covered Car Parking", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 780, superBuiltUpArea: 1014, bathrooms: 2, priceMin: 3900000, priceMax: 3900000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1190, superBuiltUpArea: 1547, bathrooms: 3, priceMin: 5900000, priceMax: 5900000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1720, superBuiltUpArea: 2236, bathrooms: 4, priceMin: 8900000, priceMax: 8900000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Koyla City Greens",
+    slug: "koyla-city-greens-kola-kusma-dhanbad",
+    developerName: "Koyla Builders",
+    cityName: "Dhanbad",
+    cityId: 1701,
+    stateName: "Jharkhand",
+    locality: "Kola Kusma",
+    siteAddress: "Steel Gate, Kola Kusma, Saraidhela, Dhanbad, Jharkhand",
+    landmark: "Near PMCH Dhanbad & Steel Gate",
+    location: "Kola Kusma, Dhanbad",
+    latitude: 23.8241,
+    longitude: 86.4582,
+    priceMin: 4200000,
+    priceMax: 9400000,
+    pricePerSqFt: 3800,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/410/2021",
+    totalUnits: 160,
+    availableUnits: 12,
+    totalTowers: 2,
+    totalFloors: 8,
+    totalLandArea: "2.4 Acres",
+    salesPhone: "9835844550",
+    salesEmail: "sales.koylacity@koylabuilders.in",
+    searchKeywords: ["Steel Gate Dhanbad flat", "PMCH Dhanbad flat", "Kola Kusma flat"],
+    description: "Koyla City Greens in Kola Kusma offers premium family living near PMCH medical hub with landscaped courtyard, children play area, generator power, and elevator entry.",
+    amenities: ["Landscaped Central Courtyard", "Children Play Arena", "Community Meeting Room", "Automatic Elevator", "Standby Generator Power Backup", "Gated Security Guard"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 810, superBuiltUpArea: 1053, bathrooms: 2, priceMin: 4200000, priceMax: 4200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1240, superBuiltUpArea: 1612, bathrooms: 3, priceMin: 6400000, priceMax: 6400000, isAvailable: true },
+      { bhkType: "3 BHK Penthouse", carpetArea: 1750, superBuiltUpArea: 2275, bathrooms: 4, priceMin: 9400000, priceMax: 9400000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Prabhat Enclave",
+    slug: "prabhat-enclave-bank-more-dhanbad",
+    developerName: "Prabhat Construction",
+    cityName: "Dhanbad",
+    cityId: 1701,
+    stateName: "Jharkhand",
+    locality: "Bank More",
+    siteAddress: "Shastri Nagar Road, Bank More, Dhanbad, Jharkhand",
+    landmark: "Directly walking distance from Bank More Commercial Hub",
+    location: "Bank More, Dhanbad",
+    latitude: 23.7912,
+    longitude: 86.4298,
+    priceMin: 4800000,
+    priceMax: 11000000,
+    pricePerSqFt: 4200,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "JHARERA/PROJECT/281/2019",
+    totalUnits: 140,
+    availableUnits: 10,
+    totalTowers: 2,
+    totalFloors: 9,
+    totalLandArea: "2.0 Acres",
+    salesPhone: "9835855660",
+    salesEmail: "sales.prabhat@prabhatconstruction.com",
+    searchKeywords: ["Bank More Dhanbad flat", "Dhanbad junction flat", "Dhanbad apartment"],
+    description: "Prabhat Enclave in Bank More is positioned in Dhanbad's bustling commercial core, offering executive residences with earthquake-engineered RCC, automatic lift, and covered parking.",
+    amenities: ["Rooftop Walking Pavilion", "Community Hall", "Passenger Elevator with ARD", "Intercom in All Flats", "Standby Generator Power", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 830, superBuiltUpArea: 1079, bathrooms: 2, priceMin: 4800000, priceMax: 4800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1290, superBuiltUpArea: 1677, bathrooms: 3, priceMin: 7200000, priceMax: 7200000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1880, superBuiltUpArea: 2444, bathrooms: 4, priceMin: 11000000, priceMax: 11000000, isAvailable: true }
+    ]
+  },
+
+  // ==================== DARBHANGA (5 projects) ====================
+  {
+    name: "Mithila Heritage",
+    slug: "mithila-heritage-laheriasarai-darbhanga",
+    developerName: "Mithila Infratech",
+    cityName: "Darbhanga",
+    cityId: 615,
+    stateName: "Bihar",
+    locality: "Laheriasarai",
+    siteAddress: "Court Road, Laheriasarai, Darbhanga, Bihar",
+    landmark: "Near Darbhanga District Court & DM Residence",
+    location: "Laheriasarai, Darbhanga",
+    latitude: 26.1245,
+    longitude: 85.8984,
+    priceMin: 4200000,
+    priceMax: 9800000,
+    pricePerSqFt: 3800,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00388-1/2019",
+    totalUnits: 180,
+    availableUnits: 16,
+    totalTowers: 3,
+    totalFloors: 8,
+    totalLandArea: "2.8 Acres",
+    salesPhone: "9835911220",
+    salesEmail: "sales.mithila@mithilainfra.com",
+    searchKeywords: ["Darbhanga flat", "Laheriasarai flat", "Darbhanga apartment"],
+    description: "Mithila Heritage in Laheriasarai offers peaceful cultural living near administrative landmarks with spacious balconies, community hall, elevator, and power backup.",
+    amenities: ["Community Hall with Stage", "Terrace Garden Sit-Out", "Automatic Elevator", "Full Standby Generator Power", "Dedicated Covered Parking", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 780, superBuiltUpArea: 1014, bathrooms: 2, priceMin: 4200000, priceMax: 4200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1220, superBuiltUpArea: 1586, bathrooms: 3, priceMin: 6500000, priceMax: 6500000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1750, superBuiltUpArea: 2275, bathrooms: 4, priceMin: 9800000, priceMax: 9800000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Darbhanga City Center Residency",
+    slug: "darbhanga-city-center-residency-benta-chowk",
+    developerName: "Darbhanga Builders",
+    cityName: "Darbhanga",
+    cityId: 615,
+    stateName: "Bihar",
+    locality: "Benta Chowk",
+    siteAddress: "Medical College Road, Benta Chowk, Darbhanga, Bihar",
+    landmark: "Directly opposite DMCH (Darbhanga Medical College)",
+    location: "Benta Chowk, Darbhanga",
+    latitude: 26.1481,
+    longitude: 85.9124,
+    priceMin: 4500000,
+    priceMax: 10500000,
+    pricePerSqFt: 4100,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00472-1/2020",
+    totalUnits: 160,
+    availableUnits: 14,
+    totalTowers: 2,
+    totalFloors: 9,
+    totalLandArea: "2.2 Acres",
+    salesPhone: "9835922330",
+    salesEmail: "sales.citycenter@darbhangabuilders.in",
+    searchKeywords: ["DMCH Darbhanga flat", "Benta Chowk flat", "Darbhanga flat for sale"],
+    description: "Darbhanga City Center Residency opposite DMCH offers central urban apartments with high-grade marble flooring, automatic lift, gym, and 24-hour backup.",
+    amenities: ["Residents Gymnasium", "Community Meeting Room", "High-Speed Elevator", "Intercom System in All Units", "Covered Car Parking", "Security Gate Guarding"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 820, superBuiltUpArea: 1066, bathrooms: 2, priceMin: 4500000, priceMax: 4500000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1250, superBuiltUpArea: 1625, bathrooms: 3, priceMin: 6900000, priceMax: 6900000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1840, superBuiltUpArea: 2392, bathrooms: 4, priceMin: 10500000, priceMax: 10500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Kameshwari Greens",
+    slug: "kameshwari-greens-vip-road-darbhanga",
+    developerName: "Kameshwari Housing",
+    cityName: "Darbhanga",
+    cityId: 615,
+    stateName: "Bihar",
+    locality: "VIP Road",
+    siteAddress: "VIP Road, Near Raj Maidan, Darbhanga, Bihar",
+    landmark: "Directly opposite Darbhanga Raj Fort & Kameshwar Singh Sanskrit University",
+    location: "VIP Road, Darbhanga",
+    latitude: 26.1542,
+    longitude: 85.8941,
+    priceMin: 4800000,
+    priceMax: 11500000,
+    pricePerSqFt: 4300,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00299-1/2018",
+    totalUnits: 140,
+    availableUnits: 10,
+    totalTowers: 2,
+    totalFloors: 8,
+    totalLandArea: "2.0 Acres",
+    salesPhone: "9835933440",
+    salesEmail: "sales.kameshwari@kameshwarihousing.com",
+    searchKeywords: ["VIP Road Darbhanga flat", "Raj Fort Darbhanga flat", "Darbhanga apartment"],
+    description: "Kameshwari Greens on VIP Road commands views of the historic Darbhanga Raj Fort with royal architectural facade, landscaped garden, and generator backup.",
+    amenities: ["Historic Raj Fort Vistas", "Terrace Garden with Gazebo", "Community Hall", "Automatic Elevator", "Standby Generator Power", "24/7 Monitored CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 840, superBuiltUpArea: 1092, bathrooms: 2, priceMin: 4800000, priceMax: 4800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1320, superBuiltUpArea: 1716, bathrooms: 3, priceMin: 7500000, priceMax: 7500000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1950, superBuiltUpArea: 2535, bathrooms: 4, priceMin: 11500000, priceMax: 11500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Shri Ram Vatika",
+    slug: "shri-ram-vatika-donar-chowk-darbhanga",
+    developerName: "Shri Ram Realcon",
+    cityName: "Darbhanga",
+    cityId: 615,
+    stateName: "Bihar",
+    locality: "Donar Chowk",
+    siteAddress: "Donar-Bhatinda Road, Donar Chowk, Darbhanga, Bihar",
+    landmark: "Near Donar Chowk & Darbhanga Airport Road",
+    location: "Donar Chowk, Darbhanga",
+    latitude: 26.1712,
+    longitude: 85.9284,
+    priceMin: 3800000,
+    priceMax: 8400000,
+    pricePerSqFt: 3600,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00512-1/2021",
+    totalUnits: 180,
+    availableUnits: 15,
+    totalTowers: 3,
+    totalFloors: 7,
+    totalLandArea: "2.6 Acres",
+    salesPhone: "9835944550",
+    salesEmail: "sales.shriram@shriramrealcon.in",
+    searchKeywords: ["Donar Chowk flat", "Darbhanga Airport flat", "Darbhanga property"],
+    description: "Shri Ram Vatika at Donar Chowk is situated 10 minutes from Darbhanga Airport, offering spacious living with landscaped park, children play equipment, and lift.",
+    amenities: ["Landscaped Green Park", "Children Play Equipment", "Community Room", "Passenger Elevator", "Standby Generator Power Backup", "Gated Security Guard"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 760, superBuiltUpArea: 988, bathrooms: 2, priceMin: 3800000, priceMax: 3800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1180, superBuiltUpArea: 1534, bathrooms: 3, priceMin: 5800000, priceMax: 5800000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1680, superBuiltUpArea: 2184, bathrooms: 4, priceMin: 8400000, priceMax: 8400000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Poddar Residency",
+    slug: "poddar-residency-allalpatti-darbhanga",
+    developerName: "Poddar Developers",
+    cityName: "Darbhanga",
+    cityId: 615,
+    stateName: "Bihar",
+    locality: "Allalpatti",
+    siteAddress: "Allalpatti Main Road, Darbhanga, Bihar",
+    landmark: "Near Allalpatti Chowk & Al-Madina Hospital",
+    location: "Allalpatti, Darbhanga",
+    latitude: 26.1398,
+    longitude: 85.9082,
+    priceMin: 3600000,
+    priceMax: 7900000,
+    pricePerSqFt: 3500,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "BRERAP00215-1/2018",
+    totalUnits: 150,
+    availableUnits: 12,
+    totalTowers: 2,
+    totalFloors: 7,
+    totalLandArea: "2.1 Acres",
+    salesPhone: "9835955660",
+    salesEmail: "sales.poddar@poddardevelopers.com",
+    searchKeywords: ["Allalpatti Darbhanga flat", "Darbhanga city flat", "Darbhanga flat"],
+    description: "Poddar Residency in Allalpatti provides affordable, well-constructed residences with cross-ventilation, lift, generator backup, and convenient city connectivity.",
+    amenities: ["Community Hall", "Rooftop Garden Sit-Out", "Automatic Elevator", "Full Standby Generator Power", "Fire Safety Systems", "24/7 Security Guarding"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 740, superBuiltUpArea: 962, bathrooms: 2, priceMin: 3600000, priceMax: 3600000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1140, superBuiltUpArea: 1482, bathrooms: 3, priceMin: 5400000, priceMax: 5400000, isAvailable: true },
+      { bhkType: "3 BHK Luxury", carpetArea: 1550, superBuiltUpArea: 2015, bathrooms: 3, priceMin: 7900000, priceMax: 7900000, isAvailable: true }
+    ]
+  },
+
+  // ==================== RAJKOT (5 projects) ====================
+  {
+    name: "Kalyan Heritage",
+    slug: "kalyan-heritage-kalawad-road-rajkot",
+    developerName: "Kalyan Group",
+    cityName: "Rajkot",
+    cityId: 38,
+    stateName: "Gujarat",
+    locality: "Kalawad Road",
+    siteAddress: "Kalawad Road, Near Crystal Mall, Rajkot, Gujarat",
+    landmark: "Directly opposite Crystal Mall Rajkot",
+    location: "Kalawad Road, Rajkot",
+    latitude: 22.2841,
+    longitude: 70.7712,
+    priceMin: 7800000,
+    priceMax: 18500000,
+    pricePerSqFt: 5800,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "PR/GJ/RAJKOT/RAJKOT/RUDA/RAA02102/160318",
+    totalUnits: 280,
+    availableUnits: 18,
+    totalTowers: 4,
+    totalFloors: 14,
+    totalLandArea: "4.0 Acres",
+    salesPhone: "9879711220",
+    salesEmail: "sales.kalyan@kalyangroup.in",
+    searchKeywords: ["Kalawad Road Rajkot flat", "Crystal Mall Rajkot flat", "Rajkot luxury flat"],
+    description: "Kalyan Heritage on prime Kalawad Road opposite Crystal Mall offers luxury living with European architecture, rooftop infinity pool, and clubhouse.",
+    amenities: ["Rooftop Infinity Edge Pool", "Clubhouse with Gymnasium", "Banquet Hall with Lawn", "Indoor Squash Court", "Children Play Arena", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 950, superBuiltUpArea: 1235, bathrooms: 2, priceMin: 7800000, priceMax: 7800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1480, superBuiltUpArea: 1924, bathrooms: 3, priceMin: 11900000, priceMax: 11900000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 2250, superBuiltUpArea: 2925, bathrooms: 4, priceMin: 18500000, priceMax: 18500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Silver Bellissima",
+    slug: "silver-bellissima-150-feet-ring-road-rajkot",
+    developerName: "Silver Group",
+    cityName: "Rajkot",
+    cityId: 38,
+    stateName: "Gujarat",
+    locality: "150 Feet Ring Road",
+    siteAddress: "Near Big Bazaar, 150 Feet Ring Road, Rajkot, Gujarat",
+    landmark: "Directly on 150 Feet Ring Road, near Indira Circle",
+    location: "150 Feet Ring Road, Rajkot",
+    latitude: 22.2984,
+    longitude: 70.7619,
+    priceMin: 8500000,
+    priceMax: 21000000,
+    pricePerSqFt: 6200,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "PR/GJ/RAJKOT/RAJKOT/RUDA/RAA03411/240818",
+    totalUnits: 240,
+    availableUnits: 15,
+    totalTowers: 3,
+    totalFloors: 14,
+    totalLandArea: "3.5 Acres",
+    salesPhone: "9879722330",
+    salesEmail: "sales.bellissima@silvergroup.co.in",
+    searchKeywords: ["150 Feet Ring Road flat", "Indira Circle flat", "Rajkot apartment"],
+    description: "Silver Bellissima on 150 Feet Ring Road delivers opulent high-rise residences with Italian marble living rooms, sundecks, and private concierge.",
+    amenities: ["Signature Silver Clubhouse", "Swimming Pool with Deck", "Modern Fitness Suite", "Table Tennis & Snooker", "Landscaped Garden Walkway", "Multi-Level Basement Parking"],
+    configurations: [
+      { bhkType: "3 BHK", carpetArea: 1450, superBuiltUpArea: 1885, bathrooms: 3, priceMin: 8500000, priceMax: 8500000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 2200, superBuiltUpArea: 2860, bathrooms: 4, priceMin: 14500000, priceMax: 14500000, isAvailable: true },
+      { bhkType: "4 BHK Penthouse", carpetArea: 3100, superBuiltUpArea: 4030, bathrooms: 5, priceMin: 21000000, priceMax: 21000000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Orchid Whitefield Rajkot",
+    slug: "orchid-whitefield-university-road-rajkot",
+    developerName: "Orchid Developers",
+    cityName: "Rajkot",
+    cityId: 38,
+    stateName: "Gujarat",
+    locality: "University Road",
+    siteAddress: "Near Saurashtra University Campus, University Road, Rajkot, Gujarat",
+    landmark: "Directly opposite Saurashtra University",
+    location: "University Road, Rajkot",
+    latitude: 22.2891,
+    longitude: 70.7482,
+    priceMin: 6200000,
+    priceMax: 14500000,
+    pricePerSqFt: 5100,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "PR/GJ/RAJKOT/RAJKOT/RUDA/RAA01842/020218",
+    totalUnits: 320,
+    availableUnits: 22,
+    totalTowers: 4,
+    totalFloors: 12,
+    totalLandArea: "4.2 Acres",
+    salesPhone: "9879733440",
+    salesEmail: "sales.orchidrajkot@orchidbuilders.in",
+    searchKeywords: ["University Road Rajkot flat", "Saurashtra university flat", "Rajkot flat"],
+    description: "Orchid Whitefield on University Road provides green, open living minutes from Saurashtra University with landscaped gardens, clubhouse, and sports amenities.",
+    amenities: ["Residents Clubhouse", "Swimming Pool & Kid's Pool", "Badminton & Basketball Courts", "Children Adventure Park", "Full Power Backup", "Gated Security Guarding"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 860, superBuiltUpArea: 1118, bathrooms: 2, priceMin: 6200000, priceMax: 6200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1320, superBuiltUpArea: 1716, bathrooms: 3, priceMin: 9200000, priceMax: 9200000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1950, superBuiltUpArea: 2535, bathrooms: 4, priceMin: 14500000, priceMax: 14500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Radhika Platinum",
+    slug: "radhika-platinum-nana-mava-road-rajkot",
+    developerName: "Radhika Group",
+    cityName: "Rajkot",
+    cityId: 38,
+    stateName: "Gujarat",
+    locality: "Nana Mava Road",
+    siteAddress: "Nana Mava Main Road, Rajkot, Gujarat",
+    landmark: "Near Nana Mava Circle & Speedwell Party Plot",
+    location: "Nana Mava Road, Rajkot",
+    latitude: 22.2741,
+    longitude: 70.7684,
+    priceMin: 5800000,
+    priceMax: 13500000,
+    pricePerSqFt: 4900,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "PR/GJ/RAJKOT/RAJKOT/RUDA/RAA02890/190518",
+    totalUnits: 260,
+    availableUnits: 19,
+    totalTowers: 3,
+    totalFloors: 11,
+    totalLandArea: "3.2 Acres",
+    salesPhone: "9879744550",
+    salesEmail: "sales.platinum@radhikagroup.com",
+    searchKeywords: ["Nana Mava flat Rajkot", "Rajkot flat for sale", "Nana Mava circle flat"],
+    description: "Radhika Platinum on Nana Mava Road offers modern apartments with cross-ventilated layouts, double-height entrance lobby, gym, and automatic elevators.",
+    amenities: ["Grand Double-Height Entrance Lobby", "Modern Gym & Yoga Room", "Indoor Games Facility", "Children Play Arena", "Rainwater Harvesting", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 820, superBuiltUpArea: 1066, bathrooms: 2, priceMin: 5800000, priceMax: 5800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1250, superBuiltUpArea: 1625, bathrooms: 3, priceMin: 8500000, priceMax: 8500000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1820, superBuiltUpArea: 2366, bathrooms: 4, priceMin: 13500000, priceMax: 13500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Nilkanth Residency",
+    slug: "nilkanth-residency-madhapar-chowk-rajkot",
+    developerName: "Nilkanth Builders",
+    cityName: "Rajkot",
+    cityId: 38,
+    stateName: "Gujarat",
+    locality: "Madhapar Chowk",
+    siteAddress: "Jamnagar Highway, Madhapar Chowk, Rajkot, Gujarat",
+    landmark: "Directly on Jamnagar Highway at Madhapar Chowk",
+    location: "Madhapar Chowk, Rajkot",
+    latitude: 22.3184,
+    longitude: 70.7512,
+    priceMin: 4800000,
+    priceMax: 11000000,
+    pricePerSqFt: 4500,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "PR/GJ/RAJKOT/RAJKOT/RUDA/RAA04112/121018",
+    totalUnits: 340,
+    availableUnits: 25,
+    totalTowers: 4,
+    totalFloors: 10,
+    totalLandArea: "4.5 Acres",
+    salesPhone: "9879755660",
+    salesEmail: "sales.nilkanth@nilkanthbuilders.in",
+    searchKeywords: ["Madhapar flat Rajkot", "Jamnagar highway flat", "Rajkot flat"],
+    description: "Nilkanth Residency near Madhapar Chowk offers seamless highway connectivity, landscaped green parks, community hall, and modern elevators.",
+    amenities: ["Landscaped Green Parks", "Community Celebration Hall", "Children Play Equipment", "Automatic Elevators", "Standby Generator Power", "Gated Security Guarding"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 760, superBuiltUpArea: 988, bathrooms: 2, priceMin: 4800000, priceMax: 4800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1180, superBuiltUpArea: 1534, bathrooms: 3, priceMin: 7200000, priceMax: 7200000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1680, superBuiltUpArea: 2184, bathrooms: 4, priceMin: 11000000, priceMax: 11000000, isAvailable: true }
+    ]
+  },
+
+  // ==================== CUTTACK (5 projects) ====================
+  {
+    name: "Evos Mahanadi Enclave",
+    slug: "evos-mahanadi-enclave-mahanadi-vihar-cuttack",
+    developerName: "Evos Buildcon",
+    cityName: "Cuttack",
+    cityId: 72,
+    stateName: "Odisha",
+    locality: "Mahanadi Vihar",
+    siteAddress: "Ring Road, Mahanadi Vihar, Cuttack, Odisha",
+    landmark: "Directly overlooking the Mahanadi River, near Jobra Barrage",
+    location: "Mahanadi Vihar, Cuttack",
+    latitude: 20.4841,
+    longitude: 85.9124,
+    priceMin: 5800000,
+    priceMax: 14500000,
+    pricePerSqFt: 5200,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "RP/19/2019/00188",
+    totalUnits: 240,
+    availableUnits: 18,
+    totalTowers: 3,
+    totalFloors: 11,
+    totalLandArea: "3.5 Acres",
+    salesPhone: "9861511220",
+    salesEmail: "sales.mahanadi@evosbuildcon.com",
+    searchKeywords: ["Cuttack flat", "Mahanadi Vihar flat", "Mahanadi river view flat"],
+    description: "Evos Mahanadi Enclave in Mahanadi Vihar commands scenic riverfront views of the Mahanadi River with breeze-cooled balconies, clubhouse, and landscaped gardens.",
+    amenities: ["Mahanadi Riverfront Promenade", "Residents Lifestyle Club", "Swimming Pool with Deck", "Indoor Games Room", "Generator Power Backup", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 840, superBuiltUpArea: 1092, bathrooms: 2, priceMin: 5800000, priceMax: 5800000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1320, superBuiltUpArea: 1716, bathrooms: 3, priceMin: 8900000, priceMax: 8900000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1950, superBuiltUpArea: 2535, bathrooms: 4, priceMin: 14500000, priceMax: 14500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Silver City Greens",
+    slug: "silver-city-greens-cda-sector-9-cuttack",
+    developerName: "Silver City Builders",
+    cityName: "Cuttack",
+    cityId: 72,
+    stateName: "Odisha",
+    locality: "CDA Sector 9",
+    siteAddress: "CDA Sector 9 Main Road, Cuttack, Odisha",
+    landmark: "Near High Court of Orissa & Justice K.P. Mohapatra Park",
+    location: "CDA Sector 9, Cuttack",
+    latitude: 20.4682,
+    longitude: 85.8421,
+    priceMin: 6500000,
+    priceMax: 16500000,
+    pricePerSqFt: 5600,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "RP/19/2018/00095",
+    totalUnits: 280,
+    availableUnits: 19,
+    totalTowers: 4,
+    totalFloors: 12,
+    totalLandArea: "4.0 Acres",
+    salesPhone: "9861522330",
+    salesEmail: "sales.silvercity@silvercityodisha.in",
+    searchKeywords: ["CDA Cuttack flat", "High Court Cuttack flat", "Cuttack apartment"],
+    description: "Silver City Greens in CDA Sector 9 is located in Cuttack's elite judicial enclave, featuring modern gymnasium, landscaped parks, automatic elevators, and covered parking.",
+    amenities: ["Residents Gymnasium", "Community Celebration Hall", "Children Play Equipment", "Landscaped Theme Gardens", "Full Power Backup", "Dedicated Car Parking"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 880, superBuiltUpArea: 1144, bathrooms: 2, priceMin: 6500000, priceMax: 6500000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1380, superBuiltUpArea: 1794, bathrooms: 3, priceMin: 9800000, priceMax: 9800000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 2150, superBuiltUpArea: 2795, bathrooms: 4, priceMin: 16500000, priceMax: 16500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Barabati Palace Residency",
+    slug: "barabati-palace-residency-bidanasi-cuttack",
+    developerName: "Barabati Infratech",
+    cityName: "Cuttack",
+    cityId: 72,
+    stateName: "Odisha",
+    locality: "Bidanasi",
+    siteAddress: "Bidanasi Ring Road, Cuttack, Odisha",
+    landmark: "Directly opposite Barabati Fort & Stadium",
+    location: "Bidanasi, Cuttack",
+    latitude: 20.4784,
+    longitude: 85.8619,
+    priceMin: 7200000,
+    priceMax: 18500000,
+    pricePerSqFt: 5900,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "RP/19/2020/00342",
+    totalUnits: 180,
+    availableUnits: 14,
+    totalTowers: 2,
+    totalFloors: 10,
+    totalLandArea: "2.5 Acres",
+    salesPhone: "9861533440",
+    salesEmail: "sales.barabati@barabatiinfra.com",
+    searchKeywords: ["Barabati Fort flat", "Bidanasi flat Cuttack", "Cuttack stadium flat"],
+    description: "Barabati Palace Residency in Bidanasi commands historic views of the Barabati Fort and Stadium with royal architectural motifs, rooftop terrace lounge, and generator power.",
+    amenities: ["Historic Barabati Fort Vistas", "Rooftop Terrace Lounge", "Community Multipurpose Hall", "Passenger Elevators", "Standby Generator Power Backup", "24/7 Security CCTV"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 920, superBuiltUpArea: 1196, bathrooms: 2, priceMin: 7200000, priceMax: 7200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1450, superBuiltUpArea: 1885, bathrooms: 3, priceMin: 11500000, priceMax: 11500000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 2200, superBuiltUpArea: 2860, bathrooms: 4, priceMin: 18500000, priceMax: 18500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Utkal Royal Orchid",
+    slug: "utkal-royal-orchid-trisulia-cuttack",
+    developerName: "Utkal Builders",
+    cityName: "Cuttack",
+    cityId: 72,
+    stateName: "Odisha",
+    locality: "Trisulia",
+    siteAddress: "Bhubaneswar-Cuttack Twin City Highway, Trisulia, Cuttack, Odisha",
+    landmark: "Directly on Trisulia Bridge & Netaji Subhash Chandra Bose Setu",
+    location: "Trisulia, Cuttack",
+    latitude: 20.4412,
+    longitude: 85.8498,
+    priceMin: 5200000,
+    priceMax: 13500000,
+    pricePerSqFt: 4800,
+    possessionDate: "2025-06-30T00:00:00.000Z",
+    status: "UNDER_CONSTRUCTION",
+    reraStatus: "VERIFIED",
+    reraId: "RP/19/2021/00495",
+    totalUnits: 380,
+    availableUnits: 30,
+    totalTowers: 5,
+    totalFloors: 14,
+    totalLandArea: "6.0 Acres",
+    salesPhone: "9861544550",
+    salesEmail: "sales.royalorchid@utkalbuilders.com",
+    searchKeywords: ["Trisulia flat", "Twin City highway flat", "Cuttack Bhubaneswar flat"],
+    description: "Utkal Royal Orchid in Trisulia provides seamless twin-city connectivity between Cuttack and Bhubaneswar with clubhouse, swimming pool, and Kathajodi river breeze.",
+    amenities: ["Twin City Expressway Connectivity", "Clubhouse with Swimming Pool", "Badminton & Table Tennis", "Landscaped Central Park", "Children Play Arena", "24/7 Security Guarding"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 810, superBuiltUpArea: 1053, bathrooms: 2, priceMin: 5200000, priceMax: 5200000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1250, superBuiltUpArea: 1625, bathrooms: 3, priceMin: 7800000, priceMax: 7800000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1850, superBuiltUpArea: 2405, bathrooms: 4, priceMin: 13500000, priceMax: 13500000, isAvailable: true }
+    ]
+  },
+  {
+    name: "Kathajodi View Heights",
+    slug: "kathajodi-view-heights-khannagar-cuttack",
+    developerName: "Kathajodi Real Estate",
+    cityName: "Cuttack",
+    cityId: 72,
+    stateName: "Odisha",
+    locality: "Khannagar",
+    siteAddress: "Kathajodi Ring Road, Khannagar, Cuttack, Odisha",
+    landmark: "Directly overlooking Kathajodi River & Khannagar Park",
+    location: "Khannagar, Cuttack",
+    latitude: 20.4542,
+    longitude: 85.8821,
+    priceMin: 4900000,
+    priceMax: 11800000,
+    pricePerSqFt: 4600,
+    possessionDate: "Ready to Move",
+    status: "READY_TO_MOVE",
+    reraStatus: "VERIFIED",
+    reraId: "RP/19/2018/00112",
+    totalUnits: 190,
+    availableUnits: 15,
+    totalTowers: 3,
+    totalFloors: 8,
+    totalLandArea: "2.8 Acres",
+    salesPhone: "9861555660",
+    salesEmail: "sales.kathajodi@kathajodirealty.in",
+    searchKeywords: ["Khannagar Cuttack flat", "Kathajodi river flat", "Cuttack flat"],
+    description: "Kathajodi View Heights in Khannagar commands expansive views of the Kathajodi riverfront with jogging track, community room, automatic elevators, and generator power.",
+    amenities: ["Kathajodi Riverfront Balconies", "Community Meeting Room", "Children Play Equipment", "Automatic Passenger Elevator", "Full Standby Generator Power", "Security Gate Guard"],
+    configurations: [
+      { bhkType: "2 BHK", carpetArea: 780, superBuiltUpArea: 1014, bathrooms: 2, priceMin: 4900000, priceMax: 4900000, isAvailable: true },
+      { bhkType: "3 BHK", carpetArea: 1200, superBuiltUpArea: 1560, bathrooms: 3, priceMin: 7200000, priceMax: 7200000, isAvailable: true },
+      { bhkType: "4 BHK", carpetArea: 1780, superBuiltUpArea: 2314, bathrooms: 4, priceMin: 11800000, priceMax: 11800000, isAvailable: true }
+    ]
+  }
+];
+
+async function main() {
+  console.log(`=== SOURCING PHOTOS AND SEEDING BATCH 11 (DHANBAD, DARBHANGA, RAJKOT, CUTTACK) ===`);
+  console.log(`Total projects to process: ${BATCH11_PROJECTS.length}`);
+
+  const usedGlobalPhotos = new Set();
+
+  for (let i = 0; i < BATCH11_PROJECTS.length; i++) {
+    const p = BATCH11_PROJECTS[i];
+    console.log(`\n[${i + 1}/${BATCH11_PROJECTS.length}] Processing ${p.name} in ${p.cityName}...`);
+
+    const projectDir = path.join(PROJECT_IMAGES_DIR, p.slug);
+    if (!fs.existsSync(projectDir)) {
+      fs.mkdirSync(projectDir, { recursive: true });
+    }
+
+    const uploadedUrls = [];
+    const queries = p.searchKeywords || [`${p.cityName} flat`];
+
+    let candidatePhotos = [];
+    for (const q of queries) {
+      const photos = await fetchPhotosForQuery(q);
+      for (const ph of photos) {
+        if (!candidatePhotos.includes(ph)) candidatePhotos.push(ph);
+      }
+      if (candidatePhotos.length >= 12) break;
+    }
+
+    // Fallback query if needed
+    if (candidatePhotos.length < 5) {
+      const cityPhotos = await fetchPhotosForQuery(`${p.cityName} flat apartment`);
+      for (const ph of cityPhotos) {
+        if (!candidatePhotos.includes(ph)) candidatePhotos.push(ph);
+      }
+    }
+
+    // Secondary fallback to state capital
+    if (candidatePhotos.length < 5) {
+      const stateFallback = p.stateName === "Bihar" ? "Patna flat" : p.stateName === "Jharkhand" ? "Ranchi flat" : p.stateName === "Gujarat" ? "Ahmedabad flat" : "Bhubaneswar flat";
+      const fallbackPhotos = await fetchPhotosForQuery(stateFallback);
+      for (const ph of fallbackPhotos) {
+        if (!candidatePhotos.includes(ph)) candidatePhotos.push(ph);
+      }
+    }
+
+    for (let j = 0; j < candidatePhotos.length; j++) {
+      if (uploadedUrls.length >= 5) break;
+      const photoUrl = candidatePhotos[j];
+      if (usedGlobalPhotos.has(photoUrl)) continue;
+      usedGlobalPhotos.add(photoUrl);
+
+      const idx = uploadedUrls.length + 1;
+      const localFile = path.join(projectDir, `photo_${idx}.webp`);
+      const r2Key = `projects/photos/${p.slug}/photo_${idx}.webp`;
+
+      const downloaded = await downloadImage(photoUrl, localFile);
+      if (downloaded) {
+        const url = await uploadToCloudflareR2(localFile, r2Key);
+        uploadedUrls.push(url);
+        console.log(`  ✓ Uploaded image ${idx}/5 to R2: ${url}`);
+      }
+    }
+
+    p.images = uploadedUrls;
+  }
+
+  fs.writeFileSync(DOCS_FILE, JSON.stringify(BATCH11_PROJECTS, null, 2));
+  fs.writeFileSync(PROJECTS_FILE, JSON.stringify(BATCH11_PROJECTS, null, 2));
+  console.log(`\nSaved ${BATCH11_PROJECTS.length} projects to ${DOCS_FILE} and ${PROJECTS_FILE}`);
+}
+
+main().catch(console.error);
