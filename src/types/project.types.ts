@@ -1,7 +1,8 @@
 export type ProjectStatus = "NEW_LAUNCH" | "UNDER_CONSTRUCTION" | "READY_TO_MOVE";
 
 export interface ProjectConfiguration {
-  id: string;
+  id: string | number;
+  projectId?: string | number;
   bhkType: string; // "1 BHK" | "2 BHK" | "3 BHK" | "4 BHK" | "Penthouse" | "Villa"
   carpetArea: number; // in sq.ft
   superBuiltUpArea?: number; // in sq.ft
@@ -10,26 +11,28 @@ export interface ProjectConfiguration {
   priceMin: number; // in INR
   priceMax?: number; // in INR
   floorPlanUrl?: string;
+  floorPlanImage?: string;
   isAvailable?: boolean;
 }
 
 export interface ProjectListing {
-  id: string;
+  id: string | number;
   slug: string;
   name: string;
   developerName: string;
-  reraId: string;
+  reraId?: string;
   status: ProjectStatus;
   launchDate?: string;
-  possessionDate: string; // e.g. "Dec 2026"
-  priceMin: number; // Starting price in INR
-  priceMax: number; // Max price in INR
+  possessionDate?: string; // e.g. "Dec 2026" or "Ready to Move"
+  priceMin?: number; // Starting price in INR
+  priceMax?: number; // Max price in INR
   pricePerSqFt?: number;
-  city: string;
-  locality: string;
-  siteAddress: string;
+  city?: string | { id?: number; name?: string; slug?: string } | any;
+  cityName?: string;
+  locality?: string;
+  siteAddress?: string;
   landmark?: string;
-  pincode: string;
+  pincode?: string;
   latitude?: number;
   longitude?: number;
   totalLandArea?: string; // e.g. "11 Acres"
@@ -43,10 +46,12 @@ export interface ProjectListing {
   brochureUrl?: string;
   images: string[];
   videoTourUrl?: string;
-  salesPhone: string;
-  salesEmail: string;
+  salesPhone?: string;
+  salesEmail?: string;
   siteVisitTimings?: string;
-  createdAt: string;
+  createdAt?: string;
+  isVerified?: boolean;
+  isFeatured?: boolean;
 }
 
 export type ProjectSort = "featured" | "price_asc" | "price_desc" | "possession_soon" | "newest";

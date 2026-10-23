@@ -63,11 +63,12 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
     };
   }, [inquiryModalOpen]);
 
-  const availableBhkTypes = Array.from(new Set(project.configurations.map((c) => c.bhkType)));
+  const cityName = typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "");
+  const availableBhkTypes = Array.from(new Set((project.configurations || []).map((c) => c.bhkType)));
 
   const filteredConfigs = selectedBhkTab === "ALL"
-    ? project.configurations
-    : project.configurations.filter((c) => c.bhkType === selectedBhkTab);
+    ? (project.configurations || [])
+    : (project.configurations || []).filter((c) => c.bhkType === selectedBhkTab);
 
   function handleShare() {
     if (navigator.share) {
@@ -95,13 +96,13 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
     }
     try {
       await createInquiry({
-        projectId: project.id,
+        projectId: String(project.id),
         data: {
           name: inquiryName.trim(),
           phone: inquiryPhone.trim(),
           email: inquiryEmail.trim() || undefined,
           message: inquiryMessage.trim() || undefined,
-          configurationId: selectedConfigForInquiry?.id,
+          configurationId: selectedConfigForInquiry ? String(selectedConfigForInquiry.id) : undefined,
           source: "DETAIL_PAGE",
         },
       }).unwrap();
@@ -120,7 +121,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
           {/* Main Large Image */}
           <div className="relative h-72 sm:h-96 lg:col-span-8 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
             <img
-              src={project.images[0] || CDN_ASSETS.placeholderWebp}
+              src={project.images?.[0] || CDN_ASSETS.placeholderWebp}
               alt={project.name}
               className="h-full w-full object-cover"
             />
@@ -129,10 +130,10 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
             <div className="absolute top-4 left-4 flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md px-3 py-1 text-xs font-black text-emerald-700 shadow-sm">
                 <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                <span>RERA Verified: {project.reraId}</span>
+                <span>RERA Verified: {project.reraId || "Registered"}</span>
               </span>
               <span className="rounded-full bg-slate-950/80 backdrop-blur-md px-3 py-1 text-xs font-bold text-white uppercase tracking-wider">
-                {project.status.replace(/_/g, " ")}
+                {project.status?.replace(/_/g, " ") || "NEW LAUNCH"}
               </span>
             </div>
 
@@ -145,7 +146,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               </h1>
               <div className="mt-1 flex items-center gap-1.5 text-xs sm:text-sm text-slate-200">
                 <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-400" />
-                <span>{project.siteAddress || `${project.locality}, ${project.city}`}</span>
+                <span>{project.siteAddress || [project.locality, cityName].filter(Boolean).join(", ")}</span>
               </div>
             </div>
           </div>
@@ -154,14 +155,14 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
           <div className="hidden lg:grid lg:col-span-4 grid-rows-2 gap-2">
             <div className="h-48 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
               <img
-                src={project.images[1] || project.images[0] || CDN_ASSETS.placeholderWebp}
+                src={project.images?.[1] || project.images?.[0] || CDN_ASSETS.placeholderWebp}
                 alt="Project View 2"
                 className="h-full w-full object-cover"
               />
             </div>
             <div className="h-48 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
               <img
-                src={project.images[2] || project.images[0] || CDN_ASSETS.placeholderWebp}
+                src={project.images?.[2] || project.images?.[0] || CDN_ASSETS.placeholderWebp}
                 alt="Project View 3"
                 className="h-full w-full object-cover"
               />
@@ -194,15 +195,17 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               <span>Share</span>
             </button>
 
-            <a
-              href={`https://wa.me/${project.salesPhone.replace(/\D/g, "")}?text=Hi%2C+I+am+interested+in+${encodeURIComponent(project.name)}+in+${encodeURIComponent(project.city)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800 shadow-sm transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
-            >
-              <MessageSquare className="h-3.5 w-3.5 text-emerald-600" />
-              <span>WhatsApp Sales Desk</span>
-            </a>
+            {project.salesPhone && (
+              <a
+                href={`https://wa.me/${project.salesPhone.replace(/\D/g, "")}?text=Hi%2C+I+am+interested+in+${encodeURIComponent(project.name)}+in+${encodeURIComponent(cityName)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-800 shadow-sm transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+              >
+                <MessageSquare className="h-3.5 w-3.5 text-emerald-600" />
+                <span>WhatsApp Sales Desk</span>
+              </a>
+            )}
 
             <button
               onClick={() => handleOpenInquiry()}
@@ -397,7 +400,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
         <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-800/40">
           <div>
             <div className="text-sm font-bold text-slate-900 dark:text-white">
-              {project.siteAddress || `${project.locality}, ${project.city}`}
+              {project.siteAddress || [project.locality, cityName].filter(Boolean).join(", ")}
             </div>
             {project.landmark && (
               <div className="mt-1 text-xs text-slate-500">
@@ -411,7 +414,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
 
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-              `${project.name} ${project.siteAddress || project.locality} ${project.city}`
+              `${project.name} ${project.siteAddress || project.locality || ""} ${cityName}`
             )}`}
             target="_blank"
             rel="noopener noreferrer"

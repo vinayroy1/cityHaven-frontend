@@ -23,6 +23,28 @@ const queryString = (params?: ProjectSearchParams) => {
   return query.toString();
 };
 
+export function normalizeProject(raw: any): ProjectListing {
+  if (!raw) return raw;
+  const cityName =
+    raw.cityName ||
+    (typeof raw.city === "object" && raw.city ? raw.city.name : raw.city) ||
+    "";
+  return {
+    ...raw,
+    city: cityName,
+    cityName,
+    configurations: Array.isArray(raw.configurations) ? raw.configurations : [],
+    amenities: Array.isArray(raw.amenities) ? raw.amenities : [],
+    highlights: Array.isArray(raw.highlights) ? raw.highlights : [],
+    images: Array.isArray(raw.images) ? raw.images : [],
+    salesPhone: raw.salesPhone || "",
+    salesEmail: raw.salesEmail || "",
+    possessionDate: raw.possessionDate || "Ready to Move",
+    priceMin: Number(raw.priceMin) || 0,
+    priceMax: Number(raw.priceMax) || 0,
+  };
+}
+
 export const projectsApi = createApi({
   reducerPath: "projectsApi",
   baseQuery: baseQueryWithReauth,
@@ -33,17 +55,27 @@ export const projectsApi = createApi({
         const qs = queryString(params || undefined);
         return { url: `${API_ENDPOINTS.projects.search}${qs ? `?${qs}` : ""}`, method: "GET" };
       },
-      transformResponse: (response: ApiEnvelope<ProjectSearchResponse>) => response.data,
+      transformResponse: (response: ApiEnvelope<ProjectSearchResponse>) => {
+        const data = response?.data;
+        if (data && Array.isArray(data.items)) {
+          return {
+            ...data,
+            items: data.items.map(normalizeProject),
+          };
+        }
+        return data;
+      },
       providesTags: ["ProjectList"],
     }),
     getProject: builder.query<ProjectListing, string>({
       query: (slug) => ({ url: API_ENDPOINTS.projects.detail(slug), method: "GET" }),
-      transformResponse: (response: ApiEnvelope<ProjectListing>) => response.data,
+      transformResponse: (response: ApiEnvelope<ProjectListing>) => normalizeProject(response?.data),
       providesTags: (_result, _error, slug) => [{ type: "Project", id: slug }],
     }),
     getMyProjects: builder.query<ProjectListing[], void>({
       query: () => ({ url: API_ENDPOINTS.projects.my, method: "GET" }),
-      transformResponse: (response: ApiEnvelope<ProjectListing[]>) => response.data || [],
+      transformResponse: (response: ApiEnvelope<ProjectListing[]>) =>
+        (response?.data || []).map(normalizeProject),
       providesTags: ["MyProjects"],
     }),
     createProject: builder.mutation<ProjectListing, CreateProjectInput>({

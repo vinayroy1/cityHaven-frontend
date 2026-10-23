@@ -333,7 +333,7 @@ export default function PostProjectPage() {
     setConfigurations([...configurations, newCfg]);
   }
 
-  function removeConfiguration(id: string) {
+  function removeConfiguration(id: string | number) {
     if (configurations.length <= 1) {
       toast.error("At least one BHK configuration is required");
       return;
@@ -341,7 +341,7 @@ export default function PostProjectPage() {
     setConfigurations(configurations.filter((c) => c.id !== id));
   }
 
-  function updateConfig(id: string, field: keyof ProjectConfiguration, val: unknown) {
+  function updateConfig(id: string | number, field: keyof ProjectConfiguration, val: unknown) {
     setConfigurations(
       configurations.map((c) => {
         if (c.id === id) {

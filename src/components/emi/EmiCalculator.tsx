@@ -1,225 +1,118 @@
- "use client";
+"use client";
+
 import React, { useMemo, useState } from "react";
-import { Calculator, Info, Percent, Sparkles, TrendingUp, Wallet } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, CalendarDays, IndianRupee, Percent } from "lucide-react";
 
 type TenureUnit = "years" | "months";
-
-const MAX_AMOUNT = 100_000_000; // Cap to keep UI readable (₹10 Cr)
 const MIN_AMOUNT = 100_000;
+const MAX_AMOUNT = 100_000_000;
+const MIN_RATE = 1;
+const MAX_RATE = 20;
 
-function toNumber(value: string | number) {
-  const numeric = typeof value === "number" ? value : Number(String(value).replace(/[^\d.]/g, ""));
-  return Number.isFinite(numeric) ? numeric : 0;
+const formatINR = (value: number) => new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(Math.round(Number.isFinite(value) ? value : 0));
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(Number.isFinite(value) ? value : min, min), max);
+const parseAmount = (value: string) => Number(value.replace(/[^\d]/g, ""));
+
+function RangeField({ label, icon, children, min, max, step, value, onChange, minLabel, maxLabel }: {
+  label: string; icon: React.ReactNode; children: React.ReactNode; min: number; max: number; step: number;
+  value: number; onChange: (value: number) => void; minLabel: string; maxLabel: string;
+}) {
+  const progress = ((value - min) / (max - min)) * 100;
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-4">
+        <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400">{icon}</span>
+          {label}
+        </label>
+        {children}
+      </div>
+      <input aria-label={label} type="range" min={min} max={max} step={step} value={value} onChange={(event) => onChange(Number(event.target.value))}
+        className="h-1.5 w-full cursor-pointer appearance-none rounded-full accent-rose-600"
+        style={{ background: `linear-gradient(to right, #e11d48 0%, #e11d48 ${progress}%, #e2e8f0 ${progress}%, #e2e8f0 100%)` }} />
+      <div className="flex justify-between text-[11px] font-medium text-slate-400 dark:text-slate-500"><span>{minLabel}</span><span>{maxLabel}</span></div>
+    </div>
+  );
 }
-
-function clampAmount(value: number) {
-  return Math.min(Math.max(value, MIN_AMOUNT), MAX_AMOUNT);
-}
-
-const formatINR = (value: number) =>
-  new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(Math.round(value));
 
 export function EmiCalculator() {
-  const [amount, setAmount] = useState<number>(3000000);
-  const [rate, setRate] = useState<number>(8.8);
-  const [tenure, setTenure] = useState<number>(20);
+  const [amount, setAmount] = useState(3_000_000);
+  const [rate, setRate] = useState(8.8);
+  const [tenure, setTenure] = useState(20);
   const [tenureUnit, setTenureUnit] = useState<TenureUnit>("years");
+  const maxTenure = tenureUnit === "years" ? 35 : 420;
+  const minTenure = tenureUnit === "years" ? 1 : 12;
 
-  const { emi, totalPayable, totalInterest, monthlyRate, months, principalShare } = useMemo(() => {
+  const { emi, totalPayable, totalInterest, principalShare, months } = useMemo(() => {
     const months = tenureUnit === "years" ? tenure * 12 : tenure;
-    const monthlyRate = rate / (12 * 100);
-    const numerator = amount * monthlyRate * Math.pow(1 + monthlyRate, months);
-    const denominator = Math.pow(1 + monthlyRate, months) - 1;
-    const emi = denominator === 0 ? 0 : numerator / denominator;
+    const monthlyRate = rate / 1200;
+    const growth = Math.pow(1 + monthlyRate, months);
+    const emi = monthlyRate === 0 ? amount / months : (amount * monthlyRate * growth) / (growth - 1);
     const totalPayable = emi * months;
-    const totalInterest = totalPayable - amount;
-    const principalShare = (amount / Math.max(totalPayable, 1)) * 100;
-    return { emi, totalPayable, totalInterest, monthlyRate, months, principalShare };
+    const totalInterest = Math.max(totalPayable - amount, 0);
+    return { emi, totalPayable, totalInterest, principalShare: (amount / Math.max(totalPayable, 1)) * 100, months };
   }, [amount, rate, tenure, tenureUnit]);
 
-  const pieBackground = `conic-gradient(#0f172a 0deg ${principalShare}deg, #2dd4bf ${principalShare}deg 360deg)`;
+  function changeTenureUnit(unit: TenureUnit) {
+    if (unit === tenureUnit) return;
+    setTenure(unit === "months" ? tenure * 12 : Math.max(1, Math.round(tenure / 12)));
+    setTenureUnit(unit);
+  }
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl">
-      <div className="pointer-events-none absolute inset-0 opacity-60">
-        <div className="absolute -left-10 -top-20 h-56 w-56 rounded-full bg-red-100 blur-3xl" />
-        <div className="absolute -right-6 top-10 h-52 w-52 rounded-full bg-orange-100 blur-3xl" />
-      </div>
-
-      <div className="relative flex flex-col gap-4 border-b border-slate-100 px-4 py-4 sm:px-6 sm:py-5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 text-white shadow-lg shadow-red-200/60">
-            <Calculator className="h-5 w-5" />
+    <section className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_20px_60px_-40px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-900">
+      <div className="grid lg:grid-cols-[minmax(0,1.3fr)_minmax(340px,.7fr)]">
+        <div className="p-5 sm:p-8 lg:p-10">
+          <div className="mb-8">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-rose-600 dark:text-rose-400">Loan details</p>
+            <h2 className="mt-2 text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">Shape a repayment plan that fits</h2>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Move the sliders or enter exact values. Your estimate updates instantly.</p>
           </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Plan repayments</p>
-            <h2 className="text-xl font-semibold text-slate-900 sm:text-2xl">EMI Calculator</h2>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2 text-xs text-slate-600">
-          <span className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 font-semibold">
-            <Wallet className="h-4 w-4 text-emerald-600" /> Principal + interest split
-          </span>
-          <span className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 font-semibold">
-            <TrendingUp className="h-4 w-4 text-indigo-600" /> Live recalculation
-          </span>
-          <span className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 font-semibold">
-            <Sparkles className="h-4 w-4 text-red-500" /> Mobile friendly
-          </span>
-        </div>
-      </div>
-
-      <div className="relative flex flex-col gap-5 p-4 sm:p-6 lg:flex-row">
-        <div className="flex-1 space-y-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="space-y-2 text-sm font-semibold text-slate-700">
-              <span className="flex items-center gap-2">
-                Loan amount <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-600">₹</span>
-              </span>
-              <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 shadow-sm shadow-red-100/40 ring-1 ring-red-50">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={formatINR(amount)}
-                  onChange={(e) => setAmount(clampAmount(toNumber(e.target.value)))}
-                  className="w-full bg-transparent text-base font-semibold text-slate-900 outline-none"
-                />
+          <div className="space-y-8">
+            <RangeField label="Loan amount" icon={<IndianRupee className="h-4 w-4" />} min={MIN_AMOUNT} max={MAX_AMOUNT} step={50_000} value={amount} onChange={setAmount} minLabel="₹1 lakh" maxLabel="₹10 crore">
+              <div className="flex h-11 w-44 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 focus-within:border-rose-400 focus-within:ring-2 focus-within:ring-rose-100 dark:border-slate-700 dark:bg-slate-800">
+                <span className="mr-1 text-sm font-semibold text-slate-400">₹</span>
+                <input aria-label="Enter loan amount" inputMode="numeric" value={formatINR(amount)} onChange={(event) => setAmount(clamp(parseAmount(event.target.value), MIN_AMOUNT, MAX_AMOUNT))} className="min-w-0 flex-1 bg-transparent text-right text-base font-bold text-slate-900 outline-none dark:text-white" />
               </div>
-              <input
-                type="range"
-                min={MIN_AMOUNT}
-                max={MAX_AMOUNT}
-                step={50000}
-                value={amount}
-                onChange={(e) => setAmount(clampAmount(Number(e.target.value)))}
-                className="w-full accent-red-500"
-              />
-            </label>
-
-            <label className="space-y-2 text-sm font-semibold text-slate-700">
-              Rate of interest (p.a)
-              <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 shadow-sm shadow-indigo-100/40 ring-1 ring-indigo-50">
-                <Percent className="h-4 w-4 text-slate-500" />
-                <input
-                  type="number"
-                  min={1}
-                  step={0.1}
-                  value={rate}
-                  onChange={(e) => setRate(Number(e.target.value))}
-                  className="w-full bg-transparent text-base font-semibold text-slate-900 outline-none"
-                />
-                <span className="text-sm text-slate-500">%</span>
+            </RangeField>
+            <RangeField label="Interest rate" icon={<Percent className="h-4 w-4" />} min={MIN_RATE} max={MAX_RATE} step={0.1} value={rate} onChange={setRate} minLabel="1%" maxLabel="20%">
+              <div className="flex h-11 w-28 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 focus-within:border-rose-400 focus-within:ring-2 focus-within:ring-rose-100 dark:border-slate-700 dark:bg-slate-800">
+                <input aria-label="Enter annual interest rate" type="number" min={MIN_RATE} max={MAX_RATE} step={0.1} value={rate} onChange={(event) => setRate(clamp(Number(event.target.value), MIN_RATE, MAX_RATE))} className="min-w-0 flex-1 bg-transparent text-right text-base font-bold text-slate-900 outline-none dark:text-white" />
+                <span className="ml-1 text-sm font-semibold text-slate-400">%</span>
               </div>
-              <div className="flex gap-2 text-[11px] text-slate-500">
-                <span className="rounded-full bg-slate-100 px-2 py-1">Floating</span>
-                <span className="rounded-full bg-slate-100 px-2 py-1">Fixed</span>
-              </div>
-            </label>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="space-y-2 text-sm font-semibold text-slate-700">
-              Tenure
-              <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 shadow-sm shadow-orange-100/50 ring-1 ring-orange-50">
-                <input
-                  type="number"
-                  min={1}
-                  value={tenure}
-                  onChange={(e) => setTenure(Number(e.target.value))}
-                  className="w-full bg-transparent text-base font-semibold text-slate-900 outline-none"
-                />
-                <div className="flex gap-1 rounded-xl bg-slate-100 p-1 text-xs font-semibold text-slate-700 shadow-inner">
-                  {(["years", "months"] as TenureUnit[]).map((unit) => (
-                    <button
-                      key={unit}
-                      type="button"
-                      onClick={() => setTenureUnit(unit)}
-                      className={`rounded-lg px-3 py-1 transition ${
-                        tenureUnit === unit ? "bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-sm" : "hover:bg-white"
-                      }`}
-                    >
-                      {unit === "years" ? "Years" : "Months"}
-                    </button>
-                  ))}
+            </RangeField>
+            <RangeField label="Loan tenure" icon={<CalendarDays className="h-4 w-4" />} min={minTenure} max={maxTenure} step={tenureUnit === "years" ? 1 : 12} value={tenure} onChange={setTenure} minLabel={tenureUnit === "years" ? "1 year" : "12 months"} maxLabel={tenureUnit === "years" ? "35 years" : "420 months"}>
+              <div className="flex h-11 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800">
+                <input aria-label="Enter loan tenure" type="number" min={minTenure} max={maxTenure} value={tenure} onChange={(event) => setTenure(clamp(Number(event.target.value), minTenure, maxTenure))} className="w-16 bg-transparent px-2 text-center text-base font-bold text-slate-900 outline-none dark:text-white" />
+                <div className="flex border-l border-slate-200 p-1 dark:border-slate-700">
+                  {(["years", "months"] as TenureUnit[]).map((unit) => <button key={unit} type="button" aria-pressed={tenureUnit === unit} onClick={() => changeTenureUnit(unit)} className={`rounded-lg px-2.5 text-xs font-semibold transition ${tenureUnit === unit ? "bg-slate-900 text-white dark:bg-rose-600" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}>{unit === "years" ? "Yr" : "Mo"}</button>)}
                 </div>
               </div>
-              <input
-                type="range"
-                min={tenureUnit === "years" ? 1 : 12}
-                max={tenureUnit === "years" ? 35 : 420}
-                step={tenureUnit === "years" ? 1 : 12}
-                value={tenure}
-                onChange={(e) => setTenure(Number(e.target.value))}
-                className="w-full accent-red-500"
-              />
-            </label>
-
-            <div className="space-y-2 rounded-2xl border border-slate-100 bg-white/80 p-4 text-xs text-slate-600 shadow-sm">
-              <p className="flex items-center gap-2 font-semibold text-slate-800">
-                <Info className="h-4 w-4 text-red-500" /> How we calculate
-              </p>
-              <p>EMI = [P x r x (1+r)^n] / [(1+r)^n - 1]</p>
-              <p>
-                r = monthly interest rate ({monthlyRate.toFixed(4)}), n = total months ({months}).
-              </p>
-              <p className="text-[11px] text-slate-500">Try lowering tenure to see interest drop faster.</p>
-            </div>
+            </RangeField>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 rounded-2xl border border-slate-100 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 text-white shadow-lg sm:p-5 lg:max-w-sm">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <div className="col-span-2 flex items-center justify-center">
-              <div
-                className="flex h-44 w-44 items-center justify-center rounded-full bg-white/10 shadow-inner ring-2 ring-white/10 sm:h-48 sm:w-48"
-                style={{ background: pieBackground }}
-              >
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white text-center text-[11px] font-semibold text-slate-900 shadow leading-tight">
-                  EMI
-                  <br />
-                  ₹{formatINR(emi)}
-                </div>
+        <aside className="relative overflow-hidden bg-slate-950 p-5 text-white sm:p-8 lg:p-10">
+          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/20 blur-3xl" />
+          <div className="relative">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-rose-300">Your monthly EMI</p>
+            <p className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">₹{formatINR(emi)}</p>
+            <p className="mt-2 text-sm text-slate-400">for {months} monthly payments</p>
+            <div className="my-8 flex items-center justify-center">
+              <div className="relative grid h-48 w-48 place-items-center rounded-full" style={{ background: `conic-gradient(#fb7185 ${principalShare * 3.6}deg, #fb923c 0deg)` }} role="img" aria-label={`${principalShare.toFixed(0)} percent principal and ${(100 - principalShare).toFixed(0)} percent interest`}>
+                <div className="grid h-32 w-32 place-items-center rounded-full bg-slate-950 text-center shadow-inner"><div><p className="text-2xl font-bold">{principalShare.toFixed(0)}%</p><p className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Principal</p></div></div>
               </div>
             </div>
-            <div className="col-span-2 sm:col-span-1 space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-sm bg-[#0f172a]" />
-                <div>
-                  <p className="text-xs text-slate-300">Principal</p>
-                  <p className="text-sm font-semibold text-white break-words">₹{formatINR(amount)}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-sm bg-[#2dd4bf]" />
-                <div>
-                  <p className="text-xs text-slate-300">Interest</p>
-                  <p className="text-sm font-semibold text-white break-words">₹{formatINR(totalInterest)}</p>
-                </div>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-white/10 p-3 text-sm backdrop-blur">
-                <p className="text-xs uppercase tracking-wide text-slate-200">Monthly EMI</p>
-                <p className="text-xl font-bold text-white break-words">₹{formatINR(emi)}</p>
-                <p className="mt-2 text-xs text-slate-200">Total Payable: ₹{formatINR(totalPayable)}</p>
-              </div>
-              <button className="w-full rounded-xl bg-gradient-to-r from-red-500 to-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5">
-                Get instant loan offers
-              </button>
+            <div className="divide-y divide-white/10 rounded-xl border border-white/10 bg-white/5 px-4">
+              <div className="flex items-center justify-between py-3.5 text-sm"><span className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-rose-400" />Principal amount</span><strong>₹{formatINR(amount)}</strong></div>
+              <div className="flex items-center justify-between py-3.5 text-sm"><span className="flex items-center gap-2 text-slate-300"><span className="h-2.5 w-2.5 rounded-full bg-orange-400" />Total interest</span><strong>₹{formatINR(totalInterest)}</strong></div>
+              <div className="flex items-center justify-between py-3.5 text-sm"><span className="text-slate-300">Total payable</span><strong>₹{formatINR(totalPayable)}</strong></div>
             </div>
+            <Link href="/home-loans" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-orange-500 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-rose-950/30 transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">Explore home loans <ArrowRight className="h-4 w-4" /></Link>
+            <p className="mt-3 text-center text-[11px] leading-relaxed text-slate-500">Indicative calculation only. Actual lender terms may vary.</p>
           </div>
-
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <p className="text-slate-200">Interest rate</p>
-              <p className="text-lg font-semibold text-white">{rate}% p.a.</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <p className="text-slate-200">Tenure</p>
-              <p className="text-lg font-semibold text-white">
-                {tenure} {tenureUnit === "years" ? "yrs" : "mo"}
-              </p>
-            </div>
-          </div>
-        </div>
+        </aside>
       </div>
     </section>
   );

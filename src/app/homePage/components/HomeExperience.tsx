@@ -602,7 +602,7 @@ function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
                     <MapPin className="h-3 w-3 shrink-0 text-rose-500" />
                     <span className="truncate">
                       {project.locality ? `${project.locality}, ` : ""}
-                      {project.city || "Top Metros"}
+                      {typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "Top Metros")}
                     </span>
                   </p>
 

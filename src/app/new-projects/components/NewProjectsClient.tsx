@@ -360,7 +360,10 @@ export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: 
                   </h3>
                   <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 sm:text-xs">
                     <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
-                    <span className="truncate">{project.locality}, {project.city}</span>
+                    <span className="truncate">
+                      {project.locality ? `${project.locality}, ` : ""}
+                      {typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "")}
+                    </span>
                   </div>
 
                   {/* Specs Pill Strip */}
@@ -395,11 +398,11 @@ export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: 
                       <span className="flex items-center gap-1 text-[9px] font-semibold text-slate-500 sm:text-[10px]">
                         <CalendarDays className="h-3 w-3 text-slate-400" /> Possession {project.possessionDate}
                       </span>
-                      {project.priceMax > project.priceMin && (
+                      {project.priceMax && project.priceMin && project.priceMax > project.priceMin ? (
                         <span className="mt-0.5 block truncate text-[10px] font-bold text-slate-700 dark:text-slate-300">
                           Up to {formatPrice(project.priceMax)}
                         </span>
-                      )}
+                      ) : null}
                     </div>
 
                     <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition group-hover:bg-rose-600 group-hover:text-white dark:bg-rose-950/40 dark:text-rose-400">

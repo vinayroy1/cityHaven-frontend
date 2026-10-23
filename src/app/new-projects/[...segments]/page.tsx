@@ -36,8 +36,24 @@ const getProject = cache(async (slug: string): Promise<ProjectListing | null> =>
       headers: { Accept: "application/json" },
     });
     if (response.status === 404 || !response.ok) return null;
-    const payload = (await response.json()) as { success?: boolean; data?: ProjectListing };
-    return payload.data ?? null;
+    const payload = (await response.json()) as { success?: boolean; data?: any };
+    const raw = payload?.data;
+    if (!raw) return null;
+    const cityName = raw.cityName || (typeof raw.city === "object" && raw.city ? raw.city.name : raw.city) || "";
+    return {
+      ...raw,
+      city: cityName,
+      cityName,
+      configurations: Array.isArray(raw.configurations) ? raw.configurations : [],
+      amenities: Array.isArray(raw.amenities) ? raw.amenities : [],
+      highlights: Array.isArray(raw.highlights) ? raw.highlights : [],
+      images: Array.isArray(raw.images) ? raw.images : [],
+      salesPhone: raw.salesPhone || "",
+      salesEmail: raw.salesEmail || "",
+      possessionDate: raw.possessionDate || "Ready to Move",
+      priceMin: Number(raw.priceMin) || 0,
+      priceMax: Number(raw.priceMax) || 0,
+    };
   } catch (error) {
     console.error(`[getProject] Failed to fetch project ${slug}:`, error);
     return null;
@@ -87,7 +103,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (segments.length === 1) {
     const project = await getProject(segments[0]);
     if (project) {
-      const locLabel = [project.locality, project.city].filter(Boolean).join(", ") || "India";
+      const cityName = typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "");
+      const locLabel = [project.locality, cityName].filter(Boolean).join(", ") || "India";
       const devLabel = project.developerName || "Premier Developer";
       const title = `${project.name} by ${devLabel} in ${locLabel} - Price & Floor Plans`;
       const description = `Explore ${project.name} in ${locLabel}. RERA Reg: ${project.reraId || "Verified"}. Configurations, price from ${formatPrice(project.priceMin)}, floor plans & possession date.`;
@@ -102,7 +119,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           description,
           url: canonical,
           type: "website",
-          images: project.images.map((img) => ({ url: img })),
+          images: (project.images || []).map((img) => ({ url: img })),
         },
       };
     }
@@ -162,11 +179,12 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
   if (segments.length === 1) {
     const project = await getProject(segments[0]);
     if (project) {
+      const cityName = typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "");
       const jsonLd = {
         "@context": "https://schema.org",
         "@type": "RealEstateListing",
         name: project.name,
-        description: `Residential project by ${project.developerName} in ${project.locality}, ${project.city}. RERA ID: ${project.reraId}`,
+        description: `Residential project by ${project.developerName} in ${project.locality}, ${cityName}. RERA ID: ${project.reraId || "Verified"}`,
         url: `${SITE_URL}/new-projects/${project.slug}`,
         offers: {
           "@type": "AggregateOffer",
@@ -203,11 +221,11 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
                   <Link href="/new-projects" className="hover:underline">
                     New Projects
                   </Link>
-                  {project.city && (
+                  {cityName && (
                     <>
                       <span>/</span>
-                      <Link href={`/new-projects/${toSearchSlug(project.city)}`} className="hover:underline">
-                        {project.city}
+                      <Link href={`/new-projects/${toSearchSlug(cityName)}`} className="hover:underline">
+                        {cityName}
                       </Link>
                     </>
                   )}
