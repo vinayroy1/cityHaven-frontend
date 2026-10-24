@@ -108,7 +108,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   const accountRef = React.useRef<HTMLDivElement | null>(null);
   const moreNavRef = React.useRef<HTMLDivElement | null>(null);
 
-  const { data: creditsData, refetch: refetchCredits } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
+  const { data: creditsData } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
   const { data: platformData } = useGetCreditPlatformConfigQuery();
   const purchaseEnabled = platformData?.data?.flags?.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
   const creditBalance = creditsData?.data?.credits ?? (userProfile as any)?.credits ?? 0;
@@ -147,9 +147,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
       } catch {
         setUserProfile(null);
       }
-      if (authed && refetchCredits) {
-        refetchCredits();
-      }
+      // RTK Query automatically runs when isAuthed transitions to true
     };
 
     checkAuth();
