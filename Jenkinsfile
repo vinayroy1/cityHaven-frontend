@@ -85,6 +85,10 @@ pipeline {
                         -e NEXT_PUBLIC_API_URL='https://awasio.com/api' \
                         -e INTERNAL_API_URL='http://awasio-backend:4000/api' \
                         ${DOCKER_IMAGE}
+
+                    # Ensure dual-network attachment so SSR always reaches awasio-backend
+                    docker network connect awasio_awasio-net ${APP_NAME} 2>/dev/null || true
+                    docker network connect ${NETWORK_NAME} awasio-backend 2>/dev/null || true
                 '''
             }
         }
@@ -97,6 +101,8 @@ pipeline {
                     for i in $(seq 1 15); do
                         if docker exec ${APP_NAME} node -e "require('http').get('http://127.0.0.1:3000', r => process.exit(r.statusCode === 200 ? 0 : 1))" > /dev/null 2>&1; then
                             echo "✅ Frontend is healthy and responding (attempt ${i})!"
+                            # Verify internal API connectivity
+                            docker exec ${APP_NAME} wget -qO- --timeout=3 http://awasio-backend:4000/api/v1/health > /dev/null 2>&1 || docker network connect awasio_awasio-net ${APP_NAME} 2>/dev/null || true
                             docker logs --tail 10 ${APP_NAME}
                             exit 0
                         fi
