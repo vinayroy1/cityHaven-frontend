@@ -7,11 +7,19 @@ const DOCS_DIR = path.join(process.cwd(), "docs");
 if (!fs.existsSync(DOCS_DIR)) fs.mkdirSync(DOCS_DIR, { recursive: true });
 
 const R2_PUBLIC_BASE = "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev";
-const PLACEHOLDER_AVATAR = `${R2_PUBLIC_BASE}/advisors/avatars/placeholder-avatar.svg`;
 
-const CURATED_AVATARS = Array.from({ length: 12 }, (_, i) => 
-  `${R2_PUBLIC_BASE}/advisors/avatars/curated_advisor_${i + 1}.webp`
-);
+// Clean, stylish vector avatar icons on Cloudflare R2 - prevents any gender mismatch
+const THEMED_AVATAR_ICONS = [
+  `${R2_PUBLIC_BASE}/advisors/avatars/avatar_indigo.svg`,
+  `${R2_PUBLIC_BASE}/advisors/avatars/avatar_slate.svg`,
+  `${R2_PUBLIC_BASE}/advisors/avatars/avatar_rose.svg`,
+  `${R2_PUBLIC_BASE}/advisors/avatars/avatar_emerald.svg`,
+  `${R2_PUBLIC_BASE}/advisors/avatars/avatar_amber.svg`,
+  `${R2_PUBLIC_BASE}/advisors/avatars/avatar_sky.svg`,
+  `${R2_PUBLIC_BASE}/advisors/avatars/avatar_purple.svg`,
+  `${R2_PUBLIC_BASE}/advisors/avatars/avatar_teal.svg`,
+  `${R2_PUBLIC_BASE}/advisors/avatars/placeholder-avatar.svg`
+];
 
 const CURATED_COVERS = [
   "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
@@ -23,43 +31,43 @@ const CURATED_COVERS = [
 ];
 
 const STATE_CONFIG = {
-  "Uttar Pradesh": { lang: "Hindi", reraPrefix: "UPRERA2021A", surnames: ["Sharma", "Verma", "Mishra", "Gupta", "Yadav", "Pandey"] },
-  "Gujarat": { lang: "Gujarati", reraPrefix: "GUJRERA2020A", surnames: ["Patel", "Shah", "Desai", "Mehta", "Trivedi", "Solanki"] },
-  "Punjab": { lang: "Punjabi", reraPrefix: "PBRERA2021A", surnames: ["Singh", "Dhillon", "Sidhu", "Gill", "Sandhu", "Bhatia"] },
-  "Karnataka": { lang: "Kannada", reraPrefix: "K-RERA2021A", surnames: ["Rao", "Hegde", "Gowda", "Shetty", "Bhat", "Murthy"] },
-  "Bihar": { lang: "Hindi", reraPrefix: "BRERA2021A", surnames: ["Singh", "Sinha", "Kumar", "Pandey", "Jha", "Srivastava"] },
-  "Madhya Pradesh": { lang: "Hindi", reraPrefix: "MPRERA2021A", surnames: ["Malviya", "Chouhan", "Gupta", "Jain", "Agrawal", "Dubey"] },
-  "Odisha": { lang: "Odia", reraPrefix: "ORERA2021A", surnames: ["Mohanty", "Patnaik", "Das", "Mishra", "Pradhan", "Nayak"] },
-  "Jharkhand": { lang: "Hindi", reraPrefix: "JHRERA2021A", surnames: ["Singh", "Kumar", "Prasad", "Sinha", "Verma", "Choudhary"] },
-  "Chandigarh": { lang: "Punjabi", reraPrefix: "CHRERA2021A", surnames: ["Malhotra", "Kapoor", "Chawla", "Bhatia", "Grewal", "Virk"] },
-  "Tamil Nadu": { lang: "Tamil", reraPrefix: "TNRERA2020A", surnames: ["Ramanathan", "Natarajan", "Balakrishnan", "Sundaram", "Krishnan", "Iyer"] },
-  "Uttarakhand": { lang: "Hindi", reraPrefix: "UKRERA2021A", surnames: ["Rawat", "Negi", "Bisht", "Bhatt", "Pant", "Joshi"] },
-  "West Bengal": { lang: "Bengali", reraPrefix: "WBHIRA2021A", surnames: ["Sen", "Banerjee", "Chatterjee", "Mukherjee", "Ghosh", "Roy"] },
-  "Haryana": { lang: "Hindi", reraPrefix: "HRERA2020A", surnames: ["Chauhan", "Kaushik", "Dhiman", "Ghanghas", "Tanwar", "Dahiya"] },
-  "Assam": { lang: "Assamese", reraPrefix: "ASRERA2021A", surnames: ["Barua", "Sarma", "Saikia", "Dutta", "Goswami", "Bora"] },
-  "Telangana": { lang: "Telugu", reraPrefix: "TSRERA2021A", surnames: ["Reddy", "Rao", "Raju", "Choudhary", "Naidu", "Prasad"] },
-  "Rajasthan": { lang: "Hindi", reraPrefix: "RAJ-RERA2021A", surnames: ["Shekhawat", "Rathore", "Agarwal", "Gehlot", "Maheshwari", "Bhati"] },
-  "Kerala": { lang: "Malayalam", reraPrefix: "K-RERA(KL)2021A", surnames: ["Menon", "Nair", "Pillai", "Varghese", "Kurian", "Nambiar"] },
-  "Maharashtra": { lang: "Marathi", reraPrefix: "MAHARERA2020A", surnames: ["Deshmukh", "Kulkarni", "Shinde", "Patil", "Gokhale", "Joshi"] },
-  "Delhi": { lang: "Hindi", reraPrefix: "DLRERA2021A", surnames: ["Kapoor", "Malhotra", "Sharma", "Varma", "Chawla", "Bhasin"] },
-  "Andhra Pradesh": { lang: "Telugu", reraPrefix: "APRERA2021A", surnames: ["Reddy", "Varma", "Naidu", "Raju", "Prasad", "Chowdary"] },
+  "Uttar Pradesh": { lang: "Hindi", reraPrefix: "UPRERA2021A", surnames: ["Sharma", "Verma", "Mishra", "Gupta", "Yadav", "Pandey", "Tripathi", "Tiwari"] },
+  "Gujarat": { lang: "Gujarati", reraPrefix: "GUJRERA2020A", surnames: ["Patel", "Shah", "Desai", "Mehta", "Trivedi", "Solanki", "Joshi", "Vora"] },
+  "Punjab": { lang: "Punjabi", reraPrefix: "PBRERA2021A", surnames: ["Singh", "Dhillon", "Sidhu", "Gill", "Sandhu", "Bhatia", "Grewal", "Virk"] },
+  "Karnataka": { lang: "Kannada", reraPrefix: "K-RERA2021A", surnames: ["Rao", "Hegde", "Gowda", "Shetty", "Bhat", "Murthy", "Prasad", "Reddy"] },
+  "Bihar": { lang: "Hindi", reraPrefix: "BRERA2021A", surnames: ["Singh", "Sinha", "Kumar", "Pandey", "Jha", "Srivastava", "Mishra", "Choudhary"] },
+  "Madhya Pradesh": { lang: "Hindi", reraPrefix: "MPRERA2021A", surnames: ["Malviya", "Chouhan", "Gupta", "Jain", "Agrawal", "Dubey", "Sharma", "Tiwari"] },
+  "Odisha": { lang: "Odia", reraPrefix: "ORERA2021A", surnames: ["Mohanty", "Patnaik", "Das", "Mishra", "Pradhan", "Nayak", "Rath", "Behera"] },
+  "Jharkhand": { lang: "Hindi", reraPrefix: "JHRERA2021A", surnames: ["Singh", "Kumar", "Prasad", "Sinha", "Verma", "Choudhary", "Mahto", "Pandey"] },
+  "Chandigarh": { lang: "Punjabi", reraPrefix: "CHRERA2021A", surnames: ["Malhotra", "Kapoor", "Chawla", "Bhatia", "Grewal", "Virk", "Ahluwalia", "Sethi"] },
+  "Tamil Nadu": { lang: "Tamil", reraPrefix: "TNRERA2020A", surnames: ["Ramanathan", "Natarajan", "Balakrishnan", "Sundaram", "Krishnan", "Iyer", "Venkatesh", "Pillai"] },
+  "Uttarakhand": { lang: "Hindi", reraPrefix: "UKRERA2021A", surnames: ["Rawat", "Negi", "Bisht", "Bhatt", "Pant", "Joshi", "Khanduri", "Semwal"] },
+  "West Bengal": { lang: "Bengali", reraPrefix: "WBHIRA2021A", surnames: ["Sen", "Banerjee", "Chatterjee", "Mukherjee", "Ghosh", "Roy", "Chakraborty", "Bhattacharya"] },
+  "Haryana": { lang: "Hindi", reraPrefix: "HRERA2020A", surnames: ["Chauhan", "Kaushik", "Dhiman", "Ghanghas", "Tanwar", "Dahiya", "Khatri", "Malik"] },
+  "Assam": { lang: "Assamese", reraPrefix: "ASRERA2021A", surnames: ["Barua", "Sarma", "Saikia", "Dutta", "Goswami", "Bora", "Kalita", "Kakati"] },
+  "Telangana": { lang: "Telugu", reraPrefix: "TSRERA2021A", surnames: ["Reddy", "Rao", "Raju", "Choudhary", "Naidu", "Prasad", "Goud", "Kishore"] },
+  "Rajasthan": { lang: "Hindi", reraPrefix: "RAJ-RERA2021A", surnames: ["Shekhawat", "Rathore", "Agarwal", "Gehlot", "Maheshwari", "Bhati", "Sharma", "Choudhary"] },
+  "Kerala": { lang: "Malayalam", reraPrefix: "K-RERA(KL)2021A", surnames: ["Menon", "Nair", "Pillai", "Varghese", "Kurian", "Nambiar", "Mathew", "Joseph"] },
+  "Maharashtra": { lang: "Marathi", reraPrefix: "MAHARERA2020A", surnames: ["Deshmukh", "Kulkarni", "Shinde", "Patil", "Gokhale", "Joshi", "Bhosale", "Pawar"] },
+  "Delhi": { lang: "Hindi", reraPrefix: "DLRERA2021A", surnames: ["Kapoor", "Malhotra", "Sharma", "Varma", "Chawla", "Bhasin", "Arora", "Sood"] },
+  "Andhra Pradesh": { lang: "Telugu", reraPrefix: "APRERA2021A", surnames: ["Reddy", "Varma", "Naidu", "Raju", "Prasad", "Chowdary", "Murthy", "Rao"] },
 };
 
 const FIRST_NAMES = [
   "Aarav", "Priya", "Vikram", "Rohan", "Kavita", "Anand", "Meera", "Siddharth",
   "Pooja", "Rajesh", "Deepika", "Kunal", "Sneha", "Aditya", "Neha", "Manish",
   "Ritu", "Gaurav", "Sunita", "Amit", "Divya", "Suresh", "Anita", "Naveen",
-  "Shweta", "Arjun", "Preeti", "Sanjay", "Ananya", "Ashok", "Poonam", "Rakesh"
+  "Shweta", "Arjun", "Preeti", "Sanjay", "Ananya", "Ashok", "Poonam", "Rakesh",
+  "Karan", "Simran", "Vikas", "Tanvi", "Alok", "Smita", "Mayank", "Monika"
 ];
 
-const ROLES = [
-  "Senior Property Advisor",
-  "Luxury Residential Consultant",
-  "Commercial Corridors Specialist",
-  "RERA Certified Property Guide",
-  "Land & Villa Consultant",
-  "Ready-to-Move Specialist",
-  "High-Rise Living Advisor"
+const SPECIALTY_ROLES = [
+  { role: "Senior Residential Rental Specialist", focus: "Rental homes & high-rises" },
+  { role: "Luxury Residential Resale & Villa Consultant", focus: "Villas & luxury resale" },
+  { role: "Commercial Corridors & Retail Specialist", focus: "Offices & retail shops" },
+  { role: "Plots, Land & Township Consultant", focus: "Plots & development land" },
+  { role: "Ready-to-Move & RERA Advisory Specialist", focus: "Ready-to-move apartments" },
+  { role: "NRI Investment & High-Rise Advisor", focus: "NRI investment & penthouses" }
 ];
 
 const BADGES = ["Top Rated", "Premier Agent", "Top Producer", "Super Agent", "Fast Responder"];
@@ -75,7 +83,7 @@ function generatePhone(seed) {
 
 export function buildPanIndiaAdvisors() {
   const allAdvisors = [];
-  let globalSeed = 101;
+  let globalSeed = 200;
 
   for (const city of CITIES_59) {
     const state = STATE_CONFIG[city.stateName] || {
@@ -84,24 +92,30 @@ export function buildPanIndiaAdvisors() {
       surnames: ["Sharma", "Verma", "Singh", "Gupta"]
     };
 
-    // Allocate 3 advisors for major metros, 2 for other cities
-    const count = ["Bengaluru", "Mumbai", "New Delhi", "Gurugram", "Noida", "Hyderabad", "Pune", "Kolkata", "Chennai", "Ahmedabad", "Indore", "Patna", "Lucknow", "Chandigarh"].includes(city.cityName) ? 3 : 2;
+    // Major hubs have 6 advisors, all other cities have 5 advisors (guarantees >= 5 per city)
+    const majorHubs = [
+      "Bengaluru", "Mumbai", "New Delhi", "Gurugram", "Noida", "Hyderabad",
+      "Pune", "Kolkata", "Chennai", "Ahmedabad", "Indore", "Patna", "Lucknow",
+      "Chandigarh", "Jaipur", "Thane", "Navi Mumbai", "Bhopal", "Vadodara", "Kochi"
+    ];
+    const count = majorHubs.includes(city.cityName) ? 6 : 5;
 
     for (let i = 0; i < count; i++) {
       globalSeed++;
       const firstName = FIRST_NAMES[(globalSeed * 7 + i) % FIRST_NAMES.length];
       const lastName = state.surnames[(globalSeed * 3 + i) % state.surnames.length];
       const name = `${firstName} ${lastName}`;
-      const slug = `${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${city.cityName.toLowerCase()}`;
+      const slug = `${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${city.cityName.toLowerCase()}-${i + 1}`;
 
-      const agency = `${city.cityName} ${["Prime Realty", "Asset Advisors", "Heritage Estates", "Capital Properties", "Corridor Homes"][i % 5]}`;
-      const role = ROLES[(globalSeed + i) % ROLES.length];
+      const agency = `${city.cityName} ${["Prime Realty", "Asset Advisors", "Heritage Estates", "Capital Properties", "Corridor Homes", "Metropolis Realty"][i % 6]}`;
+      const specialty = SPECIALTY_ROLES[i % SPECIALTY_ROLES.length];
+      const role = specialty.role;
       const area = city.localities[i % city.localities.length] || city.cityName;
-      const experienceYears = 5 + (globalSeed % 10);
-      const tours = `${40 + (globalSeed % 120)}+ visits`;
-      const listingsCount = 20 + (globalSeed % 50);
+      const experienceYears = 5 + (globalSeed % 12);
+      const tours = `${40 + (globalSeed % 140)}+ visits`;
+      const listingsCount = 20 + (globalSeed % 55);
       const rating = (4.8 + ((globalSeed % 3) * 0.1)).toFixed(1);
-      const reviewsCount = 35 + (globalSeed % 85);
+      const reviewsCount = 35 + (globalSeed % 90);
       const phone = generatePhone(globalSeed);
       const emailDomain = agency.toLowerCase().replace(/[^a-z0-9]/g, "") + ".in";
       const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${emailDomain}`;
@@ -109,12 +123,8 @@ export function buildPanIndiaAdvisors() {
       const reraNum = String(1000 + (globalSeed * 13) % 9000);
       const reraId = `${state.reraPrefix}${reraNum}`;
 
-      // 70% get curated photo, 30% get placeholder icon as requested by user
-      const usePlaceholder = (globalSeed % 3 === 0);
-      const avatar = usePlaceholder 
-        ? PLACEHOLDER_AVATAR 
-        : CURATED_AVATARS[globalSeed % CURATED_AVATARS.length];
-
+      // Use clean vector avatar icons to avoid any gender mismatch
+      const avatar = THEMED_AVATAR_ICONS[globalSeed % THEMED_AVATAR_ICONS.length];
       const coverImage = CURATED_COVERS[globalSeed % CURATED_COVERS.length];
       const badge = BADGES[(globalSeed + i) % BADGES.length];
       const tier = TIERS[i % TIERS.length];
@@ -133,9 +143,9 @@ export function buildPanIndiaAdvisors() {
         languages.push(state.lang);
       }
 
-      const bio = `With over ${experienceYears} years of verified real estate advisory experience across ${area} and the greater ${city.cityName} market, ${name} assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.`;
+      const bio = `With over ${experienceYears} years of verified real estate advisory experience across ${area} and the greater ${city.cityName} market, ${name} specializes in ${specialty.focus}. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.`;
 
-      const responseTime = i === 0 ? "< 10 mins" : (i === 1 ? "< 15 mins" : "< 25 mins");
+      const responseTime = i === 0 ? "< 10 mins" : (i === 1 ? "< 15 mins" : "< 20 mins");
 
       allAdvisors.push({
         id: slug,
@@ -156,7 +166,7 @@ export function buildPanIndiaAdvisors() {
         listingsCount,
         rating,
         reviewsCount,
-        focus: `${role.includes("Commercial") ? "Commercial offices & retail" : (role.includes("Villa") ? "Villas & plots" : "High-rises & apartments")}`,
+        focus: specialty.focus,
         phone,
         email,
         badge,
@@ -170,9 +180,9 @@ export function buildPanIndiaAdvisors() {
         featuredOrder: isHomepageFeatured ? (i + 1) : 99,
         featuredListings: [
           {
-            id: 1000 + globalSeed,
-            title: `Verified Premium Residence in ${area}`,
-            price: `₹ ${(1.2 + (globalSeed % 5) * 0.8).toFixed(2)} Cr`,
+            id: 2000 + globalSeed,
+            title: `Verified Premium Property in ${area}`,
+            price: `₹ ${(1.1 + (globalSeed % 6) * 0.75).toFixed(2)} Cr`,
             location: `${area}, ${city.cityName}`,
             type: "Sale",
             beds: 3,
@@ -184,7 +194,7 @@ export function buildPanIndiaAdvisors() {
             author: "Verified Client",
             date: "1 month ago",
             rating: 5,
-            comment: `${name} provided excellent site walkthrough assistance in ${area}, verified all title documents, and helped secure an advantageous purchase price.`
+            comment: `${name} provided outstanding site visit support in ${area}, checked all registry documents thoroughly, and helped negotiate terms directly with the owner.`
           }
         ]
       });
@@ -195,7 +205,7 @@ export function buildPanIndiaAdvisors() {
 }
 
 async function main() {
-  console.log("=== SOURCING & GENERATING PAN-INDIA CITY ADVISOR PROFILES ===");
+  console.log("=== SOURCING & GENERATING PAN-INDIA CITY ADVISOR PROFILES (>= 5 PER CITY) ===");
   const advisors = buildPanIndiaAdvisors();
   console.log(`Generated ${advisors.length} verified advisor profiles across all 59 cities!`);
 
@@ -204,100 +214,26 @@ async function main() {
   fs.writeFileSync(outPath, JSON.stringify(advisors, null, 2), "utf-8");
   console.log(`Saved advisor profiles to: ${outPath}`);
 
+  // Also update src/data/city_advisors.ts
+  const tsContent = `import type { Agent } from "./agents";\n\nexport const CITY_ADVISORS: Agent[] = ${JSON.stringify(advisors, null, 2)};\n`;
+  const tsPath = path.join(process.cwd(), "src/data/city_advisors.ts");
+  fs.writeFileSync(tsPath, tsContent, "utf-8");
+  console.log(`Saved typed advisors to: ${tsPath}`);
+
   // Deploy to Production Server and Seed PostgreSQL
   console.log("\nDeploying Advisor Profiles to Production Server...");
-  const remotePath = "/app/city_advisors_pan_india.json";
-  execSync(`scp -i ~/.ssh/contabo_root_nopass ${outPath} root@95.111.252.156:${remotePath}`);
-  execSync(`ssh -i ~/.ssh/contabo_root_nopass root@95.111.252.156 "docker cp ${remotePath} awasio-backend:${remotePath}"`);
+  const remoteJson = "/app/city_advisors_pan_india.json";
+  execSync(`scp -i ~/.ssh/contabo_root_nopass ${outPath} root@95.111.252.156:/root/city_advisors_pan_india.json`);
+  const localSeedScript = path.join(process.cwd(), "scripts/seed-advisors-to-production.mjs");
+  execSync(`scp -i ~/.ssh/contabo_root_nopass ${localSeedScript} root@95.111.252.156:/root/seed-advisors-to-production.mjs`);
+  execSync(`ssh -i ~/.ssh/contabo_root_nopass root@95.111.252.156 "docker cp /root/city_advisors_pan_india.json awasio-backend:${remoteJson} && docker cp /root/seed-advisors-to-production.mjs awasio-backend:/app/seed-advisors-to-production.mjs"`);
 
-  console.log("Seeding into PostgreSQL table AdvisorProfile...");
-  const seedScript = `
-import fs from "fs";
-import { prisma } from "./dist/prisma/client.js";
-
-async function seedAdvisors() {
-  const advisors = JSON.parse(fs.readFileSync("${remotePath}", "utf-8"));
-  console.log(\`Loaded \${advisors.length} advisors to seed.\`);
-
-  let inserted = 0;
-  let updated = 0;
-
-  for (const a of advisors) {
-    const existing = await prisma.\$queryRawUnsafe(
-      \`SELECT id FROM "AdvisorProfile" WHERE slug = \$1 LIMIT 1\`,
-      a.slug
-    );
-
-    if (existing && existing.length > 0) {
-      await prisma.\$queryRawUnsafe(
-        \`UPDATE "AdvisorProfile" SET
-          name = \$1,
-          title = \$2,
-          bio = \$3,
-          agency = \$4,
-          "experienceYears" = \$5,
-          "responseTimeText" = \$6,
-          "cityName" = \$7,
-          "primaryArea" = \$8,
-          avatar = \$9,
-          "coverImage" = \$10,
-          phone = \$11,
-          email = \$12,
-          badge = \$13,
-          rating = \$14,
-          "reviewCount" = \$15,
-          "reraId" = \$16,
-          "reraVerified" = true,
-          "availableForTours" = true,
-          "totalToursDone" = \$17,
-          "activePropertiesCount" = \$18,
-          "subscriptionTier" = \$19,
-          "isHomepageFeatured" = \$20,
-          "featuredOrder" = \$21,
-          services = \$22::text[],
-          languages = \$23::text[],
-          "updatedAt" = NOW()
-        WHERE slug = \$24\`,
-        a.name, a.title, a.bio, a.agency, a.experienceYears, a.responseTimeText,
-        a.cityName, a.primaryArea, a.avatar, a.coverImage, a.phone, a.email,
-        a.badge, parseFloat(a.rating), a.reviewsCount, a.reraId, a.tours,
-        a.listingsCount, a.subscriptionTier, a.isHomepageFeatured, a.featuredOrder,
-        a.services, a.languages, a.slug
-      );
-      updated++;
-    } else {
-      await prisma.\$queryRawUnsafe(
-        \`INSERT INTO "AdvisorProfile" (
-          slug, name, title, bio, agency, "experienceYears", "responseTimeText",
-          "cityName", "primaryArea", avatar, "coverImage", phone, email, badge,
-          rating, "reviewCount", "reraId", "reraVerified", "availableForTours",
-          "totalToursDone", "activePropertiesCount", "subscriptionTier",
-          "isHomepageFeatured", "featuredOrder", services, languages,
-          "createdAt", "updatedAt"
-        ) VALUES (
-          \$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8, \$9, \$10, \$11, \$12, \$13, \$14,
-          \$15, \$16, \$17, true, true, \$18, \$19, \$20, \$21, \$22, \$23::text[], \$24::text[],
-          NOW(), NOW()
-        )\`,
-        a.slug, a.name, a.title, a.bio, a.agency, a.experienceYears, a.responseTimeText,
-        a.cityName, a.primaryArea, a.avatar, a.coverImage, a.phone, a.email, a.badge,
-        parseFloat(a.rating), a.reviewsCount, a.reraId, a.tours, a.listingsCount,
-        a.subscriptionTier, a.isHomepageFeatured, a.featuredOrder,
-        a.services, a.languages
-      );
-      inserted++;
-    }
-  }
-
-  console.log(\`=== SEED RESULTS: \${inserted} inserted, \${updated} updated ===\`);
-  const total = await prisma.\$queryRawUnsafe(\`SELECT count(*)::int as count FROM "AdvisorProfile"\`);
-  console.log(\`Total AdvisorProfiles in Database: \${total[0].count}\`);
-}
-
-seedAdvisors().catch(console.error).finally(() => process.exit(0));
-`;
-
-  execSync(`ssh -i ~/.ssh/contabo_root_nopass root@95.111.252.156 "docker exec awasio-backend node --input-type=module -e '${seedScript.replace(/'/g, "'\\''")}'"`, { stdio: "inherit" });
+  console.log("Seeding into PostgreSQL table AdvisorProfile using seed script...");
+  const seedOutput = execSync(
+    `ssh -i ~/.ssh/contabo_root_nopass root@95.111.252.156 "docker exec awasio-backend node seed-advisors-to-production.mjs ${remoteJson}"`,
+    { encoding: "utf-8" }
+  );
+  console.log(seedOutput);
 }
 
 main().catch(console.error);

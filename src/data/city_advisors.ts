@@ -2,27 +2,207 @@ import type { Agent } from "./agents";
 
 export const CITY_ADVISORS: Agent[] = [
   {
-    "id": "deepika-sharma-agra",
-    "slug": "deepika-sharma-agra",
-    "name": "Deepika Sharma",
-    "role": "Land & Villa Consultant",
+    "id": "siddharth-gupta-agra-1",
+    "slug": "siddharth-gupta-agra-1",
+    "name": "Siddharth Gupta",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Agra Prime Realty",
-    "reraId": "UPRERA2021A2326",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "UPRERA2021A3613",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Agra",
     "cityName": "Agra",
     "area": "Taj Nagri Phase 2",
     "primaryArea": "Taj Nagri Phase 2",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "142+ visits",
-    "listingsCount": 22,
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "101+ visits",
+    "listingsCount": 56,
     "rating": "4.8",
-    "reviewsCount": 52,
-    "focus": "Villas & plots",
-    "phone": "+91 98450 13774",
-    "email": "deepika.sharma@agraprimerealty.in",
+    "reviewsCount": 56,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98200 17437",
+    "email": "siddharth.gupta@agraprimerealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Taj Nagri Phase 2 and the greater Agra market, Siddharth Gupta specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2201,
+        "title": "Verified Premium Property in Taj Nagri Phase 2",
+        "price": "₹ 3.35 Cr",
+        "location": "Taj Nagri Phase 2, Agra",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Siddharth Gupta provided outstanding site visit support in Taj Nagri Phase 2, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "manish-tiwari-agra-2",
+    "slug": "manish-tiwari-agra-2",
+    "name": "Manish Tiwari",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Agra Asset Advisors",
+    "reraId": "UPRERA2021A3626",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Agra",
+    "cityName": "Agra",
+    "area": "Fatehabad Road",
+    "primaryArea": "Fatehabad Road",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "102+ visits",
+    "listingsCount": 57,
+    "rating": "4.9",
+    "reviewsCount": 57,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98450 17474",
+    "email": "manish.tiwari@agraassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Fatehabad Road and the greater Agra market, Manish Tiwari specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2202,
+        "title": "Verified Premium Property in Fatehabad Road",
+        "price": "₹ 4.10 Cr",
+        "location": "Fatehabad Road, Agra",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Manish Tiwari provided outstanding site visit support in Fatehabad Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "naveen-gupta-agra-3",
+    "slug": "naveen-gupta-agra-3",
+    "name": "Naveen Gupta",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Agra Heritage Estates",
+    "reraId": "UPRERA2021A3639",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Agra",
+    "cityName": "Agra",
+    "area": "Dayal Bagh",
+    "primaryArea": "Dayal Bagh",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "103+ visits",
+    "listingsCount": 58,
+    "rating": "5.0",
+    "reviewsCount": 58,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98112 17511",
+    "email": "naveen.gupta@agraheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Dayal Bagh and the greater Agra market, Naveen Gupta specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2203,
+        "title": "Verified Premium Property in Dayal Bagh",
+        "price": "₹ 4.85 Cr",
+        "location": "Dayal Bagh, Agra",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Naveen Gupta provided outstanding site visit support in Dayal Bagh, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rakesh-tiwari-agra-4",
+    "slug": "rakesh-tiwari-agra-4",
+    "name": "Rakesh Tiwari",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Agra Capital Properties",
+    "reraId": "UPRERA2021A3652",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Agra",
+    "cityName": "Agra",
+    "area": "Kamla Nagar",
+    "primaryArea": "Kamla Nagar",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "104+ visits",
+    "listingsCount": 59,
+    "rating": "4.8",
+    "reviewsCount": 59,
+    "focus": "Plots & development land",
+    "phone": "+91 98712 17548",
+    "email": "rakesh.tiwari@agracapitalproperties.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -35,18 +215,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across Taj Nagri Phase 2 and the greater Agra market, Deepika Sharma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 5 years of verified real estate advisory experience across Kamla Nagar and the greater Agra market, Rakesh Tiwari specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1102,
-        "title": "Verified Premium Residence in Taj Nagri Phase 2",
-        "price": "₹ 2.80 Cr",
-        "location": "Taj Nagri Phase 2, Agra",
+        "id": 2204,
+        "title": "Verified Premium Property in Kamla Nagar",
+        "price": "₹ 1.10 Cr",
+        "location": "Kamla Nagar, Agra",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
@@ -57,32 +237,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Deepika Sharma provided excellent site walkthrough assistance in Taj Nagri Phase 2, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Rakesh Tiwari provided outstanding site visit support in Kamla Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sunita-yadav-agra",
-    "slug": "sunita-yadav-agra",
-    "name": "Sunita Yadav",
-    "role": "High-Rise Living Advisor",
-    "agency": "Agra Asset Advisors",
-    "reraId": "UPRERA2021A2339",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
+    "id": "monika-gupta-agra-5",
+    "slug": "monika-gupta-agra-5",
+    "name": "Monika Gupta",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Agra Corridor Homes",
+    "reraId": "UPRERA2021A3665",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Agra",
     "cityName": "Agra",
-    "area": "Fatehabad Road",
-    "primaryArea": "Fatehabad Road",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "143+ visits",
-    "listingsCount": 23,
+    "area": "Sikandra",
+    "primaryArea": "Sikandra",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "105+ visits",
+    "listingsCount": 60,
     "rating": "4.9",
-    "reviewsCount": 53,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98112 13811",
-    "email": "sunita.yadav@agraassetadvisors.in",
+    "reviewsCount": 60,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 99100 17585",
+    "email": "monika.gupta@agracorridorhomes.in",
     "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
@@ -95,18 +275,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across Fatehabad Road and the greater Agra market, Sunita Yadav assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 6 years of verified real estate advisory experience across Sikandra and the greater Agra market, Monika Gupta specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1103,
-        "title": "Verified Premium Residence in Fatehabad Road",
-        "price": "₹ 3.60 Cr",
-        "location": "Fatehabad Road, Agra",
+        "id": 2205,
+        "title": "Verified Premium Property in Sikandra",
+        "price": "₹ 1.85 Cr",
+        "location": "Sikandra, Agra",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
@@ -117,33 +297,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sunita Yadav provided excellent site walkthrough assistance in Fatehabad Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Monika Gupta provided outstanding site visit support in Sikandra, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "shweta-patel-ahmedabad",
-    "slug": "shweta-patel-ahmedabad",
-    "name": "Shweta Patel",
-    "role": "High-Rise Living Advisor",
+    "id": "vikram-desai-ahmedabad-1",
+    "slug": "vikram-desai-ahmedabad-1",
+    "name": "Vikram Desai",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Ahmedabad Prime Realty",
-    "reraId": "GUJRERA2020A2352",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
+    "reraId": "GUJRERA2020A3678",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Ahmedabad",
     "cityName": "Ahmedabad",
     "area": "Bodakdev",
     "primaryArea": "Bodakdev",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "144+ visits",
-    "listingsCount": 24,
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "106+ visits",
+    "listingsCount": 61,
     "rating": "5.0",
-    "reviewsCount": 54,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98712 13848",
-    "email": "shweta.patel@ahmedabadprimerealty.in",
-    "badge": "Fast Responder",
+    "reviewsCount": 61,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98188 17622",
+    "email": "vikram.desai@ahmedabadprimerealty.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -156,7 +336,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Gujarati"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Bodakdev and the greater Ahmedabad market, Shweta Patel assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 7 years of verified real estate advisory experience across Bodakdev and the greater Ahmedabad market, Vikram Desai specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -164,9 +344,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1104,
-        "title": "Verified Premium Residence in Bodakdev",
-        "price": "₹ 4.40 Cr",
+        "id": 2206,
+        "title": "Verified Premium Property in Bodakdev",
+        "price": "₹ 2.60 Cr",
         "location": "Bodakdev, Ahmedabad",
         "type": "Sale",
         "beds": 3,
@@ -178,33 +358,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Shweta Patel provided excellent site walkthrough assistance in Bodakdev, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Vikram Desai provided outstanding site visit support in Bodakdev, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aarav-trivedi-ahmedabad",
-    "slug": "aarav-trivedi-ahmedabad",
-    "name": "Aarav Trivedi",
-    "role": "Luxury Residential Consultant",
+    "id": "deepika-joshi-ahmedabad-2",
+    "slug": "deepika-joshi-ahmedabad-2",
+    "name": "Deepika Joshi",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Ahmedabad Asset Advisors",
-    "reraId": "GUJRERA2020A2365",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "reraId": "GUJRERA2020A3691",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Ahmedabad",
     "cityName": "Ahmedabad",
     "area": "Satellite",
     "primaryArea": "Satellite",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "145+ visits",
-    "listingsCount": 25,
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "107+ visits",
+    "listingsCount": 62,
     "rating": "4.8",
-    "reviewsCount": 55,
-    "focus": "High-rises & apartments",
-    "phone": "+91 99100 13885",
-    "email": "aarav.trivedi@ahmedabadassetadvisors.in",
-    "badge": "Premier Agent",
+    "reviewsCount": 62,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98230 17659",
+    "email": "deepika.joshi@ahmedabadassetadvisors.in",
+    "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -217,7 +397,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Gujarati"
     ],
-    "bio": "With over 10 years of verified real estate advisory experience across Satellite and the greater Ahmedabad market, Aarav Trivedi assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 8 years of verified real estate advisory experience across Satellite and the greater Ahmedabad market, Deepika Joshi specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -225,9 +405,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1105,
-        "title": "Verified Premium Residence in Satellite",
-        "price": "₹ 1.20 Cr",
+        "id": 2207,
+        "title": "Verified Premium Property in Satellite",
+        "price": "₹ 3.35 Cr",
         "location": "Satellite, Ahmedabad",
         "type": "Sale",
         "beds": 3,
@@ -239,33 +419,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Aarav Trivedi provided excellent site walkthrough assistance in Satellite, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Deepika Joshi provided outstanding site visit support in Satellite, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "pooja-desai-ahmedabad",
-    "slug": "pooja-desai-ahmedabad",
-    "name": "Pooja Desai",
-    "role": "RERA Certified Property Guide",
+    "id": "sunita-desai-ahmedabad-3",
+    "slug": "sunita-desai-ahmedabad-3",
+    "name": "Sunita Desai",
+    "role": "Commercial Corridors & Retail Specialist",
     "agency": "Ahmedabad Heritage Estates",
-    "reraId": "GUJRERA2020A2378",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
+    "reraId": "GUJRERA2020A3704",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "city": "Ahmedabad",
     "cityName": "Ahmedabad",
     "area": "SG Highway",
     "primaryArea": "SG Highway",
-    "experience": "11+ yrs",
-    "experienceYears": 11,
-    "tours": "146+ visits",
-    "listingsCount": 26,
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "108+ visits",
+    "listingsCount": 63,
     "rating": "4.9",
-    "reviewsCount": 56,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98188 13922",
-    "email": "pooja.desai@ahmedabadheritageestates.in",
-    "badge": "Super Agent",
+    "reviewsCount": 63,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98300 17696",
+    "email": "sunita.desai@ahmedabadheritageestates.in",
+    "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -278,17 +458,17 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Gujarati"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across SG Highway and the greater Ahmedabad market, Pooja Desai assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
+    "bio": "With over 9 years of verified real estate advisory experience across SG Highway and the greater Ahmedabad market, Sunita Desai specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1106,
-        "title": "Verified Premium Residence in SG Highway",
-        "price": "₹ 2.00 Cr",
+        "id": 2208,
+        "title": "Verified Premium Property in SG Highway",
+        "price": "₹ 4.10 Cr",
         "location": "SG Highway, Ahmedabad",
         "type": "Sale",
         "beds": 3,
@@ -300,32 +480,215 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Pooja Desai provided excellent site walkthrough assistance in SG Highway, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Sunita Desai provided outstanding site visit support in SG Highway, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aditya-gill-amritsar",
-    "slug": "aditya-gill-amritsar",
-    "name": "Aditya Gill",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Amritsar Prime Realty",
-    "reraId": "PBRERA2021A2391",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
+    "id": "preeti-joshi-ahmedabad-4",
+    "slug": "preeti-joshi-ahmedabad-4",
+    "name": "Preeti Joshi",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Ahmedabad Capital Properties",
+    "reraId": "GUJRERA2020A3717",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ahmedabad",
+    "cityName": "Ahmedabad",
+    "area": "Prahlad Nagar",
+    "primaryArea": "Prahlad Nagar",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "109+ visits",
+    "listingsCount": 64,
+    "rating": "5.0",
+    "reviewsCount": 64,
+    "focus": "Plots & development land",
+    "phone": "+91 98470 17733",
+    "email": "preeti.joshi@ahmedabadcapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Prahlad Nagar and the greater Ahmedabad market, Preeti Joshi specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2209,
+        "title": "Verified Premium Property in Prahlad Nagar",
+        "price": "₹ 4.85 Cr",
+        "location": "Prahlad Nagar, Ahmedabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Preeti Joshi provided outstanding site visit support in Prahlad Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "vikas-desai-ahmedabad-5",
+    "slug": "vikas-desai-ahmedabad-5",
+    "name": "Vikas Desai",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Ahmedabad Corridor Homes",
+    "reraId": "GUJRERA2020A3730",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ahmedabad",
+    "cityName": "Ahmedabad",
+    "area": "Vastrapur",
+    "primaryArea": "Vastrapur",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "110+ visits",
+    "listingsCount": 65,
+    "rating": "4.8",
+    "reviewsCount": 65,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98101 17770",
+    "email": "vikas.desai@ahmedabadcorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Vastrapur and the greater Ahmedabad market, Vikas Desai specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2210,
+        "title": "Verified Premium Property in Vastrapur",
+        "price": "₹ 1.10 Cr",
+        "location": "Vastrapur, Ahmedabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Vikas Desai provided outstanding site visit support in Vastrapur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "vikram-joshi-ahmedabad-6",
+    "slug": "vikram-joshi-ahmedabad-6",
+    "name": "Vikram Joshi",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Ahmedabad Metropolis Realty",
+    "reraId": "GUJRERA2020A3743",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ahmedabad",
+    "cityName": "Ahmedabad",
+    "area": "Bodakdev",
+    "primaryArea": "Bodakdev",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "111+ visits",
+    "listingsCount": 66,
+    "rating": "4.9",
+    "reviewsCount": 66,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98200 17807",
+    "email": "vikram.joshi@ahmedabadmetropolisrealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Bodakdev and the greater Ahmedabad market, Vikram Joshi specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2211,
+        "title": "Verified Premium Property in Bodakdev",
+        "price": "₹ 1.85 Cr",
+        "location": "Bodakdev, Ahmedabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Vikram Joshi provided outstanding site visit support in Bodakdev, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kavita-sandhu-amritsar-1",
+    "slug": "kavita-sandhu-amritsar-1",
+    "name": "Kavita Sandhu",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Amritsar Prime Realty",
+    "reraId": "PBRERA2021A3756",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Amritsar",
     "cityName": "Amritsar",
     "area": "Ranjit Avenue",
     "primaryArea": "Ranjit Avenue",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "147+ visits",
-    "listingsCount": 27,
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "112+ visits",
+    "listingsCount": 67,
     "rating": "5.0",
-    "reviewsCount": 57,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98230 13959",
-    "email": "aditya.gill@amritsarprimerealty.in",
+    "reviewsCount": 67,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98450 17844",
+    "email": "kavita.sandhu@amritsarprimerealty.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -339,7 +702,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Punjabi"
     ],
-    "bio": "With over 12 years of verified real estate advisory experience across Ranjit Avenue and the greater Amritsar market, Aditya Gill assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 13 years of verified real estate advisory experience across Ranjit Avenue and the greater Amritsar market, Kavita Sandhu specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -347,13 +710,13 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1107,
-        "title": "Verified Premium Residence in Ranjit Avenue",
-        "price": "₹ 2.80 Cr",
+        "id": 2212,
+        "title": "Verified Premium Property in Ranjit Avenue",
+        "price": "₹ 2.60 Cr",
         "location": "Ranjit Avenue, Amritsar",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -361,32 +724,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Aditya Gill provided excellent site walkthrough assistance in Ranjit Avenue, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Kavita Sandhu provided outstanding site visit support in Ranjit Avenue, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "suresh-dhillon-amritsar",
-    "slug": "suresh-dhillon-amritsar",
-    "name": "Suresh Dhillon",
-    "role": "Land & Villa Consultant",
+    "id": "sneha-singh-amritsar-2",
+    "slug": "sneha-singh-amritsar-2",
+    "name": "Sneha Singh",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Amritsar Asset Advisors",
-    "reraId": "PBRERA2021A2404",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "PBRERA2021A3769",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Amritsar",
     "cityName": "Amritsar",
     "area": "Mall Road",
     "primaryArea": "Mall Road",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "148+ visits",
-    "listingsCount": 28,
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "113+ visits",
+    "listingsCount": 68,
     "rating": "4.8",
-    "reviewsCount": 58,
-    "focus": "Villas & plots",
-    "phone": "+91 98300 13996",
-    "email": "suresh.dhillon@amritsarassetadvisors.in",
+    "reviewsCount": 68,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98112 17881",
+    "email": "sneha.singh@amritsarassetadvisors.in",
     "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
@@ -400,7 +763,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Punjabi"
     ],
-    "bio": "With over 13 years of verified real estate advisory experience across Mall Road and the greater Amritsar market, Suresh Dhillon assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 14 years of verified real estate advisory experience across Mall Road and the greater Amritsar market, Sneha Singh specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -408,10 +771,193 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1108,
-        "title": "Verified Premium Residence in Mall Road",
-        "price": "₹ 3.60 Cr",
+        "id": 2213,
+        "title": "Verified Premium Property in Mall Road",
+        "price": "₹ 3.35 Cr",
         "location": "Mall Road, Amritsar",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sneha Singh provided outstanding site visit support in Mall Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "divya-sandhu-amritsar-3",
+    "slug": "divya-sandhu-amritsar-3",
+    "name": "Divya Sandhu",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Amritsar Heritage Estates",
+    "reraId": "PBRERA2021A3782",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Amritsar",
+    "cityName": "Amritsar",
+    "area": "Airport Road",
+    "primaryArea": "Airport Road",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "114+ visits",
+    "listingsCount": 69,
+    "rating": "4.9",
+    "reviewsCount": 69,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98712 17918",
+    "email": "divya.sandhu@amritsarheritageestates.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Airport Road and the greater Amritsar market, Divya Sandhu specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2214,
+        "title": "Verified Premium Property in Airport Road",
+        "price": "₹ 4.10 Cr",
+        "location": "Airport Road, Amritsar",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Divya Sandhu provided outstanding site visit support in Airport Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ananya-singh-amritsar-4",
+    "slug": "ananya-singh-amritsar-4",
+    "name": "Ananya Singh",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Amritsar Capital Properties",
+    "reraId": "PBRERA2021A3795",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Amritsar",
+    "cityName": "Amritsar",
+    "area": "GT Road",
+    "primaryArea": "GT Road",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "115+ visits",
+    "listingsCount": 70,
+    "rating": "5.0",
+    "reviewsCount": 70,
+    "focus": "Plots & development land",
+    "phone": "+91 99100 17955",
+    "email": "ananya.singh@amritsarcapitalproperties.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across GT Road and the greater Amritsar market, Ananya Singh specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2215,
+        "title": "Verified Premium Property in GT Road",
+        "price": "₹ 4.85 Cr",
+        "location": "GT Road, Amritsar",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ananya Singh provided outstanding site visit support in GT Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "alok-sandhu-amritsar-5",
+    "slug": "alok-sandhu-amritsar-5",
+    "name": "Alok Sandhu",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Amritsar Corridor Homes",
+    "reraId": "PBRERA2021A3808",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Amritsar",
+    "cityName": "Amritsar",
+    "area": "Civil Lines",
+    "primaryArea": "Civil Lines",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "116+ visits",
+    "listingsCount": 71,
+    "rating": "4.8",
+    "reviewsCount": 71,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98188 17992",
+    "email": "alok.sandhu@amritsarcorridorhomes.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Civil Lines and the greater Amritsar market, Alok Sandhu specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2216,
+        "title": "Verified Premium Property in Civil Lines",
+        "price": "₹ 1.10 Cr",
+        "location": "Civil Lines, Amritsar",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
@@ -422,33 +968,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Suresh Dhillon provided excellent site walkthrough assistance in Mall Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Alok Sandhu provided outstanding site visit support in Civil Lines, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sanjay-shetty-bengaluru",
-    "slug": "sanjay-shetty-bengaluru",
-    "name": "Sanjay Shetty",
-    "role": "Land & Villa Consultant",
+    "id": "monika-shetty-bengaluru-1",
+    "slug": "monika-shetty-bengaluru-1",
+    "name": "Monika Shetty",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Bengaluru Prime Realty",
-    "reraId": "K-RERA2021A2417",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
+    "reraId": "K-RERA2021A3821",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Bengaluru",
     "cityName": "Bengaluru",
     "area": "Whitefield",
     "primaryArea": "Whitefield",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "149+ visits",
-    "listingsCount": 29,
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "117+ visits",
+    "listingsCount": 72,
     "rating": "4.9",
-    "reviewsCount": 59,
-    "focus": "Villas & plots",
-    "phone": "+91 98470 14033",
-    "email": "sanjay.shetty@bengaluruprimerealty.in",
-    "badge": "Fast Responder",
+    "reviewsCount": 72,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98230 18029",
+    "email": "monika.shetty@bengaluruprimerealty.in",
+    "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -461,7 +1007,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Kannada"
     ],
-    "bio": "With over 14 years of verified real estate advisory experience across Whitefield and the greater Bengaluru market, Sanjay Shetty assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 6 years of verified real estate advisory experience across Whitefield and the greater Bengaluru market, Monika Shetty specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -469,9 +1015,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 1,
     "featuredListings": [
       {
-        "id": 1109,
-        "title": "Verified Premium Residence in Whitefield",
-        "price": "₹ 4.40 Cr",
+        "id": 2217,
+        "title": "Verified Premium Property in Whitefield",
+        "price": "₹ 1.85 Cr",
         "location": "Whitefield, Bengaluru",
         "type": "Sale",
         "beds": 3,
@@ -483,33 +1029,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sanjay Shetty provided excellent site walkthrough assistance in Whitefield, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Monika Shetty provided outstanding site visit support in Whitefield, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "rohan-hegde-bengaluru",
-    "slug": "rohan-hegde-bengaluru",
-    "name": "Rohan Hegde",
-    "role": "High-Rise Living Advisor",
+    "id": "siddharth-reddy-bengaluru-2",
+    "slug": "siddharth-reddy-bengaluru-2",
+    "name": "Siddharth Reddy",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Bengaluru Asset Advisors",
-    "reraId": "K-RERA2021A2430",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
+    "reraId": "K-RERA2021A3834",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Bengaluru",
     "cityName": "Bengaluru",
     "area": "Indiranagar",
     "primaryArea": "Indiranagar",
-    "experience": "5+ yrs",
-    "experienceYears": 5,
-    "tours": "150+ visits",
-    "listingsCount": 30,
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "118+ visits",
+    "listingsCount": 73,
     "rating": "5.0",
-    "reviewsCount": 60,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 14070",
-    "email": "rohan.hegde@bengaluruassetadvisors.in",
-    "badge": "Premier Agent",
+    "reviewsCount": 73,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98300 18066",
+    "email": "siddharth.reddy@bengaluruassetadvisors.in",
+    "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -522,7 +1068,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Kannada"
     ],
-    "bio": "With over 5 years of verified real estate advisory experience across Indiranagar and the greater Bengaluru market, Rohan Hegde assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 7 years of verified real estate advisory experience across Indiranagar and the greater Bengaluru market, Siddharth Reddy specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -530,9 +1076,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1110,
-        "title": "Verified Premium Residence in Indiranagar",
-        "price": "₹ 1.20 Cr",
+        "id": 2218,
+        "title": "Verified Premium Property in Indiranagar",
+        "price": "₹ 2.60 Cr",
         "location": "Indiranagar, Bengaluru",
         "type": "Sale",
         "beds": 3,
@@ -544,33 +1090,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Rohan Hegde provided excellent site walkthrough assistance in Indiranagar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Siddharth Reddy provided outstanding site visit support in Indiranagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "kunal-murthy-bengaluru",
-    "slug": "kunal-murthy-bengaluru",
-    "name": "Kunal Murthy",
-    "role": "Luxury Residential Consultant",
+    "id": "manish-shetty-bengaluru-3",
+    "slug": "manish-shetty-bengaluru-3",
+    "name": "Manish Shetty",
+    "role": "Commercial Corridors & Retail Specialist",
     "agency": "Bengaluru Heritage Estates",
-    "reraId": "K-RERA2021A2443",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "reraId": "K-RERA2021A3847",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Bengaluru",
     "cityName": "Bengaluru",
     "area": "Koramangala",
     "primaryArea": "Koramangala",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "151+ visits",
-    "listingsCount": 31,
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "119+ visits",
+    "listingsCount": 74,
     "rating": "4.8",
-    "reviewsCount": 61,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98200 14107",
-    "email": "kunal.murthy@bengaluruheritageestates.in",
-    "badge": "Super Agent",
+    "reviewsCount": 74,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98470 18103",
+    "email": "manish.shetty@bengaluruheritageestates.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -583,17 +1129,17 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Kannada"
     ],
-    "bio": "With over 6 years of verified real estate advisory experience across Koramangala and the greater Bengaluru market, Kunal Murthy assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
+    "bio": "With over 8 years of verified real estate advisory experience across Koramangala and the greater Bengaluru market, Manish Shetty specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1111,
-        "title": "Verified Premium Residence in Koramangala",
-        "price": "₹ 2.00 Cr",
+        "id": 2219,
+        "title": "Verified Premium Property in Koramangala",
+        "price": "₹ 3.35 Cr",
         "location": "Koramangala, Bengaluru",
         "type": "Sale",
         "beds": 3,
@@ -605,32 +1151,335 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Kunal Murthy provided excellent site walkthrough assistance in Koramangala, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Manish Shetty provided outstanding site visit support in Koramangala, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "ritu-singh-bhagalpur",
-    "slug": "ritu-singh-bhagalpur",
-    "name": "Ritu Singh",
-    "role": "Senior Property Advisor",
-    "agency": "Bhagalpur Prime Realty",
-    "reraId": "BRERA2021A2456",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
+    "id": "naveen-reddy-bengaluru-4",
+    "slug": "naveen-reddy-bengaluru-4",
+    "name": "Naveen Reddy",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Bengaluru Capital Properties",
+    "reraId": "K-RERA2021A3860",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bengaluru",
+    "cityName": "Bengaluru",
+    "area": "HSR Layout",
+    "primaryArea": "HSR Layout",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "120+ visits",
+    "listingsCount": 20,
+    "rating": "4.9",
+    "reviewsCount": 75,
+    "focus": "Plots & development land",
+    "phone": "+91 98101 18140",
+    "email": "naveen.reddy@bengalurucapitalproperties.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Kannada"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across HSR Layout and the greater Bengaluru market, Naveen Reddy specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2220,
+        "title": "Verified Premium Property in HSR Layout",
+        "price": "₹ 4.10 Cr",
+        "location": "HSR Layout, Bengaluru",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Naveen Reddy provided outstanding site visit support in HSR Layout, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rakesh-shetty-bengaluru-5",
+    "slug": "rakesh-shetty-bengaluru-5",
+    "name": "Rakesh Shetty",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Bengaluru Corridor Homes",
+    "reraId": "K-RERA2021A3873",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bengaluru",
+    "cityName": "Bengaluru",
+    "area": "Sarjapur Road",
+    "primaryArea": "Sarjapur Road",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "121+ visits",
+    "listingsCount": 21,
+    "rating": "5.0",
+    "reviewsCount": 76,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98200 18177",
+    "email": "rakesh.shetty@bengalurucorridorhomes.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Kannada"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Sarjapur Road and the greater Bengaluru market, Rakesh Shetty specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2221,
+        "title": "Verified Premium Property in Sarjapur Road",
+        "price": "₹ 4.85 Cr",
+        "location": "Sarjapur Road, Bengaluru",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rakesh Shetty provided outstanding site visit support in Sarjapur Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "monika-reddy-bengaluru-6",
+    "slug": "monika-reddy-bengaluru-6",
+    "name": "Monika Reddy",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Bengaluru Metropolis Realty",
+    "reraId": "K-RERA2021A3886",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bengaluru",
+    "cityName": "Bengaluru",
+    "area": "Whitefield",
+    "primaryArea": "Whitefield",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "122+ visits",
+    "listingsCount": 22,
+    "rating": "4.8",
+    "reviewsCount": 77,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98450 18214",
+    "email": "monika.reddy@bengalurumetropolisrealty.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Kannada"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Whitefield and the greater Bengaluru market, Monika Reddy specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2222,
+        "title": "Verified Premium Property in Whitefield",
+        "price": "₹ 1.10 Cr",
+        "location": "Whitefield, Bengaluru",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Monika Reddy provided outstanding site visit support in Whitefield, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "priya-srivastava-bhagalpur-1",
+    "slug": "priya-srivastava-bhagalpur-1",
+    "name": "Priya Srivastava",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Bhagalpur Prime Realty",
+    "reraId": "BRERA2021A3899",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Bhagalpur",
     "cityName": "Bhagalpur",
     "area": "Zero Mile",
     "primaryArea": "Zero Mile",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "152+ visits",
-    "listingsCount": 32,
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "123+ visits",
+    "listingsCount": 23,
     "rating": "4.9",
-    "reviewsCount": 62,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 14144",
-    "email": "ritu.singh@bhagalpurprimerealty.in",
+    "reviewsCount": 78,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98112 18251",
+    "email": "priya.srivastava@bhagalpurprimerealty.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Zero Mile and the greater Bhagalpur market, Priya Srivastava specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2223,
+        "title": "Verified Premium Property in Zero Mile",
+        "price": "₹ 1.85 Cr",
+        "location": "Zero Mile, Bhagalpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Priya Srivastava provided outstanding site visit support in Zero Mile, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rajesh-sinha-bhagalpur-2",
+    "slug": "rajesh-sinha-bhagalpur-2",
+    "name": "Rajesh Sinha",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Bhagalpur Asset Advisors",
+    "reraId": "BRERA2021A3912",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bhagalpur",
+    "cityName": "Bhagalpur",
+    "area": "Tilka Manjhi",
+    "primaryArea": "Tilka Manjhi",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "124+ visits",
+    "listingsCount": 24,
+    "rating": "5.0",
+    "reviewsCount": 79,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98712 18288",
+    "email": "rajesh.sinha@bhagalpurassetadvisors.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Tilka Manjhi and the greater Bhagalpur market, Rajesh Sinha specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2224,
+        "title": "Verified Premium Property in Tilka Manjhi",
+        "price": "₹ 2.60 Cr",
+        "location": "Tilka Manjhi, Bhagalpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rajesh Sinha provided outstanding site visit support in Tilka Manjhi, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "gaurav-srivastava-bhagalpur-3",
+    "slug": "gaurav-srivastava-bhagalpur-3",
+    "name": "Gaurav Srivastava",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Bhagalpur Heritage Estates",
+    "reraId": "BRERA2021A3925",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bhagalpur",
+    "cityName": "Bhagalpur",
+    "area": "Barari",
+    "primaryArea": "Barari",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "125+ visits",
+    "listingsCount": 25,
+    "rating": "4.8",
+    "reviewsCount": 80,
+    "focus": "Offices & retail shops",
+    "phone": "+91 99100 18325",
+    "email": "gaurav.srivastava@bhagalpurheritageestates.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -643,18 +1492,78 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across Zero Mile and the greater Bhagalpur market, Ritu Singh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 14 years of verified real estate advisory experience across Barari and the greater Bhagalpur market, Gaurav Srivastava specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2225,
+        "title": "Verified Premium Property in Barari",
+        "price": "₹ 3.35 Cr",
+        "location": "Barari, Bhagalpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Gaurav Srivastava provided outstanding site visit support in Barari, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "arjun-sinha-bhagalpur-4",
+    "slug": "arjun-sinha-bhagalpur-4",
+    "name": "Arjun Sinha",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Bhagalpur Capital Properties",
+    "reraId": "BRERA2021A3938",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bhagalpur",
+    "cityName": "Bhagalpur",
+    "area": "Aliganj",
+    "primaryArea": "Aliganj",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "126+ visits",
+    "listingsCount": 26,
+    "rating": "4.9",
+    "reviewsCount": 81,
+    "focus": "Plots & development land",
+    "phone": "+91 98188 18362",
+    "email": "arjun.sinha@bhagalpurcapitalproperties.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Aliganj and the greater Bhagalpur market, Arjun Sinha specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1112,
-        "title": "Verified Premium Residence in Zero Mile",
-        "price": "₹ 2.80 Cr",
-        "location": "Zero Mile, Bhagalpur",
+        "id": 2226,
+        "title": "Verified Premium Property in Aliganj",
+        "price": "₹ 4.10 Cr",
+        "location": "Aliganj, Bhagalpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
@@ -665,33 +1574,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ritu Singh provided excellent site walkthrough assistance in Zero Mile, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Arjun Sinha provided outstanding site visit support in Aliganj, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "shweta-jha-bhagalpur",
-    "slug": "shweta-jha-bhagalpur",
-    "name": "Shweta Jha",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Bhagalpur Asset Advisors",
-    "reraId": "BRERA2021A2469",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
+    "id": "simran-srivastava-bhagalpur-5",
+    "slug": "simran-srivastava-bhagalpur-5",
+    "name": "Simran Srivastava",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Bhagalpur Corridor Homes",
+    "reraId": "BRERA2021A3951",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Bhagalpur",
     "cityName": "Bhagalpur",
-    "area": "Tilka Manjhi",
-    "primaryArea": "Tilka Manjhi",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "153+ visits",
-    "listingsCount": 33,
+    "area": "Tilkamanjhi Chowk",
+    "primaryArea": "Tilkamanjhi Chowk",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "127+ visits",
+    "listingsCount": 27,
     "rating": "5.0",
-    "reviewsCount": 63,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98112 14181",
-    "email": "shweta.jha@bhagalpurassetadvisors.in",
-    "badge": "Fast Responder",
+    "reviewsCount": 82,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98230 18399",
+    "email": "simran.srivastava@bhagalpurcorridorhomes.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -703,18 +1612,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across Tilka Manjhi and the greater Bhagalpur market, Shweta Jha assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 16 years of verified real estate advisory experience across Tilkamanjhi Chowk and the greater Bhagalpur market, Simran Srivastava specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1113,
-        "title": "Verified Premium Residence in Tilka Manjhi",
-        "price": "₹ 3.60 Cr",
-        "location": "Tilka Manjhi, Bhagalpur",
+        "id": 2227,
+        "title": "Verified Premium Property in Tilkamanjhi Chowk",
+        "price": "₹ 4.85 Cr",
+        "location": "Tilkamanjhi Chowk, Bhagalpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
@@ -725,33 +1634,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Shweta Jha provided excellent site walkthrough assistance in Tilka Manjhi, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Simran Srivastava provided outstanding site visit support in Tilkamanjhi Chowk, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "poonam-malviya-bhopal",
-    "slug": "poonam-malviya-bhopal",
-    "name": "Poonam Malviya",
-    "role": "Commercial Corridors Specialist",
+    "id": "alok-agrawal-bhopal-1",
+    "slug": "alok-agrawal-bhopal-1",
+    "name": "Alok Agrawal",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Bhopal Prime Realty",
-    "reraId": "MPRERA2021A2482",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "reraId": "MPRERA2021A3964",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
     "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Bhopal",
     "cityName": "Bhopal",
     "area": "Arera Colony",
     "primaryArea": "Arera Colony",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "154+ visits",
-    "listingsCount": 34,
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "128+ visits",
+    "listingsCount": 28,
     "rating": "4.8",
-    "reviewsCount": 64,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98712 14218",
-    "email": "poonam.malviya@bhopalprimerealty.in",
-    "badge": "Fast Responder",
+    "reviewsCount": 83,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98300 18436",
+    "email": "alok.agrawal@bhopalprimerealty.in",
+    "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -763,7 +1672,7 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Arera Colony and the greater Bhopal market, Poonam Malviya assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 5 years of verified real estate advisory experience across Arera Colony and the greater Bhopal market, Alok Agrawal specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -771,9 +1680,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1114,
-        "title": "Verified Premium Residence in Arera Colony",
-        "price": "₹ 4.40 Cr",
+        "id": 2228,
+        "title": "Verified Premium Property in Arera Colony",
+        "price": "₹ 1.10 Cr",
         "location": "Arera Colony, Bhopal",
         "type": "Sale",
         "beds": 3,
@@ -785,33 +1694,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Poonam Malviya provided excellent site walkthrough assistance in Arera Colony, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Alok Agrawal provided outstanding site visit support in Arera Colony, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "meera-agrawal-bhopal",
-    "slug": "meera-agrawal-bhopal",
-    "name": "Meera Agrawal",
-    "role": "Land & Villa Consultant",
+    "id": "kavita-malviya-bhopal-2",
+    "slug": "kavita-malviya-bhopal-2",
+    "name": "Kavita Malviya",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Bhopal Asset Advisors",
-    "reraId": "MPRERA2021A2495",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
+    "reraId": "MPRERA2021A3977",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Bhopal",
     "cityName": "Bhopal",
     "area": "Hoshangabad Road",
     "primaryArea": "Hoshangabad Road",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "155+ visits",
-    "listingsCount": 35,
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "129+ visits",
+    "listingsCount": 29,
     "rating": "4.9",
-    "reviewsCount": 65,
-    "focus": "Villas & plots",
-    "phone": "+91 99100 14255",
-    "email": "meera.agrawal@bhopalassetadvisors.in",
-    "badge": "Premier Agent",
+    "reviewsCount": 84,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98470 18473",
+    "email": "kavita.malviya@bhopalassetadvisors.in",
+    "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -823,7 +1732,7 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 10 years of verified real estate advisory experience across Hoshangabad Road and the greater Bhopal market, Meera Agrawal assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 6 years of verified real estate advisory experience across Hoshangabad Road and the greater Bhopal market, Kavita Malviya specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -831,9 +1740,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1115,
-        "title": "Verified Premium Residence in Hoshangabad Road",
-        "price": "₹ 1.20 Cr",
+        "id": 2229,
+        "title": "Verified Premium Property in Hoshangabad Road",
+        "price": "₹ 1.85 Cr",
         "location": "Hoshangabad Road, Bhopal",
         "type": "Sale",
         "beds": 3,
@@ -845,32 +1754,333 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Meera Agrawal provided excellent site walkthrough assistance in Hoshangabad Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Kavita Malviya provided outstanding site visit support in Hoshangabad Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sneha-mohanty-bhubaneswar",
-    "slug": "sneha-mohanty-bhubaneswar",
-    "name": "Sneha Mohanty",
-    "role": "Land & Villa Consultant",
-    "agency": "Bhubaneswar Prime Realty",
-    "reraId": "ORERA2021A2508",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
+    "id": "sneha-agrawal-bhopal-3",
+    "slug": "sneha-agrawal-bhopal-3",
+    "name": "Sneha Agrawal",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Bhopal Heritage Estates",
+    "reraId": "MPRERA2021A3990",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bhopal",
+    "cityName": "Bhopal",
+    "area": "Kolar Road",
+    "primaryArea": "Kolar Road",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "130+ visits",
+    "listingsCount": 30,
+    "rating": "5.0",
+    "reviewsCount": 85,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98101 18510",
+    "email": "sneha.agrawal@bhopalheritageestates.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Kolar Road and the greater Bhopal market, Sneha Agrawal specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2230,
+        "title": "Verified Premium Property in Kolar Road",
+        "price": "₹ 2.60 Cr",
+        "location": "Kolar Road, Bhopal",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sneha Agrawal provided outstanding site visit support in Kolar Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "divya-malviya-bhopal-4",
+    "slug": "divya-malviya-bhopal-4",
+    "name": "Divya Malviya",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Bhopal Capital Properties",
+    "reraId": "MPRERA2021A4003",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bhopal",
+    "cityName": "Bhopal",
+    "area": "MP Nagar",
+    "primaryArea": "MP Nagar",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "131+ visits",
+    "listingsCount": 31,
+    "rating": "4.8",
+    "reviewsCount": 86,
+    "focus": "Plots & development land",
+    "phone": "+91 98200 18547",
+    "email": "divya.malviya@bhopalcapitalproperties.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across MP Nagar and the greater Bhopal market, Divya Malviya specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2231,
+        "title": "Verified Premium Property in MP Nagar",
+        "price": "₹ 3.35 Cr",
+        "location": "MP Nagar, Bhopal",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Divya Malviya provided outstanding site visit support in MP Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ananya-agrawal-bhopal-5",
+    "slug": "ananya-agrawal-bhopal-5",
+    "name": "Ananya Agrawal",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Bhopal Corridor Homes",
+    "reraId": "MPRERA2021A4016",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bhopal",
+    "cityName": "Bhopal",
+    "area": "Ayodhya Bypass",
+    "primaryArea": "Ayodhya Bypass",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "132+ visits",
+    "listingsCount": 32,
+    "rating": "4.9",
+    "reviewsCount": 87,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98450 18584",
+    "email": "ananya.agrawal@bhopalcorridorhomes.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Ayodhya Bypass and the greater Bhopal market, Ananya Agrawal specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2232,
+        "title": "Verified Premium Property in Ayodhya Bypass",
+        "price": "₹ 4.10 Cr",
+        "location": "Ayodhya Bypass, Bhopal",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ananya Agrawal provided outstanding site visit support in Ayodhya Bypass, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "alok-malviya-bhopal-6",
+    "slug": "alok-malviya-bhopal-6",
+    "name": "Alok Malviya",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Bhopal Metropolis Realty",
+    "reraId": "MPRERA2021A4029",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bhopal",
+    "cityName": "Bhopal",
+    "area": "Arera Colony",
+    "primaryArea": "Arera Colony",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "133+ visits",
+    "listingsCount": 33,
+    "rating": "5.0",
+    "reviewsCount": 88,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98112 18621",
+    "email": "alok.malviya@bhopalmetropolisrealty.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Arera Colony and the greater Bhopal market, Alok Malviya specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2233,
+        "title": "Verified Premium Property in Arera Colony",
+        "price": "₹ 4.85 Cr",
+        "location": "Arera Colony, Bhopal",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Alok Malviya provided outstanding site visit support in Arera Colony, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "mayank-rath-bhubaneswar-1",
+    "slug": "mayank-rath-bhubaneswar-1",
+    "name": "Mayank Rath",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Bhubaneswar Prime Realty",
+    "reraId": "ORERA2021A4042",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Bhubaneswar",
     "cityName": "Bhubaneswar",
     "area": "Patia",
     "primaryArea": "Patia",
     "experience": "11+ yrs",
     "experienceYears": 11,
-    "tours": "156+ visits",
-    "listingsCount": 36,
-    "rating": "5.0",
-    "reviewsCount": 66,
-    "focus": "Villas & plots",
-    "phone": "+91 98188 14292",
-    "email": "sneha.mohanty@bhubaneswarprimerealty.in",
+    "tours": "134+ visits",
+    "listingsCount": 34,
+    "rating": "4.8",
+    "reviewsCount": 89,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98712 18658",
+    "email": "mayank.rath@bhubaneswarprimerealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Odia"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Patia and the greater Bhubaneswar market, Mayank Rath specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2234,
+        "title": "Verified Premium Property in Patia",
+        "price": "₹ 1.10 Cr",
+        "location": "Patia, Bhubaneswar",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Mayank Rath provided outstanding site visit support in Patia, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "meera-das-bhubaneswar-2",
+    "slug": "meera-das-bhubaneswar-2",
+    "name": "Meera Das",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Bhubaneswar Asset Advisors",
+    "reraId": "ORERA2021A4055",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bhubaneswar",
+    "cityName": "Bhubaneswar",
+    "area": "Nayapalli",
+    "primaryArea": "Nayapalli",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "135+ visits",
+    "listingsCount": 35,
+    "rating": "4.9",
+    "reviewsCount": 90,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 99100 18695",
+    "email": "meera.das@bhubaneswarassetadvisors.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -884,21 +2094,21 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Odia"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across Patia and the greater Bhubaneswar market, Sneha Mohanty assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 12 years of verified real estate advisory experience across Nayapalli and the greater Bhubaneswar market, Meera Das specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1116,
-        "title": "Verified Premium Residence in Patia",
-        "price": "₹ 2.00 Cr",
-        "location": "Patia, Bhubaneswar",
+        "id": 2235,
+        "title": "Verified Premium Property in Nayapalli",
+        "price": "₹ 1.85 Cr",
+        "location": "Nayapalli, Bhubaneswar",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -906,32 +2116,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sneha Mohanty provided excellent site walkthrough assistance in Patia, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Meera Das provided outstanding site visit support in Nayapalli, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "divya-pradhan-bhubaneswar",
-    "slug": "divya-pradhan-bhubaneswar",
-    "name": "Divya Pradhan",
-    "role": "High-Rise Living Advisor",
-    "agency": "Bhubaneswar Asset Advisors",
-    "reraId": "ORERA2021A2521",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "id": "neha-rath-bhubaneswar-3",
+    "slug": "neha-rath-bhubaneswar-3",
+    "name": "Neha Rath",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Bhubaneswar Heritage Estates",
+    "reraId": "ORERA2021A4068",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Bhubaneswar",
     "cityName": "Bhubaneswar",
-    "area": "Nayapalli",
-    "primaryArea": "Nayapalli",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "157+ visits",
-    "listingsCount": 37,
-    "rating": "4.8",
-    "reviewsCount": 67,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98230 14329",
-    "email": "divya.pradhan@bhubaneswarassetadvisors.in",
+    "area": "Chandrasekharpur",
+    "primaryArea": "Chandrasekharpur",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "136+ visits",
+    "listingsCount": 36,
+    "rating": "5.0",
+    "reviewsCount": 91,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98188 18732",
+    "email": "neha.rath@bhubaneswarheritageestates.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -945,18 +2155,79 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Odia"
     ],
-    "bio": "With over 12 years of verified real estate advisory experience across Nayapalli and the greater Bhubaneswar market, Divya Pradhan assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 13 years of verified real estate advisory experience across Chandrasekharpur and the greater Bhubaneswar market, Neha Rath specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1117,
-        "title": "Verified Premium Residence in Nayapalli",
-        "price": "₹ 2.80 Cr",
-        "location": "Nayapalli, Bhubaneswar",
+        "id": 2236,
+        "title": "Verified Premium Property in Chandrasekharpur",
+        "price": "₹ 2.60 Cr",
+        "location": "Chandrasekharpur, Bhubaneswar",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Neha Rath provided outstanding site visit support in Chandrasekharpur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anita-das-bhubaneswar-4",
+    "slug": "anita-das-bhubaneswar-4",
+    "name": "Anita Das",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Bhubaneswar Capital Properties",
+    "reraId": "ORERA2021A4081",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bhubaneswar",
+    "cityName": "Bhubaneswar",
+    "area": "Khandagiri",
+    "primaryArea": "Khandagiri",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "137+ visits",
+    "listingsCount": 37,
+    "rating": "4.8",
+    "reviewsCount": 92,
+    "focus": "Plots & development land",
+    "phone": "+91 98230 18769",
+    "email": "anita.das@bhubaneswarcapitalproperties.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Odia"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Khandagiri and the greater Bhubaneswar market, Anita Das specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2237,
+        "title": "Verified Premium Property in Khandagiri",
+        "price": "₹ 3.35 Cr",
+        "location": "Khandagiri, Bhubaneswar",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
@@ -967,32 +2238,213 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Divya Pradhan provided excellent site walkthrough assistance in Nayapalli, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Anita Das provided outstanding site visit support in Khandagiri, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "preeti-singh-bokaro steel city",
-    "slug": "preeti-singh-bokaro steel city",
-    "name": "Preeti Singh",
-    "role": "High-Rise Living Advisor",
-    "agency": "Bokaro Steel City Prime Realty",
-    "reraId": "JHRERA2021A2534",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
+    "id": "poonam-rath-bhubaneswar-5",
+    "slug": "poonam-rath-bhubaneswar-5",
+    "name": "Poonam Rath",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Bhubaneswar Corridor Homes",
+    "reraId": "ORERA2021A4094",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bhubaneswar",
+    "cityName": "Bhubaneswar",
+    "area": "Saheed Nagar",
+    "primaryArea": "Saheed Nagar",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "138+ visits",
+    "listingsCount": 38,
+    "rating": "4.9",
+    "reviewsCount": 93,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98300 18806",
+    "email": "poonam.rath@bhubaneswarcorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Odia"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Saheed Nagar and the greater Bhubaneswar market, Poonam Rath specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2238,
+        "title": "Verified Premium Property in Saheed Nagar",
+        "price": "₹ 4.10 Cr",
+        "location": "Saheed Nagar, Bhubaneswar",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Poonam Rath provided outstanding site visit support in Saheed Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "simran-choudhary-bokaro steel city-1",
+    "slug": "simran-choudhary-bokaro steel city-1",
+    "name": "Simran Choudhary",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Bokaro Steel City Prime Realty",
+    "reraId": "JHRERA2021A4107",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Bokaro Steel City",
     "cityName": "Bokaro Steel City",
     "area": "Sector 4",
     "primaryArea": "Sector 4",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "158+ visits",
-    "listingsCount": 38,
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "139+ visits",
+    "listingsCount": 39,
+    "rating": "5.0",
+    "reviewsCount": 94,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98470 18843",
+    "email": "simran.choudhary@bokarosteelcityprimerealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Sector 4 and the greater Bokaro Steel City market, Simran Choudhary specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2239,
+        "title": "Verified Premium Property in Sector 4",
+        "price": "₹ 4.85 Cr",
+        "location": "Sector 4, Bokaro Steel City",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Simran Choudhary provided outstanding site visit support in Sector 4, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "priya-kumar-bokaro steel city-2",
+    "slug": "priya-kumar-bokaro steel city-2",
+    "name": "Priya Kumar",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Bokaro Steel City Asset Advisors",
+    "reraId": "JHRERA2021A4120",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bokaro Steel City",
+    "cityName": "Bokaro Steel City",
+    "area": "Chas",
+    "primaryArea": "Chas",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "140+ visits",
+    "listingsCount": 40,
+    "rating": "4.8",
+    "reviewsCount": 95,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98101 18880",
+    "email": "priya.kumar@bokarosteelcityassetadvisors.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Chas and the greater Bokaro Steel City market, Priya Kumar specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2240,
+        "title": "Verified Premium Property in Chas",
+        "price": "₹ 1.10 Cr",
+        "location": "Chas, Bokaro Steel City",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Priya Kumar provided outstanding site visit support in Chas, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rajesh-choudhary-bokaro steel city-3",
+    "slug": "rajesh-choudhary-bokaro steel city-3",
+    "name": "Rajesh Choudhary",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Bokaro Steel City Heritage Estates",
+    "reraId": "JHRERA2021A4133",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bokaro Steel City",
+    "cityName": "Bokaro Steel City",
+    "area": "City Centre",
+    "primaryArea": "City Centre",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "141+ visits",
+    "listingsCount": 41,
     "rating": "4.9",
-    "reviewsCount": 68,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98300 14366",
-    "email": "preeti.singh@bokarosteelcityprimerealty.in",
+    "reviewsCount": 96,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98200 18917",
+    "email": "rajesh.choudhary@bokarosteelcityheritageestates.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -1005,21 +2457,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 13 years of verified real estate advisory experience across Sector 4 and the greater Bokaro Steel City market, Preeti Singh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 6 years of verified real estate advisory experience across City Centre and the greater Bokaro Steel City market, Rajesh Choudhary specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1118,
-        "title": "Verified Premium Residence in Sector 4",
-        "price": "₹ 3.60 Cr",
-        "location": "Sector 4, Bokaro Steel City",
+        "id": 2241,
+        "title": "Verified Premium Property in City Centre",
+        "price": "₹ 1.85 Cr",
+        "location": "City Centre, Bokaro Steel City",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -1027,32 +2479,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Preeti Singh provided excellent site walkthrough assistance in Sector 4, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Rajesh Choudhary provided outstanding site visit support in City Centre, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "vikram-verma-bokaro steel city",
-    "slug": "vikram-verma-bokaro steel city",
-    "name": "Vikram Verma",
-    "role": "Luxury Residential Consultant",
-    "agency": "Bokaro Steel City Asset Advisors",
-    "reraId": "JHRERA2021A2547",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "id": "gaurav-kumar-bokaro steel city-4",
+    "slug": "gaurav-kumar-bokaro steel city-4",
+    "name": "Gaurav Kumar",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Bokaro Steel City Capital Properties",
+    "reraId": "JHRERA2021A4146",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Bokaro Steel City",
     "cityName": "Bokaro Steel City",
-    "area": "Chas",
-    "primaryArea": "Chas",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "159+ visits",
-    "listingsCount": 39,
+    "area": "Cooperative Colony",
+    "primaryArea": "Cooperative Colony",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "142+ visits",
+    "listingsCount": 42,
     "rating": "5.0",
-    "reviewsCount": 69,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98470 14403",
-    "email": "vikram.verma@bokarosteelcityassetadvisors.in",
+    "reviewsCount": 97,
+    "focus": "Plots & development land",
+    "phone": "+91 98450 18954",
+    "email": "gaurav.kumar@bokarosteelcitycapitalproperties.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -1065,82 +2517,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 14 years of verified real estate advisory experience across Chas and the greater Bokaro Steel City market, Vikram Verma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1119,
-        "title": "Verified Premium Residence in Chas",
-        "price": "₹ 4.40 Cr",
-        "location": "Chas, Bokaro Steel City",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Vikram Verma provided excellent site walkthrough assistance in Chas, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "pooja-malhotra-chandigarh",
-    "slug": "pooja-malhotra-chandigarh",
-    "name": "Pooja Malhotra",
-    "role": "Luxury Residential Consultant",
-    "agency": "Chandigarh Prime Realty",
-    "reraId": "CHRERA2021A2560",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Chandigarh",
-    "cityName": "Chandigarh",
-    "area": "Sector 17",
-    "primaryArea": "Sector 17",
-    "experience": "5+ yrs",
-    "experienceYears": 5,
-    "tours": "40+ visits",
-    "listingsCount": 40,
-    "rating": "4.8",
-    "reviewsCount": 70,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 14440",
-    "email": "pooja.malhotra@chandigarhprimerealty.in",
-    "badge": "Top Rated",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Punjabi"
-    ],
-    "bio": "With over 5 years of verified real estate advisory experience across Sector 17 and the greater Chandigarh market, Pooja Malhotra assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 7 years of verified real estate advisory experience across Cooperative Colony and the greater Bokaro Steel City market, Gaurav Kumar specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1120,
-        "title": "Verified Premium Residence in Sector 17",
-        "price": "₹ 1.20 Cr",
-        "location": "Sector 17, Chandigarh",
+        "id": 2242,
+        "title": "Verified Premium Property in Cooperative Colony",
+        "price": "₹ 2.60 Cr",
+        "location": "Cooperative Colony, Bokaro Steel City",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -1148,32 +2539,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Pooja Malhotra provided excellent site walkthrough assistance in Sector 17, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Gaurav Kumar provided outstanding site visit support in Cooperative Colony, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "ritu-grewal-chandigarh",
-    "slug": "ritu-grewal-chandigarh",
-    "name": "Ritu Grewal",
-    "role": "RERA Certified Property Guide",
-    "agency": "Chandigarh Asset Advisors",
-    "reraId": "CHRERA2021A2573",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Chandigarh",
-    "cityName": "Chandigarh",
-    "area": "Sector 35",
-    "primaryArea": "Sector 35",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "41+ visits",
-    "listingsCount": 41,
-    "rating": "4.9",
-    "reviewsCount": 71,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98200 14477",
-    "email": "ritu.grewal@chandigarhassetadvisors.in",
+    "id": "arjun-choudhary-bokaro steel city-5",
+    "slug": "arjun-choudhary-bokaro steel city-5",
+    "name": "Arjun Choudhary",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Bokaro Steel City Corridor Homes",
+    "reraId": "JHRERA2021A4159",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Bokaro Steel City",
+    "cityName": "Bokaro Steel City",
+    "area": "Sector 1",
+    "primaryArea": "Sector 1",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "143+ visits",
+    "listingsCount": 43,
+    "rating": "4.8",
+    "reviewsCount": 98,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98112 18991",
+    "email": "arjun.choudhary@bokarosteelcitycorridorhomes.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -1184,24 +2575,23 @@ export const CITY_ADVISORS: Agent[] = [
     ],
     "languages": [
       "English",
-      "Hindi",
-      "Punjabi"
+      "Hindi"
     ],
-    "bio": "With over 6 years of verified real estate advisory experience across Sector 35 and the greater Chandigarh market, Ritu Grewal assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 8 years of verified real estate advisory experience across Sector 1 and the greater Bokaro Steel City market, Arjun Choudhary specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1121,
-        "title": "Verified Premium Residence in Sector 35",
-        "price": "₹ 2.00 Cr",
-        "location": "Sector 35, Chandigarh",
+        "id": 2243,
+        "title": "Verified Premium Property in Sector 1",
+        "price": "₹ 3.35 Cr",
+        "location": "Sector 1, Bokaro Steel City",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -1209,32 +2599,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ritu Grewal provided excellent site walkthrough assistance in Sector 35, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Arjun Choudhary provided outstanding site visit support in Sector 1, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "shweta-chawla-chandigarh",
-    "slug": "shweta-chawla-chandigarh",
-    "name": "Shweta Chawla",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Chandigarh Heritage Estates",
-    "reraId": "CHRERA2021A2586",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "id": "ananya-grewal-chandigarh-1",
+    "slug": "ananya-grewal-chandigarh-1",
+    "name": "Ananya Grewal",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Chandigarh Prime Realty",
+    "reraId": "CHRERA2021A4172",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "city": "Chandigarh",
     "cityName": "Chandigarh",
-    "area": "Sector 8",
-    "primaryArea": "Sector 8",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "42+ visits",
-    "listingsCount": 42,
-    "rating": "5.0",
-    "reviewsCount": 72,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 14514",
-    "email": "shweta.chawla@chandigarhheritageestates.in",
+    "area": "Sector 17",
+    "primaryArea": "Sector 17",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "144+ visits",
+    "listingsCount": 44,
+    "rating": "4.9",
+    "reviewsCount": 99,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98712 19028",
+    "email": "ananya.grewal@chandigarhprimerealty.in",
     "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
@@ -1248,18 +2638,262 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Punjabi"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across Sector 8 and the greater Chandigarh market, Shweta Chawla assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
+    "bio": "With over 9 years of verified real estate advisory experience across Sector 17 and the greater Chandigarh market, Ananya Grewal specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2244,
+        "title": "Verified Premium Property in Sector 17",
+        "price": "₹ 4.10 Cr",
+        "location": "Sector 17, Chandigarh",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ananya Grewal provided outstanding site visit support in Sector 17, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "alok-malhotra-chandigarh-2",
+    "slug": "alok-malhotra-chandigarh-2",
+    "name": "Alok Malhotra",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Chandigarh Asset Advisors",
+    "reraId": "CHRERA2021A4185",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Chandigarh",
+    "cityName": "Chandigarh",
+    "area": "Sector 35",
+    "primaryArea": "Sector 35",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "145+ visits",
+    "listingsCount": 45,
+    "rating": "5.0",
+    "reviewsCount": 100,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 99100 19065",
+    "email": "alok.malhotra@chandigarhassetadvisors.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Sector 35 and the greater Chandigarh market, Alok Malhotra specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2245,
+        "title": "Verified Premium Property in Sector 35",
+        "price": "₹ 4.85 Cr",
+        "location": "Sector 35, Chandigarh",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Alok Malhotra provided outstanding site visit support in Sector 35, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kavita-grewal-chandigarh-3",
+    "slug": "kavita-grewal-chandigarh-3",
+    "name": "Kavita Grewal",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Chandigarh Heritage Estates",
+    "reraId": "CHRERA2021A4198",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Chandigarh",
+    "cityName": "Chandigarh",
+    "area": "Sector 8",
+    "primaryArea": "Sector 8",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "146+ visits",
+    "listingsCount": 46,
+    "rating": "4.8",
+    "reviewsCount": 101,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98188 19102",
+    "email": "kavita.grewal@chandigarhheritageestates.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Sector 8 and the greater Chandigarh market, Kavita Grewal specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1122,
-        "title": "Verified Premium Residence in Sector 8",
-        "price": "₹ 2.80 Cr",
+        "id": 2246,
+        "title": "Verified Premium Property in Sector 8",
+        "price": "₹ 1.10 Cr",
         "location": "Sector 8, Chandigarh",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kavita Grewal provided outstanding site visit support in Sector 8, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sneha-malhotra-chandigarh-4",
+    "slug": "sneha-malhotra-chandigarh-4",
+    "name": "Sneha Malhotra",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Chandigarh Capital Properties",
+    "reraId": "CHRERA2021A4211",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Chandigarh",
+    "cityName": "Chandigarh",
+    "area": "Madhya Marg",
+    "primaryArea": "Madhya Marg",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "147+ visits",
+    "listingsCount": 47,
+    "rating": "4.9",
+    "reviewsCount": 102,
+    "focus": "Plots & development land",
+    "phone": "+91 98230 19139",
+    "email": "sneha.malhotra@chandigarhcapitalproperties.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Madhya Marg and the greater Chandigarh market, Sneha Malhotra specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2247,
+        "title": "Verified Premium Property in Madhya Marg",
+        "price": "₹ 1.85 Cr",
+        "location": "Madhya Marg, Chandigarh",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sneha Malhotra provided outstanding site visit support in Madhya Marg, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "divya-grewal-chandigarh-5",
+    "slug": "divya-grewal-chandigarh-5",
+    "name": "Divya Grewal",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Chandigarh Corridor Homes",
+    "reraId": "CHRERA2021A4224",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Chandigarh",
+    "cityName": "Chandigarh",
+    "area": "IT Park",
+    "primaryArea": "IT Park",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "148+ visits",
+    "listingsCount": 48,
+    "rating": "5.0",
+    "reviewsCount": 103,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98300 19176",
+    "email": "divya.grewal@chandigarhcorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across IT Park and the greater Chandigarh market, Divya Grewal specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2248,
+        "title": "Verified Premium Property in IT Park",
+        "price": "₹ 2.60 Cr",
+        "location": "IT Park, Chandigarh",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
@@ -1270,32 +2904,337 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Shweta Chawla provided excellent site walkthrough assistance in Sector 8, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Divya Grewal provided outstanding site visit support in IT Park, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "ashok-sundaram-chennai",
-    "slug": "ashok-sundaram-chennai",
-    "name": "Ashok Sundaram",
-    "role": "Land & Villa Consultant",
-    "agency": "Chennai Prime Realty",
-    "reraId": "TNRERA2020A2599",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "ananya-malhotra-chandigarh-6",
+    "slug": "ananya-malhotra-chandigarh-6",
+    "name": "Ananya Malhotra",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Chandigarh Metropolis Realty",
+    "reraId": "CHRERA2021A4237",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Chandigarh",
+    "cityName": "Chandigarh",
+    "area": "Sector 17",
+    "primaryArea": "Sector 17",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "149+ visits",
+    "listingsCount": 49,
+    "rating": "4.8",
+    "reviewsCount": 104,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98470 19213",
+    "email": "ananya.malhotra@chandigarhmetropolisrealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Sector 17 and the greater Chandigarh market, Ananya Malhotra specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2249,
+        "title": "Verified Premium Property in Sector 17",
+        "price": "₹ 3.35 Cr",
+        "location": "Sector 17, Chandigarh",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ananya Malhotra provided outstanding site visit support in Sector 17, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "poonam-venkatesh-chennai-1",
+    "slug": "poonam-venkatesh-chennai-1",
+    "name": "Poonam Venkatesh",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Chennai Prime Realty",
+    "reraId": "TNRERA2020A4250",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "city": "Chennai",
     "cityName": "Chennai",
     "area": "OMR",
     "primaryArea": "OMR",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "43+ visits",
-    "listingsCount": 43,
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "150+ visits",
+    "listingsCount": 50,
+    "rating": "4.9",
+    "reviewsCount": 105,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98101 19250",
+    "email": "poonam.venkatesh@chennaiprimerealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Tamil"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across OMR and the greater Chennai market, Poonam Venkatesh specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": true,
+    "featuredOrder": 1,
+    "featuredListings": [
+      {
+        "id": 2250,
+        "title": "Verified Premium Property in OMR",
+        "price": "₹ 4.10 Cr",
+        "location": "OMR, Chennai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Poonam Venkatesh provided outstanding site visit support in OMR, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "mayank-balakrishnan-chennai-2",
+    "slug": "mayank-balakrishnan-chennai-2",
+    "name": "Mayank Balakrishnan",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Chennai Asset Advisors",
+    "reraId": "TNRERA2020A4263",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Chennai",
+    "cityName": "Chennai",
+    "area": "Anna Nagar",
+    "primaryArea": "Anna Nagar",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "151+ visits",
+    "listingsCount": 51,
+    "rating": "5.0",
+    "reviewsCount": 106,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98200 19287",
+    "email": "mayank.balakrishnan@chennaiassetadvisors.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Tamil"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Anna Nagar and the greater Chennai market, Mayank Balakrishnan specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2251,
+        "title": "Verified Premium Property in Anna Nagar",
+        "price": "₹ 4.85 Cr",
+        "location": "Anna Nagar, Chennai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Mayank Balakrishnan provided outstanding site visit support in Anna Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "meera-venkatesh-chennai-3",
+    "slug": "meera-venkatesh-chennai-3",
+    "name": "Meera Venkatesh",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Chennai Heritage Estates",
+    "reraId": "TNRERA2020A4276",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Chennai",
+    "cityName": "Chennai",
+    "area": "Adyar",
+    "primaryArea": "Adyar",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "152+ visits",
+    "listingsCount": 52,
     "rating": "4.8",
-    "reviewsCount": 73,
-    "focus": "Villas & plots",
-    "phone": "+91 98112 14551",
-    "email": "ashok.sundaram@chennaiprimerealty.in",
+    "reviewsCount": 107,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98450 19324",
+    "email": "meera.venkatesh@chennaiheritageestates.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Tamil"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Adyar and the greater Chennai market, Meera Venkatesh specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2252,
+        "title": "Verified Premium Property in Adyar",
+        "price": "₹ 1.10 Cr",
+        "location": "Adyar, Chennai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Meera Venkatesh provided outstanding site visit support in Adyar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "neha-balakrishnan-chennai-4",
+    "slug": "neha-balakrishnan-chennai-4",
+    "name": "Neha Balakrishnan",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Chennai Capital Properties",
+    "reraId": "TNRERA2020A4289",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Chennai",
+    "cityName": "Chennai",
+    "area": "Velachery",
+    "primaryArea": "Velachery",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "153+ visits",
+    "listingsCount": 53,
+    "rating": "4.9",
+    "reviewsCount": 108,
+    "focus": "Plots & development land",
+    "phone": "+91 98112 19361",
+    "email": "neha.balakrishnan@chennaicapitalproperties.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Tamil"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Velachery and the greater Chennai market, Neha Balakrishnan specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2253,
+        "title": "Verified Premium Property in Velachery",
+        "price": "₹ 1.85 Cr",
+        "location": "Velachery, Chennai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Neha Balakrishnan provided outstanding site visit support in Velachery, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anita-venkatesh-chennai-5",
+    "slug": "anita-venkatesh-chennai-5",
+    "name": "Anita Venkatesh",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Chennai Corridor Homes",
+    "reraId": "TNRERA2020A4302",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Chennai",
+    "cityName": "Chennai",
+    "area": "ECR",
+    "primaryArea": "ECR",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "154+ visits",
+    "listingsCount": 54,
+    "rating": "5.0",
+    "reviewsCount": 109,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98712 19398",
+    "email": "anita.venkatesh@chennaicorridorhomes.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -1309,17 +3248,78 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Tamil"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across OMR and the greater Chennai market, Ashok Sundaram assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": true,
-    "featuredOrder": 1,
+    "bio": "With over 7 years of verified real estate advisory experience across ECR and the greater Chennai market, Anita Venkatesh specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1123,
-        "title": "Verified Premium Residence in OMR",
-        "price": "₹ 3.60 Cr",
+        "id": 2254,
+        "title": "Verified Premium Property in ECR",
+        "price": "₹ 2.60 Cr",
+        "location": "ECR, Chennai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anita Venkatesh provided outstanding site visit support in ECR, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "poonam-balakrishnan-chennai-6",
+    "slug": "poonam-balakrishnan-chennai-6",
+    "name": "Poonam Balakrishnan",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Chennai Metropolis Realty",
+    "reraId": "TNRERA2020A4315",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Chennai",
+    "cityName": "Chennai",
+    "area": "OMR",
+    "primaryArea": "OMR",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "155+ visits",
+    "listingsCount": 55,
+    "rating": "4.8",
+    "reviewsCount": 110,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 99100 19435",
+    "email": "poonam.balakrishnan@chennaimetropolisrealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Tamil"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across OMR and the greater Chennai market, Poonam Balakrishnan specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2255,
+        "title": "Verified Premium Property in OMR",
+        "price": "₹ 3.35 Cr",
         "location": "OMR, Chennai",
         "type": "Sale",
         "beds": 3,
@@ -1331,32 +3331,154 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ashok Sundaram provided excellent site walkthrough assistance in OMR, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Poonam Balakrishnan provided outstanding site visit support in OMR, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "anand-natarajan-chennai",
-    "slug": "anand-natarajan-chennai",
-    "name": "Anand Natarajan",
-    "role": "High-Rise Living Advisor",
-    "agency": "Chennai Asset Advisors",
-    "reraId": "TNRERA2020A2612",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
+    "id": "karan-ramanathan-coimbatore-1",
+    "slug": "karan-ramanathan-coimbatore-1",
+    "name": "Karan Ramanathan",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Coimbatore Prime Realty",
+    "reraId": "TNRERA2020A4328",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-    "city": "Chennai",
-    "cityName": "Chennai",
-    "area": "Anna Nagar",
-    "primaryArea": "Anna Nagar",
+    "city": "Coimbatore",
+    "cityName": "Coimbatore",
+    "area": "RS Puram",
+    "primaryArea": "RS Puram",
     "experience": "9+ yrs",
     "experienceYears": 9,
-    "tours": "44+ visits",
-    "listingsCount": 44,
+    "tours": "156+ visits",
+    "listingsCount": 56,
     "rating": "4.9",
-    "reviewsCount": 74,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98712 14588",
-    "email": "anand.natarajan@chennaiassetadvisors.in",
+    "reviewsCount": 111,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98188 19472",
+    "email": "karan.ramanathan@coimbatoreprimerealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Tamil"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across RS Puram and the greater Coimbatore market, Karan Ramanathan specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2256,
+        "title": "Verified Premium Property in RS Puram",
+        "price": "₹ 4.10 Cr",
+        "location": "RS Puram, Coimbatore",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Karan Ramanathan provided outstanding site visit support in RS Puram, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "aarav-krishnan-coimbatore-2",
+    "slug": "aarav-krishnan-coimbatore-2",
+    "name": "Aarav Krishnan",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Coimbatore Asset Advisors",
+    "reraId": "TNRERA2020A4341",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Coimbatore",
+    "cityName": "Coimbatore",
+    "area": "Avinashi Road",
+    "primaryArea": "Avinashi Road",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "157+ visits",
+    "listingsCount": 57,
+    "rating": "5.0",
+    "reviewsCount": 112,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98230 19509",
+    "email": "aarav.krishnan@coimbatoreassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Tamil"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Avinashi Road and the greater Coimbatore market, Aarav Krishnan specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2257,
+        "title": "Verified Premium Property in Avinashi Road",
+        "price": "₹ 4.85 Cr",
+        "location": "Avinashi Road, Coimbatore",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Aarav Krishnan provided outstanding site visit support in Avinashi Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "pooja-ramanathan-coimbatore-3",
+    "slug": "pooja-ramanathan-coimbatore-3",
+    "name": "Pooja Ramanathan",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Coimbatore Heritage Estates",
+    "reraId": "TNRERA2020A4354",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Coimbatore",
+    "cityName": "Coimbatore",
+    "area": "Gandhipuram",
+    "primaryArea": "Gandhipuram",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "158+ visits",
+    "listingsCount": 58,
+    "rating": "4.8",
+    "reviewsCount": 113,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98300 19546",
+    "email": "pooja.ramanathan@coimbatoreheritageestates.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -1370,140 +3492,18 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Tamil"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Anna Nagar and the greater Chennai market, Anand Natarajan assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1124,
-        "title": "Verified Premium Residence in Anna Nagar",
-        "price": "₹ 4.40 Cr",
-        "location": "Anna Nagar, Chennai",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Anand Natarajan provided excellent site walkthrough assistance in Anna Nagar, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "aditya-iyer-chennai",
-    "slug": "aditya-iyer-chennai",
-    "name": "Aditya Iyer",
-    "role": "Luxury Residential Consultant",
-    "agency": "Chennai Heritage Estates",
-    "reraId": "TNRERA2020A2625",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Chennai",
-    "cityName": "Chennai",
-    "area": "Adyar",
-    "primaryArea": "Adyar",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "45+ visits",
-    "listingsCount": 45,
-    "rating": "5.0",
-    "reviewsCount": 75,
-    "focus": "High-rises & apartments",
-    "phone": "+91 99100 14625",
-    "email": "aditya.iyer@chennaiheritageestates.in",
-    "badge": "Top Producer",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Tamil"
-    ],
-    "bio": "With over 10 years of verified real estate advisory experience across Adyar and the greater Chennai market, Aditya Iyer assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
+    "bio": "With over 11 years of verified real estate advisory experience across Gandhipuram and the greater Coimbatore market, Pooja Ramanathan specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1125,
-        "title": "Verified Premium Residence in Adyar",
-        "price": "₹ 1.20 Cr",
-        "location": "Adyar, Chennai",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Aditya Iyer provided excellent site walkthrough assistance in Adyar, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "sunita-ramanathan-coimbatore",
-    "slug": "sunita-ramanathan-coimbatore",
-    "name": "Sunita Ramanathan",
-    "role": "Senior Property Advisor",
-    "agency": "Coimbatore Prime Realty",
-    "reraId": "TNRERA2020A2638",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Coimbatore",
-    "cityName": "Coimbatore",
-    "area": "RS Puram",
-    "primaryArea": "RS Puram",
-    "experience": "11+ yrs",
-    "experienceYears": 11,
-    "tours": "46+ visits",
-    "listingsCount": 46,
-    "rating": "4.8",
-    "reviewsCount": 76,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98188 14662",
-    "email": "sunita.ramanathan@coimbatoreprimerealty.in",
-    "badge": "Premier Agent",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Tamil"
-    ],
-    "bio": "With over 11 years of verified real estate advisory experience across RS Puram and the greater Coimbatore market, Sunita Ramanathan assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1126,
-        "title": "Verified Premium Residence in RS Puram",
-        "price": "₹ 2.00 Cr",
-        "location": "RS Puram, Coimbatore",
+        "id": 2258,
+        "title": "Verified Premium Property in Gandhipuram",
+        "price": "₹ 1.10 Cr",
+        "location": "Gandhipuram, Coimbatore",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
@@ -1514,33 +3514,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sunita Ramanathan provided excellent site walkthrough assistance in RS Puram, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Pooja Ramanathan provided outstanding site visit support in Gandhipuram, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "preeti-krishnan-coimbatore",
-    "slug": "preeti-krishnan-coimbatore",
-    "name": "Preeti Krishnan",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Coimbatore Asset Advisors",
-    "reraId": "TNRERA2020A2651",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
+    "id": "ritu-krishnan-coimbatore-4",
+    "slug": "ritu-krishnan-coimbatore-4",
+    "name": "Ritu Krishnan",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Coimbatore Capital Properties",
+    "reraId": "TNRERA2020A4367",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Coimbatore",
     "cityName": "Coimbatore",
-    "area": "Avinashi Road",
-    "primaryArea": "Avinashi Road",
+    "area": "Saravanampatti",
+    "primaryArea": "Saravanampatti",
     "experience": "12+ yrs",
     "experienceYears": 12,
-    "tours": "47+ visits",
-    "listingsCount": 47,
+    "tours": "159+ visits",
+    "listingsCount": 59,
     "rating": "4.9",
-    "reviewsCount": 77,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98230 14699",
-    "email": "preeti.krishnan@coimbatoreassetadvisors.in",
-    "badge": "Super Agent",
+    "reviewsCount": 114,
+    "focus": "Plots & development land",
+    "phone": "+91 98470 19583",
+    "email": "ritu.krishnan@coimbatorecapitalproperties.in",
+    "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -1553,18 +3553,18 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Tamil"
     ],
-    "bio": "With over 12 years of verified real estate advisory experience across Avinashi Road and the greater Coimbatore market, Preeti Krishnan assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 12 years of verified real estate advisory experience across Saravanampatti and the greater Coimbatore market, Ritu Krishnan specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1127,
-        "title": "Verified Premium Residence in Avinashi Road",
-        "price": "₹ 2.80 Cr",
-        "location": "Avinashi Road, Coimbatore",
+        "id": 2259,
+        "title": "Verified Premium Property in Saravanampatti",
+        "price": "₹ 1.85 Cr",
+        "location": "Saravanampatti, Coimbatore",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
@@ -1575,33 +3575,94 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Preeti Krishnan provided excellent site walkthrough assistance in Avinashi Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Ritu Krishnan provided outstanding site visit support in Saravanampatti, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aarav-mohanty-cuttack",
-    "slug": "aarav-mohanty-cuttack",
-    "name": "Aarav Mohanty",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Cuttack Prime Realty",
-    "reraId": "ORERA2021A2664",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
+    "id": "shweta-ramanathan-coimbatore-5",
+    "slug": "shweta-ramanathan-coimbatore-5",
+    "name": "Shweta Ramanathan",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Coimbatore Corridor Homes",
+    "reraId": "TNRERA2020A4380",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Coimbatore",
+    "cityName": "Coimbatore",
+    "area": "Peelamedu",
+    "primaryArea": "Peelamedu",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "160+ visits",
+    "listingsCount": 60,
+    "rating": "5.0",
+    "reviewsCount": 115,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98101 19620",
+    "email": "shweta.ramanathan@coimbatorecorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Tamil"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Peelamedu and the greater Coimbatore market, Shweta Ramanathan specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2260,
+        "title": "Verified Premium Property in Peelamedu",
+        "price": "₹ 2.60 Cr",
+        "location": "Peelamedu, Coimbatore",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Shweta Ramanathan provided outstanding site visit support in Peelamedu, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sanjay-behera-cuttack-1",
+    "slug": "sanjay-behera-cuttack-1",
+    "name": "Sanjay Behera",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Cuttack Prime Realty",
+    "reraId": "ORERA2021A4393",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Cuttack",
     "cityName": "Cuttack",
     "area": "CDA Sector 9",
     "primaryArea": "CDA Sector 9",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "48+ visits",
-    "listingsCount": 48,
-    "rating": "5.0",
-    "reviewsCount": 78,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98300 14736",
-    "email": "aarav.mohanty@cuttackprimerealty.in",
-    "badge": "Super Agent",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "161+ visits",
+    "listingsCount": 61,
+    "rating": "4.8",
+    "reviewsCount": 116,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98200 19657",
+    "email": "sanjay.behera@cuttackprimerealty.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -1614,7 +3675,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Odia"
     ],
-    "bio": "With over 13 years of verified real estate advisory experience across CDA Sector 9 and the greater Cuttack market, Aarav Mohanty assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 14 years of verified real estate advisory experience across CDA Sector 9 and the greater Cuttack market, Sanjay Behera specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -1622,13 +3683,13 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1128,
-        "title": "Verified Premium Residence in CDA Sector 9",
-        "price": "₹ 3.60 Cr",
+        "id": 2261,
+        "title": "Verified Premium Property in CDA Sector 9",
+        "price": "₹ 3.35 Cr",
         "location": "CDA Sector 9, Cuttack",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -1636,32 +3697,93 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Aarav Mohanty provided excellent site walkthrough assistance in CDA Sector 9, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Sanjay Behera provided outstanding site visit support in CDA Sector 9, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "pooja-pradhan-cuttack",
-    "slug": "pooja-pradhan-cuttack",
-    "name": "Pooja Pradhan",
-    "role": "Land & Villa Consultant",
+    "id": "tanvi-mishra-cuttack-2",
+    "slug": "tanvi-mishra-cuttack-2",
+    "name": "Tanvi Mishra",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Cuttack Asset Advisors",
-    "reraId": "ORERA2021A2677",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "ORERA2021A4406",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "city": "Cuttack",
     "cityName": "Cuttack",
     "area": "Badambadi",
     "primaryArea": "Badambadi",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "49+ visits",
-    "listingsCount": 49,
-    "rating": "4.8",
-    "reviewsCount": 79,
-    "focus": "Villas & plots",
-    "phone": "+91 98470 14773",
-    "email": "pooja.pradhan@cuttackassetadvisors.in",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "162+ visits",
+    "listingsCount": 62,
+    "rating": "4.9",
+    "reviewsCount": 117,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98450 19694",
+    "email": "tanvi.mishra@cuttackassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Odia"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Badambadi and the greater Cuttack market, Tanvi Mishra specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2262,
+        "title": "Verified Premium Property in Badambadi",
+        "price": "₹ 4.10 Cr",
+        "location": "Badambadi, Cuttack",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Tanvi Mishra provided outstanding site visit support in Badambadi, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rohan-behera-cuttack-3",
+    "slug": "rohan-behera-cuttack-3",
+    "name": "Rohan Behera",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Cuttack Heritage Estates",
+    "reraId": "ORERA2021A4419",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Cuttack",
+    "cityName": "Cuttack",
+    "area": "Link Road",
+    "primaryArea": "Link Road",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "163+ visits",
+    "listingsCount": 63,
+    "rating": "5.0",
+    "reviewsCount": 118,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98112 19731",
+    "email": "rohan.behera@cuttackheritageestates.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -1675,21 +3797,21 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Odia"
     ],
-    "bio": "With over 14 years of verified real estate advisory experience across Badambadi and the greater Cuttack market, Pooja Pradhan assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 16 years of verified real estate advisory experience across Link Road and the greater Cuttack market, Rohan Behera specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1129,
-        "title": "Verified Premium Residence in Badambadi",
-        "price": "₹ 4.40 Cr",
-        "location": "Badambadi, Cuttack",
+        "id": 2263,
+        "title": "Verified Premium Property in Link Road",
+        "price": "₹ 4.85 Cr",
+        "location": "Link Road, Cuttack",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -1697,33 +3819,155 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Pooja Pradhan provided excellent site walkthrough assistance in Badambadi, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Rohan Behera provided outstanding site visit support in Link Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "neha-singh-darbhanga",
-    "slug": "neha-singh-darbhanga",
-    "name": "Neha Singh",
-    "role": "Land & Villa Consultant",
+    "id": "kunal-mishra-cuttack-4",
+    "slug": "kunal-mishra-cuttack-4",
+    "name": "Kunal Mishra",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Cuttack Capital Properties",
+    "reraId": "ORERA2021A4432",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Cuttack",
+    "cityName": "Cuttack",
+    "area": "Cantonment Road",
+    "primaryArea": "Cantonment Road",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "164+ visits",
+    "listingsCount": 64,
+    "rating": "4.8",
+    "reviewsCount": 119,
+    "focus": "Plots & development land",
+    "phone": "+91 98712 19768",
+    "email": "kunal.mishra@cuttackcapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Odia"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Cantonment Road and the greater Cuttack market, Kunal Mishra specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2264,
+        "title": "Verified Premium Property in Cantonment Road",
+        "price": "₹ 1.10 Cr",
+        "location": "Cantonment Road, Cuttack",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kunal Mishra provided outstanding site visit support in Cantonment Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "amit-behera-cuttack-5",
+    "slug": "amit-behera-cuttack-5",
+    "name": "Amit Behera",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Cuttack Corridor Homes",
+    "reraId": "ORERA2021A4445",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Cuttack",
+    "cityName": "Cuttack",
+    "area": "Mahanadi Vihar",
+    "primaryArea": "Mahanadi Vihar",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "165+ visits",
+    "listingsCount": 65,
+    "rating": "4.9",
+    "reviewsCount": 120,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 99100 19805",
+    "email": "amit.behera@cuttackcorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Odia"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Mahanadi Vihar and the greater Cuttack market, Amit Behera specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2265,
+        "title": "Verified Premium Property in Mahanadi Vihar",
+        "price": "₹ 1.85 Cr",
+        "location": "Mahanadi Vihar, Cuttack",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Amit Behera provided outstanding site visit support in Mahanadi Vihar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anita-mishra-darbhanga-1",
+    "slug": "anita-mishra-darbhanga-1",
+    "name": "Anita Mishra",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Darbhanga Prime Realty",
-    "reraId": "BRERA2021A2690",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "BRERA2021A4458",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Darbhanga",
     "cityName": "Darbhanga",
     "area": "Laheriasarai",
     "primaryArea": "Laheriasarai",
-    "experience": "5+ yrs",
-    "experienceYears": 5,
-    "tours": "50+ visits",
-    "listingsCount": 50,
-    "rating": "4.9",
-    "reviewsCount": 80,
-    "focus": "Villas & plots",
-    "phone": "+91 98101 14810",
-    "email": "neha.singh@darbhangaprimerealty.in",
-    "badge": "Top Rated",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "166+ visits",
+    "listingsCount": 66,
+    "rating": "5.0",
+    "reviewsCount": 121,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98188 19842",
+    "email": "anita.mishra@darbhangaprimerealty.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -1735,7 +3979,7 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 5 years of verified real estate advisory experience across Laheriasarai and the greater Darbhanga market, Neha Singh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 7 years of verified real estate advisory experience across Laheriasarai and the greater Darbhanga market, Anita Mishra specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -1743,13 +3987,13 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1130,
-        "title": "Verified Premium Residence in Laheriasarai",
-        "price": "₹ 1.20 Cr",
+        "id": 2266,
+        "title": "Verified Premium Property in Laheriasarai",
+        "price": "₹ 2.60 Cr",
         "location": "Laheriasarai, Darbhanga",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -1757,32 +4001,152 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Neha Singh provided excellent site walkthrough assistance in Laheriasarai, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Anita Mishra provided outstanding site visit support in Laheriasarai, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "anita-jha-darbhanga",
-    "slug": "anita-jha-darbhanga",
-    "name": "Anita Jha",
-    "role": "High-Rise Living Advisor",
+    "id": "poonam-kumar-darbhanga-2",
+    "slug": "poonam-kumar-darbhanga-2",
+    "name": "Poonam Kumar",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Darbhanga Asset Advisors",
-    "reraId": "BRERA2021A2703",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "BRERA2021A4471",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Darbhanga",
     "cityName": "Darbhanga",
     "area": "Donar",
     "primaryArea": "Donar",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "51+ visits",
-    "listingsCount": 51,
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "167+ visits",
+    "listingsCount": 67,
+    "rating": "4.8",
+    "reviewsCount": 122,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98230 19879",
+    "email": "poonam.kumar@darbhangaassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Donar and the greater Darbhanga market, Poonam Kumar specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2267,
+        "title": "Verified Premium Property in Donar",
+        "price": "₹ 3.35 Cr",
+        "location": "Donar, Darbhanga",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Poonam Kumar provided outstanding site visit support in Donar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "mayank-mishra-darbhanga-3",
+    "slug": "mayank-mishra-darbhanga-3",
+    "name": "Mayank Mishra",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Darbhanga Heritage Estates",
+    "reraId": "BRERA2021A4484",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Darbhanga",
+    "cityName": "Darbhanga",
+    "area": "Benta Chowk",
+    "primaryArea": "Benta Chowk",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "168+ visits",
+    "listingsCount": 68,
+    "rating": "4.9",
+    "reviewsCount": 123,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98300 19916",
+    "email": "mayank.mishra@darbhangaheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Benta Chowk and the greater Darbhanga market, Mayank Mishra specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2268,
+        "title": "Verified Premium Property in Benta Chowk",
+        "price": "₹ 4.10 Cr",
+        "location": "Benta Chowk, Darbhanga",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Mayank Mishra provided outstanding site visit support in Benta Chowk, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "meera-kumar-darbhanga-4",
+    "slug": "meera-kumar-darbhanga-4",
+    "name": "Meera Kumar",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Darbhanga Capital Properties",
+    "reraId": "BRERA2021A4497",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Darbhanga",
+    "cityName": "Darbhanga",
+    "area": "Allalpatti",
+    "primaryArea": "Allalpatti",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "169+ visits",
+    "listingsCount": 69,
     "rating": "5.0",
-    "reviewsCount": 81,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98200 14847",
-    "email": "anita.jha@darbhangaassetadvisors.in",
+    "reviewsCount": 124,
+    "focus": "Plots & development land",
+    "phone": "+91 98470 19953",
+    "email": "meera.kumar@darbhangacapitalproperties.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -1795,18 +4159,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 6 years of verified real estate advisory experience across Donar and the greater Darbhanga market, Anita Jha assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 10 years of verified real estate advisory experience across Allalpatti and the greater Darbhanga market, Meera Kumar specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1131,
-        "title": "Verified Premium Residence in Donar",
-        "price": "₹ 2.00 Cr",
-        "location": "Donar, Darbhanga",
+        "id": 2269,
+        "title": "Verified Premium Property in Allalpatti",
+        "price": "₹ 4.85 Cr",
+        "location": "Allalpatti, Darbhanga",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
@@ -1817,33 +4181,93 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Anita Jha provided excellent site walkthrough assistance in Donar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Meera Kumar provided outstanding site visit support in Allalpatti, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "ananya-rawat-dehradun",
-    "slug": "ananya-rawat-dehradun",
-    "name": "Ananya Rawat",
-    "role": "High-Rise Living Advisor",
-    "agency": "Dehradun Prime Realty",
-    "reraId": "UKRERA2021A2716",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "neha-mishra-darbhanga-5",
+    "slug": "neha-mishra-darbhanga-5",
+    "name": "Neha Mishra",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Darbhanga Corridor Homes",
+    "reraId": "BRERA2021A4510",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
     "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Darbhanga",
+    "cityName": "Darbhanga",
+    "area": "Darbhanga Tower",
+    "primaryArea": "Darbhanga Tower",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "170+ visits",
+    "listingsCount": 70,
+    "rating": "4.8",
+    "reviewsCount": 35,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98101 19990",
+    "email": "neha.mishra@darbhangacorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Darbhanga Tower and the greater Darbhanga market, Neha Mishra specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2270,
+        "title": "Verified Premium Property in Darbhanga Tower",
+        "price": "₹ 1.10 Cr",
+        "location": "Darbhanga Tower, Darbhanga",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Neha Mishra provided outstanding site visit support in Darbhanga Tower, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "gaurav-joshi-dehradun-1",
+    "slug": "gaurav-joshi-dehradun-1",
+    "name": "Gaurav Joshi",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Dehradun Prime Realty",
+    "reraId": "UKRERA2021A4523",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Dehradun",
     "cityName": "Dehradun",
     "area": "Rajpur Road",
     "primaryArea": "Rajpur Road",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "52+ visits",
-    "listingsCount": 52,
-    "rating": "4.8",
-    "reviewsCount": 82,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 14884",
-    "email": "ananya.rawat@dehradunprimerealty.in",
-    "badge": "Top Producer",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "171+ visits",
+    "listingsCount": 71,
+    "rating": "4.9",
+    "reviewsCount": 36,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98200 20027",
+    "email": "gaurav.joshi@dehradunprimerealty.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -1855,7 +4279,7 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across Rajpur Road and the greater Dehradun market, Ananya Rawat assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 12 years of verified real estate advisory experience across Rajpur Road and the greater Dehradun market, Gaurav Joshi specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -1863,13 +4287,13 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1132,
-        "title": "Verified Premium Residence in Rajpur Road",
-        "price": "₹ 2.80 Cr",
+        "id": 2271,
+        "title": "Verified Premium Property in Rajpur Road",
+        "price": "₹ 1.85 Cr",
         "location": "Rajpur Road, Dehradun",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -1877,32 +4301,212 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ananya Rawat provided excellent site walkthrough assistance in Rajpur Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Gaurav Joshi provided outstanding site visit support in Rajpur Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "kavita-pant-dehradun",
-    "slug": "kavita-pant-dehradun",
-    "name": "Kavita Pant",
-    "role": "Luxury Residential Consultant",
+    "id": "arjun-negi-dehradun-2",
+    "slug": "arjun-negi-dehradun-2",
+    "name": "Arjun Negi",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Dehradun Asset Advisors",
-    "reraId": "UKRERA2021A2729",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "UKRERA2021A4536",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Dehradun",
     "cityName": "Dehradun",
     "area": "Sahastradhara Road",
     "primaryArea": "Sahastradhara Road",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "53+ visits",
-    "listingsCount": 53,
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "172+ visits",
+    "listingsCount": 72,
+    "rating": "5.0",
+    "reviewsCount": 37,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98450 20064",
+    "email": "arjun.negi@dehradunassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Sahastradhara Road and the greater Dehradun market, Arjun Negi specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2272,
+        "title": "Verified Premium Property in Sahastradhara Road",
+        "price": "₹ 2.60 Cr",
+        "location": "Sahastradhara Road, Dehradun",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Arjun Negi provided outstanding site visit support in Sahastradhara Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "simran-joshi-dehradun-3",
+    "slug": "simran-joshi-dehradun-3",
+    "name": "Simran Joshi",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Dehradun Heritage Estates",
+    "reraId": "UKRERA2021A4549",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Dehradun",
+    "cityName": "Dehradun",
+    "area": "Chakrata Road",
+    "primaryArea": "Chakrata Road",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "173+ visits",
+    "listingsCount": 73,
+    "rating": "4.8",
+    "reviewsCount": 38,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98112 20101",
+    "email": "simran.joshi@dehradunheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Chakrata Road and the greater Dehradun market, Simran Joshi specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2273,
+        "title": "Verified Premium Property in Chakrata Road",
+        "price": "₹ 3.35 Cr",
+        "location": "Chakrata Road, Dehradun",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Simran Joshi provided outstanding site visit support in Chakrata Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "priya-negi-dehradun-4",
+    "slug": "priya-negi-dehradun-4",
+    "name": "Priya Negi",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Dehradun Capital Properties",
+    "reraId": "UKRERA2021A4562",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Dehradun",
+    "cityName": "Dehradun",
+    "area": "GMS Road",
+    "primaryArea": "GMS Road",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "174+ visits",
+    "listingsCount": 74,
     "rating": "4.9",
-    "reviewsCount": 83,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98112 14921",
-    "email": "kavita.pant@dehradunassetadvisors.in",
+    "reviewsCount": 39,
+    "focus": "Plots & development land",
+    "phone": "+91 98712 20138",
+    "email": "priya.negi@dehraduncapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across GMS Road and the greater Dehradun market, Priya Negi specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2274,
+        "title": "Verified Premium Property in GMS Road",
+        "price": "₹ 4.10 Cr",
+        "location": "GMS Road, Dehradun",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Priya Negi provided outstanding site visit support in GMS Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rajesh-joshi-dehradun-5",
+    "slug": "rajesh-joshi-dehradun-5",
+    "name": "Rajesh Joshi",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Dehradun Corridor Homes",
+    "reraId": "UKRERA2021A4575",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Dehradun",
+    "cityName": "Dehradun",
+    "area": "Haridwar Bypass",
+    "primaryArea": "Haridwar Bypass",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "175+ visits",
+    "listingsCount": 20,
+    "rating": "5.0",
+    "reviewsCount": 40,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 99100 20175",
+    "email": "rajesh.joshi@dehraduncorridorhomes.in",
     "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
@@ -1915,21 +4519,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across Sahastradhara Road and the greater Dehradun market, Kavita Pant assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 16 years of verified real estate advisory experience across Haridwar Bypass and the greater Dehradun market, Rajesh Joshi specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1133,
-        "title": "Verified Premium Residence in Sahastradhara Road",
-        "price": "₹ 3.60 Cr",
-        "location": "Sahastradhara Road, Dehradun",
+        "id": 2275,
+        "title": "Verified Premium Property in Haridwar Bypass",
+        "price": "₹ 4.85 Cr",
+        "location": "Haridwar Bypass, Dehradun",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -1937,33 +4541,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Kavita Pant provided excellent site walkthrough assistance in Sahastradhara Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Rajesh Joshi provided outstanding site visit support in Haridwar Bypass, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "deepika-singh-deoghar",
-    "slug": "deepika-singh-deoghar",
-    "name": "Deepika Singh",
-    "role": "Luxury Residential Consultant",
+    "id": "sneha-verma-deoghar-1",
+    "slug": "sneha-verma-deoghar-1",
+    "name": "Sneha Verma",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Deoghar Prime Realty",
-    "reraId": "JHRERA2021A2742",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "JHRERA2021A4588",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Deoghar",
     "cityName": "Deoghar",
     "area": "Castairs Town",
     "primaryArea": "Castairs Town",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "54+ visits",
-    "listingsCount": 54,
-    "rating": "5.0",
-    "reviewsCount": 84,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98712 14958",
-    "email": "deepika.singh@deogharprimerealty.in",
-    "badge": "Fast Responder",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "176+ visits",
+    "listingsCount": 21,
+    "rating": "4.8",
+    "reviewsCount": 41,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98188 20212",
+    "email": "sneha.verma@deogharprimerealty.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -1975,7 +4579,7 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Castairs Town and the greater Deoghar market, Deepika Singh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 5 years of verified real estate advisory experience across Castairs Town and the greater Deoghar market, Sneha Verma specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -1983,13 +4587,13 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1134,
-        "title": "Verified Premium Residence in Castairs Town",
-        "price": "₹ 4.40 Cr",
+        "id": 2276,
+        "title": "Verified Premium Property in Castairs Town",
+        "price": "₹ 1.10 Cr",
         "location": "Castairs Town, Deoghar",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -1997,33 +4601,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Deepika Singh provided excellent site walkthrough assistance in Castairs Town, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Sneha Verma provided outstanding site visit support in Castairs Town, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sunita-verma-deoghar",
-    "slug": "sunita-verma-deoghar",
-    "name": "Sunita Verma",
-    "role": "RERA Certified Property Guide",
+    "id": "divya-singh-deoghar-2",
+    "slug": "divya-singh-deoghar-2",
+    "name": "Divya Singh",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Deoghar Asset Advisors",
-    "reraId": "JHRERA2021A2755",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "JHRERA2021A4601",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Deoghar",
     "cityName": "Deoghar",
     "area": "Baidyanath Dham",
     "primaryArea": "Baidyanath Dham",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "55+ visits",
-    "listingsCount": 55,
-    "rating": "4.8",
-    "reviewsCount": 85,
-    "focus": "High-rises & apartments",
-    "phone": "+91 99100 14995",
-    "email": "sunita.verma@deogharassetadvisors.in",
-    "badge": "Premier Agent",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "177+ visits",
+    "listingsCount": 22,
+    "rating": "4.9",
+    "reviewsCount": 42,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98230 20249",
+    "email": "divya.singh@deogharassetadvisors.in",
+    "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -2035,7 +4639,7 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 10 years of verified real estate advisory experience across Baidyanath Dham and the greater Deoghar market, Sunita Verma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 6 years of verified real estate advisory experience across Baidyanath Dham and the greater Deoghar market, Divya Singh specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -2043,252 +4647,10 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1135,
-        "title": "Verified Premium Residence in Baidyanath Dham",
-        "price": "₹ 1.20 Cr",
+        "id": 2277,
+        "title": "Verified Premium Property in Baidyanath Dham",
+        "price": "₹ 1.85 Cr",
         "location": "Baidyanath Dham, Deoghar",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Sunita Verma provided excellent site walkthrough assistance in Baidyanath Dham, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "shweta-singh-dhanbad",
-    "slug": "shweta-singh-dhanbad",
-    "name": "Shweta Singh",
-    "role": "RERA Certified Property Guide",
-    "agency": "Dhanbad Prime Realty",
-    "reraId": "JHRERA2021A2768",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-    "city": "Dhanbad",
-    "cityName": "Dhanbad",
-    "area": "Bank More",
-    "primaryArea": "Bank More",
-    "experience": "11+ yrs",
-    "experienceYears": 11,
-    "tours": "56+ visits",
-    "listingsCount": 56,
-    "rating": "4.9",
-    "reviewsCount": 86,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98188 15032",
-    "email": "shweta.singh@dhanbadprimerealty.in",
-    "badge": "Premier Agent",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 11 years of verified real estate advisory experience across Bank More and the greater Dhanbad market, Shweta Singh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1136,
-        "title": "Verified Premium Residence in Bank More",
-        "price": "₹ 2.00 Cr",
-        "location": "Bank More, Dhanbad",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Shweta Singh provided excellent site walkthrough assistance in Bank More, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "aarav-verma-dhanbad",
-    "slug": "aarav-verma-dhanbad",
-    "name": "Aarav Verma",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Dhanbad Asset Advisors",
-    "reraId": "JHRERA2021A2781",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Dhanbad",
-    "cityName": "Dhanbad",
-    "area": "Saraidhela",
-    "primaryArea": "Saraidhela",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "57+ visits",
-    "listingsCount": 57,
-    "rating": "5.0",
-    "reviewsCount": 87,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98230 15069",
-    "email": "aarav.verma@dhanbadassetadvisors.in",
-    "badge": "Super Agent",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 12 years of verified real estate advisory experience across Saraidhela and the greater Dhanbad market, Aarav Verma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1137,
-        "title": "Verified Premium Residence in Saraidhela",
-        "price": "₹ 2.80 Cr",
-        "location": "Saraidhela, Dhanbad",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Aarav Verma provided excellent site walkthrough assistance in Saraidhela, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "meera-sen-durgapur",
-    "slug": "meera-sen-durgapur",
-    "name": "Meera Sen",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Durgapur Prime Realty",
-    "reraId": "WBHIRA2021A2794",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Durgapur",
-    "cityName": "Durgapur",
-    "area": "City Centre",
-    "primaryArea": "City Centre",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "58+ visits",
-    "listingsCount": 58,
-    "rating": "4.8",
-    "reviewsCount": 88,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98300 15106",
-    "email": "meera.sen@durgapurprimerealty.in",
-    "badge": "Super Agent",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Bengali"
-    ],
-    "bio": "With over 13 years of verified real estate advisory experience across City Centre and the greater Durgapur market, Meera Sen assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1138,
-        "title": "Verified Premium Residence in City Centre",
-        "price": "₹ 3.60 Cr",
-        "location": "City Centre, Durgapur",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Meera Sen provided excellent site walkthrough assistance in City Centre, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "neha-ghosh-durgapur",
-    "slug": "neha-ghosh-durgapur",
-    "name": "Neha Ghosh",
-    "role": "Senior Property Advisor",
-    "agency": "Durgapur Asset Advisors",
-    "reraId": "WBHIRA2021A2807",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Durgapur",
-    "cityName": "Durgapur",
-    "area": "Benachity",
-    "primaryArea": "Benachity",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "59+ visits",
-    "listingsCount": 59,
-    "rating": "4.9",
-    "reviewsCount": 89,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98470 15143",
-    "email": "neha.ghosh@durgapurassetadvisors.in",
-    "badge": "Top Rated",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Bengali"
-    ],
-    "bio": "With over 14 years of verified real estate advisory experience across Benachity and the greater Durgapur market, Neha Ghosh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1139,
-        "title": "Verified Premium Residence in Benachity",
-        "price": "₹ 4.40 Cr",
-        "location": "Benachity, Durgapur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
@@ -2299,32 +4661,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Neha Ghosh provided excellent site walkthrough assistance in Benachity, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Divya Singh provided outstanding site visit support in Baidyanath Dham, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "divya-chauhan-faridabad",
-    "slug": "divya-chauhan-faridabad",
-    "name": "Divya Chauhan",
-    "role": "Senior Property Advisor",
-    "agency": "Faridabad Prime Realty",
-    "reraId": "HRERA2020A2820",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
+    "id": "ananya-verma-deoghar-3",
+    "slug": "ananya-verma-deoghar-3",
+    "name": "Ananya Verma",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Deoghar Heritage Estates",
+    "reraId": "JHRERA2021A4614",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
-    "city": "Faridabad",
-    "cityName": "Faridabad",
-    "area": "Sector 15",
-    "primaryArea": "Sector 15",
-    "experience": "5+ yrs",
-    "experienceYears": 5,
-    "tours": "60+ visits",
-    "listingsCount": 60,
+    "city": "Deoghar",
+    "cityName": "Deoghar",
+    "area": "Kunda",
+    "primaryArea": "Kunda",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "178+ visits",
+    "listingsCount": 23,
     "rating": "5.0",
-    "reviewsCount": 90,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 15180",
-    "email": "divya.chauhan@faridabadprimerealty.in",
+    "reviewsCount": 43,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98300 20286",
+    "email": "ananya.verma@deogharheritageestates.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -2337,18 +4699,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 5 years of verified real estate advisory experience across Sector 15 and the greater Faridabad market, Divya Chauhan assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 7 years of verified real estate advisory experience across Kunda and the greater Deoghar market, Ananya Verma specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1140,
-        "title": "Verified Premium Residence in Sector 15",
-        "price": "₹ 1.20 Cr",
-        "location": "Sector 15, Faridabad",
+        "id": 2278,
+        "title": "Verified Premium Property in Kunda",
+        "price": "₹ 2.60 Cr",
+        "location": "Kunda, Deoghar",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
@@ -2359,32 +4721,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Divya Chauhan provided excellent site walkthrough assistance in Sector 15, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Ananya Verma provided outstanding site visit support in Kunda, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "ananya-tanwar-faridabad",
-    "slug": "ananya-tanwar-faridabad",
-    "name": "Ananya Tanwar",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Faridabad Asset Advisors",
-    "reraId": "HRERA2020A2833",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "alok-singh-deoghar-4",
+    "slug": "alok-singh-deoghar-4",
+    "name": "Alok Singh",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Deoghar Capital Properties",
+    "reraId": "JHRERA2021A4627",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
-    "city": "Faridabad",
-    "cityName": "Faridabad",
-    "area": "Sector 21C",
-    "primaryArea": "Sector 21C",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "61+ visits",
-    "listingsCount": 61,
+    "city": "Deoghar",
+    "cityName": "Deoghar",
+    "area": "Williams Town",
+    "primaryArea": "Williams Town",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "179+ visits",
+    "listingsCount": 24,
     "rating": "4.8",
-    "reviewsCount": 91,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98200 15217",
-    "email": "ananya.tanwar@faridabadassetadvisors.in",
+    "reviewsCount": 44,
+    "focus": "Plots & development land",
+    "phone": "+91 98470 20323",
+    "email": "alok.singh@deogharcapitalproperties.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -2397,18 +4759,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 6 years of verified real estate advisory experience across Sector 21C and the greater Faridabad market, Ananya Tanwar assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 8 years of verified real estate advisory experience across Williams Town and the greater Deoghar market, Alok Singh specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1141,
-        "title": "Verified Premium Residence in Sector 21C",
-        "price": "₹ 2.00 Cr",
-        "location": "Sector 21C, Faridabad",
+        "id": 2279,
+        "title": "Verified Premium Property in Williams Town",
+        "price": "₹ 3.35 Cr",
+        "location": "Williams Town, Deoghar",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
@@ -2419,33 +4781,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ananya Tanwar provided excellent site walkthrough assistance in Sector 21C, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Alok Singh provided outstanding site visit support in Williams Town, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "vikram-singh-gaya",
-    "slug": "vikram-singh-gaya",
-    "name": "Vikram Singh",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Gaya Prime Realty",
-    "reraId": "BRERA2021A2846",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
+    "id": "kavita-verma-deoghar-5",
+    "slug": "kavita-verma-deoghar-5",
+    "name": "Kavita Verma",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Deoghar Corridor Homes",
+    "reraId": "JHRERA2021A4640",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-    "city": "Gaya",
-    "cityName": "Gaya",
-    "area": "AP Colony",
-    "primaryArea": "AP Colony",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "62+ visits",
-    "listingsCount": 62,
+    "city": "Deoghar",
+    "cityName": "Deoghar",
+    "area": "Jasidih Road",
+    "primaryArea": "Jasidih Road",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "40+ visits",
+    "listingsCount": 25,
     "rating": "4.9",
-    "reviewsCount": 92,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98450 15254",
-    "email": "vikram.singh@gayaprimerealty.in",
-    "badge": "Top Producer",
+    "reviewsCount": 45,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98101 20360",
+    "email": "kavita.verma@deogharcorridorhomes.in",
+    "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -2457,18 +4819,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across AP Colony and the greater Gaya market, Vikram Singh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 9 years of verified real estate advisory experience across Jasidih Road and the greater Deoghar market, Kavita Verma specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1142,
-        "title": "Verified Premium Residence in AP Colony",
-        "price": "₹ 2.80 Cr",
-        "location": "AP Colony, Gaya",
+        "id": 2280,
+        "title": "Verified Premium Property in Jasidih Road",
+        "price": "₹ 4.10 Cr",
+        "location": "Jasidih Road, Deoghar",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
@@ -2479,152 +4841,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Vikram Singh provided excellent site walkthrough assistance in AP Colony, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Kavita Verma provided outstanding site visit support in Jasidih Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "deepika-jha-gaya",
-    "slug": "deepika-jha-gaya",
-    "name": "Deepika Jha",
-    "role": "Land & Villa Consultant",
-    "agency": "Gaya Asset Advisors",
-    "reraId": "BRERA2021A2859",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
+    "id": "siddharth-sinha-dhanbad-1",
+    "slug": "siddharth-sinha-dhanbad-1",
+    "name": "Siddharth Sinha",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Dhanbad Prime Realty",
+    "reraId": "JHRERA2021A4653",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Gaya",
-    "cityName": "Gaya",
-    "area": "Bodhgaya Road",
-    "primaryArea": "Bodhgaya Road",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "63+ visits",
-    "listingsCount": 63,
-    "rating": "5.0",
-    "reviewsCount": 93,
-    "focus": "Villas & plots",
-    "phone": "+91 98112 15291",
-    "email": "deepika.jha@gayaassetadvisors.in",
-    "badge": "Fast Responder",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 8 years of verified real estate advisory experience across Bodhgaya Road and the greater Gaya market, Deepika Jha assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1143,
-        "title": "Verified Premium Residence in Bodhgaya Road",
-        "price": "₹ 3.60 Cr",
-        "location": "Bodhgaya Road, Gaya",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Deepika Jha provided excellent site walkthrough assistance in Bodhgaya Road, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "ritu-sharma-ghaziabad",
-    "slug": "ritu-sharma-ghaziabad",
-    "name": "Ritu Sharma",
-    "role": "Land & Villa Consultant",
-    "agency": "Ghaziabad Prime Realty",
-    "reraId": "UPRERA2021A2872",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Ghaziabad",
-    "cityName": "Ghaziabad",
-    "area": "Indirapuram",
-    "primaryArea": "Indirapuram",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "64+ visits",
-    "listingsCount": 64,
-    "rating": "4.8",
-    "reviewsCount": 94,
-    "focus": "Villas & plots",
-    "phone": "+91 98712 15328",
-    "email": "ritu.sharma@ghaziabadprimerealty.in",
-    "badge": "Fast Responder",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 9 years of verified real estate advisory experience across Indirapuram and the greater Ghaziabad market, Ritu Sharma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1144,
-        "title": "Verified Premium Residence in Indirapuram",
-        "price": "₹ 4.40 Cr",
-        "location": "Indirapuram, Ghaziabad",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Ritu Sharma provided excellent site walkthrough assistance in Indirapuram, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "shweta-yadav-ghaziabad",
-    "slug": "shweta-yadav-ghaziabad",
-    "name": "Shweta Yadav",
-    "role": "High-Rise Living Advisor",
-    "agency": "Ghaziabad Asset Advisors",
-    "reraId": "UPRERA2021A2885",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Ghaziabad",
-    "cityName": "Ghaziabad",
-    "area": "Vaishali",
-    "primaryArea": "Vaishali",
+    "city": "Dhanbad",
+    "cityName": "Dhanbad",
+    "area": "Bank More",
+    "primaryArea": "Bank More",
     "experience": "10+ yrs",
     "experienceYears": 10,
-    "tours": "65+ visits",
-    "listingsCount": 65,
-    "rating": "4.9",
-    "reviewsCount": 95,
-    "focus": "High-rises & apartments",
-    "phone": "+91 99100 15365",
-    "email": "shweta.yadav@ghaziabadassetadvisors.in",
+    "tours": "41+ visits",
+    "listingsCount": 26,
+    "rating": "5.0",
+    "reviewsCount": 46,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98200 20397",
+    "email": "siddharth.sinha@dhanbadprimerealty.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -2637,7 +4879,67 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 10 years of verified real estate advisory experience across Vaishali and the greater Ghaziabad market, Shweta Yadav assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 10 years of verified real estate advisory experience across Bank More and the greater Dhanbad market, Siddharth Sinha specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2281,
+        "title": "Verified Premium Property in Bank More",
+        "price": "₹ 4.85 Cr",
+        "location": "Bank More, Dhanbad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Siddharth Sinha provided outstanding site visit support in Bank More, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "manish-pandey-dhanbad-2",
+    "slug": "manish-pandey-dhanbad-2",
+    "name": "Manish Pandey",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Dhanbad Asset Advisors",
+    "reraId": "JHRERA2021A4666",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Dhanbad",
+    "cityName": "Dhanbad",
+    "area": "Saraidhela",
+    "primaryArea": "Saraidhela",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "42+ visits",
+    "listingsCount": 27,
+    "rating": "4.8",
+    "reviewsCount": 47,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98450 20434",
+    "email": "manish.pandey@dhanbadassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Saraidhela and the greater Dhanbad market, Manish Pandey specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -2645,10 +4947,70 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1145,
-        "title": "Verified Premium Residence in Vaishali",
-        "price": "₹ 1.20 Cr",
-        "location": "Vaishali, Ghaziabad",
+        "id": 2282,
+        "title": "Verified Premium Property in Saraidhela",
+        "price": "₹ 1.10 Cr",
+        "location": "Saraidhela, Dhanbad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Manish Pandey provided outstanding site visit support in Saraidhela, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "naveen-sinha-dhanbad-3",
+    "slug": "naveen-sinha-dhanbad-3",
+    "name": "Naveen Sinha",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Dhanbad Heritage Estates",
+    "reraId": "JHRERA2021A4679",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Dhanbad",
+    "cityName": "Dhanbad",
+    "area": "Govindpur Road",
+    "primaryArea": "Govindpur Road",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "43+ visits",
+    "listingsCount": 28,
+    "rating": "4.9",
+    "reviewsCount": 48,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98112 20471",
+    "email": "naveen.sinha@dhanbadheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Govindpur Road and the greater Dhanbad market, Naveen Sinha specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2283,
+        "title": "Verified Premium Property in Govindpur Road",
+        "price": "₹ 1.85 Cr",
+        "location": "Govindpur Road, Dhanbad",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
@@ -2659,19 +5021,1344 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Shweta Yadav provided excellent site walkthrough assistance in Vaishali, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Naveen Sinha provided outstanding site visit support in Govindpur Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "poonam-sharma-greater noida",
-    "slug": "poonam-sharma-greater noida",
-    "name": "Poonam Sharma",
-    "role": "High-Rise Living Advisor",
-    "agency": "Greater Noida Prime Realty",
-    "reraId": "UPRERA2021A2898",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
+    "id": "rakesh-pandey-dhanbad-4",
+    "slug": "rakesh-pandey-dhanbad-4",
+    "name": "Rakesh Pandey",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Dhanbad Capital Properties",
+    "reraId": "JHRERA2021A4692",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Dhanbad",
+    "cityName": "Dhanbad",
+    "area": "Steel Gate",
+    "primaryArea": "Steel Gate",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "44+ visits",
+    "listingsCount": 29,
+    "rating": "5.0",
+    "reviewsCount": 49,
+    "focus": "Plots & development land",
+    "phone": "+91 98712 20508",
+    "email": "rakesh.pandey@dhanbadcapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Steel Gate and the greater Dhanbad market, Rakesh Pandey specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2284,
+        "title": "Verified Premium Property in Steel Gate",
+        "price": "₹ 2.60 Cr",
+        "location": "Steel Gate, Dhanbad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rakesh Pandey provided outstanding site visit support in Steel Gate, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "monika-sinha-dhanbad-5",
+    "slug": "monika-sinha-dhanbad-5",
+    "name": "Monika Sinha",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Dhanbad Corridor Homes",
+    "reraId": "JHRERA2021A4705",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Dhanbad",
+    "cityName": "Dhanbad",
+    "area": "Dhirajganj",
+    "primaryArea": "Dhirajganj",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "45+ visits",
+    "listingsCount": 30,
+    "rating": "4.8",
+    "reviewsCount": 50,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 99100 20545",
+    "email": "monika.sinha@dhanbadcorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Dhirajganj and the greater Dhanbad market, Monika Sinha specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2285,
+        "title": "Verified Premium Property in Dhirajganj",
+        "price": "₹ 3.35 Cr",
+        "location": "Dhirajganj, Dhanbad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Monika Sinha provided outstanding site visit support in Dhirajganj, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "vikram-chatterjee-durgapur-1",
+    "slug": "vikram-chatterjee-durgapur-1",
+    "name": "Vikram Chatterjee",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Durgapur Prime Realty",
+    "reraId": "WBHIRA2021A4718",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Durgapur",
+    "cityName": "Durgapur",
+    "area": "City Centre",
+    "primaryArea": "City Centre",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "46+ visits",
+    "listingsCount": 31,
+    "rating": "4.9",
+    "reviewsCount": 51,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98188 20582",
+    "email": "vikram.chatterjee@durgapurprimerealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across City Centre and the greater Durgapur market, Vikram Chatterjee specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2286,
+        "title": "Verified Premium Property in City Centre",
+        "price": "₹ 4.10 Cr",
+        "location": "City Centre, Durgapur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Vikram Chatterjee provided outstanding site visit support in City Centre, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "deepika-chakraborty-durgapur-2",
+    "slug": "deepika-chakraborty-durgapur-2",
+    "name": "Deepika Chakraborty",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Durgapur Asset Advisors",
+    "reraId": "WBHIRA2021A4731",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Durgapur",
+    "cityName": "Durgapur",
+    "area": "Benachity",
+    "primaryArea": "Benachity",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "47+ visits",
+    "listingsCount": 32,
+    "rating": "5.0",
+    "reviewsCount": 52,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98230 20619",
+    "email": "deepika.chakraborty@durgapurassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Benachity and the greater Durgapur market, Deepika Chakraborty specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2287,
+        "title": "Verified Premium Property in Benachity",
+        "price": "₹ 4.85 Cr",
+        "location": "Benachity, Durgapur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Deepika Chakraborty provided outstanding site visit support in Benachity, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sunita-chatterjee-durgapur-3",
+    "slug": "sunita-chatterjee-durgapur-3",
+    "name": "Sunita Chatterjee",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Durgapur Heritage Estates",
+    "reraId": "WBHIRA2021A4744",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Durgapur",
+    "cityName": "Durgapur",
+    "area": "Bidhannagar",
+    "primaryArea": "Bidhannagar",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "48+ visits",
+    "listingsCount": 33,
+    "rating": "4.8",
+    "reviewsCount": 53,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98300 20656",
+    "email": "sunita.chatterjee@durgapurheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Bidhannagar and the greater Durgapur market, Sunita Chatterjee specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2288,
+        "title": "Verified Premium Property in Bidhannagar",
+        "price": "₹ 1.10 Cr",
+        "location": "Bidhannagar, Durgapur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sunita Chatterjee provided outstanding site visit support in Bidhannagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "preeti-chakraborty-durgapur-4",
+    "slug": "preeti-chakraborty-durgapur-4",
+    "name": "Preeti Chakraborty",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Durgapur Capital Properties",
+    "reraId": "WBHIRA2021A4757",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Durgapur",
+    "cityName": "Durgapur",
+    "area": "Muchipara",
+    "primaryArea": "Muchipara",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "49+ visits",
+    "listingsCount": 34,
+    "rating": "4.9",
+    "reviewsCount": 54,
+    "focus": "Plots & development land",
+    "phone": "+91 98470 20693",
+    "email": "preeti.chakraborty@durgapurcapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Muchipara and the greater Durgapur market, Preeti Chakraborty specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2289,
+        "title": "Verified Premium Property in Muchipara",
+        "price": "₹ 1.85 Cr",
+        "location": "Muchipara, Durgapur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Preeti Chakraborty provided outstanding site visit support in Muchipara, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "vikas-chatterjee-durgapur-5",
+    "slug": "vikas-chatterjee-durgapur-5",
+    "name": "Vikas Chatterjee",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Durgapur Corridor Homes",
+    "reraId": "WBHIRA2021A4770",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Durgapur",
+    "cityName": "Durgapur",
+    "area": "Fuljhor",
+    "primaryArea": "Fuljhor",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "50+ visits",
+    "listingsCount": 35,
+    "rating": "5.0",
+    "reviewsCount": 55,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98101 20730",
+    "email": "vikas.chatterjee@durgapurcorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Fuljhor and the greater Durgapur market, Vikas Chatterjee specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2290,
+        "title": "Verified Premium Property in Fuljhor",
+        "price": "₹ 2.60 Cr",
+        "location": "Fuljhor, Durgapur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Vikas Chatterjee provided outstanding site visit support in Fuljhor, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "smita-kaushik-faridabad-1",
+    "slug": "smita-kaushik-faridabad-1",
+    "name": "Smita Kaushik",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Faridabad Prime Realty",
+    "reraId": "HRERA2020A4783",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Faridabad",
+    "cityName": "Faridabad",
+    "area": "Sector 15",
+    "primaryArea": "Sector 15",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "51+ visits",
+    "listingsCount": 36,
+    "rating": "4.8",
+    "reviewsCount": 56,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98200 20767",
+    "email": "smita.kaushik@faridabadprimerealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Sector 15 and the greater Faridabad market, Smita Kaushik specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2291,
+        "title": "Verified Premium Property in Sector 15",
+        "price": "₹ 3.35 Cr",
+        "location": "Sector 15, Faridabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Smita Kaushik provided outstanding site visit support in Sector 15, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anand-dahiya-faridabad-2",
+    "slug": "anand-dahiya-faridabad-2",
+    "name": "Anand Dahiya",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Faridabad Asset Advisors",
+    "reraId": "HRERA2020A4796",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Faridabad",
+    "cityName": "Faridabad",
+    "area": "Sector 21C",
+    "primaryArea": "Sector 21C",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "52+ visits",
+    "listingsCount": 37,
+    "rating": "4.9",
+    "reviewsCount": 57,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98450 20804",
+    "email": "anand.dahiya@faridabadassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Sector 21C and the greater Faridabad market, Anand Dahiya specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2292,
+        "title": "Verified Premium Property in Sector 21C",
+        "price": "₹ 4.10 Cr",
+        "location": "Sector 21C, Faridabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anand Dahiya provided outstanding site visit support in Sector 21C, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "aditya-kaushik-faridabad-3",
+    "slug": "aditya-kaushik-faridabad-3",
+    "name": "Aditya Kaushik",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Faridabad Heritage Estates",
+    "reraId": "HRERA2020A4809",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Faridabad",
+    "cityName": "Faridabad",
+    "area": "Greenfield Colony",
+    "primaryArea": "Greenfield Colony",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "53+ visits",
+    "listingsCount": 38,
+    "rating": "5.0",
+    "reviewsCount": 58,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98112 20841",
+    "email": "aditya.kaushik@faridabadheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Greenfield Colony and the greater Faridabad market, Aditya Kaushik specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2293,
+        "title": "Verified Premium Property in Greenfield Colony",
+        "price": "₹ 4.85 Cr",
+        "location": "Greenfield Colony, Faridabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Aditya Kaushik provided outstanding site visit support in Greenfield Colony, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "suresh-dahiya-faridabad-4",
+    "slug": "suresh-dahiya-faridabad-4",
+    "name": "Suresh Dahiya",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Faridabad Capital Properties",
+    "reraId": "HRERA2020A4822",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Faridabad",
+    "cityName": "Faridabad",
+    "area": "Neharpar Sector 82",
+    "primaryArea": "Neharpar Sector 82",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "54+ visits",
+    "listingsCount": 39,
+    "rating": "4.8",
+    "reviewsCount": 59,
+    "focus": "Plots & development land",
+    "phone": "+91 98712 20878",
+    "email": "suresh.dahiya@faridabadcapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Neharpar Sector 82 and the greater Faridabad market, Suresh Dahiya specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2294,
+        "title": "Verified Premium Property in Neharpar Sector 82",
+        "price": "₹ 1.10 Cr",
+        "location": "Neharpar Sector 82, Faridabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Suresh Dahiya provided outstanding site visit support in Neharpar Sector 82, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ashok-kaushik-faridabad-5",
+    "slug": "ashok-kaushik-faridabad-5",
+    "name": "Ashok Kaushik",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Faridabad Corridor Homes",
+    "reraId": "HRERA2020A4835",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Faridabad",
+    "cityName": "Faridabad",
+    "area": "NIT Faridabad",
+    "primaryArea": "NIT Faridabad",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "55+ visits",
+    "listingsCount": 40,
+    "rating": "4.9",
+    "reviewsCount": 60,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 99100 20915",
+    "email": "ashok.kaushik@faridabadcorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across NIT Faridabad and the greater Faridabad market, Ashok Kaushik specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2295,
+        "title": "Verified Premium Property in NIT Faridabad",
+        "price": "₹ 1.85 Cr",
+        "location": "NIT Faridabad, Faridabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ashok Kaushik provided outstanding site visit support in NIT Faridabad, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "karan-singh-gaya-1",
+    "slug": "karan-singh-gaya-1",
+    "name": "Karan Singh",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Gaya Prime Realty",
+    "reraId": "BRERA2021A4848",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Gaya",
+    "cityName": "Gaya",
+    "area": "AP Colony",
+    "primaryArea": "AP Colony",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "56+ visits",
+    "listingsCount": 41,
+    "rating": "5.0",
+    "reviewsCount": 61,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98188 20952",
+    "email": "karan.singh@gayaprimerealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across AP Colony and the greater Gaya market, Karan Singh specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2296,
+        "title": "Verified Premium Property in AP Colony",
+        "price": "₹ 2.60 Cr",
+        "location": "AP Colony, Gaya",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Karan Singh provided outstanding site visit support in AP Colony, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "aarav-jha-gaya-2",
+    "slug": "aarav-jha-gaya-2",
+    "name": "Aarav Jha",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Gaya Asset Advisors",
+    "reraId": "BRERA2021A4861",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Gaya",
+    "cityName": "Gaya",
+    "area": "Bodhgaya Road",
+    "primaryArea": "Bodhgaya Road",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "57+ visits",
+    "listingsCount": 42,
+    "rating": "4.8",
+    "reviewsCount": 62,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98230 20989",
+    "email": "aarav.jha@gayaassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Bodhgaya Road and the greater Gaya market, Aarav Jha specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2297,
+        "title": "Verified Premium Property in Bodhgaya Road",
+        "price": "₹ 3.35 Cr",
+        "location": "Bodhgaya Road, Gaya",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Aarav Jha provided outstanding site visit support in Bodhgaya Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "pooja-singh-gaya-3",
+    "slug": "pooja-singh-gaya-3",
+    "name": "Pooja Singh",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Gaya Heritage Estates",
+    "reraId": "BRERA2021A4874",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Gaya",
+    "cityName": "Gaya",
+    "area": "Civil Lines",
+    "primaryArea": "Civil Lines",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "58+ visits",
+    "listingsCount": 43,
+    "rating": "4.9",
+    "reviewsCount": 63,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98300 21026",
+    "email": "pooja.singh@gayaheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Civil Lines and the greater Gaya market, Pooja Singh specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2298,
+        "title": "Verified Premium Property in Civil Lines",
+        "price": "₹ 4.10 Cr",
+        "location": "Civil Lines, Gaya",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Pooja Singh provided outstanding site visit support in Civil Lines, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ritu-jha-gaya-4",
+    "slug": "ritu-jha-gaya-4",
+    "name": "Ritu Jha",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Gaya Capital Properties",
+    "reraId": "BRERA2021A4887",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Gaya",
+    "cityName": "Gaya",
+    "area": "Chandauti",
+    "primaryArea": "Chandauti",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "59+ visits",
+    "listingsCount": 44,
+    "rating": "5.0",
+    "reviewsCount": 64,
+    "focus": "Plots & development land",
+    "phone": "+91 98470 21063",
+    "email": "ritu.jha@gayacapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Chandauti and the greater Gaya market, Ritu Jha specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2299,
+        "title": "Verified Premium Property in Chandauti",
+        "price": "₹ 4.85 Cr",
+        "location": "Chandauti, Gaya",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ritu Jha provided outstanding site visit support in Chandauti, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "shweta-singh-gaya-5",
+    "slug": "shweta-singh-gaya-5",
+    "name": "Shweta Singh",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Gaya Corridor Homes",
+    "reraId": "BRERA2021A4900",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Gaya",
+    "cityName": "Gaya",
+    "area": "Medical College Road",
+    "primaryArea": "Medical College Road",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "60+ visits",
+    "listingsCount": 45,
+    "rating": "4.8",
+    "reviewsCount": 65,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98101 21100",
+    "email": "shweta.singh@gayacorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Medical College Road and the greater Gaya market, Shweta Singh specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2300,
+        "title": "Verified Premium Property in Medical College Road",
+        "price": "₹ 1.10 Cr",
+        "location": "Medical College Road, Gaya",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Shweta Singh provided outstanding site visit support in Medical College Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sanjay-tiwari-ghaziabad-1",
+    "slug": "sanjay-tiwari-ghaziabad-1",
+    "name": "Sanjay Tiwari",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Ghaziabad Prime Realty",
+    "reraId": "UPRERA2021A4913",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ghaziabad",
+    "cityName": "Ghaziabad",
+    "area": "Indirapuram",
+    "primaryArea": "Indirapuram",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "61+ visits",
+    "listingsCount": 46,
+    "rating": "4.9",
+    "reviewsCount": 66,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98200 21137",
+    "email": "sanjay.tiwari@ghaziabadprimerealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Indirapuram and the greater Ghaziabad market, Sanjay Tiwari specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2301,
+        "title": "Verified Premium Property in Indirapuram",
+        "price": "₹ 1.85 Cr",
+        "location": "Indirapuram, Ghaziabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sanjay Tiwari provided outstanding site visit support in Indirapuram, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "tanvi-gupta-ghaziabad-2",
+    "slug": "tanvi-gupta-ghaziabad-2",
+    "name": "Tanvi Gupta",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Ghaziabad Asset Advisors",
+    "reraId": "UPRERA2021A4926",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ghaziabad",
+    "cityName": "Ghaziabad",
+    "area": "Vaishali",
+    "primaryArea": "Vaishali",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "62+ visits",
+    "listingsCount": 47,
+    "rating": "5.0",
+    "reviewsCount": 67,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98450 21174",
+    "email": "tanvi.gupta@ghaziabadassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Vaishali and the greater Ghaziabad market, Tanvi Gupta specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2302,
+        "title": "Verified Premium Property in Vaishali",
+        "price": "₹ 2.60 Cr",
+        "location": "Vaishali, Ghaziabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Tanvi Gupta provided outstanding site visit support in Vaishali, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rohan-tiwari-ghaziabad-3",
+    "slug": "rohan-tiwari-ghaziabad-3",
+    "name": "Rohan Tiwari",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Ghaziabad Heritage Estates",
+    "reraId": "UPRERA2021A4939",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ghaziabad",
+    "cityName": "Ghaziabad",
+    "area": "Raj Nagar Extension",
+    "primaryArea": "Raj Nagar Extension",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "63+ visits",
+    "listingsCount": 48,
+    "rating": "4.8",
+    "reviewsCount": 68,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98112 21211",
+    "email": "rohan.tiwari@ghaziabadheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Raj Nagar Extension and the greater Ghaziabad market, Rohan Tiwari specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2303,
+        "title": "Verified Premium Property in Raj Nagar Extension",
+        "price": "₹ 3.35 Cr",
+        "location": "Raj Nagar Extension, Ghaziabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rohan Tiwari provided outstanding site visit support in Raj Nagar Extension, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kunal-gupta-ghaziabad-4",
+    "slug": "kunal-gupta-ghaziabad-4",
+    "name": "Kunal Gupta",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Ghaziabad Capital Properties",
+    "reraId": "UPRERA2021A4952",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ghaziabad",
+    "cityName": "Ghaziabad",
+    "area": "Vasundhara",
+    "primaryArea": "Vasundhara",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "64+ visits",
+    "listingsCount": 49,
+    "rating": "4.9",
+    "reviewsCount": 69,
+    "focus": "Plots & development land",
+    "phone": "+91 98712 21248",
+    "email": "kunal.gupta@ghaziabadcapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Vasundhara and the greater Ghaziabad market, Kunal Gupta specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2304,
+        "title": "Verified Premium Property in Vasundhara",
+        "price": "₹ 4.10 Cr",
+        "location": "Vasundhara, Ghaziabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kunal Gupta provided outstanding site visit support in Vasundhara, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "amit-tiwari-ghaziabad-5",
+    "slug": "amit-tiwari-ghaziabad-5",
+    "name": "Amit Tiwari",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Ghaziabad Corridor Homes",
+    "reraId": "UPRERA2021A4965",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ghaziabad",
+    "cityName": "Ghaziabad",
+    "area": "Crossings Republik",
+    "primaryArea": "Crossings Republik",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "65+ visits",
+    "listingsCount": 50,
+    "rating": "5.0",
+    "reviewsCount": 70,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 99100 21285",
+    "email": "amit.tiwari@ghaziabadcorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Crossings Republik and the greater Ghaziabad market, Amit Tiwari specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2305,
+        "title": "Verified Premium Property in Crossings Republik",
+        "price": "₹ 4.85 Cr",
+        "location": "Crossings Republik, Ghaziabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Amit Tiwari provided outstanding site visit support in Crossings Republik, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anita-tripathi-greater noida-1",
+    "slug": "anita-tripathi-greater noida-1",
+    "name": "Anita Tripathi",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Greater Noida Prime Realty",
+    "reraId": "UPRERA2021A4978",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Greater Noida",
     "cityName": "Greater Noida",
     "area": "Pari Chowk",
@@ -2679,12 +6366,12 @@ export const CITY_ADVISORS: Agent[] = [
     "experience": "11+ yrs",
     "experienceYears": 11,
     "tours": "66+ visits",
-    "listingsCount": 66,
-    "rating": "5.0",
-    "reviewsCount": 96,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98188 15402",
-    "email": "poonam.sharma@greaternoidaprimerealty.in",
+    "listingsCount": 51,
+    "rating": "4.8",
+    "reviewsCount": 71,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98188 21322",
+    "email": "anita.tripathi@greaternoidaprimerealty.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -2697,7 +6384,7 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across Pari Chowk and the greater Greater Noida market, Poonam Sharma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 11 years of verified real estate advisory experience across Pari Chowk and the greater Greater Noida market, Anita Tripathi specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -2705,10 +6392,130 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1146,
-        "title": "Verified Premium Residence in Pari Chowk",
-        "price": "₹ 2.00 Cr",
+        "id": 2306,
+        "title": "Verified Premium Property in Pari Chowk",
+        "price": "₹ 1.10 Cr",
         "location": "Pari Chowk, Greater Noida",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anita Tripathi provided outstanding site visit support in Pari Chowk, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "poonam-mishra-greater noida-2",
+    "slug": "poonam-mishra-greater noida-2",
+    "name": "Poonam Mishra",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Greater Noida Asset Advisors",
+    "reraId": "UPRERA2021A4991",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Greater Noida",
+    "cityName": "Greater Noida",
+    "area": "Omega 1",
+    "primaryArea": "Omega 1",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "67+ visits",
+    "listingsCount": 52,
+    "rating": "4.9",
+    "reviewsCount": 72,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98230 21359",
+    "email": "poonam.mishra@greaternoidaassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Omega 1 and the greater Greater Noida market, Poonam Mishra specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2307,
+        "title": "Verified Premium Property in Omega 1",
+        "price": "₹ 1.85 Cr",
+        "location": "Omega 1, Greater Noida",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Poonam Mishra provided outstanding site visit support in Omega 1, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "mayank-tripathi-greater noida-3",
+    "slug": "mayank-tripathi-greater noida-3",
+    "name": "Mayank Tripathi",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Greater Noida Heritage Estates",
+    "reraId": "UPRERA2021A5004",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Greater Noida",
+    "cityName": "Greater Noida",
+    "area": "Alpha 2",
+    "primaryArea": "Alpha 2",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "68+ visits",
+    "listingsCount": 53,
+    "rating": "5.0",
+    "reviewsCount": 73,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98300 21396",
+    "email": "mayank.tripathi@greaternoidaheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Alpha 2 and the greater Greater Noida market, Mayank Tripathi specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2308,
+        "title": "Verified Premium Property in Alpha 2",
+        "price": "₹ 2.60 Cr",
+        "location": "Alpha 2, Greater Noida",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
@@ -2719,33 +6526,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Poonam Sharma provided excellent site walkthrough assistance in Pari Chowk, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Mayank Tripathi provided outstanding site visit support in Alpha 2, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "meera-yadav-greater noida",
-    "slug": "meera-yadav-greater noida",
-    "name": "Meera Yadav",
-    "role": "Luxury Residential Consultant",
-    "agency": "Greater Noida Asset Advisors",
-    "reraId": "UPRERA2021A2911",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "meera-mishra-greater noida-4",
+    "slug": "meera-mishra-greater noida-4",
+    "name": "Meera Mishra",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Greater Noida Capital Properties",
+    "reraId": "UPRERA2021A5017",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Greater Noida",
     "cityName": "Greater Noida",
-    "area": "Omega 1",
-    "primaryArea": "Omega 1",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "67+ visits",
-    "listingsCount": 67,
+    "area": "Chi 5",
+    "primaryArea": "Chi 5",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "69+ visits",
+    "listingsCount": 54,
     "rating": "4.8",
-    "reviewsCount": 97,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98230 15439",
-    "email": "meera.yadav@greaternoidaassetadvisors.in",
-    "badge": "Super Agent",
+    "reviewsCount": 74,
+    "focus": "Plots & development land",
+    "phone": "+91 98470 21433",
+    "email": "meera.mishra@greaternoidacapitalproperties.in",
+    "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -2757,18 +6564,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 12 years of verified real estate advisory experience across Omega 1 and the greater Greater Noida market, Meera Yadav assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 14 years of verified real estate advisory experience across Chi 5 and the greater Greater Noida market, Meera Mishra specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1147,
-        "title": "Verified Premium Residence in Omega 1",
-        "price": "₹ 2.80 Cr",
-        "location": "Omega 1, Greater Noida",
+        "id": 2309,
+        "title": "Verified Premium Property in Chi 5",
+        "price": "₹ 3.35 Cr",
+        "location": "Chi 5, Greater Noida",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
@@ -2779,32 +6586,152 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Meera Yadav provided excellent site walkthrough assistance in Omega 1, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Meera Mishra provided outstanding site visit support in Chi 5, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sneha-chauhan-gurugram",
-    "slug": "sneha-chauhan-gurugram",
-    "name": "Sneha Chauhan",
-    "role": "Luxury Residential Consultant",
-    "agency": "Gurugram Prime Realty",
-    "reraId": "HRERA2020A2924",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
+    "id": "neha-tripathi-greater noida-5",
+    "slug": "neha-tripathi-greater noida-5",
+    "name": "Neha Tripathi",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Greater Noida Corridor Homes",
+    "reraId": "UPRERA2021A5030",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Greater Noida",
+    "cityName": "Greater Noida",
+    "area": "Greater Noida West",
+    "primaryArea": "Greater Noida West",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "70+ visits",
+    "listingsCount": 55,
+    "rating": "4.9",
+    "reviewsCount": 75,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98101 21470",
+    "email": "neha.tripathi@greaternoidacorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Greater Noida West and the greater Greater Noida market, Neha Tripathi specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2310,
+        "title": "Verified Premium Property in Greater Noida West",
+        "price": "₹ 4.10 Cr",
+        "location": "Greater Noida West, Greater Noida",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Neha Tripathi provided outstanding site visit support in Greater Noida West, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "gaurav-dahiya-gurugram-1",
+    "slug": "gaurav-dahiya-gurugram-1",
+    "name": "Gaurav Dahiya",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Gurugram Prime Realty",
+    "reraId": "HRERA2020A5043",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Gurugram",
     "cityName": "Gurugram",
     "area": "Golf Course Road",
     "primaryArea": "Golf Course Road",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "68+ visits",
-    "listingsCount": 68,
-    "rating": "4.9",
-    "reviewsCount": 98,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98300 15476",
-    "email": "sneha.chauhan@gurugramprimerealty.in",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "71+ visits",
+    "listingsCount": 56,
+    "rating": "5.0",
+    "reviewsCount": 76,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98200 21507",
+    "email": "gaurav.dahiya@gurugramprimerealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Golf Course Road and the greater Gurugram market, Gaurav Dahiya specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": true,
+    "featuredOrder": 1,
+    "featuredListings": [
+      {
+        "id": 2311,
+        "title": "Verified Premium Property in Golf Course Road",
+        "price": "₹ 4.85 Cr",
+        "location": "Golf Course Road, Gurugram",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Gaurav Dahiya provided outstanding site visit support in Golf Course Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "arjun-kaushik-gurugram-2",
+    "slug": "arjun-kaushik-gurugram-2",
+    "name": "Arjun Kaushik",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Gurugram Asset Advisors",
+    "reraId": "HRERA2020A5056",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Gurugram",
+    "cityName": "Gurugram",
+    "area": "DLF Phase 5",
+    "primaryArea": "DLF Phase 5",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "72+ visits",
+    "listingsCount": 57,
+    "rating": "4.8",
+    "reviewsCount": 77,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98450 21544",
+    "email": "arjun.kaushik@gurugramassetadvisors.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -2817,17 +6744,257 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 13 years of verified real estate advisory experience across Golf Course Road and the greater Gurugram market, Sneha Chauhan assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": true,
-    "featuredOrder": 1,
+    "bio": "With over 5 years of verified real estate advisory experience across DLF Phase 5 and the greater Gurugram market, Arjun Kaushik specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1148,
-        "title": "Verified Premium Residence in Golf Course Road",
-        "price": "₹ 3.60 Cr",
+        "id": 2312,
+        "title": "Verified Premium Property in DLF Phase 5",
+        "price": "₹ 1.10 Cr",
+        "location": "DLF Phase 5, Gurugram",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Arjun Kaushik provided outstanding site visit support in DLF Phase 5, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "simran-dahiya-gurugram-3",
+    "slug": "simran-dahiya-gurugram-3",
+    "name": "Simran Dahiya",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Gurugram Heritage Estates",
+    "reraId": "HRERA2020A5069",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Gurugram",
+    "cityName": "Gurugram",
+    "area": "Sohna Road",
+    "primaryArea": "Sohna Road",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "73+ visits",
+    "listingsCount": 58,
+    "rating": "4.9",
+    "reviewsCount": 78,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98112 21581",
+    "email": "simran.dahiya@gurugramheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Sohna Road and the greater Gurugram market, Simran Dahiya specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2313,
+        "title": "Verified Premium Property in Sohna Road",
+        "price": "₹ 1.85 Cr",
+        "location": "Sohna Road, Gurugram",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Simran Dahiya provided outstanding site visit support in Sohna Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "priya-kaushik-gurugram-4",
+    "slug": "priya-kaushik-gurugram-4",
+    "name": "Priya Kaushik",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Gurugram Capital Properties",
+    "reraId": "HRERA2020A5082",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Gurugram",
+    "cityName": "Gurugram",
+    "area": "Sector 57",
+    "primaryArea": "Sector 57",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "74+ visits",
+    "listingsCount": 59,
+    "rating": "5.0",
+    "reviewsCount": 79,
+    "focus": "Plots & development land",
+    "phone": "+91 98712 21618",
+    "email": "priya.kaushik@gurugramcapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Sector 57 and the greater Gurugram market, Priya Kaushik specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2314,
+        "title": "Verified Premium Property in Sector 57",
+        "price": "₹ 2.60 Cr",
+        "location": "Sector 57, Gurugram",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Priya Kaushik provided outstanding site visit support in Sector 57, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rajesh-dahiya-gurugram-5",
+    "slug": "rajesh-dahiya-gurugram-5",
+    "name": "Rajesh Dahiya",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Gurugram Corridor Homes",
+    "reraId": "HRERA2020A5095",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Gurugram",
+    "cityName": "Gurugram",
+    "area": "Cyber City",
+    "primaryArea": "Cyber City",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "75+ visits",
+    "listingsCount": 60,
+    "rating": "4.8",
+    "reviewsCount": 80,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 99100 21655",
+    "email": "rajesh.dahiya@gurugramcorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Cyber City and the greater Gurugram market, Rajesh Dahiya specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2315,
+        "title": "Verified Premium Property in Cyber City",
+        "price": "₹ 3.35 Cr",
+        "location": "Cyber City, Gurugram",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rajesh Dahiya provided outstanding site visit support in Cyber City, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "gaurav-kaushik-gurugram-6",
+    "slug": "gaurav-kaushik-gurugram-6",
+    "name": "Gaurav Kaushik",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Gurugram Metropolis Realty",
+    "reraId": "HRERA2020A5108",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Gurugram",
+    "cityName": "Gurugram",
+    "area": "Golf Course Road",
+    "primaryArea": "Golf Course Road",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "76+ visits",
+    "listingsCount": 61,
+    "rating": "4.9",
+    "reviewsCount": 81,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98188 21692",
+    "email": "gaurav.kaushik@gurugrammetropolisrealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Golf Course Road and the greater Gurugram market, Gaurav Kaushik specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2316,
+        "title": "Verified Premium Property in Golf Course Road",
+        "price": "₹ 4.10 Cr",
         "location": "Golf Course Road, Gurugram",
         "type": "Sale",
         "beds": 3,
@@ -2839,92 +7006,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sneha Chauhan provided excellent site walkthrough assistance in Golf Course Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Gaurav Kaushik provided outstanding site visit support in Golf Course Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "divya-tanwar-gurugram",
-    "slug": "divya-tanwar-gurugram",
-    "name": "Divya Tanwar",
-    "role": "RERA Certified Property Guide",
-    "agency": "Gurugram Asset Advisors",
-    "reraId": "HRERA2020A2937",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
+    "id": "amit-kakati-guwahati-1",
+    "slug": "amit-kakati-guwahati-1",
+    "name": "Amit Kakati",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Guwahati Prime Realty",
+    "reraId": "ASRERA2021A5121",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Gurugram",
-    "cityName": "Gurugram",
-    "area": "DLF Phase 5",
-    "primaryArea": "DLF Phase 5",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "69+ visits",
-    "listingsCount": 69,
+    "city": "Guwahati",
+    "cityName": "Guwahati",
+    "area": "GS Road",
+    "primaryArea": "GS Road",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "77+ visits",
+    "listingsCount": 62,
     "rating": "5.0",
-    "reviewsCount": 99,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98470 15513",
-    "email": "divya.tanwar@gurugramassetadvisors.in",
-    "badge": "Top Rated",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 14 years of verified real estate advisory experience across DLF Phase 5 and the greater Gurugram market, Divya Tanwar assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1149,
-        "title": "Verified Premium Residence in DLF Phase 5",
-        "price": "₹ 4.40 Cr",
-        "location": "DLF Phase 5, Gurugram",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Divya Tanwar provided excellent site walkthrough assistance in DLF Phase 5, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "ananya-dhiman-gurugram",
-    "slug": "ananya-dhiman-gurugram",
-    "name": "Ananya Dhiman",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Gurugram Heritage Estates",
-    "reraId": "HRERA2020A2950",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Gurugram",
-    "cityName": "Gurugram",
-    "area": "Sohna Road",
-    "primaryArea": "Sohna Road",
-    "experience": "5+ yrs",
-    "experienceYears": 5,
-    "tours": "70+ visits",
-    "listingsCount": 20,
-    "rating": "4.8",
-    "reviewsCount": 100,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 15550",
-    "email": "ananya.dhiman@gurugramheritageestates.in",
+    "reviewsCount": 82,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98230 21729",
+    "email": "amit.kakati@guwahatiprimerealty.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -2935,20 +7042,82 @@ export const CITY_ADVISORS: Agent[] = [
     ],
     "languages": [
       "English",
-      "Hindi"
+      "Hindi",
+      "Assamese"
     ],
-    "bio": "With over 5 years of verified real estate advisory experience across Sohna Road and the greater Gurugram market, Ananya Dhiman assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
-    "subscriptionTier": "FREE_VERIFIED",
+    "bio": "With over 10 years of verified real estate advisory experience across GS Road and the greater Guwahati market, Amit Kakati specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1150,
-        "title": "Verified Premium Residence in Sohna Road",
-        "price": "₹ 1.20 Cr",
-        "location": "Sohna Road, Gurugram",
+        "id": 2317,
+        "title": "Verified Premium Property in GS Road",
+        "price": "₹ 4.85 Cr",
+        "location": "GS Road, Guwahati",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Amit Kakati provided outstanding site visit support in GS Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sanjay-dutta-guwahati-2",
+    "slug": "sanjay-dutta-guwahati-2",
+    "name": "Sanjay Dutta",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Guwahati Asset Advisors",
+    "reraId": "ASRERA2021A5134",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Guwahati",
+    "cityName": "Guwahati",
+    "area": "Zoo Road",
+    "primaryArea": "Zoo Road",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "78+ visits",
+    "listingsCount": 63,
+    "rating": "4.8",
+    "reviewsCount": 83,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98300 21766",
+    "email": "sanjay.dutta@guwahatiassetadvisors.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Assamese"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Zoo Road and the greater Guwahati market, Sanjay Dutta specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2318,
+        "title": "Verified Premium Property in Zoo Road",
+        "price": "₹ 1.10 Cr",
+        "location": "Zoo Road, Guwahati",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
@@ -2959,32 +7128,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ananya Dhiman provided excellent site walkthrough assistance in Sohna Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Sanjay Dutta provided outstanding site visit support in Zoo Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "priya-dutta-guwahati",
-    "slug": "priya-dutta-guwahati",
-    "name": "Priya Dutta",
-    "role": "Land & Villa Consultant",
-    "agency": "Guwahati Prime Realty",
-    "reraId": "ASRERA2021A2963",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
+    "id": "tanvi-kakati-guwahati-3",
+    "slug": "tanvi-kakati-guwahati-3",
+    "name": "Tanvi Kakati",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Guwahati Heritage Estates",
+    "reraId": "ASRERA2021A5147",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Guwahati",
     "cityName": "Guwahati",
-    "area": "GS Road",
-    "primaryArea": "GS Road",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "71+ visits",
-    "listingsCount": 21,
+    "area": "Beltola",
+    "primaryArea": "Beltola",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "79+ visits",
+    "listingsCount": 64,
     "rating": "4.9",
-    "reviewsCount": 101,
-    "focus": "Villas & plots",
-    "phone": "+91 98200 15587",
-    "email": "priya.dutta@guwahatiprimerealty.in",
+    "reviewsCount": 84,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98470 21803",
+    "email": "tanvi.kakati@guwahatiheritageestates.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -2998,18 +7167,18 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Assamese"
     ],
-    "bio": "With over 6 years of verified real estate advisory experience across GS Road and the greater Guwahati market, Priya Dutta assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 12 years of verified real estate advisory experience across Beltola and the greater Guwahati market, Tanvi Kakati specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1151,
-        "title": "Verified Premium Residence in GS Road",
-        "price": "₹ 2.00 Cr",
-        "location": "GS Road, Guwahati",
+        "id": 2319,
+        "title": "Verified Premium Property in Beltola",
+        "price": "₹ 1.85 Cr",
+        "location": "Beltola, Guwahati",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
@@ -3020,32 +7189,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Priya Dutta provided excellent site walkthrough assistance in GS Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Tanvi Kakati provided outstanding site visit support in Beltola, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "rajesh-sarma-guwahati",
-    "slug": "rajesh-sarma-guwahati",
-    "name": "Rajesh Sarma",
-    "role": "High-Rise Living Advisor",
-    "agency": "Guwahati Asset Advisors",
-    "reraId": "ASRERA2021A2976",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
+    "id": "rohan-dutta-guwahati-4",
+    "slug": "rohan-dutta-guwahati-4",
+    "name": "Rohan Dutta",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Guwahati Capital Properties",
+    "reraId": "ASRERA2021A5160",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Guwahati",
     "cityName": "Guwahati",
-    "area": "Zoo Road",
-    "primaryArea": "Zoo Road",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "72+ visits",
-    "listingsCount": 22,
+    "area": "Christian Basti",
+    "primaryArea": "Christian Basti",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "80+ visits",
+    "listingsCount": 65,
     "rating": "5.0",
-    "reviewsCount": 102,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 15624",
-    "email": "rajesh.sarma@guwahatiassetadvisors.in",
+    "reviewsCount": 85,
+    "focus": "Plots & development land",
+    "phone": "+91 98101 21840",
+    "email": "rohan.dutta@guwahaticapitalproperties.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -3059,18 +7228,18 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Assamese"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across Zoo Road and the greater Guwahati market, Rajesh Sarma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 13 years of verified real estate advisory experience across Christian Basti and the greater Guwahati market, Rohan Dutta specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1152,
-        "title": "Verified Premium Residence in Zoo Road",
-        "price": "₹ 2.80 Cr",
-        "location": "Zoo Road, Guwahati",
+        "id": 2320,
+        "title": "Verified Premium Property in Christian Basti",
+        "price": "₹ 2.60 Cr",
+        "location": "Christian Basti, Guwahati",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
@@ -3081,32 +7250,273 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Rajesh Sarma provided excellent site walkthrough assistance in Zoo Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Rohan Dutta provided outstanding site visit support in Christian Basti, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "manish-sinha-hazaribagh",
-    "slug": "manish-sinha-hazaribagh",
-    "name": "Manish Sinha",
-    "role": "High-Rise Living Advisor",
-    "agency": "Hazaribagh Prime Realty",
-    "reraId": "JHRERA2021A2989",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "kunal-kakati-guwahati-5",
+    "slug": "kunal-kakati-guwahati-5",
+    "name": "Kunal Kakati",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Guwahati Corridor Homes",
+    "reraId": "ASRERA2021A5173",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Guwahati",
+    "cityName": "Guwahati",
+    "area": "Khanapara",
+    "primaryArea": "Khanapara",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "81+ visits",
+    "listingsCount": 66,
+    "rating": "4.8",
+    "reviewsCount": 86,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98200 21877",
+    "email": "kunal.kakati@guwahaticorridorhomes.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Assamese"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Khanapara and the greater Guwahati market, Kunal Kakati specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2321,
+        "title": "Verified Premium Property in Khanapara",
+        "price": "₹ 3.35 Cr",
+        "location": "Khanapara, Guwahati",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kunal Kakati provided outstanding site visit support in Khanapara, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "neha-mahto-hazaribagh-1",
+    "slug": "neha-mahto-hazaribagh-1",
+    "name": "Neha Mahto",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Hazaribagh Prime Realty",
+    "reraId": "JHRERA2021A5186",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "city": "Hazaribagh",
     "cityName": "Hazaribagh",
     "area": "Matwari",
     "primaryArea": "Matwari",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "73+ visits",
-    "listingsCount": 23,
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "82+ visits",
+    "listingsCount": 67,
+    "rating": "4.9",
+    "reviewsCount": 87,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98450 21914",
+    "email": "neha.mahto@hazaribaghprimerealty.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Matwari and the greater Hazaribagh market, Neha Mahto specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2322,
+        "title": "Verified Premium Property in Matwari",
+        "price": "₹ 4.10 Cr",
+        "location": "Matwari, Hazaribagh",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Neha Mahto provided outstanding site visit support in Matwari, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anita-prasad-hazaribagh-2",
+    "slug": "anita-prasad-hazaribagh-2",
+    "name": "Anita Prasad",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Hazaribagh Asset Advisors",
+    "reraId": "JHRERA2021A5199",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Hazaribagh",
+    "cityName": "Hazaribagh",
+    "area": "Korrah",
+    "primaryArea": "Korrah",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "83+ visits",
+    "listingsCount": 68,
+    "rating": "5.0",
+    "reviewsCount": 88,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98112 21951",
+    "email": "anita.prasad@hazaribaghassetadvisors.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Korrah and the greater Hazaribagh market, Anita Prasad specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2323,
+        "title": "Verified Premium Property in Korrah",
+        "price": "₹ 4.85 Cr",
+        "location": "Korrah, Hazaribagh",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anita Prasad provided outstanding site visit support in Korrah, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "poonam-mahto-hazaribagh-3",
+    "slug": "poonam-mahto-hazaribagh-3",
+    "name": "Poonam Mahto",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Hazaribagh Heritage Estates",
+    "reraId": "JHRERA2021A5212",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Hazaribagh",
+    "cityName": "Hazaribagh",
+    "area": "Lake Road",
+    "primaryArea": "Lake Road",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "84+ visits",
+    "listingsCount": 69,
     "rating": "4.8",
-    "reviewsCount": 103,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98112 15661",
-    "email": "manish.sinha@hazaribaghprimerealty.in",
+    "reviewsCount": 89,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98712 21988",
+    "email": "poonam.mahto@hazaribaghheritageestates.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Lake Road and the greater Hazaribagh market, Poonam Mahto specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2324,
+        "title": "Verified Premium Property in Lake Road",
+        "price": "₹ 1.10 Cr",
+        "location": "Lake Road, Hazaribagh",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Poonam Mahto provided outstanding site visit support in Lake Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "mayank-prasad-hazaribagh-4",
+    "slug": "mayank-prasad-hazaribagh-4",
+    "name": "Mayank Prasad",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Hazaribagh Capital Properties",
+    "reraId": "JHRERA2021A5225",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Hazaribagh",
+    "cityName": "Hazaribagh",
+    "area": "Nawabganj",
+    "primaryArea": "Nawabganj",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "85+ visits",
+    "listingsCount": 70,
+    "rating": "4.9",
+    "reviewsCount": 90,
+    "focus": "Plots & development land",
+    "phone": "+91 99100 22025",
+    "email": "mayank.prasad@hazaribaghcapitalproperties.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -3119,21 +7529,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across Matwari and the greater Hazaribagh market, Manish Sinha assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 6 years of verified real estate advisory experience across Nawabganj and the greater Hazaribagh market, Mayank Prasad specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1153,
-        "title": "Verified Premium Residence in Matwari",
-        "price": "₹ 3.60 Cr",
-        "location": "Matwari, Hazaribagh",
+        "id": 2325,
+        "title": "Verified Premium Property in Nawabganj",
+        "price": "₹ 1.85 Cr",
+        "location": "Nawabganj, Hazaribagh",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -3141,32 +7551,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Manish Sinha provided excellent site walkthrough assistance in Matwari, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Mayank Prasad provided outstanding site visit support in Nawabganj, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "naveen-kumar-hazaribagh",
-    "slug": "naveen-kumar-hazaribagh",
-    "name": "Naveen Kumar",
-    "role": "Luxury Residential Consultant",
-    "agency": "Hazaribagh Asset Advisors",
-    "reraId": "JHRERA2021A3002",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "id": "meera-mahto-hazaribagh-5",
+    "slug": "meera-mahto-hazaribagh-5",
+    "name": "Meera Mahto",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Hazaribagh Corridor Homes",
+    "reraId": "JHRERA2021A5238",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Hazaribagh",
     "cityName": "Hazaribagh",
-    "area": "Korrah",
-    "primaryArea": "Korrah",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "74+ visits",
-    "listingsCount": 24,
-    "rating": "4.9",
-    "reviewsCount": 104,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98712 15698",
-    "email": "naveen.kumar@hazaribaghassetadvisors.in",
+    "area": "Canary Hill Road",
+    "primaryArea": "Canary Hill Road",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "86+ visits",
+    "listingsCount": 71,
+    "rating": "5.0",
+    "reviewsCount": 91,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98188 22062",
+    "email": "meera.mahto@hazaribaghcorridorhomes.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -3179,21 +7589,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Korrah and the greater Hazaribagh market, Naveen Kumar assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 7 years of verified real estate advisory experience across Canary Hill Road and the greater Hazaribagh market, Meera Mahto specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1154,
-        "title": "Verified Premium Residence in Korrah",
-        "price": "₹ 4.40 Cr",
-        "location": "Korrah, Hazaribagh",
+        "id": 2326,
+        "title": "Verified Premium Property in Canary Hill Road",
+        "price": "₹ 2.60 Cr",
+        "location": "Canary Hill Road, Hazaribagh",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -3201,93 +7611,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Naveen Kumar provided excellent site walkthrough assistance in Korrah, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Meera Mahto provided outstanding site visit support in Canary Hill Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "ashok-mukherjee-howrah",
-    "slug": "ashok-mukherjee-howrah",
-    "name": "Ashok Mukherjee",
-    "role": "Luxury Residential Consultant",
+    "id": "rajesh-roy-howrah-1",
+    "slug": "rajesh-roy-howrah-1",
+    "name": "Rajesh Roy",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Howrah Prime Realty",
-    "reraId": "WBHIRA2021A3015",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "WBHIRA2021A5251",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Howrah",
     "cityName": "Howrah",
     "area": "Mandirtala",
     "primaryArea": "Mandirtala",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "75+ visits",
-    "listingsCount": 25,
-    "rating": "5.0",
-    "reviewsCount": 105,
-    "focus": "High-rises & apartments",
-    "phone": "+91 99100 15735",
-    "email": "ashok.mukherjee@howrahprimerealty.in",
-    "badge": "Top Rated",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Bengali"
-    ],
-    "bio": "With over 10 years of verified real estate advisory experience across Mandirtala and the greater Howrah market, Ashok Mukherjee assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1155,
-        "title": "Verified Premium Residence in Mandirtala",
-        "price": "₹ 1.20 Cr",
-        "location": "Mandirtala, Howrah",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Ashok Mukherjee provided excellent site walkthrough assistance in Mandirtala, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "anand-banerjee-howrah",
-    "slug": "anand-banerjee-howrah",
-    "name": "Anand Banerjee",
-    "role": "RERA Certified Property Guide",
-    "agency": "Howrah Asset Advisors",
-    "reraId": "WBHIRA2021A3028",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Howrah",
-    "cityName": "Howrah",
-    "area": "Kona Expressway",
-    "primaryArea": "Kona Expressway",
-    "experience": "11+ yrs",
-    "experienceYears": 11,
-    "tours": "76+ visits",
-    "listingsCount": 26,
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "87+ visits",
+    "listingsCount": 72,
     "rating": "4.8",
-    "reviewsCount": 106,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98188 15772",
-    "email": "anand.banerjee@howrahassetadvisors.in",
+    "reviewsCount": 92,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98230 22099",
+    "email": "rajesh.roy@howrahprimerealty.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -3301,7 +7650,68 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Bengali"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across Kona Expressway and the greater Howrah market, Anand Banerjee assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 8 years of verified real estate advisory experience across Mandirtala and the greater Howrah market, Rajesh Roy specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2327,
+        "title": "Verified Premium Property in Mandirtala",
+        "price": "₹ 3.35 Cr",
+        "location": "Mandirtala, Howrah",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rajesh Roy provided outstanding site visit support in Mandirtala, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "gaurav-banerjee-howrah-2",
+    "slug": "gaurav-banerjee-howrah-2",
+    "name": "Gaurav Banerjee",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Howrah Asset Advisors",
+    "reraId": "WBHIRA2021A5264",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Howrah",
+    "cityName": "Howrah",
+    "area": "Kona Expressway",
+    "primaryArea": "Kona Expressway",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "88+ visits",
+    "listingsCount": 73,
+    "rating": "4.9",
+    "reviewsCount": 93,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98300 22136",
+    "email": "gaurav.banerjee@howrahassetadvisors.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Kona Expressway and the greater Howrah market, Gaurav Banerjee specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -3309,10 +7719,132 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1156,
-        "title": "Verified Premium Residence in Kona Expressway",
-        "price": "₹ 2.00 Cr",
+        "id": 2328,
+        "title": "Verified Premium Property in Kona Expressway",
+        "price": "₹ 4.10 Cr",
         "location": "Kona Expressway, Howrah",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Gaurav Banerjee provided outstanding site visit support in Kona Expressway, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "arjun-roy-howrah-3",
+    "slug": "arjun-roy-howrah-3",
+    "name": "Arjun Roy",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Howrah Heritage Estates",
+    "reraId": "WBHIRA2021A5277",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Howrah",
+    "cityName": "Howrah",
+    "area": "Shibpur",
+    "primaryArea": "Shibpur",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "89+ visits",
+    "listingsCount": 74,
+    "rating": "5.0",
+    "reviewsCount": 94,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98470 22173",
+    "email": "arjun.roy@howrahheritageestates.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Shibpur and the greater Howrah market, Arjun Roy specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2329,
+        "title": "Verified Premium Property in Shibpur",
+        "price": "₹ 4.85 Cr",
+        "location": "Shibpur, Howrah",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Arjun Roy provided outstanding site visit support in Shibpur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "simran-banerjee-howrah-4",
+    "slug": "simran-banerjee-howrah-4",
+    "name": "Simran Banerjee",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Howrah Capital Properties",
+    "reraId": "WBHIRA2021A5290",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Howrah",
+    "cityName": "Howrah",
+    "area": "Salkia",
+    "primaryArea": "Salkia",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "90+ visits",
+    "listingsCount": 20,
+    "rating": "4.8",
+    "reviewsCount": 95,
+    "focus": "Plots & development land",
+    "phone": "+91 98101 22210",
+    "email": "simran.banerjee@howrahcapitalproperties.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Salkia and the greater Howrah market, Simran Banerjee specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2330,
+        "title": "Verified Premium Property in Salkia",
+        "price": "₹ 1.10 Cr",
+        "location": "Salkia, Howrah",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
@@ -3323,32 +7855,93 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Anand Banerjee provided excellent site walkthrough assistance in Kona Expressway, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Simran Banerjee provided outstanding site visit support in Salkia, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "kunal-choudhary-hyderabad",
-    "slug": "kunal-choudhary-hyderabad",
-    "name": "Kunal Choudhary",
-    "role": "RERA Certified Property Guide",
-    "agency": "Hyderabad Prime Realty",
-    "reraId": "TSRERA2021A3041",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
+    "id": "priya-roy-howrah-5",
+    "slug": "priya-roy-howrah-5",
+    "name": "Priya Roy",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Howrah Corridor Homes",
+    "reraId": "WBHIRA2021A5303",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Howrah",
+    "cityName": "Howrah",
+    "area": "Bally",
+    "primaryArea": "Bally",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "91+ visits",
+    "listingsCount": 21,
+    "rating": "4.9",
+    "reviewsCount": 96,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98200 22247",
+    "email": "priya.roy@howrahcorridorhomes.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Bally and the greater Howrah market, Priya Roy specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2331,
+        "title": "Verified Premium Property in Bally",
+        "price": "₹ 1.85 Cr",
+        "location": "Bally, Howrah",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Priya Roy provided outstanding site visit support in Bally, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kavita-naidu-hyderabad-1",
+    "slug": "kavita-naidu-hyderabad-1",
+    "name": "Kavita Naidu",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Hyderabad Prime Realty",
+    "reraId": "TSRERA2021A5316",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Hyderabad",
     "cityName": "Hyderabad",
     "area": "Gachibowli",
     "primaryArea": "Gachibowli",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "77+ visits",
-    "listingsCount": 27,
-    "rating": "4.9",
-    "reviewsCount": 107,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98230 15809",
-    "email": "kunal.choudhary@hyderabadprimerealty.in",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "92+ visits",
+    "listingsCount": 22,
+    "rating": "5.0",
+    "reviewsCount": 97,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98450 22284",
+    "email": "kavita.naidu@hyderabadprimerealty.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -3362,7 +7955,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Telugu"
     ],
-    "bio": "With over 12 years of verified real estate advisory experience across Gachibowli and the greater Hyderabad market, Kunal Choudhary assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 13 years of verified real estate advisory experience across Gachibowli and the greater Hyderabad market, Kavita Naidu specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -3370,9 +7963,314 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 1,
     "featuredListings": [
       {
-        "id": 1157,
-        "title": "Verified Premium Residence in Gachibowli",
-        "price": "₹ 2.80 Cr",
+        "id": 2332,
+        "title": "Verified Premium Property in Gachibowli",
+        "price": "₹ 2.60 Cr",
+        "location": "Gachibowli, Hyderabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kavita Naidu provided outstanding site visit support in Gachibowli, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sneha-reddy-hyderabad-2",
+    "slug": "sneha-reddy-hyderabad-2",
+    "name": "Sneha Reddy",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Hyderabad Asset Advisors",
+    "reraId": "TSRERA2021A5329",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Hyderabad",
+    "cityName": "Hyderabad",
+    "area": "Hitec City",
+    "primaryArea": "Hitec City",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "93+ visits",
+    "listingsCount": 23,
+    "rating": "4.8",
+    "reviewsCount": 98,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98112 22321",
+    "email": "sneha.reddy@hyderabadassetadvisors.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Hitec City and the greater Hyderabad market, Sneha Reddy specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2333,
+        "title": "Verified Premium Property in Hitec City",
+        "price": "₹ 3.35 Cr",
+        "location": "Hitec City, Hyderabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sneha Reddy provided outstanding site visit support in Hitec City, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "divya-naidu-hyderabad-3",
+    "slug": "divya-naidu-hyderabad-3",
+    "name": "Divya Naidu",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Hyderabad Heritage Estates",
+    "reraId": "TSRERA2021A5342",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Hyderabad",
+    "cityName": "Hyderabad",
+    "area": "Madhapur",
+    "primaryArea": "Madhapur",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "94+ visits",
+    "listingsCount": 24,
+    "rating": "4.9",
+    "reviewsCount": 99,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98712 22358",
+    "email": "divya.naidu@hyderabadheritageestates.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Madhapur and the greater Hyderabad market, Divya Naidu specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2334,
+        "title": "Verified Premium Property in Madhapur",
+        "price": "₹ 4.10 Cr",
+        "location": "Madhapur, Hyderabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Divya Naidu provided outstanding site visit support in Madhapur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ananya-reddy-hyderabad-4",
+    "slug": "ananya-reddy-hyderabad-4",
+    "name": "Ananya Reddy",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Hyderabad Capital Properties",
+    "reraId": "TSRERA2021A5355",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Hyderabad",
+    "cityName": "Hyderabad",
+    "area": "Jubilee Hills",
+    "primaryArea": "Jubilee Hills",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "95+ visits",
+    "listingsCount": 25,
+    "rating": "5.0",
+    "reviewsCount": 100,
+    "focus": "Plots & development land",
+    "phone": "+91 99100 22395",
+    "email": "ananya.reddy@hyderabadcapitalproperties.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Jubilee Hills and the greater Hyderabad market, Ananya Reddy specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2335,
+        "title": "Verified Premium Property in Jubilee Hills",
+        "price": "₹ 4.85 Cr",
+        "location": "Jubilee Hills, Hyderabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ananya Reddy provided outstanding site visit support in Jubilee Hills, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "alok-naidu-hyderabad-5",
+    "slug": "alok-naidu-hyderabad-5",
+    "name": "Alok Naidu",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Hyderabad Corridor Homes",
+    "reraId": "TSRERA2021A5368",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Hyderabad",
+    "cityName": "Hyderabad",
+    "area": "Kondapur",
+    "primaryArea": "Kondapur",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "96+ visits",
+    "listingsCount": 26,
+    "rating": "4.8",
+    "reviewsCount": 101,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98188 22432",
+    "email": "alok.naidu@hyderabadcorridorhomes.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Kondapur and the greater Hyderabad market, Alok Naidu specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2336,
+        "title": "Verified Premium Property in Kondapur",
+        "price": "₹ 1.10 Cr",
+        "location": "Kondapur, Hyderabad",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Alok Naidu provided outstanding site visit support in Kondapur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kavita-reddy-hyderabad-6",
+    "slug": "kavita-reddy-hyderabad-6",
+    "name": "Kavita Reddy",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Hyderabad Metropolis Realty",
+    "reraId": "TSRERA2021A5381",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Hyderabad",
+    "cityName": "Hyderabad",
+    "area": "Gachibowli",
+    "primaryArea": "Gachibowli",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "97+ visits",
+    "listingsCount": 27,
+    "rating": "4.9",
+    "reviewsCount": 102,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98230 22469",
+    "email": "kavita.reddy@hyderabadmetropolisrealty.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Gachibowli and the greater Hyderabad market, Kavita Reddy specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2337,
+        "title": "Verified Premium Property in Gachibowli",
+        "price": "₹ 1.85 Cr",
         "location": "Gachibowli, Hyderabad",
         "type": "Sale",
         "beds": 3,
@@ -3384,334 +8282,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Kunal Choudhary provided excellent site walkthrough assistance in Gachibowli, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Kavita Reddy provided outstanding site visit support in Gachibowli, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "amit-rao-hyderabad",
-    "slug": "amit-rao-hyderabad",
-    "name": "Amit Rao",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Hyderabad Asset Advisors",
-    "reraId": "TSRERA2021A3054",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
-    "city": "Hyderabad",
-    "cityName": "Hyderabad",
-    "area": "Hitec City",
-    "primaryArea": "Hitec City",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "78+ visits",
-    "listingsCount": 28,
-    "rating": "5.0",
-    "reviewsCount": 108,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98300 15846",
-    "email": "amit.rao@hyderabadassetadvisors.in",
-    "badge": "Fast Responder",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Telugu"
-    ],
-    "bio": "With over 13 years of verified real estate advisory experience across Hitec City and the greater Hyderabad market, Amit Rao assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1158,
-        "title": "Verified Premium Residence in Hitec City",
-        "price": "₹ 3.60 Cr",
-        "location": "Hitec City, Hyderabad",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Amit Rao provided excellent site walkthrough assistance in Hitec City, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "sanjay-prasad-hyderabad",
-    "slug": "sanjay-prasad-hyderabad",
-    "name": "Sanjay Prasad",
-    "role": "Senior Property Advisor",
-    "agency": "Hyderabad Heritage Estates",
-    "reraId": "TSRERA2021A3067",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
-    "city": "Hyderabad",
-    "cityName": "Hyderabad",
-    "area": "Madhapur",
-    "primaryArea": "Madhapur",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "79+ visits",
-    "listingsCount": 29,
-    "rating": "4.8",
-    "reviewsCount": 109,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98470 15883",
-    "email": "sanjay.prasad@hyderabadheritageestates.in",
-    "badge": "Premier Agent",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Telugu"
-    ],
-    "bio": "With over 14 years of verified real estate advisory experience across Madhapur and the greater Hyderabad market, Sanjay Prasad assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
-    "subscriptionTier": "FREE_VERIFIED",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1159,
-        "title": "Verified Premium Residence in Madhapur",
-        "price": "₹ 4.40 Cr",
-        "location": "Madhapur, Hyderabad",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Sanjay Prasad provided excellent site walkthrough assistance in Madhapur, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "aarav-malviya-indore",
-    "slug": "aarav-malviya-indore",
-    "name": "Aarav Malviya",
-    "role": "High-Rise Living Advisor",
+    "id": "meera-sharma-indore-1",
+    "slug": "meera-sharma-indore-1",
+    "name": "Meera Sharma",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Indore Prime Realty",
-    "reraId": "MPRERA2021A3080",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "MPRERA2021A5394",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Indore",
     "cityName": "Indore",
     "area": "Vijay Nagar",
     "primaryArea": "Vijay Nagar",
-    "experience": "5+ yrs",
-    "experienceYears": 5,
-    "tours": "80+ visits",
-    "listingsCount": 30,
-    "rating": "4.9",
-    "reviewsCount": 110,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 15920",
-    "email": "aarav.malviya@indoreprimerealty.in",
-    "badge": "Top Rated",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 5 years of verified real estate advisory experience across Vijay Nagar and the greater Indore market, Aarav Malviya assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": true,
-    "featuredOrder": 1,
-    "featuredListings": [
-      {
-        "id": 1160,
-        "title": "Verified Premium Residence in Vijay Nagar",
-        "price": "₹ 1.20 Cr",
-        "location": "Vijay Nagar, Indore",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Aarav Malviya provided excellent site walkthrough assistance in Vijay Nagar, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "pooja-agrawal-indore",
-    "slug": "pooja-agrawal-indore",
-    "name": "Pooja Agrawal",
-    "role": "Luxury Residential Consultant",
-    "agency": "Indore Asset Advisors",
-    "reraId": "MPRERA2021A3093",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Indore",
-    "cityName": "Indore",
-    "area": "AB Bypass Road",
-    "primaryArea": "AB Bypass Road",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "81+ visits",
-    "listingsCount": 31,
-    "rating": "5.0",
-    "reviewsCount": 111,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98200 15957",
-    "email": "pooja.agrawal@indoreassetadvisors.in",
-    "badge": "Top Producer",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 6 years of verified real estate advisory experience across AB Bypass Road and the greater Indore market, Pooja Agrawal assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1161,
-        "title": "Verified Premium Residence in AB Bypass Road",
-        "price": "₹ 2.00 Cr",
-        "location": "AB Bypass Road, Indore",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Pooja Agrawal provided excellent site walkthrough assistance in AB Bypass Road, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "ritu-gupta-indore",
-    "slug": "ritu-gupta-indore",
-    "name": "Ritu Gupta",
-    "role": "RERA Certified Property Guide",
-    "agency": "Indore Heritage Estates",
-    "reraId": "MPRERA2021A3106",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Indore",
-    "cityName": "Indore",
-    "area": "Nipania",
-    "primaryArea": "Nipania",
     "experience": "7+ yrs",
     "experienceYears": 7,
-    "tours": "82+ visits",
-    "listingsCount": 32,
-    "rating": "4.8",
-    "reviewsCount": 112,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 15994",
-    "email": "ritu.gupta@indoreheritageestates.in",
-    "badge": "Fast Responder",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 7 years of verified real estate advisory experience across Nipania and the greater Indore market, Ritu Gupta assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
-    "subscriptionTier": "FREE_VERIFIED",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1162,
-        "title": "Verified Premium Residence in Nipania",
-        "price": "₹ 2.80 Cr",
-        "location": "Nipania, Indore",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Ritu Gupta provided excellent site walkthrough assistance in Nipania, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "suresh-gehlot-jaipur",
-    "slug": "suresh-gehlot-jaipur",
-    "name": "Suresh Gehlot",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Jaipur Prime Realty",
-    "reraId": "RAJ-RERA2021A3119",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Jaipur",
-    "cityName": "Jaipur",
-    "area": "Vaishali Nagar",
-    "primaryArea": "Vaishali Nagar",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "83+ visits",
-    "listingsCount": 33,
-    "rating": "4.9",
-    "reviewsCount": 113,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98112 16031",
-    "email": "suresh.gehlot@jaipurprimerealty.in",
+    "tours": "98+ visits",
+    "listingsCount": 28,
+    "rating": "5.0",
+    "reviewsCount": 103,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98300 22506",
+    "email": "meera.sharma@indoreprimerealty.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -3724,7 +8320,367 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across Vaishali Nagar and the greater Jaipur market, Suresh Gehlot assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 7 years of verified real estate advisory experience across Vijay Nagar and the greater Indore market, Meera Sharma specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": true,
+    "featuredOrder": 1,
+    "featuredListings": [
+      {
+        "id": 2338,
+        "title": "Verified Premium Property in Vijay Nagar",
+        "price": "₹ 2.60 Cr",
+        "location": "Vijay Nagar, Indore",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Meera Sharma provided outstanding site visit support in Vijay Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "neha-gupta-indore-2",
+    "slug": "neha-gupta-indore-2",
+    "name": "Neha Gupta",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Indore Asset Advisors",
+    "reraId": "MPRERA2021A5407",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Indore",
+    "cityName": "Indore",
+    "area": "AB Bypass Road",
+    "primaryArea": "AB Bypass Road",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "99+ visits",
+    "listingsCount": 29,
+    "rating": "4.8",
+    "reviewsCount": 104,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98470 22543",
+    "email": "neha.gupta@indoreassetadvisors.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across AB Bypass Road and the greater Indore market, Neha Gupta specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2339,
+        "title": "Verified Premium Property in AB Bypass Road",
+        "price": "₹ 3.35 Cr",
+        "location": "AB Bypass Road, Indore",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Neha Gupta provided outstanding site visit support in AB Bypass Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anita-sharma-indore-3",
+    "slug": "anita-sharma-indore-3",
+    "name": "Anita Sharma",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Indore Heritage Estates",
+    "reraId": "MPRERA2021A5420",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Indore",
+    "cityName": "Indore",
+    "area": "Nipania",
+    "primaryArea": "Nipania",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "100+ visits",
+    "listingsCount": 30,
+    "rating": "4.9",
+    "reviewsCount": 105,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98101 22580",
+    "email": "anita.sharma@indoreheritageestates.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Nipania and the greater Indore market, Anita Sharma specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2340,
+        "title": "Verified Premium Property in Nipania",
+        "price": "₹ 4.10 Cr",
+        "location": "Nipania, Indore",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anita Sharma provided outstanding site visit support in Nipania, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "poonam-gupta-indore-4",
+    "slug": "poonam-gupta-indore-4",
+    "name": "Poonam Gupta",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Indore Capital Properties",
+    "reraId": "MPRERA2021A5433",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Indore",
+    "cityName": "Indore",
+    "area": "Super Corridor",
+    "primaryArea": "Super Corridor",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "101+ visits",
+    "listingsCount": 31,
+    "rating": "5.0",
+    "reviewsCount": 106,
+    "focus": "Plots & development land",
+    "phone": "+91 98200 22617",
+    "email": "poonam.gupta@indorecapitalproperties.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Super Corridor and the greater Indore market, Poonam Gupta specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2341,
+        "title": "Verified Premium Property in Super Corridor",
+        "price": "₹ 4.85 Cr",
+        "location": "Super Corridor, Indore",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Poonam Gupta provided outstanding site visit support in Super Corridor, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "mayank-sharma-indore-5",
+    "slug": "mayank-sharma-indore-5",
+    "name": "Mayank Sharma",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Indore Corridor Homes",
+    "reraId": "MPRERA2021A5446",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Indore",
+    "cityName": "Indore",
+    "area": "Palasia",
+    "primaryArea": "Palasia",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "102+ visits",
+    "listingsCount": 32,
+    "rating": "4.8",
+    "reviewsCount": 107,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98450 22654",
+    "email": "mayank.sharma@indorecorridorhomes.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Palasia and the greater Indore market, Mayank Sharma specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2342,
+        "title": "Verified Premium Property in Palasia",
+        "price": "₹ 1.10 Cr",
+        "location": "Palasia, Indore",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Mayank Sharma provided outstanding site visit support in Palasia, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "meera-gupta-indore-6",
+    "slug": "meera-gupta-indore-6",
+    "name": "Meera Gupta",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Indore Metropolis Realty",
+    "reraId": "MPRERA2021A5459",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Indore",
+    "cityName": "Indore",
+    "area": "Vijay Nagar",
+    "primaryArea": "Vijay Nagar",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "103+ visits",
+    "listingsCount": 33,
+    "rating": "4.9",
+    "reviewsCount": 108,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98112 22691",
+    "email": "meera.gupta@indoremetropolisrealty.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Vijay Nagar and the greater Indore market, Meera Gupta specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2343,
+        "title": "Verified Premium Property in Vijay Nagar",
+        "price": "₹ 1.85 Cr",
+        "location": "Vijay Nagar, Indore",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Meera Gupta provided outstanding site visit support in Vijay Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "pooja-shekhawat-jaipur-1",
+    "slug": "pooja-shekhawat-jaipur-1",
+    "name": "Pooja Shekhawat",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Jaipur Prime Realty",
+    "reraId": "RAJ-RERA2021A5472",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Jaipur",
+    "cityName": "Jaipur",
+    "area": "Vaishali Nagar",
+    "primaryArea": "Vaishali Nagar",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "104+ visits",
+    "listingsCount": 34,
+    "rating": "5.0",
+    "reviewsCount": 109,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98712 22728",
+    "email": "pooja.shekhawat@jaipurprimerealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Vaishali Nagar and the greater Jaipur market, Pooja Shekhawat specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -3732,9 +8688,309 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1163,
-        "title": "Verified Premium Residence in Vaishali Nagar",
-        "price": "₹ 3.60 Cr",
+        "id": 2344,
+        "title": "Verified Premium Property in Vaishali Nagar",
+        "price": "₹ 2.60 Cr",
+        "location": "Vaishali Nagar, Jaipur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Pooja Shekhawat provided outstanding site visit support in Vaishali Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ritu-maheshwari-jaipur-2",
+    "slug": "ritu-maheshwari-jaipur-2",
+    "name": "Ritu Maheshwari",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Jaipur Asset Advisors",
+    "reraId": "RAJ-RERA2021A5485",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Jaipur",
+    "cityName": "Jaipur",
+    "area": "Malviya Nagar",
+    "primaryArea": "Malviya Nagar",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "105+ visits",
+    "listingsCount": 35,
+    "rating": "4.8",
+    "reviewsCount": 110,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 99100 22765",
+    "email": "ritu.maheshwari@jaipurassetadvisors.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Malviya Nagar and the greater Jaipur market, Ritu Maheshwari specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2345,
+        "title": "Verified Premium Property in Malviya Nagar",
+        "price": "₹ 3.35 Cr",
+        "location": "Malviya Nagar, Jaipur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ritu Maheshwari provided outstanding site visit support in Malviya Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "shweta-shekhawat-jaipur-3",
+    "slug": "shweta-shekhawat-jaipur-3",
+    "name": "Shweta Shekhawat",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Jaipur Heritage Estates",
+    "reraId": "RAJ-RERA2021A5498",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Jaipur",
+    "cityName": "Jaipur",
+    "area": "Jagatpura",
+    "primaryArea": "Jagatpura",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "106+ visits",
+    "listingsCount": 36,
+    "rating": "4.9",
+    "reviewsCount": 111,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98188 22802",
+    "email": "shweta.shekhawat@jaipurheritageestates.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Jagatpura and the greater Jaipur market, Shweta Shekhawat specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2346,
+        "title": "Verified Premium Property in Jagatpura",
+        "price": "₹ 4.10 Cr",
+        "location": "Jagatpura, Jaipur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Shweta Shekhawat provided outstanding site visit support in Jagatpura, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "karan-maheshwari-jaipur-4",
+    "slug": "karan-maheshwari-jaipur-4",
+    "name": "Karan Maheshwari",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Jaipur Capital Properties",
+    "reraId": "RAJ-RERA2021A5511",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Jaipur",
+    "cityName": "Jaipur",
+    "area": "C Scheme",
+    "primaryArea": "C Scheme",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "107+ visits",
+    "listingsCount": 37,
+    "rating": "5.0",
+    "reviewsCount": 112,
+    "focus": "Plots & development land",
+    "phone": "+91 98230 22839",
+    "email": "karan.maheshwari@jaipurcapitalproperties.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across C Scheme and the greater Jaipur market, Karan Maheshwari specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2347,
+        "title": "Verified Premium Property in C Scheme",
+        "price": "₹ 4.85 Cr",
+        "location": "C Scheme, Jaipur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Karan Maheshwari provided outstanding site visit support in C Scheme, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "aarav-shekhawat-jaipur-5",
+    "slug": "aarav-shekhawat-jaipur-5",
+    "name": "Aarav Shekhawat",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Jaipur Corridor Homes",
+    "reraId": "RAJ-RERA2021A5524",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Jaipur",
+    "cityName": "Jaipur",
+    "area": "Ajmer Road",
+    "primaryArea": "Ajmer Road",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "108+ visits",
+    "listingsCount": 38,
+    "rating": "4.8",
+    "reviewsCount": 113,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98300 22876",
+    "email": "aarav.shekhawat@jaipurcorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Ajmer Road and the greater Jaipur market, Aarav Shekhawat specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2348,
+        "title": "Verified Premium Property in Ajmer Road",
+        "price": "₹ 1.10 Cr",
+        "location": "Ajmer Road, Jaipur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Aarav Shekhawat provided outstanding site visit support in Ajmer Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "pooja-maheshwari-jaipur-6",
+    "slug": "pooja-maheshwari-jaipur-6",
+    "name": "Pooja Maheshwari",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Jaipur Metropolis Realty",
+    "reraId": "RAJ-RERA2021A5537",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Jaipur",
+    "cityName": "Jaipur",
+    "area": "Vaishali Nagar",
+    "primaryArea": "Vaishali Nagar",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "109+ visits",
+    "listingsCount": 39,
+    "rating": "4.9",
+    "reviewsCount": 114,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98470 22913",
+    "email": "pooja.maheshwari@jaipurmetropolisrealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Vaishali Nagar and the greater Jaipur market, Pooja Maheshwari specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2349,
+        "title": "Verified Premium Property in Vaishali Nagar",
+        "price": "₹ 1.85 Cr",
         "location": "Vaishali Nagar, Jaipur",
         "type": "Sale",
         "beds": 3,
@@ -3746,32 +9002,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Suresh Gehlot provided excellent site walkthrough assistance in Vaishali Nagar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Pooja Maheshwari provided outstanding site visit support in Vaishali Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "ashok-rathore-jaipur",
-    "slug": "ashok-rathore-jaipur",
-    "name": "Ashok Rathore",
-    "role": "Land & Villa Consultant",
-    "agency": "Jaipur Asset Advisors",
-    "reraId": "RAJ-RERA2021A3132",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
+    "id": "deepika-prasad-jamshedpur-1",
+    "slug": "deepika-prasad-jamshedpur-1",
+    "name": "Deepika Prasad",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Jamshedpur Prime Realty",
+    "reraId": "JHRERA2021A5550",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
-    "city": "Jaipur",
-    "cityName": "Jaipur",
-    "area": "Malviya Nagar",
-    "primaryArea": "Malviya Nagar",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "84+ visits",
-    "listingsCount": 34,
+    "city": "Jamshedpur",
+    "cityName": "Jamshedpur",
+    "area": "Bistupur",
+    "primaryArea": "Bistupur",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "110+ visits",
+    "listingsCount": 40,
     "rating": "5.0",
-    "reviewsCount": 114,
-    "focus": "Villas & plots",
-    "phone": "+91 98712 16068",
-    "email": "ashok.rathore@jaipurassetadvisors.in",
+    "reviewsCount": 115,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98101 22950",
+    "email": "deepika.prasad@jamshedpurprimerealty.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -3784,18 +9040,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Malviya Nagar and the greater Jaipur market, Ashok Rathore assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 7 years of verified real estate advisory experience across Bistupur and the greater Jamshedpur market, Deepika Prasad specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1164,
-        "title": "Verified Premium Residence in Malviya Nagar",
-        "price": "₹ 4.40 Cr",
-        "location": "Malviya Nagar, Jaipur",
+        "id": 2350,
+        "title": "Verified Premium Property in Bistupur",
+        "price": "₹ 2.60 Cr",
+        "location": "Bistupur, Jamshedpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
@@ -3806,33 +9062,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ashok Rathore provided excellent site walkthrough assistance in Malviya Nagar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Deepika Prasad provided outstanding site visit support in Bistupur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "rohan-sinha-jamshedpur",
-    "slug": "rohan-sinha-jamshedpur",
-    "name": "Rohan Sinha",
-    "role": "Land & Villa Consultant",
-    "agency": "Jamshedpur Prime Realty",
-    "reraId": "JHRERA2021A3145",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "sunita-mahto-jamshedpur-2",
+    "slug": "sunita-mahto-jamshedpur-2",
+    "name": "Sunita Mahto",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Jamshedpur Asset Advisors",
+    "reraId": "JHRERA2021A5563",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Jamshedpur",
     "cityName": "Jamshedpur",
-    "area": "Bistupur",
-    "primaryArea": "Bistupur",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "85+ visits",
-    "listingsCount": 35,
+    "area": "Kadma",
+    "primaryArea": "Kadma",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "111+ visits",
+    "listingsCount": 41,
     "rating": "4.8",
-    "reviewsCount": 115,
-    "focus": "Villas & plots",
-    "phone": "+91 99100 16105",
-    "email": "rohan.sinha@jamshedpurprimerealty.in",
-    "badge": "Top Rated",
+    "reviewsCount": 116,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98200 22987",
+    "email": "sunita.mahto@jamshedpurassetadvisors.in",
+    "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -3844,18 +9100,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 10 years of verified real estate advisory experience across Bistupur and the greater Jamshedpur market, Rohan Sinha assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 8 years of verified real estate advisory experience across Kadma and the greater Jamshedpur market, Sunita Mahto specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1165,
-        "title": "Verified Premium Residence in Bistupur",
-        "price": "₹ 1.20 Cr",
-        "location": "Bistupur, Jamshedpur",
+        "id": 2351,
+        "title": "Verified Premium Property in Kadma",
+        "price": "₹ 3.35 Cr",
+        "location": "Kadma, Jamshedpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
@@ -3866,33 +9122,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Rohan Sinha provided excellent site walkthrough assistance in Bistupur, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Sunita Mahto provided outstanding site visit support in Kadma, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "kunal-kumar-jamshedpur",
-    "slug": "kunal-kumar-jamshedpur",
-    "name": "Kunal Kumar",
-    "role": "High-Rise Living Advisor",
-    "agency": "Jamshedpur Asset Advisors",
-    "reraId": "JHRERA2021A3158",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
+    "id": "preeti-prasad-jamshedpur-3",
+    "slug": "preeti-prasad-jamshedpur-3",
+    "name": "Preeti Prasad",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Jamshedpur Heritage Estates",
+    "reraId": "JHRERA2021A5576",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "city": "Jamshedpur",
     "cityName": "Jamshedpur",
-    "area": "Kadma",
-    "primaryArea": "Kadma",
-    "experience": "11+ yrs",
-    "experienceYears": 11,
-    "tours": "86+ visits",
-    "listingsCount": 36,
+    "area": "Sonari",
+    "primaryArea": "Sonari",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "112+ visits",
+    "listingsCount": 42,
     "rating": "4.9",
-    "reviewsCount": 116,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98188 16142",
-    "email": "kunal.kumar@jamshedpurassetadvisors.in",
-    "badge": "Top Producer",
+    "reviewsCount": 117,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98450 23024",
+    "email": "preeti.prasad@jamshedpurheritageestates.in",
+    "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -3904,18 +9160,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across Kadma and the greater Jamshedpur market, Kunal Kumar assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 9 years of verified real estate advisory experience across Sonari and the greater Jamshedpur market, Preeti Prasad specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1166,
-        "title": "Verified Premium Residence in Kadma",
-        "price": "₹ 2.00 Cr",
-        "location": "Kadma, Jamshedpur",
+        "id": 2352,
+        "title": "Verified Premium Property in Sonari",
+        "price": "₹ 4.10 Cr",
+        "location": "Sonari, Jamshedpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
@@ -3926,33 +9182,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Kunal Kumar provided excellent site walkthrough assistance in Kadma, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Preeti Prasad provided outstanding site visit support in Sonari, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "gaurav-gehlot-jodhpur",
-    "slug": "gaurav-gehlot-jodhpur",
-    "name": "Gaurav Gehlot",
-    "role": "High-Rise Living Advisor",
-    "agency": "Jodhpur Prime Realty",
-    "reraId": "RAJ-RERA2021A3171",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
+    "id": "vikas-mahto-jamshedpur-4",
+    "slug": "vikas-mahto-jamshedpur-4",
+    "name": "Vikas Mahto",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Jamshedpur Capital Properties",
+    "reraId": "JHRERA2021A5589",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Jodhpur",
-    "cityName": "Jodhpur",
-    "area": "Shastri Nagar",
-    "primaryArea": "Shastri Nagar",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "87+ visits",
-    "listingsCount": 37,
+    "city": "Jamshedpur",
+    "cityName": "Jamshedpur",
+    "area": "Sakchi",
+    "primaryArea": "Sakchi",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "113+ visits",
+    "listingsCount": 43,
     "rating": "5.0",
-    "reviewsCount": 117,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98230 16179",
-    "email": "gaurav.gehlot@jodhpurprimerealty.in",
-    "badge": "Top Producer",
+    "reviewsCount": 118,
+    "focus": "Plots & development land",
+    "phone": "+91 98112 23061",
+    "email": "vikas.mahto@jamshedpurcapitalproperties.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -3964,18 +9220,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 12 years of verified real estate advisory experience across Shastri Nagar and the greater Jodhpur market, Gaurav Gehlot assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 10 years of verified real estate advisory experience across Sakchi and the greater Jamshedpur market, Vikas Mahto specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1167,
-        "title": "Verified Premium Residence in Shastri Nagar",
-        "price": "₹ 2.80 Cr",
-        "location": "Shastri Nagar, Jodhpur",
+        "id": 2353,
+        "title": "Verified Premium Property in Sakchi",
+        "price": "₹ 4.85 Cr",
+        "location": "Sakchi, Jamshedpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
@@ -3986,33 +9242,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Gaurav Gehlot provided excellent site walkthrough assistance in Shastri Nagar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Vikas Mahto provided outstanding site visit support in Sakchi, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "arjun-rathore-jodhpur",
-    "slug": "arjun-rathore-jodhpur",
-    "name": "Arjun Rathore",
-    "role": "Luxury Residential Consultant",
-    "agency": "Jodhpur Asset Advisors",
-    "reraId": "RAJ-RERA2021A3184",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "vikram-prasad-jamshedpur-5",
+    "slug": "vikram-prasad-jamshedpur-5",
+    "name": "Vikram Prasad",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Jamshedpur Corridor Homes",
+    "reraId": "JHRERA2021A5602",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
     "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Jodhpur",
-    "cityName": "Jodhpur",
-    "area": "Ratanada",
-    "primaryArea": "Ratanada",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "88+ visits",
-    "listingsCount": 38,
+    "city": "Jamshedpur",
+    "cityName": "Jamshedpur",
+    "area": "Circuit House Area",
+    "primaryArea": "Circuit House Area",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "114+ visits",
+    "listingsCount": 44,
     "rating": "4.8",
-    "reviewsCount": 118,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98300 16216",
-    "email": "arjun.rathore@jodhpurassetadvisors.in",
-    "badge": "Fast Responder",
+    "reviewsCount": 119,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98712 23098",
+    "email": "vikram.prasad@jamshedpurcorridorhomes.in",
+    "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -4024,18 +9280,18 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 13 years of verified real estate advisory experience across Ratanada and the greater Jodhpur market, Arjun Rathore assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 11 years of verified real estate advisory experience across Circuit House Area and the greater Jamshedpur market, Vikram Prasad specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1168,
-        "title": "Verified Premium Residence in Ratanada",
-        "price": "₹ 3.60 Cr",
-        "location": "Ratanada, Jodhpur",
+        "id": 2354,
+        "title": "Verified Premium Property in Circuit House Area",
+        "price": "₹ 1.10 Cr",
+        "location": "Circuit House Area, Jamshedpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
@@ -4046,32 +9302,152 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Arjun Rathore provided excellent site walkthrough assistance in Ratanada, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Vikram Prasad provided outstanding site visit support in Circuit House Area, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "rakesh-gupta-kanpur",
-    "slug": "rakesh-gupta-kanpur",
-    "name": "Rakesh Gupta",
-    "role": "Luxury Residential Consultant",
-    "agency": "Kanpur Prime Realty",
-    "reraId": "UPRERA2021A3197",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
+    "id": "anand-rathore-jodhpur-1",
+    "slug": "anand-rathore-jodhpur-1",
+    "name": "Anand Rathore",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Jodhpur Prime Realty",
+    "reraId": "RAJ-RERA2021A5615",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Kanpur",
-    "cityName": "Kanpur",
-    "area": "Civil Lines",
-    "primaryArea": "Civil Lines",
+    "city": "Jodhpur",
+    "cityName": "Jodhpur",
+    "area": "Shastri Nagar",
+    "primaryArea": "Shastri Nagar",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "115+ visits",
+    "listingsCount": 45,
+    "rating": "4.9",
+    "reviewsCount": 120,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 99100 23135",
+    "email": "anand.rathore@jodhpurprimerealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Shastri Nagar and the greater Jodhpur market, Anand Rathore specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2355,
+        "title": "Verified Premium Property in Shastri Nagar",
+        "price": "₹ 1.85 Cr",
+        "location": "Shastri Nagar, Jodhpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anand Rathore provided outstanding site visit support in Shastri Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "aditya-bhati-jodhpur-2",
+    "slug": "aditya-bhati-jodhpur-2",
+    "name": "Aditya Bhati",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Jodhpur Asset Advisors",
+    "reraId": "RAJ-RERA2021A5628",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Jodhpur",
+    "cityName": "Jodhpur",
+    "area": "Ratanada",
+    "primaryArea": "Ratanada",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "116+ visits",
+    "listingsCount": 46,
+    "rating": "5.0",
+    "reviewsCount": 121,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98188 23172",
+    "email": "aditya.bhati@jodhpurassetadvisors.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Ratanada and the greater Jodhpur market, Aditya Bhati specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2356,
+        "title": "Verified Premium Property in Ratanada",
+        "price": "₹ 2.60 Cr",
+        "location": "Ratanada, Jodhpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Aditya Bhati provided outstanding site visit support in Ratanada, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "suresh-rathore-jodhpur-3",
+    "slug": "suresh-rathore-jodhpur-3",
+    "name": "Suresh Rathore",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Jodhpur Heritage Estates",
+    "reraId": "RAJ-RERA2021A5641",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Jodhpur",
+    "cityName": "Jodhpur",
+    "area": "Pal Road",
+    "primaryArea": "Pal Road",
     "experience": "14+ yrs",
     "experienceYears": 14,
-    "tours": "89+ visits",
-    "listingsCount": 39,
-    "rating": "4.9",
-    "reviewsCount": 119,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98470 16253",
-    "email": "rakesh.gupta@kanpurprimerealty.in",
+    "tours": "117+ visits",
+    "listingsCount": 47,
+    "rating": "4.8",
+    "reviewsCount": 122,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98230 23209",
+    "email": "suresh.rathore@jodhpurheritageestates.in",
     "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
@@ -4084,21 +9460,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 14 years of verified real estate advisory experience across Civil Lines and the greater Kanpur market, Rakesh Gupta assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 14 years of verified real estate advisory experience across Pal Road and the greater Jodhpur market, Suresh Rathore specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1169,
-        "title": "Verified Premium Residence in Civil Lines",
-        "price": "₹ 4.40 Cr",
-        "location": "Civil Lines, Kanpur",
+        "id": 2357,
+        "title": "Verified Premium Property in Pal Road",
+        "price": "₹ 3.35 Cr",
+        "location": "Pal Road, Jodhpur",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -4106,32 +9482,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Rakesh Gupta provided excellent site walkthrough assistance in Civil Lines, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Suresh Rathore provided outstanding site visit support in Pal Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "siddharth-verma-kanpur",
-    "slug": "siddharth-verma-kanpur",
-    "name": "Siddharth Verma",
-    "role": "RERA Certified Property Guide",
-    "agency": "Kanpur Asset Advisors",
-    "reraId": "UPRERA2021A3210",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
-    "city": "Kanpur",
-    "cityName": "Kanpur",
-    "area": "Swaroop Nagar",
-    "primaryArea": "Swaroop Nagar",
-    "experience": "5+ yrs",
-    "experienceYears": 5,
-    "tours": "90+ visits",
-    "listingsCount": 40,
-    "rating": "5.0",
-    "reviewsCount": 35,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 16290",
-    "email": "siddharth.verma@kanpurassetadvisors.in",
+    "id": "ashok-bhati-jodhpur-4",
+    "slug": "ashok-bhati-jodhpur-4",
+    "name": "Ashok Bhati",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Jodhpur Capital Properties",
+    "reraId": "RAJ-RERA2021A5654",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Jodhpur",
+    "cityName": "Jodhpur",
+    "area": "Sardarpura",
+    "primaryArea": "Sardarpura",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "118+ visits",
+    "listingsCount": 48,
+    "rating": "4.9",
+    "reviewsCount": 123,
+    "focus": "Plots & development land",
+    "phone": "+91 98300 23246",
+    "email": "ashok.bhati@jodhpurcapitalproperties.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -4144,7 +9520,187 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 5 years of verified real estate advisory experience across Swaroop Nagar and the greater Kanpur market, Siddharth Verma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 15 years of verified real estate advisory experience across Sardarpura and the greater Jodhpur market, Ashok Bhati specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2358,
+        "title": "Verified Premium Property in Sardarpura",
+        "price": "₹ 4.10 Cr",
+        "location": "Sardarpura, Jodhpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ashok Bhati provided outstanding site visit support in Sardarpura, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "smita-rathore-jodhpur-5",
+    "slug": "smita-rathore-jodhpur-5",
+    "name": "Smita Rathore",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Jodhpur Corridor Homes",
+    "reraId": "RAJ-RERA2021A5667",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Jodhpur",
+    "cityName": "Jodhpur",
+    "area": "Chopasni Road",
+    "primaryArea": "Chopasni Road",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "119+ visits",
+    "listingsCount": 49,
+    "rating": "5.0",
+    "reviewsCount": 124,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98470 23283",
+    "email": "smita.rathore@jodhpurcorridorhomes.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Chopasni Road and the greater Jodhpur market, Smita Rathore specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2359,
+        "title": "Verified Premium Property in Chopasni Road",
+        "price": "₹ 4.85 Cr",
+        "location": "Chopasni Road, Jodhpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Smita Rathore provided outstanding site visit support in Chopasni Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "aarav-sharma-kanpur-1",
+    "slug": "aarav-sharma-kanpur-1",
+    "name": "Aarav Sharma",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Kanpur Prime Realty",
+    "reraId": "UPRERA2021A5680",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kanpur",
+    "cityName": "Kanpur",
+    "area": "Civil Lines",
+    "primaryArea": "Civil Lines",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "120+ visits",
+    "listingsCount": 50,
+    "rating": "4.8",
+    "reviewsCount": 35,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98101 23320",
+    "email": "aarav.sharma@kanpurprimerealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Civil Lines and the greater Kanpur market, Aarav Sharma specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2360,
+        "title": "Verified Premium Property in Civil Lines",
+        "price": "₹ 1.10 Cr",
+        "location": "Civil Lines, Kanpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Aarav Sharma provided outstanding site visit support in Civil Lines, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "pooja-yadav-kanpur-2",
+    "slug": "pooja-yadav-kanpur-2",
+    "name": "Pooja Yadav",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Kanpur Asset Advisors",
+    "reraId": "UPRERA2021A5693",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kanpur",
+    "cityName": "Kanpur",
+    "area": "Swaroop Nagar",
+    "primaryArea": "Swaroop Nagar",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "121+ visits",
+    "listingsCount": 51,
+    "rating": "4.9",
+    "reviewsCount": 36,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98200 23357",
+    "email": "pooja.yadav@kanpurassetadvisors.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Swaroop Nagar and the greater Kanpur market, Pooja Yadav specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -4152,10 +9708,70 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1170,
-        "title": "Verified Premium Residence in Swaroop Nagar",
-        "price": "₹ 1.20 Cr",
+        "id": 2361,
+        "title": "Verified Premium Property in Swaroop Nagar",
+        "price": "₹ 1.85 Cr",
         "location": "Swaroop Nagar, Kanpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Pooja Yadav provided outstanding site visit support in Swaroop Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ritu-sharma-kanpur-3",
+    "slug": "ritu-sharma-kanpur-3",
+    "name": "Ritu Sharma",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Kanpur Heritage Estates",
+    "reraId": "UPRERA2021A5706",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kanpur",
+    "cityName": "Kanpur",
+    "area": "Kakadeo",
+    "primaryArea": "Kakadeo",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "122+ visits",
+    "listingsCount": 52,
+    "rating": "5.0",
+    "reviewsCount": 37,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98450 23394",
+    "email": "ritu.sharma@kanpurheritageestates.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Kakadeo and the greater Kanpur market, Ritu Sharma specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2362,
+        "title": "Verified Premium Property in Kakadeo",
+        "price": "₹ 2.60 Cr",
+        "location": "Kakadeo, Kanpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
@@ -4166,32 +9782,335 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Siddharth Verma provided excellent site walkthrough assistance in Swaroop Nagar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Ritu Sharma provided outstanding site visit support in Kakadeo, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aditya-varghese-kochi",
-    "slug": "aditya-varghese-kochi",
-    "name": "Aditya Varghese",
-    "role": "RERA Certified Property Guide",
-    "agency": "Kochi Prime Realty",
-    "reraId": "K-RERA(KL)2021A3223",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "shweta-yadav-kanpur-4",
+    "slug": "shweta-yadav-kanpur-4",
+    "name": "Shweta Yadav",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Kanpur Capital Properties",
+    "reraId": "UPRERA2021A5719",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kanpur",
+    "cityName": "Kanpur",
+    "area": "Sharda Nagar",
+    "primaryArea": "Sharda Nagar",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "123+ visits",
+    "listingsCount": 53,
+    "rating": "4.8",
+    "reviewsCount": 38,
+    "focus": "Plots & development land",
+    "phone": "+91 98112 23431",
+    "email": "shweta.yadav@kanpurcapitalproperties.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Sharda Nagar and the greater Kanpur market, Shweta Yadav specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2363,
+        "title": "Verified Premium Property in Sharda Nagar",
+        "price": "₹ 3.35 Cr",
+        "location": "Sharda Nagar, Kanpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Shweta Yadav provided outstanding site visit support in Sharda Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "karan-sharma-kanpur-5",
+    "slug": "karan-sharma-kanpur-5",
+    "name": "Karan Sharma",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Kanpur Corridor Homes",
+    "reraId": "UPRERA2021A5732",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kanpur",
+    "cityName": "Kanpur",
+    "area": "Kalyanpur",
+    "primaryArea": "Kalyanpur",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "124+ visits",
+    "listingsCount": 54,
+    "rating": "4.9",
+    "reviewsCount": 39,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98712 23468",
+    "email": "karan.sharma@kanpurcorridorhomes.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Kalyanpur and the greater Kanpur market, Karan Sharma specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2364,
+        "title": "Verified Premium Property in Kalyanpur",
+        "price": "₹ 4.10 Cr",
+        "location": "Kalyanpur, Kanpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Karan Sharma provided outstanding site visit support in Kalyanpur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "tanvi-joseph-kochi-1",
+    "slug": "tanvi-joseph-kochi-1",
+    "name": "Tanvi Joseph",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Kochi Prime Realty",
+    "reraId": "K-RERA(KL)2021A5745",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Kochi",
     "cityName": "Kochi",
     "area": "Marine Drive",
     "primaryArea": "Marine Drive",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "91+ visits",
-    "listingsCount": 41,
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "125+ visits",
+    "listingsCount": 55,
+    "rating": "5.0",
+    "reviewsCount": 40,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 99100 23505",
+    "email": "tanvi.joseph@kochiprimerealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Malayalam"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Marine Drive and the greater Kochi market, Tanvi Joseph specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2365,
+        "title": "Verified Premium Property in Marine Drive",
+        "price": "₹ 4.85 Cr",
+        "location": "Marine Drive, Kochi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Tanvi Joseph provided outstanding site visit support in Marine Drive, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rohan-varghese-kochi-2",
+    "slug": "rohan-varghese-kochi-2",
+    "name": "Rohan Varghese",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Kochi Asset Advisors",
+    "reraId": "K-RERA(KL)2021A5758",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kochi",
+    "cityName": "Kochi",
+    "area": "Kakkanad",
+    "primaryArea": "Kakkanad",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "126+ visits",
+    "listingsCount": 56,
     "rating": "4.8",
-    "reviewsCount": 36,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98200 16327",
-    "email": "aditya.varghese@kochiprimerealty.in",
+    "reviewsCount": 41,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98188 23542",
+    "email": "rohan.varghese@kochiassetadvisors.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Malayalam"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Kakkanad and the greater Kochi market, Rohan Varghese specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2366,
+        "title": "Verified Premium Property in Kakkanad",
+        "price": "₹ 1.10 Cr",
+        "location": "Kakkanad, Kochi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rohan Varghese provided outstanding site visit support in Kakkanad, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kunal-joseph-kochi-3",
+    "slug": "kunal-joseph-kochi-3",
+    "name": "Kunal Joseph",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Kochi Heritage Estates",
+    "reraId": "K-RERA(KL)2021A5771",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kochi",
+    "cityName": "Kochi",
+    "area": "Edappally",
+    "primaryArea": "Edappally",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "127+ visits",
+    "listingsCount": 57,
+    "rating": "4.9",
+    "reviewsCount": 42,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98230 23579",
+    "email": "kunal.joseph@kochiheritageestates.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Malayalam"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Edappally and the greater Kochi market, Kunal Joseph specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2367,
+        "title": "Verified Premium Property in Edappally",
+        "price": "₹ 1.85 Cr",
+        "location": "Edappally, Kochi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kunal Joseph provided outstanding site visit support in Edappally, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "amit-varghese-kochi-4",
+    "slug": "amit-varghese-kochi-4",
+    "name": "Amit Varghese",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Kochi Capital Properties",
+    "reraId": "K-RERA(KL)2021A5784",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kochi",
+    "cityName": "Kochi",
+    "area": "Panampilly Nagar",
+    "primaryArea": "Panampilly Nagar",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "128+ visits",
+    "listingsCount": 58,
+    "rating": "5.0",
+    "reviewsCount": 43,
+    "focus": "Plots & development land",
+    "phone": "+91 98300 23616",
+    "email": "amit.varghese@kochicapitalproperties.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -4205,21 +10124,21 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Malayalam"
     ],
-    "bio": "With over 6 years of verified real estate advisory experience across Marine Drive and the greater Kochi market, Aditya Varghese assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 13 years of verified real estate advisory experience across Panampilly Nagar and the greater Kochi market, Amit Varghese specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1171,
-        "title": "Verified Premium Residence in Marine Drive",
-        "price": "₹ 2.00 Cr",
-        "location": "Marine Drive, Kochi",
+        "id": 2368,
+        "title": "Verified Premium Property in Panampilly Nagar",
+        "price": "₹ 2.60 Cr",
+        "location": "Panampilly Nagar, Kochi",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -4227,32 +10146,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Aditya Varghese provided excellent site walkthrough assistance in Marine Drive, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Amit Varghese provided outstanding site visit support in Panampilly Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "suresh-nair-kochi",
-    "slug": "suresh-nair-kochi",
-    "name": "Suresh Nair",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Kochi Asset Advisors",
-    "reraId": "K-RERA(KL)2021A3236",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "id": "sanjay-joseph-kochi-5",
+    "slug": "sanjay-joseph-kochi-5",
+    "name": "Sanjay Joseph",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Kochi Corridor Homes",
+    "reraId": "K-RERA(KL)2021A5797",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Kochi",
     "cityName": "Kochi",
-    "area": "Kakkanad",
-    "primaryArea": "Kakkanad",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "92+ visits",
-    "listingsCount": 42,
-    "rating": "4.9",
-    "reviewsCount": 37,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 16364",
-    "email": "suresh.nair@kochiassetadvisors.in",
+    "area": "Palarivattom",
+    "primaryArea": "Palarivattom",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "129+ visits",
+    "listingsCount": 59,
+    "rating": "4.8",
+    "reviewsCount": 44,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98470 23653",
+    "email": "sanjay.joseph@kochicorridorhomes.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -4266,18 +10185,79 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Malayalam"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across Kakkanad and the greater Kochi market, Suresh Nair assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 14 years of verified real estate advisory experience across Palarivattom and the greater Kochi market, Sanjay Joseph specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1172,
-        "title": "Verified Premium Residence in Kakkanad",
-        "price": "₹ 2.80 Cr",
-        "location": "Kakkanad, Kochi",
+        "id": 2369,
+        "title": "Verified Premium Property in Palarivattom",
+        "price": "₹ 3.35 Cr",
+        "location": "Palarivattom, Kochi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sanjay Joseph provided outstanding site visit support in Palarivattom, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "tanvi-varghese-kochi-6",
+    "slug": "tanvi-varghese-kochi-6",
+    "name": "Tanvi Varghese",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Kochi Metropolis Realty",
+    "reraId": "K-RERA(KL)2021A5810",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kochi",
+    "cityName": "Kochi",
+    "area": "Marine Drive",
+    "primaryArea": "Marine Drive",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "130+ visits",
+    "listingsCount": 60,
+    "rating": "4.9",
+    "reviewsCount": 45,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98101 23690",
+    "email": "tanvi.varghese@kochimetropolisrealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Malayalam"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Marine Drive and the greater Kochi market, Tanvi Varghese specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2370,
+        "title": "Verified Premium Property in Marine Drive",
+        "price": "₹ 4.10 Cr",
+        "location": "Marine Drive, Kochi",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
@@ -4288,33 +10268,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Suresh Nair provided excellent site walkthrough assistance in Kakkanad, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Tanvi Varghese provided outstanding site visit support in Marine Drive, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sanjay-mukherjee-kolkata",
-    "slug": "sanjay-mukherjee-kolkata",
-    "name": "Sanjay Mukherjee",
-    "role": "Ready-to-Move Specialist",
+    "id": "smita-banerjee-kolkata-1",
+    "slug": "smita-banerjee-kolkata-1",
+    "name": "Smita Banerjee",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Kolkata Prime Realty",
-    "reraId": "WBHIRA2021A3249",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
+    "reraId": "WBHIRA2021A5823",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Kolkata",
     "cityName": "Kolkata",
     "area": "New Town",
     "primaryArea": "New Town",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "93+ visits",
-    "listingsCount": 43,
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "131+ visits",
+    "listingsCount": 61,
     "rating": "5.0",
-    "reviewsCount": 38,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98112 16401",
-    "email": "sanjay.mukherjee@kolkataprimerealty.in",
-    "badge": "Super Agent",
+    "reviewsCount": 46,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98200 23727",
+    "email": "smita.banerjee@kolkataprimerealty.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -4327,7 +10307,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Bengali"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across New Town and the greater Kolkata market, Sanjay Mukherjee assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 16 years of verified real estate advisory experience across New Town and the greater Kolkata market, Smita Banerjee specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -4335,9 +10315,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 1,
     "featuredListings": [
       {
-        "id": 1173,
-        "title": "Verified Premium Residence in New Town",
-        "price": "₹ 3.60 Cr",
+        "id": 2371,
+        "title": "Verified Premium Property in New Town",
+        "price": "₹ 4.85 Cr",
         "location": "New Town, Kolkata",
         "type": "Sale",
         "beds": 3,
@@ -4349,33 +10329,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sanjay Mukherjee provided excellent site walkthrough assistance in New Town, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Smita Banerjee provided outstanding site visit support in New Town, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "rohan-banerjee-kolkata",
-    "slug": "rohan-banerjee-kolkata",
-    "name": "Rohan Banerjee",
-    "role": "Senior Property Advisor",
+    "id": "anand-roy-kolkata-2",
+    "slug": "anand-roy-kolkata-2",
+    "name": "Anand Roy",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Kolkata Asset Advisors",
-    "reraId": "WBHIRA2021A3262",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "reraId": "WBHIRA2021A5836",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
     "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Kolkata",
     "cityName": "Kolkata",
     "area": "Salt Lake Sector 5",
     "primaryArea": "Salt Lake Sector 5",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "94+ visits",
-    "listingsCount": 44,
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "132+ visits",
+    "listingsCount": 62,
     "rating": "4.8",
-    "reviewsCount": 39,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98712 16438",
-    "email": "rohan.banerjee@kolkataassetadvisors.in",
-    "badge": "Top Rated",
+    "reviewsCount": 47,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98450 23764",
+    "email": "anand.roy@kolkataassetadvisors.in",
+    "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -4388,7 +10368,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Bengali"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Salt Lake Sector 5 and the greater Kolkata market, Rohan Banerjee assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 5 years of verified real estate advisory experience across Salt Lake Sector 5 and the greater Kolkata market, Anand Roy specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -4396,9 +10376,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1174,
-        "title": "Verified Premium Residence in Salt Lake Sector 5",
-        "price": "₹ 4.40 Cr",
+        "id": 2372,
+        "title": "Verified Premium Property in Salt Lake Sector 5",
+        "price": "₹ 1.10 Cr",
         "location": "Salt Lake Sector 5, Kolkata",
         "type": "Sale",
         "beds": 3,
@@ -4410,33 +10390,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Rohan Banerjee provided excellent site walkthrough assistance in Salt Lake Sector 5, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Anand Roy provided outstanding site visit support in Salt Lake Sector 5, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "kunal-roy-kolkata",
-    "slug": "kunal-roy-kolkata",
-    "name": "Kunal Roy",
-    "role": "Commercial Corridors Specialist",
+    "id": "aditya-banerjee-kolkata-3",
+    "slug": "aditya-banerjee-kolkata-3",
+    "name": "Aditya Banerjee",
+    "role": "Commercial Corridors & Retail Specialist",
     "agency": "Kolkata Heritage Estates",
-    "reraId": "WBHIRA2021A3275",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
+    "reraId": "WBHIRA2021A5849",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Kolkata",
     "cityName": "Kolkata",
     "area": "Ballygunge",
     "primaryArea": "Ballygunge",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "95+ visits",
-    "listingsCount": 45,
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "133+ visits",
+    "listingsCount": 63,
     "rating": "4.9",
-    "reviewsCount": 40,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 99100 16475",
-    "email": "kunal.roy@kolkataheritageestates.in",
-    "badge": "Top Producer",
+    "reviewsCount": 48,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98112 23801",
+    "email": "aditya.banerjee@kolkataheritageestates.in",
+    "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -4449,17 +10429,17 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Bengali"
     ],
-    "bio": "With over 10 years of verified real estate advisory experience across Ballygunge and the greater Kolkata market, Kunal Roy assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
+    "bio": "With over 6 years of verified real estate advisory experience across Ballygunge and the greater Kolkata market, Aditya Banerjee specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1175,
-        "title": "Verified Premium Residence in Ballygunge",
-        "price": "₹ 1.20 Cr",
+        "id": 2373,
+        "title": "Verified Premium Property in Ballygunge",
+        "price": "₹ 1.85 Cr",
         "location": "Ballygunge, Kolkata",
         "type": "Sale",
         "beds": 3,
@@ -4471,32 +10451,335 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Kunal Roy provided excellent site walkthrough assistance in Ballygunge, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Aditya Banerjee provided outstanding site visit support in Ballygunge, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "ritu-sharma-lucknow",
-    "slug": "ritu-sharma-lucknow",
-    "name": "Ritu Sharma",
-    "role": "Luxury Residential Consultant",
-    "agency": "Lucknow Prime Realty",
-    "reraId": "UPRERA2021A3288",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
+    "id": "suresh-roy-kolkata-4",
+    "slug": "suresh-roy-kolkata-4",
+    "name": "Suresh Roy",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Kolkata Capital Properties",
+    "reraId": "WBHIRA2021A5862",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kolkata",
+    "cityName": "Kolkata",
+    "area": "Alipore",
+    "primaryArea": "Alipore",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "134+ visits",
+    "listingsCount": 64,
+    "rating": "5.0",
+    "reviewsCount": 49,
+    "focus": "Plots & development land",
+    "phone": "+91 98712 23838",
+    "email": "suresh.roy@kolkatacapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Alipore and the greater Kolkata market, Suresh Roy specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2374,
+        "title": "Verified Premium Property in Alipore",
+        "price": "₹ 2.60 Cr",
+        "location": "Alipore, Kolkata",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Suresh Roy provided outstanding site visit support in Alipore, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ashok-banerjee-kolkata-5",
+    "slug": "ashok-banerjee-kolkata-5",
+    "name": "Ashok Banerjee",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Kolkata Corridor Homes",
+    "reraId": "WBHIRA2021A5875",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kolkata",
+    "cityName": "Kolkata",
+    "area": "EM Bypass",
+    "primaryArea": "EM Bypass",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "135+ visits",
+    "listingsCount": 65,
+    "rating": "4.8",
+    "reviewsCount": 50,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 99100 23875",
+    "email": "ashok.banerjee@kolkatacorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across EM Bypass and the greater Kolkata market, Ashok Banerjee specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2375,
+        "title": "Verified Premium Property in EM Bypass",
+        "price": "₹ 3.35 Cr",
+        "location": "EM Bypass, Kolkata",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ashok Banerjee provided outstanding site visit support in EM Bypass, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "smita-roy-kolkata-6",
+    "slug": "smita-roy-kolkata-6",
+    "name": "Smita Roy",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Kolkata Metropolis Realty",
+    "reraId": "WBHIRA2021A5888",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Kolkata",
+    "cityName": "Kolkata",
+    "area": "New Town",
+    "primaryArea": "New Town",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "136+ visits",
+    "listingsCount": 66,
+    "rating": "4.9",
+    "reviewsCount": 51,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98188 23912",
+    "email": "smita.roy@kolkatametropolisrealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across New Town and the greater Kolkata market, Smita Roy specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2376,
+        "title": "Verified Premium Property in New Town",
+        "price": "₹ 4.10 Cr",
+        "location": "New Town, Kolkata",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Smita Roy provided outstanding site visit support in New Town, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "monika-gupta-lucknow-1",
+    "slug": "monika-gupta-lucknow-1",
+    "name": "Monika Gupta",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Lucknow Prime Realty",
+    "reraId": "UPRERA2021A5901",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Lucknow",
     "cityName": "Lucknow",
     "area": "Gomti Nagar",
     "primaryArea": "Gomti Nagar",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "137+ visits",
+    "listingsCount": 67,
+    "rating": "5.0",
+    "reviewsCount": 52,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98230 23949",
+    "email": "monika.gupta@lucknowprimerealty.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Gomti Nagar and the greater Lucknow market, Monika Gupta specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2377,
+        "title": "Verified Premium Property in Gomti Nagar",
+        "price": "₹ 4.85 Cr",
+        "location": "Gomti Nagar, Lucknow",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Monika Gupta provided outstanding site visit support in Gomti Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "siddharth-tiwari-lucknow-2",
+    "slug": "siddharth-tiwari-lucknow-2",
+    "name": "Siddharth Tiwari",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Lucknow Asset Advisors",
+    "reraId": "UPRERA2021A5914",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Lucknow",
+    "cityName": "Lucknow",
+    "area": "Gomti Nagar Extension",
+    "primaryArea": "Gomti Nagar Extension",
     "experience": "11+ yrs",
     "experienceYears": 11,
-    "tours": "96+ visits",
-    "listingsCount": 46,
-    "rating": "5.0",
-    "reviewsCount": 41,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98188 16512",
-    "email": "ritu.sharma@lucknowprimerealty.in",
+    "tours": "138+ visits",
+    "listingsCount": 68,
+    "rating": "4.8",
+    "reviewsCount": 53,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98300 23986",
+    "email": "siddharth.tiwari@lucknowassetadvisors.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Gomti Nagar Extension and the greater Lucknow market, Siddharth Tiwari specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2378,
+        "title": "Verified Premium Property in Gomti Nagar Extension",
+        "price": "₹ 1.10 Cr",
+        "location": "Gomti Nagar Extension, Lucknow",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Siddharth Tiwari provided outstanding site visit support in Gomti Nagar Extension, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "manish-gupta-lucknow-3",
+    "slug": "manish-gupta-lucknow-3",
+    "name": "Manish Gupta",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Lucknow Heritage Estates",
+    "reraId": "UPRERA2021A5927",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Lucknow",
+    "cityName": "Lucknow",
+    "area": "Hazratganj",
+    "primaryArea": "Hazratganj",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "139+ visits",
+    "listingsCount": 69,
+    "rating": "4.9",
+    "reviewsCount": 54,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98470 24023",
+    "email": "manish.gupta@lucknowheritageestates.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -4509,21 +10792,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across Gomti Nagar and the greater Lucknow market, Ritu Sharma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 12 years of verified real estate advisory experience across Hazratganj and the greater Lucknow market, Manish Gupta specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1176,
-        "title": "Verified Premium Residence in Gomti Nagar",
-        "price": "₹ 2.00 Cr",
-        "location": "Gomti Nagar, Lucknow",
+        "id": 2379,
+        "title": "Verified Premium Property in Hazratganj",
+        "price": "₹ 1.85 Cr",
+        "location": "Hazratganj, Lucknow",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -4531,32 +10814,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ritu Sharma provided excellent site walkthrough assistance in Gomti Nagar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Manish Gupta provided outstanding site visit support in Hazratganj, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "shweta-yadav-lucknow",
-    "slug": "shweta-yadav-lucknow",
-    "name": "Shweta Yadav",
-    "role": "RERA Certified Property Guide",
-    "agency": "Lucknow Asset Advisors",
-    "reraId": "UPRERA2021A3301",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "id": "naveen-tiwari-lucknow-4",
+    "slug": "naveen-tiwari-lucknow-4",
+    "name": "Naveen Tiwari",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Lucknow Capital Properties",
+    "reraId": "UPRERA2021A5940",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Lucknow",
     "cityName": "Lucknow",
-    "area": "Gomti Nagar Extension",
-    "primaryArea": "Gomti Nagar Extension",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "97+ visits",
-    "listingsCount": 47,
-    "rating": "4.8",
-    "reviewsCount": 42,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98230 16549",
-    "email": "shweta.yadav@lucknowassetadvisors.in",
+    "area": "Aliganj",
+    "primaryArea": "Aliganj",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "140+ visits",
+    "listingsCount": 70,
+    "rating": "5.0",
+    "reviewsCount": 55,
+    "focus": "Plots & development land",
+    "phone": "+91 98101 24060",
+    "email": "naveen.tiwari@lucknowcapitalproperties.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -4569,21 +10852,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 12 years of verified real estate advisory experience across Gomti Nagar Extension and the greater Lucknow market, Shweta Yadav assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 13 years of verified real estate advisory experience across Aliganj and the greater Lucknow market, Naveen Tiwari specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1177,
-        "title": "Verified Premium Residence in Gomti Nagar Extension",
-        "price": "₹ 2.80 Cr",
-        "location": "Gomti Nagar Extension, Lucknow",
+        "id": 2380,
+        "title": "Verified Premium Property in Aliganj",
+        "price": "₹ 2.60 Cr",
+        "location": "Aliganj, Lucknow",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -4591,32 +10874,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Shweta Yadav provided excellent site walkthrough assistance in Gomti Nagar Extension, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Naveen Tiwari provided outstanding site visit support in Aliganj, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aarav-mishra-lucknow",
-    "slug": "aarav-mishra-lucknow",
-    "name": "Aarav Mishra",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Lucknow Heritage Estates",
-    "reraId": "UPRERA2021A3314",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "id": "rakesh-gupta-lucknow-5",
+    "slug": "rakesh-gupta-lucknow-5",
+    "name": "Rakesh Gupta",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Lucknow Corridor Homes",
+    "reraId": "UPRERA2021A5953",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Lucknow",
     "cityName": "Lucknow",
-    "area": "Hazratganj",
-    "primaryArea": "Hazratganj",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "98+ visits",
-    "listingsCount": 48,
-    "rating": "4.9",
-    "reviewsCount": 43,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98300 16586",
-    "email": "aarav.mishra@lucknowheritageestates.in",
+    "area": "Sushant Golf City",
+    "primaryArea": "Sushant Golf City",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "141+ visits",
+    "listingsCount": 71,
+    "rating": "4.8",
+    "reviewsCount": 56,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98200 24097",
+    "email": "rakesh.gupta@lucknowcorridorhomes.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -4629,18 +10912,78 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 13 years of verified real estate advisory experience across Hazratganj and the greater Lucknow market, Aarav Mishra assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
+    "bio": "With over 14 years of verified real estate advisory experience across Sushant Golf City and the greater Lucknow market, Rakesh Gupta specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2381,
+        "title": "Verified Premium Property in Sushant Golf City",
+        "price": "₹ 3.35 Cr",
+        "location": "Sushant Golf City, Lucknow",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rakesh Gupta provided outstanding site visit support in Sushant Golf City, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "monika-tiwari-lucknow-6",
+    "slug": "monika-tiwari-lucknow-6",
+    "name": "Monika Tiwari",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Lucknow Metropolis Realty",
+    "reraId": "UPRERA2021A5966",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Lucknow",
+    "cityName": "Lucknow",
+    "area": "Gomti Nagar",
+    "primaryArea": "Gomti Nagar",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "142+ visits",
+    "listingsCount": 72,
+    "rating": "4.9",
+    "reviewsCount": 57,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98450 24134",
+    "email": "monika.tiwari@lucknowmetropolisrealty.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Gomti Nagar and the greater Lucknow market, Monika Tiwari specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1178,
-        "title": "Verified Premium Residence in Hazratganj",
-        "price": "₹ 3.60 Cr",
-        "location": "Hazratganj, Lucknow",
+        "id": 2382,
+        "title": "Verified Premium Property in Gomti Nagar",
+        "price": "₹ 4.10 Cr",
+        "location": "Gomti Nagar, Lucknow",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
@@ -4651,33 +10994,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Aarav Mishra provided excellent site walkthrough assistance in Hazratganj, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Monika Tiwari provided outstanding site visit support in Gomti Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "anand-gill-ludhiana",
-    "slug": "anand-gill-ludhiana",
-    "name": "Anand Gill",
-    "role": "Land & Villa Consultant",
+    "id": "priya-bhatia-ludhiana-1",
+    "slug": "priya-bhatia-ludhiana-1",
+    "name": "Priya Bhatia",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Ludhiana Prime Realty",
-    "reraId": "PBRERA2021A3327",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
+    "reraId": "PBRERA2021A5979",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Ludhiana",
     "cityName": "Ludhiana",
     "area": "Sarabha Nagar",
     "primaryArea": "Sarabha Nagar",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "99+ visits",
-    "listingsCount": 49,
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "143+ visits",
+    "listingsCount": 73,
     "rating": "5.0",
-    "reviewsCount": 44,
-    "focus": "Villas & plots",
-    "phone": "+91 98470 16623",
-    "email": "anand.gill@ludhianaprimerealty.in",
-    "badge": "Fast Responder",
+    "reviewsCount": 58,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98112 24171",
+    "email": "priya.bhatia@ludhianaprimerealty.in",
+    "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -4690,7 +11033,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Punjabi"
     ],
-    "bio": "With over 14 years of verified real estate advisory experience across Sarabha Nagar and the greater Ludhiana market, Anand Gill assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 16 years of verified real estate advisory experience across Sarabha Nagar and the greater Ludhiana market, Priya Bhatia specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -4698,9 +11041,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1179,
-        "title": "Verified Premium Residence in Sarabha Nagar",
-        "price": "₹ 4.40 Cr",
+        "id": 2383,
+        "title": "Verified Premium Property in Sarabha Nagar",
+        "price": "₹ 4.85 Cr",
         "location": "Sarabha Nagar, Ludhiana",
         "type": "Sale",
         "beds": 3,
@@ -4712,18 +11055,18 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Anand Gill provided excellent site walkthrough assistance in Sarabha Nagar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Priya Bhatia provided outstanding site visit support in Sarabha Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aditya-dhillon-ludhiana",
-    "slug": "aditya-dhillon-ludhiana",
-    "name": "Aditya Dhillon",
-    "role": "High-Rise Living Advisor",
+    "id": "rajesh-dhillon-ludhiana-2",
+    "slug": "rajesh-dhillon-ludhiana-2",
+    "name": "Rajesh Dhillon",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Ludhiana Asset Advisors",
-    "reraId": "PBRERA2021A3340",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "reraId": "PBRERA2021A5992",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
     "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Ludhiana",
     "cityName": "Ludhiana",
@@ -4731,13 +11074,196 @@ export const CITY_ADVISORS: Agent[] = [
     "primaryArea": "Ferozepur Road",
     "experience": "5+ yrs",
     "experienceYears": 5,
-    "tours": "100+ visits",
-    "listingsCount": 50,
+    "tours": "144+ visits",
+    "listingsCount": 74,
     "rating": "4.8",
-    "reviewsCount": 45,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 16660",
-    "email": "aditya.dhillon@ludhianaassetadvisors.in",
+    "reviewsCount": 59,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98712 24208",
+    "email": "rajesh.dhillon@ludhianaassetadvisors.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Ferozepur Road and the greater Ludhiana market, Rajesh Dhillon specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2384,
+        "title": "Verified Premium Property in Ferozepur Road",
+        "price": "₹ 1.10 Cr",
+        "location": "Ferozepur Road, Ludhiana",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rajesh Dhillon provided outstanding site visit support in Ferozepur Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "gaurav-bhatia-ludhiana-3",
+    "slug": "gaurav-bhatia-ludhiana-3",
+    "name": "Gaurav Bhatia",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Ludhiana Heritage Estates",
+    "reraId": "PBRERA2021A6005",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ludhiana",
+    "cityName": "Ludhiana",
+    "area": "Civil Lines",
+    "primaryArea": "Civil Lines",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "145+ visits",
+    "listingsCount": 20,
+    "rating": "4.9",
+    "reviewsCount": 60,
+    "focus": "Offices & retail shops",
+    "phone": "+91 99100 24245",
+    "email": "gaurav.bhatia@ludhianaheritageestates.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Civil Lines and the greater Ludhiana market, Gaurav Bhatia specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2385,
+        "title": "Verified Premium Property in Civil Lines",
+        "price": "₹ 1.85 Cr",
+        "location": "Civil Lines, Ludhiana",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Gaurav Bhatia provided outstanding site visit support in Civil Lines, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "arjun-dhillon-ludhiana-4",
+    "slug": "arjun-dhillon-ludhiana-4",
+    "name": "Arjun Dhillon",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Ludhiana Capital Properties",
+    "reraId": "PBRERA2021A6018",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ludhiana",
+    "cityName": "Ludhiana",
+    "area": "Model Town",
+    "primaryArea": "Model Town",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "146+ visits",
+    "listingsCount": 21,
+    "rating": "5.0",
+    "reviewsCount": 61,
+    "focus": "Plots & development land",
+    "phone": "+91 98188 24282",
+    "email": "arjun.dhillon@ludhianacapitalproperties.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Punjabi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Model Town and the greater Ludhiana market, Arjun Dhillon specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2386,
+        "title": "Verified Premium Property in Model Town",
+        "price": "₹ 2.60 Cr",
+        "location": "Model Town, Ludhiana",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Arjun Dhillon provided outstanding site visit support in Model Town, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "simran-bhatia-ludhiana-5",
+    "slug": "simran-bhatia-ludhiana-5",
+    "name": "Simran Bhatia",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Ludhiana Corridor Homes",
+    "reraId": "PBRERA2021A6031",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ludhiana",
+    "cityName": "Ludhiana",
+    "area": "Pakhowal Road",
+    "primaryArea": "Pakhowal Road",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "147+ visits",
+    "listingsCount": 22,
+    "rating": "4.8",
+    "reviewsCount": 62,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98230 24319",
+    "email": "simran.bhatia@ludhianacorridorhomes.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -4751,7 +11277,129 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Punjabi"
     ],
-    "bio": "With over 5 years of verified real estate advisory experience across Ferozepur Road and the greater Ludhiana market, Aditya Dhillon assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 8 years of verified real estate advisory experience across Pakhowal Road and the greater Ludhiana market, Simran Bhatia specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2387,
+        "title": "Verified Premium Property in Pakhowal Road",
+        "price": "₹ 3.35 Cr",
+        "location": "Pakhowal Road, Ludhiana",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Simran Bhatia provided outstanding site visit support in Pakhowal Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "alok-bhat-mangaluru-1",
+    "slug": "alok-bhat-mangaluru-1",
+    "name": "Alok Bhat",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Mangaluru Prime Realty",
+    "reraId": "K-RERA2021A6044",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Mangaluru",
+    "cityName": "Mangaluru",
+    "area": "Kadri",
+    "primaryArea": "Kadri",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "148+ visits",
+    "listingsCount": 23,
+    "rating": "4.9",
+    "reviewsCount": 63,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98300 24356",
+    "email": "alok.bhat@mangaluruprimerealty.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Kannada"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Kadri and the greater Mangaluru market, Alok Bhat specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2388,
+        "title": "Verified Premium Property in Kadri",
+        "price": "₹ 4.10 Cr",
+        "location": "Kadri, Mangaluru",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Alok Bhat provided outstanding site visit support in Kadri, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kavita-rao-mangaluru-2",
+    "slug": "kavita-rao-mangaluru-2",
+    "name": "Kavita Rao",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Mangaluru Asset Advisors",
+    "reraId": "K-RERA2021A6057",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Mangaluru",
+    "cityName": "Mangaluru",
+    "area": "Kodialbail",
+    "primaryArea": "Kodialbail",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "149+ visits",
+    "listingsCount": 24,
+    "rating": "5.0",
+    "reviewsCount": 64,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98470 24393",
+    "email": "kavita.rao@mangaluruassetadvisors.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Kannada"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Kodialbail and the greater Mangaluru market, Kavita Rao specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -4759,10 +11407,71 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1180,
-        "title": "Verified Premium Residence in Ferozepur Road",
-        "price": "₹ 1.20 Cr",
-        "location": "Ferozepur Road, Ludhiana",
+        "id": 2389,
+        "title": "Verified Premium Property in Kodialbail",
+        "price": "₹ 4.85 Cr",
+        "location": "Kodialbail, Mangaluru",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kavita Rao provided outstanding site visit support in Kodialbail, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sneha-bhat-mangaluru-3",
+    "slug": "sneha-bhat-mangaluru-3",
+    "name": "Sneha Bhat",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Mangaluru Heritage Estates",
+    "reraId": "K-RERA2021A6070",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Mangaluru",
+    "cityName": "Mangaluru",
+    "area": "Bejai",
+    "primaryArea": "Bejai",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "150+ visits",
+    "listingsCount": 25,
+    "rating": "4.8",
+    "reviewsCount": 65,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98101 24430",
+    "email": "sneha.bhat@mangaluruheritageestates.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Kannada"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Bejai and the greater Mangaluru market, Sneha Bhat specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2390,
+        "title": "Verified Premium Property in Bejai",
+        "price": "₹ 1.10 Cr",
+        "location": "Bejai, Mangaluru",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
@@ -4773,32 +11482,93 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Aditya Dhillon provided excellent site walkthrough assistance in Ferozepur Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Sneha Bhat provided outstanding site visit support in Bejai, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "amit-shetty-mangaluru",
-    "slug": "amit-shetty-mangaluru",
-    "name": "Amit Shetty",
-    "role": "High-Rise Living Advisor",
-    "agency": "Mangaluru Prime Realty",
-    "reraId": "K-RERA2021A3353",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
+    "id": "divya-rao-mangaluru-4",
+    "slug": "divya-rao-mangaluru-4",
+    "name": "Divya Rao",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Mangaluru Capital Properties",
+    "reraId": "K-RERA2021A6083",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Mangaluru",
     "cityName": "Mangaluru",
-    "area": "Kadri",
-    "primaryArea": "Kadri",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "101+ visits",
-    "listingsCount": 51,
+    "area": "Kankanady",
+    "primaryArea": "Kankanady",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "151+ visits",
+    "listingsCount": 26,
     "rating": "4.9",
-    "reviewsCount": 46,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98200 16697",
-    "email": "amit.shetty@mangaluruprimerealty.in",
+    "reviewsCount": 66,
+    "focus": "Plots & development land",
+    "phone": "+91 98200 24467",
+    "email": "divya.rao@mangalurucapitalproperties.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Kannada"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Kankanady and the greater Mangaluru market, Divya Rao specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2391,
+        "title": "Verified Premium Property in Kankanady",
+        "price": "₹ 1.85 Cr",
+        "location": "Kankanady, Mangaluru",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Divya Rao provided outstanding site visit support in Kankanady, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ananya-bhat-mangaluru-5",
+    "slug": "ananya-bhat-mangaluru-5",
+    "name": "Ananya Bhat",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Mangaluru Corridor Homes",
+    "reraId": "K-RERA2021A6096",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Mangaluru",
+    "cityName": "Mangaluru",
+    "area": "Mannagudda",
+    "primaryArea": "Mannagudda",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "152+ visits",
+    "listingsCount": 27,
+    "rating": "5.0",
+    "reviewsCount": 67,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98450 24504",
+    "email": "ananya.bhat@mangalurucorridorhomes.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -4812,79 +11582,18 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Kannada"
     ],
-    "bio": "With over 6 years of verified real estate advisory experience across Kadri and the greater Mangaluru market, Amit Shetty assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1181,
-        "title": "Verified Premium Residence in Kadri",
-        "price": "₹ 2.00 Cr",
-        "location": "Kadri, Mangaluru",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Amit Shetty provided excellent site walkthrough assistance in Kadri, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "sanjay-hegde-mangaluru",
-    "slug": "sanjay-hegde-mangaluru",
-    "name": "Sanjay Hegde",
-    "role": "Luxury Residential Consultant",
-    "agency": "Mangaluru Asset Advisors",
-    "reraId": "K-RERA2021A3366",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
-    "city": "Mangaluru",
-    "cityName": "Mangaluru",
-    "area": "Kodialbail",
-    "primaryArea": "Kodialbail",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "102+ visits",
-    "listingsCount": 52,
-    "rating": "5.0",
-    "reviewsCount": 47,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 16734",
-    "email": "sanjay.hegde@mangaluruassetadvisors.in",
-    "badge": "Super Agent",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Kannada"
-    ],
-    "bio": "With over 7 years of verified real estate advisory experience across Kodialbail and the greater Mangaluru market, Sanjay Hegde assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 13 years of verified real estate advisory experience across Mannagudda and the greater Mangaluru market, Ananya Bhat specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1182,
-        "title": "Verified Premium Residence in Kodialbail",
-        "price": "₹ 2.80 Cr",
-        "location": "Kodialbail, Mangaluru",
+        "id": 2392,
+        "title": "Verified Premium Property in Mannagudda",
+        "price": "₹ 2.60 Cr",
+        "location": "Mannagudda, Mangaluru",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
@@ -4895,32 +11604,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sanjay Hegde provided excellent site walkthrough assistance in Kodialbail, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Ananya Bhat provided outstanding site visit support in Mannagudda, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "priya-patil-mumbai",
-    "slug": "priya-patil-mumbai",
-    "name": "Priya Patil",
-    "role": "Luxury Residential Consultant",
+    "id": "rakesh-patil-mumbai-1",
+    "slug": "rakesh-patil-mumbai-1",
+    "name": "Rakesh Patil",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Mumbai Prime Realty",
-    "reraId": "MAHARERA2020A3379",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "reraId": "MAHARERA2020A6109",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Mumbai",
     "cityName": "Mumbai",
     "area": "Bandra West",
     "primaryArea": "Bandra West",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "103+ visits",
-    "listingsCount": 53,
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "153+ visits",
+    "listingsCount": 28,
     "rating": "4.8",
-    "reviewsCount": 48,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98112 16771",
-    "email": "priya.patil@mumbaiprimerealty.in",
+    "reviewsCount": 68,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98112 24541",
+    "email": "rakesh.patil@mumbaiprimerealty.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -4934,7 +11643,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Marathi"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across Bandra West and the greater Mumbai market, Priya Patil assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 14 years of verified real estate advisory experience across Bandra West and the greater Mumbai market, Rakesh Patil specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -4942,9 +11651,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 1,
     "featuredListings": [
       {
-        "id": 1183,
-        "title": "Verified Premium Residence in Bandra West",
-        "price": "₹ 3.60 Cr",
+        "id": 2393,
+        "title": "Verified Premium Property in Bandra West",
+        "price": "₹ 3.35 Cr",
         "location": "Bandra West, Mumbai",
         "type": "Sale",
         "beds": 3,
@@ -4956,32 +11665,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Priya Patil provided excellent site walkthrough assistance in Bandra West, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Rakesh Patil provided outstanding site visit support in Bandra West, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "rajesh-kulkarni-mumbai",
-    "slug": "rajesh-kulkarni-mumbai",
-    "name": "Rajesh Kulkarni",
-    "role": "RERA Certified Property Guide",
+    "id": "monika-pawar-mumbai-2",
+    "slug": "monika-pawar-mumbai-2",
+    "name": "Monika Pawar",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Mumbai Asset Advisors",
-    "reraId": "MAHARERA2020A3392",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
+    "reraId": "MAHARERA2020A6122",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "city": "Mumbai",
     "cityName": "Mumbai",
     "area": "Andheri West",
     "primaryArea": "Andheri West",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "104+ visits",
-    "listingsCount": 54,
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "154+ visits",
+    "listingsCount": 29,
     "rating": "4.9",
-    "reviewsCount": 49,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98712 16808",
-    "email": "rajesh.kulkarni@mumbaiassetadvisors.in",
+    "reviewsCount": 69,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98712 24578",
+    "email": "monika.pawar@mumbaiassetadvisors.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -4995,7 +11704,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Marathi"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Andheri West and the greater Mumbai market, Rajesh Kulkarni assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 15 years of verified real estate advisory experience across Andheri West and the greater Mumbai market, Monika Pawar specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -5003,9 +11712,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1184,
-        "title": "Verified Premium Residence in Andheri West",
-        "price": "₹ 4.40 Cr",
+        "id": 2394,
+        "title": "Verified Premium Property in Andheri West",
+        "price": "₹ 4.10 Cr",
         "location": "Andheri West, Mumbai",
         "type": "Sale",
         "beds": 3,
@@ -5017,32 +11726,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Rajesh Kulkarni provided excellent site walkthrough assistance in Andheri West, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Monika Pawar provided outstanding site visit support in Andheri West, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "gaurav-joshi-mumbai",
-    "slug": "gaurav-joshi-mumbai",
-    "name": "Gaurav Joshi",
-    "role": "Ready-to-Move Specialist",
+    "id": "siddharth-patil-mumbai-3",
+    "slug": "siddharth-patil-mumbai-3",
+    "name": "Siddharth Patil",
+    "role": "Commercial Corridors & Retail Specialist",
     "agency": "Mumbai Heritage Estates",
-    "reraId": "MAHARERA2020A3405",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
+    "reraId": "MAHARERA2020A6135",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Mumbai",
     "cityName": "Mumbai",
     "area": "Powai",
     "primaryArea": "Powai",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "105+ visits",
-    "listingsCount": 55,
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "155+ visits",
+    "listingsCount": 30,
     "rating": "5.0",
-    "reviewsCount": 50,
-    "focus": "High-rises & apartments",
-    "phone": "+91 99100 16845",
-    "email": "gaurav.joshi@mumbaiheritageestates.in",
+    "reviewsCount": 70,
+    "focus": "Offices & retail shops",
+    "phone": "+91 99100 24615",
+    "email": "siddharth.patil@mumbaiheritageestates.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -5056,17 +11765,17 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Marathi"
     ],
-    "bio": "With over 10 years of verified real estate advisory experience across Powai and the greater Mumbai market, Gaurav Joshi assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
+    "bio": "With over 16 years of verified real estate advisory experience across Powai and the greater Mumbai market, Siddharth Patil specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1185,
-        "title": "Verified Premium Residence in Powai",
-        "price": "₹ 1.20 Cr",
+        "id": 2395,
+        "title": "Verified Premium Property in Powai",
+        "price": "₹ 4.85 Cr",
         "location": "Powai, Mumbai",
         "type": "Sale",
         "beds": 3,
@@ -5078,32 +11787,275 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Gaurav Joshi provided excellent site walkthrough assistance in Powai, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Siddharth Patil provided outstanding site visit support in Powai, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "anita-singh-muzaffarpur",
-    "slug": "anita-singh-muzaffarpur",
-    "name": "Anita Singh",
-    "role": "Land & Villa Consultant",
-    "agency": "Muzaffarpur Prime Realty",
-    "reraId": "BRERA2021A3418",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "manish-pawar-mumbai-4",
+    "slug": "manish-pawar-mumbai-4",
+    "name": "Manish Pawar",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Mumbai Capital Properties",
+    "reraId": "MAHARERA2020A6148",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
     "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Mumbai",
+    "cityName": "Mumbai",
+    "area": "Worli",
+    "primaryArea": "Worli",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "156+ visits",
+    "listingsCount": 31,
+    "rating": "4.8",
+    "reviewsCount": 71,
+    "focus": "Plots & development land",
+    "phone": "+91 98188 24652",
+    "email": "manish.pawar@mumbaicapitalproperties.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Worli and the greater Mumbai market, Manish Pawar specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2396,
+        "title": "Verified Premium Property in Worli",
+        "price": "₹ 1.10 Cr",
+        "location": "Worli, Mumbai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Manish Pawar provided outstanding site visit support in Worli, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "naveen-patil-mumbai-5",
+    "slug": "naveen-patil-mumbai-5",
+    "name": "Naveen Patil",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Mumbai Corridor Homes",
+    "reraId": "MAHARERA2020A6161",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Mumbai",
+    "cityName": "Mumbai",
+    "area": "Juhu",
+    "primaryArea": "Juhu",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "157+ visits",
+    "listingsCount": 32,
+    "rating": "4.9",
+    "reviewsCount": 72,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98230 24689",
+    "email": "naveen.patil@mumbaicorridorhomes.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Juhu and the greater Mumbai market, Naveen Patil specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2397,
+        "title": "Verified Premium Property in Juhu",
+        "price": "₹ 1.85 Cr",
+        "location": "Juhu, Mumbai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Naveen Patil provided outstanding site visit support in Juhu, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rakesh-pawar-mumbai-6",
+    "slug": "rakesh-pawar-mumbai-6",
+    "name": "Rakesh Pawar",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Mumbai Metropolis Realty",
+    "reraId": "MAHARERA2020A6174",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Mumbai",
+    "cityName": "Mumbai",
+    "area": "Bandra West",
+    "primaryArea": "Bandra West",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "158+ visits",
+    "listingsCount": 33,
+    "rating": "5.0",
+    "reviewsCount": 73,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98300 24726",
+    "email": "rakesh.pawar@mumbaimetropolisrealty.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Bandra West and the greater Mumbai market, Rakesh Pawar specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2398,
+        "title": "Verified Premium Property in Bandra West",
+        "price": "₹ 2.60 Cr",
+        "location": "Bandra West, Mumbai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rakesh Pawar provided outstanding site visit support in Bandra West, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "simran-srivastava-muzaffarpur-1",
+    "slug": "simran-srivastava-muzaffarpur-1",
+    "name": "Simran Srivastava",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Muzaffarpur Prime Realty",
+    "reraId": "BRERA2021A6187",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Muzaffarpur",
     "cityName": "Muzaffarpur",
     "area": "Mithanpura",
     "primaryArea": "Mithanpura",
-    "experience": "11+ yrs",
-    "experienceYears": 11,
-    "tours": "106+ visits",
-    "listingsCount": 56,
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "159+ visits",
+    "listingsCount": 34,
     "rating": "4.8",
-    "reviewsCount": 51,
-    "focus": "Villas & plots",
-    "phone": "+91 98188 16882",
-    "email": "anita.singh@muzaffarpurprimerealty.in",
+    "reviewsCount": 74,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98470 24763",
+    "email": "simran.srivastava@muzaffarpurprimerealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Mithanpura and the greater Muzaffarpur market, Simran Srivastava specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2399,
+        "title": "Verified Premium Property in Mithanpura",
+        "price": "₹ 3.35 Cr",
+        "location": "Mithanpura, Muzaffarpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Simran Srivastava provided outstanding site visit support in Mithanpura, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "priya-sinha-muzaffarpur-2",
+    "slug": "priya-sinha-muzaffarpur-2",
+    "name": "Priya Sinha",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Muzaffarpur Asset Advisors",
+    "reraId": "BRERA2021A6200",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Muzaffarpur",
+    "cityName": "Muzaffarpur",
+    "area": "Brahmpura",
+    "primaryArea": "Brahmpura",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "160+ visits",
+    "listingsCount": 35,
+    "rating": "4.9",
+    "reviewsCount": 75,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98101 24800",
+    "email": "priya.sinha@muzaffarpurassetadvisors.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -5116,21 +12068,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across Mithanpura and the greater Muzaffarpur market, Anita Singh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 9 years of verified real estate advisory experience across Brahmpura and the greater Muzaffarpur market, Priya Sinha specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1186,
-        "title": "Verified Premium Residence in Mithanpura",
-        "price": "₹ 2.00 Cr",
-        "location": "Mithanpura, Muzaffarpur",
+        "id": 2400,
+        "title": "Verified Premium Property in Brahmpura",
+        "price": "₹ 4.10 Cr",
+        "location": "Brahmpura, Muzaffarpur",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -5138,32 +12090,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Anita Singh provided excellent site walkthrough assistance in Mithanpura, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Priya Sinha provided outstanding site visit support in Brahmpura, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "poonam-jha-muzaffarpur",
-    "slug": "poonam-jha-muzaffarpur",
-    "name": "Poonam Jha",
-    "role": "High-Rise Living Advisor",
-    "agency": "Muzaffarpur Asset Advisors",
-    "reraId": "BRERA2021A3431",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "id": "rajesh-srivastava-muzaffarpur-3",
+    "slug": "rajesh-srivastava-muzaffarpur-3",
+    "name": "Rajesh Srivastava",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Muzaffarpur Heritage Estates",
+    "reraId": "BRERA2021A6213",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Muzaffarpur",
     "cityName": "Muzaffarpur",
-    "area": "Brahmpura",
-    "primaryArea": "Brahmpura",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "107+ visits",
-    "listingsCount": 57,
-    "rating": "4.9",
-    "reviewsCount": 52,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98230 16919",
-    "email": "poonam.jha@muzaffarpurassetadvisors.in",
+    "area": "Kalambagh Road",
+    "primaryArea": "Kalambagh Road",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "161+ visits",
+    "listingsCount": 36,
+    "rating": "5.0",
+    "reviewsCount": 76,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98200 24837",
+    "email": "rajesh.srivastava@muzaffarpurheritageestates.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -5176,18 +12128,138 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 12 years of verified real estate advisory experience across Brahmpura and the greater Muzaffarpur market, Poonam Jha assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 10 years of verified real estate advisory experience across Kalambagh Road and the greater Muzaffarpur market, Rajesh Srivastava specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2401,
+        "title": "Verified Premium Property in Kalambagh Road",
+        "price": "₹ 4.85 Cr",
+        "location": "Kalambagh Road, Muzaffarpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rajesh Srivastava provided outstanding site visit support in Kalambagh Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "gaurav-sinha-muzaffarpur-4",
+    "slug": "gaurav-sinha-muzaffarpur-4",
+    "name": "Gaurav Sinha",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Muzaffarpur Capital Properties",
+    "reraId": "BRERA2021A6226",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Muzaffarpur",
+    "cityName": "Muzaffarpur",
+    "area": "Zero Mile",
+    "primaryArea": "Zero Mile",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "162+ visits",
+    "listingsCount": 37,
+    "rating": "4.8",
+    "reviewsCount": 77,
+    "focus": "Plots & development land",
+    "phone": "+91 98450 24874",
+    "email": "gaurav.sinha@muzaffarpurcapitalproperties.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Zero Mile and the greater Muzaffarpur market, Gaurav Sinha specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2402,
+        "title": "Verified Premium Property in Zero Mile",
+        "price": "₹ 1.10 Cr",
+        "location": "Zero Mile, Muzaffarpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Gaurav Sinha provided outstanding site visit support in Zero Mile, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "arjun-srivastava-muzaffarpur-5",
+    "slug": "arjun-srivastava-muzaffarpur-5",
+    "name": "Arjun Srivastava",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Muzaffarpur Corridor Homes",
+    "reraId": "BRERA2021A6239",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Muzaffarpur",
+    "cityName": "Muzaffarpur",
+    "area": "Aghoria Bazar",
+    "primaryArea": "Aghoria Bazar",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "163+ visits",
+    "listingsCount": 38,
+    "rating": "4.9",
+    "reviewsCount": 78,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98112 24911",
+    "email": "arjun.srivastava@muzaffarpurcorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Aghoria Bazar and the greater Muzaffarpur market, Arjun Srivastava specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1187,
-        "title": "Verified Premium Residence in Brahmpura",
-        "price": "₹ 2.80 Cr",
-        "location": "Brahmpura, Muzaffarpur",
+        "id": 2403,
+        "title": "Verified Premium Property in Aghoria Bazar",
+        "price": "₹ 1.85 Cr",
+        "location": "Aghoria Bazar, Muzaffarpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
@@ -5198,18 +12270,18 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Poonam Jha provided excellent site walkthrough assistance in Brahmpura, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Arjun Srivastava provided outstanding site visit support in Aghoria Bazar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "kavita-rao-mysuru",
-    "slug": "kavita-rao-mysuru",
-    "name": "Kavita Rao",
-    "role": "High-Rise Living Advisor",
+    "id": "ananya-bhat-mysuru-1",
+    "slug": "ananya-bhat-mysuru-1",
+    "name": "Ananya Bhat",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Mysuru Prime Realty",
-    "reraId": "K-RERA2021A3444",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
+    "reraId": "K-RERA2021A6252",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Mysuru",
     "cityName": "Mysuru",
@@ -5217,14 +12289,14 @@ export const CITY_ADVISORS: Agent[] = [
     "primaryArea": "Jayalakshmipuram",
     "experience": "13+ yrs",
     "experienceYears": 13,
-    "tours": "108+ visits",
-    "listingsCount": 58,
+    "tours": "164+ visits",
+    "listingsCount": 39,
     "rating": "5.0",
-    "reviewsCount": 53,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98300 16956",
-    "email": "kavita.rao@mysuruprimerealty.in",
-    "badge": "Super Agent",
+    "reviewsCount": 79,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98712 24948",
+    "email": "ananya.bhat@mysuruprimerealty.in",
+    "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -5237,7 +12309,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Kannada"
     ],
-    "bio": "With over 13 years of verified real estate advisory experience across Jayalakshmipuram and the greater Mysuru market, Kavita Rao assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 13 years of verified real estate advisory experience across Jayalakshmipuram and the greater Mysuru market, Ananya Bhat specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -5245,9 +12317,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1188,
-        "title": "Verified Premium Residence in Jayalakshmipuram",
-        "price": "₹ 3.60 Cr",
+        "id": 2404,
+        "title": "Verified Premium Property in Jayalakshmipuram",
+        "price": "₹ 2.60 Cr",
         "location": "Jayalakshmipuram, Mysuru",
         "type": "Sale",
         "beds": 3,
@@ -5259,18 +12331,18 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Kavita Rao provided excellent site walkthrough assistance in Jayalakshmipuram, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Ananya Bhat provided outstanding site visit support in Jayalakshmipuram, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sneha-bhat-mysuru",
-    "slug": "sneha-bhat-mysuru",
-    "name": "Sneha Bhat",
-    "role": "Luxury Residential Consultant",
+    "id": "alok-rao-mysuru-2",
+    "slug": "alok-rao-mysuru-2",
+    "name": "Alok Rao",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Mysuru Asset Advisors",
-    "reraId": "K-RERA2021A3457",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "reraId": "K-RERA2021A6265",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Mysuru",
     "cityName": "Mysuru",
@@ -5278,13 +12350,135 @@ export const CITY_ADVISORS: Agent[] = [
     "primaryArea": "Gokulam",
     "experience": "14+ yrs",
     "experienceYears": 14,
-    "tours": "109+ visits",
-    "listingsCount": 59,
+    "tours": "165+ visits",
+    "listingsCount": 40,
     "rating": "4.8",
-    "reviewsCount": 54,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98470 16993",
-    "email": "sneha.bhat@mysuruassetadvisors.in",
+    "reviewsCount": 80,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 99100 24985",
+    "email": "alok.rao@mysuruassetadvisors.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Kannada"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Gokulam and the greater Mysuru market, Alok Rao specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2405,
+        "title": "Verified Premium Property in Gokulam",
+        "price": "₹ 3.35 Cr",
+        "location": "Gokulam, Mysuru",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Alok Rao provided outstanding site visit support in Gokulam, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kavita-bhat-mysuru-3",
+    "slug": "kavita-bhat-mysuru-3",
+    "name": "Kavita Bhat",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Mysuru Heritage Estates",
+    "reraId": "K-RERA2021A6278",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Mysuru",
+    "cityName": "Mysuru",
+    "area": "Vijayanagar 2nd Stage",
+    "primaryArea": "Vijayanagar 2nd Stage",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "166+ visits",
+    "listingsCount": 41,
+    "rating": "4.9",
+    "reviewsCount": 81,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98188 25022",
+    "email": "kavita.bhat@mysuruheritageestates.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Kannada"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Vijayanagar 2nd Stage and the greater Mysuru market, Kavita Bhat specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2406,
+        "title": "Verified Premium Property in Vijayanagar 2nd Stage",
+        "price": "₹ 4.10 Cr",
+        "location": "Vijayanagar 2nd Stage, Mysuru",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kavita Bhat provided outstanding site visit support in Vijayanagar 2nd Stage, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sneha-rao-mysuru-4",
+    "slug": "sneha-rao-mysuru-4",
+    "name": "Sneha Rao",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Mysuru Capital Properties",
+    "reraId": "K-RERA2021A6291",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Mysuru",
+    "cityName": "Mysuru",
+    "area": "Saraswathipuram",
+    "primaryArea": "Saraswathipuram",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "167+ visits",
+    "listingsCount": 42,
+    "rating": "5.0",
+    "reviewsCount": 82,
+    "focus": "Plots & development land",
+    "phone": "+91 98230 25059",
+    "email": "sneha.rao@mysurucapitalproperties.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -5298,7 +12492,190 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Kannada"
     ],
-    "bio": "With over 14 years of verified real estate advisory experience across Gokulam and the greater Mysuru market, Sneha Bhat assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 16 years of verified real estate advisory experience across Saraswathipuram and the greater Mysuru market, Sneha Rao specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2407,
+        "title": "Verified Premium Property in Saraswathipuram",
+        "price": "₹ 4.85 Cr",
+        "location": "Saraswathipuram, Mysuru",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sneha Rao provided outstanding site visit support in Saraswathipuram, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "divya-bhat-mysuru-5",
+    "slug": "divya-bhat-mysuru-5",
+    "name": "Divya Bhat",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Mysuru Corridor Homes",
+    "reraId": "K-RERA2021A6304",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Mysuru",
+    "cityName": "Mysuru",
+    "area": "Kuvempunagar",
+    "primaryArea": "Kuvempunagar",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "168+ visits",
+    "listingsCount": 43,
+    "rating": "4.8",
+    "reviewsCount": 83,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98300 25096",
+    "email": "divya.bhat@mysurucorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Kannada"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Kuvempunagar and the greater Mysuru market, Divya Bhat specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2408,
+        "title": "Verified Premium Property in Kuvempunagar",
+        "price": "₹ 1.10 Cr",
+        "location": "Kuvempunagar, Mysuru",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Divya Bhat provided outstanding site visit support in Kuvempunagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "naveen-patil-nagpur-1",
+    "slug": "naveen-patil-nagpur-1",
+    "name": "Naveen Patil",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Nagpur Prime Realty",
+    "reraId": "MAHARERA2020A6317",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Nagpur",
+    "cityName": "Nagpur",
+    "area": "Dharampeth",
+    "primaryArea": "Dharampeth",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "169+ visits",
+    "listingsCount": 44,
+    "rating": "4.9",
+    "reviewsCount": 84,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98470 25133",
+    "email": "naveen.patil@nagpurprimerealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Dharampeth and the greater Nagpur market, Naveen Patil specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2409,
+        "title": "Verified Premium Property in Dharampeth",
+        "price": "₹ 1.85 Cr",
+        "location": "Dharampeth, Nagpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Naveen Patil provided outstanding site visit support in Dharampeth, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rakesh-pawar-nagpur-2",
+    "slug": "rakesh-pawar-nagpur-2",
+    "name": "Rakesh Pawar",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Nagpur Asset Advisors",
+    "reraId": "MAHARERA2020A6330",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Nagpur",
+    "cityName": "Nagpur",
+    "area": "Civil Lines",
+    "primaryArea": "Civil Lines",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "170+ visits",
+    "listingsCount": 45,
+    "rating": "5.0",
+    "reviewsCount": 85,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98101 25170",
+    "email": "rakesh.pawar@nagpurassetadvisors.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Civil Lines and the greater Nagpur market, Rakesh Pawar specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -5306,10 +12683,71 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1189,
-        "title": "Verified Premium Residence in Gokulam",
-        "price": "₹ 4.40 Cr",
-        "location": "Gokulam, Mysuru",
+        "id": 2410,
+        "title": "Verified Premium Property in Civil Lines",
+        "price": "₹ 2.60 Cr",
+        "location": "Civil Lines, Nagpur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rakesh Pawar provided outstanding site visit support in Civil Lines, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "monika-patil-nagpur-3",
+    "slug": "monika-patil-nagpur-3",
+    "name": "Monika Patil",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Nagpur Heritage Estates",
+    "reraId": "MAHARERA2020A6343",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Nagpur",
+    "cityName": "Nagpur",
+    "area": "Wardha Road",
+    "primaryArea": "Wardha Road",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "171+ visits",
+    "listingsCount": 46,
+    "rating": "4.8",
+    "reviewsCount": 86,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98200 25207",
+    "email": "monika.patil@nagpurheritageestates.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Wardha Road and the greater Nagpur market, Monika Patil specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2411,
+        "title": "Verified Premium Property in Wardha Road",
+        "price": "₹ 3.35 Cr",
+        "location": "Wardha Road, Nagpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
@@ -5320,32 +12758,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sneha Bhat provided excellent site walkthrough assistance in Gokulam, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Monika Patil provided outstanding site visit support in Wardha Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sunita-deshmukh-nagpur",
-    "slug": "sunita-deshmukh-nagpur",
-    "name": "Sunita Deshmukh",
-    "role": "Luxury Residential Consultant",
-    "agency": "Nagpur Prime Realty",
-    "reraId": "MAHARERA2020A3470",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
+    "id": "siddharth-pawar-nagpur-4",
+    "slug": "siddharth-pawar-nagpur-4",
+    "name": "Siddharth Pawar",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Nagpur Capital Properties",
+    "reraId": "MAHARERA2020A6356",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "city": "Nagpur",
     "cityName": "Nagpur",
-    "area": "Dharampeth",
-    "primaryArea": "Dharampeth",
-    "experience": "5+ yrs",
-    "experienceYears": 5,
-    "tours": "110+ visits",
-    "listingsCount": 60,
+    "area": "Manish Nagar",
+    "primaryArea": "Manish Nagar",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "172+ visits",
+    "listingsCount": 47,
     "rating": "4.9",
-    "reviewsCount": 55,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 17030",
-    "email": "sunita.deshmukh@nagpurprimerealty.in",
+    "reviewsCount": 87,
+    "focus": "Plots & development land",
+    "phone": "+91 98450 25244",
+    "email": "siddharth.pawar@nagpurcapitalproperties.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -5359,18 +12797,18 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Marathi"
     ],
-    "bio": "With over 5 years of verified real estate advisory experience across Dharampeth and the greater Nagpur market, Sunita Deshmukh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 9 years of verified real estate advisory experience across Manish Nagar and the greater Nagpur market, Siddharth Pawar specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1190,
-        "title": "Verified Premium Residence in Dharampeth",
-        "price": "₹ 1.20 Cr",
-        "location": "Dharampeth, Nagpur",
+        "id": 2412,
+        "title": "Verified Premium Property in Manish Nagar",
+        "price": "₹ 4.10 Cr",
+        "location": "Manish Nagar, Nagpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
@@ -5381,32 +12819,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sunita Deshmukh provided excellent site walkthrough assistance in Dharampeth, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Siddharth Pawar provided outstanding site visit support in Manish Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "preeti-gokhale-nagpur",
-    "slug": "preeti-gokhale-nagpur",
-    "name": "Preeti Gokhale",
-    "role": "RERA Certified Property Guide",
-    "agency": "Nagpur Asset Advisors",
-    "reraId": "MAHARERA2020A3483",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
+    "id": "manish-patil-nagpur-5",
+    "slug": "manish-patil-nagpur-5",
+    "name": "Manish Patil",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Nagpur Corridor Homes",
+    "reraId": "MAHARERA2020A6369",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Nagpur",
     "cityName": "Nagpur",
-    "area": "Civil Lines",
-    "primaryArea": "Civil Lines",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "111+ visits",
-    "listingsCount": 61,
+    "area": "Pratap Nagar",
+    "primaryArea": "Pratap Nagar",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "173+ visits",
+    "listingsCount": 48,
     "rating": "5.0",
-    "reviewsCount": 56,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98200 17067",
-    "email": "preeti.gokhale@nagpurassetadvisors.in",
+    "reviewsCount": 88,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98112 25281",
+    "email": "manish.patil@nagpurcorridorhomes.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -5420,18 +12858,18 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Marathi"
     ],
-    "bio": "With over 6 years of verified real estate advisory experience across Civil Lines and the greater Nagpur market, Preeti Gokhale assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 10 years of verified real estate advisory experience across Pratap Nagar and the greater Nagpur market, Manish Patil specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1191,
-        "title": "Verified Premium Residence in Civil Lines",
-        "price": "₹ 2.00 Cr",
-        "location": "Civil Lines, Nagpur",
+        "id": 2413,
+        "title": "Verified Premium Property in Pratap Nagar",
+        "price": "₹ 4.85 Cr",
+        "location": "Pratap Nagar, Nagpur",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
@@ -5442,33 +12880,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Preeti Gokhale provided excellent site walkthrough assistance in Civil Lines, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Manish Patil provided outstanding site visit support in Pratap Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aarav-deshmukh-navi mumbai",
-    "slug": "aarav-deshmukh-navi mumbai",
-    "name": "Aarav Deshmukh",
-    "role": "RERA Certified Property Guide",
+    "id": "sunita-shinde-navi mumbai-1",
+    "slug": "sunita-shinde-navi mumbai-1",
+    "name": "Sunita Shinde",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Navi Mumbai Prime Realty",
-    "reraId": "MAHARERA2020A3496",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "reraId": "MAHARERA2020A6382",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
     "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Navi Mumbai",
     "cityName": "Navi Mumbai",
     "area": "Vashi",
     "primaryArea": "Vashi",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "112+ visits",
-    "listingsCount": 62,
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "174+ visits",
+    "listingsCount": 49,
     "rating": "4.8",
-    "reviewsCount": 57,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 17104",
-    "email": "aarav.deshmukh@navimumbaiprimerealty.in",
-    "badge": "Top Producer",
+    "reviewsCount": 89,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98712 25318",
+    "email": "sunita.shinde@navimumbaiprimerealty.in",
+    "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -5481,7 +12919,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Marathi"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across Vashi and the greater Navi Mumbai market, Aarav Deshmukh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 11 years of verified real estate advisory experience across Vashi and the greater Navi Mumbai market, Sunita Shinde specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -5489,9 +12927,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1192,
-        "title": "Verified Premium Residence in Vashi",
-        "price": "₹ 2.80 Cr",
+        "id": 2414,
+        "title": "Verified Premium Property in Vashi",
+        "price": "₹ 1.10 Cr",
         "location": "Vashi, Navi Mumbai",
         "type": "Sale",
         "beds": 3,
@@ -5503,33 +12941,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Aarav Deshmukh provided excellent site walkthrough assistance in Vashi, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Sunita Shinde provided outstanding site visit support in Vashi, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "pooja-gokhale-navi mumbai",
-    "slug": "pooja-gokhale-navi mumbai",
-    "name": "Pooja Gokhale",
-    "role": "Ready-to-Move Specialist",
+    "id": "preeti-bhosale-navi mumbai-2",
+    "slug": "preeti-bhosale-navi mumbai-2",
+    "name": "Preeti Bhosale",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Navi Mumbai Asset Advisors",
-    "reraId": "MAHARERA2020A3509",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
+    "reraId": "MAHARERA2020A6395",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Navi Mumbai",
     "cityName": "Navi Mumbai",
     "area": "Nerul",
     "primaryArea": "Nerul",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "113+ visits",
-    "listingsCount": 63,
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "175+ visits",
+    "listingsCount": 50,
     "rating": "4.9",
-    "reviewsCount": 58,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98112 17141",
-    "email": "pooja.gokhale@navimumbaiassetadvisors.in",
-    "badge": "Fast Responder",
+    "reviewsCount": 90,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 99100 25355",
+    "email": "preeti.bhosale@navimumbaiassetadvisors.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -5542,7 +12980,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Marathi"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across Nerul and the greater Navi Mumbai market, Pooja Gokhale assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 12 years of verified real estate advisory experience across Nerul and the greater Navi Mumbai market, Preeti Bhosale specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -5550,9 +12988,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1193,
-        "title": "Verified Premium Residence in Nerul",
-        "price": "₹ 3.60 Cr",
+        "id": 2415,
+        "title": "Verified Premium Property in Nerul",
+        "price": "₹ 1.85 Cr",
         "location": "Nerul, Navi Mumbai",
         "type": "Sale",
         "beds": 3,
@@ -5564,152 +13002,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Pooja Gokhale provided excellent site walkthrough assistance in Nerul, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Preeti Bhosale provided outstanding site visit support in Nerul, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "neha-kapoor-new delhi",
-    "slug": "neha-kapoor-new delhi",
-    "name": "Neha Kapoor",
-    "role": "Ready-to-Move Specialist",
-    "agency": "New Delhi Prime Realty",
-    "reraId": "DLRERA2021A3522",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
+    "id": "vikas-shinde-navi mumbai-3",
+    "slug": "vikas-shinde-navi mumbai-3",
+    "name": "Vikas Shinde",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Navi Mumbai Heritage Estates",
+    "reraId": "MAHARERA2020A6408",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
-    "city": "New Delhi",
-    "cityName": "New Delhi",
-    "area": "Vasant Vihar",
-    "primaryArea": "Vasant Vihar",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "114+ visits",
-    "listingsCount": 64,
+    "city": "Navi Mumbai",
+    "cityName": "Navi Mumbai",
+    "area": "Seawoods",
+    "primaryArea": "Seawoods",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "176+ visits",
+    "listingsCount": 51,
     "rating": "5.0",
-    "reviewsCount": 59,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98712 17178",
-    "email": "neha.kapoor@newdelhiprimerealty.in",
-    "badge": "Fast Responder",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 9 years of verified real estate advisory experience across Vasant Vihar and the greater New Delhi market, Neha Kapoor assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": true,
-    "featuredOrder": 1,
-    "featuredListings": [
-      {
-        "id": 1194,
-        "title": "Verified Premium Residence in Vasant Vihar",
-        "price": "₹ 4.40 Cr",
-        "location": "Vasant Vihar, New Delhi",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Neha Kapoor provided excellent site walkthrough assistance in Vasant Vihar, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "anita-chawla-new delhi",
-    "slug": "anita-chawla-new delhi",
-    "name": "Anita Chawla",
-    "role": "Senior Property Advisor",
-    "agency": "New Delhi Asset Advisors",
-    "reraId": "DLRERA2021A3535",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
-    "city": "New Delhi",
-    "cityName": "New Delhi",
-    "area": "Greater Kailash",
-    "primaryArea": "Greater Kailash",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "115+ visits",
-    "listingsCount": 65,
-    "rating": "4.8",
-    "reviewsCount": 60,
-    "focus": "High-rises & apartments",
-    "phone": "+91 99100 17215",
-    "email": "anita.chawla@newdelhiassetadvisors.in",
-    "badge": "Premier Agent",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 10 years of verified real estate advisory experience across Greater Kailash and the greater New Delhi market, Anita Chawla assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1195,
-        "title": "Verified Premium Residence in Greater Kailash",
-        "price": "₹ 1.20 Cr",
-        "location": "Greater Kailash, New Delhi",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Anita Chawla provided excellent site walkthrough assistance in Greater Kailash, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "poonam-sharma-new delhi",
-    "slug": "poonam-sharma-new delhi",
-    "name": "Poonam Sharma",
-    "role": "Commercial Corridors Specialist",
-    "agency": "New Delhi Heritage Estates",
-    "reraId": "DLRERA2021A3548",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-    "city": "New Delhi",
-    "cityName": "New Delhi",
-    "area": "Hauz Khas",
-    "primaryArea": "Hauz Khas",
-    "experience": "11+ yrs",
-    "experienceYears": 11,
-    "tours": "116+ visits",
-    "listingsCount": 66,
-    "rating": "4.9",
-    "reviewsCount": 61,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98188 17252",
-    "email": "poonam.sharma@newdelhiheritageestates.in",
+    "reviewsCount": 91,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98188 25392",
+    "email": "vikas.shinde@navimumbaiheritageestates.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -5720,20 +13038,143 @@ export const CITY_ADVISORS: Agent[] = [
     ],
     "languages": [
       "English",
-      "Hindi"
+      "Hindi",
+      "Marathi"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across Hauz Khas and the greater New Delhi market, Poonam Sharma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
+    "bio": "With over 13 years of verified real estate advisory experience across Seawoods and the greater Navi Mumbai market, Vikas Shinde specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1196,
-        "title": "Verified Premium Residence in Hauz Khas",
-        "price": "₹ 2.00 Cr",
-        "location": "Hauz Khas, New Delhi",
+        "id": 2416,
+        "title": "Verified Premium Property in Seawoods",
+        "price": "₹ 2.60 Cr",
+        "location": "Seawoods, Navi Mumbai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Vikas Shinde provided outstanding site visit support in Seawoods, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "vikram-bhosale-navi mumbai-4",
+    "slug": "vikram-bhosale-navi mumbai-4",
+    "name": "Vikram Bhosale",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Navi Mumbai Capital Properties",
+    "reraId": "MAHARERA2020A6421",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Navi Mumbai",
+    "cityName": "Navi Mumbai",
+    "area": "Kharghar",
+    "primaryArea": "Kharghar",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "177+ visits",
+    "listingsCount": 52,
+    "rating": "4.8",
+    "reviewsCount": 92,
+    "focus": "Plots & development land",
+    "phone": "+91 98230 25429",
+    "email": "vikram.bhosale@navimumbaicapitalproperties.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Kharghar and the greater Navi Mumbai market, Vikram Bhosale specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2417,
+        "title": "Verified Premium Property in Kharghar",
+        "price": "₹ 3.35 Cr",
+        "location": "Kharghar, Navi Mumbai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Vikram Bhosale provided outstanding site visit support in Kharghar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "deepika-shinde-navi mumbai-5",
+    "slug": "deepika-shinde-navi mumbai-5",
+    "name": "Deepika Shinde",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Navi Mumbai Corridor Homes",
+    "reraId": "MAHARERA2020A6434",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Navi Mumbai",
+    "cityName": "Navi Mumbai",
+    "area": "Palm Beach Road",
+    "primaryArea": "Palm Beach Road",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "178+ visits",
+    "listingsCount": 53,
+    "rating": "4.9",
+    "reviewsCount": 93,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98300 25466",
+    "email": "deepika.shinde@navimumbaicorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Palm Beach Road and the greater Navi Mumbai market, Deepika Shinde specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2418,
+        "title": "Verified Premium Property in Palm Beach Road",
+        "price": "₹ 4.10 Cr",
+        "location": "Palm Beach Road, Navi Mumbai",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
@@ -5744,32 +13185,153 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Poonam Sharma provided excellent site walkthrough assistance in Hauz Khas, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Deepika Shinde provided outstanding site visit support in Palm Beach Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "rohan-gupta-noida",
-    "slug": "rohan-gupta-noida",
-    "name": "Rohan Gupta",
-    "role": "Luxury Residential Consultant",
-    "agency": "Noida Prime Realty",
-    "reraId": "UPRERA2021A3561",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
+    "id": "sunita-bhosale-navi mumbai-6",
+    "slug": "sunita-bhosale-navi mumbai-6",
+    "name": "Sunita Bhosale",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Navi Mumbai Metropolis Realty",
+    "reraId": "MAHARERA2020A6447",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Noida",
-    "cityName": "Noida",
-    "area": "Sector 150",
-    "primaryArea": "Sector 150",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "117+ visits",
-    "listingsCount": 67,
+    "city": "Navi Mumbai",
+    "cityName": "Navi Mumbai",
+    "area": "Vashi",
+    "primaryArea": "Vashi",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "179+ visits",
+    "listingsCount": 54,
     "rating": "5.0",
-    "reviewsCount": 62,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98230 17289",
-    "email": "rohan.gupta@noidaprimerealty.in",
+    "reviewsCount": 94,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98470 25503",
+    "email": "sunita.bhosale@navimumbaimetropolisrealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Vashi and the greater Navi Mumbai market, Sunita Bhosale specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2419,
+        "title": "Verified Premium Property in Vashi",
+        "price": "₹ 4.85 Cr",
+        "location": "Vashi, Navi Mumbai",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sunita Bhosale provided outstanding site visit support in Vashi, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "divya-chawla-new delhi-1",
+    "slug": "divya-chawla-new delhi-1",
+    "name": "Divya Chawla",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "New Delhi Prime Realty",
+    "reraId": "DLRERA2021A6460",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "New Delhi",
+    "cityName": "New Delhi",
+    "area": "Vasant Vihar",
+    "primaryArea": "Vasant Vihar",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "40+ visits",
+    "listingsCount": 55,
+    "rating": "4.8",
+    "reviewsCount": 95,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98101 25540",
+    "email": "divya.chawla@newdelhiprimerealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Vasant Vihar and the greater New Delhi market, Divya Chawla specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": true,
+    "featuredOrder": 1,
+    "featuredListings": [
+      {
+        "id": 2420,
+        "title": "Verified Premium Property in Vasant Vihar",
+        "price": "₹ 1.10 Cr",
+        "location": "Vasant Vihar, New Delhi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Divya Chawla provided outstanding site visit support in Vasant Vihar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ananya-kapoor-new delhi-2",
+    "slug": "ananya-kapoor-new delhi-2",
+    "name": "Ananya Kapoor",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "New Delhi Asset Advisors",
+    "reraId": "DLRERA2021A6473",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "New Delhi",
+    "cityName": "New Delhi",
+    "area": "Greater Kailash",
+    "primaryArea": "Greater Kailash",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "41+ visits",
+    "listingsCount": 56,
+    "rating": "4.9",
+    "reviewsCount": 96,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98200 25577",
+    "email": "ananya.kapoor@newdelhiassetadvisors.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -5782,7 +13344,307 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 12 years of verified real estate advisory experience across Sector 150 and the greater Noida market, Rohan Gupta assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 6 years of verified real estate advisory experience across Greater Kailash and the greater New Delhi market, Ananya Kapoor specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2421,
+        "title": "Verified Premium Property in Greater Kailash",
+        "price": "₹ 1.85 Cr",
+        "location": "Greater Kailash, New Delhi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ananya Kapoor provided outstanding site visit support in Greater Kailash, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "alok-chawla-new delhi-3",
+    "slug": "alok-chawla-new delhi-3",
+    "name": "Alok Chawla",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "New Delhi Heritage Estates",
+    "reraId": "DLRERA2021A6486",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "New Delhi",
+    "cityName": "New Delhi",
+    "area": "Hauz Khas",
+    "primaryArea": "Hauz Khas",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "42+ visits",
+    "listingsCount": 57,
+    "rating": "5.0",
+    "reviewsCount": 97,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98450 25614",
+    "email": "alok.chawla@newdelhiheritageestates.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Hauz Khas and the greater New Delhi market, Alok Chawla specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2422,
+        "title": "Verified Premium Property in Hauz Khas",
+        "price": "₹ 2.60 Cr",
+        "location": "Hauz Khas, New Delhi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Alok Chawla provided outstanding site visit support in Hauz Khas, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kavita-kapoor-new delhi-4",
+    "slug": "kavita-kapoor-new delhi-4",
+    "name": "Kavita Kapoor",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "New Delhi Capital Properties",
+    "reraId": "DLRERA2021A6499",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "New Delhi",
+    "cityName": "New Delhi",
+    "area": "Dwarka Sector 11",
+    "primaryArea": "Dwarka Sector 11",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "43+ visits",
+    "listingsCount": 58,
+    "rating": "4.8",
+    "reviewsCount": 98,
+    "focus": "Plots & development land",
+    "phone": "+91 98112 25651",
+    "email": "kavita.kapoor@newdelhicapitalproperties.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Dwarka Sector 11 and the greater New Delhi market, Kavita Kapoor specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2423,
+        "title": "Verified Premium Property in Dwarka Sector 11",
+        "price": "₹ 3.35 Cr",
+        "location": "Dwarka Sector 11, New Delhi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kavita Kapoor provided outstanding site visit support in Dwarka Sector 11, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sneha-chawla-new delhi-5",
+    "slug": "sneha-chawla-new delhi-5",
+    "name": "Sneha Chawla",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "New Delhi Corridor Homes",
+    "reraId": "DLRERA2021A6512",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "New Delhi",
+    "cityName": "New Delhi",
+    "area": "South Extension",
+    "primaryArea": "South Extension",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "44+ visits",
+    "listingsCount": 59,
+    "rating": "4.9",
+    "reviewsCount": 99,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98712 25688",
+    "email": "sneha.chawla@newdelhicorridorhomes.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across South Extension and the greater New Delhi market, Sneha Chawla specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2424,
+        "title": "Verified Premium Property in South Extension",
+        "price": "₹ 4.10 Cr",
+        "location": "South Extension, New Delhi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sneha Chawla provided outstanding site visit support in South Extension, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "divya-kapoor-new delhi-6",
+    "slug": "divya-kapoor-new delhi-6",
+    "name": "Divya Kapoor",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "New Delhi Metropolis Realty",
+    "reraId": "DLRERA2021A6525",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "New Delhi",
+    "cityName": "New Delhi",
+    "area": "Vasant Vihar",
+    "primaryArea": "Vasant Vihar",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "45+ visits",
+    "listingsCount": 60,
+    "rating": "5.0",
+    "reviewsCount": 100,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 99100 25725",
+    "email": "divya.kapoor@newdelhimetropolisrealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Vasant Vihar and the greater New Delhi market, Divya Kapoor specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2425,
+        "title": "Verified Premium Property in Vasant Vihar",
+        "price": "₹ 4.85 Cr",
+        "location": "Vasant Vihar, New Delhi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Divya Kapoor provided outstanding site visit support in Vasant Vihar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anita-tripathi-noida-1",
+    "slug": "anita-tripathi-noida-1",
+    "name": "Anita Tripathi",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Noida Prime Realty",
+    "reraId": "UPRERA2021A6538",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Noida",
+    "cityName": "Noida",
+    "area": "Sector 150",
+    "primaryArea": "Sector 150",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "46+ visits",
+    "listingsCount": 61,
+    "rating": "4.8",
+    "reviewsCount": 101,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98188 25762",
+    "email": "anita.tripathi@noidaprimerealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Sector 150 and the greater Noida market, Anita Tripathi specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -5790,9 +13652,309 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1197,
-        "title": "Verified Premium Residence in Sector 150",
-        "price": "₹ 2.80 Cr",
+        "id": 2426,
+        "title": "Verified Premium Property in Sector 150",
+        "price": "₹ 1.10 Cr",
+        "location": "Sector 150, Noida",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anita Tripathi provided outstanding site visit support in Sector 150, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "poonam-mishra-noida-2",
+    "slug": "poonam-mishra-noida-2",
+    "name": "Poonam Mishra",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Noida Asset Advisors",
+    "reraId": "UPRERA2021A6551",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Noida",
+    "cityName": "Noida",
+    "area": "Sector 62",
+    "primaryArea": "Sector 62",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "47+ visits",
+    "listingsCount": 62,
+    "rating": "4.9",
+    "reviewsCount": 102,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98230 25799",
+    "email": "poonam.mishra@noidaassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Sector 62 and the greater Noida market, Poonam Mishra specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2427,
+        "title": "Verified Premium Property in Sector 62",
+        "price": "₹ 1.85 Cr",
+        "location": "Sector 62, Noida",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Poonam Mishra provided outstanding site visit support in Sector 62, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "mayank-tripathi-noida-3",
+    "slug": "mayank-tripathi-noida-3",
+    "name": "Mayank Tripathi",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Noida Heritage Estates",
+    "reraId": "UPRERA2021A6564",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Noida",
+    "cityName": "Noida",
+    "area": "Sector 137",
+    "primaryArea": "Sector 137",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "48+ visits",
+    "listingsCount": 63,
+    "rating": "5.0",
+    "reviewsCount": 103,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98300 25836",
+    "email": "mayank.tripathi@noidaheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Sector 137 and the greater Noida market, Mayank Tripathi specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2428,
+        "title": "Verified Premium Property in Sector 137",
+        "price": "₹ 2.60 Cr",
+        "location": "Sector 137, Noida",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Mayank Tripathi provided outstanding site visit support in Sector 137, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "meera-mishra-noida-4",
+    "slug": "meera-mishra-noida-4",
+    "name": "Meera Mishra",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Noida Capital Properties",
+    "reraId": "UPRERA2021A6577",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Noida",
+    "cityName": "Noida",
+    "area": "Sector 76",
+    "primaryArea": "Sector 76",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "49+ visits",
+    "listingsCount": 64,
+    "rating": "4.8",
+    "reviewsCount": 104,
+    "focus": "Plots & development land",
+    "phone": "+91 98470 25873",
+    "email": "meera.mishra@noidacapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Sector 76 and the greater Noida market, Meera Mishra specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2429,
+        "title": "Verified Premium Property in Sector 76",
+        "price": "₹ 3.35 Cr",
+        "location": "Sector 76, Noida",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Meera Mishra provided outstanding site visit support in Sector 76, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "neha-tripathi-noida-5",
+    "slug": "neha-tripathi-noida-5",
+    "name": "Neha Tripathi",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Noida Corridor Homes",
+    "reraId": "UPRERA2021A6590",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Noida",
+    "cityName": "Noida",
+    "area": "Noida Expressway",
+    "primaryArea": "Noida Expressway",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "50+ visits",
+    "listingsCount": 65,
+    "rating": "4.9",
+    "reviewsCount": 105,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98101 25910",
+    "email": "neha.tripathi@noidacorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Noida Expressway and the greater Noida market, Neha Tripathi specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2430,
+        "title": "Verified Premium Property in Noida Expressway",
+        "price": "₹ 4.10 Cr",
+        "location": "Noida Expressway, Noida",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Neha Tripathi provided outstanding site visit support in Noida Expressway, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anita-mishra-noida-6",
+    "slug": "anita-mishra-noida-6",
+    "name": "Anita Mishra",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Noida Metropolis Realty",
+    "reraId": "UPRERA2021A6603",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Noida",
+    "cityName": "Noida",
+    "area": "Sector 150",
+    "primaryArea": "Sector 150",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "51+ visits",
+    "listingsCount": 66,
+    "rating": "5.0",
+    "reviewsCount": 106,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98200 25947",
+    "email": "anita.mishra@noidametropolisrealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Sector 150 and the greater Noida market, Anita Mishra specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2431,
+        "title": "Verified Premium Property in Sector 150",
+        "price": "₹ 4.85 Cr",
         "location": "Sector 150, Noida",
         "type": "Sale",
         "beds": 3,
@@ -5804,153 +13966,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Rohan Gupta provided excellent site walkthrough assistance in Sector 150, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Anita Mishra provided outstanding site visit support in Sector 150, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "kunal-verma-noida",
-    "slug": "kunal-verma-noida",
-    "name": "Kunal Verma",
-    "role": "RERA Certified Property Guide",
-    "agency": "Noida Asset Advisors",
-    "reraId": "UPRERA2021A3574",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Noida",
-    "cityName": "Noida",
-    "area": "Sector 62",
-    "primaryArea": "Sector 62",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "118+ visits",
-    "listingsCount": 68,
-    "rating": "4.8",
-    "reviewsCount": 63,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98300 17326",
-    "email": "kunal.verma@noidaassetadvisors.in",
-    "badge": "Fast Responder",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 13 years of verified real estate advisory experience across Sector 62 and the greater Noida market, Kunal Verma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1198,
-        "title": "Verified Premium Residence in Sector 62",
-        "price": "₹ 3.60 Cr",
-        "location": "Sector 62, Noida",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Kunal Verma provided excellent site walkthrough assistance in Sector 62, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "amit-pandey-noida",
-    "slug": "amit-pandey-noida",
-    "name": "Amit Pandey",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Noida Heritage Estates",
-    "reraId": "UPRERA2021A3587",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Noida",
-    "cityName": "Noida",
-    "area": "Sector 137",
-    "primaryArea": "Sector 137",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "119+ visits",
-    "listingsCount": 69,
-    "rating": "4.9",
-    "reviewsCount": 64,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98470 17363",
-    "email": "amit.pandey@noidaheritageestates.in",
-    "badge": "Premier Agent",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 14 years of verified real estate advisory experience across Sector 137 and the greater Noida market, Amit Pandey assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
-    "subscriptionTier": "FREE_VERIFIED",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1199,
-        "title": "Verified Premium Residence in Sector 137",
-        "price": "₹ 4.40 Cr",
-        "location": "Sector 137, Noida",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Amit Pandey provided excellent site walkthrough assistance in Sector 137, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "shweta-singh-patna",
-    "slug": "shweta-singh-patna",
+    "id": "shweta-singh-patna-1",
+    "slug": "shweta-singh-patna-1",
     "name": "Shweta Singh",
-    "role": "Land & Villa Consultant",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Patna Prime Realty",
-    "reraId": "BRERA2021A3600",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "BRERA2021A6616",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Patna",
     "cityName": "Patna",
     "area": "Bailey Road",
     "primaryArea": "Bailey Road",
     "experience": "5+ yrs",
     "experienceYears": 5,
-    "tours": "120+ visits",
-    "listingsCount": 20,
-    "rating": "5.0",
-    "reviewsCount": 65,
-    "focus": "Villas & plots",
-    "phone": "+91 98101 17400",
+    "tours": "52+ visits",
+    "listingsCount": 67,
+    "rating": "4.8",
+    "reviewsCount": 107,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98450 25984",
     "email": "shweta.singh@patnaprimerealty.in",
-    "badge": "Top Rated",
+    "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -5962,7 +14004,7 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 5 years of verified real estate advisory experience across Bailey Road and the greater Patna market, Shweta Singh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 5 years of verified real estate advisory experience across Bailey Road and the greater Patna market, Shweta Singh specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -5970,13 +14012,13 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 1,
     "featuredListings": [
       {
-        "id": 1200,
-        "title": "Verified Premium Residence in Bailey Road",
-        "price": "₹ 1.20 Cr",
+        "id": 2432,
+        "title": "Verified Premium Property in Bailey Road",
+        "price": "₹ 1.10 Cr",
         "location": "Bailey Road, Patna",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -5984,92 +14026,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Shweta Singh provided excellent site walkthrough assistance in Bailey Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Shweta Singh provided outstanding site visit support in Bailey Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aarav-jha-patna",
-    "slug": "aarav-jha-patna",
-    "name": "Aarav Jha",
-    "role": "High-Rise Living Advisor",
+    "id": "karan-jha-patna-2",
+    "slug": "karan-jha-patna-2",
+    "name": "Karan Jha",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Patna Asset Advisors",
-    "reraId": "BRERA2021A3613",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "BRERA2021A6629",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Patna",
     "cityName": "Patna",
     "area": "Boring Road",
     "primaryArea": "Boring Road",
     "experience": "6+ yrs",
     "experienceYears": 6,
-    "tours": "121+ visits",
-    "listingsCount": 21,
-    "rating": "4.8",
-    "reviewsCount": 66,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98200 17437",
-    "email": "aarav.jha@patnaassetadvisors.in",
-    "badge": "Top Producer",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 6 years of verified real estate advisory experience across Boring Road and the greater Patna market, Aarav Jha assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1201,
-        "title": "Verified Premium Residence in Boring Road",
-        "price": "₹ 2.00 Cr",
-        "location": "Boring Road, Patna",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Aarav Jha provided excellent site walkthrough assistance in Boring Road, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "pooja-kumar-patna",
-    "slug": "pooja-kumar-patna",
-    "name": "Pooja Kumar",
-    "role": "Luxury Residential Consultant",
-    "agency": "Patna Heritage Estates",
-    "reraId": "BRERA2021A3626",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-    "city": "Patna",
-    "cityName": "Patna",
-    "area": "Kankarbagh",
-    "primaryArea": "Kankarbagh",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "122+ visits",
-    "listingsCount": 22,
+    "tours": "53+ visits",
+    "listingsCount": 68,
     "rating": "4.9",
-    "reviewsCount": 67,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 17474",
-    "email": "pooja.kumar@patnaheritageestates.in",
+    "reviewsCount": 108,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98112 26021",
+    "email": "karan.jha@patnaassetadvisors.in",
     "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
@@ -6082,21 +14064,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across Kankarbagh and the greater Patna market, Pooja Kumar assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
-    "subscriptionTier": "FREE_VERIFIED",
+    "bio": "With over 6 years of verified real estate advisory experience across Boring Road and the greater Patna market, Karan Jha specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1202,
-        "title": "Verified Premium Residence in Kankarbagh",
-        "price": "₹ 2.80 Cr",
-        "location": "Kankarbagh, Patna",
+        "id": 2433,
+        "title": "Verified Premium Property in Boring Road",
+        "price": "₹ 1.85 Cr",
+        "location": "Boring Road, Patna",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -6104,32 +14086,92 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Pooja Kumar provided excellent site walkthrough assistance in Kankarbagh, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Karan Jha provided outstanding site visit support in Boring Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aditya-gupta-prayagraj",
-    "slug": "aditya-gupta-prayagraj",
-    "name": "Aditya Gupta",
-    "role": "Senior Property Advisor",
-    "agency": "Prayagraj Prime Realty",
-    "reraId": "UPRERA2021A3639",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Prayagraj",
-    "cityName": "Prayagraj",
-    "area": "Civil Lines",
-    "primaryArea": "Civil Lines",
+    "id": "aarav-singh-patna-3",
+    "slug": "aarav-singh-patna-3",
+    "name": "Aarav Singh",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Patna Heritage Estates",
+    "reraId": "BRERA2021A6642",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Patna",
+    "cityName": "Patna",
+    "area": "Kankarbagh",
+    "primaryArea": "Kankarbagh",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "54+ visits",
+    "listingsCount": 69,
+    "rating": "5.0",
+    "reviewsCount": 109,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98712 26058",
+    "email": "aarav.singh@patnaheritageestates.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Kankarbagh and the greater Patna market, Aarav Singh specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2434,
+        "title": "Verified Premium Property in Kankarbagh",
+        "price": "₹ 2.60 Cr",
+        "location": "Kankarbagh, Patna",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Aarav Singh provided outstanding site visit support in Kankarbagh, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "pooja-jha-patna-4",
+    "slug": "pooja-jha-patna-4",
+    "name": "Pooja Jha",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Patna Capital Properties",
+    "reraId": "BRERA2021A6655",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Patna",
+    "cityName": "Patna",
+    "area": "Danapur",
+    "primaryArea": "Danapur",
     "experience": "8+ yrs",
     "experienceYears": 8,
-    "tours": "123+ visits",
-    "listingsCount": 23,
-    "rating": "5.0",
-    "reviewsCount": 68,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98112 17511",
-    "email": "aditya.gupta@prayagrajprimerealty.in",
+    "tours": "55+ visits",
+    "listingsCount": 70,
+    "rating": "4.8",
+    "reviewsCount": 110,
+    "focus": "Plots & development land",
+    "phone": "+91 99100 26095",
+    "email": "pooja.jha@patnacapitalproperties.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -6142,21 +14184,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across Civil Lines and the greater Prayagraj market, Aditya Gupta assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 8 years of verified real estate advisory experience across Danapur and the greater Patna market, Pooja Jha specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1203,
-        "title": "Verified Premium Residence in Civil Lines",
-        "price": "₹ 3.60 Cr",
-        "location": "Civil Lines, Prayagraj",
+        "id": 2435,
+        "title": "Verified Premium Property in Danapur",
+        "price": "₹ 3.35 Cr",
+        "location": "Danapur, Patna",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -6164,32 +14206,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Aditya Gupta provided excellent site walkthrough assistance in Civil Lines, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Pooja Jha provided outstanding site visit support in Danapur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "suresh-verma-prayagraj",
-    "slug": "suresh-verma-prayagraj",
-    "name": "Suresh Verma",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Prayagraj Asset Advisors",
-    "reraId": "UPRERA2021A3652",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Prayagraj",
-    "cityName": "Prayagraj",
-    "area": "Ashok Nagar",
-    "primaryArea": "Ashok Nagar",
+    "id": "ritu-singh-patna-5",
+    "slug": "ritu-singh-patna-5",
+    "name": "Ritu Singh",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Patna Corridor Homes",
+    "reraId": "BRERA2021A6668",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Patna",
+    "cityName": "Patna",
+    "area": "Ashiana Nagar",
+    "primaryArea": "Ashiana Nagar",
     "experience": "9+ yrs",
     "experienceYears": 9,
-    "tours": "124+ visits",
-    "listingsCount": 24,
-    "rating": "4.8",
-    "reviewsCount": 69,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98712 17548",
-    "email": "suresh.verma@prayagrajassetadvisors.in",
+    "tours": "56+ visits",
+    "listingsCount": 71,
+    "rating": "4.9",
+    "reviewsCount": 111,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98188 26132",
+    "email": "ritu.singh@patnacorridorhomes.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -6202,18 +14244,138 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Ashok Nagar and the greater Prayagraj market, Suresh Verma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 9 years of verified real estate advisory experience across Ashiana Nagar and the greater Patna market, Ritu Singh specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1204,
-        "title": "Verified Premium Residence in Ashok Nagar",
-        "price": "₹ 4.40 Cr",
-        "location": "Ashok Nagar, Prayagraj",
+        "id": 2436,
+        "title": "Verified Premium Property in Ashiana Nagar",
+        "price": "₹ 4.10 Cr",
+        "location": "Ashiana Nagar, Patna",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ritu Singh provided outstanding site visit support in Ashiana Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "shweta-jha-patna-6",
+    "slug": "shweta-jha-patna-6",
+    "name": "Shweta Jha",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Patna Metropolis Realty",
+    "reraId": "BRERA2021A6681",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Patna",
+    "cityName": "Patna",
+    "area": "Bailey Road",
+    "primaryArea": "Bailey Road",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "57+ visits",
+    "listingsCount": 72,
+    "rating": "5.0",
+    "reviewsCount": 112,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98230 26169",
+    "email": "shweta.jha@patnametropolisrealty.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Bailey Road and the greater Patna market, Shweta Jha specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2437,
+        "title": "Verified Premium Property in Bailey Road",
+        "price": "₹ 4.85 Cr",
+        "location": "Bailey Road, Patna",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Shweta Jha provided outstanding site visit support in Bailey Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "preeti-mishra-prayagraj-1",
+    "slug": "preeti-mishra-prayagraj-1",
+    "name": "Preeti Mishra",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Prayagraj Prime Realty",
+    "reraId": "UPRERA2021A6694",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Prayagraj",
+    "cityName": "Prayagraj",
+    "area": "Civil Lines",
+    "primaryArea": "Civil Lines",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "58+ visits",
+    "listingsCount": 73,
+    "rating": "4.8",
+    "reviewsCount": 113,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98300 26206",
+    "email": "preeti.mishra@prayagrajprimerealty.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Civil Lines and the greater Prayagraj market, Preeti Mishra specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2438,
+        "title": "Verified Premium Property in Civil Lines",
+        "price": "₹ 1.10 Cr",
+        "location": "Civil Lines, Prayagraj",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
@@ -6224,33 +14386,273 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Suresh Verma provided excellent site walkthrough assistance in Ashok Nagar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Preeti Mishra provided outstanding site visit support in Civil Lines, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sanjay-patil-pune",
-    "slug": "sanjay-patil-pune",
-    "name": "Sanjay Patil",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Pune Prime Realty",
-    "reraId": "MAHARERA2020A3665",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
+    "id": "vikas-tripathi-prayagraj-2",
+    "slug": "vikas-tripathi-prayagraj-2",
+    "name": "Vikas Tripathi",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Prayagraj Asset Advisors",
+    "reraId": "UPRERA2021A6707",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Prayagraj",
+    "cityName": "Prayagraj",
+    "area": "Ashok Nagar",
+    "primaryArea": "Ashok Nagar",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "59+ visits",
+    "listingsCount": 74,
+    "rating": "4.9",
+    "reviewsCount": 114,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98470 26243",
+    "email": "vikas.tripathi@prayagrajassetadvisors.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Ashok Nagar and the greater Prayagraj market, Vikas Tripathi specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2439,
+        "title": "Verified Premium Property in Ashok Nagar",
+        "price": "₹ 1.85 Cr",
+        "location": "Ashok Nagar, Prayagraj",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Vikas Tripathi provided outstanding site visit support in Ashok Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "vikram-mishra-prayagraj-3",
+    "slug": "vikram-mishra-prayagraj-3",
+    "name": "Vikram Mishra",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Prayagraj Heritage Estates",
+    "reraId": "UPRERA2021A6720",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Prayagraj",
+    "cityName": "Prayagraj",
+    "area": "George Town",
+    "primaryArea": "George Town",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "60+ visits",
+    "listingsCount": 20,
+    "rating": "5.0",
+    "reviewsCount": 115,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98101 26280",
+    "email": "vikram.mishra@prayagrajheritageestates.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across George Town and the greater Prayagraj market, Vikram Mishra specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2440,
+        "title": "Verified Premium Property in George Town",
+        "price": "₹ 2.60 Cr",
+        "location": "George Town, Prayagraj",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Vikram Mishra provided outstanding site visit support in George Town, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "deepika-tripathi-prayagraj-4",
+    "slug": "deepika-tripathi-prayagraj-4",
+    "name": "Deepika Tripathi",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Prayagraj Capital Properties",
+    "reraId": "UPRERA2021A6733",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Prayagraj",
+    "cityName": "Prayagraj",
+    "area": "Tagore Town",
+    "primaryArea": "Tagore Town",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "61+ visits",
+    "listingsCount": 21,
+    "rating": "4.8",
+    "reviewsCount": 116,
+    "focus": "Plots & development land",
+    "phone": "+91 98200 26317",
+    "email": "deepika.tripathi@prayagrajcapitalproperties.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Tagore Town and the greater Prayagraj market, Deepika Tripathi specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2441,
+        "title": "Verified Premium Property in Tagore Town",
+        "price": "₹ 3.35 Cr",
+        "location": "Tagore Town, Prayagraj",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Deepika Tripathi provided outstanding site visit support in Tagore Town, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sunita-mishra-prayagraj-5",
+    "slug": "sunita-mishra-prayagraj-5",
+    "name": "Sunita Mishra",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Prayagraj Corridor Homes",
+    "reraId": "UPRERA2021A6746",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Prayagraj",
+    "cityName": "Prayagraj",
+    "area": "Jhalwa",
+    "primaryArea": "Jhalwa",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "62+ visits",
+    "listingsCount": 22,
+    "rating": "4.9",
+    "reviewsCount": 117,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98450 26354",
+    "email": "sunita.mishra@prayagrajcorridorhomes.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Jhalwa and the greater Prayagraj market, Sunita Mishra specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2442,
+        "title": "Verified Premium Property in Jhalwa",
+        "price": "₹ 4.10 Cr",
+        "location": "Jhalwa, Prayagraj",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sunita Mishra provided outstanding site visit support in Jhalwa, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "suresh-kulkarni-pune-1",
+    "slug": "suresh-kulkarni-pune-1",
+    "name": "Suresh Kulkarni",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Pune Prime Realty",
+    "reraId": "MAHARERA2020A6759",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Pune",
     "cityName": "Pune",
     "area": "Koregaon Park",
     "primaryArea": "Koregaon Park",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "125+ visits",
-    "listingsCount": 25,
-    "rating": "4.9",
-    "reviewsCount": 70,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 99100 17585",
-    "email": "sanjay.patil@puneprimerealty.in",
-    "badge": "Top Rated",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "63+ visits",
+    "listingsCount": 23,
+    "rating": "5.0",
+    "reviewsCount": 118,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98112 26391",
+    "email": "suresh.kulkarni@puneprimerealty.in",
+    "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -6263,7 +14665,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Marathi"
     ],
-    "bio": "With over 10 years of verified real estate advisory experience across Koregaon Park and the greater Pune market, Sanjay Patil assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 16 years of verified real estate advisory experience across Koregaon Park and the greater Pune market, Suresh Kulkarni specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -6271,13 +14673,13 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 1,
     "featuredListings": [
       {
-        "id": 1205,
-        "title": "Verified Premium Residence in Koregaon Park",
-        "price": "₹ 1.20 Cr",
+        "id": 2443,
+        "title": "Verified Premium Property in Koregaon Park",
+        "price": "₹ 4.85 Cr",
         "location": "Koregaon Park, Pune",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -6285,32 +14687,93 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sanjay Patil provided excellent site walkthrough assistance in Koregaon Park, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Suresh Kulkarni provided outstanding site visit support in Koregaon Park, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "rohan-kulkarni-pune",
-    "slug": "rohan-kulkarni-pune",
-    "name": "Rohan Kulkarni",
-    "role": "Land & Villa Consultant",
+    "id": "ashok-joshi-pune-2",
+    "slug": "ashok-joshi-pune-2",
+    "name": "Ashok Joshi",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Pune Asset Advisors",
-    "reraId": "MAHARERA2020A3678",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "MAHARERA2020A6772",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Pune",
     "cityName": "Pune",
     "area": "Baner",
     "primaryArea": "Baner",
-    "experience": "11+ yrs",
-    "experienceYears": 11,
-    "tours": "126+ visits",
-    "listingsCount": 26,
-    "rating": "5.0",
-    "reviewsCount": 71,
-    "focus": "Villas & plots",
-    "phone": "+91 98188 17622",
-    "email": "rohan.kulkarni@puneassetadvisors.in",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "64+ visits",
+    "listingsCount": 24,
+    "rating": "4.8",
+    "reviewsCount": 119,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98712 26428",
+    "email": "ashok.joshi@puneassetadvisors.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Baner and the greater Pune market, Ashok Joshi specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2444,
+        "title": "Verified Premium Property in Baner",
+        "price": "₹ 1.10 Cr",
+        "location": "Baner, Pune",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Ashok Joshi provided outstanding site visit support in Baner, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "smita-kulkarni-pune-3",
+    "slug": "smita-kulkarni-pune-3",
+    "name": "Smita Kulkarni",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Pune Heritage Estates",
+    "reraId": "MAHARERA2020A6785",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Pune",
+    "cityName": "Pune",
+    "area": "Kalyani Nagar",
+    "primaryArea": "Kalyani Nagar",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "65+ visits",
+    "listingsCount": 25,
+    "rating": "4.9",
+    "reviewsCount": 120,
+    "focus": "Offices & retail shops",
+    "phone": "+91 99100 26465",
+    "email": "smita.kulkarni@puneheritageestates.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -6324,79 +14787,140 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Marathi"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across Baner and the greater Pune market, Rohan Kulkarni assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1206,
-        "title": "Verified Premium Residence in Baner",
-        "price": "₹ 2.00 Cr",
-        "location": "Baner, Pune",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Rohan Kulkarni provided excellent site walkthrough assistance in Baner, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "kunal-joshi-pune",
-    "slug": "kunal-joshi-pune",
-    "name": "Kunal Joshi",
-    "role": "High-Rise Living Advisor",
-    "agency": "Pune Heritage Estates",
-    "reraId": "MAHARERA2020A3691",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
-    "city": "Pune",
-    "cityName": "Pune",
-    "area": "Kalyani Nagar",
-    "primaryArea": "Kalyani Nagar",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "127+ visits",
-    "listingsCount": 27,
-    "rating": "4.8",
-    "reviewsCount": 72,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98230 17659",
-    "email": "kunal.joshi@puneheritageestates.in",
-    "badge": "Fast Responder",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Marathi"
-    ],
-    "bio": "With over 12 years of verified real estate advisory experience across Kalyani Nagar and the greater Pune market, Kunal Joshi assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 25 mins",
-    "responseTimeText": "< 25 mins",
+    "bio": "With over 6 years of verified real estate advisory experience across Kalyani Nagar and the greater Pune market, Smita Kulkarni specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1207,
-        "title": "Verified Premium Residence in Kalyani Nagar",
-        "price": "₹ 2.80 Cr",
+        "id": 2445,
+        "title": "Verified Premium Property in Kalyani Nagar",
+        "price": "₹ 1.85 Cr",
         "location": "Kalyani Nagar, Pune",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Smita Kulkarni provided outstanding site visit support in Kalyani Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anand-joshi-pune-4",
+    "slug": "anand-joshi-pune-4",
+    "name": "Anand Joshi",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Pune Capital Properties",
+    "reraId": "MAHARERA2020A6798",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Pune",
+    "cityName": "Pune",
+    "area": "Kothrud",
+    "primaryArea": "Kothrud",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "66+ visits",
+    "listingsCount": 26,
+    "rating": "5.0",
+    "reviewsCount": 121,
+    "focus": "Plots & development land",
+    "phone": "+91 98188 26502",
+    "email": "anand.joshi@punecapitalproperties.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Kothrud and the greater Pune market, Anand Joshi specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2446,
+        "title": "Verified Premium Property in Kothrud",
+        "price": "₹ 2.60 Cr",
+        "location": "Kothrud, Pune",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anand Joshi provided outstanding site visit support in Kothrud, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "aditya-kulkarni-pune-5",
+    "slug": "aditya-kulkarni-pune-5",
+    "name": "Aditya Kulkarni",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Pune Corridor Homes",
+    "reraId": "MAHARERA2020A6811",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Pune",
+    "cityName": "Pune",
+    "area": "Wakad",
+    "primaryArea": "Wakad",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "67+ visits",
+    "listingsCount": 27,
+    "rating": "4.8",
+    "reviewsCount": 122,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98230 26539",
+    "email": "aditya.kulkarni@punecorridorhomes.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Wakad and the greater Pune market, Aditya Kulkarni specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2447,
+        "title": "Verified Premium Property in Wakad",
+        "price": "₹ 3.35 Cr",
+        "location": "Wakad, Pune",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
@@ -6407,33 +14931,94 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Kunal Joshi provided excellent site walkthrough assistance in Kalyani Nagar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Aditya Kulkarni provided outstanding site visit support in Wakad, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "ritu-mohanty-puri",
-    "slug": "ritu-mohanty-puri",
-    "name": "Ritu Mohanty",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Puri Prime Realty",
-    "reraId": "ORERA2021A3704",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
+    "id": "suresh-joshi-pune-6",
+    "slug": "suresh-joshi-pune-6",
+    "name": "Suresh Joshi",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Pune Metropolis Realty",
+    "reraId": "MAHARERA2020A6824",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Pune",
+    "cityName": "Pune",
+    "area": "Koregaon Park",
+    "primaryArea": "Koregaon Park",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "68+ visits",
+    "listingsCount": 28,
+    "rating": "4.9",
+    "reviewsCount": 123,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98300 26576",
+    "email": "suresh.joshi@punemetropolisrealty.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Koregaon Park and the greater Pune market, Suresh Joshi specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2448,
+        "title": "Verified Premium Property in Koregaon Park",
+        "price": "₹ 4.10 Cr",
+        "location": "Koregaon Park, Pune",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Suresh Joshi provided outstanding site visit support in Koregaon Park, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "naveen-mishra-puri-1",
+    "slug": "naveen-mishra-puri-1",
+    "name": "Naveen Mishra",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Puri Prime Realty",
+    "reraId": "ORERA2021A6837",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Puri",
     "cityName": "Puri",
     "area": "VIP Road",
     "primaryArea": "VIP Road",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "128+ visits",
-    "listingsCount": 28,
-    "rating": "4.9",
-    "reviewsCount": 73,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98300 17696",
-    "email": "ritu.mohanty@puriprimerealty.in",
-    "badge": "Super Agent",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "69+ visits",
+    "listingsCount": 29,
+    "rating": "5.0",
+    "reviewsCount": 124,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98470 26613",
+    "email": "naveen.mishra@puriprimerealty.in",
+    "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -6446,7 +15031,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Odia"
     ],
-    "bio": "With over 13 years of verified real estate advisory experience across VIP Road and the greater Puri market, Ritu Mohanty assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 10 years of verified real estate advisory experience across VIP Road and the greater Puri market, Naveen Mishra specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -6454,13 +15039,13 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1208,
-        "title": "Verified Premium Residence in VIP Road",
-        "price": "₹ 3.60 Cr",
+        "id": 2449,
+        "title": "Verified Premium Property in VIP Road",
+        "price": "₹ 4.85 Cr",
         "location": "VIP Road, Puri",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -6468,32 +15053,154 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ritu Mohanty provided excellent site walkthrough assistance in VIP Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Naveen Mishra provided outstanding site visit support in VIP Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "shweta-pradhan-puri",
-    "slug": "shweta-pradhan-puri",
-    "name": "Shweta Pradhan",
-    "role": "Senior Property Advisor",
+    "id": "rakesh-behera-puri-2",
+    "slug": "rakesh-behera-puri-2",
+    "name": "Rakesh Behera",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Puri Asset Advisors",
-    "reraId": "ORERA2021A3717",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "ORERA2021A6850",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Puri",
     "cityName": "Puri",
     "area": "Chakratirtha Road",
     "primaryArea": "Chakratirtha Road",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "129+ visits",
-    "listingsCount": 29,
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "70+ visits",
+    "listingsCount": 30,
+    "rating": "4.8",
+    "reviewsCount": 35,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98101 26650",
+    "email": "rakesh.behera@puriassetadvisors.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Odia"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Chakratirtha Road and the greater Puri market, Rakesh Behera specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2450,
+        "title": "Verified Premium Property in Chakratirtha Road",
+        "price": "₹ 1.10 Cr",
+        "location": "Chakratirtha Road, Puri",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rakesh Behera provided outstanding site visit support in Chakratirtha Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "monika-mishra-puri-3",
+    "slug": "monika-mishra-puri-3",
+    "name": "Monika Mishra",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Puri Heritage Estates",
+    "reraId": "ORERA2021A6863",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Puri",
+    "cityName": "Puri",
+    "area": "Marine Drive Road",
+    "primaryArea": "Marine Drive Road",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "71+ visits",
+    "listingsCount": 31,
+    "rating": "4.9",
+    "reviewsCount": 36,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98200 26687",
+    "email": "monika.mishra@puriheritageestates.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Odia"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Marine Drive Road and the greater Puri market, Monika Mishra specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2451,
+        "title": "Verified Premium Property in Marine Drive Road",
+        "price": "₹ 1.85 Cr",
+        "location": "Marine Drive Road, Puri",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Monika Mishra provided outstanding site visit support in Marine Drive Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "siddharth-behera-puri-4",
+    "slug": "siddharth-behera-puri-4",
+    "name": "Siddharth Behera",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Puri Capital Properties",
+    "reraId": "ORERA2021A6876",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Puri",
+    "cityName": "Puri",
+    "area": "Grand Road",
+    "primaryArea": "Grand Road",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "72+ visits",
+    "listingsCount": 32,
     "rating": "5.0",
-    "reviewsCount": 74,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98470 17733",
-    "email": "shweta.pradhan@puriassetadvisors.in",
+    "reviewsCount": 37,
+    "focus": "Plots & development land",
+    "phone": "+91 98450 26724",
+    "email": "siddharth.behera@puricapitalproperties.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -6507,199 +15214,18 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Odia"
     ],
-    "bio": "With over 14 years of verified real estate advisory experience across Chakratirtha Road and the greater Puri market, Shweta Pradhan assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1209,
-        "title": "Verified Premium Residence in Chakratirtha Road",
-        "price": "₹ 4.40 Cr",
-        "location": "Chakratirtha Road, Puri",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Shweta Pradhan provided excellent site walkthrough assistance in Chakratirtha Road, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "poonam-singh-purnia",
-    "slug": "poonam-singh-purnia",
-    "name": "Poonam Singh",
-    "role": "Senior Property Advisor",
-    "agency": "Purnia Prime Realty",
-    "reraId": "BRERA2021A3730",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Purnia",
-    "cityName": "Purnia",
-    "area": "Line Bazar",
-    "primaryArea": "Line Bazar",
-    "experience": "5+ yrs",
-    "experienceYears": 5,
-    "tours": "130+ visits",
-    "listingsCount": 30,
-    "rating": "4.8",
-    "reviewsCount": 75,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 17770",
-    "email": "poonam.singh@purniaprimerealty.in",
-    "badge": "Top Rated",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 5 years of verified real estate advisory experience across Line Bazar and the greater Purnia market, Poonam Singh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 13 years of verified real estate advisory experience across Grand Road and the greater Puri market, Siddharth Behera specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1210,
-        "title": "Verified Premium Residence in Line Bazar",
-        "price": "₹ 1.20 Cr",
-        "location": "Line Bazar, Purnia",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Poonam Singh provided excellent site walkthrough assistance in Line Bazar, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "meera-jha-purnia",
-    "slug": "meera-jha-purnia",
-    "name": "Meera Jha",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Purnia Asset Advisors",
-    "reraId": "BRERA2021A3743",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Purnia",
-    "cityName": "Purnia",
-    "area": "Rambagh",
-    "primaryArea": "Rambagh",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "131+ visits",
-    "listingsCount": 31,
-    "rating": "4.9",
-    "reviewsCount": 76,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98200 17807",
-    "email": "meera.jha@purniaassetadvisors.in",
-    "badge": "Top Producer",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi"
-    ],
-    "bio": "With over 6 years of verified real estate advisory experience across Rambagh and the greater Purnia market, Meera Jha assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1211,
-        "title": "Verified Premium Residence in Rambagh",
-        "price": "₹ 2.00 Cr",
-        "location": "Rambagh, Purnia",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Meera Jha provided excellent site walkthrough assistance in Rambagh, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "sneha-patel-rajkot",
-    "slug": "sneha-patel-rajkot",
-    "name": "Sneha Patel",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Rajkot Prime Realty",
-    "reraId": "GUJRERA2020A3756",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
-    "city": "Rajkot",
-    "cityName": "Rajkot",
-    "area": "Kalawad Road",
-    "primaryArea": "Kalawad Road",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "132+ visits",
-    "listingsCount": 32,
-    "rating": "5.0",
-    "reviewsCount": 77,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98450 17844",
-    "email": "sneha.patel@rajkotprimerealty.in",
-    "badge": "Top Producer",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Gujarati"
-    ],
-    "bio": "With over 7 years of verified real estate advisory experience across Kalawad Road and the greater Rajkot market, Sneha Patel assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1212,
-        "title": "Verified Premium Residence in Kalawad Road",
-        "price": "₹ 2.80 Cr",
-        "location": "Kalawad Road, Rajkot",
+        "id": 2452,
+        "title": "Verified Premium Property in Grand Road",
+        "price": "₹ 2.60 Cr",
+        "location": "Grand Road, Puri",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
@@ -6710,33 +15236,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sneha Patel provided excellent site walkthrough assistance in Kalawad Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Siddharth Behera provided outstanding site visit support in Grand Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "divya-trivedi-rajkot",
-    "slug": "divya-trivedi-rajkot",
-    "name": "Divya Trivedi",
-    "role": "Land & Villa Consultant",
-    "agency": "Rajkot Asset Advisors",
-    "reraId": "GUJRERA2020A3769",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "manish-mishra-puri-5",
+    "slug": "manish-mishra-puri-5",
+    "name": "Manish Mishra",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Puri Corridor Homes",
+    "reraId": "ORERA2021A6889",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
-    "city": "Rajkot",
-    "cityName": "Rajkot",
-    "area": "150 Feet Ring Road",
-    "primaryArea": "150 Feet Ring Road",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "133+ visits",
+    "city": "Puri",
+    "cityName": "Puri",
+    "area": "Baliapanda",
+    "primaryArea": "Baliapanda",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "73+ visits",
     "listingsCount": 33,
     "rating": "4.8",
-    "reviewsCount": 78,
-    "focus": "Villas & plots",
-    "phone": "+91 98112 17881",
-    "email": "divya.trivedi@rajkotassetadvisors.in",
-    "badge": "Fast Responder",
+    "reviewsCount": 38,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98112 26761",
+    "email": "manish.mishra@puricorridorhomes.in",
+    "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -6747,20 +15273,20 @@ export const CITY_ADVISORS: Agent[] = [
     "languages": [
       "English",
       "Hindi",
-      "Gujarati"
+      "Odia"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across 150 Feet Ring Road and the greater Rajkot market, Divya Trivedi assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 14 years of verified real estate advisory experience across Baliapanda and the greater Puri market, Manish Mishra specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1213,
-        "title": "Verified Premium Residence in 150 Feet Ring Road",
-        "price": "₹ 3.60 Cr",
-        "location": "150 Feet Ring Road, Rajkot",
+        "id": 2453,
+        "title": "Verified Premium Property in Baliapanda",
+        "price": "₹ 3.35 Cr",
+        "location": "Baliapanda, Puri",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
@@ -6771,32 +15297,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Divya Trivedi provided excellent site walkthrough assistance in 150 Feet Ring Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Manish Mishra provided outstanding site visit support in Baliapanda, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "preeti-singh-ranchi",
-    "slug": "preeti-singh-ranchi",
-    "name": "Preeti Singh",
-    "role": "Land & Villa Consultant",
-    "agency": "Ranchi Prime Realty",
-    "reraId": "JHRERA2021A3782",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
+    "id": "sunita-kumar-purnia-1",
+    "slug": "sunita-kumar-purnia-1",
+    "name": "Sunita Kumar",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Purnia Prime Realty",
+    "reraId": "BRERA2021A6902",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-    "city": "Ranchi",
-    "cityName": "Ranchi",
-    "area": "Morabadi",
-    "primaryArea": "Morabadi",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "134+ visits",
+    "city": "Purnia",
+    "cityName": "Purnia",
+    "area": "Line Bazar",
+    "primaryArea": "Line Bazar",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "74+ visits",
     "listingsCount": 34,
     "rating": "4.9",
-    "reviewsCount": 79,
-    "focus": "Villas & plots",
-    "phone": "+91 98712 17918",
-    "email": "preeti.singh@ranchiprimerealty.in",
+    "reviewsCount": 39,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98712 26798",
+    "email": "sunita.kumar@purniaprimerealty.in",
     "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
@@ -6809,7 +15335,7 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Morabadi and the greater Ranchi market, Preeti Singh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 15 years of verified real estate advisory experience across Line Bazar and the greater Purnia market, Sunita Kumar specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -6817,10 +15343,10 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1214,
-        "title": "Verified Premium Residence in Morabadi",
-        "price": "₹ 4.40 Cr",
-        "location": "Morabadi, Ranchi",
+        "id": 2454,
+        "title": "Verified Premium Property in Line Bazar",
+        "price": "₹ 4.10 Cr",
+        "location": "Line Bazar, Purnia",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
@@ -6831,32 +15357,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Preeti Singh provided excellent site walkthrough assistance in Morabadi, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Sunita Kumar provided outstanding site visit support in Line Bazar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "vikram-verma-ranchi",
-    "slug": "vikram-verma-ranchi",
-    "name": "Vikram Verma",
-    "role": "High-Rise Living Advisor",
-    "agency": "Ranchi Asset Advisors",
-    "reraId": "JHRERA2021A3795",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
+    "id": "preeti-mishra-purnia-2",
+    "slug": "preeti-mishra-purnia-2",
+    "name": "Preeti Mishra",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Purnia Asset Advisors",
+    "reraId": "BRERA2021A6915",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Ranchi",
-    "cityName": "Ranchi",
-    "area": "Harmu Housing Colony",
-    "primaryArea": "Harmu Housing Colony",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "135+ visits",
+    "city": "Purnia",
+    "cityName": "Purnia",
+    "area": "Rambagh",
+    "primaryArea": "Rambagh",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "75+ visits",
     "listingsCount": 35,
     "rating": "5.0",
-    "reviewsCount": 80,
-    "focus": "High-rises & apartments",
-    "phone": "+91 99100 17955",
-    "email": "vikram.verma@ranchiassetadvisors.in",
+    "reviewsCount": 40,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 99100 26835",
+    "email": "preeti.mishra@purniaassetadvisors.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -6869,7 +15395,7 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 10 years of verified real estate advisory experience across Harmu Housing Colony and the greater Ranchi market, Vikram Verma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 16 years of verified real estate advisory experience across Rambagh and the greater Purnia market, Preeti Mishra specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -6877,10 +15403,10 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1215,
-        "title": "Verified Premium Residence in Harmu Housing Colony",
-        "price": "₹ 1.20 Cr",
-        "location": "Harmu Housing Colony, Ranchi",
+        "id": 2455,
+        "title": "Verified Premium Property in Rambagh",
+        "price": "₹ 4.85 Cr",
+        "location": "Rambagh, Purnia",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
@@ -6891,32 +15417,273 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Vikram Verma provided excellent site walkthrough assistance in Harmu Housing Colony, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Preeti Mishra provided outstanding site visit support in Rambagh, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "pooja-sen-siliguri",
-    "slug": "pooja-sen-siliguri",
-    "name": "Pooja Sen",
-    "role": "High-Rise Living Advisor",
-    "agency": "Siliguri Prime Realty",
-    "reraId": "WBHIRA2021A3808",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "vikas-kumar-purnia-3",
+    "slug": "vikas-kumar-purnia-3",
+    "name": "Vikas Kumar",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Purnia Heritage Estates",
+    "reraId": "BRERA2021A6928",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
     "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Siliguri",
-    "cityName": "Siliguri",
-    "area": "Sevoke Road",
-    "primaryArea": "Sevoke Road",
-    "experience": "11+ yrs",
-    "experienceYears": 11,
-    "tours": "136+ visits",
+    "city": "Purnia",
+    "cityName": "Purnia",
+    "area": "Madhubani",
+    "primaryArea": "Madhubani",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "76+ visits",
     "listingsCount": 36,
     "rating": "4.8",
-    "reviewsCount": 81,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98188 17992",
-    "email": "pooja.sen@siliguriprimerealty.in",
+    "reviewsCount": 41,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98188 26872",
+    "email": "vikas.kumar@purniaheritageestates.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Madhubani and the greater Purnia market, Vikas Kumar specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2456,
+        "title": "Verified Premium Property in Madhubani",
+        "price": "₹ 1.10 Cr",
+        "location": "Madhubani, Purnia",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Vikas Kumar provided outstanding site visit support in Madhubani, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "vikram-mishra-purnia-4",
+    "slug": "vikram-mishra-purnia-4",
+    "name": "Vikram Mishra",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Purnia Capital Properties",
+    "reraId": "BRERA2021A6941",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Purnia",
+    "cityName": "Purnia",
+    "area": "Gulabbagh",
+    "primaryArea": "Gulabbagh",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "77+ visits",
+    "listingsCount": 37,
+    "rating": "4.9",
+    "reviewsCount": 42,
+    "focus": "Plots & development land",
+    "phone": "+91 98230 26909",
+    "email": "vikram.mishra@purniacapitalproperties.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Gulabbagh and the greater Purnia market, Vikram Mishra specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2457,
+        "title": "Verified Premium Property in Gulabbagh",
+        "price": "₹ 1.85 Cr",
+        "location": "Gulabbagh, Purnia",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Vikram Mishra provided outstanding site visit support in Gulabbagh, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "deepika-kumar-purnia-5",
+    "slug": "deepika-kumar-purnia-5",
+    "name": "Deepika Kumar",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Purnia Corridor Homes",
+    "reraId": "BRERA2021A6954",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Purnia",
+    "cityName": "Purnia",
+    "area": "Bhatta Bazar",
+    "primaryArea": "Bhatta Bazar",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "78+ visits",
+    "listingsCount": 38,
+    "rating": "5.0",
+    "reviewsCount": 43,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98300 26946",
+    "email": "deepika.kumar@purniacorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Bhatta Bazar and the greater Purnia market, Deepika Kumar specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2458,
+        "title": "Verified Premium Property in Bhatta Bazar",
+        "price": "₹ 2.60 Cr",
+        "location": "Bhatta Bazar, Purnia",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Deepika Kumar provided outstanding site visit support in Bhatta Bazar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "aditya-shah-rajkot-1",
+    "slug": "aditya-shah-rajkot-1",
+    "name": "Aditya Shah",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Rajkot Prime Realty",
+    "reraId": "GUJRERA2020A6967",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Rajkot",
+    "cityName": "Rajkot",
+    "area": "Kalawad Road",
+    "primaryArea": "Kalawad Road",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "79+ visits",
+    "listingsCount": 39,
+    "rating": "4.8",
+    "reviewsCount": 44,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98470 26983",
+    "email": "aditya.shah@rajkotprimerealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Kalawad Road and the greater Rajkot market, Aditya Shah specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2459,
+        "title": "Verified Premium Property in Kalawad Road",
+        "price": "₹ 3.35 Cr",
+        "location": "Kalawad Road, Rajkot",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Aditya Shah provided outstanding site visit support in Kalawad Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "suresh-solanki-rajkot-2",
+    "slug": "suresh-solanki-rajkot-2",
+    "name": "Suresh Solanki",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Rajkot Asset Advisors",
+    "reraId": "GUJRERA2020A6980",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Rajkot",
+    "cityName": "Rajkot",
+    "area": "150 Feet Ring Road",
+    "primaryArea": "150 Feet Ring Road",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "80+ visits",
+    "listingsCount": 40,
+    "rating": "4.9",
+    "reviewsCount": 45,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98101 27020",
+    "email": "suresh.solanki@rajkotassetadvisors.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -6928,70 +15695,9 @@ export const CITY_ADVISORS: Agent[] = [
     "languages": [
       "English",
       "Hindi",
-      "Bengali"
+      "Gujarati"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across Sevoke Road and the greater Siliguri market, Pooja Sen assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
-    "isHomepageFeatured": false,
-    "featuredOrder": 99,
-    "featuredListings": [
-      {
-        "id": 1216,
-        "title": "Verified Premium Residence in Sevoke Road",
-        "price": "₹ 2.00 Cr",
-        "location": "Sevoke Road, Siliguri",
-        "type": "Sale",
-        "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
-      }
-    ],
-    "reviews": [
-      {
-        "author": "Verified Client",
-        "date": "1 month ago",
-        "rating": 5,
-        "comment": "Pooja Sen provided excellent site walkthrough assistance in Sevoke Road, verified all title documents, and helped secure an advantageous purchase price."
-      }
-    ]
-  },
-  {
-    "id": "ritu-ghosh-siliguri",
-    "slug": "ritu-ghosh-siliguri",
-    "name": "Ritu Ghosh",
-    "role": "Luxury Residential Consultant",
-    "agency": "Siliguri Asset Advisors",
-    "reraId": "WBHIRA2021A3821",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-    "city": "Siliguri",
-    "cityName": "Siliguri",
-    "area": "Matigara",
-    "primaryArea": "Matigara",
-    "experience": "12+ yrs",
-    "experienceYears": 12,
-    "tours": "137+ visits",
-    "listingsCount": 37,
-    "rating": "4.9",
-    "reviewsCount": 82,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98230 18029",
-    "email": "ritu.ghosh@siliguriassetadvisors.in",
-    "badge": "Super Agent",
-    "services": [
-      "Private site walkthroughs",
-      "Price negotiation",
-      "Title & document check",
-      "Home loan assistance",
-      "Registry guidance"
-    ],
-    "languages": [
-      "English",
-      "Hindi",
-      "Bengali"
-    ],
-    "bio": "With over 12 years of verified real estate advisory experience across Matigara and the greater Siliguri market, Ritu Ghosh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 9 years of verified real estate advisory experience across 150 Feet Ring Road and the greater Rajkot market, Suresh Solanki specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -6999,13 +15705,13 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1217,
-        "title": "Verified Premium Residence in Matigara",
-        "price": "₹ 2.80 Cr",
-        "location": "Matigara, Siliguri",
+        "id": 2460,
+        "title": "Verified Premium Property in 150 Feet Ring Road",
+        "price": "₹ 4.10 Cr",
+        "location": "150 Feet Ring Road, Rajkot",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -7013,32 +15719,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ritu Ghosh provided excellent site walkthrough assistance in Matigara, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Suresh Solanki provided outstanding site visit support in 150 Feet Ring Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "anita-patel-surat",
-    "slug": "anita-patel-surat",
-    "name": "Anita Patel",
-    "role": "Luxury Residential Consultant",
-    "agency": "Surat Prime Realty",
-    "reraId": "GUJRERA2020A3834",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
-    "city": "Surat",
-    "cityName": "Surat",
-    "area": "Vesu",
-    "primaryArea": "Vesu",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "138+ visits",
-    "listingsCount": 38,
+    "id": "ashok-shah-rajkot-3",
+    "slug": "ashok-shah-rajkot-3",
+    "name": "Ashok Shah",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Rajkot Heritage Estates",
+    "reraId": "GUJRERA2020A6993",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Rajkot",
+    "cityName": "Rajkot",
+    "area": "University Road",
+    "primaryArea": "University Road",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "81+ visits",
+    "listingsCount": 41,
     "rating": "5.0",
-    "reviewsCount": 83,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98300 18066",
-    "email": "anita.patel@suratprimerealty.in",
+    "reviewsCount": 46,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98200 27057",
+    "email": "ashok.shah@rajkotheritageestates.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -7052,21 +15758,21 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Gujarati"
     ],
-    "bio": "With over 13 years of verified real estate advisory experience across Vesu and the greater Surat market, Anita Patel assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 10 years of verified real estate advisory experience across University Road and the greater Rajkot market, Ashok Shah specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1218,
-        "title": "Verified Premium Residence in Vesu",
-        "price": "₹ 3.60 Cr",
-        "location": "Vesu, Surat",
+        "id": 2461,
+        "title": "Verified Premium Property in University Road",
+        "price": "₹ 4.85 Cr",
+        "location": "University Road, Rajkot",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -7074,32 +15780,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Anita Patel provided excellent site walkthrough assistance in Vesu, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Ashok Shah provided outstanding site visit support in University Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "poonam-trivedi-surat",
-    "slug": "poonam-trivedi-surat",
-    "name": "Poonam Trivedi",
-    "role": "RERA Certified Property Guide",
-    "agency": "Surat Asset Advisors",
-    "reraId": "GUJRERA2020A3847",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
-    "city": "Surat",
-    "cityName": "Surat",
-    "area": "Piplod",
-    "primaryArea": "Piplod",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "139+ visits",
-    "listingsCount": 39,
+    "id": "smita-solanki-rajkot-4",
+    "slug": "smita-solanki-rajkot-4",
+    "name": "Smita Solanki",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Rajkot Capital Properties",
+    "reraId": "GUJRERA2020A7006",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Rajkot",
+    "cityName": "Rajkot",
+    "area": "Yagnik Road",
+    "primaryArea": "Yagnik Road",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "82+ visits",
+    "listingsCount": 42,
     "rating": "4.8",
-    "reviewsCount": 84,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98470 18103",
-    "email": "poonam.trivedi@suratassetadvisors.in",
+    "reviewsCount": 47,
+    "focus": "Plots & development land",
+    "phone": "+91 98450 27094",
+    "email": "smita.solanki@rajkotcapitalproperties.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -7113,7 +15819,188 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Gujarati"
     ],
-    "bio": "With over 14 years of verified real estate advisory experience across Piplod and the greater Surat market, Poonam Trivedi assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 11 years of verified real estate advisory experience across Yagnik Road and the greater Rajkot market, Smita Solanki specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2462,
+        "title": "Verified Premium Property in Yagnik Road",
+        "price": "₹ 1.10 Cr",
+        "location": "Yagnik Road, Rajkot",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Smita Solanki provided outstanding site visit support in Yagnik Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anand-shah-rajkot-5",
+    "slug": "anand-shah-rajkot-5",
+    "name": "Anand Shah",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Rajkot Corridor Homes",
+    "reraId": "GUJRERA2020A7019",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Rajkot",
+    "cityName": "Rajkot",
+    "area": "Amin Marg",
+    "primaryArea": "Amin Marg",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "83+ visits",
+    "listingsCount": 43,
+    "rating": "4.9",
+    "reviewsCount": 48,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98112 27131",
+    "email": "anand.shah@rajkotcorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Amin Marg and the greater Rajkot market, Anand Shah specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2463,
+        "title": "Verified Premium Property in Amin Marg",
+        "price": "₹ 1.85 Cr",
+        "location": "Amin Marg, Rajkot",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anand Shah provided outstanding site visit support in Amin Marg, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "pooja-singh-ranchi-1",
+    "slug": "pooja-singh-ranchi-1",
+    "name": "Pooja Singh",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Ranchi Prime Realty",
+    "reraId": "JHRERA2021A7032",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ranchi",
+    "cityName": "Ranchi",
+    "area": "Morabadi",
+    "primaryArea": "Morabadi",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "84+ visits",
+    "listingsCount": 44,
+    "rating": "5.0",
+    "reviewsCount": 49,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98712 27168",
+    "email": "pooja.singh@ranchiprimerealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Morabadi and the greater Ranchi market, Pooja Singh specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2464,
+        "title": "Verified Premium Property in Morabadi",
+        "price": "₹ 2.60 Cr",
+        "location": "Morabadi, Ranchi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Pooja Singh provided outstanding site visit support in Morabadi, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "ritu-verma-ranchi-2",
+    "slug": "ritu-verma-ranchi-2",
+    "name": "Ritu Verma",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Ranchi Asset Advisors",
+    "reraId": "JHRERA2021A7045",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ranchi",
+    "cityName": "Ranchi",
+    "area": "Harmu Housing Colony",
+    "primaryArea": "Harmu Housing Colony",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "85+ visits",
+    "listingsCount": 45,
+    "rating": "4.8",
+    "reviewsCount": 50,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 99100 27205",
+    "email": "ritu.verma@ranchiassetadvisors.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Harmu Housing Colony and the greater Ranchi market, Ritu Verma specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -7121,10 +16008,10 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1219,
-        "title": "Verified Premium Residence in Piplod",
-        "price": "₹ 4.40 Cr",
-        "location": "Piplod, Surat",
+        "id": 2465,
+        "title": "Verified Premium Property in Harmu Housing Colony",
+        "price": "₹ 3.35 Cr",
+        "location": "Harmu Housing Colony, Ranchi",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
@@ -7135,32 +16022,1005 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Poonam Trivedi provided excellent site walkthrough assistance in Piplod, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Ritu Verma provided outstanding site visit support in Harmu Housing Colony, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "kavita-deshmukh-thane",
-    "slug": "kavita-deshmukh-thane",
-    "name": "Kavita Deshmukh",
-    "role": "RERA Certified Property Guide",
-    "agency": "Thane Prime Realty",
-    "reraId": "MAHARERA2020A3860",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
+    "id": "shweta-singh-ranchi-3",
+    "slug": "shweta-singh-ranchi-3",
+    "name": "Shweta Singh",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Ranchi Heritage Estates",
+    "reraId": "JHRERA2021A7058",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ranchi",
+    "cityName": "Ranchi",
+    "area": "Ashok Nagar",
+    "primaryArea": "Ashok Nagar",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "86+ visits",
+    "listingsCount": 46,
+    "rating": "4.9",
+    "reviewsCount": 51,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98188 27242",
+    "email": "shweta.singh@ranchiheritageestates.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Ashok Nagar and the greater Ranchi market, Shweta Singh specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2466,
+        "title": "Verified Premium Property in Ashok Nagar",
+        "price": "₹ 4.10 Cr",
+        "location": "Ashok Nagar, Ranchi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Shweta Singh provided outstanding site visit support in Ashok Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "karan-verma-ranchi-4",
+    "slug": "karan-verma-ranchi-4",
+    "name": "Karan Verma",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Ranchi Capital Properties",
+    "reraId": "JHRERA2021A7071",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ranchi",
+    "cityName": "Ranchi",
+    "area": "Kanke Road",
+    "primaryArea": "Kanke Road",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "87+ visits",
+    "listingsCount": 47,
+    "rating": "5.0",
+    "reviewsCount": 52,
+    "focus": "Plots & development land",
+    "phone": "+91 98230 27279",
+    "email": "karan.verma@ranchicapitalproperties.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Kanke Road and the greater Ranchi market, Karan Verma specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2467,
+        "title": "Verified Premium Property in Kanke Road",
+        "price": "₹ 4.85 Cr",
+        "location": "Kanke Road, Ranchi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Karan Verma provided outstanding site visit support in Kanke Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "aarav-singh-ranchi-5",
+    "slug": "aarav-singh-ranchi-5",
+    "name": "Aarav Singh",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Ranchi Corridor Homes",
+    "reraId": "JHRERA2021A7084",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Ranchi",
+    "cityName": "Ranchi",
+    "area": "Bariatu",
+    "primaryArea": "Bariatu",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "88+ visits",
+    "listingsCount": 48,
+    "rating": "4.8",
+    "reviewsCount": 53,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98300 27316",
+    "email": "aarav.singh@ranchicorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Bariatu and the greater Ranchi market, Aarav Singh specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2468,
+        "title": "Verified Premium Property in Bariatu",
+        "price": "₹ 1.10 Cr",
+        "location": "Bariatu, Ranchi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Aarav Singh provided outstanding site visit support in Bariatu, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rohan-bhattacharya-siliguri-1",
+    "slug": "rohan-bhattacharya-siliguri-1",
+    "name": "Rohan Bhattacharya",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Siliguri Prime Realty",
+    "reraId": "WBHIRA2021A7097",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Siliguri",
+    "cityName": "Siliguri",
+    "area": "Sevoke Road",
+    "primaryArea": "Sevoke Road",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "89+ visits",
+    "listingsCount": 49,
+    "rating": "4.9",
+    "reviewsCount": 54,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98470 27353",
+    "email": "rohan.bhattacharya@siliguriprimerealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Sevoke Road and the greater Siliguri market, Rohan Bhattacharya specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2469,
+        "title": "Verified Premium Property in Sevoke Road",
+        "price": "₹ 1.85 Cr",
+        "location": "Sevoke Road, Siliguri",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rohan Bhattacharya provided outstanding site visit support in Sevoke Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kunal-mukherjee-siliguri-2",
+    "slug": "kunal-mukherjee-siliguri-2",
+    "name": "Kunal Mukherjee",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Siliguri Asset Advisors",
+    "reraId": "WBHIRA2021A7110",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Siliguri",
+    "cityName": "Siliguri",
+    "area": "Matigara",
+    "primaryArea": "Matigara",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "90+ visits",
+    "listingsCount": 50,
+    "rating": "5.0",
+    "reviewsCount": 55,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98101 27390",
+    "email": "kunal.mukherjee@siliguriassetadvisors.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Matigara and the greater Siliguri market, Kunal Mukherjee specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2470,
+        "title": "Verified Premium Property in Matigara",
+        "price": "₹ 2.60 Cr",
+        "location": "Matigara, Siliguri",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kunal Mukherjee provided outstanding site visit support in Matigara, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "amit-bhattacharya-siliguri-3",
+    "slug": "amit-bhattacharya-siliguri-3",
+    "name": "Amit Bhattacharya",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Siliguri Heritage Estates",
+    "reraId": "WBHIRA2021A7123",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Siliguri",
+    "cityName": "Siliguri",
+    "area": "Pradhan Nagar",
+    "primaryArea": "Pradhan Nagar",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "91+ visits",
+    "listingsCount": 51,
+    "rating": "4.8",
+    "reviewsCount": 56,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98200 27427",
+    "email": "amit.bhattacharya@siliguriheritageestates.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Pradhan Nagar and the greater Siliguri market, Amit Bhattacharya specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2471,
+        "title": "Verified Premium Property in Pradhan Nagar",
+        "price": "₹ 3.35 Cr",
+        "location": "Pradhan Nagar, Siliguri",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Amit Bhattacharya provided outstanding site visit support in Pradhan Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sanjay-mukherjee-siliguri-4",
+    "slug": "sanjay-mukherjee-siliguri-4",
+    "name": "Sanjay Mukherjee",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Siliguri Capital Properties",
+    "reraId": "WBHIRA2021A7136",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Siliguri",
+    "cityName": "Siliguri",
+    "area": "Hakim Para",
+    "primaryArea": "Hakim Para",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "92+ visits",
+    "listingsCount": 52,
+    "rating": "4.9",
+    "reviewsCount": 57,
+    "focus": "Plots & development land",
+    "phone": "+91 98450 27464",
+    "email": "sanjay.mukherjee@siliguricapitalproperties.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Hakim Para and the greater Siliguri market, Sanjay Mukherjee specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2472,
+        "title": "Verified Premium Property in Hakim Para",
+        "price": "₹ 4.10 Cr",
+        "location": "Hakim Para, Siliguri",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sanjay Mukherjee provided outstanding site visit support in Hakim Para, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "tanvi-bhattacharya-siliguri-5",
+    "slug": "tanvi-bhattacharya-siliguri-5",
+    "name": "Tanvi Bhattacharya",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Siliguri Corridor Homes",
+    "reraId": "WBHIRA2021A7149",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Siliguri",
+    "cityName": "Siliguri",
+    "area": "Dagapur",
+    "primaryArea": "Dagapur",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "93+ visits",
+    "listingsCount": 53,
+    "rating": "5.0",
+    "reviewsCount": 58,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98112 27501",
+    "email": "tanvi.bhattacharya@siliguricorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Dagapur and the greater Siliguri market, Tanvi Bhattacharya specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2473,
+        "title": "Verified Premium Property in Dagapur",
+        "price": "₹ 4.85 Cr",
+        "location": "Dagapur, Siliguri",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Tanvi Bhattacharya provided outstanding site visit support in Dagapur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "mayank-joshi-surat-1",
+    "slug": "mayank-joshi-surat-1",
+    "name": "Mayank Joshi",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Surat Prime Realty",
+    "reraId": "GUJRERA2020A7162",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Surat",
+    "cityName": "Surat",
+    "area": "Vesu",
+    "primaryArea": "Vesu",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "94+ visits",
+    "listingsCount": 54,
+    "rating": "4.8",
+    "reviewsCount": 59,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98712 27538",
+    "email": "mayank.joshi@suratprimerealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 11 years of verified real estate advisory experience across Vesu and the greater Surat market, Mayank Joshi specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2474,
+        "title": "Verified Premium Property in Vesu",
+        "price": "₹ 1.10 Cr",
+        "location": "Vesu, Surat",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Mayank Joshi provided outstanding site visit support in Vesu, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "meera-desai-surat-2",
+    "slug": "meera-desai-surat-2",
+    "name": "Meera Desai",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Surat Asset Advisors",
+    "reraId": "GUJRERA2020A7175",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Surat",
+    "cityName": "Surat",
+    "area": "Piplod",
+    "primaryArea": "Piplod",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "95+ visits",
+    "listingsCount": 55,
+    "rating": "4.9",
+    "reviewsCount": 60,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 99100 27575",
+    "email": "meera.desai@suratassetadvisors.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across Piplod and the greater Surat market, Meera Desai specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2475,
+        "title": "Verified Premium Property in Piplod",
+        "price": "₹ 1.85 Cr",
+        "location": "Piplod, Surat",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Meera Desai provided outstanding site visit support in Piplod, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "neha-joshi-surat-3",
+    "slug": "neha-joshi-surat-3",
+    "name": "Neha Joshi",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Surat Heritage Estates",
+    "reraId": "GUJRERA2020A7188",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Surat",
+    "cityName": "Surat",
+    "area": "Adajan",
+    "primaryArea": "Adajan",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "96+ visits",
+    "listingsCount": 56,
+    "rating": "5.0",
+    "reviewsCount": 61,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98188 27612",
+    "email": "neha.joshi@suratheritageestates.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Adajan and the greater Surat market, Neha Joshi specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2476,
+        "title": "Verified Premium Property in Adajan",
+        "price": "₹ 2.60 Cr",
+        "location": "Adajan, Surat",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Neha Joshi provided outstanding site visit support in Adajan, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anita-desai-surat-4",
+    "slug": "anita-desai-surat-4",
+    "name": "Anita Desai",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Surat Capital Properties",
+    "reraId": "GUJRERA2020A7201",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Surat",
+    "cityName": "Surat",
+    "area": "Pal",
+    "primaryArea": "Pal",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "97+ visits",
+    "listingsCount": 57,
+    "rating": "4.8",
+    "reviewsCount": 62,
+    "focus": "Plots & development land",
+    "phone": "+91 98230 27649",
+    "email": "anita.desai@suratcapitalproperties.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Pal and the greater Surat market, Anita Desai specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2477,
+        "title": "Verified Premium Property in Pal",
+        "price": "₹ 3.35 Cr",
+        "location": "Pal, Surat",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anita Desai provided outstanding site visit support in Pal, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "poonam-joshi-surat-5",
+    "slug": "poonam-joshi-surat-5",
+    "name": "Poonam Joshi",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Surat Corridor Homes",
+    "reraId": "GUJRERA2020A7214",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Surat",
+    "cityName": "Surat",
+    "area": "Ghod Dod Road",
+    "primaryArea": "Ghod Dod Road",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "98+ visits",
+    "listingsCount": 58,
+    "rating": "4.9",
+    "reviewsCount": 63,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98300 27686",
+    "email": "poonam.joshi@suratcorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Ghod Dod Road and the greater Surat market, Poonam Joshi specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2478,
+        "title": "Verified Premium Property in Ghod Dod Road",
+        "price": "₹ 4.10 Cr",
+        "location": "Ghod Dod Road, Surat",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Poonam Joshi provided outstanding site visit support in Ghod Dod Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "simran-joshi-thane-1",
+    "slug": "simran-joshi-thane-1",
+    "name": "Simran Joshi",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Thane Prime Realty",
+    "reraId": "MAHARERA2020A7227",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Thane",
     "cityName": "Thane",
     "area": "Ghopbunder Road",
     "primaryArea": "Ghopbunder Road",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "99+ visits",
+    "listingsCount": 59,
+    "rating": "5.0",
+    "reviewsCount": 64,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98470 27723",
+    "email": "simran.joshi@thaneprimerealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Ghopbunder Road and the greater Thane market, Simran Joshi specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2479,
+        "title": "Verified Premium Property in Ghopbunder Road",
+        "price": "₹ 4.85 Cr",
+        "location": "Ghopbunder Road, Thane",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Simran Joshi provided outstanding site visit support in Ghopbunder Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "priya-kulkarni-thane-2",
+    "slug": "priya-kulkarni-thane-2",
+    "name": "Priya Kulkarni",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Thane Asset Advisors",
+    "reraId": "MAHARERA2020A7240",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Thane",
+    "cityName": "Thane",
+    "area": "Panchpakhadi",
+    "primaryArea": "Panchpakhadi",
     "experience": "5+ yrs",
     "experienceYears": 5,
-    "tours": "140+ visits",
-    "listingsCount": 40,
+    "tours": "100+ visits",
+    "listingsCount": 60,
+    "rating": "4.8",
+    "reviewsCount": 65,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98101 27760",
+    "email": "priya.kulkarni@thaneassetadvisors.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Panchpakhadi and the greater Thane market, Priya Kulkarni specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2480,
+        "title": "Verified Premium Property in Panchpakhadi",
+        "price": "₹ 1.10 Cr",
+        "location": "Panchpakhadi, Thane",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Priya Kulkarni provided outstanding site visit support in Panchpakhadi, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rajesh-joshi-thane-3",
+    "slug": "rajesh-joshi-thane-3",
+    "name": "Rajesh Joshi",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Thane Heritage Estates",
+    "reraId": "MAHARERA2020A7253",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Thane",
+    "cityName": "Thane",
+    "area": "Majiwada",
+    "primaryArea": "Majiwada",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "101+ visits",
+    "listingsCount": 61,
     "rating": "4.9",
-    "reviewsCount": 85,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 18140",
-    "email": "kavita.deshmukh@thaneprimerealty.in",
+    "reviewsCount": 66,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98200 27797",
+    "email": "rajesh.joshi@thaneheritageestates.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Majiwada and the greater Thane market, Rajesh Joshi specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2481,
+        "title": "Verified Premium Property in Majiwada",
+        "price": "₹ 1.85 Cr",
+        "location": "Majiwada, Thane",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rajesh Joshi provided outstanding site visit support in Majiwada, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "gaurav-kulkarni-thane-4",
+    "slug": "gaurav-kulkarni-thane-4",
+    "name": "Gaurav Kulkarni",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Thane Capital Properties",
+    "reraId": "MAHARERA2020A7266",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Thane",
+    "cityName": "Thane",
+    "area": "Naupada",
+    "primaryArea": "Naupada",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "102+ visits",
+    "listingsCount": 62,
+    "rating": "5.0",
+    "reviewsCount": 67,
+    "focus": "Plots & development land",
+    "phone": "+91 98450 27834",
+    "email": "gaurav.kulkarni@thanecapitalproperties.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -7174,17 +17034,139 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Marathi"
     ],
-    "bio": "With over 5 years of verified real estate advisory experience across Ghopbunder Road and the greater Thane market, Kavita Deshmukh assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 7 years of verified real estate advisory experience across Naupada and the greater Thane market, Gaurav Kulkarni specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1220,
-        "title": "Verified Premium Residence in Ghopbunder Road",
-        "price": "₹ 1.20 Cr",
+        "id": 2482,
+        "title": "Verified Premium Property in Naupada",
+        "price": "₹ 2.60 Cr",
+        "location": "Naupada, Thane",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Gaurav Kulkarni provided outstanding site visit support in Naupada, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "arjun-joshi-thane-5",
+    "slug": "arjun-joshi-thane-5",
+    "name": "Arjun Joshi",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Thane Corridor Homes",
+    "reraId": "MAHARERA2020A7279",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Thane",
+    "cityName": "Thane",
+    "area": "Hiranandani Estate",
+    "primaryArea": "Hiranandani Estate",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "103+ visits",
+    "listingsCount": 63,
+    "rating": "4.8",
+    "reviewsCount": 68,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98112 27871",
+    "email": "arjun.joshi@thanecorridorhomes.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Hiranandani Estate and the greater Thane market, Arjun Joshi specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2483,
+        "title": "Verified Premium Property in Hiranandani Estate",
+        "price": "₹ 3.35 Cr",
+        "location": "Hiranandani Estate, Thane",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Arjun Joshi provided outstanding site visit support in Hiranandani Estate, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "simran-kulkarni-thane-6",
+    "slug": "simran-kulkarni-thane-6",
+    "name": "Simran Kulkarni",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Thane Metropolis Realty",
+    "reraId": "MAHARERA2020A7292",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Thane",
+    "cityName": "Thane",
+    "area": "Ghopbunder Road",
+    "primaryArea": "Ghopbunder Road",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "104+ visits",
+    "listingsCount": 64,
+    "rating": "4.9",
+    "reviewsCount": 69,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98712 27908",
+    "email": "simran.kulkarni@thanemetropolisrealty.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Marathi"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Ghopbunder Road and the greater Thane market, Simran Kulkarni specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2484,
+        "title": "Verified Premium Property in Ghopbunder Road",
+        "price": "₹ 4.10 Cr",
         "location": "Ghopbunder Road, Thane",
         "type": "Sale",
         "beds": 3,
@@ -7196,33 +17178,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Kavita Deshmukh provided excellent site walkthrough assistance in Ghopbunder Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Simran Kulkarni provided outstanding site visit support in Ghopbunder Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sneha-gokhale-thane",
-    "slug": "sneha-gokhale-thane",
-    "name": "Sneha Gokhale",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Thane Asset Advisors",
-    "reraId": "MAHARERA2020A3873",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
+    "id": "tanvi-joseph-thiruvananthapuram-1",
+    "slug": "tanvi-joseph-thiruvananthapuram-1",
+    "name": "Tanvi Joseph",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Thiruvananthapuram Prime Realty",
+    "reraId": "K-RERA(KL)2021A7305",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
     "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Thane",
-    "cityName": "Thane",
-    "area": "Panchpakhadi",
-    "primaryArea": "Panchpakhadi",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "141+ visits",
-    "listingsCount": 41,
+    "city": "Thiruvananthapuram",
+    "cityName": "Thiruvananthapuram",
+    "area": "Kowdiar",
+    "primaryArea": "Kowdiar",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "105+ visits",
+    "listingsCount": 65,
     "rating": "5.0",
-    "reviewsCount": 86,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98200 18177",
-    "email": "sneha.gokhale@thaneassetadvisors.in",
-    "badge": "Top Producer",
+    "reviewsCount": 70,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 99100 27945",
+    "email": "tanvi.joseph@thiruvananthapuramprimerealty.in",
+    "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -7233,20 +17215,20 @@ export const CITY_ADVISORS: Agent[] = [
     "languages": [
       "English",
       "Hindi",
-      "Marathi"
+      "Malayalam"
     ],
-    "bio": "With over 6 years of verified real estate advisory experience across Panchpakhadi and the greater Thane market, Sneha Gokhale assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 10 years of verified real estate advisory experience across Kowdiar and the greater Thiruvananthapuram market, Tanvi Joseph specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1221,
-        "title": "Verified Premium Residence in Panchpakhadi",
-        "price": "₹ 2.00 Cr",
-        "location": "Panchpakhadi, Thane",
+        "id": 2485,
+        "title": "Verified Premium Property in Kowdiar",
+        "price": "₹ 4.85 Cr",
+        "location": "Kowdiar, Thiruvananthapuram",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
@@ -7257,32 +17239,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sneha Gokhale provided excellent site walkthrough assistance in Panchpakhadi, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Tanvi Joseph provided outstanding site visit support in Kowdiar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sunita-menon-thiruvananthapuram",
-    "slug": "sunita-menon-thiruvananthapuram",
-    "name": "Sunita Menon",
-    "role": "Ready-to-Move Specialist",
-    "agency": "Thiruvananthapuram Prime Realty",
-    "reraId": "K-RERA(KL)2021A3886",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "rohan-varghese-thiruvananthapuram-2",
+    "slug": "rohan-varghese-thiruvananthapuram-2",
+    "name": "Rohan Varghese",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Thiruvananthapuram Asset Advisors",
+    "reraId": "K-RERA(KL)2021A7318",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
     "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "city": "Thiruvananthapuram",
     "cityName": "Thiruvananthapuram",
-    "area": "Kowdiar",
-    "primaryArea": "Kowdiar",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "142+ visits",
-    "listingsCount": 42,
+    "area": "Technopark Kazhakkoottam",
+    "primaryArea": "Technopark Kazhakkoottam",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "106+ visits",
+    "listingsCount": 66,
     "rating": "4.8",
-    "reviewsCount": 87,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 18214",
-    "email": "sunita.menon@thiruvananthapuramprimerealty.in",
+    "reviewsCount": 71,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98188 27982",
+    "email": "rohan.varghese@thiruvananthapuramassetadvisors.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -7296,18 +17278,18 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Malayalam"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across Kowdiar and the greater Thiruvananthapuram market, Sunita Menon assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 11 years of verified real estate advisory experience across Technopark Kazhakkoottam and the greater Thiruvananthapuram market, Rohan Varghese specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1222,
-        "title": "Verified Premium Residence in Kowdiar",
-        "price": "₹ 2.80 Cr",
-        "location": "Kowdiar, Thiruvananthapuram",
+        "id": 2486,
+        "title": "Verified Premium Property in Technopark Kazhakkoottam",
+        "price": "₹ 1.10 Cr",
+        "location": "Technopark Kazhakkoottam, Thiruvananthapuram",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
@@ -7318,32 +17300,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sunita Menon provided excellent site walkthrough assistance in Kowdiar, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Rohan Varghese provided outstanding site visit support in Technopark Kazhakkoottam, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "preeti-kurian-thiruvananthapuram",
-    "slug": "preeti-kurian-thiruvananthapuram",
-    "name": "Preeti Kurian",
-    "role": "Senior Property Advisor",
-    "agency": "Thiruvananthapuram Asset Advisors",
-    "reraId": "K-RERA(KL)2021A3899",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_8.webp",
+    "id": "kunal-joseph-thiruvananthapuram-3",
+    "slug": "kunal-joseph-thiruvananthapuram-3",
+    "name": "Kunal Joseph",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Thiruvananthapuram Heritage Estates",
+    "reraId": "K-RERA(KL)2021A7331",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
     "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Thiruvananthapuram",
     "cityName": "Thiruvananthapuram",
-    "area": "Technopark Kazhakkoottam",
-    "primaryArea": "Technopark Kazhakkoottam",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "143+ visits",
-    "listingsCount": 43,
+    "area": "Vellayambalam",
+    "primaryArea": "Vellayambalam",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "107+ visits",
+    "listingsCount": 67,
     "rating": "4.9",
-    "reviewsCount": 88,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98112 18251",
-    "email": "preeti.kurian@thiruvananthapuramassetadvisors.in",
+    "reviewsCount": 72,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98230 28019",
+    "email": "kunal.joseph@thiruvananthapuramheritageestates.in",
     "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
@@ -7357,18 +17339,18 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Malayalam"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across Technopark Kazhakkoottam and the greater Thiruvananthapuram market, Preeti Kurian assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
-    "subscriptionTier": "CITY_SPOTLIGHT",
+    "bio": "With over 12 years of verified real estate advisory experience across Vellayambalam and the greater Thiruvananthapuram market, Kunal Joseph specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1223,
-        "title": "Verified Premium Residence in Technopark Kazhakkoottam",
-        "price": "₹ 3.60 Cr",
-        "location": "Technopark Kazhakkoottam, Thiruvananthapuram",
+        "id": 2487,
+        "title": "Verified Premium Property in Vellayambalam",
+        "price": "₹ 1.85 Cr",
+        "location": "Vellayambalam, Thiruvananthapuram",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
@@ -7379,33 +17361,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Preeti Kurian provided excellent site walkthrough assistance in Technopark Kazhakkoottam, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Kunal Joseph provided outstanding site visit support in Vellayambalam, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aarav-shekhawat-udaipur",
-    "slug": "aarav-shekhawat-udaipur",
-    "name": "Aarav Shekhawat",
-    "role": "Senior Property Advisor",
-    "agency": "Udaipur Prime Realty",
-    "reraId": "RAJ-RERA2021A3912",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_9.webp",
+    "id": "amit-varghese-thiruvananthapuram-4",
+    "slug": "amit-varghese-thiruvananthapuram-4",
+    "name": "Amit Varghese",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Thiruvananthapuram Capital Properties",
+    "reraId": "K-RERA(KL)2021A7344",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
-    "city": "Udaipur",
-    "cityName": "Udaipur",
-    "area": "Fatehpura",
-    "primaryArea": "Fatehpura",
-    "experience": "9+ yrs",
-    "experienceYears": 9,
-    "tours": "144+ visits",
-    "listingsCount": 44,
+    "city": "Thiruvananthapuram",
+    "cityName": "Thiruvananthapuram",
+    "area": "Pattom",
+    "primaryArea": "Pattom",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "108+ visits",
+    "listingsCount": 68,
     "rating": "5.0",
-    "reviewsCount": 89,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98712 18288",
-    "email": "aarav.shekhawat@udaipurprimerealty.in",
-    "badge": "Fast Responder",
+    "reviewsCount": 73,
+    "focus": "Plots & development land",
+    "phone": "+91 98300 28056",
+    "email": "amit.varghese@thiruvananthapuramcapitalproperties.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -7415,20 +17397,21 @@ export const CITY_ADVISORS: Agent[] = [
     ],
     "languages": [
       "English",
-      "Hindi"
+      "Hindi",
+      "Malayalam"
     ],
-    "bio": "With over 9 years of verified real estate advisory experience across Fatehpura and the greater Udaipur market, Aarav Shekhawat assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 13 years of verified real estate advisory experience across Pattom and the greater Thiruvananthapuram market, Amit Varghese specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1224,
-        "title": "Verified Premium Residence in Fatehpura",
-        "price": "₹ 4.40 Cr",
-        "location": "Fatehpura, Udaipur",
+        "id": 2488,
+        "title": "Verified Premium Property in Pattom",
+        "price": "₹ 2.60 Cr",
+        "location": "Pattom, Thiruvananthapuram",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
@@ -7439,33 +17422,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Aarav Shekhawat provided excellent site walkthrough assistance in Fatehpura, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Amit Varghese provided outstanding site visit support in Pattom, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "pooja-maheshwari-udaipur",
-    "slug": "pooja-maheshwari-udaipur",
-    "name": "Pooja Maheshwari",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Udaipur Asset Advisors",
-    "reraId": "RAJ-RERA2021A3925",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "id": "sanjay-joseph-thiruvananthapuram-5",
+    "slug": "sanjay-joseph-thiruvananthapuram-5",
+    "name": "Sanjay Joseph",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Thiruvananthapuram Corridor Homes",
+    "reraId": "K-RERA(KL)2021A7357",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
-    "city": "Udaipur",
-    "cityName": "Udaipur",
-    "area": "Shobhagpura",
-    "primaryArea": "Shobhagpura",
-    "experience": "10+ yrs",
-    "experienceYears": 10,
-    "tours": "145+ visits",
-    "listingsCount": 45,
+    "city": "Thiruvananthapuram",
+    "cityName": "Thiruvananthapuram",
+    "area": "Sasthamangalam",
+    "primaryArea": "Sasthamangalam",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "109+ visits",
+    "listingsCount": 69,
     "rating": "4.8",
-    "reviewsCount": 90,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 99100 18325",
-    "email": "pooja.maheshwari@udaipurassetadvisors.in",
-    "badge": "Premier Agent",
+    "reviewsCount": 74,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98470 28093",
+    "email": "sanjay.joseph@thiruvananthapuramcorridorhomes.in",
+    "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -7475,20 +17458,21 @@ export const CITY_ADVISORS: Agent[] = [
     ],
     "languages": [
       "English",
-      "Hindi"
+      "Hindi",
+      "Malayalam"
     ],
-    "bio": "With over 10 years of verified real estate advisory experience across Shobhagpura and the greater Udaipur market, Pooja Maheshwari assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 14 years of verified real estate advisory experience across Sasthamangalam and the greater Thiruvananthapuram market, Sanjay Joseph specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1225,
-        "title": "Verified Premium Residence in Shobhagpura",
-        "price": "₹ 1.20 Cr",
-        "location": "Shobhagpura, Udaipur",
+        "id": 2489,
+        "title": "Verified Premium Property in Sasthamangalam",
+        "price": "₹ 3.35 Cr",
+        "location": "Sasthamangalam, Thiruvananthapuram",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
@@ -7499,32 +17483,515 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Pooja Maheshwari provided excellent site walkthrough assistance in Shobhagpura, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Sanjay Joseph provided outstanding site visit support in Sasthamangalam, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "neha-patel-vadodara",
-    "slug": "neha-patel-vadodara",
-    "name": "Neha Patel",
-    "role": "Commercial Corridors Specialist",
-    "agency": "Vadodara Prime Realty",
-    "reraId": "GUJRERA2020A3938",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_11.webp",
+    "id": "poonam-sharma-udaipur-1",
+    "slug": "poonam-sharma-udaipur-1",
+    "name": "Poonam Sharma",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Udaipur Prime Realty",
+    "reraId": "RAJ-RERA2021A7370",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Udaipur",
+    "cityName": "Udaipur",
+    "area": "Fatehpura",
+    "primaryArea": "Fatehpura",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "110+ visits",
+    "listingsCount": 70,
+    "rating": "4.9",
+    "reviewsCount": 75,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98101 28130",
+    "email": "poonam.sharma@udaipurprimerealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Fatehpura and the greater Udaipur market, Poonam Sharma specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2490,
+        "title": "Verified Premium Property in Fatehpura",
+        "price": "₹ 4.10 Cr",
+        "location": "Fatehpura, Udaipur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Poonam Sharma provided outstanding site visit support in Fatehpura, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "mayank-agarwal-udaipur-2",
+    "slug": "mayank-agarwal-udaipur-2",
+    "name": "Mayank Agarwal",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Udaipur Asset Advisors",
+    "reraId": "RAJ-RERA2021A7383",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Udaipur",
+    "cityName": "Udaipur",
+    "area": "Shobhagpura",
+    "primaryArea": "Shobhagpura",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "111+ visits",
+    "listingsCount": 71,
+    "rating": "5.0",
+    "reviewsCount": 76,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98200 28167",
+    "email": "mayank.agarwal@udaipurassetadvisors.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Shobhagpura and the greater Udaipur market, Mayank Agarwal specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2491,
+        "title": "Verified Premium Property in Shobhagpura",
+        "price": "₹ 4.85 Cr",
+        "location": "Shobhagpura, Udaipur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Mayank Agarwal provided outstanding site visit support in Shobhagpura, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "meera-sharma-udaipur-3",
+    "slug": "meera-sharma-udaipur-3",
+    "name": "Meera Sharma",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Udaipur Heritage Estates",
+    "reraId": "RAJ-RERA2021A7396",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Udaipur",
+    "cityName": "Udaipur",
+    "area": "Saheli Nagar",
+    "primaryArea": "Saheli Nagar",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "112+ visits",
+    "listingsCount": 72,
+    "rating": "4.8",
+    "reviewsCount": 77,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98450 28204",
+    "email": "meera.sharma@udaipurheritageestates.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Saheli Nagar and the greater Udaipur market, Meera Sharma specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2492,
+        "title": "Verified Premium Property in Saheli Nagar",
+        "price": "₹ 1.10 Cr",
+        "location": "Saheli Nagar, Udaipur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Meera Sharma provided outstanding site visit support in Saheli Nagar, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "neha-agarwal-udaipur-4",
+    "slug": "neha-agarwal-udaipur-4",
+    "name": "Neha Agarwal",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Udaipur Capital Properties",
+    "reraId": "RAJ-RERA2021A7409",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Udaipur",
+    "cityName": "Udaipur",
+    "area": "Bhuwana",
+    "primaryArea": "Bhuwana",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "113+ visits",
+    "listingsCount": 73,
+    "rating": "4.9",
+    "reviewsCount": 78,
+    "focus": "Plots & development land",
+    "phone": "+91 98112 28241",
+    "email": "neha.agarwal@udaipurcapitalproperties.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Bhuwana and the greater Udaipur market, Neha Agarwal specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2493,
+        "title": "Verified Premium Property in Bhuwana",
+        "price": "₹ 1.85 Cr",
+        "location": "Bhuwana, Udaipur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Neha Agarwal provided outstanding site visit support in Bhuwana, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "anita-sharma-udaipur-5",
+    "slug": "anita-sharma-udaipur-5",
+    "name": "Anita Sharma",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Udaipur Corridor Homes",
+    "reraId": "RAJ-RERA2021A7422",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Udaipur",
+    "cityName": "Udaipur",
+    "area": "Sukher",
+    "primaryArea": "Sukher",
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "114+ visits",
+    "listingsCount": 74,
+    "rating": "5.0",
+    "reviewsCount": 79,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98712 28278",
+    "email": "anita.sharma@udaipurcorridorhomes.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 7 years of verified real estate advisory experience across Sukher and the greater Udaipur market, Anita Sharma specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2494,
+        "title": "Verified Premium Property in Sukher",
+        "price": "₹ 2.60 Cr",
+        "location": "Sukher, Udaipur",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Anita Sharma provided outstanding site visit support in Sukher, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "arjun-solanki-vadodara-1",
+    "slug": "arjun-solanki-vadodara-1",
+    "name": "Arjun Solanki",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Vadodara Prime Realty",
+    "reraId": "GUJRERA2020A7435",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Vadodara",
     "cityName": "Vadodara",
     "area": "Alkapuri",
     "primaryArea": "Alkapuri",
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "115+ visits",
+    "listingsCount": 20,
+    "rating": "4.8",
+    "reviewsCount": 80,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 99100 28315",
+    "email": "arjun.solanki@vadodaraprimerealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 8 years of verified real estate advisory experience across Alkapuri and the greater Vadodara market, Arjun Solanki specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2495,
+        "title": "Verified Premium Property in Alkapuri",
+        "price": "₹ 3.35 Cr",
+        "location": "Alkapuri, Vadodara",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Arjun Solanki provided outstanding site visit support in Alkapuri, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "simran-shah-vadodara-2",
+    "slug": "simran-shah-vadodara-2",
+    "name": "Simran Shah",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Vadodara Asset Advisors",
+    "reraId": "GUJRERA2020A7448",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Vadodara",
+    "cityName": "Vadodara",
+    "area": "Vasna-Bhayli Road",
+    "primaryArea": "Vasna-Bhayli Road",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "116+ visits",
+    "listingsCount": 21,
+    "rating": "4.9",
+    "reviewsCount": 81,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98188 28352",
+    "email": "simran.shah@vadodaraassetadvisors.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Vasna-Bhayli Road and the greater Vadodara market, Simran Shah specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2496,
+        "title": "Verified Premium Property in Vasna-Bhayli Road",
+        "price": "₹ 4.10 Cr",
+        "location": "Vasna-Bhayli Road, Vadodara",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Simran Shah provided outstanding site visit support in Vasna-Bhayli Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "priya-solanki-vadodara-3",
+    "slug": "priya-solanki-vadodara-3",
+    "name": "Priya Solanki",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Vadodara Heritage Estates",
+    "reraId": "GUJRERA2020A7461",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Vadodara",
+    "cityName": "Vadodara",
+    "area": "Gotri",
+    "primaryArea": "Gotri",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "117+ visits",
+    "listingsCount": 22,
+    "rating": "5.0",
+    "reviewsCount": 82,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98230 28389",
+    "email": "priya.solanki@vadodaraheritageestates.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 10 years of verified real estate advisory experience across Gotri and the greater Vadodara market, Priya Solanki specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2497,
+        "title": "Verified Premium Property in Gotri",
+        "price": "₹ 4.85 Cr",
+        "location": "Gotri, Vadodara",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Priya Solanki provided outstanding site visit support in Gotri, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rajesh-shah-vadodara-4",
+    "slug": "rajesh-shah-vadodara-4",
+    "name": "Rajesh Shah",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Vadodara Capital Properties",
+    "reraId": "GUJRERA2020A7474",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Vadodara",
+    "cityName": "Vadodara",
+    "area": "Old Padra Road",
+    "primaryArea": "Old Padra Road",
     "experience": "11+ yrs",
     "experienceYears": 11,
-    "tours": "146+ visits",
-    "listingsCount": 46,
-    "rating": "4.9",
-    "reviewsCount": 91,
-    "focus": "Commercial offices & retail",
-    "phone": "+91 98188 18362",
-    "email": "neha.patel@vadodaraprimerealty.in",
+    "tours": "118+ visits",
+    "listingsCount": 23,
+    "rating": "4.8",
+    "reviewsCount": 83,
+    "focus": "Plots & development land",
+    "phone": "+91 98300 28426",
+    "email": "rajesh.shah@vadodaracapitalproperties.in",
     "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
@@ -7538,21 +18005,21 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Gujarati"
     ],
-    "bio": "With over 11 years of verified real estate advisory experience across Alkapuri and the greater Vadodara market, Neha Patel assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 11 years of verified real estate advisory experience across Old Padra Road and the greater Vadodara market, Rajesh Shah specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1226,
-        "title": "Verified Premium Residence in Alkapuri",
-        "price": "₹ 2.00 Cr",
-        "location": "Alkapuri, Vadodara",
+        "id": 2498,
+        "title": "Verified Premium Property in Old Padra Road",
+        "price": "₹ 1.10 Cr",
+        "location": "Old Padra Road, Vadodara",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -7560,32 +18027,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Neha Patel provided excellent site walkthrough assistance in Alkapuri, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Rajesh Shah provided outstanding site visit support in Old Padra Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "anita-trivedi-vadodara",
-    "slug": "anita-trivedi-vadodara",
-    "name": "Anita Trivedi",
-    "role": "Land & Villa Consultant",
-    "agency": "Vadodara Asset Advisors",
-    "reraId": "GUJRERA2020A3951",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_12.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "id": "gaurav-solanki-vadodara-5",
+    "slug": "gaurav-solanki-vadodara-5",
+    "name": "Gaurav Solanki",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Vadodara Corridor Homes",
+    "reraId": "GUJRERA2020A7487",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "city": "Vadodara",
     "cityName": "Vadodara",
-    "area": "Vasna-Bhayli Road",
-    "primaryArea": "Vasna-Bhayli Road",
+    "area": "Akota",
+    "primaryArea": "Akota",
     "experience": "12+ yrs",
     "experienceYears": 12,
-    "tours": "147+ visits",
-    "listingsCount": 47,
-    "rating": "5.0",
-    "reviewsCount": 92,
-    "focus": "Villas & plots",
-    "phone": "+91 98230 18399",
-    "email": "anita.trivedi@vadodaraassetadvisors.in",
+    "tours": "119+ visits",
+    "listingsCount": 24,
+    "rating": "4.9",
+    "reviewsCount": 84,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98470 28463",
+    "email": "gaurav.solanki@vadodaracorridorhomes.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -7599,21 +18066,21 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Gujarati"
     ],
-    "bio": "With over 12 years of verified real estate advisory experience across Vasna-Bhayli Road and the greater Vadodara market, Anita Trivedi assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 12 years of verified real estate advisory experience across Akota and the greater Vadodara market, Gaurav Solanki specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1227,
-        "title": "Verified Premium Residence in Vasna-Bhayli Road",
-        "price": "₹ 2.80 Cr",
-        "location": "Vasna-Bhayli Road, Vadodara",
+        "id": 2499,
+        "title": "Verified Premium Property in Akota",
+        "price": "₹ 1.85 Cr",
+        "location": "Akota, Vadodara",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -7621,32 +18088,153 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Anita Trivedi provided excellent site walkthrough assistance in Vasna-Bhayli Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Gaurav Solanki provided outstanding site visit support in Akota, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "ananya-sharma-varanasi",
-    "slug": "ananya-sharma-varanasi",
-    "name": "Ananya Sharma",
-    "role": "Land & Villa Consultant",
+    "id": "arjun-shah-vadodara-6",
+    "slug": "arjun-shah-vadodara-6",
+    "name": "Arjun Shah",
+    "role": "NRI Investment & High-Rise Advisor",
+    "agency": "Vadodara Metropolis Realty",
+    "reraId": "GUJRERA2020A7500",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Vadodara",
+    "cityName": "Vadodara",
+    "area": "Alkapuri",
+    "primaryArea": "Alkapuri",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "120+ visits",
+    "listingsCount": 25,
+    "rating": "5.0",
+    "reviewsCount": 85,
+    "focus": "NRI investment & penthouses",
+    "phone": "+91 98101 28500",
+    "email": "arjun.shah@vadodarametropolisrealty.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Gujarati"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Alkapuri and the greater Vadodara market, Arjun Shah specializes in NRI investment & penthouses. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2500,
+        "title": "Verified Premium Property in Alkapuri",
+        "price": "₹ 2.60 Cr",
+        "location": "Alkapuri, Vadodara",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Arjun Shah provided outstanding site visit support in Alkapuri, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "sanjay-tiwari-varanasi-1",
+    "slug": "sanjay-tiwari-varanasi-1",
+    "name": "Sanjay Tiwari",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Varanasi Prime Realty",
-    "reraId": "UPRERA2021A3964",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
-    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "reraId": "UPRERA2021A7513",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Varanasi",
     "cityName": "Varanasi",
     "area": "Cantonment",
     "primaryArea": "Cantonment",
-    "experience": "13+ yrs",
-    "experienceYears": 13,
-    "tours": "148+ visits",
-    "listingsCount": 48,
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "121+ visits",
+    "listingsCount": 26,
     "rating": "4.8",
-    "reviewsCount": 93,
-    "focus": "Villas & plots",
-    "phone": "+91 98300 18436",
-    "email": "ananya.sharma@varanasiprimerealty.in",
+    "reviewsCount": 86,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98200 28537",
+    "email": "sanjay.tiwari@varanasiprimerealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Cantonment and the greater Varanasi market, Sanjay Tiwari specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2501,
+        "title": "Verified Premium Property in Cantonment",
+        "price": "₹ 3.35 Cr",
+        "location": "Cantonment, Varanasi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Sanjay Tiwari provided outstanding site visit support in Cantonment, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "tanvi-gupta-varanasi-2",
+    "slug": "tanvi-gupta-varanasi-2",
+    "name": "Tanvi Gupta",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Varanasi Asset Advisors",
+    "reraId": "UPRERA2021A7526",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Varanasi",
+    "cityName": "Varanasi",
+    "area": "Sigra",
+    "primaryArea": "Sigra",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "122+ visits",
+    "listingsCount": 27,
+    "rating": "4.9",
+    "reviewsCount": 87,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98450 28574",
+    "email": "tanvi.gupta@varanasiassetadvisors.in",
     "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
@@ -7659,21 +18247,21 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 13 years of verified real estate advisory experience across Cantonment and the greater Varanasi market, Ananya Sharma assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
-    "subscriptionTier": "PRO_ADVISOR",
+    "bio": "With over 15 years of verified real estate advisory experience across Sigra and the greater Varanasi market, Tanvi Gupta specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 15 mins",
+    "responseTimeText": "< 15 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1228,
-        "title": "Verified Premium Residence in Cantonment",
-        "price": "₹ 3.60 Cr",
-        "location": "Cantonment, Varanasi",
+        "id": 2502,
+        "title": "Verified Premium Property in Sigra",
+        "price": "₹ 4.10 Cr",
+        "location": "Sigra, Varanasi",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -7681,32 +18269,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Ananya Sharma provided excellent site walkthrough assistance in Cantonment, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Tanvi Gupta provided outstanding site visit support in Sigra, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "kavita-yadav-varanasi",
-    "slug": "kavita-yadav-varanasi",
-    "name": "Kavita Yadav",
-    "role": "High-Rise Living Advisor",
-    "agency": "Varanasi Asset Advisors",
-    "reraId": "UPRERA2021A3977",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_2.webp",
-    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "id": "rohan-tiwari-varanasi-3",
+    "slug": "rohan-tiwari-varanasi-3",
+    "name": "Rohan Tiwari",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Varanasi Heritage Estates",
+    "reraId": "UPRERA2021A7539",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "city": "Varanasi",
     "cityName": "Varanasi",
-    "area": "Sigra",
-    "primaryArea": "Sigra",
-    "experience": "14+ yrs",
-    "experienceYears": 14,
-    "tours": "149+ visits",
-    "listingsCount": 49,
-    "rating": "4.9",
-    "reviewsCount": 94,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98470 18473",
-    "email": "kavita.yadav@varanasiassetadvisors.in",
+    "area": "Bhelupur",
+    "primaryArea": "Bhelupur",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "123+ visits",
+    "listingsCount": 28,
+    "rating": "5.0",
+    "reviewsCount": 88,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98112 28611",
+    "email": "rohan.tiwari@varanasiheritageestates.in",
     "badge": "Top Rated",
     "services": [
       "Private site walkthroughs",
@@ -7719,18 +18307,138 @@ export const CITY_ADVISORS: Agent[] = [
       "English",
       "Hindi"
     ],
-    "bio": "With over 14 years of verified real estate advisory experience across Sigra and the greater Varanasi market, Kavita Yadav assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 15 mins",
-    "responseTimeText": "< 15 mins",
+    "bio": "With over 16 years of verified real estate advisory experience across Bhelupur and the greater Varanasi market, Rohan Tiwari specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2503,
+        "title": "Verified Premium Property in Bhelupur",
+        "price": "₹ 4.85 Cr",
+        "location": "Bhelupur, Varanasi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Rohan Tiwari provided outstanding site visit support in Bhelupur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "kunal-gupta-varanasi-4",
+    "slug": "kunal-gupta-varanasi-4",
+    "name": "Kunal Gupta",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Varanasi Capital Properties",
+    "reraId": "UPRERA2021A7552",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Varanasi",
+    "cityName": "Varanasi",
+    "area": "Mahmoorganj",
+    "primaryArea": "Mahmoorganj",
+    "experience": "5+ yrs",
+    "experienceYears": 5,
+    "tours": "124+ visits",
+    "listingsCount": 29,
+    "rating": "4.8",
+    "reviewsCount": 89,
+    "focus": "Plots & development land",
+    "phone": "+91 98712 28648",
+    "email": "kunal.gupta@varanasicapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 5 years of verified real estate advisory experience across Mahmoorganj and the greater Varanasi market, Kunal Gupta specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2504,
+        "title": "Verified Premium Property in Mahmoorganj",
+        "price": "₹ 1.10 Cr",
+        "location": "Mahmoorganj, Varanasi",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Kunal Gupta provided outstanding site visit support in Mahmoorganj, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "amit-tiwari-varanasi-5",
+    "slug": "amit-tiwari-varanasi-5",
+    "name": "Amit Tiwari",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Varanasi Corridor Homes",
+    "reraId": "UPRERA2021A7565",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Varanasi",
+    "cityName": "Varanasi",
+    "area": "Pandeypur",
+    "primaryArea": "Pandeypur",
+    "experience": "6+ yrs",
+    "experienceYears": 6,
+    "tours": "125+ visits",
+    "listingsCount": 30,
+    "rating": "4.9",
+    "reviewsCount": 90,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 99100 28685",
+    "email": "amit.tiwari@varanasicorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "bio": "With over 6 years of verified real estate advisory experience across Pandeypur and the greater Varanasi market, Amit Tiwari specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1229,
-        "title": "Verified Premium Residence in Sigra",
-        "price": "₹ 4.40 Cr",
-        "location": "Sigra, Varanasi",
+        "id": 2505,
+        "title": "Verified Premium Property in Pandeypur",
+        "price": "₹ 1.85 Cr",
+        "location": "Pandeypur, Varanasi",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
@@ -7741,33 +18449,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Kavita Yadav provided excellent site walkthrough assistance in Sigra, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Amit Tiwari provided outstanding site visit support in Pandeypur, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "deepika-reddy-vijayawada",
-    "slug": "deepika-reddy-vijayawada",
-    "name": "Deepika Reddy",
-    "role": "High-Rise Living Advisor",
+    "id": "anita-murthy-vijayawada-1",
+    "slug": "anita-murthy-vijayawada-1",
+    "name": "Anita Murthy",
+    "role": "Senior Residential Rental Specialist",
     "agency": "Vijayawada Prime Realty",
-    "reraId": "APRERA2021A3990",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_3.webp",
+    "reraId": "APRERA2021A7578",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     "city": "Vijayawada",
     "cityName": "Vijayawada",
     "area": "Benz Circle",
     "primaryArea": "Benz Circle",
-    "experience": "5+ yrs",
-    "experienceYears": 5,
-    "tours": "150+ visits",
-    "listingsCount": 50,
+    "experience": "7+ yrs",
+    "experienceYears": 7,
+    "tours": "126+ visits",
+    "listingsCount": 31,
     "rating": "5.0",
-    "reviewsCount": 95,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98101 18510",
-    "email": "deepika.reddy@vijayawadaprimerealty.in",
-    "badge": "Top Rated",
+    "reviewsCount": 91,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98188 28722",
+    "email": "anita.murthy@vijayawadaprimerealty.in",
+    "badge": "Premier Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -7780,7 +18488,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Telugu"
     ],
-    "bio": "With over 5 years of verified real estate advisory experience across Benz Circle and the greater Vijayawada market, Deepika Reddy assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 7 years of verified real estate advisory experience across Benz Circle and the greater Vijayawada market, Anita Murthy specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 10 mins",
     "responseTimeText": "< 10 mins",
     "subscriptionTier": "PRO_ADVISOR",
@@ -7788,9 +18496,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1230,
-        "title": "Verified Premium Residence in Benz Circle",
-        "price": "₹ 1.20 Cr",
+        "id": 2506,
+        "title": "Verified Premium Property in Benz Circle",
+        "price": "₹ 2.60 Cr",
         "location": "Benz Circle, Vijayawada",
         "type": "Sale",
         "beds": 3,
@@ -7802,33 +18510,33 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Deepika Reddy provided excellent site walkthrough assistance in Benz Circle, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Anita Murthy provided outstanding site visit support in Benz Circle, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "sunita-prasad-vijayawada",
-    "slug": "sunita-prasad-vijayawada",
-    "name": "Sunita Prasad",
-    "role": "Luxury Residential Consultant",
+    "id": "poonam-naidu-vijayawada-2",
+    "slug": "poonam-naidu-vijayawada-2",
+    "name": "Poonam Naidu",
+    "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Vijayawada Asset Advisors",
-    "reraId": "APRERA2021A4003",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "reraId": "APRERA2021A7591",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_emerald.svg",
     "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     "city": "Vijayawada",
     "cityName": "Vijayawada",
     "area": "MG Road",
     "primaryArea": "MG Road",
-    "experience": "6+ yrs",
-    "experienceYears": 6,
-    "tours": "151+ visits",
-    "listingsCount": 51,
+    "experience": "8+ yrs",
+    "experienceYears": 8,
+    "tours": "127+ visits",
+    "listingsCount": 32,
     "rating": "4.8",
-    "reviewsCount": 96,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98200 18547",
-    "email": "sunita.prasad@vijayawadaassetadvisors.in",
-    "badge": "Top Producer",
+    "reviewsCount": 92,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98230 28759",
+    "email": "poonam.naidu@vijayawadaassetadvisors.in",
+    "badge": "Super Agent",
     "services": [
       "Private site walkthroughs",
       "Price negotiation",
@@ -7841,7 +18549,7 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Telugu"
     ],
-    "bio": "With over 6 years of verified real estate advisory experience across MG Road and the greater Vijayawada market, Sunita Prasad assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 8 years of verified real estate advisory experience across MG Road and the greater Vijayawada market, Poonam Naidu specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -7849,9 +18557,9 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1231,
-        "title": "Verified Premium Residence in MG Road",
-        "price": "₹ 2.00 Cr",
+        "id": 2507,
+        "title": "Verified Premium Property in MG Road",
+        "price": "₹ 3.35 Cr",
         "location": "MG Road, Vijayawada",
         "type": "Sale",
         "beds": 3,
@@ -7863,32 +18571,93 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Sunita Prasad provided excellent site walkthrough assistance in MG Road, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Poonam Naidu provided outstanding site visit support in MG Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "shweta-reddy-visakhapatnam",
-    "slug": "shweta-reddy-visakhapatnam",
-    "name": "Shweta Reddy",
-    "role": "Luxury Residential Consultant",
-    "agency": "Visakhapatnam Prime Realty",
-    "reraId": "APRERA2021A4016",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_5.webp",
+    "id": "mayank-murthy-vijayawada-3",
+    "slug": "mayank-murthy-vijayawada-3",
+    "name": "Mayank Murthy",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Vijayawada Heritage Estates",
+    "reraId": "APRERA2021A7604",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-    "city": "Visakhapatnam",
-    "cityName": "Visakhapatnam",
-    "area": "MVP Colony",
-    "primaryArea": "MVP Colony",
-    "experience": "7+ yrs",
-    "experienceYears": 7,
-    "tours": "152+ visits",
-    "listingsCount": 52,
+    "city": "Vijayawada",
+    "cityName": "Vijayawada",
+    "area": "Kanuru",
+    "primaryArea": "Kanuru",
+    "experience": "9+ yrs",
+    "experienceYears": 9,
+    "tours": "128+ visits",
+    "listingsCount": 33,
     "rating": "4.9",
-    "reviewsCount": 97,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98450 18584",
-    "email": "shweta.reddy@visakhapatnamprimerealty.in",
+    "reviewsCount": 93,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98300 28796",
+    "email": "mayank.murthy@vijayawadaheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 9 years of verified real estate advisory experience across Kanuru and the greater Vijayawada market, Mayank Murthy specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2508,
+        "title": "Verified Premium Property in Kanuru",
+        "price": "₹ 4.10 Cr",
+        "location": "Kanuru, Vijayawada",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Mayank Murthy provided outstanding site visit support in Kanuru, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "meera-naidu-vijayawada-4",
+    "slug": "meera-naidu-vijayawada-4",
+    "name": "Meera Naidu",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Vijayawada Capital Properties",
+    "reraId": "APRERA2021A7617",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Vijayawada",
+    "cityName": "Vijayawada",
+    "area": "Poranki",
+    "primaryArea": "Poranki",
+    "experience": "10+ yrs",
+    "experienceYears": 10,
+    "tours": "129+ visits",
+    "listingsCount": 34,
+    "rating": "5.0",
+    "reviewsCount": 94,
+    "focus": "Plots & development land",
+    "phone": "+91 98470 28833",
+    "email": "meera.naidu@vijayawadacapitalproperties.in",
     "badge": "Top Producer",
     "services": [
       "Private site walkthroughs",
@@ -7902,21 +18671,21 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Telugu"
     ],
-    "bio": "With over 7 years of verified real estate advisory experience across MVP Colony and the greater Visakhapatnam market, Shweta Reddy assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
-    "responseTime": "< 10 mins",
-    "responseTimeText": "< 10 mins",
+    "bio": "With over 10 years of verified real estate advisory experience across Poranki and the greater Vijayawada market, Meera Naidu specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
     "subscriptionTier": "PRO_ADVISOR",
     "isHomepageFeatured": false,
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1232,
-        "title": "Verified Premium Residence in MVP Colony",
-        "price": "₹ 2.80 Cr",
-        "location": "MVP Colony, Visakhapatnam",
+        "id": 2509,
+        "title": "Verified Premium Property in Poranki",
+        "price": "₹ 4.85 Cr",
+        "location": "Poranki, Vijayawada",
         "type": "Sale",
         "beds": 3,
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+        "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     "reviews": [
@@ -7924,32 +18693,32 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Shweta Reddy provided excellent site walkthrough assistance in MVP Colony, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Meera Naidu provided outstanding site visit support in Poranki, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   },
   {
-    "id": "aarav-prasad-visakhapatnam",
-    "slug": "aarav-prasad-visakhapatnam",
-    "name": "Aarav Prasad",
-    "role": "RERA Certified Property Guide",
-    "agency": "Visakhapatnam Asset Advisors",
-    "reraId": "APRERA2021A4029",
-    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/curated_advisor_6.webp",
-    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    "city": "Visakhapatnam",
-    "cityName": "Visakhapatnam",
-    "area": "Seethammadhara",
-    "primaryArea": "Seethammadhara",
-    "experience": "8+ yrs",
-    "experienceYears": 8,
-    "tours": "153+ visits",
-    "listingsCount": 53,
-    "rating": "5.0",
-    "reviewsCount": 98,
-    "focus": "High-rises & apartments",
-    "phone": "+91 98112 18621",
-    "email": "aarav.prasad@visakhapatnamassetadvisors.in",
+    "id": "neha-murthy-vijayawada-5",
+    "slug": "neha-murthy-vijayawada-5",
+    "name": "Neha Murthy",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Vijayawada Corridor Homes",
+    "reraId": "APRERA2021A7630",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_purple.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Vijayawada",
+    "cityName": "Vijayawada",
+    "area": "Gollapudi",
+    "primaryArea": "Gollapudi",
+    "experience": "11+ yrs",
+    "experienceYears": 11,
+    "tours": "130+ visits",
+    "listingsCount": 35,
+    "rating": "4.8",
+    "reviewsCount": 95,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 98101 28870",
+    "email": "neha.murthy@vijayawadacorridorhomes.in",
     "badge": "Fast Responder",
     "services": [
       "Private site walkthroughs",
@@ -7963,7 +18732,129 @@ export const CITY_ADVISORS: Agent[] = [
       "Hindi",
       "Telugu"
     ],
-    "bio": "With over 8 years of verified real estate advisory experience across Seethammadhara and the greater Visakhapatnam market, Aarav Prasad assists buyers, tenants, and investors with transparent property diligence, developer negotiations, and on-ground private site tours.",
+    "bio": "With over 11 years of verified real estate advisory experience across Gollapudi and the greater Vijayawada market, Neha Murthy specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2510,
+        "title": "Verified Premium Property in Gollapudi",
+        "price": "₹ 1.10 Cr",
+        "location": "Gollapudi, Vijayawada",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Neha Murthy provided outstanding site visit support in Gollapudi, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "gaurav-chowdary-visakhapatnam-1",
+    "slug": "gaurav-chowdary-visakhapatnam-1",
+    "name": "Gaurav Chowdary",
+    "role": "Senior Residential Rental Specialist",
+    "agency": "Visakhapatnam Prime Realty",
+    "reraId": "APRERA2021A7643",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "city": "Visakhapatnam",
+    "cityName": "Visakhapatnam",
+    "area": "MVP Colony",
+    "primaryArea": "MVP Colony",
+    "experience": "12+ yrs",
+    "experienceYears": 12,
+    "tours": "131+ visits",
+    "listingsCount": 36,
+    "rating": "4.9",
+    "reviewsCount": 96,
+    "focus": "Rental homes & high-rises",
+    "phone": "+91 98200 28907",
+    "email": "gaurav.chowdary@visakhapatnamprimerealty.in",
+    "badge": "Premier Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 12 years of verified real estate advisory experience across MVP Colony and the greater Visakhapatnam market, Gaurav Chowdary specializes in Rental homes & high-rises. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 10 mins",
+    "responseTimeText": "< 10 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2511,
+        "title": "Verified Premium Property in MVP Colony",
+        "price": "₹ 1.85 Cr",
+        "location": "MVP Colony, Visakhapatnam",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Gaurav Chowdary provided outstanding site visit support in MVP Colony, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "arjun-varma-visakhapatnam-2",
+    "slug": "arjun-varma-visakhapatnam-2",
+    "name": "Arjun Varma",
+    "role": "Luxury Residential Resale & Villa Consultant",
+    "agency": "Visakhapatnam Asset Advisors",
+    "reraId": "APRERA2021A7656",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/placeholder-avatar.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+    "city": "Visakhapatnam",
+    "cityName": "Visakhapatnam",
+    "area": "Seethammadhara",
+    "primaryArea": "Seethammadhara",
+    "experience": "13+ yrs",
+    "experienceYears": 13,
+    "tours": "132+ visits",
+    "listingsCount": 37,
+    "rating": "5.0",
+    "reviewsCount": 97,
+    "focus": "Villas & luxury resale",
+    "phone": "+91 98450 28944",
+    "email": "arjun.varma@visakhapatnamassetadvisors.in",
+    "badge": "Super Agent",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 13 years of verified real estate advisory experience across Seethammadhara and the greater Visakhapatnam market, Arjun Varma specializes in Villas & luxury resale. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
     "responseTime": "< 15 mins",
     "responseTimeText": "< 15 mins",
     "subscriptionTier": "CITY_SPOTLIGHT",
@@ -7971,10 +18862,193 @@ export const CITY_ADVISORS: Agent[] = [
     "featuredOrder": 99,
     "featuredListings": [
       {
-        "id": 1233,
-        "title": "Verified Premium Residence in Seethammadhara",
-        "price": "₹ 3.60 Cr",
+        "id": 2512,
+        "title": "Verified Premium Property in Seethammadhara",
+        "price": "₹ 2.60 Cr",
         "location": "Seethammadhara, Visakhapatnam",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Arjun Varma provided outstanding site visit support in Seethammadhara, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "simran-chowdary-visakhapatnam-3",
+    "slug": "simran-chowdary-visakhapatnam-3",
+    "name": "Simran Chowdary",
+    "role": "Commercial Corridors & Retail Specialist",
+    "agency": "Visakhapatnam Heritage Estates",
+    "reraId": "APRERA2021A7669",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
+    "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    "city": "Visakhapatnam",
+    "cityName": "Visakhapatnam",
+    "area": "Madhurawada",
+    "primaryArea": "Madhurawada",
+    "experience": "14+ yrs",
+    "experienceYears": 14,
+    "tours": "133+ visits",
+    "listingsCount": 38,
+    "rating": "4.8",
+    "reviewsCount": 98,
+    "focus": "Offices & retail shops",
+    "phone": "+91 98112 28981",
+    "email": "simran.chowdary@visakhapatnamheritageestates.in",
+    "badge": "Top Rated",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 14 years of verified real estate advisory experience across Madhurawada and the greater Visakhapatnam market, Simran Chowdary specializes in Offices & retail shops. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "FREE_VERIFIED",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2513,
+        "title": "Verified Premium Property in Madhurawada",
+        "price": "₹ 3.35 Cr",
+        "location": "Madhurawada, Visakhapatnam",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Simran Chowdary provided outstanding site visit support in Madhurawada, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "priya-varma-visakhapatnam-4",
+    "slug": "priya-varma-visakhapatnam-4",
+    "name": "Priya Varma",
+    "role": "Plots, Land & Township Consultant",
+    "agency": "Visakhapatnam Capital Properties",
+    "reraId": "APRERA2021A7682",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
+    "coverImage": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "city": "Visakhapatnam",
+    "cityName": "Visakhapatnam",
+    "area": "Beach Road",
+    "primaryArea": "Beach Road",
+    "experience": "15+ yrs",
+    "experienceYears": 15,
+    "tours": "134+ visits",
+    "listingsCount": 39,
+    "rating": "4.9",
+    "reviewsCount": 99,
+    "focus": "Plots & development land",
+    "phone": "+91 98712 29018",
+    "email": "priya.varma@visakhapatnamcapitalproperties.in",
+    "badge": "Top Producer",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 15 years of verified real estate advisory experience across Beach Road and the greater Visakhapatnam market, Priya Varma specializes in Plots & development land. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "PRO_ADVISOR",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2514,
+        "title": "Verified Premium Property in Beach Road",
+        "price": "₹ 4.10 Cr",
+        "location": "Beach Road, Visakhapatnam",
+        "type": "Sale",
+        "beds": 3,
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80"
+      }
+    ],
+    "reviews": [
+      {
+        "author": "Verified Client",
+        "date": "1 month ago",
+        "rating": 5,
+        "comment": "Priya Varma provided outstanding site visit support in Beach Road, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
+      }
+    ]
+  },
+  {
+    "id": "rajesh-chowdary-visakhapatnam-5",
+    "slug": "rajesh-chowdary-visakhapatnam-5",
+    "name": "Rajesh Chowdary",
+    "role": "Ready-to-Move & RERA Advisory Specialist",
+    "agency": "Visakhapatnam Corridor Homes",
+    "reraId": "APRERA2021A7695",
+    "avatar": "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
+    "coverImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "city": "Visakhapatnam",
+    "cityName": "Visakhapatnam",
+    "area": "Siripuram",
+    "primaryArea": "Siripuram",
+    "experience": "16+ yrs",
+    "experienceYears": 16,
+    "tours": "135+ visits",
+    "listingsCount": 40,
+    "rating": "5.0",
+    "reviewsCount": 100,
+    "focus": "Ready-to-move apartments",
+    "phone": "+91 99100 29055",
+    "email": "rajesh.chowdary@visakhapatnamcorridorhomes.in",
+    "badge": "Fast Responder",
+    "services": [
+      "Private site walkthroughs",
+      "Price negotiation",
+      "Title & document check",
+      "Home loan assistance",
+      "Registry guidance"
+    ],
+    "languages": [
+      "English",
+      "Hindi",
+      "Telugu"
+    ],
+    "bio": "With over 16 years of verified real estate advisory experience across Siripuram and the greater Visakhapatnam market, Rajesh Chowdary specializes in Ready-to-move apartments. Provides transparent documentation checks, pricing guidance, and on-ground private property walkthroughs with zero buyer fees.",
+    "responseTime": "< 20 mins",
+    "responseTimeText": "< 20 mins",
+    "subscriptionTier": "CITY_SPOTLIGHT",
+    "isHomepageFeatured": false,
+    "featuredOrder": 99,
+    "featuredListings": [
+      {
+        "id": 2515,
+        "title": "Verified Premium Property in Siripuram",
+        "price": "₹ 4.85 Cr",
+        "location": "Siripuram, Visakhapatnam",
         "type": "Sale",
         "beds": 3,
         "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
@@ -7985,7 +19059,7 @@ export const CITY_ADVISORS: Agent[] = [
         "author": "Verified Client",
         "date": "1 month ago",
         "rating": 5,
-        "comment": "Aarav Prasad provided excellent site walkthrough assistance in Seethammadhara, verified all title documents, and helped secure an advantageous purchase price."
+        "comment": "Rajesh Chowdary provided outstanding site visit support in Siripuram, checked all registry documents thoroughly, and helped negotiate terms directly with the owner."
       }
     ]
   }

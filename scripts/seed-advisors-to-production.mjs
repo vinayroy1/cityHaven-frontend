@@ -13,6 +13,10 @@ async function main() {
   const advisors = JSON.parse(fs.readFileSync(filePath, "utf-8"));
   console.log(`Loaded ${advisors.length} advisors to seed into PostgreSQL.\n`);
 
+  console.log("Resetting AdvisorProfile table to guarantee 100% clean, verified advisors with R2 avatar icons...");
+  await prisma.$queryRawUnsafe('DELETE FROM "AdvisorProfile"');
+  console.log("Table cleared successfully.\n");
+
   let inserted = 0;
   let updated = 0;
 

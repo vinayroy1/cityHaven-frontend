@@ -59,7 +59,7 @@ export const INITIAL_FEATURED_AGENTS: Agent[] = [
     role: "Senior Property Advisor",
     agency: "Urban Nest Realty",
     reraId: "DLRERA2021A0042",
-    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80",
+    avatar: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_indigo.svg",
     coverImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     city: "Delhi",
     area: "South Delhi & Chhatarpur",
@@ -128,7 +128,7 @@ export const INITIAL_FEATURED_AGENTS: Agent[] = [
     role: "Luxury Residential Specialist",
     agency: "Prime Door Advisors",
     reraId: "HRERA2019A0118",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
+    avatar: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_rose.svg",
     coverImage: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     city: "Gurugram",
     area: "Golf Course Rd & Cyber City",
@@ -182,7 +182,7 @@ export const INITIAL_FEATURED_AGENTS: Agent[] = [
     role: "Ready-to-Move Consultant",
     agency: "Metroline Properties",
     reraId: "UPRERA2020A0341",
-    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=600&q=80",
+    avatar: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_slate.svg",
     coverImage: "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
     city: "Noida",
     area: "Sector 62, 75 & Expressway",
@@ -227,7 +227,7 @@ export const INITIAL_FEATURED_AGENTS: Agent[] = [
     role: "Coastal & High-Rise Expert",
     agency: "Harbour Key Homes",
     reraId: "MAHARERA2018A0091",
-    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=600&q=80",
+    avatar: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_amber.svg",
     coverImage: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     city: "Mumbai",
     area: "Bandra, Juhu & Powai",
@@ -272,7 +272,7 @@ export const INITIAL_FEATURED_AGENTS: Agent[] = [
     role: "Tech Corridor Specialist",
     agency: "Silicon Edge Realty",
     reraId: "K-RERA2021A0087",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+    avatar: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_sky.svg",
     coverImage: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
     city: "Bengaluru",
     area: "Whitefield, HSR & Indiranagar",
@@ -317,7 +317,7 @@ export const INITIAL_FEATURED_AGENTS: Agent[] = [
     role: "Modern Living Consultant",
     agency: "Aura Prime Estates",
     reraId: "MAHARERA2022A0145",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+    avatar: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/advisors/avatars/avatar_teal.svg",
     coverImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     city: "Pune",
     area: "Koregaon Park & Baner",
@@ -358,15 +358,11 @@ export const INITIAL_FEATURED_AGENTS: Agent[] = [
   },
 ];
 
-export const ALL_AGENTS: Agent[] = [
-  ...INITIAL_FEATURED_AGENTS,
-  ...CITY_ADVISORS.filter(
-    (advisor) => !INITIAL_FEATURED_AGENTS.some((existing) => existing.id === advisor.id)
-  ),
-];
+export const ALL_AGENTS: Agent[] = CITY_ADVISORS && CITY_ADVISORS.length > 0 ? CITY_ADVISORS : INITIAL_FEATURED_AGENTS;
 
 export function getAgentById(id: string): Agent | undefined {
-  return ALL_AGENTS.find((agent) => agent.id === id);
+  const target = id.toLowerCase();
+  return ALL_AGENTS.find((agent) => agent.id.toLowerCase() === target || ((agent as any).slug && (agent as any).slug.toLowerCase() === target));
 }
 
 export function getAllAgentIds(): string[] {
@@ -374,23 +370,25 @@ export function getAllAgentIds(): string[] {
 }
 
 export function getAgentsByCity(city: string): Agent[] {
-  return ALL_AGENTS.filter((agent) => agent.city.toLowerCase() === city.toLowerCase());
+  const target = city.toLowerCase();
+  return ALL_AGENTS.filter((agent) => (agent.city || (agent as any).cityName || "").toLowerCase() === target);
 }
 
 export function getHomepageFeaturedAgents(city?: string): Agent[] {
   const featured = ALL_AGENTS.filter((agent) => agent.isHomepageFeatured);
   if (!city) return featured;
-  const inCity = featured.filter((agent) => agent.city.toLowerCase() === city.toLowerCase());
+  const inCity = featured.filter((agent) => (agent.city || (agent as any).cityName || "").toLowerCase() === city.toLowerCase());
   return inCity.length ? inCity : featured;
 }
 
 export function getSimilarAgents(currentAgentId: string, city: string, limit: number = 3): Agent[] {
+  const targetCity = city.toLowerCase();
   const sameCity = ALL_AGENTS.filter(
-    (agent) => agent.id !== currentAgentId && agent.city.toLowerCase() === city.toLowerCase()
+    (agent) => agent.id !== currentAgentId && ((agent as any).slug !== currentAgentId) && (agent.city || (agent as any).cityName || "").toLowerCase() === targetCity
   );
   if (sameCity.length >= limit) return sameCity.slice(0, limit);
   const others = ALL_AGENTS.filter(
-    (agent) => agent.id !== currentAgentId && agent.city.toLowerCase() !== city.toLowerCase()
+    (agent) => agent.id !== currentAgentId && ((agent as any).slug !== currentAgentId) && (agent.city || (agent as any).cityName || "").toLowerCase() !== targetCity
   );
   return [...sameCity, ...others].slice(0, limit);
 }
