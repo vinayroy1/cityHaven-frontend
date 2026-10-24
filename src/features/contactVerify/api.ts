@@ -279,10 +279,7 @@ export const contactVerifyApi = createApi({
           body: organizationId ? { organizationId } : {},
         };
       },
-      invalidatesTags: (_result, _err, arg) => {
-        const id = typeof arg === "object" ? arg.propertyId : arg;
-        return [{ type: "UnlockedContact", id }, "Credits", "BillingSummary", "OrgCredits"];
-      },
+      invalidatesTags: ["Credits", "BillingSummary", "OrgCredits"],
     }),
     purchaseCredits: builder.mutation<{ success: boolean; data: { credits: number } }, PurchaseCreditsPayload>({
       query: (body) => ({

@@ -49,6 +49,8 @@ export function ResultCard({
   const [contactOpen, setContactOpen] = React.useState(false);
   const [contactStep, setContactStep] = React.useState<ContactStep>("plans");
   const [checkingContact, setCheckingContact] = React.useState(false);
+  const contactCheckInFlight = React.useRef(false);
+  const contactUnlockInFlight = React.useRef(false);
   const getToken = () => (typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) ?? "" : "");
   const { data: meData } = useMeQuery(undefined, { skip: !getToken() });
   const isMyProperty = Boolean(ownerId && meData?.id && Number(ownerId) === Number(meData.id));
@@ -204,33 +206,12 @@ export function ResultCard({
     openDetails();
   };
 
-  const checkAlreadyUnlocked = async () => {
-    try {
-      const res = await triggerCheckUnlocked(id).unwrap();
-      const isUnlocked = Boolean(res?.unlocked || res?.data?.unlocked);
-      if (isUnlocked) {
-        const cData = res?.data ?? (res as any);
-        setOwnerContact({ name: cData?.ownerName ?? null, phone: cData?.ownerPhone ?? null });
-        const remaining = res?.credits ?? meData?.credits ?? personalSummary?.credits;
-        if (typeof remaining === "number") {
-          setCredits(remaining);
-        }
-        return true;
-      }
-    } catch {
-      // The unlock flow can continue if this convenience check fails.
-    }
-    return false;
-  };
-
   const unlockContact = async (scopeToUse = selectedScope): Promise<boolean> => {
+    if (contactUnlockInFlight.current) return false;
+    contactUnlockInFlight.current = true;
     setLoading(true);
     setContactError(null);
     try {
-      if (await checkAlreadyUnlocked()) {
-        setContactStep("contact");
-        return true;
-      }
       const isOrg = scopeToUse !== "PERSONAL";
       const res = await unlockPropertyContactMutation({
         propertyId: id,
@@ -239,7 +220,6 @@ export function ResultCard({
       setOwnerContact({ name: res.data?.ownerName ?? null, phone: res.data?.ownerPhone ?? null });
       setCredits(res.credits ?? 0);
       setContactStep("contact");
-      void refreshScopes();
       return true;
     } catch (err: any) {
       if (err?.status === 401 || err?.originalStatus === 401) {
@@ -259,6 +239,7 @@ export function ResultCard({
         return false;
       }
     } finally {
+      contactUnlockInFlight.current = false;
       setLoading(false);
     }
   };
@@ -266,6 +247,8 @@ export function ResultCard({
   const openContactFlow = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
+    if (contactCheckInFlight.current) return;
+    contactCheckInFlight.current = true;
     setContactError(null);
     setOwnerContact(null);
 
@@ -275,6 +258,7 @@ export function ResultCard({
       const targetUrl = `/properties/${slug || id}`;
       const returnUrl = encodeURIComponent(`${targetUrl}?autoUnlock=true`);
       router.push(`/login?redirect=${returnUrl}`);
+      contactCheckInFlight.current = false;
       return;
     }
 
@@ -287,6 +271,7 @@ export function ResultCard({
       await unlockContact();
       setCheckingContact(false);
       setLoading(false);
+      contactCheckInFlight.current = false;
       return;
     }
 
@@ -303,7 +288,6 @@ export function ResultCard({
         }
         setContactStep("contact");
         setContactOpen(true);
-        void refreshScopes();
         setCheckingContact(false);
         setLoading(false);
         return;
@@ -360,6 +344,7 @@ export function ResultCard({
       toast.error(errorMsg);
       setContactOpen(false);
     } finally {
+      contactCheckInFlight.current = false;
       setCheckingContact(false);
       setLoading(false);
     }
