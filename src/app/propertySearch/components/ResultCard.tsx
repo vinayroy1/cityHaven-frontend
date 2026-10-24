@@ -264,10 +264,14 @@ export function ResultCard({
 
     const activeToken = getToken();
     if (!activeToken) {
-      // Unauthenticated user -> redirect directly to login page with return URL (no login popup)
+      // Unauthenticated user -> trigger high-converting 1,000 Credit Welcome Gift popup with return URL!
       const targetUrl = `/properties/${slug || id}`;
-      const returnUrl = encodeURIComponent(`${targetUrl}?autoUnlock=true`);
-      router.push(`/login?redirect=${returnUrl}`);
+      const returnUrl = `${targetUrl}?autoUnlock=true`;
+      window.dispatchEvent(
+        new CustomEvent("awasio:open-welcome-credits", {
+          detail: { returnUrl },
+        })
+      );
       contactCheckInFlight.current = false;
       return;
     }

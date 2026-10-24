@@ -247,8 +247,12 @@ export function ContactAccessFlow({
     setError(null);
     const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
     if (!token) {
-      const returnUrl = encodeURIComponent(`${window.location.pathname}?autoUnlock=true`);
-      router.push(`/login?redirect=${returnUrl}`);
+      const returnUrl = `${window.location.pathname}?autoUnlock=true`;
+      window.dispatchEvent(
+        new CustomEvent("awasio:open-welcome-credits", {
+          detail: { returnUrl },
+        })
+      );
       return;
     }
     void run(checkAndUnlock);

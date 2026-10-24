@@ -186,7 +186,11 @@ export function MobileBottomNav() {
     if (isAuthed) {
       router.push("/propertyListing");
     } else {
-      router.push(`/login?redirect=${encodeURIComponent("/propertyListing")}`);
+      window.dispatchEvent(
+        new CustomEvent("awasio:open-welcome-credits", {
+          detail: { returnUrl: "/propertyListing" },
+        })
+      );
     }
   };
 

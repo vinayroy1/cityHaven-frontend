@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "../styles/globals.css";
 import { Providers } from "./providers";
 import { MobileBottomNav } from "@/components/common/MobileBottomNav";
+import { WelcomeCreditModal } from "@/components/marketing/WelcomeCreditModal";
 import { buildCanonical, SITE_URL } from "@/constants/seo";
 
 export const viewport: Viewport = {
@@ -106,6 +107,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <MobileBottomNav />
+          <WelcomeCreditModal />
         </Providers>
       </body>
     </html>
