@@ -30,10 +30,13 @@ import {
   Mail,
   Phone,
   BookOpenText,
+  Zap,
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { ThemeToggle } from "./ThemeToggle";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
+import { useGetMyCreditsQuery, useGetCreditPlatformConfigQuery } from "@/features/contactVerify/api";
+import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
 
 interface UserProfile {
   name?: string;
@@ -85,8 +88,34 @@ export function MobileBottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [creditModalOpen, setCreditModalOpen] = React.useState(false);
   const [isAuthed, setIsAuthed] = React.useState(false);
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
+
+  const { data: creditsData } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
+  const { data: platformData } = useGetCreditPlatformConfigQuery();
+  const purchaseEnabled = platformData?.data?.flags?.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
+  const creditBalance = creditsData?.data?.credits ?? 0;
+
+  const activeResourceLinks = React.useMemo(() => {
+    return [
+      { label: "Price Trends", href: "/price-trends", icon: TrendingUp, onClick: undefined },
+      { label: "Home Loans", href: "/home-loans", icon: Coins, onClick: undefined },
+      { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator, onClick: undefined },
+      purchaseEnabled
+        ? { label: "Pricing & Plans", href: "/pricing", icon: Sparkles, onClick: undefined }
+        : {
+            label: `Credit Wallet (${creditBalance} Credits)`,
+            href: "#credits",
+            icon: Zap,
+            onClick: () => {
+              setDrawerOpen(false);
+              setCreditModalOpen(true);
+            },
+          },
+      { label: "Blog & Guides", href: "/blog", icon: BookOpenText, onClick: undefined },
+    ];
+  }, [purchaseEnabled, creditBalance]);
 
   // Check auth
   React.useEffect(() => {
@@ -355,13 +384,26 @@ export function MobileBottomNav() {
                           </p>
                         </div>
                       </div>
-                      <Link
-                        href="/dashboard"
-                        onNavigate={closeAfterNavigation}
-                        className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-850 dark:text-white"
-                      >
-                        Dashboard
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDrawerOpen(false);
+                            setCreditModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-1 text-xs font-black text-amber-900 shadow-2xs dark:border-amber-700/60 dark:bg-amber-950/40 dark:text-amber-200"
+                        >
+                          <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                          <span>{creditBalance} Credits</span>
+                        </button>
+                        <Link
+                          href="/dashboard"
+                          onNavigate={closeAfterNavigation}
+                          className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-850 dark:text-white"
+                        >
+                          Dashboard
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -374,14 +416,27 @@ export function MobileBottomNav() {
                         Unlock owner contacts &amp; manage properties
                       </p>
                     </div>
-                    <Link
-                      href={`/login?redirect=${encodeURIComponent(pathname || "/")}`}
-                      onNavigate={closeAfterNavigation}
-                      className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-rose-700 transition"
-                    >
-                      <User className="h-3.5 w-3.5" />
-                      <span>Login</span>
-                    </Link>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDrawerOpen(false);
+                          setCreditModalOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-2 py-1 text-[11px] font-bold text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
+                      >
+                        <Zap className="h-3 w-3 fill-amber-500 text-amber-500" />
+                        <span>100 Credits</span>
+                      </button>
+                      <Link
+                        href={`/login?redirect=${encodeURIComponent(pathname || "/")}`}
+                        onNavigate={closeAfterNavigation}
+                        className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-3 py-1 text-xs font-bold text-white shadow-sm hover:bg-rose-700 transition"
+                      >
+                        <User className="h-3.5 w-3.5" />
+                        <span>Login</span>
+                      </Link>
+                    </div>
                   </div>
                 )}
 
@@ -419,8 +474,23 @@ export function MobileBottomNav() {
                     Calculators &amp; Advisory
                   </p>
                   <div className="mt-2 space-y-1">
-                    {resourceLinks.map((item) => {
+                    {activeResourceLinks.map((item) => {
                       const Icon = item.icon;
+                      if (item.onClick) {
+                        return (
+                          <button
+                            key={item.label}
+                            type="button"
+                            onClick={item.onClick}
+                            className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900 transition"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <Icon className="h-4 w-4 text-amber-500 fill-amber-500/20" />
+                              <span className="font-semibold text-amber-900 dark:text-amber-200">{item.label}</span>
+                            </div>
+                          </button>
+                        );
+                      }
                       return (
                         <Link
                           key={item.label}
@@ -487,6 +557,13 @@ export function MobileBottomNav() {
           </>,
           document.body
         )}
+
+      {/* Credit Wallet & Rewards Modal */}
+      <CreditWalletModal
+        isOpen={creditModalOpen}
+        onClose={() => setCreditModalOpen(false)}
+        userProfile={userProfile}
+      />
     </>
   );
 }

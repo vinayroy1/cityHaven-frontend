@@ -10,10 +10,20 @@ export function resolveClientUrl(rawUrl: string): string {
   if (typeof window === "undefined") return rawUrl;
   try {
     const currentHost = window.location.hostname;
-    if (currentHost && currentHost !== "localhost" && currentHost !== "127.0.0.1") {
-      const parsed = new URL(rawUrl, window.location.origin);
-      if (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1") {
+    const parsed = new URL(rawUrl, window.location.origin);
+    // When running in the browser on localhost or 127.0.0.1, guarantee that API calls target the local backend on port 4000
+    if (currentHost === "localhost" || currentHost === "127.0.0.1") {
+      if (parsed.hostname !== "localhost" && parsed.hostname !== "127.0.0.1") {
+        parsed.protocol = "http:";
+        parsed.hostname = "localhost";
+        parsed.port = "4000";
+        return parsed.toString();
+      }
+    } else if (currentHost) {
+      if (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1" || parsed.hostname.includes("onrender.com")) {
         parsed.hostname = currentHost;
+        parsed.protocol = window.location.protocol;
+        parsed.port = window.location.port;
         return parsed.toString();
       }
     }

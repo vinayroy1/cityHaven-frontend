@@ -25,6 +25,7 @@ import { BookVisitModal } from "@/components/agents/BookVisitModal";
 import { getMergedAgentsList } from "@/lib/services/agentProfile";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
+import { useGetAdvisorsQuery } from "@/features/advisors/api";
 
 const SPECIALTIES = [
   "All Specialties",
@@ -40,6 +41,7 @@ interface AgentsDirectoryClientProps {
 }
 
 export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClientProps) {
+  const { data: serverAgents = [] } = useGetAdvisorsQuery({ city: initialCity || undefined, limit: 50 });
   // Draft state (user selections before pressing Search)
   const [cityDraft, setCityDraft] = useState(
     initialCity && initialCity !== "All Cities" ? initialCity : ""
@@ -60,12 +62,12 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
 
   React.useEffect(() => {
     const updateList = () => {
-      setAgentsList(getMergedAgentsList());
+      setAgentsList(serverAgents.length ? serverAgents : getMergedAgentsList());
     };
     updateList();
     window.addEventListener("awasio:agent-profile-updated", updateList);
     return () => window.removeEventListener("awasio:agent-profile-updated", updateList);
-  }, []);
+  }, [serverAgents]);
 
   const handleSearch = () => {
     setAppliedCity(cityDraft);
@@ -108,6 +110,8 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
 
       return matchCity && matchLocality && matchSpecialty && matchQuery;
     }).sort((a, b) => {
+      const boostDiff = Number(Boolean(b.isBoosted)) - Number(Boolean(a.isBoosted));
+      if (boostDiff !== 0) return boostDiff;
       // Primary sort: Spotlight/Pro subscribers appear on top!
       const tierRank: Record<string, number> = {
         PRO_ADVISOR: 2,
@@ -363,7 +367,7 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                   <div className="mt-2 sm:mt-3 flex items-center justify-between border-t border-slate-100 pt-1.5 sm:pt-2.5 dark:border-slate-800/80">
                     <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
                       <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                      {agent.badge}
+                      {agent.isBoosted ? "👑 TOP ADVISOR" : agent.badge}
                     </span>
 
                     <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-medium text-emerald-600 dark:text-emerald-400">

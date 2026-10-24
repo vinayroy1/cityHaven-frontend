@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, AlertCircle, Lock, Loader2 } from "lucide-react";
+import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, AlertCircle, Lock, Loader2, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { ContactPlan, ContactStep } from "./resultCardTypes";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
@@ -46,6 +46,7 @@ type ContactUnlockDialogProps = {
   onSaveProfile?: () => void;
   onSelectedPlanChange: (value: string) => void;
   onPurchasePlan: () => void;
+  purchaseEnabled?: boolean;
 };
 
 export function ContactUnlockDialog({
@@ -66,10 +67,12 @@ export function ContactUnlockDialog({
   onUnlockContact,
   onSelectedPlanChange,
   onPurchasePlan,
+  purchaseEnabled = false,
 }: ContactUnlockDialogProps) {
   useModalBackHandler({
     isOpen: open,
     onClose: () => onOpenChange(false),
+    pushHistoryState: false,
     name: "ContactUnlockDialog",
   });
 
@@ -81,9 +84,23 @@ export function ContactUnlockDialog({
       <DialogContent
         className={`max-h-[92vh] overflow-y-auto border-0 bg-white p-0 shadow-2xl sm:max-w-md ${contactStep === "plans" ? "lg:max-w-5xl" : "lg:max-w-md"}`}
         onClick={(event) => event.stopPropagation()}
+        onPointerDown={(event) => event.stopPropagation()}
+        onPointerDownOutside={() => onOpenChange(false)}
+        onInteractOutside={() => onOpenChange(false)}
       >
-        <div className="bg-rose-600 px-5 py-5 text-white">
-          <DialogHeader className="text-left">
+        <div className="relative bg-rose-600 px-5 py-5 text-white overflow-hidden shrink-0">
+          {/* Prominent High-Contrast Close Button */}
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white text-rose-600 shadow-md hover:bg-rose-50 hover:scale-105 active:scale-90 transition-all font-bold focus:outline-none focus:ring-2 focus:ring-white"
+            aria-label="Close dialog"
+            title="Close (Esc)"
+          >
+            <X className="h-5 w-5 stroke-[2.5]" />
+          </button>
+
+          <DialogHeader className="text-left pr-12">
             <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-lg bg-white/15">
               <PhoneCall className="h-5 w-5" />
             </div>
@@ -194,6 +211,7 @@ export function ContactUnlockDialog({
                 loading={loading}
                 onSelectedPlanChange={onSelectedPlanChange}
                 onPurchasePlan={onPurchasePlan}
+                purchaseEnabled={purchaseEnabled}
               />
             </>
           )}
@@ -206,6 +224,20 @@ export function ContactUnlockDialog({
               scopeName={isOrgScope ? activeScopeObj?.name : "Personal Account"}
             />
           )}
+        </div>
+
+        {/* Footer info & explicit Close Button */}
+        <div className="flex items-center justify-between border-t border-zinc-200 bg-zinc-50 px-5 py-3 text-xs dark:border-slate-800 dark:bg-slate-900/60 shrink-0">
+          <span className="text-[11px] text-zinc-500 dark:text-slate-400">
+            Contact credits never expire &bull; Verified direct owners
+          </span>
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="inline-flex items-center gap-1 rounded-xl border border-zinc-300 bg-white px-4 py-1.5 text-xs font-bold text-zinc-800 shadow-2xs hover:bg-zinc-50 hover:border-zinc-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition"
+          >
+            Close
+          </button>
         </div>
       </DialogContent>
     </Dialog>
@@ -427,8 +459,9 @@ export function PlanSelectionStep(props: {
   loading: boolean;
   onSelectedPlanChange: (value: string) => void;
   onPurchasePlan: () => void;
+  purchaseEnabled?: boolean;
 }) {
-  const { plansList, selectedPlan, currentPlan, contactError, loading, onSelectedPlanChange, onPurchasePlan } = props;
+  const { plansList, selectedPlan, currentPlan, contactError, loading, onSelectedPlanChange, onPurchasePlan, purchaseEnabled = false } = props;
 
   return (
     <>
@@ -504,11 +537,11 @@ export function PlanSelectionStep(props: {
       {contactError && <p className="rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{contactError}</p>}
       <button
         type="button"
-        disabled={loading}
+        disabled={loading || !purchaseEnabled}
         onClick={onPurchasePlan}
         className="w-full rounded-md bg-rose-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:bg-rose-300"
       >
-        {loading ? "Processing payment..." : `Continue with ${currentPlan?.name ?? "Selected Plan"}`}
+        {loading ? "Processing payment..." : purchaseEnabled ? `Continue with ${currentPlan?.name ?? "Selected Plan"}` : "Credit purchases launching soon"}
       </button>
     </>
   );
@@ -517,35 +550,41 @@ export function PlanSelectionStep(props: {
 export function UnlockedContactStep({
   ownerContact,
   owner,
-  credits,
-  scopeName,
 }: {
   ownerContact: OwnerContact;
   owner?: string;
-  credits: number;
+  credits?: number;
   scopeName?: string;
 }) {
   return (
     <>
-      <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-4">
+      <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-4 dark:border-emerald-900/60 dark:bg-emerald-950/40">
         <div className="flex items-start gap-3">
-          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
-          <div>
-            <p className="text-sm font-semibold text-zinc-950">{ownerContact?.name ?? owner ?? "Owner"}</p>
-            <p className="mt-1 text-xl font-bold text-zinc-950">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
+            <CheckCircle2 className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+              Verified Direct Contact
+            </span>
+            <p className="mt-0.5 text-base font-bold text-zinc-950 dark:text-white truncate">
+              {ownerContact?.name ?? owner ?? "Property Owner"}
+            </p>
+            <p className="mt-1 text-2xl font-black tracking-tight text-emerald-950 dark:text-emerald-200">
               {ownerContact?.phone ? `+91 ${ownerContact.phone}` : "+91 ..... ....."}
             </p>
-            <p className="mt-1 text-xs text-zinc-500">
-              Credits remaining: {credits} {scopeName ? `(${scopeName})` : ""}
+            <p className="mt-1 text-[11px] text-zinc-500 dark:text-slate-400">
+              Direct connection &bull; Zero brokerage &bull; Lifetime unlocked
             </p>
           </div>
         </div>
       </div>
       <a
         href={ownerContact?.phone ? `tel:+91${ownerContact.phone}` : undefined}
-        className="block w-full rounded-md bg-emerald-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-emerald-700"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-center text-sm font-bold text-white shadow-md hover:bg-emerald-700 active:scale-98 transition"
       >
-        Call owner
+        <PhoneCall className="h-4 w-4" />
+        <span>Call Owner Now</span>
       </a>
     </>
   );

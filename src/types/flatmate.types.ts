@@ -85,6 +85,8 @@ export interface FlatmateListing {
   };
   compatibilityScore?: number | null;
   compatibilityReasons?: string[];
+  isBoosted?: boolean;
+  boostEndsAt?: string | null;
   contact?: {
     name?: string | null;
     mobileNumber?: string;

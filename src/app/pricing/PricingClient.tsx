@@ -29,9 +29,10 @@ import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import {
   Plan,
   PlanCategory,
-  useGetPlansQuery,
+  useGetCreditPlatformConfigQuery,
   usePurchaseCreditsByPlanMutation,
   useGetBillingSummaryQuery,
+  useRedeemCreditCouponMutation,
 } from "@/features/contactVerify/api";
 
 type CategoryMeta = {
@@ -43,9 +44,9 @@ type CategoryMeta = {
 
 const CATEGORY_CONFIG: Record<PlanCategory | string, CategoryMeta> = {
   BUYER_TENANT: {
-    label: "House Hunters & Buyers",
-    badgeLabel: "Disruptive Micro-Packs",
-    subtitle: "Unlock direct verified property owner numbers starting at just ₹29. Zero broker commission, lifetime validity.",
+    label: "Common Credit Packs",
+    badgeLabel: "One Wallet, Every Action",
+    subtitle: "Use the same credits for contacts, listings, renewals, property boosts, flatmate posts, and advisor spotlights.",
     icon: PhoneCall,
   },
   FLATMATE: {
@@ -72,28 +73,15 @@ export function PricingClient() {
   const router = useRouter();
 
   // Fetch all active plans from backend DB
-  const { data: plansData, isLoading: isPlansLoading } = useGetPlansQuery();
-  const plans: Plan[] = plansData?.data ?? [];
+  const { data: platformData, isLoading: isPlansLoading } = useGetCreditPlatformConfigQuery();
+  const plans: Plan[] = platformData?.data?.plans ?? [];
+  const purchaseEnabled = platformData?.data?.flags.find((flag) => flag.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
 
   // Group plans dynamically by category as provided by DB
   const categoriesPresent = useMemo<(PlanCategory | string)[]>(() => {
     const set = new Set<string>();
-    plans.forEach((p) => {
-      if (p.category) set.add(p.category);
-    });
-    // Preferred ordering
-    const preferredOrder: (PlanCategory | string)[] = [
-      "BUYER_TENANT",
-      "FLATMATE",
-      "OWNER_LANDLORD",
-      "AGENCY_BROKER",
-    ];
-    const ordered = preferredOrder.filter((cat) => set.has(cat));
-    // Append any custom categories that DB might have added
-    set.forEach((cat) => {
-      if (!ordered.includes(cat)) ordered.push(cat);
-    });
-    return ordered;
+    if (plans.length) set.add("BUYER_TENANT");
+    return Array.from(set);
   }, [plans]);
 
   // Active category selection
@@ -111,6 +99,7 @@ export function PricingClient() {
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState("");
 
   const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
   const isAuthenticated = Boolean(token);
@@ -128,18 +117,33 @@ export function PricingClient() {
   const summary = summaryData?.data;
 
   const [purchaseCreditsByPlan, { isLoading: isPurchasing }] = usePurchaseCreditsByPlanMutation();
+  const [redeemCoupon, { isLoading: isRedeemingCoupon }] = useRedeemCreditCouponMutation();
+  const couponsEnabled = platformData?.data?.flags.find((flag) => flag.key === "COUPONS_ENABLED")?.isEnabled ?? false;
+
+  const handleCoupon = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setPurchaseError(null);
+    try {
+      const result = await redeemCoupon({ code: couponCode, organizationId: effectiveOrgId }).unwrap();
+      setPurchaseSuccess(`${result.data.code} redeemed: +${result.data.creditsAdded} credits. Balance: ${result.data.credits}.`);
+      setCouponCode("");
+      void refetchSummary();
+    } catch (error: any) {
+      setPurchaseError(error?.data?.message || "Coupon could not be redeemed.");
+    }
+  };
 
   // Active plans to display under selected category, sorted by sortOrder and price
   const plansForCategory = useMemo(() => {
     return plans
-      .filter((p) => p.category === activeCategory)
+      .filter((p) => (p.contactCredits ?? p.features?.creditsIncluded ?? 0) > 0)
       .sort((a, b) => {
         if ((a.sortOrder ?? 0) !== (b.sortOrder ?? 0)) {
           return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
         }
         return a.price - b.price;
       });
-  }, [plans, activeCategory]);
+  }, [plans]);
 
   const categoryMeta: CategoryMeta = CATEGORY_CONFIG[activeCategory] || {
     label: activeCategory.replace(/_/g, " "),
@@ -151,6 +155,11 @@ export function PricingClient() {
   const handleAction = async (plan: Plan) => {
     setPurchaseError(null);
     setPurchaseSuccess(null);
+
+    if (!purchaseEnabled) {
+      setPurchaseError("Credit purchases are not open yet. You can still use earned and promotional credits.");
+      return;
+    }
 
     // Free tier: direct to property posting
     if (plan.price === 0) {
@@ -205,7 +214,7 @@ export function PricingClient() {
             </h1>
 
             <p className="mt-3 text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Skip heavy monthly subscriptions and hefty broker commissions. Pay tiny micro-fees only when you find what you love, or post your home 100% free.
+              One transparent credit balance powers every paid action. Earn credits now and use them across contacts, posting, renewals, and visibility boosts.
             </p>
 
             {/* Dynamic Category Selector Tabs */}
@@ -245,6 +254,19 @@ export function PricingClient() {
               <span className="font-bold text-rose-600 dark:text-rose-400 mr-1.5">{categoryMeta.badgeLabel}:</span>
               {categoryMeta.subtitle}
             </div>
+
+            {/* Early Launch Notice if Purchases are Disabled */}
+            {!purchaseEnabled && (
+              <div className="mt-4 mx-auto max-w-2xl rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-xs text-amber-900 shadow-sm dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200 text-left sm:text-center">
+                <p className="font-bold flex items-center justify-center gap-1.5 text-amber-800 dark:text-amber-300">
+                  <Sparkles className="h-4 w-4 shrink-0 text-amber-600" />
+                  <span>Early Founder Launch &bull; Enjoy Free Credits!</span>
+                </p>
+                <p className="mt-1 text-slate-600 dark:text-slate-300">
+                  Paid credit top-ups are currently in preview mode. All new users receive <strong>100 free credits on registration</strong> to unlock verified contacts, post listings, and test visibility boosts.
+                </p>
+              </div>
+            )}
 
             {/* Organization / Personal Switcher for Agency & Broker Plans */}
             {activeCategory === "AGENCY_BROKER" && (
@@ -346,6 +368,13 @@ export function PricingClient() {
               <ShieldCheck className="h-5 w-5 text-rose-600 shrink-0" />
               <span>{purchaseError}</span>
             </div>
+          )}
+
+          {couponsEnabled && isAuthenticated && (
+            <form onSubmit={handleCoupon} className="mb-8 mx-auto flex max-w-xl gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <input aria-label="Coupon code" required value={couponCode} onChange={(event) => setCouponCode(event.target.value.toUpperCase())} placeholder="Enter coupon code" className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm uppercase outline-none focus:border-rose-500 dark:border-slate-700 dark:bg-slate-950" />
+              <button disabled={isRedeemingCoupon} className="rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-60">{isRedeemingCoupon ? "Redeeming…" : "Redeem"}</button>
+            </form>
           )}
 
           {/* Pricing Cards Grid - 100% Dynamic from Backend DB */}
@@ -517,7 +546,7 @@ export function PricingClient() {
                     {/* Action Button */}
                     <button
                       type="button"
-                      disabled={isPurchasing}
+                      disabled={isPurchasing || !purchaseEnabled}
                       onClick={() => handleAction(plan)}
                       className={`mt-6 w-full inline-flex items-center justify-center gap-2 rounded-2xl py-3 px-4 text-xs font-bold transition shadow-sm ${
                         isPopular
@@ -534,7 +563,7 @@ export function PricingClient() {
                         </>
                       ) : (
                         <>
-                          <span>{plan.ctaText || (isFree ? "Post Free Listing" : `Get ${plan.name}`)}</span>
+                          <span>{purchaseEnabled ? (plan.ctaText || (isFree ? "Get Started" : `Get ${plan.name}`)) : "Purchases launching soon"}</span>
                           <ArrowRight className="h-3.5 w-3.5" />
                         </>
                       )}

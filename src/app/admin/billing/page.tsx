@@ -14,6 +14,7 @@ import {
   RotateCcw,
   ShieldCheck,
 } from "lucide-react";
+import { CreditPlatformAdmin } from "./CreditPlatformAdmin";
 
 export default function AdminBillingPage() {
   const mounted = useIsMounted();
@@ -124,6 +125,8 @@ export default function AdminBillingPage() {
           <span>{successMsg}</span>
         </div>
       )}
+
+      <CreditPlatformAdmin />
 
       {/* Tabs */}
       <div className="flex items-center gap-2 bg-white dark:bg-slate-900/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800/80 shadow-sm">

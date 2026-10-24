@@ -8,8 +8,14 @@
  * (e.g. http://awasio-backend:4000/api) when running on the server.
  */
 export function toInternalApiUrl(endpoint: string): string {
-  // If running in browser, do not rewrite (browser must use public API URL)
+  // If running in browser on localhost, ensure we target localhost:4000
   if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") {
+      if (/^https?:\/\/[^\/]+\/api(\/.*)?$/i.test(endpoint)) {
+        return endpoint.replace(/^https?:\/\/[^\/]+\/api/i, "http://localhost:4000/api");
+      }
+    }
     return endpoint;
   }
 

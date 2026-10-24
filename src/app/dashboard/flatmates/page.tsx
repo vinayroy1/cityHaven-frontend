@@ -32,6 +32,7 @@ import {
   useArchiveFlatmateListingMutation,
 } from "@/features/flatmates/api";
 import type { FlatmateInterestStatus } from "@/types/flatmate.types";
+import { CreditBoostButton } from "@/components/billing/CreditBoostButton";
 
 export default function DashboardFlatmatesPage() {
   const [activeTab, setActiveTab] = useState<"listings" | "received" | "sent">("listings");
@@ -186,6 +187,7 @@ export default function DashboardFlatmatesPage() {
                       </div>
 
                       <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3">
+                        {item.status === "ACTIVE" && <CreditBoostButton targetType="FLATMATE" targetId={item.id} />}
                         <Link
                           href={`/flatmates/${item.slug}`}
                           className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-700"

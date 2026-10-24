@@ -44,6 +44,7 @@ import { useOrgListingsInfinite } from "@/features/propertyListing/useQueries";
 import { useOrganizationPropertiesQuery, useMyOrganizationsQuery } from "@/features/organizations/api";
 import { useGetBillingSummaryQuery } from "@/features/contactVerify/api";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
+import { CreditBoostButton } from "@/components/billing/CreditBoostButton";
 
 import { APP_CONFIG } from "@/constants/app-config";
 
@@ -845,6 +846,7 @@ function PropertiesContent() {
                         </span>
 
                         <div className="flex items-center gap-1.5">
+                          {isItemActive && <CreditBoostButton targetType="PROPERTY" targetId={Number(item.id)} organizationId={scope === "org" ? effectiveOrgId : undefined} />}
                           <Link
                             href={`/properties/${item.id}`}
                             className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-rose-400"

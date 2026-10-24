@@ -81,6 +81,8 @@ export type PropertySearchItem = {
   propertySubType?: { name?: string | null; slug?: string | null } | null;
   media?: PropertySearchMedia[];
   createdAt?: string;
+  isBoosted?: boolean;
+  boostEndsAt?: string | null;
 };
 
 export type PropertySearchResponse = {

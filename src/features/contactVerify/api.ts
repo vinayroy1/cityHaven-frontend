@@ -192,10 +192,59 @@ export interface VerifyPaymentPayload {
   paymentRef: string;
 }
 
+export interface CreditActionConfig {
+  id: number;
+  key: string;
+  label: string;
+  description?: string | null;
+  creditAmount: number;
+  durationDays?: number | null;
+  isEnabled: boolean;
+  metadata?: Record<string, unknown> | null;
+}
+
+export interface PlatformFeatureFlag {
+  id: number;
+  key: string;
+  label: string;
+  description?: string | null;
+  isEnabled: boolean;
+}
+
+export interface CreditPlatformConfig {
+  actions: CreditActionConfig[];
+  flags: PlatformFeatureFlag[];
+  plans: Plan[];
+}
+
+export interface CreditPromotion {
+  id: number;
+  actionKey: string;
+  targetType: "PROPERTY" | "FLATMATE" | "ADVISOR";
+  targetId: number;
+  startsAt: string;
+  endsAt: string;
+  creditCost: number;
+  isActive: boolean;
+}
+
+export interface CreditCoupon {
+  id: number;
+  code: string;
+  description?: string | null;
+  credits: number;
+  maxRedemptions?: number | null;
+  maxPerUser: number;
+  redemptionCount: number;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  isActive: boolean;
+}
+
 export const contactVerifyApi = createApi({
   reducerPath: "contactVerifyApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["ContactVerify", "Credits", "UnlockedContact", "Plans", "BillingSummary", "OrgCredits"],
+  tagTypes: ["ContactVerify", "Credits", "UnlockedContact", "Plans", "BillingSummary", "OrgCredits", "CreditConfig", "Promotions", "Coupons"],
   endpoints: (builder) => ({
     getPlans: builder.query<{ success: boolean; data: Plan[] }, { category?: string; all?: boolean } | void>({
       query: (params) => ({
@@ -204,6 +253,56 @@ export const contactVerifyApi = createApi({
         params: params ? { category: params.category, all: params.all } : undefined,
       }),
       providesTags: ["Plans"],
+    }),
+    getCreditPlatformConfig: builder.query<{ success: boolean; data: CreditPlatformConfig }, { admin?: boolean } | void>({
+      query: (params) => ({
+        url: params?.admin ? API_ENDPOINTS.admin.billing.platformConfig : API_ENDPOINTS.billing.platformConfig,
+        method: "GET",
+        params: params?.admin ? { all: true } : undefined,
+      }),
+      providesTags: ["CreditConfig", "Plans"],
+    }),
+    activateCreditPromotion: builder.mutation<
+      { success: boolean; data: { promotion: CreditPromotion; credits: number } },
+      { actionKey: string; targetType: "PROPERTY" | "FLATMATE" | "ADVISOR"; targetId: number; organizationId?: number }
+    >({
+      query: (body) => ({ url: API_ENDPOINTS.billing.promotions, method: "POST", body }),
+      invalidatesTags: ["Promotions", "Credits", "BillingSummary"],
+    }),
+    getMyPromotions: builder.query<{ success: boolean; data: CreditPromotion[] }, void>({
+      query: () => ({ url: API_ENDPOINTS.billing.myPromotions, method: "GET" }),
+      providesTags: ["Promotions"],
+    }),
+    redeemCreditCoupon: builder.mutation<
+      { success: boolean; data: { credits: number; creditsAdded: number; code: string } },
+      { code: string; organizationId?: number }
+    >({
+      query: (body) => ({ url: API_ENDPOINTS.billing.redeemCoupon, method: "POST", body }),
+      invalidatesTags: ["Credits", "BillingSummary", "Coupons"],
+    }),
+    adminUpdateCreditAction: builder.mutation<CreditActionConfig, { key: string; data: Omit<CreditActionConfig, "id" | "key"> }>({
+      query: ({ key, data }) => ({ url: API_ENDPOINTS.admin.billing.creditAction(key), method: "PUT", body: data }),
+      transformResponse: (response: { success: boolean; data: CreditActionConfig }) => response.data,
+      invalidatesTags: ["CreditConfig"],
+    }),
+    adminUpdateFeatureFlag: builder.mutation<PlatformFeatureFlag, { key: string; data: Omit<PlatformFeatureFlag, "id" | "key"> }>({
+      query: ({ key, data }) => ({ url: API_ENDPOINTS.admin.billing.featureFlag(key), method: "PUT", body: data }),
+      transformResponse: (response: { success: boolean; data: PlatformFeatureFlag }) => response.data,
+      invalidatesTags: ["CreditConfig"],
+    }),
+    adminGetCoupons: builder.query<{ success: boolean; data: CreditCoupon[] }, void>({
+      query: () => ({ url: API_ENDPOINTS.admin.billing.coupons, method: "GET" }),
+      providesTags: ["Coupons"],
+    }),
+    adminCreateCoupon: builder.mutation<CreditCoupon, Partial<CreditCoupon> & Pick<CreditCoupon, "code" | "credits">>({
+      query: (body) => ({ url: API_ENDPOINTS.admin.billing.coupons, method: "POST", body }),
+      transformResponse: (response: { success: boolean; data: CreditCoupon }) => response.data,
+      invalidatesTags: ["Coupons"],
+    }),
+    adminUpdateCoupon: builder.mutation<CreditCoupon, { id: number; data: Partial<CreditCoupon> }>({
+      query: ({ id, data }) => ({ url: API_ENDPOINTS.admin.billing.coupon(id), method: "PATCH", body: data }),
+      transformResponse: (response: { success: boolean; data: CreditCoupon }) => response.data,
+      invalidatesTags: ["Coupons"],
     }),
     getBillingSummary: builder.query<{ success: boolean; data: BillingSummary }, { target?: "USER" | "ORG"; organizationId?: number } | void>({
       query: (params) => ({
@@ -232,6 +331,17 @@ export const contactVerifyApi = createApi({
       query: () => ({
         url: API_ENDPOINTS.billing.myCredits,
         method: "GET",
+      }),
+      providesTags: ["Credits"],
+    }),
+    getMyCreditTransactions: builder.query<
+      { success: boolean; data: { items: any[]; total: number; page: number; pageSize: number } },
+      { page?: number; pageSize?: number } | void
+    >({
+      query: (params) => ({
+        url: API_ENDPOINTS.billing.myCreditTransactions,
+        method: "GET",
+        params: params || { page: 1, pageSize: 20 },
       }),
       providesTags: ["Credits"],
     }),
@@ -320,12 +430,23 @@ export const contactVerifyApi = createApi({
 
 export const {
   useGetPlansQuery,
+  useGetCreditPlatformConfigQuery,
+  useActivateCreditPromotionMutation,
+  useGetMyPromotionsQuery,
+  useRedeemCreditCouponMutation,
+  useAdminUpdateCreditActionMutation,
+  useAdminUpdateFeatureFlagMutation,
+  useAdminGetCouponsQuery,
+  useAdminCreateCouponMutation,
+  useAdminUpdateCouponMutation,
   useGetBillingSummaryQuery,
   useLazyGetBillingSummaryQuery,
   useRequestContactOtpMutation,
   useVerifyContactOtpMutation,
   useGetMyCreditsQuery,
   useLazyGetMyCreditsQuery,
+  useGetMyCreditTransactionsQuery,
+  useLazyGetMyCreditTransactionsQuery,
   useGetOrgCreditTransactionsQuery,
   useCheckUnlockedContactQuery,
   useLazyCheckUnlockedContactQuery,

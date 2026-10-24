@@ -111,6 +111,7 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     decisionDetails: decisionDetails(item),
     isNew: isFreshListing(item.createdAt),
     isVerified: item.qcStatus === "APPROVED",
+    isBoosted: item.isBoosted,
     posterBadge: postedAsLabel(item.postedAs),
     ownerId: item.ownerId ?? item.createdById ?? undefined,
     images: [item.thumbnailUrl, ...(item.media?.map((m) => m.url) ?? [])].filter(Boolean) as string[],

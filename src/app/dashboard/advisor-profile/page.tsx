@@ -20,6 +20,7 @@ import {
   UploadCloud,
   User,
   X,
+  Zap,
 } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import {
@@ -33,6 +34,14 @@ import {
 import type { AgentSubscriptionTier } from "@/data/agents";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { AdvisorLocalitySelector } from "./components/AdvisorLocalitySelector";
+import { useGetMyAdvisorProfileQuery } from "@/features/advisors/api";
+import {
+  useGetCreditPlatformConfigQuery,
+  useGetMyCreditsQuery,
+  useGetMyPromotionsQuery,
+  useActivateCreditPromotionMutation,
+} from "@/features/contactVerify/api";
+import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
 
 const CITIES = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
 
@@ -55,10 +64,42 @@ const SAMPLE_AVATARS = [
 ];
 
 export default function AdvisorProfilePage() {
+  const { data: serverAdvisor } = useGetMyAdvisorProfileQuery();
   const [profile, setProfile] = useState<AgentProfileData>(DEFAULT_PROFILE);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"profile" | "plans">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "boost">("profile");
   const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
+  const [creditModalOpen, setCreditModalOpen] = useState(false);
+
+  const { data: creditsData, refetch: refetchCredits } = useGetMyCreditsQuery();
+  const { data: configData } = useGetCreditPlatformConfigQuery();
+  const { data: promotionsData, refetch: refetchPromotions } = useGetMyPromotionsQuery();
+  const [activatePromotion, { isLoading: isActivating }] = useActivateCreditPromotionMutation();
+
+  const myCredits = creditsData?.data?.credits ?? 0;
+  const configuredActions = (configData?.data?.actions ?? []).filter(
+    (a) => a.isEnabled && a.key.startsWith("ADVISOR_BOOST_")
+  );
+
+  const fallbackActions = [
+    { key: "ADVISOR_BOOST_7", durationDays: 7, creditAmount: 75, label: "7-Day City Spotlight" },
+    { key: "ADVISOR_BOOST_15", durationDays: 15, creditAmount: 130, label: "15-Day City Spotlight" },
+  ];
+
+  const advisorBoostActions = configuredActions.length > 0 ? configuredActions : fallbackActions;
+
+  // Check if current advisor has an active boost
+  const activeAdvisorPromotion = (promotionsData?.data ?? []).find(
+    (p) =>
+      p.targetType === "ADVISOR" &&
+      p.isActive !== false &&
+      (serverAdvisor?.id ? Number(p.targetId) === Number(serverAdvisor.id) : true) &&
+      new Date(p.endsAt) > new Date()
+  );
+
+  const daysRemaining = activeAdvisorPromotion
+    ? Math.max(1, Math.ceil((new Date(activeAdvisorPromotion.endsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : 0;
 
   const libraryInputRef = useRef<HTMLInputElement | null>(null);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
@@ -162,15 +203,33 @@ export default function AdvisorProfilePage() {
 
 
 
-  const handleSelectTier = (tier: AgentSubscriptionTier) => {
-    const updated = updateAgentSubscription(profile.id, tier);
-    setProfile(updated);
-    if (tier === "FREE_VERIFIED") {
-      showToast("Subscription set to Free Verified Directory Listing.");
-    } else if (tier === "CITY_SPOTLIGHT") {
-      showToast("Activated City Spotlight! Featured on Homepage.");
-    } else {
-      showToast("Upgraded to Pro Advisor! #1 Homepage placement active.");
+  const handleActivateBoost = async (actionKey: string, creditAmount: number) => {
+    if (!serverAdvisor?.id) {
+      showToast("Please save and publish your advisor profile first before activating a boost.");
+      return;
+    }
+    if (myCredits < creditAmount) {
+      setCreditModalOpen(true);
+      showToast(`You have ${myCredits} credits. ${creditAmount} credits needed for this spotlight boost.`);
+      return;
+    }
+
+    try {
+      const res = await activatePromotion({
+        actionKey,
+        targetType: "ADVISOR",
+        targetId: Number(serverAdvisor.id),
+      }).unwrap();
+      void refetchCredits();
+      void refetchPromotions();
+      const endStr = new Date(res.data.promotion.endsAt).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+      showToast(`🎉 City Spotlight Boost activated until ${endStr}!`);
+    } catch (err: any) {
+      showToast(err?.data?.message || err?.message || "Could not activate boost. Please try again.");
     }
   };
 
@@ -304,18 +363,24 @@ export default function AdvisorProfilePage() {
               </button>
               <button
                 type="button"
-                onClick={() => setActiveTab("plans")}
+                onClick={() => setActiveTab("boost")}
                 className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${
-                  activeTab === "plans"
+                  activeTab === "boost"
                     ? "bg-white text-rose-600 shadow-xs dark:bg-slate-900 dark:text-rose-400"
                     : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
                 }`}
               >
-                <Crown className="h-3 w-3 text-amber-500" />
-                <span>Plans</span>
-                <span className="rounded-full bg-amber-100 px-1 py-0.2 text-[9px] font-black text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">
-                  {profile.subscriptionTier === "PRO_ADVISOR" ? "Pro" : profile.subscriptionTier === "CITY_SPOTLIGHT" ? "Spotlight" : "Free"}
-                </span>
+                <Sparkles className="h-3 w-3 text-amber-500" />
+                <span>Spotlight &amp; Boost</span>
+                {activeAdvisorPromotion ? (
+                  <span className="rounded-full bg-emerald-100 px-1.5 py-0.2 text-[9px] font-black text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                    ⚡ Spotlight Active
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-amber-100 px-1 py-0.2 text-[9px] font-black text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">
+                    Boost
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -675,199 +740,220 @@ export default function AdvisorProfilePage() {
         )}
 
         {/* =========================================================================
-            TAB 2: PLACEMENT & HOMEPAGE VISIBILITY TIERS
+            TAB 2: SPOTLIGHT & VISIBILITY BOOSTS (Unified Credit Platform)
            ========================================================================= */}
-        {activeTab === "plans" && (
-          <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-4 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-3.5">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
-              <div className="min-w-0 flex-1">
+        {activeTab === "boost" && (
+          <div className="space-y-4">
+            {/* Credit Balance Header Card */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 via-amber-100/60 to-rose-50/50 p-4 dark:border-amber-900/60 dark:from-amber-950/40 dark:to-rose-950/30">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-white shadow-md">
+                  <Zap className="h-6 w-6 fill-white" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                      Your Credit Balance
+                    </span>
+                    <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                      Universal Wallet
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-1.5 mt-0.5">
+                    <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                      {myCredits}
+                    </span>
+                    <span className="text-xs font-bold text-amber-800 dark:text-amber-300">Available Credits</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setCreditModalOpen(true)}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-950 px-4 py-2 text-xs font-bold text-white shadow hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 transition"
+              >
+                <span>+ Add Credits / Redeem Code</span>
+              </button>
+            </div>
+
+            {/* Active Promotion Status Banner */}
+            {activeAdvisorPromotion ? (
+              <div className="rounded-2xl border border-emerald-300 bg-emerald-50 p-4 dark:border-emerald-900/80 dark:bg-emerald-950/40 flex items-start gap-3 shadow-xs">
+                <Crown className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-bold text-sm text-emerald-950 dark:text-emerald-100">
+                    ⚡ City Spotlight Active — {daysRemaining} Day{daysRemaining === 1 ? "" : "s"} Remaining
+                  </p>
+                  <p className="text-xs text-emerald-800 dark:text-emerald-300 mt-0.5">
+                    Your verified advisor profile is currently pinned in the Homepage Carousel and ranked at the top of city searches until{" "}
+                    <strong>
+                      {new Date(activeAdvisorPromotion.endsAt).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </strong>.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-900/40 flex items-start gap-3">
+                <ShieldCheck className="h-5 w-5 text-slate-500 mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-bold text-xs text-slate-900 dark:text-white">
+                    Standard Directory Status Active
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Your profile is visible in the standard advisor directory (`/agents`). Activate a City Spotlight boost below using credits to be featured on the homepage and get up to 10x more walkthrough inquiries.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Boost Tiers Grid */}
+            <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-4 sm:p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-4">
+              <div>
                 <div className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                   <Crown className="h-3.5 w-3.5" />
-                  <span>Placement & Monetization Tiers</span>
+                  <span>Homepage &amp; Search Visibility Boosts</span>
                 </div>
-                <h2 className="mt-0.5 text-base font-bold text-slate-950 dark:text-white break-words">
-                  Homepage Featured Carousel & Lead Boost
+                <h2 className="mt-0.5 text-base font-bold text-slate-950 dark:text-white">
+                  Get Maximum Direct Walkthrough Inquiries
                 </h2>
-                <p className="mt-0.5 text-xs text-slate-500 break-words">
-                  Upgrade to City Spotlight or Pro Advisor to be featured on the homepage carousel.
+                <p className="mt-0.5 text-xs text-slate-500">
+                  Boost your verified profile to top rank in your city and appear in the Homepage Featured Carousel.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 pt-1 sm:pt-0">
-                <span className="text-xs font-semibold text-slate-500">Current Plan:</span>
-                <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-xs font-bold text-white dark:bg-rose-600">
-                  {profile.subscriptionTier === "PRO_ADVISOR"
-                    ? "👑 Pro Advisor"
-                    : profile.subscriptionTier === "CITY_SPOTLIGHT"
-                    ? "⭐ City Spotlight"
-                    : "Free Verified"}
-                </span>
-              </div>
-            </div>
+              <div className="grid gap-3.5 md:grid-cols-3">
+                {/* Standard Free Base Tier */}
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 flex flex-col justify-between dark:border-slate-800 dark:bg-slate-900/50">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Free Tier</span>
+                      <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        Base
+                      </span>
+                    </div>
+                    <h3 className="mt-1 text-base font-extrabold text-slate-950 dark:text-white">Directory Listing</h3>
+                    <p className="mt-0.5 text-xl font-black text-slate-900 dark:text-white">0 Credits</p>
+                    <p className="text-[11px] text-slate-400">Always free for verified RERA advisors</p>
 
-            <div className="grid gap-3 md:grid-cols-3 pt-1">
-              {/* Tier 1: Free Verified */}
-              <div
-                className={`rounded-2xl border p-4 flex flex-col justify-between transition ${
-                  profile.subscriptionTier === "FREE_VERIFIED"
-                    ? "border-slate-900 bg-slate-50/80 ring-2 ring-slate-900/10 dark:border-slate-100 dark:bg-slate-800/80"
-                    : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900"
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Free Tier</span>
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                      Standard
-                    </span>
+                    <ul className="mt-3 space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                        <span>Public Profile Page (`/agents/[id]`)</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                        <span>Search Directory (`/agents`) listing</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                        <span>RERA Verified Seal</span>
+                      </li>
+                      <li className="flex items-center gap-2 text-slate-400 line-through">
+                        <X className="h-3.5 w-3.5 text-slate-300 shrink-0" />
+                        <span>Homepage Carousel Placement</span>
+                      </li>
+                    </ul>
                   </div>
-                  <h3 className="mt-1 text-base font-extrabold text-slate-950 dark:text-white">Directory Only</h3>
-                  <p className="mt-0.5 text-xl font-black text-slate-900 dark:text-white">₹0</p>
-                  <p className="text-[11px] text-slate-400">Free forever for RERA agents</p>
 
-                  <ul className="mt-3 space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                      <span>Public Profile Page (`/agents/[id]`)</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                      <span>Search Directory (`/agents`) listing</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                      <span>RERA Verified Seal</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-slate-400 line-through">
-                      <X className="h-3.5 w-3.5 text-slate-300 shrink-0" />
-                      <span>Homepage Carousel Placement</span>
-                    </li>
-                  </ul>
+                  <div className="mt-4 rounded-xl border border-slate-200 bg-white py-2 text-center text-xs font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    Included by Default ✓
+                  </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleSelectTier("FREE_VERIFIED")}
-                  className={`mt-4 w-full rounded-xl py-2 text-xs font-bold transition ${
-                    profile.subscriptionTier === "FREE_VERIFIED"
-                      ? "bg-slate-200 text-slate-700 cursor-default dark:bg-slate-800 dark:text-slate-300"
-                      : "border border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300"
-                  }`}
-                >
-                  {profile.subscriptionTier === "FREE_VERIFIED" ? "Current Plan ✓" : "Switch to Free"}
-                </button>
-              </div>
+                {/* Dynamic Boost Options from Credit Platform */}
+                {advisorBoostActions.map((action, idx) => {
+                  const isPrimary = idx === 0;
+                  return (
+                    <div
+                      key={action.key}
+                      className={`relative rounded-2xl border p-4 flex flex-col justify-between transition ${
+                        isPrimary
+                          ? "border-rose-400 bg-rose-50/30 ring-2 ring-rose-500/10 dark:border-rose-700 dark:bg-rose-950/20"
+                          : "border-amber-400 bg-amber-50/30 ring-2 ring-amber-500/10 dark:border-amber-700 dark:bg-amber-950/20"
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                            {action.durationDays} Days Spotlight
+                          </span>
+                          <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-900/60 dark:text-rose-300">
+                            {isPrimary ? "Most Popular" : "Extended"}
+                          </span>
+                        </div>
+                        <h3 className="mt-1 text-base font-extrabold text-slate-950 dark:text-white">
+                          City Spotlight Boost
+                        </h3>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <p className="text-xl font-black text-slate-950 dark:text-white">
+                            {action.creditAmount}
+                          </p>
+                          <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                            Credits / {action.durationDays} Days
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-400">Instant activation with your credit balance</p>
 
-              {/* Tier 2: City Spotlight */}
-              <div
-                className={`rounded-2xl border p-4 flex flex-col justify-between relative transition ${
-                  profile.subscriptionTier === "CITY_SPOTLIGHT"
-                    ? "border-rose-500 bg-rose-50/40 ring-2 ring-rose-500/20 dark:border-rose-600 dark:bg-rose-950/20"
-                    : "border-rose-200 bg-white hover:border-rose-300 dark:border-slate-800 dark:bg-slate-900"
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-                      City Spotlight
-                    </span>
-                    <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-900/60 dark:text-rose-300">
-                      Popular
-                    </span>
-                  </div>
-                  <h3 className="mt-1 text-base font-extrabold text-slate-950 dark:text-white">Homepage Feature</h3>
-                  <p className="mt-0.5 text-xl font-black text-rose-600 dark:text-rose-400">₹4,999<span className="text-xs font-normal text-slate-500">/mo</span></p>
-                  <p className="text-[11px] text-slate-400">Billed monthly or quarterly</p>
+                        <ul className="mt-3 space-y-1.5 text-xs text-slate-700 dark:text-slate-200 font-medium">
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                            <span><strong>Featured on Homepage</strong> Carousel</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                            <span>Top-Pinned in City Search (`/agents`)</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                            <span>&quot;City Spotlight&quot; Golden Badge</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                            <span>Direct Inquiries &amp; Site Tour Leads</span>
+                          </li>
+                        </ul>
+                      </div>
 
-                  <ul className="mt-3 space-y-1.5 text-xs text-slate-700 dark:text-slate-200 font-medium">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                      <span><strong>Featured on Homepage</strong> Carousel</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                      <span>Top-Pinned in City Search (`/agents`)</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                      <span>&quot;City Spotlight&quot; Golden Badge</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                      <span>Direct Visitor Leads to CRM</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectTier("CITY_SPOTLIGHT")}
-                  className={`mt-4 w-full rounded-xl py-2 text-xs font-bold transition shadow-xs ${
-                    profile.subscriptionTier === "CITY_SPOTLIGHT"
-                      ? "bg-rose-600 text-white cursor-default"
-                      : "bg-slate-900 text-white hover:bg-slate-800 dark:bg-rose-600 dark:hover:bg-rose-700"
-                  }`}
-                >
-                  {profile.subscriptionTier === "CITY_SPOTLIGHT" ? "Active on Homepage ✓" : "Activate City Spotlight"}
-                </button>
-              </div>
-
-              {/* Tier 3: Pro Advisor */}
-              <div
-                className={`rounded-2xl border p-4 flex flex-col justify-between relative transition ${
-                  profile.subscriptionTier === "PRO_ADVISOR"
-                    ? "border-amber-500 bg-amber-50/40 ring-2 ring-amber-500/20 dark:border-amber-600 dark:bg-amber-950/20"
-                    : "border-slate-200 bg-white hover:border-amber-300 dark:border-slate-800 dark:bg-slate-900"
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                      Pro Advisor
-                    </span>
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">
-                      Maximum Leads
-                    </span>
-                  </div>
-                  <h3 className="mt-1 text-base font-extrabold text-slate-950 dark:text-white">Elite Showcase</h3>
-                  <p className="mt-0.5 text-xl font-black text-amber-600 dark:text-amber-400">₹9,999<span className="text-xs font-normal text-slate-500">/mo</span></p>
-                  <p className="text-[11px] text-slate-400">Includes all VIP partner perks</p>
-
-                  <ul className="mt-3 space-y-1.5 text-xs text-slate-700 dark:text-slate-200 font-medium">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                      <span><strong>#1 Priority Rank</strong> on Homepage</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                      <span>Multi-City Micro-market Presence</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                      <span>Instant WhatsApp Walkthrough Alerts</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                      <span>&quot;Pro Advisor&quot; Gold Seal on all cards</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectTier("PRO_ADVISOR")}
-                  className={`mt-4 w-full rounded-xl py-2 text-xs font-bold transition shadow-xs ${
-                    profile.subscriptionTier === "PRO_ADVISOR"
-                      ? "bg-amber-600 text-white cursor-default"
-                      : "bg-slate-900 text-white hover:bg-slate-800 dark:bg-rose-600 dark:hover:bg-rose-700"
-                  }`}
-                >
-                  {profile.subscriptionTier === "PRO_ADVISOR" ? "Active VIP Pro ✓" : "Upgrade to Pro Advisor"}
-                </button>
+                      <button
+                        type="button"
+                        disabled={isActivating}
+                        onClick={() => handleActivateBoost(action.key, action.creditAmount)}
+                        className={`mt-4 w-full rounded-xl py-2.5 text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5 ${
+                          isPrimary
+                            ? "bg-rose-600 text-white hover:bg-rose-700 active:scale-95"
+                            : "bg-slate-900 text-white hover:bg-slate-800 dark:bg-rose-600 dark:hover:bg-rose-700 active:scale-95"
+                        } disabled:opacity-60`}
+                      >
+                        {isActivating ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Sparkles className="h-3.5 w-3.5" />
+                        )}
+                        <span>
+                          {activeAdvisorPromotion
+                            ? `Extend +${action.durationDays} Days (${action.creditAmount} Credits)`
+                            : `Activate Spotlight (${action.creditAmount} Credits)`}
+                        </span>
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
         )}
+
+        {/* Credit Wallet Modal for Adding Credits or Redeeming Coupons */}
+        <CreditWalletModal
+          isOpen={creditModalOpen}
+          onClose={() => setCreditModalOpen(false)}
+          userProfile={{ name: profile.name, email: profile.email }}
+        />
       </div>
     </main>
   );

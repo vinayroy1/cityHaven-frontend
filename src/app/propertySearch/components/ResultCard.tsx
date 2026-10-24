@@ -5,7 +5,7 @@ import { APP_CONFIG } from "@/constants/app-config";
 import { useMeQuery } from "@/features/auth/api";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import {
-  useGetPlansQuery,
+  useGetCreditPlatformConfigQuery,
   useLazyCheckUnlockedContactQuery,
   useLazyGetBillingSummaryQuery,
   usePurchaseCreditsByPlanMutation,
@@ -36,6 +36,7 @@ export function ResultCard({
   decisionDetails,
   isNew,
   isVerified,
+  isBoosted,
   posterBadge,
   images = [],
   compact = false,
@@ -81,7 +82,10 @@ export function ResultCard({
   const { data: orgsData } = useMyOrganizationsQuery(undefined, { skip: !getToken() });
   const orgs = orgsData ?? [];
 
-  const { data: plansResponse } = useGetPlansQuery();
+  const { data: platformResponse } = useGetCreditPlatformConfigQuery();
+  const plansResponse = { data: platformResponse?.data?.plans ?? [] };
+  const contactCost = platformResponse?.data?.actions.find((action) => action.key === "CONTACT_UNLOCK")?.creditAmount ?? 10;
+  const creditPurchasesEnabled = platformResponse?.data?.flags.find((flag) => flag.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
   const [fetchBillingSummary] = useLazyGetBillingSummaryQuery();
   const [triggerCheckUnlocked] = useLazyCheckUnlockedContactQuery();
   const [unlockPropertyContactMutation] = useUnlockPropertyContactMutation();
@@ -218,7 +222,11 @@ export function ResultCard({
         organizationId: isOrg && typeof scopeToUse === "number" ? scopeToUse : undefined,
       }).unwrap();
       setOwnerContact({ name: res.data?.ownerName ?? null, phone: res.data?.ownerPhone ?? null });
-      setCredits(res.credits ?? 0);
+      if (typeof res.credits === "number") {
+        const newCredits: number = res.credits;
+        setCredits(newCredits);
+        setPersonalSummary((prev) => (prev ? { ...prev, credits: newCredits } : null));
+      }
       setContactStep("contact");
       return true;
     } catch (err: any) {
@@ -308,14 +316,14 @@ export function ResultCard({
       }
 
       // Smart scope fallback if current selected scope has 0 credits
-      if (effectiveCredits <= 0) {
-        if (personalCredits > 0) {
+      if (effectiveCredits < contactCost) {
+        if (personalCredits >= contactCost) {
           scopeToUse = "PERSONAL";
           setSelectedScope("PERSONAL");
           effectiveCredits = personalCredits;
         } else if (scopesData?.orgMap) {
           const orgWithCredits = Object.entries(scopesData.orgMap).find(
-            ([_, s]) => (s?.credits ?? 0) > 0
+            ([_, s]) => (s?.credits ?? 0) >= contactCost
           );
           if (orgWithCredits) {
             scopeToUse = Number(orgWithCredits[0]);
@@ -325,9 +333,9 @@ export function ResultCard({
         }
       }
 
-      setHasActivePlan(effectiveCredits > 0);
+      setHasActivePlan(effectiveCredits >= contactCost);
 
-      if (effectiveCredits > 0) {
+      if (effectiveCredits >= contactCost) {
         // User has active credits -> unlock immediately! DO NOT SHOW PLAN/BUY POPUP!
         const success = await unlockContact(scopeToUse);
         if (success) {
@@ -426,7 +434,7 @@ export function ResultCard({
         listingType={listingType}
         decisionDetails={decisionDetails}
         contextBadge={contextBadge}
-        posterBadge={posterBadge}
+        posterBadge={isBoosted ? "⭐ FEATURED" : posterBadge}
         onContactClick={openContactFlow}
         onScheduleClick={openScheduleFlow}
         compact={compact}
@@ -473,6 +481,7 @@ export function ResultCard({
         onUnlockContact={() => void unlockContact(selectedScope)}
         onSelectedPlanChange={setSelectedPlan}
         onPurchasePlan={purchasePlan}
+        purchaseEnabled={creditPurchasesEnabled}
       />
     </article>
   );

@@ -15,6 +15,7 @@ export type ResultCardProps = {
   decisionDetails?: string[];
   isNew?: boolean;
   isVerified?: boolean;
+  isBoosted?: boolean;
   posterBadge?: string;
   images?: string[];
   compact?: boolean;

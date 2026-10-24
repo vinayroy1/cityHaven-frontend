@@ -41,6 +41,7 @@ export interface Agent {
   responseTime: string;
   responseTimeText?: string;
   featuredOrder?: number;
+  isBoosted?: boolean;
   featuredListings: AgentListing[];
   reviews: {
     author: string;
@@ -392,4 +393,3 @@ export function getSimilarAgents(currentAgentId: string, city: string, limit: nu
   );
   return [...sameCity, ...others].slice(0, limit);
 }
-

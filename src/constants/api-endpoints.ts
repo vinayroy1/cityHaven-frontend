@@ -33,6 +33,10 @@ export const API_ENDPOINTS = {
     orgCredits: (orgId: number | string) => `${BASE}/billing/credit-transactions/organization/${orgId}`,
     myTransactions: `${BASE}/billing/transactions/my`,
     myCreditTransactions: `${BASE}/billing/credit-transactions/my`,
+    platformConfig: `${BASE}/billing/platform-config`,
+    promotions: `${BASE}/billing/promotions`,
+    myPromotions: `${BASE}/billing/promotions/my`,
+    redeemCoupon: `${BASE}/billing/coupons/redeem`,
   },
   organizations: {
     create: `${BASE}/organizations`,
@@ -171,6 +175,11 @@ export const API_ENDPOINTS = {
       refunds: `${BASE}/admin/billing/refunds`,
       approveRefund: (id: number | string) => `${BASE}/admin/billing/refunds/${id}/approve`,
       decideRefund: (id: number | string) => `${BASE}/admin/billing/refunds/${id}/decision`,
+      platformConfig: `${BASE}/admin/billing/platform-config`,
+      creditAction: (key: string) => `${BASE}/admin/billing/credit-actions/${key}`,
+      featureFlag: (key: string) => `${BASE}/admin/billing/feature-flags/${key}`,
+      coupons: `${BASE}/admin/billing/coupons`,
+      coupon: (id: number | string) => `${BASE}/admin/billing/coupons/${id}`,
     },
     disputes: {
       list: `${BASE}/admin/disputes`,

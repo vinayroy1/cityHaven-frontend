@@ -8,9 +8,14 @@ export const APP_CONFIG = {
     get BASE_URL() {
       if (typeof window !== 'undefined') {
         const currentHost = window.location.hostname;
-        if (currentHost && currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
-          return `${window.location.protocol}//${window.location.host}/api`;
+        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+          const envUrl = process.env.NEXT_PUBLIC_API_URL;
+          if (envUrl && (envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))) {
+            return envUrl;
+          }
+          return 'http://localhost:4000/api';
         }
+        return `${window.location.protocol}//${window.location.host}/api`;
       }
       return (
         process.env.INTERNAL_API_URL ||

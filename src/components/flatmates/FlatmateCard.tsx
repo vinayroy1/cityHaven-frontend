@@ -85,7 +85,7 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             router.push(detailsHref);
           }
         }}
-        className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-rose-900/60"
+        className={`group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 ${listing.isBoosted ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40" : "border-slate-200/90 hover:border-rose-300 dark:border-slate-800 dark:hover:border-rose-900/60"}`}
       >
         <div>
           {/* Card Media / Header Banner - Full-bleed Property Details Card Style (Compact Height) */}
@@ -120,6 +120,7 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
                 <span>{badge.label}</span>
               </span>
             </div>
+            {listing.isBoosted && <span className="absolute left-2.5 top-10 rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">⭐ FEATURED</span>}
 
             {/* Compatibility Score */}
             {listing.compatibilityScore != null && (

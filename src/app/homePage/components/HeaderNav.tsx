@@ -28,11 +28,14 @@ import {
   User,
   Users,
   BedDouble,
+  Zap,
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
+import { useGetMyCreditsQuery, useGetCreditPlatformConfigQuery } from "@/features/contactVerify/api";
+import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
 
 interface UserProfile {
   name?: string;
@@ -101,8 +104,14 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [currentSearch, setCurrentSearch] = React.useState("");
+  const [creditModalOpen, setCreditModalOpen] = React.useState(false);
   const accountRef = React.useRef<HTMLDivElement | null>(null);
   const moreNavRef = React.useRef<HTMLDivElement | null>(null);
+
+  const { data: creditsData } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
+  const { data: platformData } = useGetCreditPlatformConfigQuery();
+  const purchaseEnabled = platformData?.data?.flags?.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
+  const creditBalance = creditsData?.data?.credits ?? 0;
 
   useModalBackHandler({
     isOpen: accountOpen,
@@ -208,14 +217,16 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   };
 
   const accountMenuItems = [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, badge: null },
-    { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null },
-    { label: "Organization", href: "/dashboard/organization", icon: ShieldCheck, badge: null },
-    { label: "Plans & Credits", href: "/pricing", icon: CreditCard, badge: "PRO" },
-    { label: "Saved Properties", href: "/favorites", icon: Heart, badge: null },
-    { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator, badge: null },
-    { label: "Help & Support", href: "/contact", icon: CircleHelp, badge: null },
-    { label: "Account Settings", href: "/dashboard/settings", icon: Settings, badge: null },
+    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, badge: null, onClick: undefined },
+    { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null, onClick: undefined },
+    { label: "Organization", href: "/dashboard/organization", icon: ShieldCheck, badge: null, onClick: undefined },
+    purchaseEnabled
+      ? { label: "Plans & Credits", href: "/pricing", icon: CreditCard, badge: "PRO", onClick: undefined }
+      : { label: `Credits Wallet (${creditBalance})`, href: "#credits", icon: Zap, badge: "⚡ Free", onClick: () => setCreditModalOpen(true) },
+    { label: "Saved Properties", href: "/favorites", icon: Heart, badge: null, onClick: undefined },
+    { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator, badge: null, onClick: undefined },
+    { label: "Help & Support", href: "/contact", icon: CircleHelp, badge: null, onClick: undefined },
+    { label: "Account Settings", href: "/dashboard/settings", icon: Settings, badge: null, onClick: undefined },
   ];
 
   const userDisplayName =
@@ -254,7 +265,9 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
 
         {/* Center Desktop Navigation - Guaranteed Single Line */}
         <nav className="hidden items-center gap-0.5 rounded-full border border-slate-200/70 bg-slate-100/60 p-1 backdrop-blur-md dark:border-slate-800/70 dark:bg-slate-900/60 lg:flex shrink-0">
-          {primaryNavLinks.map((link) => {
+          {primaryNavLinks
+            .filter((link) => link.href !== "/pricing" || purchaseEnabled)
+            .map((link) => {
             const active = isLinkActive(link.href);
             return (
               <Link
@@ -477,6 +490,33 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
             <ThemeToggle />
           </div>
 
+          {/* Sleek Floating Credit Badge Pill */}
+          {isAuthed ? (
+            <button
+              type="button"
+              onClick={() => setCreditModalOpen(true)}
+              className="group inline-flex items-center gap-1 sm:gap-1.5 rounded-full border border-amber-300/80 bg-gradient-to-r from-amber-50 via-amber-100/70 to-amber-50 px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-black text-amber-900 shadow-2xs hover:border-amber-400 hover:shadow-xs hover:scale-[1.02] active:scale-95 transition-all dark:border-amber-700/60 dark:bg-gradient-to-r dark:from-amber-950/40 dark:via-amber-900/30 dark:to-amber-950/40 dark:text-amber-200"
+              title="Click to view Credit Wallet & Rewards"
+              aria-label="View Credit Balance"
+            >
+              <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500 animate-pulse shrink-0" />
+              <span>{creditBalance}</span>
+              <span className="hidden sm:inline font-bold text-amber-800 dark:text-amber-300 text-[11px]">
+                Credits
+              </span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setCreditModalOpen(true)}
+              className="hidden md:inline-flex items-center gap-1.5 rounded-full border border-amber-300/80 bg-amber-50/90 px-2.5 py-1 text-[11px] font-bold text-amber-800 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200 transition"
+              title="Sign up and claim 100 free credits"
+            >
+              <Zap className="h-3 w-3 fill-amber-500 text-amber-500" />
+              <span>100 Free Credits</span>
+            </button>
+          )}
+
           {/* Authenticated Account Menu or Login Button */}
           {isAuthed ? (
             <div className="relative">
@@ -528,6 +568,29 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                   <div className="mt-1.5 space-y-0.5">
                     {accountMenuItems.map((item) => {
                       const Icon = item.icon;
+                      if (item.onClick) {
+                        return (
+                          <button
+                            key={item.label}
+                            type="button"
+                            onClick={() => {
+                              setAccountOpen(false);
+                              item.onClick!();
+                            }}
+                            className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-850 dark:hover:text-white"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <Icon className="h-4 w-4 text-amber-500 fill-amber-500/20" />
+                              <span>{item.label}</span>
+                            </div>
+                            {item.badge && (
+                              <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                                {item.badge}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      }
                       return (
                         <Link
                           key={item.href}
@@ -574,9 +637,15 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
             </Link>
           )}
 
-
         </div>
       </div>
+
+      {/* Credit Wallet & Rewards Modal */}
+      <CreditWalletModal
+        isOpen={creditModalOpen}
+        onClose={() => setCreditModalOpen(false)}
+        userProfile={userProfile}
+      />
     </header>
   );
 }
