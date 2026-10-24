@@ -92,10 +92,10 @@ export function MobileBottomNav() {
   const [isAuthed, setIsAuthed] = React.useState(false);
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
 
-  const { data: creditsData } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
+  const { data: creditsData, refetch: refetchCredits } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
   const { data: platformData } = useGetCreditPlatformConfigQuery();
   const purchaseEnabled = platformData?.data?.flags?.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
-  const creditBalance = creditsData?.data?.credits ?? 0;
+  const creditBalance = creditsData?.data?.credits ?? (userProfile as any)?.credits ?? 0;
 
   const activeResourceLinks = React.useMemo(() => {
     return [

@@ -108,10 +108,10 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   const accountRef = React.useRef<HTMLDivElement | null>(null);
   const moreNavRef = React.useRef<HTMLDivElement | null>(null);
 
-  const { data: creditsData } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
+  const { data: creditsData, refetch: refetchCredits } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
   const { data: platformData } = useGetCreditPlatformConfigQuery();
   const purchaseEnabled = platformData?.data?.flags?.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
-  const creditBalance = creditsData?.data?.credits ?? 0;
+  const creditBalance = creditsData?.data?.credits ?? (userProfile as any)?.credits ?? 0;
 
   useModalBackHandler({
     isOpen: accountOpen,
@@ -135,7 +135,8 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     setCurrentSearch(window.location.search);
     const checkAuth = () => {
       const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
-      setIsAuthed(Boolean(token));
+      const authed = Boolean(token);
+      setIsAuthed(authed);
       try {
         const storedUser = localStorage.getItem(APP_CONFIG.AUTH.USER_KEY);
         if (storedUser) {
@@ -145,6 +146,9 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
         }
       } catch {
         setUserProfile(null);
+      }
+      if (authed && refetchCredits) {
+        refetchCredits();
       }
     };
 
@@ -518,12 +522,18 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
           ) : (
             <button
               type="button"
-              onClick={() => setCreditModalOpen(true)}
+              onClick={() => {
+                window.dispatchEvent(
+                  new CustomEvent("awasio:open-welcome-credits", {
+                    detail: { returnUrl: window.location.pathname },
+                  })
+                );
+              }}
               className="hidden md:inline-flex items-center gap-1.5 rounded-full border border-amber-300/80 bg-amber-50/90 px-2.5 py-1 text-[11px] font-bold text-amber-800 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200 transition"
-              title="Sign up and claim 100 free credits"
+              title="Sign up and claim 1,000 free credits"
             >
               <Zap className="h-3 w-3 fill-amber-500 text-amber-500" />
-              <span>100 Free Credits</span>
+              <span>1,000 Free Credits</span>
             </button>
           )}
 

@@ -205,7 +205,7 @@ function LoginContent() {
 
     window.dispatchEvent(new Event("auth-change"));
     setSuccessMessage("Authentication successful! Redirecting...");
-    router.replace(redirectTo);
+    window.location.assign(redirectTo || "/");
   }
 
   // Check if session already exists
@@ -213,7 +213,7 @@ function LoginContent() {
     const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
     if (token) {
       setRedirectingSession(true);
-      router.replace(redirectTo);
+      window.location.assign(redirectTo || "/");
     } else {
       setRedirectingSession(false);
     }
@@ -410,7 +410,7 @@ function LoginContent() {
         setSuccessMessage("Mobile verified! Complete your profile to continue.");
       } else {
         setSuccessMessage("Authentication successful! Redirecting...");
-        router.replace(redirectTo);
+        window.location.assign(redirectTo || "/");
       }
     } catch (err: any) {
       setAttemptsLeft((prev) => Math.max(0, prev - 1));
@@ -534,7 +534,7 @@ function LoginContent() {
       const res = await updateProfile({ name: profileName.trim(), email: profileEmail.trim() }).unwrap();
       if (res?.user) localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(res.user));
       window.dispatchEvent(new Event("auth-change"));
-      router.replace(redirectTo);
+      window.location.assign(redirectTo || "/");
     } catch (err: any) {
       setProfileMessage(err?.data?.message || err?.message || "Unable to save profile right now.");
     }
