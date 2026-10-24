@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, AlertCircle, Lock, Loader2, X } from "lucide-react";
+import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, AlertCircle, Lock, Loader2, X, Sparkles, Gift } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { ContactPlan, ContactStep } from "./resultCardTypes";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
@@ -47,6 +47,7 @@ type ContactUnlockDialogProps = {
   onSelectedPlanChange: (value: string) => void;
   onPurchasePlan: () => void;
   purchaseEnabled?: boolean;
+  onOpenWallet?: () => void;
 };
 
 export function ContactUnlockDialog({
@@ -68,6 +69,7 @@ export function ContactUnlockDialog({
   onSelectedPlanChange,
   onPurchasePlan,
   purchaseEnabled = false,
+  onOpenWallet,
 }: ContactUnlockDialogProps) {
   useModalBackHandler({
     isOpen: open,
@@ -88,7 +90,7 @@ export function ContactUnlockDialog({
         onPointerDownOutside={() => onOpenChange(false)}
         onInteractOutside={() => onOpenChange(false)}
       >
-        <div className="relative bg-rose-600 px-5 py-5 text-white overflow-hidden shrink-0">
+        <div className="relative bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 px-5 py-5 text-white overflow-hidden shrink-0">
           {/* Prominent High-Contrast Close Button */}
           <button
             type="button"
@@ -101,30 +103,30 @@ export function ContactUnlockDialog({
           </button>
 
           <DialogHeader className="text-left pr-12">
-            <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-lg bg-white/15">
-              <PhoneCall className="h-5 w-5" />
+            <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur-md">
+              {contactStep === "contact" ? <PhoneCall className="h-5 w-5" /> : <Zap className="h-5 w-5 fill-amber-300 stroke-amber-300" />}
             </div>
             <DialogTitle className="text-xl font-bold">
               {contactStep === "contact"
                 ? "Owner contact details"
-                : "Choose a contact pack"}
+                : "Get Credits to Unlock Contact"}
             </DialogTitle>
-            <DialogDescription className="text-rose-50">
+            <DialogDescription className="text-rose-100 text-xs sm:text-sm">
               {contactStep === "contact"
                 ? isOrgScope
                   ? `Unlocked for all team members in ${activeScopeObj?.name || "your organization"}.`
                   : "Unlocked for your personal account."
-                : "Select a contact pack to instantly unlock verified owner phone numbers."}
+                : "1 Verified Contact Reveal = 10 Credits. Choose a pack below or redeem promo credits."}
             </DialogDescription>
           </DialogHeader>
         </div>
 
-        <div className="space-y-3 p-5">
+        <div className="space-y-4 p-5">
           <StepIndicator contactStep={contactStep} />
 
           {/* Workspace / Account Scope Selector (when authenticated & has orgs) */}
           {scopes.length > 1 && onScopeChange && (
-            <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3">
               <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-2">Active Billing Workspace</p>
               <div className="flex flex-wrap gap-1.5">
                 {scopes.map((scope) => {
@@ -135,7 +137,7 @@ export function ContactUnlockDialog({
                       key={String(scope.id)}
                       type="button"
                       onClick={() => onScopeChange(scope.id as any)}
-                      className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition ${
+                      className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
                         active
                           ? "bg-rose-600 text-white shadow-sm"
                           : "bg-white text-zinc-700 border border-zinc-200 hover:bg-zinc-100"
@@ -148,7 +150,7 @@ export function ContactUnlockDialog({
                 })}
               </div>
 
-              <div className="mt-2.5 rounded-md bg-white border border-zinc-200 p-2 text-xs text-zinc-600">
+              <div className="mt-2.5 rounded-lg bg-white border border-zinc-200 p-2.5 text-xs text-zinc-600">
                 {isOrgScope ? (
                   <p className="flex items-center gap-1.5 font-medium text-zinc-900">
                     <Building2 className="h-3.5 w-3.5 text-rose-600" />
@@ -166,38 +168,37 @@ export function ContactUnlockDialog({
 
           {contactStep === "plans" && (
             <>
-              {(activeScopeObj?.credits ?? credits) > 0 && onUnlockContact && (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50/90 p-4 text-xs text-emerald-900 shadow-sm dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200">
-                  <div className="flex items-start gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
+              {/* If user has enough credits in active scope */}
+              {(activeScopeObj?.credits ?? credits) >= 10 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white">
+                      <Zap className="h-4 w-4 fill-white" />
+                    </div>
                     <div>
-                      <p className="font-bold text-sm text-emerald-950 dark:text-emerald-100">
-                        {activeScopeObj?.credits ?? credits} Contact Credit{(activeScopeObj?.credits ?? credits) === 1 ? "" : "s"} Available
-                      </p>
-                      <p className="text-emerald-700 dark:text-emerald-300 mt-0.5">
-                        You have active credits in {isOrgScope ? activeScopeObj?.name : "your Personal Account"}. Unlock this owner immediately without purchasing a new pack.
-                      </p>
+                      <p className="text-xs font-bold text-emerald-950">You have {activeScopeObj?.credits ?? credits} Credits</p>
+                      <p className="text-[11px] text-emerald-700">Unlock this verified owner contact for 10 credits.</p>
                     </div>
                   </div>
                   <button
                     type="button"
                     disabled={loading}
                     onClick={onUnlockContact}
-                    className="inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60 transition"
+                    className="inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60 transition"
                   >
                     {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PhoneCall className="h-3.5 w-3.5" />}
-                    <span>Unlock with 1 Credit</span>
+                    <span>Unlock with 10 Credits</span>
                   </button>
                 </div>
               )}
 
-              {isOrgScope && (activeScopeObj?.credits ?? credits) === 0 && (
-                <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+              {isOrgScope && (activeScopeObj?.credits ?? credits) < 10 && (
+                <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
                   <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-amber-600" />
                   <div>
-                    <p className="font-semibold">{activeScopeObj?.name} has 0 contact credits remaining</p>
+                    <p className="font-semibold">{activeScopeObj?.name} has {activeScopeObj?.credits ?? 0} credits (10 required)</p>
                     <p className="mt-0.5 text-amber-700">
-                      You can purchase a pack for this organization, or switch above to use your personal credits.
+                      Recharge a pack for this organization, or switch above to use your personal credits.
                     </p>
                   </div>
                 </div>
@@ -209,9 +210,11 @@ export function ContactUnlockDialog({
                 currentPlan={currentPlan}
                 contactError={contactError}
                 loading={loading}
+                userCredits={activeScopeObj?.credits ?? credits}
                 onSelectedPlanChange={onSelectedPlanChange}
                 onPurchasePlan={onPurchasePlan}
                 purchaseEnabled={purchaseEnabled}
+                onOpenWallet={onOpenWallet}
               />
             </>
           )}
@@ -229,7 +232,7 @@ export function ContactUnlockDialog({
         {/* Footer info & explicit Close Button */}
         <div className="flex items-center justify-between border-t border-zinc-200 bg-zinc-50 px-5 py-3 text-xs dark:border-slate-800 dark:bg-slate-900/60 shrink-0">
           <span className="text-[11px] text-zinc-500 dark:text-slate-400">
-            Contact credits never expire &bull; Verified direct owners
+            Universal Credits never expire &bull; Verified direct owners
           </span>
           <button
             type="button"
@@ -248,11 +251,11 @@ function StepIndicator({ contactStep }: { contactStep: ContactStep }) {
   return (
     <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
       {[
-        ["1", "Select Plan", contactStep === "plans"],
-        ["2", "Owner Contact", contactStep === "contact"],
+        ["1", "Recharge Credits", contactStep === "plans"],
+        ["2", "Verified Contact", contactStep === "contact"],
       ].map(([num, label, active]) => (
-        <div key={label as string} className={`whitespace-nowrap rounded-md px-2 py-2 text-center ${active ? "bg-rose-50 text-rose-700" : "bg-zinc-50 text-zinc-500"}`}>
-          <span className="mr-1">{num}</span>
+        <div key={label as string} className={`whitespace-nowrap rounded-lg px-2.5 py-2 text-center transition ${active ? "bg-rose-50 text-rose-700 font-bold border border-rose-200" : "bg-zinc-50 text-zinc-500 border border-transparent"}`}>
+          <span className="mr-1">{num}.</span>
           {label}
         </div>
       ))}
@@ -348,7 +351,7 @@ export function LeadDetailsStep(props: {
             </label>
             <Link
               href="/login?mode=forgot"
-              className="text-xs font-medium text-rose-600 hover:underline dark:text-rose-400"
+              className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline"
             >
               Forgot password?
             </Link>
@@ -363,91 +366,30 @@ export function LeadDetailsStep(props: {
             className="h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
           />
         </div>
-
-        {props.otpError && (
-          <p className="rounded-lg bg-red-50 p-2.5 text-xs font-medium text-red-700 dark:bg-red-950/40 dark:text-red-300">
-            {props.otpError}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={!loginId.trim() || password.length < 4 || props.loading}
-          className="w-full rounded-lg bg-rose-600 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-zinc-300 dark:disabled:bg-slate-800"
-        >
-          {props.loading ? "Authenticating..." : "Sign In & View Contact"}
-        </button>
-
-        <div className="text-center pt-2">
-          <p className="text-xs text-zinc-500 dark:text-slate-400">
-            New to Awasio?{" "}
-            <Link
-              href={registerRedirectUrl}
-              className="font-bold text-rose-600 hover:underline dark:text-rose-400"
-            >
-              Register with Email OTP
-            </Link>
-          </p>
-        </div>
-      </div>
-    </form>
-  );
-}
-
-export function ProfileDetailsStep(props: {
-  leadName: string;
-  leadEmail?: string;
-  loading: boolean;
-  error?: string | null;
-  onLeadNameChange: (value: string) => void;
-  onLeadEmailChange?: (value: string) => void;
-  onSaveProfile: () => void;
-}) {
-  const { leadName, leadEmail = "", loading, error, onLeadNameChange, onLeadEmailChange, onSaveProfile } = props;
-
-  return (
-    <>
-      <div className="rounded-lg border border-zinc-200 p-4">
-        <div className="flex items-center gap-2 text-rose-600 mb-2">
-          <UserCheck className="h-5 w-5" />
-          <p className="text-sm font-semibold text-zinc-950">Welcome to Awasio!</p>
-        </div>
-        <p className="text-xs text-zinc-500">Please provide your name to finish creating your account.</p>
-        <div className="mt-4 space-y-3">
-          <div>
-            <label className="block text-xs font-semibold text-zinc-700 mb-1">Your Full Name *</label>
-            <input
-              value={leadName}
-              onChange={(event) => onLeadNameChange(event.target.value)}
-              placeholder="e.g. Rahul Sharma"
-              className="h-11 w-full rounded-md border border-zinc-200 px-3 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-zinc-700 mb-1">Email Address (Optional)</label>
-            <input
-              value={leadEmail}
-              onChange={(event) => onLeadEmailChange?.(event.target.value)}
-              placeholder="e.g. rahul@example.com"
-              type="email"
-              className="h-11 w-full rounded-md border border-zinc-200 px-3 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-            />
-          </div>
-        </div>
       </div>
 
-      {error && <p className="rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{error}</p>}
+      {props.otpError && (
+        <p className="rounded-lg bg-red-50 p-3 text-xs font-medium text-red-700 dark:bg-red-950/50 dark:text-red-300">
+          {props.otpError}
+        </p>
+      )}
 
       <button
-        type="button"
-        disabled={!leadName.trim() || loading}
-        onClick={onSaveProfile}
-        className="w-full rounded-md bg-rose-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-zinc-300"
+        type="submit"
+        disabled={props.loading || !loginId.trim() || !password}
+        className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 text-sm font-bold text-white shadow-md hover:bg-rose-700 disabled:opacity-50 transition"
       >
-        {loading ? "Saving Profile..." : "Save & Continue"}
+        {props.loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}
+        <span>Sign In &amp; Continue</span>
       </button>
-    </>
+
+      <div className="flex items-center justify-between text-xs text-zinc-500 pt-2 border-t border-zinc-100">
+        <span>Don&apos;t have an account?</span>
+        <Link href={registerRedirectUrl} className="font-bold text-rose-600 hover:underline">
+          Register now (Free 100 Credits)
+        </Link>
+      </div>
+    </form>
   );
 }
 
@@ -457,93 +399,140 @@ export function PlanSelectionStep(props: {
   currentPlan: ContactPlan;
   contactError: string | null;
   loading: boolean;
+  userCredits?: number;
   onSelectedPlanChange: (value: string) => void;
   onPurchasePlan: () => void;
   purchaseEnabled?: boolean;
+  onOpenWallet?: () => void;
 }) {
-  const { plansList, selectedPlan, currentPlan, contactError, loading, onSelectedPlanChange, onPurchasePlan, purchaseEnabled = false } = props;
+  const {
+    plansList,
+    selectedPlan,
+    currentPlan,
+    contactError,
+    loading,
+    userCredits = 0,
+    onSelectedPlanChange,
+    onPurchasePlan,
+    purchaseEnabled = false,
+    onOpenWallet,
+  } = props;
 
   return (
-    <>
-      <div className="grid gap-4 lg:grid-cols-[0.42fr_1fr] lg:items-start">
-        <div className="space-y-3">
-          <div className="rounded-xl border border-rose-100 bg-rose-50 p-4">
-            <p className="text-sm font-bold text-zinc-950">Choose your contact pack</p>
-            <p className="mt-1 text-xs text-zinc-600">Unlock this owner now and use remaining contacts on other shortlisted homes.</p>
-          </div>
-
-          <div className="rounded-xl border border-zinc-200 bg-white p-4">
-            <p className="text-xs font-semibold uppercase text-zinc-500">Selected plan</p>
-            <div className="mt-2 flex items-start justify-between gap-3">
-              <div>
-                <p className="text-base font-bold text-zinc-950">{currentPlan.name}</p>
-                <p className="mt-1 text-xs text-zinc-600">{currentPlan.contacts}</p>
+    <div className="space-y-4">
+      {/* Insufficient Credit Alert Banner */}
+      <div className="rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50 via-pink-50 to-amber-50 p-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white shadow-sm">
+              <Zap className="h-5 w-5 fill-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-wider text-rose-950">
+                  Credits Needed
+                </span>
+                <span className="rounded-full bg-rose-200/70 px-2 py-0.5 text-[10px] font-bold text-rose-800">
+                  10 Credits Required
+                </span>
               </div>
-              <p className="text-xl font-black text-zinc-950">{currentPlan.price}</p>
+              <p className="mt-0.5 text-xs text-zinc-600">
+                Your current balance: <strong className="font-bold text-zinc-950">{userCredits} Credits</strong>. Choose a credit pack below to reveal the owner&apos;s verified number.
+              </p>
             </div>
           </div>
 
-          <div className="space-y-2 rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-xs text-zinc-700">
-            {["Verified mobile before reveal", "Unused contacts stay in your account", "Works for owner, agent and builder listings"].map((item) => (
-              <div key={item} className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-rose-600" />
-                <span>{item}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid gap-2.5 lg:grid-cols-2">
-          {plansList.map((plan) => {
-            const active = selectedPlan === plan.id || String(plan.dbId) === String(selectedPlan);
-            const isPriority = plan.id === "power" || plan.id === "premium" || plan.id === "assisted";
-            return (
-              <button
-                key={plan.id}
-                type="button"
-                aria-pressed={active}
-                onClick={() => onSelectedPlanChange(plan.id)}
-                className={`relative w-full overflow-hidden rounded-xl border p-4 text-left transition ${
-                  active
-                    ? "border-rose-500 bg-white shadow-lg shadow-rose-100 ring-2 ring-rose-100"
-                    : "border-zinc-200 bg-white hover:border-rose-200 hover:bg-rose-50/40"
-                }`}
-              >
-                {plan.popular && (
-                  <span className="absolute right-3 top-3 rounded-md bg-zinc-950 px-2 py-1 text-[10px] font-bold uppercase text-white">
-                    Popular
-                  </span>
-                )}
-                <div className="flex gap-3 pr-12">
-                  <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${isPriority ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-600"}`}>
-                    {isPriority ? <ShieldCheck className="h-4 w-4" /> : <Zap className="h-4 w-4" />}
-                  </span>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-bold text-zinc-950">{plan.name}</p>
-                      {active && <CheckCircle2 className="h-4 w-4 text-rose-600" />}
-                    </div>
-                    <p className="mt-1 text-xs font-semibold text-zinc-700">{plan.contacts}</p>
-                    <p className="mt-1 text-xs text-zinc-500">{plan.description}</p>
-                  </div>
-                </div>
-                <p className="mt-3 text-xl font-black text-zinc-950">{plan.price}</p>
-              </button>
-            );
-          })}
+          {onOpenWallet && (
+            <button
+              type="button"
+              onClick={onOpenWallet}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-rose-300 bg-white px-3 py-1.5 text-xs font-bold text-rose-700 shadow-2xs hover:bg-rose-50 transition"
+            >
+              <Gift className="h-3.5 w-3.5 text-rose-600" />
+              <span>Redeem Promo Code</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {contactError && <p className="rounded-md bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{contactError}</p>}
-      <button
-        type="button"
-        disabled={loading || !purchaseEnabled}
-        onClick={onPurchasePlan}
-        className="w-full rounded-md bg-rose-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:bg-rose-300"
-      >
-        {loading ? "Processing payment..." : purchaseEnabled ? `Continue with ${currentPlan?.name ?? "Selected Plan"}` : "Credit purchases launching soon"}
-      </button>
-    </>
+      {/* Credit Pack Cards Grid */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        {plansList.map((plan) => {
+          const active = selectedPlan === plan.id || String(plan.dbId) === String(selectedPlan);
+          const isMega = plan.popular || plan.id.includes("300") || plan.name.includes("300") || plan.name.includes("Super");
+          return (
+            <button
+              key={plan.id}
+              type="button"
+              aria-pressed={active}
+              onClick={() => onSelectedPlanChange(plan.id)}
+              className={`relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 text-left transition-all ${
+                active
+                  ? "border-rose-500 bg-white shadow-lg shadow-rose-100 ring-2 ring-rose-500"
+                  : "border-zinc-200 bg-white hover:border-rose-200 hover:bg-rose-50/30"
+              }`}
+            >
+              {plan.popular && (
+                <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-rose-600 px-2.5 py-0.5 text-[10px] font-black uppercase text-white shadow-xs">
+                  <Sparkles className="h-2.5 w-2.5" />
+                  Popular
+                </span>
+              )}
+
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className={`flex h-7 w-7 items-center justify-center rounded-lg ${active ? "bg-rose-600 text-white" : "bg-zinc-100 text-zinc-700"}`}>
+                    <Zap className="h-4 w-4 fill-current" />
+                  </span>
+                  <div className="min-w-0 pr-16">
+                    <p className="text-sm font-bold text-zinc-950 truncate">{plan.name}</p>
+                    <p className="text-[11px] font-bold text-rose-600">{plan.contacts}</p>
+                  </div>
+                </div>
+
+                <p className="mt-2 text-xs text-zinc-500 line-clamp-2">
+                  {plan.description || "Universal credits for contacts, boosts, and listings."}
+                </p>
+              </div>
+
+              <div className="mt-3 flex items-baseline justify-between border-t border-zinc-100 pt-2.5">
+                <span className="text-xl font-black text-zinc-950">{plan.price}</span>
+                <span className="text-[11px] font-semibold text-zinc-500">
+                  {active ? "✓ Selected" : "Click to select"}
+                </span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {contactError && <p className="rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-700">{contactError}</p>}
+
+      <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2">
+        <button
+          type="button"
+          disabled={loading || !purchaseEnabled}
+          onClick={onPurchasePlan}
+          className="w-full flex-1 rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 disabled:opacity-50"
+        >
+          {loading
+            ? "Processing purchase..."
+            : purchaseEnabled
+              ? `Recharge ${currentPlan?.price ?? ""} & Unlock Contact`
+              : "Credit purchases opening soon"}
+        </button>
+
+        {onOpenWallet && (
+          <button
+            type="button"
+            onClick={onOpenWallet}
+            className="w-full sm:w-auto rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-bold text-zinc-700 hover:bg-zinc-50 transition"
+          >
+            Credit Wallet
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -557,8 +546,8 @@ export function UnlockedContactStep({
   scopeName?: string;
 }) {
   return (
-    <>
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-4 dark:border-emerald-900/60 dark:bg-emerald-950/40">
+    <div className="space-y-4">
+      <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 dark:border-emerald-900/60 dark:bg-emerald-950/40">
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
             <CheckCircle2 className="h-5 w-5" />
@@ -586,6 +575,6 @@ export function UnlockedContactStep({
         <PhoneCall className="h-4 w-4" />
         <span>Call Owner Now</span>
       </a>
-    </>
+    </div>
   );
 }

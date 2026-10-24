@@ -28,10 +28,10 @@ export type ContactStep = "plans" | "contact";
 export const FALLBACK_IMAGE = CDN_ASSETS.placeholderWebp;
 
 export const CONTACT_PLANS = [
-  { id: "buyer_single_29", name: "Instant Single", contacts: "1 verified owner", description: "Instant contact reveal with lifetime dashboard access.", price: "₹29" },
-  { id: "buyer_starter_99", name: "Local Hunter", contacts: "5 verified owners", description: "Ideal for shortlisting homes in 1 locality.", price: "₹99" },
-  { id: "buyer_super_199", name: "Super Hunter", contacts: "15 verified owners", description: "Best value for active house hunters comparing localities.", price: "₹199", popular: true },
-  { id: "buyer_explorer_399", name: "City Explorer", contacts: "40 verified owners", description: "Maximum flexibility with zero expiry.", price: "₹399" },
+  { id: "credit_pack_100", name: "100 Credits Starter", contacts: "10 verified contacts (100 credits)", description: "Universal credits for owner contacts, boosts, and listings.", price: "₹99" },
+  { id: "credit_pack_300", name: "300 Credits Value Pack", contacts: "30 verified contacts (300 credits)", description: "Best value for active house hunters comparing localities.", price: "₹249", popular: true },
+  { id: "credit_pack_650", name: "650 Credits Growth Pack", contacts: "65 verified contacts (650 credits)", description: "Maximum flexibility with zero expiry across all searches.", price: "₹499" },
+  { id: "credit_pack_1500", name: "1500 Credits Mega Pack", contacts: "150 verified contacts (1500 credits)", description: "Lowest per-credit rate with priority verified phone reveals.", price: "₹999" },
 ] as const;
 
 export type ContactPlan = {

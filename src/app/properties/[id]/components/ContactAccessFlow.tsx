@@ -402,6 +402,8 @@ export function ContactAccessFlow({
                   currentPlan={currentPlan}
                   contactError={error}
                   loading={busy}
+                  userCredits={currentCredits}
+                  purchaseEnabled={true}
                   onSelectedPlanChange={setSelectedPlanId}
                   onPurchasePlan={() =>
                     void run(async () => {

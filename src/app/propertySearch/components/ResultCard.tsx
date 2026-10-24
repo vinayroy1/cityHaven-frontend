@@ -14,6 +14,7 @@ import {
   BillingSummary,
 } from "@/features/contactVerify/api";
 import { ContactUnlockDialog, ScopeOption } from "./ContactUnlockDialog";
+import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
 import { ScheduleVisitDialog } from "@/components/property/ScheduleVisitDialog";
 import { ResultCardMedia } from "./ResultCardMedia";
 import { ResultCardSummary, SavePropertyButton } from "./ResultCardSummary";
@@ -64,7 +65,8 @@ export function ResultCard({
   const [ownerContact, setOwnerContact] = React.useState<{ name: string | null; phone: string | null } | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [contactError, setContactError] = React.useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = React.useState("buyer_super_199");
+  const [selectedPlan, setSelectedPlan] = React.useState("credit_pack_300");
+  const [walletOpen, setWalletOpen] = React.useState(false);
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -482,6 +484,18 @@ export function ResultCard({
         onSelectedPlanChange={setSelectedPlan}
         onPurchasePlan={purchasePlan}
         purchaseEnabled={creditPurchasesEnabled}
+        onOpenWallet={() => {
+          setContactOpen(false);
+          setWalletOpen(true);
+        }}
+      />
+      <CreditWalletModal
+        isOpen={walletOpen}
+        onClose={() => {
+          setWalletOpen(false);
+          void refreshScopes();
+        }}
+        userProfile={meData}
       />
     </article>
   );
