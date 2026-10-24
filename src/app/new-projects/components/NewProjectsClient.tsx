@@ -523,12 +523,13 @@ export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: 
               </span>
               <div className="mt-1 flex items-center justify-between">
                 <span className="text-lg font-black text-slate-950 dark:text-white">
-                  +91 {contactModalProject.salesPhone}
+                  +91 {(contactModalProject.salesPhone || "8848510629").replace(/^\+?91\s*[-]?\s*/, "")}
                 </span>
                 <button
                   type="button"
                   onClick={() => {
-                    navigator.clipboard.writeText(contactModalProject.salesPhone || "");
+                    const raw = (contactModalProject.salesPhone || "8848510629").replace(/^\+?91\s*[-]?\s*/, "");
+                    navigator.clipboard.writeText(`+91-${raw}`);
                     setCopiedCardPhone(true);
                     toast.success("Phone number copied!");
                     setTimeout(() => setCopiedCardPhone(false), 2000);

@@ -575,11 +575,12 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               </span>
               <div className="mt-1 flex items-center justify-between">
                 <span className="text-lg font-black text-slate-950 dark:text-white">
-                  +91 {project.salesPhone}
+                  +91 {(project.salesPhone || "8848510629").replace(/^\+?91\s*[-]?\s*/, "")}
                 </span>
                 <button
                   onClick={() => {
-                    navigator.clipboard.writeText(project.salesPhone || "");
+                    const raw = (project.salesPhone || "8848510629").replace(/^\+?91\s*[-]?\s*/, "");
+                    navigator.clipboard.writeText(`+91-${raw}`);
                     setCopiedPhone(true);
                     toast.success("Phone number copied!");
                     setTimeout(() => setCopiedPhone(false), 2000);
