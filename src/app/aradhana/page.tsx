@@ -98,17 +98,19 @@ const DEITIES: Deity[] = [
   }
 ];
 
+const REALISTIC_OM_AUDIO_URL = "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/devotional/om_chant.mp3";
+
 export default function AradhanaPage() {
   const [selectedDeity, setSelectedDeity] = useState<Deity>(DEITIES[0]);
   const [japaCount, setJapaCount] = useState<number>(0);
   const [isDiyaLit, setIsDiyaLit] = useState<boolean>(true);
   const [flowerPetals, setFlowerPetals] = useState<Array<{ id: number; left: number; animDuration: number }>>([]);
-  const [audioPlaying, setAudioPlaying] = useState<boolean>(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const [volume, setVolume] = useState<number>(0.75);
   const [personalPrayer, setPersonalPrayer] = useState<string>("");
   const [savedPrayerStatus, setSavedPrayerStatus] = useState<string>("");
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const oscillatorNodeRef = useRef<OscillatorNode | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("awasio_isht_prayer");
@@ -118,6 +120,27 @@ export default function AradhanaPage() {
     if (savedCount) setJapaCount(parseInt(savedCount, 10) || 0);
   }, []);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  const toggleOmChant = () => {
+    if (!audioRef.current) return;
+
+    if (isPlayingAudio) {
+      audioRef.current.pause();
+      setIsPlayingAudio(false);
+    } else {
+      audioRef.current.play().then(() => {
+        setIsPlayingAudio(true);
+      }).catch(() => {
+        setIsPlayingAudio(false);
+      });
+    }
+  };
+
   const playDivineBell = () => {
     try {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -126,57 +149,19 @@ export default function AradhanaPage() {
       const gain = ctx.createGain();
 
       osc.type = "sine";
-      osc.frequency.setValueAtTime(432, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(108, ctx.currentTime + 3.0);
+      osc.frequency.setValueAtTime(528, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(132, ctx.currentTime + 2.5);
 
-      gain.gain.setValueAtTime(0.4, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3.2);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2.5);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
       osc.start();
-      osc.stop(ctx.currentTime + 3.2);
+      osc.stop(ctx.currentTime + 2.5);
     } catch {
-      // audio fallback
-    }
-  };
-
-  const toggleOmDrone = () => {
-    try {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new AudioCtx();
-      }
-      const ctx = audioCtxRef.current;
-
-      if (audioPlaying) {
-        if (oscillatorNodeRef.current) {
-          oscillatorNodeRef.current.stop();
-          oscillatorNodeRef.current.disconnect();
-          oscillatorNodeRef.current = null;
-        }
-        setAudioPlaying(false);
-      } else {
-        if (ctx.state === "suspended") ctx.resume();
-
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(136.1, ctx.currentTime);
-        gain.gain.setValueAtTime(0.12, ctx.currentTime);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start();
-        oscillatorNodeRef.current = osc;
-        gainNodeRef.current = gain;
-        setAudioPlaying(true);
-      }
-    } catch {
-      setAudioPlaying(false);
+      // Audio fallback
     }
   };
 
@@ -216,6 +201,16 @@ export default function AradhanaPage() {
 
   return (
     <div className="min-h-screen bg-[#070505] text-[#F3E8D6] selection:bg-amber-600 selection:text-white relative overflow-hidden font-sans">
+      
+      {/* Hidden Cloudflare R2 Audio Player for Authentic Om Chanting */}
+      <audio
+        ref={audioRef}
+        src={REALISTIC_OM_AUDIO_URL}
+        loop
+        preload="auto"
+        onEnded={() => setIsPlayingAudio(false)}
+      />
+
       {/* Flower Offering Shower Canvas */}
       {flowerPetals.map((petal) => (
         <div
@@ -277,16 +272,40 @@ export default function AradhanaPage() {
               <span>{isDiyaLit ? "🪔" : "🕯️"}</span> {isDiyaLit ? "दीपक प्रज्वलित है" : "दीपक जलाएँ"}
             </button>
 
-            <button
-              onClick={toggleOmDrone}
-              className={`px-4 py-2 rounded-xl border text-xs sm:text-sm font-medium flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95 ${
-                audioPlaying
-                  ? "bg-amber-500 text-black border-amber-300 font-semibold"
-                  : "bg-amber-950/40 border-amber-500/40 text-amber-200"
-              }`}
-            >
-              <span>{audioPlaying ? "🔊" : "🔈"}</span> {audioPlaying ? "ॐ ध्वनि चालू (136.1Hz)" : "ॐ दिव्य ध्वनि आरम्भ"}
-            </button>
+            {/* Realistic Authentic Om Chant Controller */}
+            <div className="flex items-center gap-2 bg-amber-950/40 border border-amber-500/40 px-3 py-1.5 rounded-xl shadow-lg">
+              <button
+                onClick={toggleOmChant}
+                className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 transition-all ${
+                  isPlayingAudio
+                    ? "bg-amber-500 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-105"
+                    : "bg-amber-900/60 text-amber-200 hover:bg-amber-800/80"
+                }`}
+              >
+                <span>{isPlayingAudio ? "⏸️" : "▶️"}</span>
+                <span>{isPlayingAudio ? "ॐ जप चालू (शान्ति ध्यान)" : "ॐ जप आरम्भ करें (वास्तविक मन्त्र)"}</span>
+              </button>
+
+              {isPlayingAudio && (
+                <div className="flex items-center gap-1.5 px-2">
+                  <span className="w-1.5 h-3 bg-amber-400 rounded animate-pulse" />
+                  <span className="w-1.5 h-5 bg-amber-300 rounded animate-pulse delay-75" />
+                  <span className="w-1.5 h-2 bg-amber-400 rounded animate-pulse delay-150" />
+                </div>
+              )}
+
+              {/* Volume Slider */}
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={volume}
+                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                className="w-16 h-1.5 accent-amber-500 bg-stone-800 rounded-lg cursor-pointer"
+                title="ध्वनि तीव्रता (Volume)"
+              />
+            </div>
           </div>
         </header>
 
@@ -524,7 +543,6 @@ export default function AradhanaPage() {
         }
         .animate-fall {
           animation-name: fall;
-          animation-fill-mode: forwards;
         }
       `}</style>
     </div>
