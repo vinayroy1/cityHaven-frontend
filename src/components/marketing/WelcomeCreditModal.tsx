@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -26,18 +26,26 @@ export function WelcomeCreditModal() {
   const [isDismissed, setIsDismissed] = useState(false);
   const [returnUrl, setReturnUrl] = useState<string>("");
 
+  const checkAuth = useCallback(() => {
+    if (typeof window === "undefined") return false;
+    const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
+    const authed = Boolean(token && token !== "null" && token !== "undefined");
+    setIsAuthed(authed);
+    if (authed) {
+      setIsOpen(false);
+    }
+    return authed;
+  }, []);
+
   useEffect(() => {
     setMounted(true);
-
-    const checkAuth = () => {
-      const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
-      setIsAuthed(Boolean(token));
-    };
-
     checkAuth();
 
     // Listen for custom intent trigger: e.g. clicking "View Contact" or "Post" when not logged in
     const handleOpenEvent = (e: Event) => {
+      // If user is already authenticated, never open welcome modal
+      if (checkAuth()) return;
+
       const customEvent = e as CustomEvent<{ returnUrl?: string }>;
       if (customEvent.detail?.returnUrl) {
         setReturnUrl(customEvent.detail.returnUrl);
@@ -48,13 +56,20 @@ export function WelcomeCreditModal() {
     };
 
     window.addEventListener("awasio:open-welcome-credits", handleOpenEvent);
+    window.addEventListener("auth-change", checkAuth);
     window.addEventListener("storage", checkAuth);
 
     return () => {
       window.removeEventListener("awasio:open-welcome-credits", handleOpenEvent);
+      window.removeEventListener("auth-change", checkAuth);
       window.removeEventListener("storage", checkAuth);
     };
-  }, []);
+  }, [checkAuth]);
+
+  // Re-verify auth whenever path changes
+  useEffect(() => {
+    checkAuth();
+  }, [pathname, checkAuth]);
 
   // Lock scroll when open
   useEffect(() => {
@@ -80,11 +95,22 @@ export function WelcomeCreditModal() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  // If user is authenticated, DO NOT show modal or floating pill at all!
-  if (!mounted || isAuthed) return null;
+  // Check if current route is an auth or internal dashboard/admin route
+  const isAuthOrDashboardPage =
+    !pathname ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/admin");
 
-  const currentRedirect = returnUrl || (typeof window !== "undefined" ? window.location.pathname + window.location.search : "/");
-  const registerHref = `/auth/register?redirect=${encodeURIComponent(currentRedirect)}`;
+  // NEVER render popup or pill if:
+  // 1. Not mounted
+  // 2. User is authenticated
+  // 3. Current page is login, auth, dashboard, or admin
+  if (!mounted || isAuthed || isAuthOrDashboardPage) return null;
+
+  const currentRedirect =
+    returnUrl || (typeof window !== "undefined" ? window.location.pathname + window.location.search : "/");
   const loginHref = `/login?redirect=${encodeURIComponent(currentRedirect)}`;
 
   const modalPortal = isOpen ? (
@@ -191,7 +217,7 @@ export function WelcomeCreditModal() {
 
           {/* Primary CTA Button */}
           <Link
-            href={registerHref}
+            href={loginHref}
             onClick={() => setIsOpen(false)}
             className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-rose-600 to-pink-600 px-5 text-sm sm:text-base font-black text-white shadow-[0_0_25px_rgba(244,63,94,0.4)] hover:brightness-110 active:scale-98 transition-all"
           >
@@ -216,7 +242,7 @@ export function WelcomeCreditModal() {
 
   return (
     <>
-      {/* Approach 3: Floating Gift Pill for Non-Logged-In Users */}
+      {/* Approach 3: Floating Gift Pill for Non-Logged-In Users (never shown on auth/dashboard pages) */}
       {!isOpen && !isDismissed && (
         <div className="fixed bottom-20 sm:bottom-6 left-4 sm:left-6 z-40 animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="group relative flex items-center">
