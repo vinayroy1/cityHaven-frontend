@@ -249,6 +249,14 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
   const location = parseLocation(segments);
   if (!location) notFound();
 
+  // If single segment was not a project, verify that it has actual projects in that city
+  if (segments.length === 1) {
+    const count = await getProjectCount(location.city);
+    if (!count || count <= 0) {
+      notFound();
+    }
+  }
+
   // Redirect alias or non-canonical casing/slug
   const canonicalSegments = [toSearchSlug(location.city), ...location.localities.map(toSearchSlug)];
   if (canonicalSegments.some((value, index) => value !== segments[index])) {

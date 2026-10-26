@@ -613,6 +613,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                         <Link
                           key={item.href}
                           href={item.href}
+                          rel={item.href.startsWith("/dashboard") ? "nofollow" : undefined}
                           onNavigate={closeMenusAfterNavigation}
                           className="flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-850 dark:hover:text-white"
                         >
