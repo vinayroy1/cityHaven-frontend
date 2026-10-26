@@ -18,6 +18,7 @@ import {
   Home,
   Flame,
   Check,
+  Coins,
   BadgePercent,
   Clock,
   LucideIcon,
@@ -337,7 +338,7 @@ export function PricingClient() {
             {isAuthenticated && summary && (
               <div className="mt-5 inline-flex items-center gap-4 rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-2 text-xs text-emerald-900 shadow-sm">
                 <span className="font-semibold">
-                  Active balance: <strong className="font-black text-emerald-800">{summary.credits} contact credits</strong>
+                  Active balance: <strong className="font-black text-emerald-800">{summary.credits.toLocaleString("en-IN")} Credits</strong>
                 </span>
                 <span className="h-3 w-px bg-emerald-300" />
                 <span>
@@ -377,6 +378,48 @@ export function PricingClient() {
             </form>
           )}
 
+          {/* Transparent Credit Value Guide */}
+          <div className="mb-8 rounded-3xl border border-amber-200/80 bg-gradient-to-r from-amber-50 via-rose-50/40 to-slate-50 p-5 shadow-xs dark:border-amber-950/60 dark:from-amber-950/20 dark:via-rose-950/10 dark:to-slate-900">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500 text-white font-black text-xs shadow-xs">
+                    🪙
+                  </div>
+                  <h4 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-950 dark:text-white">
+                    One Universal Credit Wallet Powers Every Action
+                  </h4>
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                    Transparent
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                  Every pack deposits credits directly into your wallet. Use them interchangeably for verified owner reveals, listing posts, renewals, and top-rank locality boosts. Credits never expire.
+                </p>
+              </div>
+
+              {/* Action cost cheat sheet */}
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 text-xs">
+                <div className="flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 font-bold shadow-xs border border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                  <PhoneCall className="h-3.5 w-3.5 text-rose-500" />
+                  <span>10 cr / Contact Unlock</span>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 font-bold shadow-xs border border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                  <Home className="h-3.5 w-3.5 text-blue-500" />
+                  <span>30 cr / Property Post</span>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 font-bold shadow-xs border border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                  <Users className="h-3.5 w-3.5 text-purple-500" />
+                  <span>20 cr / Flatmate Post</span>
+                </div>
+                <div className="flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 font-bold shadow-xs border border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-800 dark:text-slate-200">
+                  <Flame className="h-3.5 w-3.5 text-amber-500" />
+                  <span>50 cr / 7-Day Boost</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Pricing Cards Grid - 100% Dynamic from Backend DB */}
           {isPlansLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
@@ -401,6 +444,10 @@ export function PricingClient() {
                 const isPopular = Boolean(plan.isPopular);
                 const isProcessingThis = isPurchasing && selectedPlanId === plan.id;
                 const isFree = plan.price === 0;
+                const isMonthly = plan.billingCycle === "MONTHLY";
+
+                // Total universal credits provided
+                const creditsAmount = Number(plan.contactCredits) || Number(plan.features?.creditsIncluded) || 0;
 
                 // Discount calculation
                 const hasDiscount = Boolean(plan.originalPrice && plan.originalPrice > plan.price);
@@ -420,11 +467,12 @@ export function PricingClient() {
                     ? `${plan.durationDays ?? 7} days spotlight`
                     : plan.billingCycle.toLowerCase();
 
-                // Effective per contact cost
-                const perContactCost =
-                  plan.contactCredits && plan.contactCredits > 0
-                    ? Math.round(plan.price / plan.contactCredits)
-                    : null;
+                // Effective per credit rate
+                const perCreditRateText =
+                  plan.features?.perCreditRate ||
+                  (creditsAmount > 0 && plan.price > 0
+                    ? `₹${(plan.price / creditsAmount).toFixed(2)} / credit`
+                    : null);
 
                 return (
                   <div
@@ -461,6 +509,31 @@ export function PricingClient() {
                       {plan.tagline || plan.description}
                     </p>
 
+                    {/* Prominent Credits Display Pill */}
+                    {creditsAmount > 0 && (
+                      <div className="mt-3.5 flex items-center justify-between rounded-2xl bg-amber-500/10 border border-amber-500/25 px-3.5 py-2.5 dark:bg-amber-500/15">
+                        <div className="flex items-center gap-2.5">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-xs font-black text-sm shrink-0">
+                            🪙
+                          </div>
+                          <div>
+                            <div className="text-base sm:text-lg font-black text-slate-950 dark:text-white leading-none">
+                              +{creditsAmount.toLocaleString("en-IN")} Credits
+                            </div>
+                            <span className="block text-[10px] font-semibold text-amber-800 dark:text-amber-300 mt-0.5">
+                              {isMonthly ? "Monthly team credit pool" : "Added to your wallet instantly"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {perCreditRateText && (
+                          <span className="rounded-full bg-white/90 dark:bg-slate-900/90 px-2.5 py-1 text-[11px] font-black text-amber-800 dark:text-amber-300 shadow-xs border border-amber-200 dark:border-amber-900 shrink-0">
+                            {perCreditRateText}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
                     {/* Price Block */}
                     <div className="mt-4 flex flex-col">
                       <div className="flex items-baseline gap-2">
@@ -487,9 +560,12 @@ export function PricingClient() {
                         )}
                       </div>
 
-                      {perContactCost !== null && perContactCost > 0 && (
-                        <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mt-1">
-                          ~₹{perContactCost} per verified owner reveal
+                      {creditsAmount > 0 && (
+                        <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mt-1 flex items-center gap-1">
+                          <Sparkles className="h-3 w-3 shrink-0" />
+                          <span>
+                            {perCreditRateText ? `${perCreditRateText} • ` : ""}Universal wallet balance
+                          </span>
                         </p>
                       )}
                     </div>
@@ -517,12 +593,24 @@ export function PricingClient() {
                       ) : (
                         // Fallback in case a plan has no featureList
                         <>
-                          {plan.contactCredits ? (
+                          {creditsAmount > 0 ? (
                             <div className="flex items-center gap-2 font-bold text-slate-950 dark:text-white">
                               <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                              <span>{plan.contactCredits} verified direct owner reveals</span>
+                              <span>+{creditsAmount.toLocaleString("en-IN")} Universal credits added to wallet</span>
                             </div>
                           ) : null}
+                          {creditsAmount >= 10 && (
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                              <span>Unlock up to {Math.floor(creditsAmount / 10)} verified owner / flatmate contacts</span>
+                            </div>
+                          )}
+                          {creditsAmount >= 20 && (
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                              <span>Or publish {Math.floor(creditsAmount / 30)} properties (30 cr) / {Math.floor(creditsAmount / 20)} flatmates (20 cr)</span>
+                            </div>
+                          )}
                           {plan.activeListings ? (
                             <div className="flex items-center gap-2">
                               <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
@@ -535,6 +623,10 @@ export function PricingClient() {
                               <span>{plan.teamSeats} team agent seats</span>
                             </div>
                           ) : null}
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                            <span>Lifetime validity (credits never expire)</span>
+                          </div>
                           <div className="flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
                             <span>Zero brokerage guarantee</span>
@@ -648,10 +740,10 @@ export function PricingClient() {
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <p className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 mb-1.5">
                   <PhoneCall className="h-4 w-4 text-rose-600 dark:text-rose-400" />
-                  How do contact unlock credits work?
+                  How do universal credits and contact unlocks work?
                 </p>
                 <p>
-                  Each contact pack gives you credits to view verified owner phone numbers. Unlocking a contact charges 1 credit once per property. Once unlocked, you can view that contact repeatedly in your dashboard without ever paying again. Your credits never expire.
+                  Each pack adds transparent credits directly to your wallet balance. Unlocking a verified owner or flatmate contact charges 10 credits once per listing. Once unlocked, you have permanent access to that contact in your dashboard without ever paying again. Your credits never expire and can also be used for property listings (30 credits), flatmate posts (20 credits), and visibility boosts (50 credits).
                 </p>
               </div>
 
@@ -671,7 +763,7 @@ export function PricingClient() {
                   How do flatmate connects and spotlights work?
                 </p>
                 <p>
-                  Room seekers can get 3 verified flatmate phone reveals for ₹49. Room posters with an urgent vacancy can spotlight their listing at the top of their locality for 7 days for just ₹49 to find a compatible roommate quickly.
+                  Room seekers can use universal credits (10 credits per verified connect) or grab the Roomie Connect Pass (+30 Credits for ₹49) to connect with verified room posters directly. Room posters with an urgent vacancy can spotlight their listing at the top of their locality for 7 days (50 credits) to find a compatible roommate quickly.
                 </p>
               </div>
 
