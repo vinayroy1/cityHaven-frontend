@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import {
   SITE_URL,
   SEO_SEARCH_INTENTS,
+  ALL_59_CITIES,
 } from "@/constants/seo";
 import { toSearchSlug } from "@/components/search/searchQuery";
 import { getAllAgentIds } from "@/data/agents";
@@ -18,7 +19,7 @@ async function getActiveProperties(): Promise<Array<{
   updatedAt?: string | null;
 }>> {
   try {
-    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.propertyListing.search}?pageSize=100`);
+    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.propertyListing.search}?pageSize=200`);
     const res = await fetch(endpoint, {
       next: { revalidate: 3600 },
     });
@@ -43,7 +44,7 @@ async function getActiveProperties(): Promise<Array<{
 
 async function getActiveProjects(): Promise<Array<{ slug: string; city?: string | null; updatedAt?: string | null }>> {
   try {
-    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.projects.search}?pageSize=100`);
+    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.projects.search}?pageSize=500`);
     const res = await fetch(endpoint, {
       next: { revalidate: 3600 },
     });
@@ -213,9 +214,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const activeCities = Array.from(activeCitiesSet);
-  const citySearchRoutes: MetadataRoute.Sitemap = ["rent", "buy", "pg", "flatmate"].flatMap((intent) =>
-    activeCities.map((city) => ({
+  const searchIntents = ["rent", "buy", "pg", "flatmate", "commercial", "plot"] as const;
+  const citySearchRoutes: MetadataRoute.Sitemap = searchIntents.flatMap((intent) =>
+    ALL_59_CITIES.map((city) => ({
       url: `${SITE_URL}/${intent}/${city}`,
       lastModified: now,
       changeFrequency: "daily" as const,
@@ -241,7 +242,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 6. Dynamic Active Projects with SEO Slugs
+  // 6. Dynamic Active Projects with SEO Slugs (all 359 projects)
   const projects = await getActiveProjects();
   const projectDetailRoutes: MetadataRoute.Sitemap = projects.map((proj) => ({
     url: `${SITE_URL}/new-projects/${proj.slug}`,
@@ -250,11 +251,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  // Populated new project city landing pages
-  const projectCities = Array.from(
-    new Set(projects.map((p) => (p.city ? toSearchSlug(p.city) : null)).filter(Boolean) as string[])
-  );
-  const newProjectsCityRoutes: MetadataRoute.Sitemap = projectCities.map((city) => ({
+  // Populated new project city landing pages for all 59 cities
+  const newProjectsCityRoutes: MetadataRoute.Sitemap = ALL_59_CITIES.map((city) => ({
     url: `${SITE_URL}/new-projects/${city}`,
     lastModified: now,
     changeFrequency: "daily" as const,
