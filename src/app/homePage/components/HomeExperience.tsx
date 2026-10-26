@@ -679,11 +679,11 @@ function FeaturedFlatmatesSection({ selectedCity }: { selectedCity: string }) {
           ))}
         </div>
       ) : (
-        <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
+        <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory items-stretch">
           {flatmates.slice(0, 8).map((item) => (
             <div
               key={item.id}
-              className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]"
+              className="flex h-full w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]"
             >
               <FlatmateCard listing={item} />
             </div>
