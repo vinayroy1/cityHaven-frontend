@@ -336,22 +336,16 @@ export function PricingClient() {
 
             {/* Current Balance Banner */}
             {isAuthenticated && summary && (
-              <div className="mt-5 inline-flex items-center gap-4 rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-2 text-xs text-emerald-900 shadow-sm">
+              <div className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-4 py-2 text-xs text-emerald-900 shadow-xs dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white font-black text-[10px]">
+                  🪙
+                </span>
                 <span className="font-semibold">
-                  Active balance: <strong className="font-black text-emerald-800">{summary.credits.toLocaleString("en-IN")} Credits</strong>
+                  Active Wallet Balance:{" "}
+                  <strong className="font-black text-emerald-800 dark:text-emerald-300">
+                    {summary.credits.toLocaleString("en-IN")} Credits
+                  </strong>
                 </span>
-                <span className="h-3 w-px bg-emerald-300" />
-                <span>
-                  Listings limit: <strong>{summary.allowances?.listings?.limit ?? 5} active</strong>
-                </span>
-                {billingScope === "ORGANIZATION" && (
-                  <>
-                    <span className="h-3 w-px bg-emerald-300" />
-                    <span>
-                      Seats limit: <strong>{summary.allowances?.seats?.limit ?? 2} members</strong>
-                    </span>
-                  </>
-                )}
               </div>
             )}
           </div>
@@ -402,7 +396,7 @@ export function PricingClient() {
               <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 text-xs">
                 <div className="flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 font-bold shadow-xs border border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-800 dark:text-slate-200">
                   <PhoneCall className="h-3.5 w-3.5 text-rose-500" />
-                  <span>10 cr / Contact Unlock</span>
+                  <span>5 cr / Contact Unlock</span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 font-bold shadow-xs border border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-800 dark:text-slate-200">
                   <Home className="h-3.5 w-3.5 text-blue-500" />
@@ -432,19 +426,12 @@ export function PricingClient() {
             </div>
           ) : (
             <div
-              className={`grid grid-cols-1 gap-6 sm:grid-cols-2 ${
-                plansForCategory.length === 3
-                  ? "lg:grid-cols-3 max-w-5xl mx-auto"
-                  : plansForCategory.length >= 4
-                  ? "lg:grid-cols-4 max-w-7xl mx-auto"
-                  : "max-w-3xl mx-auto"
-              }`}
+              className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 max-w-7xl mx-auto`}
             >
               {plansForCategory.map((plan: Plan) => {
                 const isPopular = Boolean(plan.isPopular);
                 const isProcessingThis = isPurchasing && selectedPlanId === plan.id;
                 const isFree = plan.price === 0;
-                const isMonthly = plan.billingCycle === "MONTHLY";
 
                 // Total universal credits provided
                 const creditsAmount = Number(plan.contactCredits) || Number(plan.features?.creditsIncluded) || 0;
@@ -477,162 +464,97 @@ export function PricingClient() {
                 return (
                   <div
                     key={plan.id}
-                    className={`relative flex flex-col rounded-3xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900 ${
+                    className={`relative flex flex-col rounded-3xl border bg-white p-5 sm:p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900 ${
                       isPopular
                         ? "border-rose-500 ring-2 ring-rose-500/20 shadow-rose-100 dark:shadow-rose-950/40"
                         : "border-slate-200 hover:border-slate-300 dark:border-slate-800 dark:hover:border-slate-700"
                     }`}
                   >
-                    {/* Badge: Most Popular / Rent 3x Faster / Best Value */}
+                    {/* Badge: Most Popular / Micro Pack / Best Value */}
                     {(plan.badge || isPopular) && (
-                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-rose-600 px-3.5 py-1 text-[11px] font-black uppercase tracking-wider text-white shadow-md shadow-rose-200 dark:shadow-rose-950/60 whitespace-nowrap">
+                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-rose-600 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-md shadow-rose-200 dark:shadow-rose-950/60 whitespace-nowrap">
                         {plan.badge || "Most Popular"}
                       </div>
                     )}
 
-                    {/* Plan Title & Icon */}
-                    <div className="flex items-center justify-between gap-2 mt-1">
-                      <h3 className="text-xl font-black text-slate-950 dark:text-white">{plan.name}</h3>
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 shrink-0">
-                        {isPopular ? (
-                          <Flame className="h-4 w-4 text-rose-600 dark:text-rose-400" />
-                        ) : isFree ? (
-                          <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                        ) : (
-                          <Zap className="h-4 w-4 text-rose-600 dark:text-rose-400" />
-                        )}
-                      </div>
+                    {/* Plan Name Header */}
+                    <div className="text-center mt-1">
+                      <h3 className="text-sm font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                        {plan.name}
+                      </h3>
                     </div>
 
-                    {/* Tagline / Subtitle */}
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 min-h-[32px] line-clamp-2">
-                      {plan.tagline || plan.description}
-                    </p>
-
-                    {/* Prominent Credits Display Pill */}
-                    {creditsAmount > 0 && (
-                      <div className="mt-3.5 flex items-center justify-between rounded-2xl bg-amber-500/10 border border-amber-500/25 px-3.5 py-2.5 dark:bg-amber-500/15">
-                        <div className="flex items-center gap-2.5">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-xs font-black text-sm shrink-0">
-                            🪙
-                          </div>
-                          <div>
-                            <div className="text-base sm:text-lg font-black text-slate-950 dark:text-white leading-none">
-                              +{creditsAmount.toLocaleString("en-IN")} Credits
-                            </div>
-                            <span className="block text-[10px] font-semibold text-amber-800 dark:text-amber-300 mt-0.5">
-                              {isMonthly ? "Monthly team credit pool" : "Added to your wallet instantly"}
-                            </span>
-                          </div>
-                        </div>
-
-                        {perCreditRateText && (
-                          <span className="rounded-full bg-white/90 dark:bg-slate-900/90 px-2.5 py-1 text-[11px] font-black text-amber-800 dark:text-amber-300 shadow-xs border border-amber-200 dark:border-amber-900 shrink-0">
-                            {perCreditRateText}
-                          </span>
-                        )}
+                    {/* HERO FOCUS: Credit Amount Callout */}
+                    <div className="mt-3 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-amber-50 to-amber-100/50 p-4 border border-amber-200 text-center dark:from-amber-950/30 dark:to-amber-900/10 dark:border-amber-900/50 shadow-xs">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <span className="text-2xl sm:text-3xl">🪙</span>
+                        <span className="text-3xl sm:text-4xl font-black tracking-tight text-slate-950 dark:text-white">
+                          +{creditsAmount.toLocaleString("en-IN")}
+                        </span>
+                        <span className="text-base sm:text-lg font-black text-amber-600 dark:text-amber-400">
+                          Credits
+                        </span>
                       </div>
-                    )}
+
+                      <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-0.5 text-[11px] font-bold text-amber-950 shadow-2xs border border-amber-200 dark:bg-slate-900 dark:text-amber-200 dark:border-amber-800">
+                        <Sparkles className="h-3 w-3 text-amber-600 dark:text-amber-400 shrink-0" />
+                        <span>Unlocks {Math.floor(creditsAmount / 5)} Verified Contacts</span>
+                      </div>
+
+                      {perCreditRateText && (
+                        <span className="mt-1.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                          {perCreditRateText} &bull; Never expires
+                        </span>
+                      )}
+                    </div>
 
                     {/* Price Block */}
-                    <div className="mt-4 flex flex-col">
+                    <div className="mt-4 flex flex-col items-center text-center">
                       <div className="flex items-baseline gap-2">
-                        <span className="text-3xl sm:text-4xl font-black text-slate-950 dark:text-white">
+                        <span className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white">
                           {isFree ? "Free" : `₹${plan.price.toLocaleString("en-IN")}`}
                         </span>
 
                         {hasDiscount && (
-                          <span className="text-sm font-semibold text-slate-400 line-through">
+                          <span className="text-xs font-semibold text-slate-400 line-through">
                             ₹{plan.originalPrice?.toLocaleString("en-IN")}
                           </span>
                         )}
-                      </div>
-
-                      <div className="mt-1 flex items-center gap-2">
-                        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                          {validityLabel}
-                        </span>
 
                         {hasDiscount && (
-                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black uppercase text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                             Save {discountPct}%
                           </span>
                         )}
                       </div>
 
-                      {creditsAmount > 0 && (
-                        <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mt-1 flex items-center gap-1">
-                          <Sparkles className="h-3 w-3 shrink-0" />
-                          <span>
-                            {perCreditRateText ? `${perCreditRateText} • ` : ""}Universal wallet balance
-                          </span>
-                        </p>
-                      )}
+                      <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+                        {validityLabel}
+                      </span>
                     </div>
 
-                    {/* Feature Checklist - 100% Dynamic from Backend featureList JSON */}
-                    <div className="mt-5 space-y-2.5 border-t border-slate-100 pt-5 text-xs text-slate-700 dark:border-slate-800 dark:text-slate-300 flex-1">
-                      {plan.featureList && plan.featureList.length > 0 ? (
-                        plan.featureList.map((item, idx) => (
-                          <div
-                            key={idx}
-                            className={`flex items-start gap-2 ${
-                              item.highlight ? "font-bold text-slate-950 dark:text-white" : ""
-                            }`}
-                          >
-                            <CheckCircle2
-                              className={`h-4 w-4 shrink-0 mt-0.5 ${
-                                item.highlight
-                                  ? "text-rose-600 dark:text-rose-400"
-                                  : "text-emerald-600 dark:text-emerald-400"
-                              }`}
-                            />
-                            <span>{item.text}</span>
-                          </div>
-                        ))
-                      ) : (
-                        // Fallback in case a plan has no featureList
-                        <>
-                          {creditsAmount > 0 ? (
-                            <div className="flex items-center gap-2 font-bold text-slate-950 dark:text-white">
-                              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                              <span>+{creditsAmount.toLocaleString("en-IN")} Universal credits added to wallet</span>
-                            </div>
-                          ) : null}
-                          {creditsAmount >= 10 && (
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                              <span>Unlock up to {Math.floor(creditsAmount / 10)} verified owner / flatmate contacts</span>
-                            </div>
-                          )}
-                          {creditsAmount >= 20 && (
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                              <span>Or publish {Math.floor(creditsAmount / 30)} properties (30 cr) / {Math.floor(creditsAmount / 20)} flatmates (20 cr)</span>
-                            </div>
-                          )}
-                          {plan.activeListings ? (
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                              <span>Up to {plan.activeListings} active property listings</span>
-                            </div>
-                          ) : null}
-                          {plan.teamSeats && plan.teamSeats > 1 ? (
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                              <span>{plan.teamSeats} team agent seats</span>
-                            </div>
-                          ) : null}
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                            <span>Lifetime validity (credits never expire)</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                            <span>Zero brokerage guarantee</span>
-                          </div>
-                        </>
-                      )}
+                    {/* Credit Utility Checklist */}
+                    <div className="mt-4 space-y-2 border-t border-slate-100 pt-4 text-xs text-slate-700 dark:border-slate-800 dark:text-slate-300 flex-1">
+                      <div className="flex items-start gap-2 font-bold text-slate-950 dark:text-white">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                        <span>+{creditsAmount.toLocaleString("en-IN")} Universal wallet credits</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                        <span>Unlock up to {Math.floor(creditsAmount / 5)} verified contacts (5 cr each)</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                        <span>Or spend on listings (30 cr), flatmates (20 cr) or boosts</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                        <span>Credits never expire (Lifetime validity)</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                        <span>Zero brokerage &bull; Instant activation</span>
+                      </div>
                     </div>
 
                     {/* Action Button */}
