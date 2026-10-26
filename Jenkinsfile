@@ -73,7 +73,7 @@ pipeline {
                         --restart always \
                         --read-only \
                         --tmpfs /tmp:rw,noexec,nosuid,size=64m \
-                        --tmpfs /app/.next/cache:rw,noexec,nosuid,size=128m \
+                        --tmpfs /app/.next/cache:rw,noexec,nosuid,size=128m,uid=1001,gid=1001,mode=0770 \
                         --cap-drop ALL \
                         --security-opt no-new-privileges:true \
                         --memory 1g \
