@@ -149,8 +149,18 @@ export function FlatmateListingWizard() {
   };
 
   const addPhoto = () => {
-    if (newPhotoUrl.trim() && !photos.includes(newPhotoUrl.trim())) {
-      setPhotos((prev) => [...prev, newPhotoUrl.trim()]);
+    const maxAllowed = mode === "HAVE_ROOM" ? 8 : 1;
+    const trimmed = newPhotoUrl.trim();
+    if (trimmed && !photos.includes(trimmed)) {
+      if (mode !== "HAVE_ROOM") {
+        setPhotos([trimmed]);
+      } else {
+        if (photos.length >= maxAllowed) {
+          toast.info("Maximum 8 photos allowed");
+          return;
+        }
+        setPhotos((prev) => [...prev, trimmed]);
+      }
       setNewPhotoUrl("");
     }
   };
@@ -161,8 +171,13 @@ export function FlatmateListingWizard() {
 
   const uploadPhotos = async (files: FileList | null) => {
     if (!files?.length) return;
-    const selected = Array.from(files).slice(0, Math.max(0, 8 - photos.length));
-    if (!selected.length) return;
+    const maxAllowed = mode === "HAVE_ROOM" ? 8 : 1;
+    const remainingSlots = Math.max(0, maxAllowed - photos.length);
+    const selected = Array.from(files).slice(0, remainingSlots);
+    if (!selected.length) {
+      toast.info(mode === "HAVE_ROOM" ? "Maximum 8 photos allowed" : "Maximum 1 profile picture allowed");
+      return;
+    }
     if (selected.some((file) => !file.type.startsWith("image/") || file.size > 10 * 1024 * 1024)) {
       toast.error("Choose image files smaller than 10 MB each");
       return;
@@ -170,13 +185,17 @@ export function FlatmateListingWizard() {
     setIsUploadingPhotos(true);
     try {
       const uploaded = await Promise.all(selected.map(async (file) => {
-        const presigned = await getPresignedUploadUrl({ fileName: file.name, contentType: file.type, category: "flatmates", subFolder: "photos" }).unwrap();
+        const presigned = await getPresignedUploadUrl({ fileName: file.name, contentType: file.type, category: "flatmates", subFolder: mode === "HAVE_ROOM" ? "photos" : "profiles" }).unwrap();
         const response = await fetch(presigned.uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
         if (!response.ok) throw new Error(`Could not upload ${file.name}`);
         return presigned.publicUrl;
       }));
-      setPhotos((current) => [...current, ...uploaded].slice(0, 8));
-      toast.success(`${uploaded.length} photo${uploaded.length === 1 ? "" : "s"} uploaded`);
+      setPhotos((current) => [...current, ...uploaded].slice(0, maxAllowed));
+      toast.success(
+        mode === "HAVE_ROOM"
+          ? `${uploaded.length} photo${uploaded.length === 1 ? "" : "s"} uploaded`
+          : "Profile photo uploaded"
+      );
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Photo upload failed");
     } finally {
@@ -583,10 +602,12 @@ export function FlatmateListingWizard() {
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="space-y-1">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              Room & Property Details
+              {mode === "HAVE_ROOM" ? "Room & Property Details" : "Room Preferences & Timeline"}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Specify the room type, flat size, and amenities available.
+              {mode === "HAVE_ROOM"
+                ? "Specify the room type, flat size, and amenities available."
+                : "Specify your preferred room type, furnishing preference, and move-in timeline."}
             </p>
           </div>
 
@@ -695,7 +716,7 @@ export function FlatmateListingWizard() {
           {/* Amenities checklist */}
           <div className="space-y-2 pt-2">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Key Amenities Included
+              {mode === "HAVE_ROOM" ? "Key Amenities Included" : "Desired Amenities (Optional)"}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {AMENITY_OPTIONS.map((amenity) => {
@@ -950,10 +971,12 @@ export function FlatmateListingWizard() {
           <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-5">
             <div className="space-y-1">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                About You & Photos
+                {mode === "HAVE_ROOM" ? "About You & Room Photos" : "About You & Profile Photo"}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                A clear profile and recent room photos help people decide whether to start a conversation.
+                {mode === "HAVE_ROOM"
+                  ? "A clear profile and recent room photos help prospective flatmates get an accurate view of your space."
+                  : "Tell potential flatmates a little about yourself. Since you are searching for a room or flat, flat photos are not needed — you can optionally add a profile picture."}
               </p>
             </div>
 
@@ -1026,51 +1049,111 @@ export function FlatmateListingWizard() {
             </div>
 
             {/* Photos */}
-            <div className="space-y-2 pt-2">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Room & Flat Photos
-              </label>
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {mode === "HAVE_ROOM" ? "Room & Flat Photos" : "Your Profile Picture (Optional)"}
+                </label>
+                {mode !== "HAVE_ROOM" && (
+                  <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                    Optional
+                  </span>
+                )}
+              </div>
+
+              {mode !== "HAVE_ROOM" && (
+                <div className="flex items-start gap-2.5 rounded-2xl bg-indigo-50/70 p-3 text-xs text-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/40">
+                  <Info className="w-4 h-4 mt-0.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                  <span>
+                    <strong>Searching for a room or flat?</strong> You don&apos;t have a property to show yet, so flat photos are not required. You can optionally upload your profile photo so flatmates can put a face to your listing.
+                  </span>
+                </div>
+              )}
+
               <label className={`flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center transition hover:border-rose-400 hover:bg-rose-50/40 dark:border-slate-700 dark:bg-slate-800/50 ${isUploadingPhotos ? "pointer-events-none opacity-70" : ""}`}>
-                {isUploadingPhotos ? <Loader2 className="mb-2 h-6 w-6 animate-spin text-rose-500" /> : <Upload className="mb-2 h-6 w-6 text-rose-500" />}
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{isUploadingPhotos ? "Uploading photos…" : "Choose room or profile photos"}</span>
-                <span className="mt-1 text-[11px] text-slate-500">Up to 8 JPG, PNG or WebP images · 10 MB each</span>
-                <input type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only" onChange={(e) => void uploadPhotos(e.target.files)} />
-              </label>
-              <details className="rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-800">
-                <summary className="cursor-pointer text-[11px] font-semibold text-slate-500">Or add an image URL</summary>
-                <div className="mt-2 flex gap-2">
-                <Input
-                  value={newPhotoUrl}
-                  onChange={(e) => setNewPhotoUrl(e.target.value)}
-                  placeholder="Paste photo URL (https://...)"
-                  className="rounded-2xl text-sm"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addPhoto();
-                    }
-                  }}
+                {isUploadingPhotos ? (
+                  <Loader2 className="mb-2 h-6 w-6 animate-spin text-rose-500" />
+                ) : (
+                  <Upload className="mb-2 h-6 w-6 text-rose-500" />
+                )}
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                  {isUploadingPhotos
+                    ? "Uploading photo…"
+                    : mode === "HAVE_ROOM"
+                    ? "Choose room or flat photos"
+                    : photos.length > 0
+                    ? "Change profile photo"
+                    : "Upload profile picture (Optional)"}
+                </span>
+                <span className="mt-1 text-[11px] text-slate-500">
+                  {mode === "HAVE_ROOM"
+                    ? "Up to 8 JPG, PNG or WebP images · 10 MB each"
+                    : "1 JPG, PNG or WebP image · 10 MB max · Completely optional"}
+                </span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple={mode === "HAVE_ROOM"}
+                  className="sr-only"
+                  onChange={(e) => void uploadPhotos(e.target.files)}
                 />
-                <Button type="button" onClick={addPhoto} className="rounded-2xl shrink-0">
-                  <Plus className="w-4 h-4 mr-1" /> Add Photo
-                </Button>
+              </label>
+
+              <details className="rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-800">
+                <summary className="cursor-pointer text-[11px] font-semibold text-slate-500">
+                  {mode === "HAVE_ROOM" ? "Or add an image URL" : "Or paste a profile image URL"}
+                </summary>
+                <div className="mt-2 flex gap-2">
+                  <Input
+                    value={newPhotoUrl}
+                    onChange={(e) => setNewPhotoUrl(e.target.value)}
+                    placeholder="Paste photo URL (https://...)"
+                    className="rounded-2xl text-sm"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addPhoto();
+                      }
+                    }}
+                  />
+                  <Button type="button" onClick={addPhoto} className="rounded-2xl shrink-0">
+                    <Plus className="w-4 h-4 mr-1" /> Add Photo
+                  </Button>
                 </div>
               </details>
 
               {photos.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                <div className={mode === "HAVE_ROOM" ? "grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2" : "flex items-center gap-4 pt-2"}>
                   {photos.map((url, idx) => (
-                    <div key={idx} className="relative group rounded-2xl overflow-hidden h-28 border border-slate-200 dark:border-slate-800">
-                      <img src={url} alt={`Room photo ${idx + 1}`} className="w-full h-full object-cover" />
+                    <div
+                      key={idx}
+                      className={
+                        mode === "HAVE_ROOM"
+                          ? "relative group rounded-2xl overflow-hidden h-28 border border-slate-200 dark:border-slate-800"
+                          : "relative group rounded-full overflow-hidden w-24 h-24 border-2 border-rose-400 dark:border-rose-600 shadow-sm"
+                      }
+                    >
+                      <img
+                        src={url}
+                        alt={mode === "HAVE_ROOM" ? `Room photo ${idx + 1}` : "Profile photo"}
+                        className="w-full h-full object-cover"
+                      />
                       <button
                         type="button"
                         onClick={() => removePhoto(idx)}
-                        className="absolute top-1.5 right-1.5 p-1 rounded-full bg-slate-950/70 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1 right-1 p-1 rounded-full bg-slate-950/70 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Remove photo"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ))}
+                  {mode !== "HAVE_ROOM" && (
+                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                      <p className="font-medium text-slate-700 dark:text-slate-300">Profile photo set</p>
+                      <p className="text-[11px]">Click upload above to change, or hover to remove.</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
