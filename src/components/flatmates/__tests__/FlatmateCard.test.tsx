@@ -9,9 +9,15 @@ jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: pushMock }),
 }));
 
-// Mock api hook
+// Mock api hooks
 jest.mock("@/features/flatmates/api", () => ({
   useExpressFlatmateInterestMutation: () => [jest.fn(), { isLoading: false }],
+  useUnlockFlatmateContactMutation: () => [jest.fn(), { isLoading: false }],
+  useGetUnlockedFlatmateContactQuery: () => ({ data: { success: true, unlocked: false }, isLoading: false }),
+}));
+
+jest.mock("@/features/contactVerify/api", () => ({
+  useGetBillingSummaryQuery: () => ({ data: { data: { credits: 100 } }, isLoading: false, refetch: jest.fn() }),
 }));
 
 describe("FlatmateCard", () => {

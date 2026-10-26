@@ -83,6 +83,8 @@ export const API_ENDPOINTS = {
     expressInterest: (id: number | string) => `${BASE}/flatmates/${id}/interests`,
     myInterests: `${BASE}/flatmates/me/interests`,
     updateInterestStatus: (id: number | string) => `${BASE}/flatmates/interests/${id}`,
+    unlockContact: (id: number | string) => `${BASE}/flatmates/${id}/unlock-contact`,
+    unlockedContact: (id: number | string) => `${BASE}/flatmates/${id}/unlocked-contact`,
   },
   projects: {
     search: `${BASE}/projects`,

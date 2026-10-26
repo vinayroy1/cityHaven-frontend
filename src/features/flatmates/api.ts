@@ -147,6 +147,41 @@ export const flatmatesApi = createApi({
       transformResponse: (response: { success: boolean; data: FlatmateInterest }) => response.data,
       invalidatesTags: ["FlatmateInterests"],
     }),
+
+    unlockFlatmateContact: builder.mutation<
+      {
+        success: boolean;
+        alreadyUnlocked?: boolean;
+        isOwner?: boolean;
+        message?: string;
+        credits?: number;
+        data: { name: string; mobileNumber?: string | null; email?: string | null };
+      },
+      number
+    >({
+      query: (id) => ({
+        url: API_ENDPOINTS.flatmates.unlockContact(id),
+        method: "POST",
+      }),
+      invalidatesTags: (_res, _err, id) => [{ type: "FlatmateListing", id: String(id) }],
+    }),
+
+    getUnlockedFlatmateContact: builder.query<
+      {
+        success: boolean;
+        unlocked: boolean;
+        isOwner?: boolean;
+        credits?: number;
+        data: { unlocked: boolean; name?: string; mobileNumber?: string | null; email?: string | null };
+      },
+      number
+    >({
+      query: (id) => ({
+        url: API_ENDPOINTS.flatmates.unlockedContact(id),
+        method: "GET",
+      }),
+      providesTags: (_res, _err, id) => [{ type: "FlatmateListing", id: String(id) }],
+    }),
   }),
 });
 
@@ -162,4 +197,7 @@ export const {
   useExpressFlatmateInterestMutation,
   useGetMyFlatmateInterestsQuery,
   useUpdateFlatmateInterestStatusMutation,
+  useUnlockFlatmateContactMutation,
+  useGetUnlockedFlatmateContactQuery,
 } = flatmatesApi;
+

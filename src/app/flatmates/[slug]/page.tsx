@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
-import { FlatmateInterestModal } from "@/components/flatmates/FlatmateInterestModal";
+import { FlatmateContactModal } from "@/components/flatmates/FlatmateContactModal";
 import { useGetFlatmateListingQuery } from "@/features/flatmates/api";
 import { BackButton } from "@/components/common/BackButton";
 import { FlatmateDetailSkeleton } from "@/components/flatmates/FlatmateDetailSkeleton";
@@ -39,7 +39,7 @@ export default function FlatmateDetailPage() {
     skip: !slug,
   });
 
-  const [isInterestModalOpen, setIsInterestModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
 
   const handleShare = async () => {
@@ -412,7 +412,7 @@ export default function FlatmateDetailPage() {
                 </div>
 
                 <Button
-                  onClick={() => setIsInterestModalOpen(true)}
+                  onClick={() => setIsContactModalOpen(true)}
                   className="w-full h-12 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-sm shadow-lg shadow-rose-600/30 transition active:scale-95"
                 >
                   <HeartHandshake className="w-4 h-4 mr-2" />
@@ -420,7 +420,7 @@ export default function FlatmateDetailPage() {
                 </Button>
 
                 <div className="text-[11px] text-center text-slate-500 dark:text-slate-400">
-                  ⚡ 100% Free • Direct verified roomie connect • No broker commission
+                  ⚡ Direct verified contact • Phone &amp; Email unlocked • No brokerage
                 </div>
 
                 {/* Poster Profile Box */}
@@ -490,15 +490,15 @@ export default function FlatmateDetailPage() {
           <p className="truncate text-sm font-black text-slate-900 dark:text-white">{formattedRent()}</p>
           <p className="text-[10px] text-slate-500">{listing.mode === "HAVE_ROOM" ? "per month" : "target budget"}</p>
         </div>
-        <Button onClick={() => setIsInterestModalOpen(true)} className="h-11 shrink-0 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white hover:bg-rose-700">
+        <Button onClick={() => setIsContactModalOpen(true)} className="h-11 shrink-0 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white hover:bg-rose-700">
           <HeartHandshake className="mr-1.5 h-4 w-4" /> Connect
         </Button>
       </div>
 
-      <FlatmateInterestModal
+      <FlatmateContactModal
         listing={listing}
-        isOpen={isInterestModalOpen}
-        onClose={() => setIsInterestModalOpen(false)}
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
       />
     </div>
   );

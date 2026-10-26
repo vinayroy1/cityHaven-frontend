@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FlatmateInterestModal } from "./FlatmateInterestModal";
+import { FlatmateContactModal } from "./FlatmateContactModal";
 import type { FlatmateListing } from "@/types/flatmate.types";
 
 interface FlatmateCardProps {
@@ -26,7 +26,7 @@ interface FlatmateCardProps {
 
 export function FlatmateCard({ listing }: FlatmateCardProps) {
   const router = useRouter();
-  const [isInterestModalOpen, setIsInterestModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const detailsHref = `/flatmates/${listing.slug}`;
 
   const isPlaceListing = listing.mode === "HAVE_ROOM";
@@ -518,7 +518,7 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
               size="sm"
               onClick={(event) => {
                 event.stopPropagation();
-                setIsInterestModalOpen(true);
+                setIsContactModalOpen(true);
               }}
               className={`h-7 rounded-full text-white font-semibold text-[11px] px-3 shadow-xs transition-transform active:scale-95 ${
                 listing.mode === "BUDDY_UP"
@@ -535,10 +535,10 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
         </div>
       </article>
 
-      <FlatmateInterestModal
+      <FlatmateContactModal
         listing={listing}
-        isOpen={isInterestModalOpen}
-        onClose={() => setIsInterestModalOpen(false)}
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
       />
     </>
   );
