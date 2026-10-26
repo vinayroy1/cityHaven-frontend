@@ -91,6 +91,12 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
 
   const balance = creditsData?.data?.credits ?? 0;
   const flags = configData?.data?.flags ?? [];
+  const actions = configData?.data?.actions ?? [];
+
+  const contactCost = actions.find((a) => a.key === "CONTACT_UNLOCK")?.creditAmount ?? 5;
+  const propertyCost = actions.find((a) => a.key === "PROPERTY_POST")?.creditAmount ?? 10;
+  const flatmateCost = actions.find((a) => a.key === "FLATMATE_POST")?.creditAmount ?? 10;
+  const boost7Cost = actions.find((a) => a.key === "PROPERTY_BOOST_7")?.creditAmount ?? 50;
 
   const purchaseEnabled = flags.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
   const couponsEnabled = flags.find((f) => f.key === "COUPONS_ENABLED")?.isEnabled ?? true;
@@ -98,7 +104,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
   // Referral link helper
   const referralCode = userProfile?.email ? btoa(userProfile.email).slice(0, 8).toUpperCase() : "AWASIO";
   const referralUrl = typeof window !== "undefined" ? `${window.location.origin}/signup?ref=${referralCode}` : `https://awasio.com/signup?ref=${referralCode}`;
-  const shareMessage = `Join Awasio — the verified zero-brokerage real estate platform! Use my invite link to get 100 Free Credits to unlock owner numbers & post listings: ${referralUrl}`;
+  const shareMessage = `Join Awasio — the verified zero-brokerage real estate platform! Use my invite link to get 1,000 Free Credits to unlock owner numbers & post listings: ${referralUrl}`;
 
   const handleCopyLink = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -240,9 +246,9 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
               <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/80 p-2.5 dark:border-slate-800 dark:bg-slate-900/60">
                 <div className="flex items-center gap-2">
                   <PhoneCall className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">Unlock Owner Contact</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">Unlock Owner or Flatmate Contact</span>
                 </div>
-                <span className="font-bold text-slate-900 dark:text-white">10 Credits</span>
+                <span className="font-bold text-slate-900 dark:text-white">{contactCost} Credits</span>
               </div>
 
               <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/80 p-2.5 dark:border-slate-800 dark:bg-slate-900/60">
@@ -250,7 +256,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
                   <Building2 className="h-4 w-4 text-rose-600 shrink-0" />
                   <span className="font-semibold text-slate-800 dark:text-slate-200">Post Property Listing</span>
                 </div>
-                <span className="font-bold text-slate-900 dark:text-white">30 Credits (30d)</span>
+                <span className="font-bold text-slate-900 dark:text-white">{propertyCost} Credits</span>
               </div>
 
               <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/80 p-2.5 dark:border-slate-800 dark:bg-slate-900/60">
@@ -258,7 +264,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
                   <Users className="h-4 w-4 text-indigo-600 shrink-0" />
                   <span className="font-semibold text-slate-800 dark:text-slate-200">Post Flatmate Listing</span>
                 </div>
-                <span className="font-bold text-slate-900 dark:text-white">20 Credits (30d)</span>
+                <span className="font-bold text-slate-900 dark:text-white">{flatmateCost} Credits</span>
               </div>
 
               <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/80 p-2.5 dark:border-slate-800 dark:bg-slate-900/60">
@@ -266,7 +272,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
                   <Flame className="h-4 w-4 text-amber-600 shrink-0" />
                   <span className="font-semibold text-slate-800 dark:text-slate-200">Featured Boost (7 Days)</span>
                 </div>
-                <span className="font-bold text-slate-900 dark:text-white">50 Credits</span>
+                <span className="font-bold text-slate-900 dark:text-white">{boost7Cost} Credits</span>
               </div>
             </div>
             <p className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400">
@@ -421,7 +427,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
                   No credit transactions recorded yet
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  New users receive 100 free credits on registration!
+                  New users receive 1,000 free credits on registration!
                 </p>
               </div>
             )}

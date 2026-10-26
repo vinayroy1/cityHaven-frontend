@@ -48,6 +48,7 @@ type ContactUnlockDialogProps = {
   onPurchasePlan: () => void;
   purchaseEnabled?: boolean;
   onOpenWallet?: () => void;
+  contactCost?: number;
 };
 
 export function ContactUnlockDialog({
@@ -70,6 +71,7 @@ export function ContactUnlockDialog({
   onPurchasePlan,
   purchaseEnabled = false,
   onOpenWallet,
+  contactCost = 5,
 }: ContactUnlockDialogProps) {
   useModalBackHandler({
     isOpen: open,
@@ -116,7 +118,7 @@ export function ContactUnlockDialog({
                 ? isOrgScope
                   ? `Unlocked for all team members in ${activeScopeObj?.name || "your organization"}.`
                   : "Unlocked for your personal account."
-                : "1 Verified Contact Reveal = 10 Credits. Choose a pack below or redeem promo credits."}
+                : `1 Verified Contact Reveal = ${contactCost} Credits. Choose a pack below or redeem promo credits.`}
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -169,7 +171,7 @@ export function ContactUnlockDialog({
           {contactStep === "plans" && (
             <>
               {/* If user has enough credits in active scope */}
-              {(activeScopeObj?.credits ?? credits) >= 10 && (
+              {(activeScopeObj?.credits ?? credits) >= contactCost && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white">
@@ -177,7 +179,7 @@ export function ContactUnlockDialog({
                     </div>
                     <div>
                       <p className="text-xs font-bold text-emerald-950">You have {activeScopeObj?.credits ?? credits} Credits</p>
-                      <p className="text-[11px] text-emerald-700">Unlock this verified owner contact for 10 credits.</p>
+                      <p className="text-[11px] text-emerald-700">Unlock this verified owner contact for {contactCost} credits.</p>
                     </div>
                   </div>
                   <button
@@ -187,16 +189,16 @@ export function ContactUnlockDialog({
                     className="inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60 transition"
                   >
                     {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PhoneCall className="h-3.5 w-3.5" />}
-                    <span>Unlock with 10 Credits</span>
+                    <span>Unlock with {contactCost} Credits</span>
                   </button>
                 </div>
               )}
 
-              {isOrgScope && (activeScopeObj?.credits ?? credits) < 10 && (
+              {isOrgScope && (activeScopeObj?.credits ?? credits) < contactCost && (
                 <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
                   <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-amber-600" />
                   <div>
-                    <p className="font-semibold">{activeScopeObj?.name} has {activeScopeObj?.credits ?? 0} credits (10 required)</p>
+                    <p className="font-semibold">{activeScopeObj?.name} has {activeScopeObj?.credits ?? 0} credits ({contactCost} required)</p>
                     <p className="mt-0.5 text-amber-700">
                       Recharge a pack for this organization, or switch above to use your personal credits.
                     </p>
@@ -211,6 +213,7 @@ export function ContactUnlockDialog({
                 contactError={contactError}
                 loading={loading}
                 userCredits={activeScopeObj?.credits ?? credits}
+                contactCost={contactCost}
                 onSelectedPlanChange={onSelectedPlanChange}
                 onPurchasePlan={onPurchasePlan}
                 purchaseEnabled={purchaseEnabled}
@@ -400,6 +403,7 @@ export function PlanSelectionStep(props: {
   contactError: string | null;
   loading: boolean;
   userCredits?: number;
+  contactCost?: number;
   onSelectedPlanChange: (value: string) => void;
   onPurchasePlan: () => void;
   purchaseEnabled?: boolean;
@@ -412,6 +416,7 @@ export function PlanSelectionStep(props: {
     contactError,
     loading,
     userCredits = 0,
+    contactCost = 5,
     onSelectedPlanChange,
     onPurchasePlan,
     purchaseEnabled = false,
@@ -433,7 +438,7 @@ export function PlanSelectionStep(props: {
                   Credits Needed
                 </span>
                 <span className="rounded-full bg-rose-200/70 px-2 py-0.5 text-[10px] font-bold text-rose-800">
-                  10 Credits Required
+                  {contactCost} Credits Required
                 </span>
               </div>
               <p className="mt-0.5 text-xs text-zinc-600">

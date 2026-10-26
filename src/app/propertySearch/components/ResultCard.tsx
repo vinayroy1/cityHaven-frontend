@@ -86,7 +86,7 @@ export function ResultCard({
 
   const { data: platformResponse } = useGetCreditPlatformConfigQuery();
   const plansResponse = { data: platformResponse?.data?.plans ?? [] };
-  const contactCost = platformResponse?.data?.actions.find((action) => action.key === "CONTACT_UNLOCK")?.creditAmount ?? 10;
+  const contactCost = platformResponse?.data?.actions.find((action) => action.key === "CONTACT_UNLOCK")?.creditAmount ?? 5;
   const creditPurchasesEnabled = platformResponse?.data?.flags.find((flag) => flag.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
   const [fetchBillingSummary] = useLazyGetBillingSummaryQuery();
   const [triggerCheckUnlocked] = useLazyCheckUnlockedContactQuery();
@@ -492,6 +492,7 @@ export function ResultCard({
           setContactOpen(false);
           setWalletOpen(true);
         }}
+        contactCost={contactCost}
       />
       <CreditWalletModal
         isOpen={walletOpen}

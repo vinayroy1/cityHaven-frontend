@@ -173,8 +173,8 @@ export function WelcomeCreditModal() {
                 <PhoneCall className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
               <div className="min-w-0">
-                <h3 className="text-xs sm:text-sm font-bold text-white">Unlock 100 Verified Owner Contacts</h3>
-                <p className="text-[10px] sm:text-[11px] text-slate-400">Direct phone numbers revealed instantly &bull; Zero broker spam</p>
+                <h3 className="text-xs sm:text-sm font-bold text-white">Unlock 200 Verified Owner &amp; Flatmate Contacts</h3>
+                <p className="text-[10px] sm:text-[11px] text-slate-400">Only 5 credits per contact &bull; Direct phone numbers &bull; Zero broker spam</p>
               </div>
             </div>
 
@@ -183,8 +183,8 @@ export function WelcomeCreditModal() {
                 <Home className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
               <div className="min-w-0">
-                <h3 className="text-xs sm:text-sm font-bold text-white">Post Free Property &amp; Flatmate Listings</h3>
-                <p className="text-[10px] sm:text-[11px] text-slate-400">Rent or sell your home with zero brokerage fees</p>
+                <h3 className="text-xs sm:text-sm font-bold text-white">Post 100 Property &amp; Flatmate Listings</h3>
+                <p className="text-[10px] sm:text-[11px] text-slate-400">Only 10 credits per listing &bull; Never expires &bull; Zero brokerage fees</p>
               </div>
             </div>
 

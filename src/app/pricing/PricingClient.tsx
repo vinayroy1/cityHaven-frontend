@@ -263,7 +263,7 @@ export function PricingClient() {
                   <span>Early Founder Launch &bull; Enjoy Free Credits!</span>
                 </p>
                 <p className="mt-1 text-slate-600 dark:text-slate-300">
-                  Paid credit top-ups are currently in preview mode. All new users receive <strong>100 free credits on registration</strong> to unlock verified contacts, post listings, and test visibility boosts.
+                  Paid credit top-ups are currently in preview mode. All new users receive <strong>1,000 free credits on registration</strong> to unlock verified contacts, post listings, and test visibility boosts.
                 </p>
               </div>
             )}
