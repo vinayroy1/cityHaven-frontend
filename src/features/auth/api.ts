@@ -5,7 +5,7 @@ import { baseQueryWithReauth } from "@/lib/api/baseQueryWithReauth";
 export type RequestOtpPayload = { mobileNumber: string };
 export type VerifyOtpPayload = { mobileNumber: string; otp: string };
 export type LoginPayload = { loginId: string; password: string };
-export type SignupPayload = { name: string; email: string; mobileNumber: string; password: string; otp?: string };
+export type SignupPayload = { name: string; email: string; mobileNumber: string; password: string; otp?: string; referralCode?: string };
 export type SendSignupOtpPayload = { name: string; email: string; mobileNumber: string };
 export type TokenResponse = { accessToken?: string; refreshToken?: string; user?: any; isNewUser?: boolean };
 export type UpdateProfilePayload = { name?: string; email?: string };

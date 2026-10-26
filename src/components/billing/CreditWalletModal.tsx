@@ -26,6 +26,7 @@ import {
   useGetCreditPlatformConfigQuery,
   useRedeemCreditCouponMutation,
 } from "@/features/contactVerify/api";
+import { useMeQuery } from "@/features/auth/api";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 interface CreditWalletModalProps {
@@ -102,7 +103,9 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
   const couponsEnabled = flags.find((f) => f.key === "COUPONS_ENABLED")?.isEnabled ?? true;
 
   // Referral link helper
-  const referralCode = userProfile?.email ? btoa(userProfile.email).slice(0, 8).toUpperCase() : "AWASIO";
+  const { data: meData } = useMeQuery(undefined, { skip: !isOpen });
+  const activeUserId = meData?.id || (userProfile as any)?.id;
+  const referralCode = activeUserId ? `REF${activeUserId}` : userProfile?.email ? userProfile.email : "AWASIO";
   const referralUrl = typeof window !== "undefined" ? `${window.location.origin}/signup?ref=${referralCode}` : `https://awasio.com/signup?ref=${referralCode}`;
   const shareMessage = `Join Awasio — the verified zero-brokerage real estate platform! Use my invite link to get 1,000 Free Credits to unlock owner numbers & post listings: ${referralUrl}`;
 

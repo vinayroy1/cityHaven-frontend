@@ -161,6 +161,7 @@ function LoginContent() {
   const [signupStep, setSignupStep] = useState<"details" | "verify_email">("details");
   const [signupOtp, setSignupOtp] = useState("");
   const [signupResendCountdown, setSignupResendCountdown] = useState(0);
+  const [referralCode, setReferralCode] = useState<string>("");
   const [otpInput, setOtpInput] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -237,6 +238,21 @@ function LoginContent() {
     } else if (mode === "password" || mode === "login") {
       setIsSignup(false);
       setIsForgotPassword(false);
+    }
+
+    // Capture referral code from URL or persisted localStorage
+    const refParam = searchParams.get("ref");
+    if (refParam) {
+      const cleanRef = refParam.trim().toUpperCase();
+      setReferralCode(cleanRef);
+      try {
+        localStorage.setItem("awasio_referral_code", cleanRef);
+      } catch {}
+    } else if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("awasio_referral_code");
+        if (stored) setReferralCode(stored.trim().toUpperCase());
+      } catch {}
     }
   }, [searchParams]);
 
@@ -471,6 +487,8 @@ function LoginContent() {
     }
 
     const cleanMobile = mobile.replace(/\D/g, "");
+    const storedRef = typeof window !== "undefined" ? localStorage.getItem("awasio_referral_code") : null;
+    const activeRef = referralCode || searchParams.get("ref") || storedRef || undefined;
     try {
       const tokens = await signupUser({
         name: fullName.trim(),
@@ -478,7 +496,11 @@ function LoginContent() {
         mobileNumber: cleanMobile,
         password,
         otp: cleanOtp,
+        referralCode: activeRef?.trim() || undefined,
       }).unwrap();
+      try {
+        localStorage.removeItem("awasio_referral_code");
+      } catch {}
       handleAuthSuccess(tokens);
     } catch (err: any) {
       // Handled by toast/unwrap
@@ -868,11 +890,20 @@ function LoginContent() {
                   <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 dark:text-white">
                     {isSignup ? "Create Your Account" : "Sign In or Register"}
                   </h1>
-                  <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-5">
+                  <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-4">
                     {isSignup
                       ? "Join Awasio to discover verified properties, connect with owners, and list properties."
                       : "Enter your registered email address or 10-digit mobile number and password to securely sign in."}
                   </p>
+
+                  {isSignup && referralCode && (
+                    <div className="mb-4 flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
+                      <Sparkles className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                      <span>
+                        Referral code <strong className="font-bold">{referralCode}</strong> applied! You&apos;ll receive 1,000 Welcome Credits on signup.
+                      </span>
+                    </div>
+                  )}
 
                   <form onSubmit={handlePasswordSubmit} className="space-y-4">
                       {isSignup && (
