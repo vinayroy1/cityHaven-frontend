@@ -7,6 +7,8 @@ import {
   type AwasioSuggestion,
 } from "@/lib/awasioSuggestions";
 
+import { toast } from "sonner";
+
 const LOCALITY_PAGE_SIZE = 30;
 
 export interface LocalitySelection {
@@ -18,21 +20,29 @@ export interface LocalitySelection {
 }
 
 interface Props {
-  value: string;
+  value?: string;
   cityName: string;
   selectedState?: string;
-  onChange: (loc: LocalitySelection) => void;
+  onChange?: (loc: LocalitySelection) => void;
   hasError?: boolean;
   placeholder?: string;
+  multiple?: boolean;
+  values?: string[];
+  onValuesChange?: (values: string[]) => void;
+  maxSelections?: number;
 }
 
 export function PropertyListingLocalitySelector({
-  value,
+  value = "",
   cityName,
   selectedState,
-  onChange,
+  onChange = () => {},
   hasError = false,
   placeholder,
+  multiple = false,
+  values = [],
+  onValuesChange,
+  maxSelections = 5,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -225,10 +235,44 @@ export function PropertyListingLocalitySelector({
     };
   }, [isOpen]);
 
+  const selectedList = multiple ? values : [];
+
   const handleSelectLocality = (s: AwasioSuggestion) => {
+    const locName = s.location.locality || s.title;
+
+    if (multiple) {
+      const exists = selectedList.some((l) => l.toLowerCase() === locName.toLowerCase());
+      if (exists) {
+        const next = selectedList.filter((l) => l.toLowerCase() !== locName.toLowerCase());
+        onValuesChange?.(next);
+        onChange({
+          name: next[0] || "",
+          pincode: undefined,
+          lat: null,
+          lng: null,
+          isCustom: false,
+        });
+      } else {
+        if (selectedList.length >= maxSelections) {
+          toast.error(`You can select up to ${maxSelections} preferred localities.`);
+          return;
+        }
+        const next = [...selectedList, locName];
+        onValuesChange?.(next);
+        onChange({
+          name: next[0] || "",
+          pincode: s.location.pincode ? String(s.location.pincode) : undefined,
+          lat: s.location.lat ?? null,
+          lng: s.location.lng ?? null,
+          isCustom: false,
+        });
+      }
+      setSearch("");
+      return;
+    }
+
     setIsOpen(false);
     setSearch("");
-    const locName = s.location.locality || s.title;
     onChange({
       name: locName,
       pincode: s.location.pincode ? String(s.location.pincode) : undefined,
@@ -239,10 +283,32 @@ export function PropertyListingLocalitySelector({
   };
 
   const handleCustomLocality = (customName: string) => {
-    setIsOpen(false);
-    setSearch("");
     const cleanName = customName.trim();
     if (!cleanName) return;
+
+    if (multiple) {
+      const exists = selectedList.some((l) => l.toLowerCase() === cleanName.toLowerCase());
+      if (exists) {
+        toast.error(`"${cleanName}" is already selected`);
+        setSearch("");
+        return;
+      }
+      if (selectedList.length >= maxSelections) {
+        toast.error(`You can select up to ${maxSelections} preferred localities.`);
+        return;
+      }
+      const next = [...selectedList, cleanName];
+      onValuesChange?.(next);
+      onChange({
+        name: next[0] || "",
+        isCustom: true,
+      });
+      setSearch("");
+      return;
+    }
+
+    setIsOpen(false);
+    setSearch("");
     onChange({
       name: cleanName,
       isCustom: true,
@@ -255,10 +321,49 @@ export function PropertyListingLocalitySelector({
 
   return (
     <div className="relative" ref={containerRef}>
+      {/* Multi-selection badges display */}
+      {multiple && selectedList.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 pb-2">
+          {selectedList.map((loc, idx) => (
+            <span
+              key={loc}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 text-xs font-semibold border border-rose-200/70 dark:border-rose-900/50 shadow-2xs transition-all animate-in fade-in"
+            >
+              <span>{loc}</span>
+              {idx === 0 && (
+                <span className="text-[9px] uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded bg-rose-200/80 text-rose-800 dark:bg-rose-900 dark:text-rose-200">
+                  Primary
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const next = selectedList.filter((x) => x !== loc);
+                  onValuesChange?.(next);
+                  onChange({ name: next[0] || "", isCustom: false });
+                }}
+                className="hover:text-rose-900 dark:hover:text-rose-100 p-0.5 rounded-full hover:bg-rose-200/60 dark:hover:bg-rose-900/60 transition-colors"
+                aria-label={`Remove ${loc}`}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 pl-1">
+            ({selectedList.length}/{maxSelections} selected)
+          </span>
+        </div>
+      )}
+
       {/* Trigger Bar */}
       <div
         onClick={() => {
           if (!isCitySelected) return;
+          if (multiple && selectedList.length >= maxSelections) {
+            toast.error(`Maximum ${maxSelections} preferred localities already selected. Remove one to add another.`);
+            return;
+          }
           setIsOpen(true);
           inputRef.current?.focus();
         }}
@@ -274,11 +379,11 @@ export function PropertyListingLocalitySelector({
       >
         <MapPin
           className={`ml-0.5 h-4 w-4 shrink-0 transition-colors ${
-            value ? "text-rose-500" : "text-slate-400"
+            value || selectedList.length > 0 ? "text-rose-500" : "text-slate-400"
           }`}
         />
 
-        {value && !isOpen ? (
+        {!multiple && value && !isOpen ? (
           <div className="flex min-w-0 flex-1 items-center justify-between gap-1">
             <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
               {value}
@@ -300,15 +405,44 @@ export function PropertyListingLocalitySelector({
           <input
             ref={inputRef}
             type="text"
-            disabled={!isCitySelected}
-            value={isOpen ? search : ""}
+            disabled={!isCitySelected || (multiple && selectedList.length >= maxSelections)}
+            value={multiple ? search : (isOpen ? search : "")}
             onChange={(e) => setSearch(e.target.value)}
             onFocus={() => {
-              if (isCitySelected) setIsOpen(true);
+              if (isCitySelected && (!multiple || selectedList.length < maxSelections)) setIsOpen(true);
             }}
-            placeholder={value || dynamicPlaceholder}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && search.trim()) {
+                e.preventDefault();
+                handleCustomLocality(search);
+              }
+            }}
+            placeholder={
+              multiple
+                ? selectedList.length >= maxSelections
+                  ? "Maximum 5 localities selected"
+                  : selectedList.length > 0
+                  ? "Search or type to add another preferred locality (Press Enter)…"
+                  : placeholder || `Select up to ${maxSelections} preferred localities in ${cityName}`
+                : value || dynamicPlaceholder
+            }
             className="min-w-0 flex-1 bg-transparent px-1.5 py-0.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500 disabled:cursor-not-allowed"
           />
+        )}
+
+        {multiple && selectedList.length > 0 && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onValuesChange?.([]);
+              onChange({ name: "", pincode: undefined, lat: null, lng: null });
+              setSearch("");
+            }}
+            className="rounded-full px-2 py-0.5 text-[11px] font-medium text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200 shrink-0"
+          >
+            Clear
+          </button>
         )}
 
         <ChevronDown
@@ -357,7 +491,9 @@ export function PropertyListingLocalitySelector({
           {localities.map((sg) => {
             const title = sg.title;
             const subtitle = sg.subtitle || `${cityName} (${sg.location.pincode || ""})`;
-            const isSelected = value.toLowerCase() === title.toLowerCase();
+            const isSelected = multiple
+              ? selectedList.some((l) => l.toLowerCase() === title.toLowerCase())
+              : value.toLowerCase() === title.toLowerCase();
 
             return (
               <button
@@ -367,7 +503,7 @@ export function PropertyListingLocalitySelector({
                 onClick={() => handleSelectLocality(sg)}
                 className={`group flex w-full items-center justify-between gap-2 px-3 py-2 text-left transition-colors ${
                   isSelected
-                    ? "bg-rose-50/80 text-rose-900 dark:bg-rose-950/40 dark:text-rose-300"
+                    ? "bg-rose-50/80 text-rose-900 dark:bg-rose-950/40 dark:text-rose-300 font-medium"
                     : "hover:bg-slate-50 text-slate-800 dark:text-slate-200 dark:hover:bg-slate-800/80"
                 }`}
               >
@@ -389,15 +525,22 @@ export function PropertyListingLocalitySelector({
                   </div>
                 </div>
 
-                <div className="flex shrink-0 flex-col items-end gap-0.5">
-                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
-                    {sg.badge || "Locality"}
-                  </span>
-                  {sg.metrics?.formattedPriceSqft && (
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500">
-                      {sg.metrics.formattedPriceSqft}
+                <div className="flex shrink-0 items-center gap-2">
+                  {isSelected && (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-white dark:bg-rose-500 shadow-2xs">
+                      <Check className="h-3 w-3 stroke-[3]" />
                     </span>
                   )}
+                  <div className="flex flex-col items-end gap-0.5">
+                    <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
+                      {sg.badge || "Locality"}
+                    </span>
+                    {sg.metrics?.formattedPriceSqft && (
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                        {sg.metrics.formattedPriceSqft}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </button>
             );

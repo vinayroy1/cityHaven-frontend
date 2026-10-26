@@ -151,6 +151,7 @@ export function LocationStep() {
     lifestyle?: Array<{ name: string; distanceKm: number; duration?: string; key: string }>;
   } | null>((form.getValues("location.nearbyLandmarks") as any) ?? null);
   const [loadingLandmarks, setLoadingLandmarks] = useState(false);
+  const [showAllLandmarks, setShowAllLandmarks] = useState(false);
 
   // Auto-fetch nearby landmarks when valid latitude & longitude are assigned OR from manual address
   const watchedLat = form.watch("location.latitude");
@@ -772,9 +773,9 @@ export function LocationStep() {
 
         {/* Internal Geocoding coordinates badge */}
         {(currentLat || currentLng || geoStatus) && (
-          <div className="flex items-center gap-2 rounded-xl bg-emerald-50/70 border border-emerald-200/60 px-3 py-2 text-xs text-emerald-800">
+          <div className="flex min-w-0 items-center gap-2 overflow-hidden rounded-xl bg-emerald-50/70 border border-emerald-200/60 px-3 py-2 text-xs text-emerald-800">
             <Navigation className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-            <span>
+            <span className="min-w-0 break-words">
               Internal Geolocation Synced ({geoStatus?.source || "Target Synced"}):{" "}
               <strong>
                 {currentLat ? Number(currentLat).toFixed(4) : "—"}, {currentLng ? Number(currentLng).toFixed(4) : "—"}
@@ -788,12 +789,13 @@ export function LocationStep() {
 
         {/* Live Detected Nearby Amenities from Google Places API (New) */}
         {(loadingLandmarks || nearbyLandmarks) && (
-          <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3.5 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-indigo-600" />
-                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                  Nearby Landmarks & Connectivity (Auto-Detected)
+          <div className="min-w-0 max-w-full overflow-hidden rounded-xl border border-indigo-100 bg-indigo-50/40 p-2.5 sm:p-3.5 space-y-2.5 sm:space-y-3">
+            <div className="flex min-w-0 items-center justify-between gap-2">
+              <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+                <Sparkles className="h-4 w-4 shrink-0 text-indigo-600" />
+                <h4 className="min-w-0 text-[10px] font-bold text-slate-900 uppercase tracking-wide sm:text-xs">
+                  <span className="sm:hidden">Nearby places</span>
+                  <span className="hidden sm:inline">Nearby Landmarks & Connectivity (Auto-Detected)</span>
                 </h4>
               </div>
               {loadingLandmarks ? (
@@ -801,25 +803,26 @@ export function LocationStep() {
                   <Loader2 className="h-3.5 w-3.5 animate-spin" /> Detecting…
                 </span>
               ) : (
-                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md">
-                  Saved with Listing
+                <span className="shrink-0 whitespace-nowrap text-[9px] font-semibold text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded-md sm:px-2 sm:text-[11px]">
+                  <span className="sm:hidden">Saved</span>
+                  <span className="hidden sm:inline">Saved with Listing</span>
                 </span>
               )}
             </div>
 
             {nearbyLandmarks && (
-              <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid min-w-0 grid-cols-2 gap-1.5 sm:gap-2.5 lg:grid-cols-4">
                 {/* 1. Transit */}
                 {nearbyLandmarks.transit && nearbyLandmarks.transit.length > 0 && (
-                  <div className="rounded-lg bg-white p-2.5 border border-slate-200/80 shadow-2xs">
+                  <div className="min-w-0 rounded-lg bg-white p-2 sm:p-2.5 border border-slate-200/80 shadow-2xs">
                     <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
                       <Train className="h-3.5 w-3.5 text-blue-600" />
                       <span>Transit & Metro</span>
                     </div>
                     <ul className="space-y-1">
                       {nearbyLandmarks.transit.map((t, idx) => (
-                        <li key={idx} className="text-xs text-slate-600 flex justify-between gap-1">
-                          <span className="truncate" title={t.name}>{t.name}</span>
+                        <li key={idx} className={`${idx >= 2 && !showAllLandmarks ? "hidden sm:flex" : "flex"} min-w-0 justify-between gap-1 text-[10px] text-slate-600 sm:text-xs`}>
+                          <span className="min-w-0 flex-1 truncate" title={t.name}>{t.name}</span>
                           <span className="shrink-0 font-semibold text-slate-900">{t.distanceKm} km</span>
                         </li>
                       ))}
@@ -829,15 +832,15 @@ export function LocationStep() {
 
                 {/* 2. Healthcare */}
                 {nearbyLandmarks.healthcare && nearbyLandmarks.healthcare.length > 0 && (
-                  <div className="rounded-lg bg-white p-2.5 border border-slate-200/80 shadow-2xs">
+                  <div className="min-w-0 rounded-lg bg-white p-2 sm:p-2.5 border border-slate-200/80 shadow-2xs">
                     <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
                       <Hospital className="h-3.5 w-3.5 text-rose-600" />
                       <span>Healthcare</span>
                     </div>
                     <ul className="space-y-1">
                       {nearbyLandmarks.healthcare.map((h, idx) => (
-                        <li key={idx} className="text-xs text-slate-600 flex justify-between gap-1">
-                          <span className="truncate" title={h.name}>{h.name}</span>
+                        <li key={idx} className={`${idx >= 2 && !showAllLandmarks ? "hidden sm:flex" : "flex"} min-w-0 justify-between gap-1 text-[10px] text-slate-600 sm:text-xs`}>
+                          <span className="min-w-0 flex-1 truncate" title={h.name}>{h.name}</span>
                           <span className="shrink-0 font-semibold text-slate-900">{h.distanceKm} km</span>
                         </li>
                       ))}
@@ -847,15 +850,15 @@ export function LocationStep() {
 
                 {/* 3. Education */}
                 {nearbyLandmarks.education && nearbyLandmarks.education.length > 0 && (
-                  <div className="rounded-lg bg-white p-2.5 border border-slate-200/80 shadow-2xs">
+                  <div className="min-w-0 rounded-lg bg-white p-2 sm:p-2.5 border border-slate-200/80 shadow-2xs">
                     <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
                       <GraduationCap className="h-3.5 w-3.5 text-amber-600" />
                       <span>Schools & Colleges</span>
                     </div>
                     <ul className="space-y-1">
                       {nearbyLandmarks.education.map((e, idx) => (
-                        <li key={idx} className="text-xs text-slate-600 flex justify-between gap-1">
-                          <span className="truncate" title={e.name}>{e.name}</span>
+                        <li key={idx} className={`${idx >= 2 && !showAllLandmarks ? "hidden sm:flex" : "flex"} min-w-0 justify-between gap-1 text-[10px] text-slate-600 sm:text-xs`}>
+                          <span className="min-w-0 flex-1 truncate" title={e.name}>{e.name}</span>
                           <span className="shrink-0 font-semibold text-slate-900">{e.distanceKm} km</span>
                         </li>
                       ))}
@@ -865,15 +868,15 @@ export function LocationStep() {
 
                 {/* 4. Lifestyle */}
                 {nearbyLandmarks.lifestyle && nearbyLandmarks.lifestyle.length > 0 && (
-                  <div className="rounded-lg bg-white p-2.5 border border-slate-200/80 shadow-2xs">
+                  <div className="min-w-0 rounded-lg bg-white p-2 sm:p-2.5 border border-slate-200/80 shadow-2xs">
                     <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
                       <ShoppingBag className="h-3.5 w-3.5 text-emerald-600" />
                       <span>Shopping & Parks</span>
                     </div>
                     <ul className="space-y-1">
                       {nearbyLandmarks.lifestyle.map((l, idx) => (
-                        <li key={idx} className="text-xs text-slate-600 flex justify-between gap-1">
-                          <span className="truncate" title={l.name}>{l.name}</span>
+                        <li key={idx} className={`${idx >= 2 && !showAllLandmarks ? "hidden sm:flex" : "flex"} min-w-0 justify-between gap-1 text-[10px] text-slate-600 sm:text-xs`}>
+                          <span className="min-w-0 flex-1 truncate" title={l.name}>{l.name}</span>
                           <span className="shrink-0 font-semibold text-slate-900">{l.distanceKm} km</span>
                         </li>
                       ))}
@@ -882,6 +885,18 @@ export function LocationStep() {
                 )}
               </div>
             )}
+            {nearbyLandmarks &&
+              [nearbyLandmarks.transit, nearbyLandmarks.healthcare, nearbyLandmarks.education, nearbyLandmarks.lifestyle]
+                .some((items) => (items?.length ?? 0) > 2) && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllLandmarks((current) => !current)}
+                  className="mx-auto flex items-center gap-1 rounded-full border border-indigo-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-indigo-700 sm:hidden"
+                >
+                  {showAllLandmarks ? "Show fewer places" : "Show all nearby places"}
+                  <ChevronDown className={`h-3 w-3 transition ${showAllLandmarks ? "rotate-180" : ""}`} />
+                </button>
+              )}
           </div>
         )}
       </div>

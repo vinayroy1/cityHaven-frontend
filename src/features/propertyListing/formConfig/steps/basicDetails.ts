@@ -48,13 +48,13 @@ export const basicDetailsStep: StepConfig = {
         },
         {
           id: "context.postedAs",
-          label: "You are",
+          label: "What is your relationship to this property?",
           type: "chip-radio",
           required: true,
           options: [
-            { value: "OWNER", label: "Owner" },
-            { value: "AGENT", label: "Agent" },
-            { value: "BUILDER", label: "Builder" },
+            { value: "OWNER", label: "Property Owner" },
+            { value: "AGENT", label: "Broker / Agent" },
+            { value: "BUILDER", label: "Builder / Developer" },
           ],
         },
       ],

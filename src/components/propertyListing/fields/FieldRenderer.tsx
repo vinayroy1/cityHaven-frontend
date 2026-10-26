@@ -30,6 +30,10 @@ type Props = { field: FieldConfig; values: FormValues };
 
 const toNum = (raw: string): number | null => (raw === "" ? null : Number(raw));
 
+const compactChipGrid = "grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap sm:gap-2";
+const compactChip =
+  "min-h-9 w-full justify-center px-2 py-1.5 text-center text-[11px] leading-tight sm:min-h-0 sm:w-auto sm:px-4 sm:py-2 sm:text-sm";
+
 const Labelled = ({
   label,
   htmlFor,
@@ -77,17 +81,19 @@ const Chip = ({
   disabled,
   onClick,
   children,
+  className,
 }: {
   active: boolean;
   disabled?: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  className?: string;
 }) => (
   <button
     type="button"
     disabled={disabled}
     onClick={onClick}
-    className={cn(chipCls.base, active ? chipCls.active : chipCls.idle, disabled && chipCls.disabled)}
+    className={cn(chipCls.base, active ? chipCls.active : chipCls.idle, disabled && chipCls.disabled, className)}
   >
     {active && <Check className="h-3.5 w-3.5" />}
     {children}
@@ -245,7 +251,52 @@ export function FieldRenderer({ field, values }: Props) {
       );
 
     case "radio":
-    case "chip-radio":
+      return (
+        <Controller
+          name={field.id}
+          control={form.control}
+          rules={rules}
+          render={({ field: rhf }) => (
+            <div className="space-y-1">
+              <div className="flex min-w-0 items-center gap-1.5">
+                <p className={cn(fieldLabel, "min-w-0 text-[11px] leading-tight sm:text-sm")}>{field.label}</p>
+                {required && (
+                  <span className="shrink-0 rounded-md border border-rose-200/90 bg-rose-50 px-1 py-0.5 text-[9px] font-bold leading-none text-rose-600 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-400">
+                    Required
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                {options.map((o) => {
+                  const active = String(rhf.value ?? "") === String(o.value);
+                  return (
+                    <label
+                      key={String(o.value)}
+                      className={cn(
+                        "inline-flex min-h-8 cursor-pointer items-center gap-1.5 text-[11px] font-medium text-slate-700 sm:text-sm dark:text-slate-300",
+                        (disabled || optDisabled(o)) && "cursor-not-allowed opacity-40",
+                      )}
+                    >
+                      <input
+                        type="radio"
+                        name={field.id}
+                        checked={active}
+                        disabled={disabled || optDisabled(o)}
+                        onChange={() => rhf.onChange(o.value)}
+                        className="h-3.5 w-3.5 accent-slate-900 dark:accent-white"
+                      />
+                      <span>{o.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              {error ? <p className={errorText}>{error}</p> : field.helpText ? <p className={helpCls}>{field.helpText}</p> : null}
+            </div>
+          )}
+        />
+      );
+
+    case "chip-radio": {
       return (
         <Controller
           name={field.id}
@@ -253,7 +304,9 @@ export function FieldRenderer({ field, values }: Props) {
           rules={rules}
           render={({ field: rhf }) => (
             <Labelled label={field.label} required={required} error={error} helpText={field.helpText}>
-              <div className="flex flex-wrap gap-2">
+              <div
+                className={compactChipGrid}
+              >
                 {options.map((o) => {
                   const active = String(rhf.value ?? "") === String(o.value);
                   return (
@@ -288,6 +341,7 @@ export function FieldRenderer({ field, values }: Props) {
                           }
                         }
                       }}
+                      className={compactChip}
                     >
                       {o.label}
                     </Chip>
@@ -298,6 +352,7 @@ export function FieldRenderer({ field, values }: Props) {
           )}
         />
       );
+    }
 
     case "chip-multi":
       return (
@@ -309,7 +364,7 @@ export function FieldRenderer({ field, values }: Props) {
             const arr: (string | number)[] = Array.isArray(rhf.value) ? rhf.value : [];
             return (
               <Labelled label={field.label} required={required} error={error} helpText={field.helpText}>
-                <div className="flex flex-wrap gap-2">
+                <div className={compactChipGrid}>
                   {options.map((o) => {
                     const active = arr.includes(o.value as string | number);
                     return (
@@ -324,6 +379,7 @@ export function FieldRenderer({ field, values }: Props) {
                               : [...arr, o.value as string | number],
                           )
                         }
+                        className={compactChip}
                       >
                         {o.label}
                       </Chip>
@@ -347,7 +403,7 @@ export function FieldRenderer({ field, values }: Props) {
               rhf.value && typeof rhf.value === "object" ? rhf.value : {};
             return (
               <Labelled label={field.label} required={required} error={error} helpText={field.helpText}>
-                <div className="flex flex-wrap gap-2">
+                <div className={compactChipGrid}>
                   {options.map((o) => {
                     const key = String(o.value);
                     const active = !!rec[key];
@@ -357,6 +413,7 @@ export function FieldRenderer({ field, values }: Props) {
                         active={active}
                         disabled={disabled || optDisabled(o)}
                         onClick={() => rhf.onChange({ ...rec, [key]: !active })}
+                        className={compactChip}
                       >
                         {active ? o.label : `+ ${o.label}`}
                       </Chip>

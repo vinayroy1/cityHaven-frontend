@@ -86,13 +86,23 @@ export function SectionRenderer({
       )}
 
       {!collapsed && (
-        <div className={cn("grid gap-4 sm:grid-cols-2", section.title && "mt-4")}>
+        <div
+          className={cn(
+            "grid sm:grid-cols-2",
+            section.mobileColumns === 2 ? "grid-cols-2 gap-2.5 sm:gap-4" : "gap-4",
+            section.title && "mt-4",
+          )}
+        >
           {visibleFields.map((field, i) => (
             <div
               key={`${field.id}:${i}`}
               id={`field-container-${field.id}`}
               className={cn(
-                FULL_WIDTH_TYPES.has(field.type) ? "sm:col-span-2" : undefined,
+                FULL_WIDTH_TYPES.has(field.type)
+                  ? section.mobileColumns === 2
+                    ? "col-span-2"
+                    : "sm:col-span-2"
+                  : undefined,
                 "transition-all duration-300 rounded-xl",
               )}
             >

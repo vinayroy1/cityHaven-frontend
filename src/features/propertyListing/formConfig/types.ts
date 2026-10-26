@@ -87,6 +87,8 @@ export type SectionConfig = {
   id: string;
   title?: string;
   description?: string;
+  /** Render regular fields in two columns on mobile; full-width field types still span both columns. */
+  mobileColumns?: 2;
   /** small red hint under the title, e.g. "At least one area is mandatory". */
   requiredHint?: string;
   visibleWhen?: Condition;

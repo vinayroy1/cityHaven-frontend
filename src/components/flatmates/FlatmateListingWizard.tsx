@@ -90,7 +90,6 @@ export function FlatmateListingWizard() {
   const [stateName, setStateName] = useState("Karnataka");
   const [locality, setLocality] = useState("");
   const [preferredLocalities, setPreferredLocalities] = useState<string[]>([]);
-  const [localityInput, setLocalityInput] = useState("");
 
   // Room details
   const [bhk, setBhk] = useState<number>(2);
@@ -149,17 +148,6 @@ export function FlatmateListingWizard() {
     );
   };
 
-  const addPreferredLocality = () => {
-    if (localityInput.trim() && !preferredLocalities.includes(localityInput.trim())) {
-      setPreferredLocalities((prev) => [...prev, localityInput.trim()]);
-      setLocalityInput("");
-    }
-  };
-
-  const removePreferredLocality = (item: string) => {
-    setPreferredLocalities((prev) => prev.filter((l) => l !== item));
-  };
-
   const addPhoto = () => {
     if (newPhotoUrl.trim() && !photos.includes(newPhotoUrl.trim())) {
       setPhotos((prev) => [...prev, newPhotoUrl.trim()]);
@@ -199,7 +187,7 @@ export function FlatmateListingWizard() {
   // Smart title generation
   const computedTitle = () => {
     if (title.trim()) return title.trim();
-    const loc = locality || cityName;
+    const loc = preferredLocalities[0] || locality || cityName;
     if (mode === "HAVE_ROOM") {
       return `${roomType} in ${bhk} BHK at ${loc} for rent`;
     }
@@ -213,6 +201,10 @@ export function FlatmateListingWizard() {
     if (step === 2) {
       if (!cityName) {
         toast.error("Please select a city");
+        return;
+      }
+      if (preferredLocalities.length === 0 && !locality) {
+        toast.error("Please select at least one preferred locality");
         return;
       }
       if (mode === "HAVE_ROOM" && !rent) {
@@ -230,14 +222,19 @@ export function FlatmateListingWizard() {
   const handleSubmit = async () => {
     try {
       const finalTitle = computedTitle();
+      const primaryLoc = preferredLocalities[0] || locality.trim();
       const payload: FlatmateListingInput = {
         mode,
         title: finalTitle,
         description: description.trim() || undefined,
         cityName,
         stateName: stateName || undefined,
-        locality: locality.trim() || undefined,
-        preferredLocalities: preferredLocalities.length ? preferredLocalities : undefined,
+        locality: primaryLoc || undefined,
+        preferredLocalities: preferredLocalities.length
+          ? preferredLocalities
+          : primaryLoc
+          ? [primaryLoc]
+          : undefined,
         bhk: mode === "HAVE_ROOM" ? bhk : undefined,
         roomType,
         furnishing,
@@ -450,75 +447,41 @@ export function FlatmateListingWizard() {
                   setCityName(city.name);
                   if (city.state) setStateName(city.state);
                   setLocality("");
+                  setPreferredLocalities([]);
                 }}
                 placeholder="Select city (e.g. Bengaluru, Mumbai, Delhi)"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Primary Locality / Sector
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Preferred Localities / Areas <span className="text-rose-500">*</span>
+                </label>
+                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  {preferredLocalities.length}/5 selected
+                </span>
+              </div>
               <PropertyListingLocalitySelector
-                value={locality}
                 cityName={cityName}
                 selectedState={stateName}
-                onChange={(loc: LocalitySelection) => setLocality(loc.name)}
-                placeholder="Search locality (e.g. Koramangala, Indiranagar)"
+                multiple={true}
+                values={preferredLocalities}
+                maxSelections={5}
+                onValuesChange={(locs) => {
+                  setPreferredLocalities(locs);
+                  setLocality(locs[0] || "");
+                }}
+                placeholder={
+                  preferredLocalities.length >= 5
+                    ? "Maximum 5 localities selected"
+                    : preferredLocalities.length > 0
+                    ? "Add another preferred locality..."
+                    : "Search & select up to 5 preferred localities"
+                }
               />
             </div>
           </div>
-
-          {/* Preferred additional localities for seekers */}
-          {mode !== "HAVE_ROOM" && (
-            <div className="space-y-2 pt-2">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Other Preferred Areas (Optional, up to 5)
-              </label>
-              <div className="flex gap-2">
-                <Input
-                  value={localityInput}
-                  onChange={(e) => setLocalityInput(e.target.value)}
-                  placeholder="e.g. HSR Layout, Bellandur..."
-                  className="rounded-2xl"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addPreferredLocality();
-                    }
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={addPreferredLocality}
-                  className="rounded-2xl"
-                >
-                  <Plus className="w-4 h-4 mr-1" /> Add
-                </Button>
-              </div>
-
-              {preferredLocalities.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {preferredLocalities.map((loc) => (
-                    <span
-                      key={loc}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-300"
-                    >
-                      <span>{loc}</span>
-                      <button
-                        type="button"
-                        onClick={() => removePreferredLocality(loc)}
-                        className="hover:text-rose-500"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Pricing fields */}
           <div className="border-t border-slate-100 dark:border-slate-800 pt-5 space-y-4">

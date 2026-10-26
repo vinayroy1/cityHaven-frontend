@@ -238,5 +238,30 @@ describe("PropertyListingLocationSelectors", () => {
         expect(screen.getByText("Sector 2")).toBeTruthy();
       });
     });
+
+    it("supports multi-selection mode up to 5 preferred localities", async () => {
+      const handleValuesChange = jest.fn();
+
+      render(
+        <PropertyListingLocalitySelector
+          cityName="Bengaluru"
+          multiple={true}
+          values={["Koramangala", "Indiranagar"]}
+          maxSelections={5}
+          onValuesChange={handleValuesChange}
+        />
+      );
+
+      // Verify badges and count rendered
+      expect(screen.getByText("Koramangala")).toBeTruthy();
+      expect(screen.getByText("Indiranagar")).toBeTruthy();
+      expect(screen.getByText("(2/5 selected)")).toBeTruthy();
+      expect(screen.getByText("Primary")).toBeTruthy();
+
+      // Remove Indiranagar badge
+      const removeBtn = screen.getByLabelText("Remove Indiranagar");
+      fireEvent.click(removeBtn);
+      expect(handleValuesChange).toHaveBeenCalledWith(["Koramangala"]);
+    });
   });
 });

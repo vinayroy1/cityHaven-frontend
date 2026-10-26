@@ -173,9 +173,6 @@ export function PropertyListingFlow({
     if (propertyId) return;
     if (organizationIdFromQuery) {
       form.setValue("context.organizationId", organizationIdFromQuery, { shouldDirty: true });
-      if (form.getValues("context.postedAs") === "OWNER") {
-        form.setValue("context.postedAs", "AGENT", { shouldDirty: true });
-      }
     }
   }, [form, organizationIdFromQuery, propertyId]);
 
@@ -346,7 +343,7 @@ export function PropertyListingFlow({
 
   const handleNext = async () => {
     if (isViewerInSelectedOrg) {
-      toast.error("Viewer role cannot publish listings under this organization. Please switch to Personal Account or update your role.");
+      toast.error("Viewer role cannot publish listings under this organization. Please switch to My Account or update your role.");
       return;
     }
     const paths = requiredPathsForStep(step, form.getValues()) as FieldPath<PropertyListingFormValues>[];
@@ -370,7 +367,7 @@ export function PropertyListingFlow({
 
   const handlePublish = async () => {
     if (isViewerInSelectedOrg) {
-      toast.error("Viewer role cannot publish listings under this organization. Please switch to Personal Account or update your role.");
+      toast.error("Viewer role cannot publish listings under this organization. Please switch to My Account or update your role.");
       return;
     }
 
@@ -593,9 +590,6 @@ export function PropertyListingFlow({
                   }}
                   onSelectOrg={(org) => {
                     form.setValue("context.organizationId", String(org.id), { shouldDirty: true });
-                    if (form.getValues("context.postedAs") === "OWNER") {
-                      form.setValue("context.postedAs", "AGENT", { shouldDirty: true });
-                    }
                   }}
                 />
               )}

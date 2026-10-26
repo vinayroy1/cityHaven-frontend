@@ -40,10 +40,10 @@ export function WorkspacePicker({ selectedOrgId, onSelectPersonal, onSelectOrg }
         <div>
           <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Building2 className="h-4 w-4 text-rose-500" />
-            Publishing Workspace & Scope
+            Where should this listing be managed?
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Select whether this listing is posted under your personal account or an organization team.
+            Choose whether to manage it yourself or with one of your organization teams.
           </p>
         </div>
       </div>
@@ -74,10 +74,10 @@ export function WorkspacePicker({ selectedOrgId, onSelectPersonal, onSelectOrg }
               </div>
               <div>
                 <span className="text-sm font-bold text-slate-900 dark:text-white block">
-                  Personal Account
+                  My Account
                 </span>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
-                  Individual / Owner listing
+                  Publish and manage this listing personally
                 </span>
               </div>
             </div>
@@ -125,6 +125,9 @@ export function WorkspacePicker({ selectedOrgId, onSelectPersonal, onSelectOrg }
                       <span className="text-sm font-bold text-slate-900 dark:text-white block truncate max-w-[170px]">
                         {org.name}
                       </span>
+                      <span className="block text-[10px] text-slate-500 dark:text-slate-400">
+                        Publish and manage with this organization team
+                      </span>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <span
                           className={cn(
@@ -163,7 +166,7 @@ export function WorkspacePicker({ selectedOrgId, onSelectPersonal, onSelectOrg }
           <div>
             <span className="font-bold block">Viewer Role Restriction</span>
             <span>
-              Your assigned role in <strong>{activeOrg?.name}</strong> is <strong>Viewer</strong>. Viewers have read-only permissions and cannot create or publish property listings. Please switch to your Personal Account or ask an organization Admin/Owner to upgrade your membership.
+              Your assigned role in <strong>{activeOrg?.name}</strong> is <strong>Viewer</strong>. Viewers have read-only permissions and cannot create or publish property listings. Please switch to My Account or ask an organization Admin/Owner to upgrade your membership.
             </span>
           </div>
         </div>

@@ -71,6 +71,11 @@ const bhkOptions: Option[] = [
   { value: 6, label: "6+ BHK" },
 ];
 
+const yesNoOptions: Option[] = [
+  { value: true, label: "Yes" },
+  { value: false, label: "No" },
+];
+
 export const propertyProfileStep: StepConfig = {
   id: "profile",
   label: "Property Profile",
@@ -220,6 +225,7 @@ export const propertyProfileStep: StepConfig = {
     {
       id: "furnishing",
       title: "Furnishing",
+      mobileColumns: 2,
       visibleWhen: preset("showFurnishing"),
       fields: [
         {
@@ -533,41 +539,46 @@ export const propertyProfileStep: StepConfig = {
     {
       id: "liftsParking",
       title: "Lifts & parking",
+      mobileColumns: 2,
       visibleWhen: preset("showLiftsAndParking"),
       fields: [
-        { id: "details.lift", label: "Lift available", type: "toggle", visibleWhen: preset("showLift") },
+        { id: "details.lift", label: "Lift available", type: "radio", options: yesNoOptions, visibleWhen: preset("showLift") },
         num("details.passengerLifts", "Passenger lifts", {
           visibleWhen: { and: [{ field: "details.lift", equals: true }, preset("showLiftCounts")] },
         }),
         num("details.serviceLifts", "Service lifts", {
           visibleWhen: { and: [{ field: "details.lift", equals: true }, preset("showLiftCounts")] },
         }),
-        { id: "amenities.parkingAvailable", label: "Parking available", type: "toggle", visibleWhen: preset("showParking") },
+        { id: "amenities.parkingAvailable", label: "Parking available", type: "radio", options: yesNoOptions, visibleWhen: preset("showParking") },
         num("amenities.noOfParkings", "Number of parkings", {
           visibleWhen: { field: "amenities.parkingAvailable", equals: true },
         }),
         {
           id: "amenities.privateParkingBasement",
           label: "Private parking (basement)",
-          type: "toggle",
+          type: "radio",
+          options: yesNoOptions,
           visibleWhen: { field: "amenities.parkingAvailable", equals: true },
         },
         {
           id: "amenities.privateParkingOutside",
           label: "Private parking (outside)",
-          type: "toggle",
+          type: "radio",
+          options: yesNoOptions,
           visibleWhen: { field: "amenities.parkingAvailable", equals: true },
         },
         {
           id: "amenities.publicParking",
           label: "Public parking",
-          type: "toggle",
+          type: "radio",
+          options: yesNoOptions,
           visibleWhen: { field: "amenities.parkingAvailable", equals: true },
         },
         {
           id: "amenities.multilevelParking",
           label: "Multilevel parking",
-          type: "toggle",
+          type: "radio",
+          options: yesNoOptions,
           visibleWhen: preset("isShopCategory"),
         },
       ],
