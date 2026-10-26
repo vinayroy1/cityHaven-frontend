@@ -138,7 +138,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 overflow-y-auto cursor-pointer"
+      className="fixed inset-0 z-[9999] flex min-h-[100dvh] items-center justify-center p-2.5 sm:p-4 overflow-y-auto cursor-pointer"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -165,15 +165,15 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
         aria-labelledby="credit-wallet-title"
         onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
-        className="cursor-default relative z-10 w-full max-w-xl max-h-[90vh] flex flex-col rounded-3xl border border-slate-200/90 bg-white shadow-2xl overflow-hidden dark:border-slate-800 dark:bg-slate-950 animate-in zoom-in-95 duration-200"
+        className="cursor-default relative z-10 w-full max-w-xl my-auto max-h-[calc(100dvh-1.5rem)] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white shadow-2xl overflow-hidden dark:border-slate-800 dark:bg-slate-950 animate-in zoom-in-95 duration-200"
       >
         {/* Top Header Banner with Gradient */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-rose-600 via-pink-600 to-amber-600 px-5 sm:px-6 py-4 sm:py-5 text-white shrink-0">
+        <div className="relative overflow-hidden bg-gradient-to-br from-rose-600 via-pink-600 to-amber-600 px-4 sm:px-6 py-3.5 sm:py-5 text-white shrink-0">
           <div className="absolute -right-6 -bottom-8 h-32 w-32 rounded-full bg-white/10 blur-xl pointer-events-none" />
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md shadow-inner text-amber-300">
-                <Zap className="h-6 w-6 fill-amber-300 stroke-amber-300" />
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-white/20 backdrop-blur-md shadow-inner text-amber-300">
+                <Zap className="h-5 w-5 sm:h-6 sm:w-6 fill-amber-300 stroke-amber-300" />
               </div>
               <div className="min-w-0">
                 <h2 id="credit-wallet-title" className="text-base sm:text-lg font-black tracking-tight text-white truncate">
@@ -189,25 +189,25 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
             <button
               type="button"
               onClick={onClose}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-rose-600 hover:bg-rose-50 hover:scale-105 active:scale-95 transition-all shadow-lg font-bold focus:outline-none focus:ring-2 focus:ring-white"
+              className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-white text-rose-600 hover:bg-rose-50 hover:scale-105 active:scale-95 transition-all shadow-lg font-bold focus:outline-none focus:ring-2 focus:ring-white"
               aria-label="Close modal"
               title="Close (Esc)"
             >
-              <X className="h-5 w-5 stroke-[2.5]" />
+              <X className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.5]" />
             </button>
           </div>
 
           {/* Current Balance Display Card */}
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-black/25 p-3.5 sm:p-4 backdrop-blur-md border border-white/15">
+          <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl sm:rounded-2xl bg-black/25 p-3 sm:p-4 backdrop-blur-md border border-white/15">
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-rose-200">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-rose-200">
                 Available Balance
               </span>
               <div className="flex items-baseline gap-2 mt-0.5">
-                <span className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+                <span className="text-2xl sm:text-4xl font-black tracking-tight text-white">
                   {balance}
                 </span>
-                <span className="text-sm font-bold text-amber-300">Credits</span>
+                <span className="text-xs sm:text-sm font-bold text-amber-300">Credits</span>
               </div>
             </div>
 
@@ -230,7 +230,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
         </div>
 
         {/* Scrollable Body Content */}
-        <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-4 sm:py-5 space-y-5 sm:space-y-6">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-3.5 sm:py-5 space-y-4 sm:space-y-6">
           {/* Section: What your credits unlock */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2.5">
@@ -429,7 +429,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
         </div>
 
         {/* Footer info & explicit Close Button */}
-        <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-5 sm:px-6 py-3 text-xs dark:border-slate-800 dark:bg-slate-900/60 shrink-0">
+        <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-4 sm:px-6 py-2.5 sm:py-3 text-xs dark:border-slate-800 dark:bg-slate-900/60 shrink-0">
           <span className="text-[11px] text-slate-500 dark:text-slate-400">
             Credits never expire &bull; Zero brokerage
           </span>
