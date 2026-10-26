@@ -8,12 +8,34 @@ import { buildCanonical } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
 
 export const metadata: Metadata = {
-  title: "Post your property - Awasio",
-  description: "List your property for rent or sale on Awasio and reach verified buyers and tenants.",
+  title: "Post Property Free - List Property for Rent or Sale | Awasio",
+  description:
+    "Post your property for free on Awasio. Reach millions of verified buyers and tenants for flats, independent houses, plots, and commercial spaces across India with zero brokerage.",
+  keywords: [
+    "post property free",
+    "list property online",
+    "post property for rent",
+    "sell house online",
+    "property listing india",
+    "free property ad",
+    "post flat for rent",
+  ],
   alternates: { canonical: buildCanonical("/propertyListing") },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
-    title: "Post your property - Awasio",
-    description: "List your property for rent or sale on Awasio and reach verified buyers and tenants.",
+    title: "Post Property Free - List Property for Rent or Sale | Awasio",
+    description:
+      "Post your property for free on Awasio. Reach verified buyers and tenants across India with transparent pricing and zero brokerage.",
     url: buildCanonical("/propertyListing"),
     type: "website",
   },

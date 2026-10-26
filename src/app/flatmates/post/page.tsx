@@ -12,6 +12,17 @@ export const metadata: Metadata = {
   description:
     "List your available room or search for flatmates with shared lifestyle habits, diet, and sleep preferences on Awasio.",
   alternates: { canonical: buildCanonical("/flatmates/post") },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     title: "Post Flatmate Requirement | Find Roommates with Zero Brokerage - Awasio",
     description:

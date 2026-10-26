@@ -30,10 +30,12 @@ export default function robots(): MetadataRoute.Robots {
           "/privacy",
           "/terms",
           "/community",
+          "/propertyListing",
+          "/post-project",
+          "/flatmates/post",
         ],
         disallow: [
           "/api/",
-          "/propertyListing",
         ],
       },
     ],
