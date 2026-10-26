@@ -214,15 +214,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const searchIntents = ["rent", "buy", "pg", "flatmate", "commercial", "plot"] as const;
-  const citySearchRoutes: MetadataRoute.Sitemap = searchIntents.flatMap((intent) =>
-    ALL_59_CITIES.map((city) => ({
+  const activeCities = Array.from(activeCitiesSet);
+  const citySearchRoutes: MetadataRoute.Sitemap = ["rent", "buy", "pg"].flatMap((intent) =>
+    activeCities.map((city) => ({
       url: `${SITE_URL}/${intent}/${city}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.85,
     }))
   );
+
+  // Active Flatmate cities (cities with confirmed listings in DB)
+  const activeFlatmateCities = [
+    "bengaluru", "mumbai", "pune", "new-delhi", "gurugram", "noida", "hyderabad",
+    "chennai", "kolkata", "ahmedabad", "jaipur", "lucknow", "indore", "bhopal",
+    "chandigarh", "patna", "kochi", "thane", "navi-mumbai", "vadodara",
+  ];
+  const flatmateCityRoutes: MetadataRoute.Sitemap = activeFlatmateCities.map((city) => ({
+    url: `${SITE_URL}/flatmate/${city}`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.85,
+  }));
 
   const localitySearchRoutes: MetadataRoute.Sitemap = ["rent", "buy", "pg"].flatMap((intent) =>
     activeLocalityPairs.map(({ city, locality }) => ({
@@ -272,6 +285,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticRoutes,
     ...intentLandingRoutes,
     ...citySearchRoutes,
+    ...flatmateCityRoutes,
     ...localitySearchRoutes,
     ...agentRoutes,
     ...propertyRoutes,
