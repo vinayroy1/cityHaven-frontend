@@ -32,11 +32,7 @@ export default function robots(): MetadataRoute.Robots {
           "/community",
         ],
         disallow: [
-          "/dashboard/",
-          "/admin/",
           "/api/",
-          "/auth/",
-          "/login",
           "/propertyListing",
         ],
       },

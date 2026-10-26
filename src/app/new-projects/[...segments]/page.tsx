@@ -124,18 +124,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       };
     }
 
-    // It's a city landing page (e.g. /new-projects/bengaluru)
+    // It's a city landing page or project category (e.g. /new-projects/bengaluru)
     const location = parseLocation(segments);
-    if (!location) notFound();
-    const count = await getProjectCount(location.city);
-    if (!count || count <= 0) {
-      notFound();
-    }
-    const hasResults = count > 0;
-    const countLabel = `${count} `;
-    const title = `${countLabel}New Residential Projects in ${location.city} | Awasio`;
-    const description = `Explore ${countLabel || "verified "}new residential projects, luxury apartments, and township developments in ${location.city} with RERA verification, floor plans, and developer pricing.`;
-    const canonical = buildCanonical(`/new-projects/${toSearchSlug(location.city)}`);
+    const cityName = location?.city || fromSearchSlug(segments[0]);
+    const count = location ? await getProjectCount(location.city) : null;
+    const hasResults = count !== null && count > 0;
+    const countLabel = hasResults ? `${count} ` : "";
+    const title = `${countLabel}New Residential Projects in ${cityName} | Awasio`;
+    const description = `Explore ${countLabel || "verified "}new residential projects, luxury apartments, and township developments in ${cityName} with RERA verification, floor plans, and developer pricing.`;
+    const canonical = buildCanonical(`/new-projects/${toSearchSlug(cityName)}`);
+
+    return {
+      title,
+      description,
+      alternates: { canonical },
+      robots: {
+        index: true,
+        follow: true,
+      },
+      openGraph: { title, description, url: canonical, type: "website" },
+    };
 
     return {
       title,
@@ -248,22 +256,17 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
     }
   }
 
-  // Otherwise, it is a city or locality landing page
+  // Otherwise, it is a city or locality landing page (or general project directory fallback)
   const location = parseLocation(segments);
-  if (!location) notFound();
+  const city = location?.city || fromSearchSlug(segments[0]);
+  const localities = location?.localities || [];
 
-  // If single segment was not a project, verify that it has actual projects in that city
-  if (segments.length === 1) {
-    const count = await getProjectCount(location.city);
-    if (!count || count <= 0) {
-      notFound();
+  // Redirect alias or non-canonical casing/slug if canonical location is recognized
+  if (location) {
+    const canonicalSegments = [toSearchSlug(location.city), ...location.localities.map(toSearchSlug)];
+    if (canonicalSegments.some((value, index) => value !== segments[index])) {
+      permanentRedirect(`/new-projects/${canonicalSegments.join("/")}`);
     }
-  }
-
-  // Redirect alias or non-canonical casing/slug
-  const canonicalSegments = [toSearchSlug(location.city), ...location.localities.map(toSearchSlug)];
-  if (canonicalSegments.some((value, index) => value !== segments[index])) {
-    permanentRedirect(`/new-projects/${canonicalSegments.join("/")}`);
   }
 
   const breadcrumbsJsonLd = {
@@ -285,16 +288,16 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
       {
         "@type": "ListItem",
         position: 3,
-        name: location.city,
-        item: `${SITE_URL}/new-projects/${toSearchSlug(location.city)}`,
+        name: city,
+        item: `${SITE_URL}/new-projects/${toSearchSlug(city)}`,
       },
-      ...(location.localities[0]
+      ...(localities[0]
         ? [
             {
               "@type": "ListItem",
               position: 4,
-              name: location.localities[0],
-              item: `${SITE_URL}/new-projects/${toSearchSlug(location.city)}/${toSearchSlug(location.localities[0])}`,
+              name: localities[0],
+              item: `${SITE_URL}/new-projects/${toSearchSlug(city)}/${toSearchSlug(localities[0])}`,
             },
           ]
         : []),
@@ -306,7 +309,7 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }} />
       <HeaderNav />
       <main className="flex-1">
-        <NewProjectsClient initialCity={location.city} initialLocalities={location.localities} />
+        <NewProjectsClient initialCity={city} initialLocalities={localities} />
       </main>
       <FooterLinks />
     </div>
