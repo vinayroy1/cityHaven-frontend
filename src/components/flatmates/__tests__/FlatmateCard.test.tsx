@@ -111,9 +111,65 @@ describe("FlatmateCard", () => {
           budgetMin: 15000,
           budgetMax: 22000,
         }}
-      />,
+      />
     );
 
     expect(screen.getByText(/Preferred areas:/).parentElement).toHaveTextContent("HSR Layout · Koramangala");
+  });
+
+  it("renders profile-first card layout for NEED_ROOM mode", () => {
+    render(
+      <FlatmateCard
+        listing={{
+          ...mockListing,
+          id: 3,
+          slug: "need-room-priya",
+          mode: "NEED_ROOM",
+          budgetMin: 12000,
+          budgetMax: 18000,
+          rent: null,
+          photos: [],
+          profile: {
+            displayName: "Priya S.",
+            birthYear: 2000,
+            occupation: "Product Designer",
+            isIdentityVerified: true,
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Looking for Room")).toBeInTheDocument();
+    expect(screen.getByText("Max Budget")).toBeInTheDocument();
+    expect(screen.getByText("₹12,000 - ₹18,000")).toBeInTheDocument();
+    expect(screen.getByText("Priya S.")).toBeInTheDocument();
+    expect(screen.getByText("Verified")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /connect/i })).toBeInTheDocument();
+  });
+
+  it("renders team-first card layout for BUDDY_UP mode", () => {
+    render(
+      <FlatmateCard
+        listing={{
+          ...mockListing,
+          id: 4,
+          slug: "buddy-up-bellandur",
+          mode: "BUDDY_UP",
+          budgetMax: 35000,
+          rent: null,
+          title: "Looking to team up for 3BHK",
+          profile: {
+            displayName: "Vikram & Rohit",
+            occupation: "Software Engineers",
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Buddy Up • Team to Rent")).toBeInTheDocument();
+    expect(screen.getByText("Team Budget")).toBeInTheDocument();
+    expect(screen.getByText("Up to ₹35,000")).toBeInTheDocument();
+    expect(screen.getByText("Vikram & Rohit")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /team up/i })).toBeInTheDocument();
   });
 });

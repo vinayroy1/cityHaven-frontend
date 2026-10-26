@@ -14,7 +14,8 @@ import {
   PawPrint,
   Utensils,
   BedDouble,
-  WalletCards,
+  Briefcase,
+  CheckCircle2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,8 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
   const router = useRouter();
   const [isInterestModalOpen, setIsInterestModalOpen] = useState(false);
   const detailsHref = `/flatmates/${listing.slug}`;
+
+  const isPlaceListing = listing.mode === "HAVE_ROOM";
 
   const modeBadge = () => {
     switch (listing.mode) {
@@ -56,10 +59,11 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
   const badge = modeBadge();
   const ModeIcon = badge.icon;
 
-  const photo = listing.photos?.[0];
+  const roomPhoto = listing.photos?.[0];
   const profile = listing.profile;
+  const avatarPhoto = profile?.profilePhoto || (!isPlaceListing ? listing.photos?.[0] : undefined);
   const age = profile?.birthYear ? new Date().getFullYear() - profile.birthYear : undefined;
-  const preferredAreas = listing.preferredLocalities?.filter(Boolean).slice(0, 2) || [];
+  const preferredAreas = listing.preferredLocalities?.filter(Boolean).slice(0, 3) || [];
   const formatMoney = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
 
   const formattedRent = () => {
@@ -85,158 +89,347 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             router.push(detailsHref);
           }
         }}
-        className={`group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 ${listing.isBoosted ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40" : "border-slate-200/90 hover:border-rose-300 dark:border-slate-800 dark:hover:border-rose-900/60"}`}
+        className={`group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 ${
+          listing.isBoosted
+            ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40"
+            : "border-slate-200/90 hover:border-rose-300 dark:border-slate-800 dark:hover:border-rose-900/60"
+        }`}
       >
         <div>
-          {/* Card Media / Header Banner - Full-bleed Property Details Card Style (Compact Height) */}
-          <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900">
-            {photo ? (
-              <img
-                src={photo}
-                alt={listing.title}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-            ) : (
-              <div className="flex h-full w-full flex-col items-center justify-center p-3 text-center">
-                <div className="mb-1.5 flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 shadow-xs backdrop-blur dark:bg-slate-800/80">
-                  <ModeIcon className="h-4 w-4 text-rose-500" />
+          {/* ======================================================== */}
+          {/* LAYOUT 1: HAVE_ROOM (Property-First Landscape Card)      */}
+          {/* ======================================================== */}
+          {isPlaceListing ? (
+            <>
+              {/* Media Banner */}
+              <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900">
+                {roomPhoto ? (
+                  <img
+                    src={roomPhoto}
+                    alt={listing.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center p-3 text-center">
+                    <div className="mb-1.5 flex h-9 w-9 items-center justify-center rounded-xl bg-white/80 shadow-xs backdrop-blur dark:bg-slate-800/80">
+                      <ModeIcon className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                      Room in Shared Flat
+                    </span>
+                  </div>
+                )}
+
+                {/* Gradient Scrim */}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/25" />
+
+                {/* Mode Tag */}
+                <div className="absolute left-2.5 top-2.5">
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-xs backdrop-blur-md ${badge.className}`}
+                  >
+                    <ModeIcon className="h-2.5 w-2.5" />
+                    <span>{badge.label}</span>
+                  </span>
                 </div>
-                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                  {listing.mode === "HAVE_ROOM" ? "Room in Shared Flat" : "Roommate Seeking Flat"}
-                </span>
+                {listing.isBoosted && (
+                  <span className="absolute left-2.5 top-10 rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">
+                    ⭐ FEATURED
+                  </span>
+                )}
+
+                {/* Compatibility Score */}
+                {listing.compatibilityScore != null && (
+                  <div className="absolute right-2.5 top-2.5 rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700 shadow-xs backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
+                    {listing.compatibilityScore}% match
+                  </div>
+                )}
+
+                {/* Price Badge */}
+                <div className="absolute bottom-2 left-2.5">
+                  <div className="rounded-lg bg-slate-950/85 px-2.5 py-1 text-white backdrop-blur-md shadow-md">
+                    <span className="text-sm font-extrabold tracking-tight sm:text-base">
+                      {formattedRent()}
+                    </span>
+                    <span className="text-[10px] font-medium text-slate-300 ml-1">/mo</span>
+                  </div>
+                </div>
+
+                {/* Photo count badge */}
+                {listing.photos && listing.photos.length > 1 && (
+                  <div className="absolute bottom-2 right-2.5 rounded-full bg-slate-950/70 px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur">
+                    1 of {listing.photos.length} photos
+                  </div>
+                )}
               </div>
-            )}
 
-            {/* Gradient Scrim for readable badges */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/25" />
+              {/* Body */}
+              <div className="space-y-2 p-3 sm:p-3.5">
+                <div className="space-y-1">
+                  <h3 className="line-clamp-1 text-sm font-bold text-slate-900 transition-colors group-hover:text-rose-600 sm:text-base dark:text-white dark:group-hover:text-rose-400">
+                    {listing.title}
+                  </h3>
 
-            {/* Mode Tag */}
-            <div className="absolute left-2.5 top-2.5">
-              <span
-                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-xs backdrop-blur-md ${badge.className}`}
-              >
-                <ModeIcon className="h-2.5 w-2.5" />
-                <span>{badge.label}</span>
-              </span>
-            </div>
-            {listing.isBoosted && <span className="absolute left-2.5 top-10 rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">⭐ FEATURED</span>}
+                  <div className="flex items-center gap-1 text-[11px] text-slate-500 sm:text-xs dark:text-slate-400">
+                    <MapPin className="h-3 w-3 shrink-0 text-rose-500" />
+                    <span className="line-clamp-1">
+                      {listing.locality ? `${listing.locality}, ${listing.cityName}` : listing.cityName}
+                    </span>
+                  </div>
+                </div>
 
-            {/* Compatibility Score */}
-            {listing.compatibilityScore != null && (
-              <div className="absolute right-2.5 top-2.5 rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700 shadow-xs backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
-                {listing.compatibilityScore}% match
-              </div>
-            )}
-
-            {/* Price Badge */}
-            <div className="absolute bottom-2 left-2.5">
-              <div className="rounded-lg bg-slate-950/85 px-2.5 py-1 text-white backdrop-blur-md shadow-md">
-                <span className="text-sm font-extrabold tracking-tight sm:text-base">{formattedRent()}</span>
-                <span className="text-[10px] font-medium text-slate-300 ml-1">
-                  {listing.mode === "HAVE_ROOM" ? "/mo" : "budget"}
-                </span>
-              </div>
-            </div>
-
-            {/* Photo count badge */}
-            {listing.photos && listing.photos.length > 1 && (
-              <div className="absolute bottom-2 right-2.5 rounded-full bg-slate-950/70 px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur">
-                1 of {listing.photos.length} photos
-              </div>
-            )}
-          </div>
-
-          {/* Card Body Content with Spacing */}
-          <div className="space-y-2 p-3 sm:p-3.5">
-            {/* Title & Location */}
-            <div className="space-y-1">
-              <h3 className="line-clamp-1 text-sm font-bold text-slate-900 transition-colors group-hover:text-rose-600 sm:text-base dark:text-white dark:group-hover:text-rose-400">
-                {listing.title}
-              </h3>
-
-              <div className="flex items-center gap-1 text-[11px] text-slate-500 sm:text-xs dark:text-slate-400">
-                <MapPin className="h-3 w-3 shrink-0 text-rose-500" />
-                <span className="line-clamp-1">
-                  {listing.locality ? `${listing.locality}, ${listing.cityName}` : listing.cityName}
-                </span>
-              </div>
-            </div>
-
-            {/* Quick Specifications Row */}
-            <div className="flex flex-wrap items-center gap-1 text-[10px] sm:text-[11px]">
-            {listing.roomType && (
-              <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                <BedDouble className="h-2.5 w-2.5 text-slate-500" />
-                {listing.roomType}
-              </span>
-            )}
-            {listing.furnishing && (
-              <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                {listing.furnishing}
-              </span>
-            )}
-            {listing.availableFrom && (
-              <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                <Calendar className="h-2.5 w-2.5 text-slate-500" />
-                {listing.mode === "HAVE_ROOM" ? "Available " : "Move-in "}
-                {new Date(listing.availableFrom).toLocaleDateString("en-IN", {
-                  month: "short",
-                  day: "numeric",
-                })}
-              </span>
-            )}
-            {listing.mode !== "HAVE_ROOM" && listing.bhk && (
-              <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                {listing.bhk} BHK preferred
-              </span>
-            )}
-          </div>
-
-          {/* Mode-specific Decision Details (Compact Box) */}
-          {listing.mode === "HAVE_ROOM" ? (
-            (listing.deposit != null || listing.maintenance != null || listing.currentOccupants != null || listing.spotsAvailable > 0 || listing.minimumStayMonths != null) && (
-              <div className="mt-2 rounded-lg bg-slate-50/90 px-2 py-1.5 text-[10px] text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                  {listing.deposit != null && (
-                    <span><strong>{formatMoney(listing.deposit)}</strong> deposit</span>
-                  )}
-                  {listing.deposit != null && listing.maintenance != null && <span className="text-slate-300 dark:text-slate-600">·</span>}
-                  {listing.maintenance != null && (
-                    <span><strong>{formatMoney(listing.maintenance)}</strong> maintenance</span>
-                  )}
-                  {(listing.deposit != null || listing.maintenance != null) && (listing.currentOccupants != null || listing.spotsAvailable > 0 || listing.minimumStayMonths != null) && (
-                    <span className="text-slate-300 dark:text-slate-600">·</span>
-                  )}
-                  {listing.currentOccupants != null && (
-                    <span>{listing.currentOccupants} current occupant{listing.currentOccupants === 1 ? "" : "s"}</span>
-                  )}
-                  {listing.currentOccupants != null && listing.spotsAvailable > 0 && <span className="text-slate-300 dark:text-slate-600">·</span>}
-                  {listing.spotsAvailable > 0 && (
-                    <span className="font-semibold text-emerald-700 dark:text-emerald-400">
-                      {listing.spotsAvailable} spot{listing.spotsAvailable === 1 ? "" : "s"} open
+                {/* Quick Specifications Row */}
+                <div className="flex flex-wrap items-center gap-1 text-[10px] sm:text-[11px]">
+                  {listing.roomType && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      <BedDouble className="h-2.5 w-2.5 text-slate-500" />
+                      {listing.roomType}
                     </span>
                   )}
-                  {(listing.spotsAvailable > 0 || listing.currentOccupants != null) && listing.minimumStayMonths != null && (
-                    <span className="text-slate-300 dark:text-slate-600">·</span>
+                  {listing.furnishing && (
+                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      {listing.furnishing}
+                    </span>
                   )}
-                  {listing.minimumStayMonths != null && (
-                    <span>{listing.minimumStayMonths}+ month stay</span>
+                  {listing.availableFrom && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      <Calendar className="h-2.5 w-2.5 text-slate-500" />
+                      Available{" "}
+                      {new Date(listing.availableFrom).toLocaleDateString("en-IN", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  )}
+                </div>
+
+                {/* Cost and Occupancy details */}
+                {(listing.deposit != null ||
+                  listing.maintenance != null ||
+                  listing.currentOccupants != null ||
+                  listing.spotsAvailable > 0 ||
+                  listing.minimumStayMonths != null) && (
+                  <div className="mt-2 rounded-lg bg-slate-50/90 px-2 py-1.5 text-[10px] text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                      {listing.deposit != null && (
+                        <span>
+                          <strong>{formatMoney(listing.deposit)}</strong> deposit
+                        </span>
+                      )}
+                      {listing.deposit != null && listing.maintenance != null && (
+                        <span className="text-slate-300 dark:text-slate-600">·</span>
+                      )}
+                      {listing.maintenance != null && (
+                        <span>
+                          <strong>{formatMoney(listing.maintenance)}</strong> maintenance
+                        </span>
+                      )}
+                      {(listing.deposit != null || listing.maintenance != null) &&
+                        (listing.currentOccupants != null ||
+                          listing.spotsAvailable > 0 ||
+                          listing.minimumStayMonths != null) && (
+                          <span className="text-slate-300 dark:text-slate-600">·</span>
+                        )}
+                      {listing.currentOccupants != null && (
+                        <span>
+                          {listing.currentOccupants} current occupant{listing.currentOccupants === 1 ? "" : "s"}
+                        </span>
+                      )}
+                      {listing.currentOccupants != null && listing.spotsAvailable > 0 && (
+                        <span className="text-slate-300 dark:text-slate-600">·</span>
+                      )}
+                      {listing.spotsAvailable > 0 && (
+                        <span className="font-semibold text-emerald-700 dark:text-emerald-400">
+                          {listing.spotsAvailable} spot{listing.spotsAvailable === 1 ? "" : "s"} open
+                        </span>
+                      )}
+                      {(listing.spotsAvailable > 0 || listing.currentOccupants != null) &&
+                        listing.minimumStayMonths != null && (
+                          <span className="text-slate-300 dark:text-slate-600">·</span>
+                        )}
+                      {listing.minimumStayMonths != null && (
+                        <span>{listing.minimumStayMonths}+ month stay</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            /* ======================================================== */
+            /* LAYOUT 2: NEED_ROOM / BUDDY_UP (Person / Team Profile)   */
+            /* ======================================================== */
+            <>
+              {/* Profile Card Header Banner */}
+              <div
+                className={`relative h-20 sm:h-22 w-full p-2.5 flex items-start justify-between ${
+                  listing.mode === "BUDDY_UP"
+                    ? "bg-gradient-to-r from-amber-500/25 via-orange-500/20 to-rose-500/15 dark:from-amber-950/60 dark:via-orange-950/40 dark:to-slate-900 border-b border-amber-200/50 dark:border-amber-900/30"
+                    : "bg-gradient-to-r from-indigo-500/25 via-purple-500/20 to-pink-500/15 dark:from-indigo-950/60 dark:via-purple-950/40 dark:to-slate-900 border-b border-indigo-200/50 dark:border-indigo-900/30"
+                }`}
+              >
+                {/* Mode Tag */}
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-xs backdrop-blur-md ${badge.className}`}
+                >
+                  <ModeIcon className="h-2.5 w-2.5" />
+                  <span>{badge.label}</span>
+                </span>
+
+                {/* Match or Featured */}
+                <div className="flex items-center gap-1">
+                  {listing.isBoosted && (
+                    <span className="rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">
+                      ⭐ FEATURED
+                    </span>
+                  )}
+                  {listing.compatibilityScore != null && (
+                    <span className="rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700 shadow-xs backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
+                      {listing.compatibilityScore}% match
+                    </span>
                   )}
                 </div>
               </div>
-            )
-          ) : preferredAreas.length > 0 ? (
-            <div className="mt-2 flex items-center gap-1.5 rounded-lg bg-indigo-50/70 px-2 py-1.5 text-[10px] text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300">
-              <MapPin className="h-3 w-3 shrink-0" />
-              <span className="line-clamp-1"><strong>Preferred areas:</strong> {preferredAreas.join(" · ")}</span>
-            </div>
-          ) : null}
 
-          {/* Lifestyle Badges (Streamlined 1-row) */}
-          <div className="mt-2 flex flex-wrap items-center gap-1 px-0.5">
+              {/* Avatar & Budget Floating Row */}
+              <div className="relative -mt-9 px-3 sm:px-3.5 flex items-end justify-between">
+                {/* Circular Portrait Avatar */}
+                <div className="relative">
+                  <div
+                    className={`h-16 w-16 sm:h-18 sm:w-18 rounded-2xl overflow-hidden ring-4 ring-white dark:ring-slate-900 shadow-md flex items-center justify-center font-extrabold text-xl text-white ${
+                      listing.mode === "BUDDY_UP"
+                        ? "bg-gradient-to-tr from-amber-500 to-rose-500"
+                        : "bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500"
+                    }`}
+                  >
+                    {avatarPhoto ? (
+                      <img
+                        src={avatarPhoto}
+                        alt={profile?.displayName || listing.title}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span>{(profile?.displayName || "R")[0].toUpperCase()}</span>
+                    )}
+                  </div>
+                  {listing.mode === "BUDDY_UP" && (
+                    <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white shadow ring-2 ring-white dark:ring-slate-900">
+                      <Users className="h-3 w-3" />
+                    </span>
+                  )}
+                </div>
+
+                {/* Budget Pill */}
+                <div className="text-right pb-1">
+                  <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    {listing.mode === "BUDDY_UP" ? "Team Budget" : "Max Budget"}
+                  </span>
+                  <span className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white">
+                    {formattedRent()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Seeker / Buddy Body Content */}
+              <div className="space-y-2 p-3 sm:p-3.5 pt-2">
+                {/* Name, Age & Verification */}
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <h3 className="line-clamp-1 text-sm sm:text-base font-bold text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
+                      {profile?.displayName || (listing.mode === "BUDDY_UP" ? "Buddy-Up Group" : "Room Seeker")}
+                    </h3>
+                    {age && (
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                        · {age} yrs
+                      </span>
+                    )}
+                    {profile?.isIdentityVerified && (
+                      <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                        <ShieldCheck className="h-3 w-3 shrink-0" />
+                        <span>Verified</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Occupation & College / Company */}
+                  <p className="line-clamp-1 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                    {[profile?.gender, profile?.occupation, profile?.companyOrCollege ? `@ ${profile.companyOrCollege}` : ""].filter(Boolean).join(" · ") || listing.title}
+                  </p>
+
+                  {/* Context / Intent Title */}
+                  {profile?.displayName && listing.title && (
+                    <p className="line-clamp-1 text-[11px] text-slate-500 dark:text-slate-400">
+                      {listing.title}
+                    </p>
+                  )}
+                </div>
+
+                {/* Preferred Areas / Target Locality Display */}
+                {preferredAreas.length > 0 ? (
+                  <div className="mt-1 flex items-center gap-1.5 rounded-lg bg-indigo-50/70 px-2 py-1.5 text-[10px] text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300">
+                    <MapPin className="h-3 w-3 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                    <span className="line-clamp-1">
+                      <strong>Preferred areas:</strong> {preferredAreas.join(" · ")}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400">
+                    <MapPin className="h-3 w-3 shrink-0 text-rose-500" />
+                    <span className="line-clamp-1">
+                      {listing.locality ? `${listing.locality}, ${listing.cityName}` : listing.cityName}
+                    </span>
+                  </div>
+                )}
+
+                {/* Room Preferences Tags */}
+                <div className="flex flex-wrap items-center gap-1 text-[10px] sm:text-[11px] pt-0.5">
+                  {listing.roomType && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      <BedDouble className="h-2.5 w-2.5 text-slate-500" />
+                      {listing.roomType}
+                    </span>
+                  )}
+                  {listing.bhk && (
+                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      {listing.bhk} BHK preferred
+                    </span>
+                  )}
+                  {listing.furnishing && (
+                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      {listing.furnishing}
+                    </span>
+                  )}
+                  {listing.availableFrom && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      <Calendar className="h-2.5 w-2.5 text-slate-500" />
+                      Move-in{" "}
+                      {new Date(listing.availableFrom).toLocaleDateString("en-IN", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  )}
+                </div>
+
+                {/* Bio / Roommate Pitch Quote */}
+                {(profile?.bio || listing.description) && (
+                  <p className="line-clamp-2 text-[11px] italic text-slate-500 dark:text-slate-400 pt-0.5">
+                    &ldquo;{profile?.bio || listing.description}&rdquo;
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Lifestyle Badges (Common to all cards) */}
+          <div className="flex flex-wrap items-center gap-1 px-3 sm:px-3.5 pb-2">
             {listing.compatibilityReasons?.slice(0, 1).map((reason) => (
-              <Badge key={reason} variant="outline" className="border-emerald-200 bg-emerald-50/50 px-1.5 py-0 text-[9px] font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300">
+              <Badge
+                key={reason}
+                variant="outline"
+                className="border-emerald-200 bg-emerald-50/50 px-1.5 py-0 text-[9px] font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300"
+              >
                 <Sparkles className="mr-0.5 h-2 w-2" /> {reason}
               </Badge>
             ))}
@@ -275,44 +468,63 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
               </Badge>
             )}
             {listing.drinkingAllowed === false && (
-              <Badge variant="outline" className="border-slate-200 bg-slate-50 px-1.5 py-0 text-[9px] font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400">
+              <Badge
+                variant="outline"
+                className="border-slate-200 bg-slate-50 px-1.5 py-0 text-[9px] font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400"
+              >
                 No drinking
               </Badge>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Card Footer: Poster Mini Profile + Connect Button */}
+        {/* Card Footer: Poster Mini Profile (for HAVE_ROOM) or Quick Connect (for SEEKER / BUDDY) */}
         <div className="flex items-center justify-between border-t border-slate-100 p-3 pt-2.5 sm:p-3.5 sm:pt-2.5 dark:border-slate-800/80">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 font-bold text-white shadow-inner flex items-center justify-center text-[11px]">
-              {profile?.profilePhoto ? (
-                <img
-                  src={profile.profilePhoto}
-                  alt={profile.displayName || "Roomie"}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span>{(profile?.displayName || "R")[0].toUpperCase()}</span>
-              )}
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1">
-                <span className="line-clamp-1 text-xs font-bold text-slate-900 dark:text-slate-100">
-                  {profile?.displayName || "Flatmate"}
+            {isPlaceListing ? (
+              <>
+                <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 font-bold text-white shadow-inner flex items-center justify-center text-[11px]">
+                  {profile?.profilePhoto ? (
+                    <img
+                      src={profile.profilePhoto}
+                      alt={profile.displayName || "Host"}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span>{(profile?.displayName || "R")[0].toUpperCase()}</span>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1">
+                    <span className="line-clamp-1 text-xs font-bold text-slate-900 dark:text-slate-100">
+                      {profile?.displayName || "Flat Host"}
+                    </span>
+                    {profile?.isIdentityVerified && (
+                      <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        <ShieldCheck className="h-3 w-3 shrink-0" />
+                        <span className="hidden xl:inline">Verified</span>
+                      </span>
+                    )}
+                  </div>
+                  <p className="line-clamp-1 text-[9px] text-slate-500 dark:text-slate-400">
+                    {[profile?.gender, age ? `${age} yrs` : "", profile?.occupation].filter(Boolean).join(" · ") ||
+                      "Flat Host"}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400">
+                <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <span className="line-clamp-1 font-medium">
+                  {listing.availableFrom
+                    ? `Move-in: ${new Date(listing.availableFrom).toLocaleDateString("en-IN", {
+                        month: "short",
+                        day: "numeric",
+                      })}`
+                    : "Flexible move-in"}
                 </span>
-                {profile?.isIdentityVerified && (
-                  <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
-                    <ShieldCheck className="h-3 w-3 shrink-0" />
-                    <span className="hidden xl:inline">Verified</span>
-                  </span>
-                )}
               </div>
-              <p className="line-clamp-1 text-[9px] text-slate-500 dark:text-slate-400">
-                {[profile?.gender, age ? `${age} yrs` : "", profile?.occupation].filter(Boolean).join(" · ") || (listing.mode === "HAVE_ROOM" ? "Flat Host" : "Looking to move")}
-              </p>
-            </div>
+            )}
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
@@ -323,10 +535,16 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
                 event.stopPropagation();
                 setIsInterestModalOpen(true);
               }}
-              className="h-7 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-semibold text-[11px] px-3 shadow-xs transition-transform active:scale-95"
+              className={`h-7 rounded-full text-white font-semibold text-[11px] px-3 shadow-xs transition-transform active:scale-95 ${
+                listing.mode === "BUDDY_UP"
+                  ? "bg-amber-600 hover:bg-amber-700"
+                  : listing.mode === "NEED_ROOM"
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "bg-rose-600 hover:bg-rose-700"
+              }`}
             >
               <HeartHandshake className="w-3 h-3 mr-1" />
-              Connect
+              {listing.mode === "BUDDY_UP" ? "Team Up" : "Connect"}
             </Button>
           </div>
         </div>
