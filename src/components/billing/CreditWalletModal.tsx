@@ -98,6 +98,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
   const propertyCost = actions.find((a) => a.key === "PROPERTY_POST")?.creditAmount ?? 10;
   const flatmateCost = actions.find((a) => a.key === "FLATMATE_POST")?.creditAmount ?? 10;
   const boost7Cost = actions.find((a) => a.key === "PROPERTY_BOOST_7")?.creditAmount ?? 50;
+  const referralReward = actions.find((a) => a.key === "REFERRAL_REWARD")?.creditAmount ?? 100;
 
   const purchaseEnabled = flags.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
   const couponsEnabled = flags.find((f) => f.key === "COUPONS_ENABLED")?.isEnabled ?? true;
@@ -298,7 +299,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
               <div className="flex items-center justify-between gap-2 rounded-xl bg-white/90 p-2.5 shadow-2xs dark:bg-slate-900/90">
                 <div className="flex items-center gap-2">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-[11px] font-black text-rose-700 dark:bg-rose-950 dark:text-rose-300">
-                    +25
+                    +{referralReward}
                   </span>
                   <div>
                     <span className="font-bold text-slate-900 dark:text-white">Refer a Friend</span>
