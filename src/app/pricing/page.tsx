@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 const PRICING_FAQS = [
   {
     q: "How do contact unlocks work?",
-    a: "Each contact pack gives you credits to view verified owner phone numbers. Unlocking a contact charges 1 credit once per property. Once unlocked, you (or your organization members) can view that contact repeatedly without paying again.",
+    a: "Each contact pack gives you credits to view verified owner phone numbers. Unlocking a contact charges 5 credits once per property. Once unlocked, you (or your organization members) can view that contact repeatedly without paying again.",
   },
   {
     q: "Who pays for organization listings & unlocks?",

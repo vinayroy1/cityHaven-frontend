@@ -34,6 +34,8 @@ import {
   Lock,
   ArrowRight,
   Check,
+  Coins,
+  PhoneCall,
 } from "lucide-react";
 import {
   useDeletePropertyMutation,
@@ -153,7 +155,6 @@ function PropertiesContent() {
   const [activationItem, setActivationItem] = useState<any | null>(null);
   const [deactivateItem, setDeactivateItem] = useState<any | null>(null);
   const [creditsExhaustedModalOpen, setCreditsExhaustedModalOpen] = useState(false);
-  const [subscriptionExpiredModalOpen, setSubscriptionExpiredModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Auto-dismiss toast
@@ -177,90 +178,9 @@ function PropertiesContent() {
     return [];
   }, [scope, orgProperties, orgQuery.items, myData]);
 
-  // Subscription expiration detection
-  const activeSub = billingSummary?.activeSubscription;
-  const isSubscriptionExpired = Boolean(
-    (activeSub && activeSub.status === "EXPIRED") ||
-    (activeSub && activeSub.endsAt && new Date(activeSub.endsAt).getTime() <= Date.now()) ||
-    (billingSummaryData?.success && !activeSub && rawList.length > 0)
-  );
-
-  // Automatic deactivation of active properties if subscription is expired
-  const hasAutoDeactivatedRef = useRef(false);
-  useEffect(() => {
-    if (isSubscriptionExpired && !hasAutoDeactivatedRef.current && rawList.length > 0) {
-      const activeItems = rawList.filter((item: any) => item.status === "ACTIVE");
-      if (activeItems.length > 0) {
-        hasAutoDeactivatedRef.current = true;
-        Promise.all(
-          activeItems.map((item: any) =>
-            updatePropertyStatus({ id: item.id, status: "INACTIVE" }).unwrap().catch(() => {})
-          )
-        ).then(() => {
-          if (scope === "org") {
-            orgQuery.refetch();
-            refetchOrgProperties();
-          } else {
-            refetch();
-          }
-        });
-      }
-    }
-  }, [isSubscriptionExpired, rawList, scope, updatePropertyStatus, orgQuery, refetchOrgProperties, refetch]);
-
-  // Credit Deduction & "No Swapping Allowed" Tracking:
-  // When user purchases a subscription (e.g. 5 listings), total package credits = packageListingLimit.
-  // Each property that is activated consumes 1 credit permanently.
-  // We record consumed property IDs under the current subscription key.
-  const packageListingLimit =
-    activeSub?.plan?.features?.maxActiveListings ??
-    billingSummary?.allowances?.listings?.limit ??
-    (scope === "org" ? 5 : 2);
-
-  const subKey = activeSub?.id ? `sub_${activeSub.id}` : "default_sub";
-  const storageKey = `awasio_${scope}_${subKey}_consumed_listing_ids`;
-
-  const [consumedPropertyIds, setConsumedPropertyIds] = useState<number[]>([]);
-  const activePropertyIdsKey = (rawList as Array<{ id: number | string; status?: string }>)
-    .filter((item) => item.status === "ACTIVE")
-    .map((item) => Number(item.id))
-    .filter(Number.isFinite)
-    .sort((a: number, b: number) => a - b)
-    .join(",");
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = localStorage.getItem(storageKey);
-      const stored = raw ? JSON.parse(raw) : [];
-      const parsed = Array.isArray(stored)
-        ? stored.map(Number).filter(Number.isFinite)
-        : [];
-      // Any property currently ACTIVE is guaranteed to have consumed a credit
-      const activeIds = activePropertyIdsKey
-        ? activePropertyIdsKey.split(",").map(Number).filter(Number.isFinite)
-        : [];
-      const merged = Array.from(new Set([...parsed, ...activeIds])).sort((a, b) => a - b);
-      const serialized = JSON.stringify(merged);
-
-      setConsumedPropertyIds((current) => {
-        if (current.length === merged.length && current.every((id, index) => id === merged[index])) {
-          return current;
-        }
-        return merged;
-      });
-
-      if (raw !== serialized) {
-        localStorage.setItem(storageKey, serialized);
-      }
-    } catch (e) {
-      console.error("Error loading consumed listing IDs", e);
-    }
-  }, [storageKey, activePropertyIdsKey]);
-
-  // Available listing credits remaining in purchased package
-  const consumedCredits = consumedPropertyIds.length;
-  const availableCredits = Math.max(0, packageListingLimit - consumedCredits);
+  // Universal Wallet Balance & Property Activation Cost
+  const walletCredits = billingSummary?.credits ?? 0;
+  const PROPERTY_ACTIVATION_CREDIT_COST = 10;
 
   // Stats calculation
   const stats = useMemo(() => {
@@ -322,35 +242,22 @@ function PropertiesContent() {
     }
   };
 
-  // Activation handler (Triggered when user clicks "Activate (1 Credit)")
+  // Activation handler (Triggered when user clicks "Activate (10 Credits)")
   const handleActivateClick = (item: any) => {
-    if (isSubscriptionExpired) {
-      setSubscriptionExpiredModalOpen(true);
-      return;
-    }
-    const itemId = Number(item.id);
-    const isAlreadyConsumed = consumedPropertyIds.includes(itemId);
-    // If package has 0 credits remaining and this property didn't already consume a credit:
-    if (availableCredits <= 0 && !isAlreadyConsumed) {
+    if (walletCredits < PROPERTY_ACTIVATION_CREDIT_COST) {
       setCreditsExhaustedModalOpen(true);
       return;
     }
     setActivationItem(item);
   };
 
-  // Confirm activation & permanently consume 1 listing credit
+  // Confirm activation & deduct credits from universal wallet
   const confirmActivate = async () => {
     if (!activationItem) return;
     try {
       await updatePropertyStatus({ id: activationItem.id, status: "ACTIVE" }).unwrap();
-      const itemId = Number(activationItem.id);
-      const updatedConsumed = Array.from(new Set([...consumedPropertyIds, itemId]));
-      setConsumedPropertyIds(updatedConsumed);
-      localStorage.setItem(storageKey, JSON.stringify(updatedConsumed));
-
-      const newRemaining = Math.max(0, packageListingLimit - updatedConsumed.length);
       setToastMessage(
-        `⚡ Property "${activationItem.title || `#${activationItem.id}`}" activated successfully! 1 listing credit consumed. (${newRemaining} remaining)`
+        `⚡ Property "${activationItem.title || `#${activationItem.id}`}" activated successfully! ${PROPERTY_ACTIVATION_CREDIT_COST} credits deducted from your wallet.`
       );
       setActivationItem(null);
 
@@ -368,15 +275,13 @@ function PropertiesContent() {
     }
   };
 
-  // Confirm deactivation (Strict Rule: Credit remains consumed, NO SWAPPING ALLOWED)
+  // Confirm deactivation
   const confirmDeactivate = async () => {
     if (!deactivateItem) return;
     try {
       await updatePropertyStatus({ id: deactivateItem.id, status: "INACTIVE" }).unwrap();
-      // NOTE: We DO NOT remove the ID from consumedPropertyIds!
-      // This strictly enforces: NO SLOT SWAPPING! The credit is permanently consumed for this listing.
       setToastMessage(
-        `Property "${deactivateItem.title || `#${deactivateItem.id}`}" is now Inactive. Policy Reminder: Listing credit remains consumed (no slot swapping allowed).`
+        `Property "${deactivateItem.title || `#${deactivateItem.id}`}" is now Inactive and hidden from search.`
       );
       setDeactivateItem(null);
 
@@ -389,7 +294,7 @@ function PropertiesContent() {
       refetchBillingSummary();
     } catch (err: any) {
       console.error("Failed to deactivate property", err);
-      alert(err?.data?.message || "Failed to deactivate property listing.");
+      alert(err?.data?.message || "Failed to deactivate property listing. Please try again.");
     }
   };
 
@@ -483,82 +388,62 @@ function PropertiesContent() {
             </div>
           </div>
 
-          {/* Subscription Expiry / Package Listing Credit Banner */}
-          {isSubscriptionExpired ? (
-            <div className="mb-3 sm:mb-6 flex flex-col gap-2.5 sm:gap-3 rounded-2xl border border-rose-300 bg-gradient-to-r from-rose-50 via-rose-100/60 to-amber-50 p-3 sm:p-5 shadow-2xs sm:flex-row sm:items-center sm:justify-between dark:border-rose-900/60 dark:from-rose-950/40 dark:via-rose-950/20 dark:to-slate-900">
-              <div className="flex items-start gap-2.5 sm:gap-3.5">
-                <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-rose-600 text-white shadow-xs sm:shadow-md shadow-rose-300 dark:shadow-none">
-                  <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6" />
+          {/* Universal Credit Wallet Banner */}
+          <div className="mb-3 sm:mb-6 rounded-2xl border border-slate-200/80 bg-gradient-to-r from-amber-500/10 via-rose-500/5 to-slate-50 p-3 sm:p-5 shadow-xs dark:border-slate-800 dark:from-amber-950/20 dark:via-rose-950/10 dark:to-slate-900">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-md shadow-amber-200 dark:shadow-none text-xl sm:text-2xl font-black">
+                  🪙
                 </div>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-rose-600 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-white">
-                      Expired
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-900 dark:bg-amber-950/80 dark:text-amber-300">
+                      Universal Wallet
                     </span>
-                    <span className="text-[11px] sm:text-xs font-bold text-rose-800 dark:text-rose-300">Properties inactive</span>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Credits never expire
+                    </span>
                   </div>
-                  <h3 className="mt-0.5 text-xs sm:text-base font-black text-slate-900 dark:text-white">
-                    Listing package expired
-                  </h3>
-                  <p className="mt-0.5 text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 hidden sm:block">
-                    All your properties are currently <strong>Inactive</strong> and hidden from buyers. Purchase or renew a package to receive listing credits.
-                  </p>
-                </div>
-              </div>
-              <Link
-                href="/pricing"
-                className="inline-flex items-center justify-center gap-1.5 rounded-full bg-rose-600 px-3.5 sm:px-5 py-1.5 sm:py-2.5 text-xs font-bold text-white shadow-xs transition hover:bg-rose-700 active:scale-95 whitespace-nowrap self-start sm:self-auto"
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Renew Package</span>
-                <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          ) : (
-            <div className="mb-3 sm:mb-6 rounded-2xl border border-slate-200 bg-white p-3 sm:p-5 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-                  <div className="flex h-8 w-8 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-emerald-600 text-white shadow-xs sm:shadow-md shadow-emerald-200 dark:shadow-none">
-                    <Zap className="h-4 w-4 sm:h-6 sm:w-6" />
+                  <div className="mt-0.5 flex items-baseline gap-2">
+                    <span className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300">
+                      Active Balance:
+                    </span>
+                    <span className="text-base sm:text-xl font-black text-slate-950 dark:text-white">
+                      {walletCredits.toLocaleString("en-IN")} Credits
+                    </span>
                   </div>
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                      <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
-                        {activeSub?.plan?.name || "Active Package"}
-                      </span>
-                      {activeSub?.endsAt && (
-                        <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">
-                          Valid until {new Date(activeSub.endsAt).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-0.5 text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
-                      Credits:{" "}
-                      <span className="text-emerald-600 font-black dark:text-emerald-400">
-                        {availableCredits}
-                      </span>{" "}
-                      / {packageListingLimit} remaining
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <Link
-                    href="/pricing"
-                    className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-slate-800 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 whitespace-nowrap"
-                  >
-                    <Plus className="h-3 w-3 text-rose-600" />
-                    <span>Buy Credits</span>
-                  </Link>
                 </div>
               </div>
 
-              <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 hidden sm:flex items-center gap-1.5">
-                <Lock className="h-3 w-3 text-slate-400" />
-                <span>Strict Policy: 1 credit consumed permanently per activation. No slot swapping permitted.</span>
-              </p>
+              <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 whitespace-nowrap"
+                >
+                  <Plus className="h-3.5 w-3.5 text-rose-400 dark:text-rose-600" />
+                  <span>Buy Credits</span>
+                </Link>
+              </div>
             </div>
-          )}
+
+            {/* Micro utility guide */}
+            <div className="mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-800 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-slate-600 dark:text-slate-400">
+              <span className="flex items-center gap-1 font-medium">
+                <Zap className="h-3 w-3 text-emerald-500" />
+                <span><strong>10 credits</strong> per property activation (30 days live)</span>
+              </span>
+              <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
+              <span className="flex items-center gap-1 font-medium">
+                <Sparkles className="h-3 w-3 text-amber-500" />
+                <span><strong>50 credits</strong> for 7-day locality boost</span>
+              </span>
+              <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
+              <span className="flex items-center gap-1 font-medium">
+                <PhoneCall className="h-3 w-3 text-rose-500" />
+                <span><strong>5 credits</strong> to unlock owner contacts</span>
+              </span>
+            </div>
+          </div>
 
           {/* Quick Metrics Bar - Horizontal Scrollable on Mobile, Grid on Desktop */}
           <div className="mb-3 sm:mb-6 flex gap-2 overflow-x-auto pb-1 no-scrollbar sm:grid sm:grid-cols-5 sm:gap-3">
@@ -733,7 +618,7 @@ function PropertiesContent() {
             /* Grid View */
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {paginatedItems.map((item: any) => {
-                const effectiveStatus = isSubscriptionExpired && item.status === "ACTIVE" ? "INACTIVE" : item.status;
+                const effectiveStatus = item.status;
                 const cfg = statusConfig[effectiveStatus] || statusConfig.DRAFT;
                 const StatusIcon = cfg.icon;
                 const coverImage = item.media?.[0]?.url || "/placeholder-property.jpg";
@@ -833,7 +718,7 @@ function PropertiesContent() {
                               className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1 text-xs font-black text-white shadow-sm transition hover:bg-emerald-700 active:scale-95 disabled:opacity-50"
                             >
                               <Zap className="h-3 w-3" />
-                              <span>Activate (1 Credit)</span>
+                              <span>Activate ({PROPERTY_ACTIVATION_CREDIT_COST} Credits)</span>
                             </button>
                           </div>
                         </div>
@@ -868,7 +753,7 @@ function PropertiesContent() {
                             <button
                               type="button"
                               onClick={() => setDeactivateItem(item)}
-                              title="Deactivate listing (Credit remains consumed, no slot swapping)"
+                              title="Deactivate listing (Hide from public search)"
                               className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-200 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white"
                             >
                               <PowerOff className="h-3 w-3 text-slate-500" />
@@ -910,7 +795,7 @@ function PropertiesContent() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {paginatedItems.map((item: any) => {
-                      const effectiveStatus = isSubscriptionExpired && item.status === "ACTIVE" ? "INACTIVE" : item.status;
+                      const effectiveStatus = item.status;
                       const cfg = statusConfig[effectiveStatus] || statusConfig.DRAFT;
                       const StatusIcon = cfg.icon;
                       const coverImage = item.media?.[0]?.url || "/placeholder-property.jpg";
@@ -965,7 +850,7 @@ function PropertiesContent() {
                                   className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-700 active:scale-95 disabled:opacity-50"
                                 >
                                   <Zap className="h-3 w-3" />
-                                  <span>Activate (1 Credit)</span>
+                                  <span>Activate ({PROPERTY_ACTIVATION_CREDIT_COST} Credits)</span>
                                 </button>
                               )}
 
@@ -973,7 +858,7 @@ function PropertiesContent() {
                                 <button
                                   type="button"
                                   onClick={() => setDeactivateItem(item)}
-                                  title="Deactivate listing (Credit remains consumed, no slot swapping)"
+                                  title="Deactivate listing (Hide from public search)"
                                   className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:bg-slate-200 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
                                 >
                                   <PowerOff className="h-3 w-3" />
@@ -1110,28 +995,28 @@ function PropertiesContent() {
             {/* Credit Cost Summary */}
             <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
               <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
-                <span>Active Package:</span>
-                <span className="font-bold text-slate-900 dark:text-white">{activeSub?.plan?.name || "Listing Package"}</span>
+                <span>Wallet Balance:</span>
+                <span className="font-bold text-slate-900 dark:text-white">{walletCredits.toLocaleString("en-IN")} Credits</span>
               </div>
               <div className="mt-2 flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
-                <span>Deduction:</span>
-                <span className="font-black text-rose-600 dark:text-rose-400">-1 Listing Credit</span>
+                <span>Activation Cost:</span>
+                <span className="font-black text-rose-600 dark:text-rose-400">-{PROPERTY_ACTIVATION_CREDIT_COST} Credits</span>
               </div>
               <div className="mt-2 flex items-center justify-between border-t border-slate-200 pt-2 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">
-                <span>Remaining Credits After:</span>
+                <span>Balance After Activation:</span>
                 <span className="font-black text-emerald-600 dark:text-emerald-400">
-                  {Math.max(0, availableCredits - 1)} / {packageListingLimit}
+                  {Math.max(0, walletCredits - PROPERTY_ACTIVATION_CREDIT_COST).toLocaleString("en-IN")} Credits
                 </span>
               </div>
             </div>
 
-            {/* Strict Policy Alert (No Swapping) */}
-            <div className="mt-4 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50/80 p-3.5 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
-              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
+            {/* Instant Visibility Notice */}
+            <div className="mt-4 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3.5 text-xs text-emerald-950 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200">
+              <Zap className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
               <div>
-                <p className="font-black">Strict Rule: No Slot Swapping Allowed</p>
+                <p className="font-black">Instant Visibility</p>
                 <p className="mt-0.5 leading-relaxed text-[11px] opacity-90">
-                  Activating this property permanently consumes 1 listing credit from your package. If this property is later deactivated, rented, or marked sold, this credit <strong>cannot be refunded or swapped</strong> to another property.
+                  Your property will be live on search and open to buyer enquiries for 30 days. You can edit or boost its ranking anytime.
                 </p>
               </div>
             </div>
@@ -1152,14 +1037,14 @@ function PropertiesContent() {
                 className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-200 transition hover:bg-emerald-700 disabled:opacity-60 dark:shadow-none"
               >
                 {isUpdatingStatus ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5" />}
-                <span>Confirm & Deduct 1 Credit</span>
+                <span>Confirm & Deduct {PROPERTY_ACTIVATION_CREDIT_COST} Credits</span>
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 2. Deactivation Warning Modal (Explains no credit refund / no swapping) */}
+      {/* 2. Deactivation Warning Modal */}
       {deactivateItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-3xl border border-slate-100 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
@@ -1174,14 +1059,13 @@ function PropertiesContent() {
               Deactivating <strong className="text-slate-900 dark:text-white">{deactivateItem.title || `#${deactivateItem.id}`}</strong> will remove it from public search and buyer enquiries.
             </p>
 
-            {/* Strict Notice */}
-            <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
+            <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
               <p className="font-black flex items-center gap-1.5">
-                <AlertCircle className="h-4 w-4 text-rose-600" />
-                No Slot Swapping & No Credit Refunds
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                Temporary Pause
               </p>
               <p className="mt-1 leading-relaxed text-[11px] opacity-90">
-                The listing credit consumed when activating this property will <strong>NOT</strong> be refunded to your package balance. You cannot reuse this credit to activate a different property slot.
+                Your listing details and photos remain saved. You can reactivate this property at any time from your dashboard.
               </p>
             </div>
 
@@ -1208,28 +1092,28 @@ function PropertiesContent() {
         </div>
       )}
 
-      {/* 3. Credits Exhausted Modal (Triggered when available credits = 0) */}
+      {/* 3. Insufficient Credits Modal (Triggered when walletCredits < 10) */}
       {creditsExhaustedModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900 text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 shadow-inner dark:bg-amber-950/60 dark:text-amber-400">
-              <Lock className="h-7 w-7" />
+              <Coins className="h-7 w-7" />
             </div>
 
             <h3 className="mt-4 text-xl font-black text-slate-950 dark:text-white">
-              Listing Credits Exhausted
+              Insufficient Credits
             </h3>
             <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
-              You have used all <strong>{packageListingLimit} listing credits</strong> included in your current package.
+              Activating a property requires <strong>{PROPERTY_ACTIVATION_CREDIT_COST} Credits</strong>. Your current wallet balance is <strong>{walletCredits} Credits</strong>.
             </p>
 
             <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50/70 p-3.5 text-left text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
               <p className="font-bold flex items-center gap-1.5">
-                <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
-                Slot Swapping Not Permitted
+                <Sparkles className="h-4 w-4 text-amber-600 shrink-0" />
+                Universal Credit Packs
               </p>
               <p className="mt-0.5 text-[11px] leading-relaxed">
-                Deactivating other properties does not refund credits. To activate additional properties, please upgrade or purchase a new listing package.
+                Purchase credit packs starting at just ₹49. Credits never expire and can be used for property listings, contacts, and visibility boosts.
               </p>
             </div>
 
@@ -1246,42 +1130,7 @@ function PropertiesContent() {
                 className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 dark:shadow-none"
               >
                 <Sparkles className="h-3.5 w-3.5" />
-                <span>View Packages & Pricing</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 4. Subscription Expired Modal */}
-      {subscriptionExpiredModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900 text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 shadow-inner dark:bg-rose-950/60 dark:text-rose-400">
-              <AlertCircle className="h-7 w-7" />
-            </div>
-
-            <h3 className="mt-4 text-xl font-black text-slate-950 dark:text-white">
-              Subscription Expired
-            </h3>
-            <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
-              Your subscription has expired. All properties are currently Inactive. Purchase a new package to receive listing credits and activate your properties.
-            </p>
-
-            <div className="mt-6 flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => setSubscriptionExpiredModalOpen(false)}
-                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-              >
-                Cancel
-              </button>
-              <Link
-                href="/pricing"
-                className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 dark:shadow-none"
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Renew Subscription</span>
+                <span>Buy Credits</span>
               </Link>
             </div>
           </div>
