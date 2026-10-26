@@ -400,11 +400,11 @@ export function PricingClient() {
                 </div>
                 <div className="flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 font-bold shadow-xs border border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-800 dark:text-slate-200">
                   <Home className="h-3.5 w-3.5 text-blue-500" />
-                  <span>30 cr / Property Post</span>
+                  <span>10 cr / Property Post</span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 font-bold shadow-xs border border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-800 dark:text-slate-200">
                   <Users className="h-3.5 w-3.5 text-purple-500" />
-                  <span>20 cr / Flatmate Post</span>
+                  <span>10 cr / Flatmate Post</span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 font-bold shadow-xs border border-slate-200 dark:bg-slate-900 dark:border-slate-800 text-slate-800 dark:text-slate-200">
                   <Flame className="h-3.5 w-3.5 text-amber-500" />
@@ -425,9 +425,7 @@ export function PricingClient() {
               <p className="text-sm font-semibold">No active plans found for this category.</p>
             </div>
           ) : (
-            <div
-              className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 max-w-7xl mx-auto`}
-            >
+            <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
               {plansForCategory.map((plan: Plan) => {
                 const isPopular = Boolean(plan.isPopular);
                 const isProcessingThis = isPurchasing && selectedPlanId === plan.id;
@@ -464,7 +462,7 @@ export function PricingClient() {
                 return (
                   <div
                     key={plan.id}
-                    className={`relative flex flex-col rounded-3xl border bg-white p-5 sm:p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900 ${
+                    className={`relative flex flex-col justify-between w-full max-w-[340px] sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-16px)] rounded-3xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900 ${
                       isPopular
                         ? "border-rose-500 ring-2 ring-rose-500/20 shadow-rose-100 dark:shadow-rose-950/40"
                         : "border-slate-200 hover:border-slate-300 dark:border-slate-800 dark:hover:border-slate-700"
@@ -472,88 +470,90 @@ export function PricingClient() {
                   >
                     {/* Badge: Most Popular / Micro Pack / Best Value */}
                     {(plan.badge || isPopular) && (
-                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-rose-600 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-md shadow-rose-200 dark:shadow-rose-950/60 whitespace-nowrap">
+                      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-rose-600 px-3.5 py-1 text-[11px] font-black uppercase tracking-wider text-white shadow-md shadow-rose-200 dark:shadow-rose-950/60 whitespace-nowrap">
                         {plan.badge || "Most Popular"}
                       </div>
                     )}
 
-                    {/* Plan Name Header */}
-                    <div className="text-center mt-1">
-                      <h3 className="text-sm font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
-                        {plan.name}
-                      </h3>
-                    </div>
-
-                    {/* HERO FOCUS: Credit Amount Callout */}
-                    <div className="mt-3 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-amber-50 to-amber-100/50 p-4 border border-amber-200 text-center dark:from-amber-950/30 dark:to-amber-900/10 dark:border-amber-900/50 shadow-xs">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <span className="text-2xl sm:text-3xl">🪙</span>
-                        <span className="text-3xl sm:text-4xl font-black tracking-tight text-slate-950 dark:text-white">
-                          +{creditsAmount.toLocaleString("en-IN")}
-                        </span>
-                        <span className="text-base sm:text-lg font-black text-amber-600 dark:text-amber-400">
-                          Credits
-                        </span>
+                    <div>
+                      {/* Plan Name Header */}
+                      <div className="text-center mt-1">
+                        <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                          {plan.name}
+                        </h3>
                       </div>
 
-                      <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-0.5 text-[11px] font-bold text-amber-950 shadow-2xs border border-amber-200 dark:bg-slate-900 dark:text-amber-200 dark:border-amber-800">
-                        <Sparkles className="h-3 w-3 text-amber-600 dark:text-amber-400 shrink-0" />
-                        <span>Unlocks {Math.floor(creditsAmount / 5)} Verified Contacts</span>
-                      </div>
-
-                      {perCreditRateText && (
-                        <span className="mt-1.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
-                          {perCreditRateText} &bull; Never expires
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Price Block */}
-                    <div className="mt-4 flex flex-col items-center text-center">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white">
-                          {isFree ? "Free" : `₹${plan.price.toLocaleString("en-IN")}`}
-                        </span>
-
-                        {hasDiscount && (
-                          <span className="text-xs font-semibold text-slate-400 line-through">
-                            ₹{plan.originalPrice?.toLocaleString("en-IN")}
+                      {/* HERO FOCUS: Credit Amount Callout */}
+                      <div className="mt-3.5 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-amber-50 via-amber-50/70 to-amber-100/50 p-5 border border-amber-200 text-center dark:from-amber-950/40 dark:via-amber-950/20 dark:to-amber-900/10 dark:border-amber-900/60 shadow-xs">
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="text-3xl">🪙</span>
+                          <span className="text-4xl font-black tracking-tight text-slate-950 dark:text-white">
+                            +{creditsAmount.toLocaleString("en-IN")}
                           </span>
-                        )}
+                          <span className="text-lg font-black text-amber-600 dark:text-amber-400">
+                            Credits
+                          </span>
+                        </div>
 
-                        {hasDiscount && (
-                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black uppercase text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                            Save {discountPct}%
+                        <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-bold text-amber-950 shadow-2xs border border-amber-200 dark:bg-slate-900 dark:text-amber-200 dark:border-amber-800">
+                          <Sparkles className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                          <span>Unlocks {Math.floor(creditsAmount / 5)} Verified Contacts</span>
+                        </div>
+
+                        {perCreditRateText && (
+                          <span className="mt-2 text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                            {perCreditRateText} &bull; Never expires
                           </span>
                         )}
                       </div>
 
-                      <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
-                        {validityLabel}
-                      </span>
-                    </div>
+                      {/* Price Block */}
+                      <div className="mt-4 flex flex-col items-center text-center">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-3xl font-black text-slate-950 dark:text-white">
+                            {isFree ? "Free" : `₹${plan.price.toLocaleString("en-IN")}`}
+                          </span>
 
-                    {/* Credit Utility Checklist */}
-                    <div className="mt-4 space-y-2 border-t border-slate-100 pt-4 text-xs text-slate-700 dark:border-slate-800 dark:text-slate-300 flex-1">
-                      <div className="flex items-start gap-2 font-bold text-slate-950 dark:text-white">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-                        <span>+{creditsAmount.toLocaleString("en-IN")} Universal wallet credits</span>
+                          {hasDiscount && (
+                            <span className="text-sm font-semibold text-slate-400 line-through">
+                              ₹{plan.originalPrice?.toLocaleString("en-IN")}
+                            </span>
+                          )}
+
+                          {hasDiscount && (
+                            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                              Save {discountPct}%
+                            </span>
+                          )}
+                        </div>
+
+                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">
+                          {validityLabel}
+                        </span>
                       </div>
-                      <div className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-                        <span>Unlock up to {Math.floor(creditsAmount / 5)} verified contacts (5 cr each)</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-                        <span>Or spend on listings (30 cr), flatmates (20 cr) or boosts</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-                        <span>Credits never expire (Lifetime validity)</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-                        <span>Zero brokerage &bull; Instant activation</span>
+
+                      {/* Credit Utility Checklist */}
+                      <div className="mt-5 space-y-2.5 border-t border-slate-100 pt-4 text-xs text-slate-700 dark:border-slate-800 dark:text-slate-300">
+                        <div className="flex items-start gap-2 font-bold text-slate-950 dark:text-white">
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                          <span>+{creditsAmount.toLocaleString("en-IN")} Universal wallet credits</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                          <span>Unlock up to {Math.floor(creditsAmount / 5)} verified contacts (5 cr each)</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                          <span>Or publish {Math.floor(creditsAmount / 10)} listings / flatmates (10 cr each)</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                          <span>Credits never expire (Lifetime validity)</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                          <span>Zero brokerage &bull; Instant activation</span>
+                        </div>
                       </div>
                     </div>
 
