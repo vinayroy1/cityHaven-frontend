@@ -126,10 +126,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     // It's a city landing page (e.g. /new-projects/bengaluru)
     const location = parseLocation(segments);
-    if (!location) return {};
+    if (!location) notFound();
     const count = await getProjectCount(location.city);
-    const hasResults = count !== null && count > 0;
-    const countLabel = hasResults ? `${count} ` : "";
+    if (!count || count <= 0) {
+      notFound();
+    }
+    const hasResults = count > 0;
+    const countLabel = `${count} `;
     const title = `${countLabel}New Residential Projects in ${location.city} | Awasio`;
     const description = `Explore ${countLabel || "verified "}new residential projects, luxury apartments, and township developments in ${location.city} with RERA verification, floor plans, and developer pricing.`;
     const canonical = buildCanonical(`/new-projects/${toSearchSlug(location.city)}`);
