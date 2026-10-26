@@ -1,24 +1,25 @@
 import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Home, Building2, ShieldCheck, Users } from "lucide-react";
+import { ArrowLeft, Home, Building2, ShieldCheck, Users, Sparkles, Gift } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PropertyListingFlow } from "@/components/propertyListing/PropertyListingFlow";
 import { buildCanonical } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
 
 export const metadata: Metadata = {
-  title: "Post Property Free - List Property for Rent or Sale | Awasio",
+  title: "Post Property Free - Get 1,000 Free Credits on Signup | Awasio",
   description:
-    "Post your property for free on Awasio. Reach millions of verified buyers and tenants for flats, independent houses, plots, and commercial spaces across India with zero brokerage.",
+    "Post your property for free on Awasio. Get 1,000 free credits on signup to list properties, unlock verified tenant & buyer contacts, and boost your listing with zero brokerage.",
   keywords: [
     "post property free",
+    "free 1000 credits property",
     "list property online",
     "post property for rent",
     "sell house online",
-    "property listing india",
-    "free property ad",
-    "post flat for rent",
+    "unlock contact credits",
+    "boost property listing",
+    "zero brokerage real estate india",
   ],
   alternates: { canonical: buildCanonical("/propertyListing") },
   robots: {
@@ -33,9 +34,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Post Property Free - List Property for Rent or Sale | Awasio",
+    title: "Post Property Free - Get 1,000 Free Credits on Signup | Awasio",
     description:
-      "Post your property for free on Awasio. Reach verified buyers and tenants across India with transparent pricing and zero brokerage.",
+      "Post your property for free on Awasio. Get 1,000 free credits on signup to list properties, unlock verified contacts, and boost listing visibility.",
     url: buildCanonical("/propertyListing"),
     type: "website",
   },
@@ -53,7 +54,7 @@ export default function PropertyListingPage() {
 
         <div className="relative mx-auto max-w-6xl px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
           {/* Top Breadcrumbs & Back Bar */}
-          <div className="mb-3 sm:mb-6 flex flex-row items-center justify-between gap-2 border-b border-slate-200/80 dark:border-slate-800 pb-2.5 sm:pb-4">
+          <div className="mb-3 sm:mb-4 flex flex-row items-center justify-between gap-2 border-b border-slate-200/80 dark:border-slate-800 pb-2.5 sm:pb-3">
             <div className="flex items-center gap-2 sm:gap-3">
               <BackButton fallbackHref="/dashboard/properties" label="Back" variant="pill" />
 
@@ -69,6 +70,35 @@ export default function PropertyListingPage() {
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span className="hidden sm:inline">100% Free Listing • Direct Verified Inquiries</span>
               <span className="sm:hidden">100% Free Listing</span>
+            </div>
+          </div>
+
+          {/* 1,000 Free Credits Signup Highlight */}
+          <div className="mb-4 sm:mb-6 rounded-2xl border border-amber-200/90 bg-gradient-to-r from-amber-50/90 via-rose-50/40 to-emerald-50/50 p-3 sm:p-4 shadow-2xs dark:border-amber-900/40 dark:from-amber-950/20 dark:via-slate-900 dark:to-slate-900">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center rounded-md bg-amber-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-2xs">
+                      1,000 Free Credits
+                    </span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">
+                      Instant Signup Bonus for All Users
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-400">
+                    Use your 1,000 credits to list properties, unlock verified direct tenant &amp; buyer contacts, and boost your listing to the top of search results.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
+                <span className="rounded-full bg-white dark:bg-slate-800 px-3 py-1 border border-amber-200 dark:border-amber-800/60 shadow-2xs">
+                  Zero Brokerage • Instant Activation
+                </span>
+              </div>
             </div>
           </div>
 

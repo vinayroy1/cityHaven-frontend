@@ -8,9 +8,9 @@ import { buildCanonical } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
 
 export const metadata: Metadata = {
-  title: "Post Flatmate Requirement | Find Roommates with Zero Brokerage - Awasio",
+  title: "Post Flatmate Requirement - Get 1,000 Free Credits on Signup | Awasio",
   description:
-    "List your available room or search for flatmates with shared lifestyle habits, diet, and sleep preferences on Awasio.",
+    "List your available room or search for flatmates with zero brokerage on Awasio. Get 1,000 free credits on signup to unlock verified flatmate contacts and boost your listing.",
   alternates: { canonical: buildCanonical("/flatmates/post") },
   robots: {
     index: true,
@@ -24,9 +24,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Post Flatmate Requirement | Find Roommates with Zero Brokerage - Awasio",
+    title: "Post Flatmate Requirement - Get 1,000 Free Credits on Signup | Awasio",
     description:
-      "List your available room or search for flatmates with shared lifestyle habits, diet, and sleep preferences on Awasio.",
+      "List your available room or search for flatmates with zero brokerage on Awasio. Get 1,000 free credits on signup to unlock verified contacts and boost your post.",
     url: buildCanonical("/flatmates/post"),
     type: "website",
   },
