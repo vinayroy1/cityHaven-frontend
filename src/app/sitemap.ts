@@ -214,9 +214,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const activeCities = Array.from(activeCitiesSet);
-  const citySearchRoutes: MetadataRoute.Sitemap = ["rent", "buy", "pg"].flatMap((intent) =>
-    activeCities.map((city) => ({
+  // 4. Populated City & Locality Landing Pages
+  // A. All 59 Cities for Buy, Rent, Commercial, and Plot (Indexable & populated across India)
+  const CORE_59_CITY_INTENTS = ["buy", "rent", "commercial", "plot"] as const;
+  const citySearchRoutes: MetadataRoute.Sitemap = CORE_59_CITY_INTENTS.flatMap((intent) =>
+    ALL_59_CITIES.map((city) => ({
       url: `${SITE_URL}/${intent}/${city}`,
       lastModified: now,
       changeFrequency: "daily" as const,
@@ -224,7 +226,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  // Active Flatmate cities (cities with confirmed listings in DB)
+  // B. Active PG Cities (only cities with confirmed inventory to prevent noindex warnings)
+  const activeCities = Array.from(activeCitiesSet);
+  const pgCityRoutes: MetadataRoute.Sitemap = activeCities.map((city) => ({
+    url: `${SITE_URL}/pg/${city}`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.8,
+  }));
+
+  // C. Active Flatmate cities (cities with confirmed listings in DB)
   const activeFlatmateCities = [
     "bengaluru", "mumbai", "pune", "new-delhi", "gurugram", "noida", "hyderabad",
     "chennai", "kolkata", "ahmedabad", "jaipur", "lucknow", "indore", "bhopal",
@@ -237,7 +248,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  const localitySearchRoutes: MetadataRoute.Sitemap = ["rent", "buy", "pg"].flatMap((intent) =>
+  const localitySearchRoutes: MetadataRoute.Sitemap = ["rent", "buy", "commercial", "plot"].flatMap((intent) =>
     activeLocalityPairs.map(({ city, locality }) => ({
       url: `${SITE_URL}/${intent}/${city}/${locality}`,
       lastModified: now,
@@ -285,6 +296,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticRoutes,
     ...intentLandingRoutes,
     ...citySearchRoutes,
+    ...pgCityRoutes,
     ...flatmateCityRoutes,
     ...localitySearchRoutes,
     ...agentRoutes,
