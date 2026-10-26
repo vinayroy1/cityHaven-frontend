@@ -20,14 +20,13 @@ import {
   User,
   MapPin,
   Sparkles,
-  Zap,
   Lock,
   Loader2,
   Copy,
   Check,
   Coins,
   ArrowRight,
-  ExternalLink,
+  LogIn,
 } from "lucide-react";
 import {
   useUnlockFlatmateContactMutation,
@@ -48,7 +47,7 @@ interface FlatmateContactModalProps {
 const CONTACT_UNLOCK_CREDIT_COST = 5;
 
 export function FlatmateContactModal(props: FlatmateContactModalProps) {
-  if (!props.isOpen || !props.listing) return null;
+  if (!props.listing) return null;
   return <FlatmateContactModalContent {...props} listing={props.listing} />;
 }
 
@@ -59,7 +58,12 @@ function FlatmateContactModalContent({
   onSuccess,
 }: FlatmateContactModalProps & { listing: FlatmateListing }) {
   const router = useRouter();
-  const [hasToken, setHasToken] = useState(false);
+  const [hasToken, setHasToken] = useState(() => {
+    if (typeof window !== "undefined") {
+      return Boolean(window.localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY));
+    }
+    return false;
+  });
   const [copiedPhone, setCopiedPhone] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [unlockedContact, setUnlockedContact] = useState<{
@@ -68,9 +72,12 @@ function FlatmateContactModalContent({
     email?: string | null;
   } | null>(null);
 
+  // CRITICAL: pushHistoryState MUST be false to prevent popstate back-navigation loops
+  // which causes the modal to blink and immediately close in Next.js App Router.
   useModalBackHandler({
     isOpen,
     onClose,
+    pushHistoryState: false,
     name: "FlatmateContactModal",
   });
 
@@ -89,8 +96,8 @@ function FlatmateContactModalContent({
 
   // Check if contact is already unlocked
   const { data: unlockedQueryData, isLoading: isCheckingUnlocked } = useGetUnlockedFlatmateContactQuery(
-    listing?.id ?? 0,
-    { skip: !isOpen || !listing?.id || !hasToken }
+    listing.id,
+    { skip: !isOpen || !listing.id || !hasToken }
   );
 
   const [unlockContact, { isLoading: isUnlocking }] = useUnlockFlatmateContactMutation();
@@ -98,13 +105,13 @@ function FlatmateContactModalContent({
   useEffect(() => {
     if (unlockedQueryData?.data?.unlocked) {
       setUnlockedContact({
-        name: unlockedQueryData.data.name || listing?.profile?.displayName || "Flatmate",
+        name: unlockedQueryData.data.name || listing.profile?.displayName || "Flatmate",
         mobileNumber: unlockedQueryData.data.mobileNumber ?? null,
         email: unlockedQueryData.data.email ?? null,
       });
-    } else if (listing?.contact?.mobileNumber || listing?.contact?.email) {
+    } else if (listing.contact?.mobileNumber || listing.contact?.email) {
       setUnlockedContact({
-        name: listing.contact.name || listing?.profile?.displayName || "Flatmate",
+        name: listing.contact.name || listing.profile?.displayName || "Flatmate",
         mobileNumber: listing.contact.mobileNumber ?? null,
         email: listing.contact.email ?? null,
       });
@@ -112,8 +119,6 @@ function FlatmateContactModalContent({
       setUnlockedContact(null);
     }
   }, [unlockedQueryData, listing]);
-
-  if (!listing) return null;
 
   const profile = listing.profile;
   const posterName = unlockedContact?.name || profile?.displayName || "Flatmate";
@@ -133,9 +138,9 @@ function FlatmateContactModalContent({
     try {
       const res = await unlockContact(listing.id).unwrap();
       const contactInfo = {
-        name: res.data.name || posterName,
-        mobileNumber: res.data.mobileNumber ?? null,
-        email: res.data.email ?? null,
+        name: res.data?.name || posterName,
+        mobileNumber: res.data?.mobileNumber ?? null,
+        email: res.data?.email ?? null,
       };
       setUnlockedContact(contactInfo);
       void refetchBilling();
@@ -179,6 +184,7 @@ function FlatmateContactModalContent({
       <DialogContent
         className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] flex-col gap-0 overflow-hidden rounded-3xl border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-slate-900 sm:max-h-[min(90dvh,720px)] sm:max-w-md shadow-2xl"
         onClick={(event) => event.stopPropagation()}
+        onPointerDown={(event) => event.stopPropagation()}
       >
         {/* Header Gradient */}
         <div className="relative bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 px-5 py-5 text-white shrink-0">
@@ -240,8 +246,14 @@ function FlatmateContactModalContent({
             </div>
           </div>
 
-          {/* STATE 1: CONTACT UNLOCKED */}
-          {unlockedContact ? (
+          {/* STATE 0: CHECKING IF CONTACT IS ALREADY UNLOCKED */}
+          {hasToken && isCheckingUnlocked ? (
+            <div className="flex flex-col items-center justify-center py-10 space-y-2">
+              <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
+              <span className="text-xs text-slate-500">Checking contact access...</span>
+            </div>
+          ) : unlockedContact ? (
+            /* STATE 1: CONTACT UNLOCKED */
             <div className="space-y-3.5 animate-in fade-in zoom-in-95 duration-200">
               {/* Verified Unlocked Banner */}
               <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 dark:border-emerald-900/60 dark:bg-emerald-950/30">
@@ -342,8 +354,50 @@ function FlatmateContactModalContent({
                 Close
               </Button>
             </div>
+          ) : !hasToken ? (
+            /* STATE 2: NOT LOGGED IN */
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 dark:border-rose-900/60 dark:bg-rose-950/30">
+                <div className="flex items-center gap-2 text-rose-800 dark:text-rose-300">
+                  <Lock className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                  <span className="text-xs font-black uppercase tracking-wider">
+                    Sign In Required to View Contact
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-rose-900/80 dark:text-rose-200/80 leading-relaxed">
+                  Sign in or create an account to view verified contact details and connect directly with {posterName}.
+                </p>
+              </div>
+
+              {/* Safety & Guarantee Notice */}
+              <div className="flex gap-2.5 rounded-xl border border-slate-200 bg-white p-3 text-[11px] leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                <p>
+                  Direct verified phone &amp; email access. Zero brokerage. Contact remains unlocked permanently in your account.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 pt-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
+                  className="flex-1 h-11 rounded-xl border-slate-200 dark:border-slate-700"
+                >
+                  Cancel
+                </Button>
+                <Link
+                  href={`/login?redirect=${encodeURIComponent(`/flatmates/${listing.slug}`)}`}
+                  className="flex-1 h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md shadow-rose-200 dark:shadow-none flex items-center justify-center gap-1.5"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>Sign In to View</span>
+                </Link>
+              </div>
+            </div>
           ) : (
-            /* STATE 2: LOCKED - PROMPT FOR CREDIT DEDUCTION */
+            /* STATE 3: LOGGED IN BUT LOCKED - PROMPT FOR CREDIT DEDUCTION */
             <div className="space-y-4">
               {/* Credit Cost Box */}
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
