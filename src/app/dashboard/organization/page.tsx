@@ -640,7 +640,7 @@ function OrganizationDashboardContent() {
                         <span>Contact Unlocks</span>
                         <span className="font-bold text-emerald-700 dark:text-emerald-400">{billingSummary?.credits ?? 0} available</span>
                       </div>
-                      <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">Shared across all authorized employees</p>
+                      <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">Shared common pool with Owner wallet</p>
                     </div>
 
                     <div className="border-t border-slate-100 pt-2 dark:border-slate-800">
@@ -707,7 +707,7 @@ function OrganizationDashboardContent() {
                     <span className="truncate">Credits</span>
                   </div>
                   <p className="mt-1 sm:mt-2 text-lg sm:text-2xl font-black text-emerald-700 dark:text-emerald-400">{billingSummary?.credits ?? 0}</p>
-                  <p className="mt-0.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">Contact credits</p>
+                  <p className="mt-0.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">Shared owner pool</p>
                 </div>
 
                 <Link
