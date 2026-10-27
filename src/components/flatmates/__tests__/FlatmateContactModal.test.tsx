@@ -42,6 +42,8 @@ const mockListing: FlatmateListing = {
   spotsAvailable: 1,
   amenities: ["WiFi"],
   photos: [],
+  preferredGenders: [],
+  preferredOccupations: [],
   countryCode: "IN",
   createdAt: "2026-10-16T12:00:00Z",
   updatedAt: "2026-10-16T12:00:00Z",
