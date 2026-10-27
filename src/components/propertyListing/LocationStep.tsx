@@ -787,8 +787,8 @@ export function LocationStep() {
           </div>
         )}
 
-        {/* Live Detected Nearby Amenities from Google Places API (New) */}
-        {(loadingLandmarks || nearbyLandmarks) && (
+        {/* Nearby Amenities (Connectivity & Landmarks) */}
+        {(loadingLandmarks || (nearbyLandmarks && ((nearbyLandmarks.transit?.length ?? 0) > 0 || (nearbyLandmarks.healthcare?.length ?? 0) > 0 || (nearbyLandmarks.education?.length ?? 0) > 0 || (nearbyLandmarks.lifestyle?.length ?? 0) > 0))) && (
           <div className="min-w-0 max-w-full overflow-hidden rounded-xl border border-indigo-100 bg-indigo-50/40 p-2.5 sm:p-3.5 space-y-2.5 sm:space-y-3">
             <div className="flex min-w-0 items-center justify-between gap-2">
               <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">

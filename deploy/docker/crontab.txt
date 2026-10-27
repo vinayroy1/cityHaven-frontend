@@ -1,0 +1,7 @@
+# ==============================================================================
+# Awasio Production Crontab Schedule
+# To install: crontab deploy/docker/crontab.txt
+# ==============================================================================
+
+# Daily automated database backup at 03:00 AM (retains 14 days of gzipped dumps)
+0 3 * * * /opt/awasio/backup_db.sh >/dev/null 2>&1

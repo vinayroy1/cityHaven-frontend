@@ -22,6 +22,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:smoke": "k6 run load-tests/smoke-test.js",
+    "test:load": "k6 run load-tests/load-test.js",
+    "test:stress-5000": "k6 run load-tests/stress-5000-rps.js",
     "seo:crawl": "node scripts/force-crawl.mjs",
     "seo:google": "node scripts/google-indexing.mjs"
   },

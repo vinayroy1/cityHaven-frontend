@@ -1,0 +1,94 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: awasio-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: awasio_prod
+      POSTGRES_PASSWORD: AwasioProdSecretPassword2026!
+      POSTGRES_DB: awasio_prod_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - awasio-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: awasio-redis
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - awasio-net
+
+  opensearch:
+    image: opensearchproject/opensearch:2.18.0
+    container_name: awasio-opensearch
+    restart: always
+    environment:
+      - cluster.name=awasio-cluster
+      - node.name=awasio-node1
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - DISABLE_SECURITY_PLUGIN=true
+      - DISABLE_INSTALL_DEMO_CONFIG=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    networks:
+      - awasio-net
+
+  backend:
+    build:
+      context: ./awasio-backend
+      dockerfile: Dockerfile
+    image: awasio-backend:latest
+    container_name: awasio-backend
+    restart: always
+    ports:
+      - "127.0.0.1:4000:4000"
+    env_file:
+      - .env.backend
+    depends_on:
+      - postgres
+      - redis
+      - opensearch
+    networks:
+      - awasio-net
+      - awasio-frontend-net
+
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: awasio-jenkins
+    restart: unless-stopped
+    user: root
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+      - /opt/awasio:/opt/awasio
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx1024m
+    networks:
+      - awasio-net
+
+volumes:
+  postgres_data:
+  redis_data:
+  opensearch_data:
+  jenkins_home:
+
+networks:
+  awasio-net:
+    driver: bridge
+  awasio-frontend-net:
+    external: true

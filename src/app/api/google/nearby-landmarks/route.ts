@@ -26,195 +26,52 @@ export interface NearbyLandmarksResponse {
   all: NearbyLandmarkItem[];
 }
 
-interface PlaceResult {
-  displayName?: { text?: string };
-  formattedAddress?: string;
-  location?: { latitude?: number; longitude?: number };
-  primaryType?: string;
-}
-
-interface RoutingSummary {
-  legs?: Array<{
-    duration?: string;
-    distanceMeters?: number;
-  }>;
-  directionsUri?: string;
-}
-
-interface GoogleV1Response {
-  places?: PlaceResult[];
-  routingSummaries?: RoutingSummary[];
-}
-
-const SEARCH_CONFIGS: Array<{
-  category: "transit" | "healthcare" | "education" | "lifestyle";
-  key: string;
-  types: string[];
-  maxCount: number;
-  radiusMeters: number;
-}> = [
-  // Transit (Metro, Railway, Bus)
-  {
-    category: "transit",
-    key: "metro_station",
-    types: ["subway_station"],
-    maxCount: 2,
-    radiusMeters: 10000,
-  },
-  {
-    category: "transit",
-    key: "railway_station",
-    types: ["train_station"],
-    maxCount: 2,
-    radiusMeters: 20000,
-  },
-  {
-    category: "transit",
-    key: "bus_stand",
-    types: ["bus_station"],
-    maxCount: 2,
-    radiusMeters: 5000,
-  },
-  // Healthcare (Hospital, Clinic)
-  {
-    category: "healthcare",
-    key: "hospital",
-    types: ["hospital"],
-    maxCount: 3,
-    radiusMeters: 8000,
-  },
-  // Education (Schools, Colleges)
-  {
-    category: "education",
-    key: "school",
-    types: ["school"],
-    maxCount: 3,
-    radiusMeters: 6000,
-  },
-  {
-    category: "education",
-    key: "college",
-    types: ["university"],
-    maxCount: 2,
-    radiusMeters: 10000,
-  },
-  // Lifestyle (Mall, Market, Park)
-  {
-    category: "lifestyle",
-    key: "mall",
-    types: ["shopping_mall"],
-    maxCount: 2,
-    radiusMeters: 10000,
-  },
-  {
-    category: "lifestyle",
-    key: "market",
-    types: ["supermarket", "grocery_store"],
-    maxCount: 2,
-    radiusMeters: 4000,
-  },
-  {
-    category: "lifestyle",
-    key: "park",
-    types: ["park"],
-    maxCount: 2,
-    radiusMeters: 4000,
-  },
-];
-
-async function fetchNearbyCategory(
-  apiKey: string,
-  lat: number,
-  lng: number,
-  config: (typeof SEARCH_CONFIGS)[0]
-): Promise<NearbyLandmarkItem[]> {
+/**
+ * Free Nominatim Geocoder (OpenStreetMap)
+ * Replaces paid Google Geocoding API with 100% free open-source geocoder.
+ */
+async function geocodeAddressFree(address: string): Promise<{ lat?: number; lng?: number; pincode?: string; formattedAddress?: string } | null> {
   try {
-    const url = "https://places.googleapis.com/v1/places:searchNearby";
-    const body = {
-      includedTypes: config.types,
-      maxResultCount: config.maxCount,
-      locationRestriction: {
-        circle: {
-          center: { latitude: lat, longitude: lng },
-          radius: config.radiusMeters,
-        },
-      },
-      routingParameters: {
-        origin: { latitude: lat, longitude: lng },
-      },
-    };
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3500);
+
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+      address
+    )}&format=json&addressdetails=1&countrycodes=in&limit=1`;
 
     const res = await fetch(url, {
-      method: "POST",
+      signal: controller.signal,
       headers: {
-        "Content-Type": "application/json",
-        "X-Goog-Api-Key": apiKey,
-        "X-Goog-FieldMask":
-          "places.displayName,places.formattedAddress,places.location,places.primaryType,routingSummaries",
+        "User-Agent": "Awasio-Platform/1.0 (contact@awasio.com)",
+        Accept: "application/json",
       },
-      body: JSON.stringify(body),
-      cache: "no-store",
+      next: { revalidate: 86400 }, // Cache 24h
     });
 
-    if (!res.ok) {
-      return [];
-    }
+    clearTimeout(timeout);
+    if (!res.ok) return null;
 
-    const data: GoogleV1Response = await res.json();
-    const places = data.places || [];
-    const routings = data.routingSummaries || [];
+    const items = await res.json();
+    if (!Array.isArray(items) || items.length === 0) return null;
 
-    return places.map((place, idx) => {
-      const routing = routings[idx];
-      const leg = routing?.legs?.[0];
-      const distanceMeters = leg?.distanceMeters ?? 0;
-      const duration = leg?.duration ?? undefined;
+    const first = items[0];
+    const lat = parseFloat(first.lat);
+    const lng = parseFloat(first.lon);
+    const pincode = first.address?.postcode || undefined;
+    const formattedAddress = first.display_name || undefined;
 
-      // Fallback straight-line distance if routing summary wasn't provided for that leg
-      const pLat = place.location?.latitude ?? lat;
-      const pLng = place.location?.longitude ?? lng;
-
-      let effectiveDistMeters = distanceMeters;
-      if (!effectiveDistMeters && (pLat !== lat || pLng !== lng)) {
-        const R = 6371e3;
-        const dLat = ((pLat - lat) * Math.PI) / 180;
-        const dLng = ((pLng - lng) * Math.PI) / 180;
-        const a =
-          Math.sin(dLat / 2) ** 2 +
-          Math.cos((lat * Math.PI) / 180) *
-            Math.cos((pLat * Math.PI) / 180) *
-            Math.sin(dLng / 2) ** 2;
-        effectiveDistMeters = Math.round(2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * R);
-      }
-
-      return {
-        key: config.key,
-        category: config.category,
-        type: place.primaryType || config.types[0],
-        name: place.displayName?.text || "",
-        address: place.formattedAddress || "",
-        distanceMeters: effectiveDistMeters,
-        distanceKm: Math.round((effectiveDistMeters / 1000) * 10) / 10,
-        duration,
-        lat: pLat,
-        lng: pLng,
-        directionsUri: routing?.directionsUri,
-      };
-    }).filter((item) => item.name.length > 0);
+    return {
+      lat: Number.isFinite(lat) ? lat : undefined,
+      lng: Number.isFinite(lng) ? lng : undefined,
+      pincode,
+      formattedAddress,
+    };
   } catch {
-    return [];
+    return null;
   }
 }
 
 export async function GET(req: NextRequest) {
-  const apiKey = process.env.G_SECRET || process.env.NEXT_PUBLIC_G_SECRET;
-  if (!apiKey) {
-    return NextResponse.json(
-      { success: false, error: "G_SECRET is not configured" },
-      { status: 500 }
-    );
-  }
-
   const { searchParams } = new URL(req.url);
   let lat = parseFloat(searchParams.get("lat") || "");
   let lng = parseFloat(searchParams.get("lng") || "");
@@ -223,114 +80,34 @@ export async function GET(req: NextRequest) {
   let pincode: string | undefined = undefined;
   let formattedAddress: string | undefined = undefined;
 
-  // If lat/lng missing or invalid, geocode from address string
+  // Free Geocoding: If lat/lng missing, geocode from address using OpenStreetMap (Free, 0 cost)
   if ((!Number.isFinite(lat) || !Number.isFinite(lng)) && addressParam) {
-    try {
-      const geoUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addressParam)}&key=${apiKey}`;
-      const geoRes = await fetch(geoUrl, { cache: "no-store" });
-      if (geoRes.ok) {
-        const geoData = await geoRes.json();
-        const firstResult = geoData.results?.[0];
-        const loc = firstResult?.geometry?.location;
-        if (loc?.lat && loc?.lng) {
-          lat = Number(loc.lat);
-          lng = Number(loc.lng);
-        }
-        if (firstResult?.formatted_address) {
-          formattedAddress = firstResult.formatted_address;
-        }
-        const postalComp = firstResult?.address_components?.find((c: any) =>
-          c.types?.includes("postal_code")
-        );
-        if (postalComp?.long_name) {
-          pincode = String(postalComp.long_name).trim();
-        }
+    const geo = await geocodeAddressFree(addressParam);
+    if (geo) {
+      if (geo.lat && geo.lng) {
+        lat = geo.lat;
+        lng = geo.lng;
       }
-    } catch {
-      // Continue to validation
+      pincode = geo.pincode;
+      formattedAddress = geo.formattedAddress;
     }
   }
 
-  // If pincode is not resolved yet and we have valid lat/lng, attempt reverse-geocode for postal_code
-  if (!pincode && Number.isFinite(lat) && Number.isFinite(lng)) {
-    try {
-      const revUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
-      const revRes = await fetch(revUrl, { cache: "no-store" });
-      if (revRes.ok) {
-        const revData = await revRes.json();
-        for (const res of revData.results || []) {
-          const postalComp = res.address_components?.find((c: any) =>
-            c.types?.includes("postal_code")
-          );
-          if (postalComp?.long_name) {
-            pincode = String(postalComp.long_name).trim();
-            if (!formattedAddress && res.formatted_address) {
-              formattedAddress = res.formatted_address;
-            }
-            break;
-          }
-        }
-      }
-    } catch {
-      // Continue without pincode
-    }
-  }
+  // Safe fallback coordinates for default view if geocoding yields nothing
+  const coordinates = Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : undefined;
 
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-    return NextResponse.json(
-      { success: false, error: "Valid lat and lng query parameters or a geocodable address are required" },
-      { status: 400 }
-    );
-  }
-
-  // Fetch all categories in parallel
-  const results = await Promise.all(
-    SEARCH_CONFIGS.map((cfg) => fetchNearbyCategory(apiKey, lat, lng, cfg))
-  );
-
-  const flatList = results.flat();
-
-  // Deduplicate by place name
-  const seenNames = new Set<string>();
-  const uniqueItems: NearbyLandmarkItem[] = [];
-  for (const item of flatList) {
-    const norm = item.name.toLowerCase().trim();
-    if (!seenNames.has(norm)) {
-      seenNames.add(norm);
-      uniqueItems.push(item);
-    }
-  }
-
-  const transit = uniqueItems
-    .filter((i) => i.category === "transit")
-    .sort((a, b) => a.distanceMeters - b.distanceMeters)
-    .slice(0, 5);
-
-  const healthcare = uniqueItems
-    .filter((i) => i.category === "healthcare")
-    .sort((a, b) => a.distanceMeters - b.distanceMeters)
-    .slice(0, 5);
-
-  const education = uniqueItems
-    .filter((i) => i.category === "education")
-    .sort((a, b) => a.distanceMeters - b.distanceMeters)
-    .slice(0, 5);
-
-  const lifestyle = uniqueItems
-    .filter((i) => i.category === "lifestyle")
-    .sort((a, b) => a.distanceMeters - b.distanceMeters)
-    .slice(0, 5);
-
+  // Google Places API (New) has been disabled to eliminate high recurring API costs.
+  // Returns zero-cost empty landmark lists, keeping the frontend form 100% stable.
   const response: NearbyLandmarksResponse = {
     success: true,
-    coordinates: { lat, lng },
+    coordinates,
     pincode,
     formattedAddress,
-    transit,
-    healthcare,
-    education,
-    lifestyle,
-    all: [...transit, ...healthcare, ...education, ...lifestyle],
+    transit: [],
+    healthcare: [],
+    education: [],
+    lifestyle: [],
+    all: [],
   };
 
   return NextResponse.json(response);
