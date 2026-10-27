@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Heart, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, Heart, Search, SlidersHorizontal, Loader2 } from "lucide-react";
 import { HeaderNav } from "../homePage/components/HeaderNav";
 import { FooterLinks } from "../homePage/components/FooterLinks";
 import { BrandLogo } from "@/components/common/BrandLogo";
@@ -167,6 +167,15 @@ export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent,
     setSheetOpen(true);
   };
 
+  const [isMobileSearching, setIsMobileSearching] = React.useState(false);
+
+  const handleMobileHeaderSubmit = () => {
+    if (isMobileSearching || results.isLoading) return;
+    setIsMobileSearching(true);
+    commit(state);
+    setTimeout(() => setIsMobileSearching(false), 2000);
+  };
+
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
       <HeaderNav isMobileHidden={isScrolledDown} hideOnPhone />
@@ -185,22 +194,39 @@ export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent,
             <Heart size={20} />
           </Link>
         </div>
-        <button
-          type="button"
-          onClick={() => setMobileSearchOpen(true)}
-          aria-label="Modify property search"
-          className="flex h-10 w-full items-center gap-2.5 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 pl-3 text-left shadow-inner transition active:border-rose-300 dark:border-slate-700 dark:bg-slate-900"
-        >
-          <Search size={16} className="shrink-0 text-rose-600 dark:text-rose-400" />
-          <span className="min-w-0 flex-1 truncate text-xs font-semibold text-slate-800 dark:text-slate-100">
-            {[state.cityName, ...state.localities.map((locality) => locality.label), state.q]
-              .filter(Boolean)
-              .join(" • ") || "Search locality, project or landmark"}
-          </span>
-          <span className="flex h-full shrink-0 items-center bg-rose-600 px-4 text-xs font-bold text-white dark:bg-rose-500">
-            Search
-          </span>
-        </button>
+        <div className="flex h-10 w-full items-center gap-2 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 pl-3 shadow-inner transition dark:border-slate-700 dark:bg-slate-900">
+          <button
+            type="button"
+            onClick={() => setMobileSearchOpen(true)}
+            aria-label="Open search filters"
+            className="flex min-w-0 flex-1 items-center gap-2 text-left focus:outline-none"
+          >
+            <Search size={16} className="shrink-0 text-rose-600 dark:text-rose-400" />
+            <span className="min-w-0 flex-1 truncate text-xs font-semibold text-slate-800 dark:text-slate-100">
+              {[state.cityName, ...state.localities.map((locality) => locality.label), state.q]
+                .filter(Boolean)
+                .join(" • ") || "Search locality, project or landmark"}
+            </span>
+          </button>
+          <button
+            type="button"
+            disabled={isMobileSearching || results.isLoading}
+            onClick={handleMobileHeaderSubmit}
+            aria-label="Submit search"
+            className={`flex h-full shrink-0 items-center justify-center gap-1.5 bg-rose-600 px-3.5 text-xs font-bold text-white transition hover:bg-rose-700 active:scale-[0.98] dark:bg-rose-500 ${
+              isMobileSearching || results.isLoading ? "opacity-80 cursor-not-allowed" : ""
+            }`}
+          >
+            {isMobileSearching || results.isLoading ? (
+              <>
+                <Loader2 size={13} className="animate-spin" />
+                <span>Searching...</span>
+              </>
+            ) : (
+              <span>Search</span>
+            )}
+          </button>
+        </div>
       </header>
 
       <div className="mx-auto max-w-7xl px-3 pb-4 pt-2 sm:px-6 sm:pt-4 lg:px-8">

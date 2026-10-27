@@ -3,7 +3,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, RotateCcw, Search, SlidersHorizontal, Loader2 } from "lucide-react";
 import { FilterSectionsEditor } from "./FilterSheet";
 import { clearAllFilters, countActiveFilters, type SearchState } from "./searchQuery";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
@@ -23,6 +23,7 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
   const [mounted, setMounted] = React.useState(false);
   const [draft, setDraft] = React.useState(value);
   const [viewportStyle, setViewportStyle] = React.useState<React.CSSProperties>({});
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   useModalBackHandler({
     isOpen: open,
@@ -33,7 +34,10 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
 
   React.useEffect(() => setMounted(true), []);
   React.useEffect(() => {
-    if (open) setDraft(value);
+    if (open) {
+      setDraft(value);
+      setIsSubmitting(false);
+    }
   }, [open, value]);
 
   React.useEffect(() => {
@@ -69,11 +73,19 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
   if (!open || !mounted || typeof document === "undefined") return null;
 
   const handleApply = (e?: React.MouseEvent) => {
-    onClose();
+    if (isSubmitting) {
+      e?.preventDefault();
+      return;
+    }
+    setIsSubmitting(true);
     if (onSubmit) {
       e?.preventDefault();
       onSubmit(draft);
     }
+    setTimeout(() => {
+      onClose();
+      setIsSubmitting(false);
+    }, 400);
   };
 
   const activeCount = countActiveFilters(draft);
@@ -121,21 +133,44 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
       <footer className="relative z-20 shrink-0 border-t border-slate-200 bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_-20px_rgba(15,23,42,0.5)] dark:border-slate-800 dark:bg-slate-900">
         {submitHref ? (
           <a
-            href={submitHref(draft)}
+            href={isSubmitting ? undefined : submitHref(draft)}
             onClick={handleApply}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 active:scale-[0.99] cursor-pointer"
+            className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 active:scale-[0.99] cursor-pointer transition ${
+              isSubmitting ? "opacity-80 pointer-events-none" : ""
+            }`}
           >
-            <Search size={18} />
-            {resultCount == null ? "Search properties" : "Apply & search"}
+            {isSubmitting ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                <span>Searching...</span>
+              </>
+            ) : (
+              <>
+                <Search size={18} />
+                <span>{resultCount == null ? "Search properties" : "Apply & search"}</span>
+              </>
+            )}
           </a>
         ) : (
           <button
             type="button"
+            disabled={isSubmitting}
             onClick={handleApply}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 active:scale-[0.99] cursor-pointer"
+            className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 active:scale-[0.99] cursor-pointer transition ${
+              isSubmitting ? "opacity-80 cursor-not-allowed" : ""
+            }`}
           >
-            <Search size={18} />
-            {resultCount == null ? "Search properties" : "Apply & search"}
+            {isSubmitting ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                <span>Searching...</span>
+              </>
+            ) : (
+              <>
+                <Search size={18} />
+                <span>{resultCount == null ? "Search properties" : "Apply & search"}</span>
+              </>
+            )}
           </button>
         )}
       </footer>

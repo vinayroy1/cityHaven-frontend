@@ -231,11 +231,23 @@ export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: 
               />
               <button
                 type="button"
+                disabled={isLoading || isFetching}
                 onClick={runSearch}
-                className="hidden h-11 items-center justify-center gap-2 rounded-xl bg-rose-600 px-6 text-sm font-bold text-white shadow-md shadow-rose-600/20 transition hover:bg-rose-700 active:scale-[0.98] md:flex"
+                className={`hidden h-11 items-center justify-center gap-2 rounded-xl bg-rose-600 px-6 text-sm font-bold text-white shadow-md shadow-rose-600/20 transition hover:bg-rose-700 active:scale-[0.98] md:flex ${
+                  isLoading || isFetching ? "opacity-75 cursor-not-allowed" : ""
+                }`}
               >
-                <Search className="h-4 w-4" />
-                <span>Search</span>
+                {isLoading || isFetching ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Searching...</span>
+                  </>
+                ) : (
+                  <>
+                    <Search className="h-4 w-4" />
+                    <span>Search</span>
+                  </>
+                )}
               </button>
             </div>
 
@@ -256,11 +268,23 @@ export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: 
               </button>
               <button
                 type="button"
+                disabled={isLoading || isFetching}
                 onClick={runSearch}
-                className="flex h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-3 text-xs font-bold text-white shadow-xs transition active:scale-[0.98]"
+                className={`flex h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-3 text-xs font-bold text-white shadow-xs transition active:scale-[0.98] ${
+                  isLoading || isFetching ? "opacity-75 cursor-not-allowed" : ""
+                }`}
               >
-                <Search className="h-3.5 w-3.5" />
-                <span>Search</span>
+                {isLoading || isFetching ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Searching...</span>
+                  </>
+                ) : (
+                  <>
+                    <Search className="h-3.5 w-3.5" />
+                    <span>Search</span>
+                  </>
+                )}
               </button>
             </div>
 

@@ -51,4 +51,14 @@ describe("listing search context", () => {
 
     expect(submitLink.getAttribute("href")).toBe("/rent/delhi");
   });
+
+  it("triggers submit directly on mobile search button click without opening filter dialog", () => {
+    const onSubmit = jest.fn();
+    render(<SearchBar variant="hero" value={initialSearchState()} onChange={jest.fn()} onSubmit={onSubmit} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Search properties" }));
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("dialog", { name: "Search and filter properties" })).toBeNull();
+  });
 });

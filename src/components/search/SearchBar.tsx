@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { LocationSearchInput } from "./LocationSearchInput";
 import { CitySelectorDropdown } from "./CitySelectorDropdown";
 import { MobileSearchFlow } from "./MobileSearchFlow";
@@ -23,6 +23,7 @@ type Props = {
 
 export function SearchEditor({ variant, value, onSubmit, onContextChange, showSubmit = true, liveChanges = false }: { variant?: "hero" | "results"; value: SearchState; onSubmit: (next: SearchState) => void; onContextChange?: (next: SearchState) => void; showSubmit?: boolean; liveChanges?: boolean }) {
   const [draft, setDraft] = React.useState(value);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const draftRef = React.useRef(draft);
   const update = (next: SearchState) => { draftRef.current = next; setDraft(next); };
 
@@ -33,12 +34,18 @@ export function SearchEditor({ variant, value, onSubmit, onContextChange, showSu
   }, [value]);
 
   const submit = async () => {
-    let next = draftRef.current;
-    if (next.q && next.q.trim()) {
-      next = await resolveSearchQueryToState(next.q, next);
-      update(next);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      let next = draftRef.current;
+      if (next.q && next.q.trim()) {
+        next = await resolveSearchQueryToState(next.q, next);
+        update(next);
+      }
+      await onSubmit(next);
+    } finally {
+      setTimeout(() => setIsSubmitting(false), 2500);
     }
-    onSubmit(next);
   };
   const changeContext = (next: SearchState) => { update(next); onContextChange?.(next); };
 
@@ -129,11 +136,23 @@ export function SearchEditor({ variant, value, onSubmit, onContextChange, showSu
         {showSubmit && (
           <button
             type="button"
-            className={`${primaryButton} shrink-0 w-full sm:w-auto h-11 font-semibold shadow-sm`}
+            disabled={isSubmitting}
+            className={`${primaryButton} shrink-0 w-full sm:w-auto h-11 font-semibold shadow-sm transition-all ${
+              isSubmitting ? "opacity-75 cursor-not-allowed" : ""
+            }`}
             onClick={submit}
           >
-            <Search size={18} />
-            Search
+            {isSubmitting ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                <span>Searching...</span>
+              </>
+            ) : (
+              <>
+                <Search size={18} />
+                <span>Search</span>
+              </>
+            )}
           </button>
         )}
       </div>
@@ -148,6 +167,17 @@ export function SearchBar({
   onSubmit,
 }: Props) {
   const [mobileSearchOpen, setMobileSearchOpen] = React.useState(false);
+  const [isMobileSubmitting, setIsMobileSubmitting] = React.useState(false);
+
+  const handleMobileSubmit = async () => {
+    if (isMobileSubmitting) return;
+    setIsMobileSubmitting(true);
+    try {
+      await onSubmit(value);
+    } finally {
+      setTimeout(() => setIsMobileSubmitting(false), 2500);
+    }
+  };
 
   if (variant === "hero") {
     return (
@@ -176,17 +206,37 @@ export function SearchBar({
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => setMobileSearchOpen(true)}
-            className="flex h-12 w-full items-center gap-2 rounded-xl border border-slate-200 bg-white pl-3 pr-1.5 text-left shadow-xs transition hover:border-slate-300 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900"
-          >
-            <Search size={18} className="shrink-0 text-slate-400" />
-            <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-400 dark:text-slate-500">
-              Search by locality, project or landmark
-            </span>
-            <span className="flex h-9 shrink-0 items-center rounded-lg bg-rose-600 px-3 text-xs font-bold text-white shadow-xs">Search</span>
-          </button>
+          <div className="flex h-12 w-full items-center gap-2 rounded-xl border border-slate-200 bg-white pl-3 pr-1.5 text-left shadow-xs transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900">
+            <button
+              type="button"
+              onClick={() => setMobileSearchOpen(true)}
+              className="flex min-w-0 flex-1 items-center gap-2 text-left focus:outline-none"
+              aria-label="Open search and filter options"
+            >
+              <Search size={18} className="shrink-0 text-slate-400" />
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-400 dark:text-slate-500">
+                Search by locality, project or landmark
+              </span>
+            </button>
+            <button
+              type="button"
+              disabled={isMobileSubmitting}
+              onClick={handleMobileSubmit}
+              className={`flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3.5 text-xs font-bold text-white shadow-xs transition hover:bg-rose-700 active:scale-[0.98] ${
+                isMobileSubmitting ? "opacity-80 cursor-not-allowed" : ""
+              }`}
+              aria-label="Search properties"
+            >
+              {isMobileSubmitting ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Searching...</span>
+                </>
+              ) : (
+                <span>Search</span>
+              )}
+            </button>
+          </div>
         </div>
 
         <MobileSearchFlow
