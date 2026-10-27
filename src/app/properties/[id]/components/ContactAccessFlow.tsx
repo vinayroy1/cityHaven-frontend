@@ -14,9 +14,12 @@ import {
   useLazyCheckUnlockedContactQuery,
   useLazyGetBillingSummaryQuery,
   usePurchaseCreditsByPlanMutation,
+  useCreateBillingOrderMutation,
+  useVerifyBillingPaymentMutation,
   useUnlockPropertyContactMutation,
   BillingSummary,
 } from "@/features/contactVerify/api";
+import { launchCashfreeCheckout } from "@/lib/cashfree/cashfreeCheckout";
 
 type Step = "check" | "plans";
 
@@ -52,6 +55,8 @@ export function ContactAccessFlow({
   const [check] = useLazyCheckUnlockedContactQuery();
   const [fetchSummary] = useLazyGetBillingSummaryQuery();
   const [purchase] = usePurchaseCreditsByPlanMutation();
+  const [createBillingOrder] = useCreateBillingOrderMutation();
+  const [verifyBillingPayment] = useVerifyBillingPaymentMutation();
   const [unlock] = useUnlockPropertyContactMutation();
 
   const orgsQuery = useMyOrganizationsQuery(undefined, {
@@ -411,11 +416,45 @@ export function ContactAccessFlow({
                   onSelectedPlanChange={setSelectedPlanId}
                   onPurchasePlan={() =>
                     void run(async () => {
-                      await purchase({
+                      const orderRes = await createBillingOrder({
                         planId: currentPlan.dbId,
                         target: isOrgScope ? "ORG" : "USER",
                         organizationId: isOrgScope && typeof selectedScope === "number" ? selectedScope : undefined,
                       }).unwrap();
+
+                      const orderData = orderRes.data;
+                      if (orderData?.paymentSessionId) {
+                        toast.info("Opening Cashfree checkout...");
+                        const checkoutResult = await launchCashfreeCheckout(orderData.paymentSessionId, {
+                          redirectTarget: "_modal",
+                        });
+
+                        if (checkoutResult.status === "CLOSED") {
+                          toast.info("Payment window was closed.");
+                          return;
+                        }
+
+                        if (checkoutResult.status === "FAILED") {
+                          toast.error(checkoutResult.error || "Payment was not completed.");
+                          return;
+                        }
+
+                        if (checkoutResult.status === "REDIRECTED") {
+                          toast.info("Redirecting for payment authentication...");
+                          return;
+                        }
+
+                        toast.loading("Verifying payment with Cashfree...", { id: "verify-contact-plan" });
+                        await verifyBillingPayment({
+                          orderId: orderData.orderId,
+                          cfPaymentId: checkoutResult.paymentDetails?.paymentId
+                            ? String(checkoutResult.paymentDetails.paymentId)
+                            : undefined,
+                        }).unwrap();
+                        toast.dismiss("verify-contact-plan");
+                        toast.success("Contact pack activated! Unlocking owner number...");
+                      }
+
                       await checkAndUnlock();
                     })
                   }

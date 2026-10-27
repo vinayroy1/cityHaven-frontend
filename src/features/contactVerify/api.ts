@@ -185,15 +185,18 @@ export interface PurchaseCreditsByPlanPayload {
 
 export interface CreateOrderPayload {
   planId: number;
-  target: "USER" | "ORG";
+  target?: "USER" | "ORG";
   organizationId?: number;
+  returnUrl?: string;
 }
 
 export interface VerifyPaymentPayload {
-  planId: number;
-  target: "USER" | "ORG";
+  orderId?: string;
+  paymentRef?: string;
+  cfPaymentId?: string;
+  planId?: number;
+  target?: "USER" | "ORG";
   organizationId?: number;
-  paymentRef: string;
 }
 
 export interface CreditActionConfig {
@@ -414,14 +417,40 @@ export const contactVerifyApi = createApi({
       }),
       invalidatesTags: ["Credits", "BillingSummary", "OrgCredits"],
     }),
-    createBillingOrder: builder.mutation<{ success: boolean; data: { orderId: string; plan: Plan; target: string } }, CreateOrderPayload>({
+    createBillingOrder: builder.mutation<
+      {
+        success: boolean;
+        data: {
+          orderId: string;
+          paymentSessionId: string | null;
+          cfOrderId?: string | null;
+          plan: Plan;
+          target: string;
+          organizationId?: number | null;
+        };
+      },
+      CreateOrderPayload
+    >({
       query: (body) => ({
         url: API_ENDPOINTS.billing.createOrder,
         method: "POST",
         body,
       }),
     }),
-    verifyBillingPayment: builder.mutation<{ success: boolean; data: { credits: number; planName?: string; activeSubscription?: any } }, VerifyPaymentPayload>({
+    verifyBillingPayment: builder.mutation<
+      {
+        success: boolean;
+        data: {
+          success: boolean;
+          alreadyActivated?: boolean;
+          credits: number;
+          planName?: string;
+          activeSubscription?: any;
+          creditsAdded?: number;
+        };
+      },
+      VerifyPaymentPayload
+    >({
       query: (body) => ({
         url: API_ENDPOINTS.billing.verifyPayment,
         method: "POST",

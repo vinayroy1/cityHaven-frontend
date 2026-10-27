@@ -10,9 +10,12 @@ import {
   useLazyGetBillingSummaryQuery,
   usePurchaseCreditsByPlanMutation,
   usePurchaseCreditsMutation,
+  useCreateBillingOrderMutation,
+  useVerifyBillingPaymentMutation,
   useUnlockPropertyContactMutation,
   BillingSummary,
 } from "@/features/contactVerify/api";
+import { launchCashfreeCheckout } from "@/lib/cashfree/cashfreeCheckout";
 import { ContactUnlockDialog, ScopeOption } from "./ContactUnlockDialog";
 import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
 import { ScheduleVisitDialog } from "@/components/property/ScheduleVisitDialog";
@@ -93,6 +96,8 @@ export function ResultCard({
   const [unlockPropertyContactMutation] = useUnlockPropertyContactMutation();
   const [purchaseCreditsMutation] = usePurchaseCreditsMutation();
   const [purchaseCreditsByPlanMutation] = usePurchaseCreditsByPlanMutation();
+  const [createBillingOrderMutation] = useCreateBillingOrderMutation();
+  const [verifyBillingPaymentMutation] = useVerifyBillingPaymentMutation();
 
   const plansList = React.useMemo<ContactPlan[]>(() => {
     if (plansResponse?.data?.length) {
@@ -370,20 +375,57 @@ export function ResultCard({
     const isOrg = selectedScope !== "PERSONAL";
     const orgId = isOrg && typeof selectedScope === "number" ? selectedScope : undefined;
     try {
-      if (currentPlan?.dbId) {
-        const res = await purchaseCreditsByPlanMutation({
-          planId: currentPlan.dbId,
-          target: isOrg ? "ORG" : "USER",
-          organizationId: orgId,
-        }).unwrap();
-        setCredits(res.data?.credits ?? 0);
-      } else {
-        const res = await purchaseCreditsMutation({ credits: currentPlan?.credits ?? 20, reason: "PURCHASE" }).unwrap();
-        setCredits(res.data?.credits ?? 0);
+      const planId = currentPlan?.dbId;
+      if (!planId) {
+        throw new Error("Please select a valid pack.");
       }
+
+      const orderRes = await createBillingOrderMutation({
+        planId,
+        target: isOrg ? "ORG" : "USER",
+        organizationId: orgId,
+      }).unwrap();
+
+      const orderData = orderRes.data;
+      if (orderData?.paymentSessionId) {
+        toast.info("Opening Cashfree secure checkout...");
+        const checkoutResult = await launchCashfreeCheckout(orderData.paymentSessionId, {
+          redirectTarget: "_modal",
+        });
+
+        if (checkoutResult.status === "CLOSED") {
+          toast.info("Payment window was closed.");
+          return;
+        }
+
+        if (checkoutResult.status === "FAILED") {
+          const msg = checkoutResult.error || "Payment was not completed.";
+          setContactError(msg);
+          toast.error(msg);
+          return;
+        }
+
+        if (checkoutResult.status === "REDIRECTED") {
+          toast.info("Redirecting for payment authentication...");
+          return;
+        }
+
+        toast.loading("Verifying payment with Cashfree...", { id: "verify-card-payment" });
+        const verifyRes = await verifyBillingPaymentMutation({
+          orderId: orderData.orderId,
+          cfPaymentId: checkoutResult.paymentDetails?.paymentId
+            ? String(checkoutResult.paymentDetails.paymentId)
+            : undefined,
+        }).unwrap();
+        toast.dismiss("verify-card-payment");
+        setCredits(verifyRes.data?.credits ?? 0);
+        toast.success("Contact pack activated! Unlocking owner number...");
+      }
+
       setHasActivePlan(true);
       await unlockContact(selectedScope);
     } catch (err: any) {
+      toast.dismiss("verify-card-payment");
       setContactError(err?.data?.message || err.message || "Purchase failed");
     } finally {
       setLoading(false);

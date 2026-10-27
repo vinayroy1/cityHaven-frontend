@@ -32,9 +32,13 @@ import {
   PlanCategory,
   useGetCreditPlatformConfigQuery,
   usePurchaseCreditsByPlanMutation,
+  useCreateBillingOrderMutation,
+  useVerifyBillingPaymentMutation,
   useGetBillingSummaryQuery,
   useRedeemCreditCouponMutation,
 } from "@/features/contactVerify/api";
+import { launchCashfreeCheckout } from "@/lib/cashfree/cashfreeCheckout";
+import { toast } from "sonner";
 
 type CategoryMeta = {
   label: string;
@@ -117,7 +121,10 @@ export function PricingClient() {
   );
   const summary = summaryData?.data;
 
-  const [purchaseCreditsByPlan, { isLoading: isPurchasing }] = usePurchaseCreditsByPlanMutation();
+  const [createBillingOrder, { isLoading: isCreatingOrder }] = useCreateBillingOrderMutation();
+  const [verifyBillingPayment, { isLoading: isVerifyingPayment }] = useVerifyBillingPaymentMutation();
+  const [purchaseCreditsByPlan] = usePurchaseCreditsByPlanMutation();
+  const isPurchasing = isCreatingOrder || isVerifyingPayment;
   const [redeemCoupon, { isLoading: isRedeemingCoupon }] = useRedeemCreditCouponMutation();
   const couponsEnabled = platformData?.data?.flags.find((flag) => flag.key === "COUPONS_ENABLED")?.isEnabled ?? false;
 
@@ -180,18 +187,67 @@ export function PricingClient() {
     setSelectedPlanId(plan.id);
 
     try {
-      const res = await purchaseCreditsByPlan({
+      // 1. Create order on backend which registers with Cashfree
+      const orderRes = await createBillingOrder({
         planId: plan.id,
         target: billingScope === "ORGANIZATION" ? "ORG" : "USER",
         organizationId: effectiveOrgId,
       }).unwrap();
 
+      const orderData = orderRes.data;
+      if (!orderData?.paymentSessionId) {
+        // Direct / free activation fallback
+        setPurchaseSuccess(
+          `Successfully activated ${orderData?.plan?.name || plan.name}!`
+        );
+        void refetchSummary();
+        return;
+      }
+
+      // 2. Open Cashfree checkout modal
+      toast.info("Opening Cashfree secure payment...");
+      const checkoutResult = await launchCashfreeCheckout(orderData.paymentSessionId, {
+        redirectTarget: "_modal",
+      });
+
+      if (checkoutResult.status === "CLOSED") {
+        toast.info("Payment window was closed.");
+        return;
+      }
+
+      if (checkoutResult.status === "FAILED") {
+        const msg = checkoutResult.error || "Payment was not completed.";
+        setPurchaseError(msg);
+        toast.error(msg);
+        return;
+      }
+
+      if (checkoutResult.status === "REDIRECTED") {
+        toast.info("Redirecting to authenticate payment...");
+        return;
+      }
+
+      // 3. Completed modal payment: verify with backend
+      toast.loading("Verifying payment with Cashfree...", { id: "verify-plan" });
+      const verifyRes = await verifyBillingPayment({
+        orderId: orderData.orderId,
+        cfPaymentId: checkoutResult.paymentDetails?.paymentId
+          ? String(checkoutResult.paymentDetails.paymentId)
+          : undefined,
+      }).unwrap();
+
+      toast.dismiss("verify-plan");
+      const creditsAdded = verifyRes.data?.creditsAdded ?? plan.contactCredits ?? 0;
       setPurchaseSuccess(
-        `Successfully activated ${res.data?.planName || plan.name}! Current balance: ${res.data?.credits ?? 0} contact credits.`
+        `🎉 Successfully activated ${verifyRes.data?.planName || plan.name}! +${creditsAdded} credits added. Current balance: ${verifyRes.data?.credits ?? 0} contact credits.`
       );
+      toast.success(`+${creditsAdded} Credits added to your wallet!`);
       void refetchSummary();
     } catch (err: any) {
-      setPurchaseError(err?.data?.message || err?.message || "Payment activation failed. Please try again.");
+      toast.dismiss("verify-plan");
+      const msg = err?.data?.message || err?.message || "Payment initiation or verification failed. Please try again.";
+      setPurchaseError(msg);
+      toast.error(msg);
     } finally {
       setSelectedPlanId(null);
     }
