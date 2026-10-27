@@ -29,6 +29,9 @@ import {
   Check,
   ShieldCheck,
   Info,
+  Phone,
+  Mail,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,8 +41,10 @@ import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/app-config";
 import { PropertyListingCitySelector, type CitySelection } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector, type LocalitySelection } from "@/components/propertyListing/PropertyListingLocalitySelector";
-import { useCreateFlatmateListingMutation } from "@/features/flatmates/api";
+import { useCreateFlatmateListingMutation, useGetFlatmateProfileQuery } from "@/features/flatmates/api";
 import { useGetPresignedUploadUrlMutation } from "@/features/propertyListing/api";
+import { useMeQuery } from "@/features/auth/api";
+import { getStoredUserContact } from "@/lib/auth/storedUser";
 import type { FlatmateListingMode, FlatmateListingInput } from "@/types/flatmate.types";
 import { registerBackHandler } from "@/lib/navigation/backNavigation";
 
@@ -68,6 +73,8 @@ const SLEEP_SCHEDULE_OPTIONS = ["Flexible", "Early Bird", "Night Owl"];
 
 export function FlatmateListingWizard() {
   const router = useRouter();
+  const { data: meData } = useMeQuery();
+  const { data: flatmateProfile } = useGetFlatmateProfileQuery();
   const [createListing, { isLoading: isSubmitting }] = useCreateFlatmateListingMutation();
   const [getPresignedUploadUrl] = useGetPresignedUploadUrlMutation();
 
@@ -124,6 +131,8 @@ export function FlatmateListingWizard() {
 
   // Profile and photos
   const [displayName, setDisplayName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [birthYear, setBirthYear] = useState("");
   const [gender, setGender] = useState("");
   const [occupation, setOccupation] = useState("");
@@ -134,6 +143,41 @@ export function FlatmateListingWizard() {
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  // Autofill logged-in user profile details, phone and email
+  React.useEffect(() => {
+    const storedUser = getStoredUserContact();
+
+    setDisplayName((prev) => {
+      if (prev) return prev;
+      return flatmateProfile?.displayName || meData?.name || storedUser?.name || "";
+    });
+
+    setPhone((prev) => {
+      if (prev) return prev;
+      return meData?.mobileNumber || storedUser?.mobileNumber || "";
+    });
+
+    setEmail((prev) => {
+      if (prev) return prev;
+      return meData?.email || storedUser?.email || "";
+    });
+
+    if (flatmateProfile) {
+      if (flatmateProfile.gender) setGender((prev) => prev || flatmateProfile.gender || "");
+      if (flatmateProfile.birthYear) setBirthYear((prev) => prev || String(flatmateProfile.birthYear));
+      if (flatmateProfile.occupation) setOccupation((prev) => prev || flatmateProfile.occupation || "");
+      if (flatmateProfile.companyOrCollege) setCompanyOrCollege((prev) => prev || flatmateProfile.companyOrCollege || "");
+      if (flatmateProfile.bio) setBio((prev) => prev || flatmateProfile.bio || "");
+      if (flatmateProfile.cleanlinessLevel) setCleanlinessLevel((prev) => prev || flatmateProfile.cleanlinessLevel || 4);
+      if (flatmateProfile.workMode) setWorkMode((prev) => prev || flatmateProfile.workMode || "Hybrid");
+      if (flatmateProfile.sleepSchedule) setSleepSchedule((prev) => prev || flatmateProfile.sleepSchedule || "Flexible");
+      if (flatmateProfile.diet) setPreferredDiet((prev) => (prev === "Any Diet" ? flatmateProfile.diet || "Any Diet" : prev));
+      if (flatmateProfile.profilePhoto && mode !== "HAVE_ROOM") {
+        setPhotos((prev) => (prev.length === 0 ? [flatmateProfile.profilePhoto!] : prev));
+      }
+    }
+  }, [meData, flatmateProfile, mode]);
 
   React.useEffect(() => {
     if (!window.localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)) {
@@ -240,6 +284,17 @@ export function FlatmateListingWizard() {
 
   const handleSubmit = async () => {
     try {
+      const cleanPhone = phone.replace(/\D/g, "").slice(-10);
+      if (phone && cleanPhone.length !== 10) {
+        toast.error("Please enter a valid 10-digit mobile number");
+        return;
+      }
+
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+        toast.error("Please enter a valid email address");
+        return;
+      }
+
       const finalTitle = computedTitle();
       const primaryLoc = preferredLocalities[0] || locality.trim();
       const payload: FlatmateListingInput = {
@@ -273,22 +328,47 @@ export function FlatmateListingWizard() {
         smokingAllowed,
         drinkingAllowed,
         petsAllowed,
+        phone: cleanPhone || undefined,
+        mobileNumber: cleanPhone || undefined,
+        email: email.trim() || undefined,
+        contact: {
+          name: displayName.trim() || undefined,
+          mobileNumber: cleanPhone || undefined,
+          email: email.trim() || undefined,
+        },
         profile: {
-              displayName: displayName || undefined,
-              birthYear: birthYear ? Number(birthYear) : undefined,
-              gender: gender || undefined,
-              occupation: occupation || undefined,
-              companyOrCollege: companyOrCollege || undefined,
-              bio: bio || undefined,
-              diet: preferredDiet,
-              cleanlinessLevel,
-              sleepSchedule,
-              workMode,
-              hasPets: petsAllowed,
-            },
+          displayName: displayName || undefined,
+          birthYear: birthYear ? Number(birthYear) : undefined,
+          gender: gender || undefined,
+          occupation: occupation || undefined,
+          companyOrCollege: companyOrCollege || undefined,
+          bio: bio || undefined,
+          diet: preferredDiet,
+          cleanlinessLevel,
+          sleepSchedule,
+          workMode,
+          hasPets: petsAllowed,
+        },
       };
 
       const res = await createListing(payload).unwrap();
+
+      // Update local storage user if phone/email/name changed
+      if (typeof window !== "undefined") {
+        try {
+          const raw = window.localStorage.getItem(APP_CONFIG.AUTH.USER_KEY);
+          if (raw) {
+            const userObj = JSON.parse(raw);
+            if (displayName.trim()) userObj.name = displayName.trim();
+            if (cleanPhone) userObj.mobileNumber = cleanPhone;
+            if (email.trim()) userObj.email = email.trim();
+            window.localStorage.setItem(APP_CONFIG.AUTH.USER_KEY, JSON.stringify(userObj));
+          }
+        } catch {
+          // ignore localStorage sync error
+        }
+      }
+
       toast.success("Flatmate listing posted successfully!", {
         description: "Your listing is now live and room seekers can connect with you directly.",
       });
@@ -978,6 +1058,68 @@ export function FlatmateListingWizard() {
                   ? "A clear profile and recent room photos help prospective flatmates get an accurate view of your space."
                   : "Tell potential flatmates a little about yourself. Since you are searching for a room or flat, flat photos are not needed — you can optionally add a profile picture."}
               </p>
+            </div>
+
+            {/* Contact Details (Phone & Email) */}
+            <div className="rounded-2xl border border-rose-100 bg-rose-50/40 p-4 dark:border-rose-950/60 dark:bg-rose-950/20 space-y-3">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-600 text-white shadow-xs">
+                    <Phone className="h-3.5 w-3.5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                      Contact Details (Phone &amp; Email)
+                    </h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Pre-filled from your profile. Kept secure and only shared when a verified room seeker unlocks contact.
+                    </p>
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
+                  <ShieldCheck className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                  Verified &amp; Private
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                    <Phone className="h-3.5 w-3.5 text-rose-500" />
+                    <span>Phone Number</span>
+                    <span className="text-rose-500 font-bold">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <span className="text-xs font-bold text-slate-400 dark:text-slate-500">+91</span>
+                    </div>
+                    <Input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      placeholder="9876543210"
+                      className="rounded-2xl pl-12 text-sm font-medium"
+                      maxLength={10}
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-400">Room seekers will call or WhatsApp on this number once unlocked.</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                    <Mail className="h-3.5 w-3.5 text-rose-500" />
+                    <span>Email Address</span>
+                  </label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="e.g. yourname@example.com"
+                    className="rounded-2xl text-sm font-medium"
+                  />
+                  <p className="text-[10px] text-slate-400">Used for email inquiries and direct notification alerts.</p>
+                </div>
+              </div>
             </div>
 
             {/* Profile fields */}

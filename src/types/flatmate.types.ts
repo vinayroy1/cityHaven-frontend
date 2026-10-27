@@ -178,5 +178,13 @@ export interface FlatmateListingInput {
   petsAllowed?: boolean | null;
   ageMin?: number | null;
   ageMax?: number | null;
+  phone?: string;
+  mobileNumber?: string;
+  email?: string;
+  contact?: {
+    name?: string;
+    mobileNumber?: string;
+    email?: string;
+  };
   profile?: FlatmateProfile | null;
 }
