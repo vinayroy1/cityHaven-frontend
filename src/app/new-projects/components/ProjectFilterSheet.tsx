@@ -2,7 +2,7 @@
 
 import React from "react";
 import { createPortal } from "react-dom";
-import { X, SlidersHorizontal, Check, RotateCcw } from "lucide-react";
+import { X, SlidersHorizontal, Check, RotateCcw, Loader2 } from "lucide-react";
 
 export interface ProjectFilterState {
   status: string;
@@ -108,6 +108,7 @@ export function ProjectFilterSheet({
 }: ProjectFilterSheetProps) {
   const [draft, setDraft] = React.useState<ProjectFilterState>(state);
   const [mounted, setMounted] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -116,8 +117,9 @@ export function ProjectFilterSheet({
   React.useEffect(() => {
     if (open) {
       setDraft(state);
+      setIsSubmitting(false);
     }
-  }, [open, state]);
+  }, [open]);
 
   // Lock body scroll on mobile while sheet is open
   React.useEffect(() => {
@@ -157,8 +159,13 @@ export function ProjectFilterSheet({
   };
 
   const handleApply = () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     onApply(draft);
-    onClose();
+    setTimeout(() => {
+      onClose();
+      setIsSubmitting(false);
+    }, 500);
   };
 
   return createPortal(
@@ -367,16 +374,27 @@ export function ProjectFilterSheet({
           <button
             type="button"
             onClick={handleReset}
+            disabled={isSubmitting}
             className="flex-1 h-11 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
           >
             Clear All
           </button>
           <button
             type="button"
+            disabled={isSubmitting}
             onClick={handleApply}
-            className="flex-1 h-11 rounded-xl bg-rose-600 text-xs font-bold text-white shadow-md shadow-rose-600/20 hover:bg-rose-700 transition"
+            className={`flex-1 h-11 rounded-xl bg-rose-600 text-xs font-bold text-white shadow-md shadow-rose-600/20 hover:bg-rose-700 transition flex items-center justify-center gap-1.5 ${
+              isSubmitting ? "opacity-80 cursor-not-allowed" : ""
+            }`}
           >
-            Apply Filters {totalResultsCount !== undefined && `(${totalResultsCount})`}
+            {isSubmitting ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span>Applying...</span>
+              </>
+            ) : (
+              <span>Apply Filters {totalResultsCount !== undefined && `(${totalResultsCount})`}</span>
+            )}
           </button>
         </div>
       </div>

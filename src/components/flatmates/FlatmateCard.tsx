@@ -87,13 +87,13 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             router.push(detailsHref);
           }
         }}
-        className={`group relative flex h-full w-full min-h-[400px] cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 ${
+        className={`group relative flex w-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 sm:h-full sm:min-h-[400px] ${
           listing.isBoosted
             ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40"
             : "border-slate-200/90 hover:border-rose-300 dark:border-slate-800 dark:hover:border-rose-900/60"
         }`}
       >
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-col sm:flex-1">
           {/* ======================================================== */}
           {/* TOP SECTION: Clean visual distinction, ZERO overlapping   */}
           {/* ======================================================== */}
@@ -239,7 +239,7 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
           {/* ======================================================== */}
           {/* CARD BODY: Clean Typography & Balanced Padding           */}
           {/* ======================================================== */}
-          <div className="flex flex-1 flex-col justify-between p-3.5 space-y-2">
+          <div className="flex flex-col sm:flex-1 sm:justify-between p-3 sm:p-3.5 space-y-2">
             {isPlaceListing ? (
               /* HAVE_ROOM Content */
               <div className="space-y-2">
@@ -405,7 +405,7 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             )}
 
             {/* Lifestyle Badges (Clamped to 1 single clean row, NO multiline wrapping) */}
-            <div className="flex items-center gap-1 overflow-hidden flex-nowrap pt-1">
+            <div className="flex items-center gap-1 overflow-hidden flex-nowrap pt-1 sm:mt-auto">
               {listing.compatibilityReasons?.slice(0, 1).map((reason) => (
                 <Badge
                   key={reason}
@@ -462,9 +462,9 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
         </div>
 
         {/* ======================================================== */}
-        {/* UNIFIED FOOTER: Always fixed h-12 with clean alignment    */}
+        {/* UNIFIED FOOTER: Always fixed h-11 on mobile, h-12 on desktop */}
         {/* ======================================================== */}
-        <div className="flex h-12 items-center justify-between border-t border-slate-100 px-3.5 dark:border-slate-800/80">
+        <div className="flex h-11 sm:h-12 items-center justify-between border-t border-slate-100 px-3 sm:px-3.5 dark:border-slate-800/80">
           <div className="flex items-center gap-2 min-w-0">
             {isPlaceListing ? (
               <>

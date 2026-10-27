@@ -2,7 +2,7 @@
 
 import React from "react";
 import { createPortal } from "react-dom";
-import { X, SlidersHorizontal } from "lucide-react";
+import { X, SlidersHorizontal, Loader2 } from "lucide-react";
 import { Chip } from "./Chip";
 import {
   clearAllFilters,
@@ -337,6 +337,7 @@ export function FilterSheet({
 }) {
   const [draft, setDraft] = React.useState(state);
   const [mounted, setMounted] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [mobileViewportStyle, setMobileViewportStyle] = React.useState<React.CSSProperties>({});
 
   useModalBackHandler({
@@ -351,8 +352,11 @@ export function FilterSheet({
   }, []);
 
   React.useEffect(() => {
-    if (open) setDraft(state);
-  }, [open, state]);
+    if (open) {
+      setDraft(state);
+      setIsSubmitting(false);
+    }
+  }, [open]);
 
   // Bulletproof mobile bottom sheet positioning using visualViewport (same pattern as CitySelectorDropdown)
   React.useEffect(() => {
@@ -439,18 +443,33 @@ export function FilterSheet({
 
         {/* Footer */}
         <div className="flex shrink-0 gap-3 border-t border-slate-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-slate-800 bg-white dark:bg-slate-900">
-          <button type="button" className={ghostButton} onClick={onClose}>
+          <button type="button" className={ghostButton} onClick={onClose} disabled={isSubmitting}>
             Cancel
           </button>
           <button
             type="button"
-            className={primaryButton}
+            disabled={isSubmitting}
+            className={`${primaryButton} flex items-center justify-center gap-1.5 transition ${
+              isSubmitting ? "opacity-80 cursor-not-allowed" : ""
+            }`}
             onClick={() => {
+              if (isSubmitting) return;
+              setIsSubmitting(true);
               (onSubmit || onApply)?.(draft);
-              onClose();
+              setTimeout(() => {
+                onClose();
+                setIsSubmitting(false);
+              }, 500);
             }}
           >
-            Apply Filters
+            {isSubmitting ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span>Applying...</span>
+              </>
+            ) : (
+              <span>Apply Filters</span>
+            )}
           </button>
         </div>
       </div>

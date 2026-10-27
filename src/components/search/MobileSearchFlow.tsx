@@ -38,7 +38,7 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
       setDraft(value);
       setIsSubmitting(false);
     }
-  }, [open, value]);
+  }, [open]);
 
   React.useEffect(() => {
     if (!open || typeof window === "undefined") return;
@@ -85,7 +85,7 @@ export function MobileSearchFlow({ open, onClose, value, onSubmit, resultCount, 
     setTimeout(() => {
       onClose();
       setIsSubmitting(false);
-    }, 400);
+    }, 500);
   };
 
   const activeCount = countActiveFilters(draft);

@@ -322,7 +322,6 @@ export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent,
         )}
         onSubmit={(next) => {
           commit(next);
-          setMobileSearchOpen(false);
         }}
       />
 
