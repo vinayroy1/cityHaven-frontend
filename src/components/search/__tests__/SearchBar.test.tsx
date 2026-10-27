@@ -5,6 +5,9 @@ import { initialSearchState } from "../searchQuery";
 
 jest.mock("../LocationSearchInput", () => ({ LocationSearchInput: () => null }));
 jest.mock("../SearchDialog", () => ({ SearchDialog: () => null }));
+jest.mock("@/features/locations/api", () => ({
+  useGetCitiesQuery: () => ({ data: [] }),
+}));
 
 describe("listing search context", () => {
   it("commits Rent immediately and clears purchase budgets", () => {

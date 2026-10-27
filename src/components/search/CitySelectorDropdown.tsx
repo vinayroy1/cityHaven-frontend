@@ -3,7 +3,7 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, MapPin, Search, Check, Sparkles } from "lucide-react";
-import { APP_CONFIG } from "@/constants/app-config";
+import { useGetCitiesQuery } from "@/features/locations/api";
 
 export interface CityItem {
   id: number;
@@ -73,8 +73,7 @@ export function CitySelectorDropdown({ selectedCityName, onSelectCity, className
   const [isOpen, setIsOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [search, setSearch] = React.useState("");
-  const [popularCities, setPopularCities] = React.useState<CityItem[]>(DEFAULT_POPULAR_CITIES);
-  const [searchResults, setSearchResults] = React.useState<CityItem[]>([]);
+  const [debouncedSearch, setDebouncedSearch] = React.useState("");
   const [dropdownMaxHeight, setDropdownMaxHeight] = React.useState<number>(360);
   const [dropdownCoords, setDropdownCoords] = React.useState<{ top?: number; bottom?: number; left: number }>({ left: 0 });
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -84,61 +83,44 @@ export function CitySelectorDropdown({ selectedCityName, onSelectCity, className
     setMounted(true);
   }, []);
 
-  // 1. Fetch live popular cities from API, filtering strictly for Indian metro cities
-  React.useEffect(() => {
-    const fetchPopular = async () => {
-      try {
-        const url = `${APP_CONFIG.API.BASE_URL}/v1/cities?popular=true`;
-        const res = await fetch(url);
-        const resJson = await res.json();
-        if (resJson?.data && Array.isArray(resJson.data) && resJson.data.length > 0) {
-          const eligible: CityItem[] = [];
-          for (const rawCity of resJson.data) {
-            const c = canonicalizeCity(rawCity);
-            const key = c.name?.toLowerCase().trim();
-            // Strictly exclude foreign cities (Auckland, Austin, Christchurch, etc.)
-            if (key && KNOWN_INDIAN_METROS.has(key)) {
-              eligible.push(c);
-            }
-          }
-          const unique = dedupeCities(eligible);
-          if (unique.length >= 4) {
-            setPopularCities(unique.slice(0, 14));
-          }
-        }
-      } catch {
-        // Fallback to default popular cities
-      }
-    };
-    void fetchPopular();
-  }, []);
+  // 1. Fetch live popular cities via RTK Query (cached & deduplicated across mounts/StrictMode)
+  const { data: rawPopularCities } = useGetCitiesQuery({ popular: true });
 
-  // 2. Search cities when user types in the city search box
-  React.useEffect(() => {
-    if (!search.trim()) {
-      setSearchResults([]);
-      return;
+  const popularCities = React.useMemo(() => {
+    if (!rawPopularCities || rawPopularCities.length === 0) {
+      return DEFAULT_POPULAR_CITIES;
     }
+    const eligible: CityItem[] = [];
+    for (const rawCity of rawPopularCities) {
+      const c = canonicalizeCity(rawCity);
+      const key = c.name?.toLowerCase().trim();
+      // Strictly exclude foreign cities (Auckland, Austin, Christchurch, etc.)
+      if (key && KNOWN_INDIAN_METROS.has(key)) {
+        eligible.push(c);
+      }
+    }
+    const unique = dedupeCities(eligible);
+    return unique.length >= 4 ? unique.slice(0, 14) : DEFAULT_POPULAR_CITIES;
+  }, [rawPopularCities]);
 
+  // 2. Debounce search query
+  React.useEffect(() => {
     const timer = setTimeout(() => {
-      const runSearch = async () => {
-        try {
-          const query = encodeURIComponent(search.trim());
-          const url = `${APP_CONFIG.API.BASE_URL}/v1/cities?search=${query}&limit=20`;
-          const res = await fetch(url);
-          const resJson = await res.json();
-          if (resJson?.data && Array.isArray(resJson.data)) {
-            setSearchResults(dedupeCities(resJson.data));
-          }
-        } catch {
-          // ignore error
-        }
-      };
-      void runSearch();
+      setDebouncedSearch(search.trim());
     }, 150);
-
     return () => clearTimeout(timer);
   }, [search]);
+
+  // 3. Search cities via RTK Query (skipped when search query is empty)
+  const { data: rawSearchResults } = useGetCitiesQuery(
+    { search: debouncedSearch, limit: 20 },
+    { skip: !debouncedSearch }
+  );
+
+  const searchResults = React.useMemo(() => {
+    if (!debouncedSearch || !rawSearchResults) return [];
+    return dedupeCities(rawSearchResults);
+  }, [debouncedSearch, rawSearchResults]);
 
   // 3. Dropdown Placement & Viewport Boundary calculation (Portaled directly to document.body)
   React.useEffect(() => {

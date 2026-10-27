@@ -9,6 +9,7 @@ import { advisorsApi } from "@/features/advisors/api";
 import { flatmatesApi } from "@/features/flatmates/api";
 import { projectsApi } from "@/features/projects/api";
 import { blogApi } from "@/features/blog/api";
+import { locationsApi } from "@/features/locations/api";
 
 export const makeStore = () =>
   configureStore({
@@ -22,6 +23,7 @@ export const makeStore = () =>
       [flatmatesApi.reducerPath]: flatmatesApi.reducer,
       [projectsApi.reducerPath]: projectsApi.reducer,
       [blogApi.reducerPath]: blogApi.reducer,
+      [locationsApi.reducerPath]: locationsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
@@ -32,7 +34,8 @@ export const makeStore = () =>
         advisorsApi.middleware,
         flatmatesApi.middleware,
         projectsApi.middleware,
-        blogApi.middleware
+        blogApi.middleware,
+        locationsApi.middleware
       ),
     devTools: true,
   });

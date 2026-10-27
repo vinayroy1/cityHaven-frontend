@@ -132,6 +132,10 @@ export const API_ENDPOINTS = {
   search: {
     suggestions: `${BASE}/search/suggestions`,
   },
+  locations: {
+    cities: `${BASE}/cities`,
+    localities: (cityId: number | string) => `${BASE}/cities/${cityId}/localities`,
+  },
   admin: {
     auth: {
       requestOtp: `${BASE}/admin/auth/request-otp`,
