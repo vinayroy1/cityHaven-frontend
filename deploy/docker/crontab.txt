@@ -3,5 +3,9 @@
 # To install: crontab deploy/docker/crontab.txt
 # ==============================================================================
 
-# Daily automated database backup at 03:00 AM (retains 14 days of gzipped dumps)
+# 1. Daily automated database backup at 03:00 AM (retains 14 days of gzipped dumps)
 0 3 * * * /opt/awasio/backup_db.sh >/dev/null 2>&1
+
+# 2. Weekly automated Docker storage cleanup every Sunday at 04:00 AM
+# Reclaims stale Jenkins build cache and untagged images older than 7 days
+0 4 * * 0 docker builder prune -af --filter until=168h && docker image prune -af --filter until=168h >/dev/null 2>&1
