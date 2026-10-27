@@ -4,6 +4,8 @@ import React from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, MapPin, Search, Check, Sparkles } from "lucide-react";
 import { useGetCitiesQuery } from "@/features/locations/api";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchPopularCities } from "@/features/locations/slice";
 
 export interface CityItem {
   id: number;
@@ -83,25 +85,13 @@ export function CitySelectorDropdown({ selectedCityName, onSelectCity, className
     setMounted(true);
   }, []);
 
-  // 1. Fetch live popular cities via RTK Query (cached & deduplicated across mounts/StrictMode)
-  const { data: rawPopularCities } = useGetCitiesQuery({ popular: true });
+  const dispatch = useAppDispatch();
+  const popularCities = useAppSelector((state) => state.locations?.popularCities || DEFAULT_POPULAR_CITIES);
 
-  const popularCities = React.useMemo(() => {
-    if (!rawPopularCities || rawPopularCities.length === 0) {
-      return DEFAULT_POPULAR_CITIES;
-    }
-    const eligible: CityItem[] = [];
-    for (const rawCity of rawPopularCities) {
-      const c = canonicalizeCity(rawCity);
-      const key = c.name?.toLowerCase().trim();
-      // Strictly exclude foreign cities (Auckland, Austin, Christchurch, etc.)
-      if (key && KNOWN_INDIAN_METROS.has(key)) {
-        eligible.push(c);
-      }
-    }
-    const unique = dedupeCities(eligible);
-    return unique.length >= 4 ? unique.slice(0, 14) : DEFAULT_POPULAR_CITIES;
-  }, [rawPopularCities]);
+  // 1. Fetch live popular cities via Redux Toolkit (non-paginated API call with deduplication)
+  React.useEffect(() => {
+    void dispatch(fetchPopularCities());
+  }, [dispatch]);
 
   // 2. Debounce search query
   React.useEffect(() => {

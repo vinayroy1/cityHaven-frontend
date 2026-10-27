@@ -8,6 +8,10 @@ jest.mock("../SearchDialog", () => ({ SearchDialog: () => null }));
 jest.mock("@/features/locations/api", () => ({
   useGetCitiesQuery: () => ({ data: [] }),
 }));
+jest.mock("@/store/hooks", () => ({
+  useAppDispatch: () => jest.fn(),
+  useAppSelector: (selector: any) => selector({ locations: { popularCities: [] } }),
+}));
 
 describe("listing search context", () => {
   it("commits Rent immediately and clears purchase budgets", () => {

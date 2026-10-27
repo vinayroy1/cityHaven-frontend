@@ -10,11 +10,14 @@ import { flatmatesApi } from "@/features/flatmates/api";
 import { projectsApi } from "@/features/projects/api";
 import { blogApi } from "@/features/blog/api";
 import { locationsApi } from "@/features/locations/api";
+import locationsReducer from "@/features/locations/slice";
+import { leadsApi } from "@/features/leads/api";
 
 export const makeStore = () =>
   configureStore({
     reducer: {
       propertyListing: propertyListingReducer,
+      locations: locationsReducer,
       [propertyListingApi.reducerPath]: propertyListingApi.reducer,
       [authApi.reducerPath]: authApi.reducer,
       [contactVerifyApi.reducerPath]: contactVerifyApi.reducer,
@@ -24,6 +27,7 @@ export const makeStore = () =>
       [projectsApi.reducerPath]: projectsApi.reducer,
       [blogApi.reducerPath]: blogApi.reducer,
       [locationsApi.reducerPath]: locationsApi.reducer,
+      [leadsApi.reducerPath]: leadsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
@@ -35,7 +39,8 @@ export const makeStore = () =>
         flatmatesApi.middleware,
         projectsApi.middleware,
         blogApi.middleware,
-        locationsApi.middleware
+        locationsApi.middleware,
+        leadsApi.middleware
       ),
     devTools: true,
   });

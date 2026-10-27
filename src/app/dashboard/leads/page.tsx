@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CalendarClock,
   CheckCircle2,
@@ -15,8 +14,7 @@ import {
   ShieldCheck,
   UserRoundCheck,
 } from "lucide-react";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { apiFetch } from "@/lib/api/query";
+import { useGetAssignedLeadsQuery, useUpdateLeadStatusMutation, type ApiLead } from "@/features/leads/api";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PageHeader } from "../components/PageHeader";
 import { SectionCard } from "../components/SectionCard";
@@ -28,25 +26,6 @@ import {
 } from "@/lib/services/visitBookings";
 import { ALL_AGENTS } from "@/data/agents";
 
-type ApiLead = {
-  id: number;
-  status?: string | null;
-  guestName?: string | null;
-  guestContact?: string | null;
-  message?: string | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-  propertyId?: number | null;
-  buyer?: { name?: string | null; mobileNumber?: string | null } | null;
-  property?: {
-    id?: number;
-    title?: string | null;
-    cityName?: string | null;
-    locality?: string | null;
-    listingType?: string | null;
-    price?: number | string | null;
-  } | null;
-};
 
 type UnifiedLead = {
   id: string | number;
@@ -88,7 +67,6 @@ function timeLabel(value?: string | null) {
 }
 
 export default function LeadsPage() {
-  const queryClient = useQueryClient();
   const [localVisits, setLocalVisits] = useState<VisitBooking[]>([]);
   const [selectedAgentFilter, setSelectedAgentFilter] = useState("ALL");
 
@@ -107,36 +85,11 @@ export default function LeadsPage() {
     };
   }, []);
 
-  const leadsQuery = useQuery({
-    queryKey: ["dashboard-leads"],
-    queryFn: async () => {
-      try {
-        const assigned = await apiFetch<{ items?: ApiLead[] } | ApiLead[]>({
-          url: API_ENDPOINTS.leads.assigned,
-          params: { pageSize: 100 },
-        });
-        if (Array.isArray(assigned)) return assigned;
-        return assigned.items ?? [];
-      } catch {
-        return [];
-      }
-    },
-  });
-
-  const updateApiStatus = useMutation({
-    mutationFn: ({ id, status }: { id: number; status: string }) =>
-      apiFetch({
-        url: API_ENDPOINTS.leads.status(id),
-        init: {
-          method: "PATCH",
-          body: JSON.stringify({ status }),
-        },
-      }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["dashboard-leads"] }),
-  });
+  const { data: apiLeads = [], isFetching, refetch } = useGetAssignedLeadsQuery({ pageSize: 100 });
+  const [updateLeadStatusMutation] = useUpdateLeadStatusMutation();
+  const leadsQuery = { data: apiLeads, isFetching, refetch };
 
   // Convert API leads to Unified format
-  const apiLeads = leadsQuery.data ?? [];
   const unifiedApiLeads: UnifiedLead[] = useMemo(() => {
     return apiLeads.map((lead) => ({
       id: lead.id,
@@ -190,7 +143,7 @@ export default function LeadsPage() {
       updateVisitBookingStatus(String(lead.id), nextStage as any);
       syncVisits();
     } else {
-      updateApiStatus.mutate({ id: Number(lead.id), status: nextStage });
+      void updateLeadStatusMutation({ id: Number(lead.id), status: nextStage });
     }
   };
 
