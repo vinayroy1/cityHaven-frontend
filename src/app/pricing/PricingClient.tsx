@@ -695,7 +695,7 @@ export function PricingClient() {
                   How do multi-property plans and team workspaces work?
                 </p>
                 <p>
-                  Any user or organization managing multiple properties can subscribe to monthly plans starting at ₹299/mo. Team plans (Agency Pro and Fleet) include shared credit pools and multiple team seats so your team members can manage listings and unlock owner leads collaboratively from their own logins.
+                  Any user or organization managing multiple properties can subscribe to monthly plans starting at ₹299/mo. Team workspaces include 2 free team members and shared credit pools. Additional team members can be added anytime for just 10 credits/month deducted from your organization wallet.
                 </p>
               </div>
 

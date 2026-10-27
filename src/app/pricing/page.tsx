@@ -32,8 +32,8 @@ const PRICING_FAQS = [
     a: "Listing management is billed to the organization that owns the listing. When an employee unlocks someone else's contact using the organization workspace, the organization's allowance is deducted and shared with authorized members.",
   },
   {
-    q: "How are team seats counted?",
-    a: "Seat capacity counts the owner, all active members, and unexpired pending invitations. Invitations reserve seats until accepted, revoked, or expired.",
+    q: "How are team members and seats billed?",
+    a: "Every organization includes 2 team members completely free. Additional members can be added for only 10 credits/month deducted directly from your organization credit balance.",
   },
   {
     q: "Does buying a plan automatically verify my account?",

@@ -201,9 +201,14 @@ function OrganizationDashboardContent() {
   }, [members]);
 
   const pendingInvitesCount = canManageTeam ? invitations.filter((invite) => invite.status === "PENDING").length : 0;
-  const seatsLimit = billingSummary?.allowances?.seats?.limit ?? 2;
   const seatsUsed = members.length + pendingInvitesCount;
-  const isSeatFull = seatsUsed >= seatsLimit;
+  const orgCredits = billingSummary?.credits ?? 0;
+  const freeSeats = billingSummary?.allowances?.seats?.freeLimit ?? 2;
+  const costPerExtraMember = billingSummary?.allowances?.seats?.costPerAdditionalMember ?? 10;
+  const isBeyondFree = seatsUsed >= freeSeats;
+  const canInviteMore = !isBeyondFree || orgCredits >= costPerExtraMember;
+  const billableMembersCount = Math.max(0, seatsUsed - freeSeats);
+  const monthlyCreditBurn = billableMembersCount * costPerExtraMember;
 
   const createOrg = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -377,7 +382,7 @@ function OrganizationDashboardContent() {
               {selectedOrg?.name || "Company & Team Workspace"}
             </h1>
             <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400 hidden sm:block max-w-2xl">
-              Manage agency or builder teams, seat allowances, contact unlocking, and property listings.
+              Manage agency or builder teams, member permissions, contact unlocking, and property listings.
             </p>
           </div>
 
@@ -610,16 +615,21 @@ function OrganizationDashboardContent() {
 
                   <div className="mt-3 space-y-2.5 text-xs">
                     <div>
-                      <div className="flex justify-between font-semibold text-slate-700 dark:text-slate-300">
-                        <span>Employee Seats</span>
-                        <span>{seatsUsed} / {seatsLimit} used</span>
+                      <div className="flex justify-between items-center font-semibold text-slate-700 dark:text-slate-300">
+                        <span>Team Members</span>
+                        <span className="text-[11px] font-bold text-slate-900 dark:text-white">
+                          {seatsUsed} in use {billableMembersCount > 0 ? `(${billableMembersCount} billed)` : "(Free)"}
+                        </span>
                       </div>
-                      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                        <div
-                          className={`h-full rounded-full transition-all ${isSeatFull ? "bg-amber-500" : "bg-emerald-500"}`}
-                          style={{ width: `${Math.min(100, (seatsUsed / seatsLimit) * 100)}%` }}
-                        />
+                      <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                        <span>{freeSeats} base members free</span>
+                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">+{costPerExtraMember} cr/mo per extra</span>
                       </div>
+                      {monthlyCreditBurn > 0 && (
+                        <div className="mt-1.5 rounded-md bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+                          Active team burn: {monthlyCreditBurn} credits/month
+                        </div>
+                      )}
                       <p className="mt-1 text-[10px] text-slate-500 dark:text-slate-400">
                         {members.length} active + {pendingInvitesCount} pending invite{pendingInvitesCount === 1 ? "" : "s"}
                       </p>
@@ -681,13 +691,13 @@ function OrganizationDashboardContent() {
                 <div className="rounded-xl sm:rounded-lg border border-slate-200 bg-white p-2.5 sm:p-4 shadow-2xs min-w-[95px] sm:min-w-0 shrink-0 sm:shrink dark:border-slate-800 dark:bg-slate-900">
                   <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     <Users className="h-3.5 w-3.5 text-rose-500" />
-                    <span className="truncate">Seats</span>
+                    <span className="truncate">Team</span>
                   </div>
                   <p className="mt-1 sm:mt-2 text-lg sm:text-2xl font-black text-slate-950 dark:text-white">
-                    {seatsUsed} <span className="text-xs sm:text-sm font-semibold text-slate-400">/ {seatsLimit}</span>
+                    {seatsUsed} <span className="text-xs sm:text-sm font-semibold text-slate-400">active</span>
                   </p>
                   <p className="mt-0.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">
-                    {isSeatFull ? "Limit reached" : `${seatsLimit - seatsUsed} available`}
+                    {seatsUsed <= freeSeats ? `${freeSeats} Free seats` : `${billableMembersCount} extra · ${monthlyCreditBurn} cr/mo`}
                   </p>
                 </div>
 
@@ -1022,22 +1032,36 @@ function OrganizationDashboardContent() {
                             <UserPlus className="h-4 w-4 text-rose-600 dark:text-rose-400" />
                             <h2 className="text-xs sm:text-sm font-black text-slate-950 dark:text-white">Invite employee</h2>
                           </div>
-                          {isSeatFull && (
-                            <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
-                              Seats Full
+                          {isBeyondFree && (
+                            <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200 dark:border-emerald-900/60 dark:bg-emerald-950/60 dark:text-emerald-300">
+                              {costPerExtraMember} cr/mo
                             </span>
                           )}
                         </div>
 
-                        {isSeatFull ? (
+                        {!canInviteMore ? (
                           <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/60 dark:text-amber-300">
-                            <p className="font-semibold">Seat limit reached ({seatsUsed}/{seatsLimit} in use)</p>
+                            <p className="font-semibold">Recharge credits to add more members</p>
                             <p className="mt-1 text-amber-700 dark:text-amber-400">
-                              Pending invitations also reserve seats. Upgrade your subscription to invite more team members.
+                              Your organization has reached the {freeSeats} free members limit. Inviting additional members requires at least {costPerExtraMember} credits in your organization wallet (Current balance: {orgCredits} credits).
                             </p>
+                            <div className="mt-2.5">
+                              <Link
+                                href={`/pricing?tab=organization&orgId=${selectedOrg.id}`}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-amber-800 transition"
+                              >
+                                <Sparkles className="h-3.5 w-3.5" />
+                                Recharge Credits
+                              </Link>
+                            </div>
                           </div>
                         ) : (
                           <form onSubmit={inviteUserToOrg} className="mt-3 space-y-2.5">
+                            {isBeyondFree && (
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                                First {freeSeats} members are included free. This member will use {costPerExtraMember} credits/month from your organization wallet.
+                              </p>
+                            )}
                             <label className="block">
                               <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Email address</span>
                               <input

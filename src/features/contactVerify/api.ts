@@ -128,6 +128,10 @@ export interface BillingSummary {
       pendingInvites: number;
       limit: number;
       available: number;
+      freeLimit?: number;
+      costPerAdditionalMember?: number;
+      billableMembers?: number;
+      monthlyCreditBurn?: number;
     };
     listings: {
       current: number;
