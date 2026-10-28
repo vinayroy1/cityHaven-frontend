@@ -217,9 +217,9 @@ export function ResultCard({
     }
   }, [fetchBillingSummary, orgs]);
 
-  const moveImage = (event: React.MouseEvent<HTMLButtonElement>, direction: 1 | -1) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const moveImage = (event: React.SyntheticEvent, direction: 1 | -1) => {
+    if (event?.preventDefault) event.preventDefault();
+    if (event?.stopPropagation) event.stopPropagation();
     if (!hasCarousel) return;
     setImageFailed(false);
     setActiveImage((current) => (current + direction + photoCount) % photoCount);

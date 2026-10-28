@@ -13,8 +13,8 @@ type ResultCardMediaProps = {
   safeImages: string[];
   hasCarousel: boolean;
   onImageError: () => void;
-  onMoveImage: (event: React.MouseEvent<HTMLButtonElement>, direction: 1 | -1) => void;
-  onChooseImage: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
+  onMoveImage: (event: React.SyntheticEvent, direction: 1 | -1) => void;
+  onChooseImage?: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
   compact?: boolean;
   priority?: boolean;
   deferImage?: boolean;
@@ -33,12 +33,69 @@ export function ResultCardMedia({
   hasCarousel,
   onImageError,
   onMoveImage,
-  onChooseImage,
   compact = false,
   priority = false,
   deferImage = false,
 }: ResultCardMediaProps) {
   const [loaded, setLoaded] = React.useState(!deferImage);
+
+  // Touch swipe tracking
+  const touchStartRef = React.useRef<{ x: number; y: number; time: number } | null>(null);
+  const swipedRef = React.useRef(false);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!hasCarousel || photoCount <= 1) return;
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+    swipedRef.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStartRef.current || !hasCarousel || photoCount <= 1) return;
+    const touch = e.touches[0];
+    const diffX = touch.clientX - touchStartRef.current.x;
+    const diffY = touch.clientY - touchStartRef.current.y;
+
+    if (Math.abs(diffX) > 20 && Math.abs(diffX) > Math.abs(diffY) * 1.2) {
+      swipedRef.current = true;
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStartRef.current || !hasCarousel || photoCount <= 1) {
+      touchStartRef.current = null;
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const diffX = touch.clientX - touchStartRef.current.x;
+    const diffY = touch.clientY - touchStartRef.current.y;
+    const elapsed = Date.now() - touchStartRef.current.time;
+    touchStartRef.current = null;
+
+    const isHorizontalSwipe = Math.abs(diffX) > 30 && Math.abs(diffX) > Math.abs(diffY);
+    const isQuickFlick = elapsed < 350 && Math.abs(diffX) > 20 && Math.abs(diffX) > Math.abs(diffY);
+
+    if (isHorizontalSwipe || isQuickFlick) {
+      swipedRef.current = true;
+      e.stopPropagation();
+      if (diffX < 0) {
+        // Swiped left -> next photo
+        onMoveImage(e, 1);
+      } else {
+        // Swiped right -> previous photo
+        onMoveImage(e, -1);
+      }
+    }
+  };
+
+  const handleClickCapture = (e: React.MouseEvent) => {
+    if (swipedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      swipedRef.current = false;
+    }
+  };
 
   React.useEffect(() => {
     if (!deferImage || loaded) return;
@@ -56,7 +113,13 @@ export function ResultCardMedia({
   }, [deferImage, loaded]);
 
   return (
-    <div className={`relative block overflow-hidden bg-gradient-to-br from-slate-100 via-zinc-100 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 ${compact ? "aspect-[16/7] sm:aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}>
+    <div
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onClickCapture={handleClickCapture}
+      className={`relative block overflow-hidden touch-pan-y select-none bg-gradient-to-br from-slate-100 via-zinc-100 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 ${compact ? "aspect-[16/7] sm:aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}
+    >
       {loaded ? (
         <img
           src={image}
@@ -64,7 +127,7 @@ export function ResultCardMedia({
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : "auto"}
           decoding="async"
-          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+          className="h-full w-full object-cover transition duration-300 group-hover:scale-105 pointer-events-none"
           onError={onImageError}
         />
       ) : (
@@ -117,30 +180,11 @@ export function ResultCardMedia({
           </span>
         )}
       </div>
-      {photoCount > 0 && (
-        <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-md bg-zinc-950/80 px-2 py-1 text-[11px] font-semibold text-white">
-          <Camera className="h-3.5 w-3.5" />
+      {photoCount > 1 && (
+        <span className="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1 rounded-md bg-zinc-950/75 px-1.5 py-0.5 text-[10px] font-semibold text-white shadow-xs backdrop-blur-xs">
+          <Camera className="h-3 w-3" />
           {activeImage + 1}/{photoCount}
         </span>
-      )}
-      {hasCarousel && (
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-0.5 rounded-full bg-zinc-950/60 px-1 py-0.5">
-          {safeImages.slice(0, 5).map((_, index) => (
-            <button
-              key={index}
-              type="button"
-              aria-label={`Show photo ${index + 1}`}
-              onClick={(event) => onChooseImage(event, index)}
-              className="relative z-20 flex h-6 w-6 items-center justify-center p-1 cursor-pointer focus:outline-none"
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full transition-all ${
-                  index === activeImage ? "bg-white scale-125" : "bg-white/50"
-                }`}
-              />
-            </button>
-          ))}
-        </div>
       )}
     </div>
   );
