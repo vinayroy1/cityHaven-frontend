@@ -1,6 +1,6 @@
 // Global Cloudflare CDN & R2 Media Configuration
 export const CLOUDFLARE_CDN_URL =
-  process.env.NEXT_PUBLIC_CDN_URL || "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev";
+  process.env.NEXT_PUBLIC_CDN_URL || "/r2-cdn";
 
 export const CDN_ASSETS = {
   placeholderWebp: `${CLOUDFLARE_CDN_URL}/assets/property-placeholder.webp`,

@@ -94,6 +94,11 @@ export const isFreshListing = (createdAt?: string) => {
   return Date.now() - created <= 1000 * 60 * 60 * 24 * 30;
 };
 
+const normalizeR2Url = (url?: string | null): string => {
+  if (!url) return "";
+  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+};
+
 export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
   return {
     id: item.id,
@@ -114,6 +119,8 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     isBoosted: item.isBoosted,
     posterBadge: postedAsLabel(item.postedAs),
     ownerId: item.ownerId ?? item.createdById ?? undefined,
-    images: [item.thumbnailUrl, ...(item.media?.map((m) => m.url) ?? [])].filter(Boolean) as string[],
+    images: [item.thumbnailUrl, ...(item.media?.map((m) => m.url) ?? [])]
+      .filter((u): u is string => Boolean(u))
+      .map(normalizeR2Url),
   };
 }

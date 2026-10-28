@@ -23,6 +23,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/r2-cdn/:path*",
+        destination: "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/:path*",
+      },
+    ];
+  },
   async headers() {
     return [
       {

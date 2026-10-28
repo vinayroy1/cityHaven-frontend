@@ -10,12 +10,34 @@ import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import { toResultCardProps } from "@/app/propertySearch/components/propertyCardAdapter";
 
-let cachedFreshListings: PropertySearchItem[] | null = null;
+const SEED_FALLBACK_LISTINGS: PropertySearchItem[] = [
+  {
+    id: 1136,
+    title: "Villa Plot For Sale in Oragodam, varanasi",
+    slug: "plot-land-res-for-sale-in-oragadam-varanasi-bc2052",
+    price: 1500000,
+    listingType: "SELL",
+    cityName: "Varanasi",
+    locality: "Oragodam",
+    thumbnailUrl: "/r2-cdn/properties/photos/pan_india/prop_varanasi_plot_land_1859612846/photo_1.webp",
+    media: [
+      {
+        id: 1,
+        url: "/r2-cdn/properties/photos/pan_india/prop_varanasi_plot_land_1859612846/photo_1.webp",
+        type: "IMAGE",
+      },
+    ],
+    propertySubType: { id: 1, name: "Plot / Land", slug: "plot-land" },
+    qcStatus: "APPROVED",
+  } as PropertySearchItem,
+];
+
+let cachedFreshListings: PropertySearchItem[] | null = SEED_FALLBACK_LISTINGS;
 let cachedFreshTime = 0;
 
 async function getInitialFreshListings(): Promise<PropertySearchItem[]> {
   const now = Date.now();
-  if (cachedFreshListings && now - cachedFreshTime < 60_000) {
+  if (cachedFreshListings && cachedFreshListings !== SEED_FALLBACK_LISTINGS && now - cachedFreshTime < 60_000) {
     return cachedFreshListings;
   }
   try {
