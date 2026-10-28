@@ -211,10 +211,10 @@ export function SearchBar({
               type="button"
               onClick={() => setMobileSearchOpen(true)}
               className="flex min-w-0 flex-1 items-center gap-2 text-left focus:outline-none"
-              aria-label="Open search and filter options"
+              aria-label="Search by locality, project or landmark"
             >
-              <Search size={18} className="shrink-0 text-slate-400" />
-              <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-400 dark:text-slate-500">
+              <Search size={18} className="shrink-0 text-slate-500" />
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-600 dark:text-slate-300">
                 Search by locality, project or landmark
               </span>
             </button>

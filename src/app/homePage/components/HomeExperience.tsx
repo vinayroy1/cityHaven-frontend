@@ -33,6 +33,7 @@ export function HomeExperience({
   // Server and first client render must match. Browser preferences are restored
   // in the effect below after hydration.
   const [selectedCity, setSelectedCity] = React.useState("");
+  const [isExplicitCity, setIsExplicitCity] = React.useState(false);
   const [searchState, setSearchState] = React.useState<SearchState>(() => initialSearchState(""));
 
   React.useEffect(() => {
@@ -66,6 +67,7 @@ export function HomeExperience({
   }, []);
 
   const updateCity = (city: string) => {
+    setIsExplicitCity(true);
     setSelectedCity(city);
     setSearchState((prev) => ({ ...prev, cityName: city || undefined }));
     try {
@@ -78,6 +80,7 @@ export function HomeExperience({
   };
 
   const submit = (next: SearchState) => {
+    setIsExplicitCity(true);
     const targetCity = next.cityName || selectedCity || undefined;
     const state = { ...next, cityName: targetCity };
     router.push(buildSearchHref(state));
@@ -172,13 +175,16 @@ export function HomeExperience({
   const rawFresh = (freshQuery.items as PropertySearchItem[]) ?? [];
   const trendingListings = (trendingFallbackQuery.items as PropertySearchItem[]) ?? [];
 
-  // If local city has items, show them; otherwise fallback to top trending across metros or SSR initial items
+  // Keep the preloaded SSR listings stable across hydration to prevent hero image thrashing.
+  // Only swap to a specific city if the user explicitly picked one.
   const freshListings = (
-    rawFresh.length > 0
+    isExplicitCity && selectedCity && rawFresh.length > 0
       ? rawFresh
-      : trendingListings.length > 0
-      ? trendingListings
-      : initialFreshListings
+      : initialFreshListings.length > 0
+      ? initialFreshListings
+      : rawFresh.length > 0
+      ? rawFresh
+      : trendingListings
   ).slice(0, 4);
 
   const rawOwnerListings = (ownerQuery.items as PropertySearchItem[]) ?? [];
@@ -250,13 +256,13 @@ export function HomeExperience({
         <ListingBlock
           isFirstBlock
           title={
-            rawFresh.length > 0
-              ? (selectedCity ? `Fresh listings in ${selectedCity}` : "Fresh listings")
+            isExplicitCity && selectedCity && rawFresh.length > 0
+              ? `Fresh listings in ${selectedCity}`
               : "Featured Verified Listings"
           }
-          href={buildSearchHref({ ...initialSearchState(), cityName: selectedCity || undefined, sort: "newest" })}
-          loading={(freshQuery.isLoading && trendingFallbackQuery.isLoading) && freshListings.length === 0}
-          error={freshQuery.isError && trendingFallbackQuery.isError}
+          href={buildSearchHref({ ...initialSearchState(), cityName: (isExplicitCity ? selectedCity : undefined), sort: "newest" })}
+          loading={Boolean(isExplicitCity && freshQuery.isLoading && freshListings.length === 0)}
+          error={Boolean(isExplicitCity && freshQuery.isError && freshListings.length === 0)}
           onRetry={() => {
             freshQuery.refetch();
             trendingFallbackQuery.refetch();
