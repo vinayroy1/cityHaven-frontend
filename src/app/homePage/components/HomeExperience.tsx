@@ -414,7 +414,7 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
         </div>
       </div>
 
-      {isLoading ? (
+      {isLoading && staticAgents.length === 0 ? (
         <div className="flex w-full gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
           {[1, 2, 3].map((i) => (
             <div key={i} className="w-[285px] sm:w-[310px] shrink-0 rounded-2xl border border-slate-200/80 bg-white p-3.5 animate-pulse dark:border-slate-800 dark:bg-slate-900">
@@ -455,6 +455,10 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
                       <img
                         src={agent.avatar}
                         alt={agent.name}
+                        width={56}
+                        height={56}
+                        loading="lazy"
+                        decoding="async"
                         className="h-14 w-14 rounded-full object-cover ring-2 ring-slate-100 shadow-xs dark:ring-slate-800 group-hover:ring-rose-200 transition"
                       />
                       {/* Active / In-Person tour availability indicator */}

@@ -209,6 +209,8 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
                       <img
                         src={avatarPhoto}
                         alt={profile?.displayName || listing.title}
+                        loading="lazy"
+                        decoding="async"
                         className="h-full w-full object-cover"
                       />
                     ) : (
