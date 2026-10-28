@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Loader2, MapPin, Phone, PhoneCall, RotateCcw, SearchX, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SearchBar } from "@/components/search/SearchBar";
 import { buildSearchHref, initialSearchState, type SearchState } from "@/components/search/searchQuery";
 import { usePropertySearchInfinite } from "@/features/propertyListing/useQueries";
@@ -63,7 +62,9 @@ export function HomeExperience({
       return;
     }
 
-    // 2. Otherwise detect current location dynamically (GPS first, then IP API)
+    // 2. Otherwise detect current location dynamically (GPS first, then IP API) only once idle
+    if (!isIdle) return;
+
     void detectUserLocation().then((profile) => {
       if (!cancelled && profile?.city && profile.city.trim()) {
         const matched = profile.city.trim();
@@ -80,7 +81,7 @@ export function HomeExperience({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isIdle]);
 
   const updateCity = (city: string) => {
     setIsExplicitCity(true);
@@ -571,7 +572,7 @@ function ListingBlock({
                 {...toResultCardProps(item)}
                 compact
                 priority={Boolean(isFirstBlock && idx === 0)}
-                deferImage={Boolean(isFirstBlock && idx > 0)}
+                deferImage={!(isFirstBlock && idx === 0)}
               />
             </div>
           ))}
