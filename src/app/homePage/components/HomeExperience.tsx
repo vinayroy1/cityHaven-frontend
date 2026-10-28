@@ -24,12 +24,28 @@ import { CDN_ASSETS } from "@/config/cdn";
 const CITY_OPTIONS = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
 const STORAGE_KEY = "awasio.home.city";
 
+function useIdleState(timeoutMs = 1200) {
+  const [isIdle, setIsIdle] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    if ("requestIdleCallback" in window) {
+      const handle = (window as any).requestIdleCallback(() => setIsIdle(true), { timeout: timeoutMs + 300 });
+      return () => (window as any).cancelIdleCallback(handle);
+    } else {
+      const timer = setTimeout(() => setIsIdle(true), timeoutMs);
+      return () => clearTimeout(timer);
+    }
+  }, [timeoutMs]);
+  return isIdle;
+}
+
 export function HomeExperience({
   initialFreshListings = [],
 }: {
   initialFreshListings?: PropertySearchItem[];
 } = {}) {
   const router = useRouter();
+  const isIdle = useIdleState(1000);
   // Server and first client render must match. Browser preferences are restored
   // in the effect below after hydration.
   const [selectedCity, setSelectedCity] = React.useState("");
@@ -100,19 +116,25 @@ export function HomeExperience({
     ? searchState.intent === "FLATMATE" ? "PG" : searchState.intent
     : undefined;
 
-  // 1. Dedicated query for fresh new listings in the selected city
-  const freshQuery = usePropertySearchInfinite({
-    listingType: queryListingType,
-    cityName: normalizedCity,
-    sort: "newest",
-    pageSize: 8,
-  });
+  // 1. Dedicated query for fresh new listings in the selected city (only if user explicitly chose a city)
+  const freshQuery = usePropertySearchInfinite(
+    {
+      listingType: queryListingType,
+      cityName: normalizedCity,
+      sort: "newest",
+      pageSize: 8,
+    },
+    { enabled: Boolean(isExplicitCity && normalizedCity) }
+  );
 
-  // 2. Nationwide trending query fallback so the home page is NEVER blank
-  const trendingFallbackQuery = usePropertySearchInfinite({
-    sort: "newest",
-    pageSize: 12,
-  });
+  // 2. Nationwide trending query fallback (only needed if SSR items were empty)
+  const trendingFallbackQuery = usePropertySearchInfinite(
+    {
+      sort: "newest",
+      pageSize: 12,
+    },
+    { enabled: initialFreshListings.length === 0 }
+  );
 
   // 3. Dedicated query for budget homes / rentals (strictly separated)
   const isRentSearch = searchState.intent === "RENT";
@@ -148,29 +170,38 @@ export function HomeExperience({
   };
 
   // Local city budget query
-  const budgetQuery = usePropertySearchInfinite({
-    listingType: budgetListingType,
-    cityName: normalizedCity,
-    priceMax: budgetMax,
-    sort: "newest",
-    pageSize: 16,
-  });
+  const budgetQuery = usePropertySearchInfinite(
+    {
+      listingType: budgetListingType,
+      cityName: normalizedCity,
+      priceMax: budgetMax,
+      sort: "newest",
+      pageSize: 16,
+    },
+    { enabled: isIdle && Boolean(normalizedCity) }
+  );
 
-  // Nationwide fallback budget query (strictly matching the same listingType)
-  const budgetFallbackQuery = usePropertySearchInfinite({
-    listingType: budgetListingType,
-    priceMax: budgetMax,
-    sort: "newest",
-    pageSize: 16,
-  });
+  // Nationwide fallback budget query (only needed if no city selected)
+  const budgetFallbackQuery = usePropertySearchInfinite(
+    {
+      listingType: budgetListingType,
+      priceMax: budgetMax,
+      sort: "newest",
+      pageSize: 16,
+    },
+    { enabled: isIdle && !normalizedCity }
+  );
 
   // 4. Dedicated query for owner-posted listings
-  const ownerQuery = usePropertySearchInfinite({
-    listingType: queryListingType,
-    cityName: normalizedCity,
-    sort: "newest",
-    pageSize: 16,
-  });
+  const ownerQuery = usePropertySearchInfinite(
+    {
+      listingType: queryListingType,
+      cityName: normalizedCity,
+      sort: "newest",
+      pageSize: 16,
+    },
+    { enabled: isIdle }
+  );
 
   const rawFresh = (freshQuery.items as PropertySearchItem[]) ?? [];
   const trendingListings = (trendingFallbackQuery.items as PropertySearchItem[]) ?? [];
@@ -326,11 +357,15 @@ export function HomeExperience({
 }
 
 function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
-  const { data: apiAdvisors, isLoading } = useGetAdvisorsQuery({
-    city: selectedCity,
-    featured: true,
-    limit: 8,
-  });
+  const isIdle = useIdleState(1200);
+  const { data: apiAdvisors, isLoading } = useGetAdvisorsQuery(
+    {
+      city: selectedCity,
+      featured: true,
+      limit: 8,
+    },
+    { skip: !isIdle }
+  );
 
   const [staticAgents, setStaticAgents] = React.useState<Agent[]>(() => {
     return ALL_AGENTS.filter((agent) => agent.isHomepageFeatured);
@@ -410,6 +445,7 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
               <Link
                 key={agentKey}
                 href={`/agents/${agentKey}`}
+                prefetch={false}
                 className="group flex w-[285px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 sm:w-[310px]"
               >
                 <div>
@@ -502,7 +538,7 @@ function ListingBlock({
     <section className="mt-3 sm:mt-5 first:mt-0">
       <div className="mb-2 sm:mb-3 flex items-center justify-between gap-3">
         <h2 className="text-lg font-bold text-slate-950 dark:text-white">{title}</h2>
-        <Link href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-rose-700 dark:text-rose-400">
+        <Link href={href} prefetch={false} className="inline-flex items-center gap-1 text-sm font-semibold text-rose-700 dark:text-rose-400">
           View all <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
@@ -550,22 +586,25 @@ function formatProjectPrice(value?: number) {
 }
 
 function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
+  const isIdle = useIdleState(1200);
   const normalizedCity = selectedCity?.toLowerCase().includes("delhi")
     ? "New Delhi"
     : (selectedCity || undefined);
 
   // Try local city first, then nationwide fallback
   const { data: cityData, isLoading: isCityLoading } = useSearchProjectsQuery(
-    normalizedCity ? { city: normalizedCity, pageSize: 6 } : undefined
+    { city: normalizedCity, pageSize: 6 },
+    { skip: !isIdle || !normalizedCity }
   );
   const { data: fallbackData, isLoading: isFallbackLoading } = useSearchProjectsQuery(
-    { pageSize: 6 }
+    { pageSize: 6 },
+    { skip: !isIdle || Boolean(normalizedCity) }
   );
 
   const cityProjects = cityData?.items ?? [];
   const fallbackProjects = fallbackData?.items ?? [];
   const projects = cityProjects.length > 0 ? cityProjects : fallbackProjects;
-  const isLoading = isCityLoading && isFallbackLoading;
+  const isLoading = normalizedCity ? isCityLoading : isFallbackLoading;
 
   if (!isLoading && projects.length === 0) return null;
 
@@ -585,6 +624,7 @@ function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
         </div>
         <Link
           href="/new-projects"
+          prefetch={false}
           className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 shrink-0"
         >
           View all <ArrowRight className="h-4 w-4" />
@@ -608,6 +648,7 @@ function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
             >
               <Link
                 href={`/new-projects/${project.slug}`}
+                prefetch={false}
                 className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
               >
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
@@ -676,22 +717,25 @@ function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
 }
 
 function FeaturedFlatmatesSection({ selectedCity }: { selectedCity: string }) {
+  const isIdle = useIdleState(1200);
   const normalizedCity = selectedCity?.toLowerCase().includes("delhi")
     ? "Delhi"
     : (selectedCity || undefined);
 
   // Try local city first, then fallback
   const { data: cityData, isLoading: isCityLoading } = useSearchFlatmatesQuery(
-    normalizedCity ? { city: normalizedCity, pageSize: 6 } : undefined
+    { city: normalizedCity, pageSize: 6 },
+    { skip: !isIdle || !normalizedCity }
   );
   const { data: fallbackData, isLoading: isFallbackLoading } = useSearchFlatmatesQuery(
-    { pageSize: 6 }
+    { pageSize: 6 },
+    { skip: !isIdle || Boolean(normalizedCity) }
   );
 
   const cityFlatmates = cityData?.items ?? [];
   const fallbackFlatmates = fallbackData?.items ?? [];
   const flatmates = cityFlatmates.length > 0 ? cityFlatmates : fallbackFlatmates;
-  const isLoading = isCityLoading && isFallbackLoading;
+  const isLoading = normalizedCity ? isCityLoading : isFallbackLoading;
 
   if (!isLoading && flatmates.length === 0) return null;
 
@@ -711,6 +755,7 @@ function FeaturedFlatmatesSection({ selectedCity }: { selectedCity: string }) {
         </div>
         <Link
           href="/flatmates"
+          prefetch={false}
           className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 shrink-0"
         >
           View all <ArrowRight className="h-4 w-4" />

@@ -23,6 +23,7 @@ export type IntentSearchRouteProps = {
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 const API_BASE = rawApiUrl.replace(/\/api$/, "");
 const CITY_ALIASES: Record<string, string> = { bangalore: "bengaluru", delhi: "new-delhi", gurgaon: "gurugram" };
+const searchSsrCache = new Map<string, { items: (PropertySearchItem | FlatmateListing)[]; total: number; timestamp: number }>();
 
 type RouteLocation = { state?: string; city?: string; localities: string[] };
 
@@ -214,22 +215,40 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
       for (const locality of location.localities) url.searchParams.append("locality", locality);
       if (intent === "COMMERCIAL") url.searchParams.set("resCom", "COMMERCIAL");
     }
-    const response = await fetch(url, { next: { revalidate: 300 } });
-    if (response.ok) {
-      const payload = await response.json();
-      initialItems = payload?.data?.items ?? payload?.items ?? [];
-      initialTotal = Number(payload?.data?.total ?? payload?.total ?? initialItems.length);
-      const first = initialItems[0];
-      if (first) {
-        if (isFlatmate) {
-          lcpImage = (first as FlatmateListing).photos?.[0] ?? null;
-        } else {
-          lcpImage = toResultCardProps(first as PropertySearchItem).images?.[0] ?? null;
+  const cacheKey = url.toString();
+  const cached = searchSsrCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < 60_000) {
+    initialItems = cached.items;
+    initialTotal = cached.total;
+    const first = initialItems[0];
+    if (first) {
+      lcpImage = isFlatmate
+        ? (first as FlatmateListing).photos?.[0] ?? null
+        : toResultCardProps(first as PropertySearchItem).images?.[0] ?? null;
+    }
+  } else {
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        const payload = await response.json();
+        initialItems = payload?.data?.items ?? payload?.items ?? [];
+        initialTotal = Number(payload?.data?.total ?? payload?.total ?? initialItems.length);
+        searchSsrCache.set(cacheKey, { items: initialItems, total: initialTotal, timestamp: Date.now() });
+        const first = initialItems[0];
+        if (first) {
+          if (isFlatmate) {
+            lcpImage = (first as FlatmateListing).photos?.[0] ?? null;
+          } else {
+            lcpImage = toResultCardProps(first as PropertySearchItem).images?.[0] ?? null;
+          }
         }
       }
+    } catch {
+      // Gracefully fallback to client hydration
     }
+  }
   } catch {
-    // Gracefully fallback to client hydration
+    // Outer fallback
   }
 
   return (

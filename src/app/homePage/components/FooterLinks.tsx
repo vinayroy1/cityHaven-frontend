@@ -72,6 +72,7 @@ export function FooterLinks() {
                       key={link.label}
                       className="hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                       href={link.href}
+                      prefetch={false}
                     >
                       {link.label}
                     </Link>

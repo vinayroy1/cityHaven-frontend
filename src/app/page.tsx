@@ -10,19 +10,29 @@ import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import { toResultCardProps } from "@/app/propertySearch/components/propertyCardAdapter";
 
+let cachedFreshListings: PropertySearchItem[] | null = null;
+let cachedFreshTime = 0;
+
 async function getInitialFreshListings(): Promise<PropertySearchItem[]> {
+  const now = Date.now();
+  if (cachedFreshListings && now - cachedFreshTime < 60_000) {
+    return cachedFreshListings;
+  }
   try {
     const endpoint = toInternalApiUrl(
       `${API_ENDPOINTS.propertyListing.search}?listingType=SELL&pageSize=8&sort=newest`
     );
-    const res = await fetch(endpoint, {
-      next: { revalidate: 300 }, // 5 min ISR cache
-    });
-    if (!res.ok) return [];
+    const res = await fetch(endpoint);
+    if (!res.ok) return cachedFreshListings ?? [];
     const json = (await res.json()) as { data?: { items?: PropertySearchItem[] } };
-    return json?.data?.items ?? [];
+    const items = json?.data?.items ?? [];
+    if (items.length > 0) {
+      cachedFreshListings = items;
+      cachedFreshTime = now;
+    }
+    return items.length > 0 ? items : (cachedFreshListings ?? []);
   } catch {
-    return [];
+    return cachedFreshListings ?? [];
   }
 }
 

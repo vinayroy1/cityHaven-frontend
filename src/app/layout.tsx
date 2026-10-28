@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
+import { GoogleAdsenseDeferred } from "@/components/common/GoogleAdsenseDeferred";
 import "../styles/globals.css";
 import { Providers } from "./providers";
 import { MobileBottomNav } from "@/components/common/MobileBottomNav";
@@ -109,11 +109,7 @@ export default function RootLayout({
           <MobileBottomNav />
           <WelcomeCreditModal />
         </Providers>
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7884603260618662"
-          strategy="lazyOnload"
-          crossOrigin="anonymous"
-        />
+        <GoogleAdsenseDeferred />
       </body>
     </html>
   );
