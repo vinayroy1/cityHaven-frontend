@@ -1,5 +1,5 @@
 import { IntentSearchRoute, metadataForIntentSearch } from "@/app/searchRoutePage";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 export const generateMetadata = metadataForIntentSearch;
 export default IntentSearchRoute;

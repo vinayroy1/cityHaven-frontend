@@ -127,7 +127,14 @@ type PropertyDetails = {
 
 import { CDN_ASSETS } from "@/config/cdn";
 
+export const revalidate = 60;
+
 const FALLBACK_IMAGES = [CDN_ASSETS.placeholderWebp];
+
+const normalizeR2Url = (url?: string | null): string => {
+  if (!url) return "";
+  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+};
 
 const getProperty = cache(async (id: string): Promise<PropertyDetails | null> => {
   try {
@@ -630,7 +637,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
   const isPg = property.listingType?.toUpperCase() === "PG" || property.propertyType?.slug === "pg";
   const roomWise = isPgRoomWise(property);
-  const images = property.media?.map((item) => item.url).filter(Boolean) as string[] | undefined;
+  const images = property.media?.map((item) => normalizeR2Url(item.url)).filter(Boolean) as string[] | undefined;
   const location = compact([property.subLocality, property.localityRef?.name ?? property.locality, property.city?.name ?? property.cityName]);
 
   const pgRoomType = roomWise

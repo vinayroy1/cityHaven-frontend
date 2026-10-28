@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { buildCanonical } from "@/constants/seo";
 import { buildSearchHref, parseSearchParams } from "@/components/search/searchQuery";
+
+export const revalidate = 60;
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { SearchPageClient } from "../SearchPageClient";
 

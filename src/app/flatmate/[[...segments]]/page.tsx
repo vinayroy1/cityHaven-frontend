@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import FlatmatesDiscoveryPage from "@/app/flatmates/page";
 import { buildCanonical, SITE_URL } from "@/constants/seo";
+
+export const revalidate = 60;
 import { fromSearchSlug } from "@/components/search/searchQuery";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 

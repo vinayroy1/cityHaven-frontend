@@ -9,12 +9,21 @@ import { FooterLinks } from "../homePage/components/FooterLinks";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { BackButton } from "@/components/common/BackButton";
 import { ResultsList } from "./components/ResultsList";
+import dynamic from "next/dynamic";
 import { SearchBar, SearchEditor } from "@/components/search/SearchBar";
-import { MobileSearchFlow } from "@/components/search/MobileSearchFlow";
 import { QuickFilterChips } from "@/components/search/QuickFilterChips";
 import { AppliedChips } from "@/components/search/AppliedChips";
 import { SortMenu } from "@/components/search/SortMenu";
-import { FilterRail, FilterSheet } from "@/components/search/FilterSheet";
+import { FilterRail } from "@/components/search/FilterSheet";
+
+const FilterSheet = dynamic(
+  () => import("@/components/search/FilterSheet").then((mod) => mod.FilterSheet),
+  { ssr: false }
+);
+const MobileSearchFlow = dynamic(
+  () => import("@/components/search/MobileSearchFlow").then((mod) => mod.MobileSearchFlow),
+  { ssr: false }
+);
 import { useSearchResults } from "@/components/search/useSearchResults";
 import {
   buildSearchHref,
@@ -315,27 +324,31 @@ export function SearchPageClient({
         </div>
       </div>
 
-      <FilterSheet
-        open={sheetOpen}
-        onClose={() => setSheetOpen(false)}
-        state={state}
-        onApply={commit}
-        focusKey={sheetFocus}
-        resultCount={settledCount}
-      />
+      {sheetOpen && (
+        <FilterSheet
+          open={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+          state={state}
+          onApply={commit}
+          focusKey={sheetFocus}
+          resultCount={settledCount}
+        />
+      )}
 
-      <MobileSearchFlow
-        open={mobileSearchOpen}
-        onClose={() => setMobileSearchOpen(false)}
-        value={state}
-        resultCount={settledCount}
-        renderSearchEditor={(draft, setDraft) => (
-          <SearchEditor variant="hero" value={draft} onSubmit={setDraft} onContextChange={setDraft} showSubmit={false} liveChanges />
-        )}
-        onSubmit={(next) => {
-          commit(next);
-        }}
-      />
+      {mobileSearchOpen && (
+        <MobileSearchFlow
+          open={mobileSearchOpen}
+          onClose={() => setMobileSearchOpen(false)}
+          value={state}
+          resultCount={settledCount}
+          renderSearchEditor={(draft, setDraft) => (
+            <SearchEditor variant="hero" value={draft} onSubmit={setDraft} onContextChange={setDraft} showSubmit={false} liveChanges />
+          )}
+          onSubmit={(next) => {
+            commit(next);
+          }}
+        />
+      )}
 
       {/* Floating Bottom Filter Button (NoBroker / 99acres style on mobile) */}
       <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-40 md:hidden">
