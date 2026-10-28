@@ -26,6 +26,8 @@ async function getInitialFreshListings(): Promise<PropertySearchItem[]> {
   }
 }
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Awasio - Find Verified Homes, Apartments & Local Property Advisors",
   description:
