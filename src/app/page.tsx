@@ -22,7 +22,7 @@ async function getInitialFreshListings(): Promise<PropertySearchItem[]> {
     const endpoint = toInternalApiUrl(
       `${API_ENDPOINTS.propertyListing.search}?listingType=SELL&pageSize=8&sort=newest`
     );
-    const res = await fetch(endpoint);
+    const res = await fetch(endpoint, { next: { revalidate: 60 } });
     if (!res.ok) return cachedFreshListings ?? [];
     const json = (await res.json()) as { data?: { items?: PropertySearchItem[] } };
     const items = json?.data?.items ?? [];
@@ -36,7 +36,7 @@ async function getInitialFreshListings(): Promise<PropertySearchItem[]> {
   }
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Awasio - Find Verified Homes, Apartments & Local Property Advisors",

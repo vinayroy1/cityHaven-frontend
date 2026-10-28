@@ -228,7 +228,7 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
     }
   } else {
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, { next: { revalidate: 60 } });
       if (response.ok) {
         const payload = await response.json();
         initialItems = payload?.data?.items ?? payload?.items ?? [];
