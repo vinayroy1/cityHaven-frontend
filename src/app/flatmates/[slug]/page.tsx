@@ -32,6 +32,11 @@ import { useGetFlatmateListingQuery } from "@/features/flatmates/api";
 import { BackButton } from "@/components/common/BackButton";
 import { FlatmateDetailSkeleton } from "@/components/flatmates/FlatmateDetailSkeleton";
 
+const normalizeR2Url = (url?: string | null): string => {
+  if (!url) return "";
+  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+};
+
 export default function FlatmateDetailPage() {
   const params = useParams();
   const slug = String(params?.slug || "");
@@ -86,7 +91,8 @@ export default function FlatmateDetailPage() {
   }
 
   const profile = listing.profile;
-  const photos = listing.photos?.length ? listing.photos : [];
+  const photos = (listing.photos?.length ? listing.photos : []).map(normalizeR2Url);
+  const profilePhoto = normalizeR2Url(profile?.profilePhoto);
   const age = profile?.birthYear ? new Date().getFullYear() - profile.birthYear : undefined;
   const preferredAreas = listing.preferredLocalities?.filter(Boolean).slice(0, 4) || [];
 
@@ -132,6 +138,8 @@ export default function FlatmateDetailPage() {
                       src={photos[activePhotoIdx]}
                       alt={listing.title}
                       className="w-full h-full object-cover"
+                      fetchPriority={activePhotoIdx === 0 ? "high" : "auto"}
+                      decoding="async"
                     />
                     <div className="absolute bottom-3 right-3 rounded-full bg-slate-950/70 px-3 py-1 text-xs font-bold text-white backdrop-blur">
                       {activePhotoIdx + 1} of {photos.length}
@@ -150,7 +158,7 @@ export default function FlatmateDetailPage() {
                             activePhotoIdx === idx ? "border-rose-500 scale-95" : "border-transparent opacity-70"
                           }`}
                         >
-                          <img src={p} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
+                          <img src={p} alt={`Thumb ${idx}`} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                         </button>
                       ))}
                     </div>
@@ -436,11 +444,13 @@ export default function FlatmateDetailPage() {
 
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white font-bold text-base shrink-0 shadow-inner overflow-hidden">
-                      {profile?.profilePhoto ? (
+                      {profilePhoto ? (
                         <img
-                          src={profile.profilePhoto}
-                          alt={profile.displayName || "Roomie"}
+                          src={profilePhoto}
+                          alt={profile?.displayName || "Roomie"}
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         <span>{(profile?.displayName || "R")[0].toUpperCase()}</span>

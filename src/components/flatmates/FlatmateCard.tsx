@@ -24,6 +24,11 @@ interface FlatmateCardProps {
   listing: FlatmateListing;
 }
 
+const normalizeR2Url = (url?: string | null): string => {
+  if (!url) return "";
+  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+};
+
 export function FlatmateCard({ listing }: FlatmateCardProps) {
   const router = useRouter();
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -57,9 +62,10 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
   const badge = modeBadge();
   const ModeIcon = badge.icon;
 
-  const roomPhoto = listing.photos?.[0];
+  const roomPhoto = normalizeR2Url(listing.photos?.[0]);
   const profile = listing.profile;
-  const avatarPhoto = profile?.profilePhoto || (!isPlaceListing ? listing.photos?.[0] : undefined);
+  const hostPhoto = normalizeR2Url(profile?.profilePhoto);
+  const avatarPhoto = hostPhoto || (!isPlaceListing ? roomPhoto : undefined);
   const age = profile?.birthYear ? new Date().getFullYear() - profile.birthYear : undefined;
   const preferredAreas = listing.preferredLocalities?.filter(Boolean).slice(0, 3) || [];
   const formatMoney = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
@@ -105,6 +111,7 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
                   alt={listing.title}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <div className="flex h-full w-full flex-col items-center justify-center p-3 text-center">
@@ -470,11 +477,13 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
             {isPlaceListing ? (
               <>
                 <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 font-bold text-white shadow-inner flex items-center justify-center text-[11px]">
-                  {profile?.profilePhoto ? (
+                  {hostPhoto ? (
                     <img
-                      src={profile.profilePhoto}
-                      alt={profile.displayName || "Host"}
+                      src={hostPhoto}
+                      alt={profile?.displayName || "Host"}
                       className="h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <span>{(profile?.displayName || "R")[0].toUpperCase()}</span>

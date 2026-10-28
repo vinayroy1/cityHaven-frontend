@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Loader2, MapPin, Phone, PhoneCall, RotateCcw, SearchX, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Loader2, MapPin, Phone, PhoneCall, RotateCcw, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
 import { SearchBar } from "@/components/search/SearchBar";
 import { buildSearchHref, initialSearchState, type SearchState } from "@/components/search/searchQuery";
 import { usePropertySearchInfinite } from "@/features/propertyListing/useQueries";
@@ -393,6 +393,8 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
   // Use dynamic API advisors if available, fallback gracefully to static/local
   const agents = (apiAdvisors && apiAdvisors.length > 0) ? apiAdvisors : staticAgents;
 
+  if (!isLoading && (!agents || agents.length === 0)) return null;
+
   return (
     <section className="mt-4 sm:mt-6">
       <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
@@ -540,6 +542,10 @@ function ListingBlock({
   onRetry?: () => void;
   isFirstBlock?: boolean;
 }) {
+  if (!loading && (!listings || listings.length === 0)) {
+    return null;
+  }
+
   return (
     <section className="mt-3 sm:mt-5 first:mt-0">
       <div className="mb-2 sm:mb-3 flex items-center justify-between gap-3">
@@ -578,13 +584,7 @@ function ListingBlock({
             </div>
           ))}
         </div>
-      ) : (
-        <div className="rounded-lg border border-slate-200 bg-white p-8 text-center dark:border-slate-800 dark:bg-slate-900">
-          <SearchX className="mx-auto h-7 w-7 text-slate-400" />
-          <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-200">No approved listings found here yet</p>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Try another city or search a nearby locality.</p>
-        </div>
-      )}
+      ) : null}
     </section>
   );
 }

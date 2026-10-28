@@ -6,6 +6,8 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { EmiCalculator } from "@/components/emi/EmiCalculator";
 
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: "Home Loan EMI Calculator | Awasio",
   description: "Calculate your home loan EMI, total interest, and total repayment instantly. Adjust the loan amount, interest rate, and tenure to plan with confidence.",
