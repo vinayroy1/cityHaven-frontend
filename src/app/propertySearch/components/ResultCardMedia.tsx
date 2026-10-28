@@ -78,7 +78,7 @@ export function ResultCardMedia({
             type="button"
             aria-label="Previous photo"
             onClick={(event) => onMoveImage(event, -1)}
-            className="absolute left-2 top-1/2 z-20 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md bg-white/95 text-zinc-800 shadow-sm transition hover:bg-white focus:opacity-100 sm:left-3 sm:opacity-0 sm:group-hover:opacity-100"
+            className="absolute left-2 top-1/2 z-20 hidden sm:inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md bg-white/95 text-zinc-800 shadow-sm transition hover:bg-white focus:opacity-100 sm:left-3 sm:opacity-0 sm:group-hover:opacity-100"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -86,7 +86,7 @@ export function ResultCardMedia({
             type="button"
             aria-label="Next photo"
             onClick={(event) => onMoveImage(event, 1)}
-            className="absolute right-2 top-1/2 z-20 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md bg-white/95 text-zinc-800 shadow-sm transition hover:bg-white focus:opacity-100 sm:right-3 sm:opacity-0 sm:group-hover:opacity-100"
+            className="absolute right-2 top-1/2 z-20 hidden sm:inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md bg-white/95 text-zinc-800 shadow-sm transition hover:bg-white focus:opacity-100 sm:right-3 sm:opacity-0 sm:group-hover:opacity-100"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
