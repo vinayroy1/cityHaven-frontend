@@ -112,13 +112,41 @@ export function HomeExperience() {
   const budgetListingType = isRentSearch ? "RENT" : "SELL";
   const budgetMax = isRentSearch ? 50000 : 10000000;
 
+  // Helpers to ensure "Homes" sections show only actual residential homes, not plots or commercial land
+  const isPlotOrLand = (item: PropertySearchItem): boolean => {
+    const subSlug = (item.propertySubType?.slug || item.propertySubTypeSlug || "").toLowerCase();
+    const subName = (item.propertySubTypeName || item.propertySubType?.name || "").toLowerCase();
+    const typeSlug = (item.propertyTypeSlug || item.propertyType?.slug || "").toLowerCase();
+    const typeName = (item.propertyTypeName || item.propertyType?.name || "").toLowerCase();
+    const title = (item.title || "").toLowerCase();
+
+    return (
+      subSlug.includes("plot") ||
+      subSlug.includes("land") ||
+      subName.includes("plot") ||
+      subName.includes("land") ||
+      typeSlug.includes("plot") ||
+      typeSlug.includes("land") ||
+      typeName.includes("plot") ||
+      typeName.includes("land") ||
+      /\b(plot|plots|land|lands|farm\s*land)\b/i.test(title) ||
+      Boolean(item.plotArea && (!item.bedrooms || item.bedrooms === 0) && !item.builtUpArea && !item.carpetArea)
+    );
+  };
+
+  const isHomeListing = (item: PropertySearchItem): boolean => {
+    if (isPlotOrLand(item)) return false;
+    if ((item.resCom ?? "").toUpperCase() === "COMMERCIAL") return false;
+    return true;
+  };
+
   // Local city budget query
   const budgetQuery = usePropertySearchInfinite({
     listingType: budgetListingType,
     cityName: normalizedCity,
     priceMax: budgetMax,
     sort: "newest",
-    pageSize: 8,
+    pageSize: 16,
   });
 
   // Nationwide fallback budget query (strictly matching the same listingType)
@@ -126,7 +154,7 @@ export function HomeExperience() {
     listingType: budgetListingType,
     priceMax: budgetMax,
     sort: "newest",
-    pageSize: 8,
+    pageSize: 16,
   });
 
   // 4. Dedicated query for owner-posted listings
@@ -146,26 +174,26 @@ export function HomeExperience() {
   const rawOwnerListings = (ownerQuery.items as PropertySearchItem[]) ?? [];
   const filteredOwnerListings = rawOwnerListings.filter(
     (item) =>
-      (item.postedAs ?? "")?.toUpperCase() === "OWNER" ||
-      ((item as any).ownerType ?? "")?.toUpperCase() === "USER"
+      isHomeListing(item) &&
+      ((item.postedAs ?? "")?.toUpperCase() === "OWNER" ||
+       ((item as any).ownerType ?? "")?.toUpperCase() === "USER")
   );
   const ownerListings = (
     filteredOwnerListings.length > 0
       ? filteredOwnerListings
-      : rawOwnerListings.length > 0
-      ? rawOwnerListings
-      : trendingListings
+      : rawOwnerListings.filter(isHomeListing).length > 0
+      ? rawOwnerListings.filter(isHomeListing)
+      : trendingListings.filter(isHomeListing)
   ).slice(0, 4);
 
   const rawBudgetListings = (budgetQuery.items as PropertySearchItem[]) ?? [];
   const rawBudgetFallbackListings = (budgetFallbackQuery.items as PropertySearchItem[]) ?? [];
 
-  // Strictly show matching listingType properties (Sale under 1Cr or Rent under 50k).
-  // NEVER fall back to freshListings (which may contain rental rooms or PGs).
+  // Strictly show matching listingType properties (Sale under 1Cr or Rent under 50k) that are actual HOMES
   const budgetListings = (
-    rawBudgetListings.length > 0
-      ? rawBudgetListings
-      : rawBudgetFallbackListings.filter((item) => item.listingType === budgetListingType)
+    rawBudgetListings.filter(isHomeListing).length > 0
+      ? rawBudgetListings.filter(isHomeListing)
+      : rawBudgetFallbackListings.filter((item) => item.listingType === budgetListingType && isHomeListing(item))
   ).slice(0, 4);
 
   return (
