@@ -77,7 +77,9 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    google:
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+      "VhfeKH6SSoiyonmucg-FUq01ZsJbrBm7lSBVRnsDkAg",
   },
 };
 

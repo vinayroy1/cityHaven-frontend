@@ -36,6 +36,12 @@ export default function robots(): MetadataRoute.Robots {
         ],
         disallow: [
           "/api/",
+          "/login",
+          "/signup",
+          "/dashboard/",
+          "/admin/",
+          "/reset-password",
+          "/verify-email",
         ],
       },
     ],
