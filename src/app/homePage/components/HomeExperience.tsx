@@ -238,6 +238,7 @@ export function HomeExperience() {
       <div className="bg-gradient-to-b from-slate-50/80 via-white to-white dark:from-slate-900/45 dark:via-slate-950 dark:to-slate-950">
       <main className="mx-auto max-w-6xl overflow-x-clip px-4 pt-2 pb-5 sm:pt-3 sm:pb-6 sm:px-6">
         <ListingBlock
+          isFirstBlock
           title={
             rawFresh.length > 0
               ? (selectedCity ? `Fresh listings in ${selectedCity}` : "Fresh listings")
@@ -471,6 +472,7 @@ function ListingBlock({
   loading,
   error,
   onRetry,
+  isFirstBlock = false,
 }: {
   title: string;
   href: string;
@@ -478,6 +480,7 @@ function ListingBlock({
   loading?: boolean;
   error?: boolean;
   onRetry?: () => void;
+  isFirstBlock?: boolean;
 }) {
   return (
     <section className="mt-3 sm:mt-5 first:mt-0">
@@ -506,9 +509,9 @@ function ListingBlock({
         </div>
       ) : listings.length ? (
         <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
-          {listings.slice(0, 10).map((item) => (
+          {listings.slice(0, 10).map((item, idx) => (
             <div key={item.id} className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]">
-              <ResultCard {...toResultCardProps(item)} compact />
+              <ResultCard {...toResultCardProps(item)} compact priority={Boolean(isFirstBlock && idx === 0)} />
             </div>
           ))}
         </div>

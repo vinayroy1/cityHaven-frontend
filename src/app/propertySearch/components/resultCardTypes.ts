@@ -19,6 +19,7 @@ export type ResultCardProps = {
   posterBadge?: string;
   images?: string[];
   compact?: boolean;
+  priority?: boolean;
 };
 
 import { CDN_ASSETS } from "@/config/cdn";

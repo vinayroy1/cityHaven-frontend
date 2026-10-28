@@ -1,7 +1,5 @@
 "use client";
 
-import { load } from "@cashfreepayments/cashfree-js";
-
 let cashfreePromise: Promise<any> | null = null;
 
 export function getCashfreeMode(): "production" | "sandbox" {
@@ -11,14 +9,17 @@ export function getCashfreeMode(): "production" | "sandbox" {
 
 /**
  * Initializes and caches the Cashfree SDK instance.
- * Safe to call on client-side only.
+ * Safe to call on client-side only. Loaded dynamically to avoid blocking initial page load.
  */
 export async function getCashfreeInstance() {
   if (typeof window === "undefined") return null;
 
   if (!cashfreePromise) {
     const mode = getCashfreeMode();
-    cashfreePromise = load({ mode });
+    cashfreePromise = (async () => {
+      const { load } = await import("@cashfreepayments/cashfree-js");
+      return load({ mode });
+    })();
   }
 
   return cashfreePromise;

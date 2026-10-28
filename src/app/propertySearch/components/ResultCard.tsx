@@ -49,6 +49,7 @@ export function ResultCard({
   posterBadge,
   images = [],
   compact = false,
+  priority = false,
 }: ResultCardProps) {
   const router = useRouter();
   const [isNavigating, setIsNavigating] = React.useState(false);
@@ -462,7 +463,6 @@ export function ResultCard({
 
   return (
     <article
-      role="link"
       tabIndex={0}
       onClick={openDetails}
       onKeyDown={handleCardKeyDown}
@@ -496,6 +496,7 @@ export function ResultCard({
         onMoveImage={moveImage}
         onChooseImage={chooseImage}
         compact={compact}
+        priority={priority}
       />
       <SavePropertyButton propertyId={id} />
       <ResultCardSummary

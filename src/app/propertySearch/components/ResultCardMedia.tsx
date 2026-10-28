@@ -16,6 +16,7 @@ type ResultCardMediaProps = {
   onMoveImage: (event: React.MouseEvent<HTMLButtonElement>, direction: 1 | -1) => void;
   onChooseImage: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
   compact?: boolean;
+  priority?: boolean;
 };
 
 export function ResultCardMedia({
@@ -33,12 +34,16 @@ export function ResultCardMedia({
   onMoveImage,
   onChooseImage,
   compact = false,
+  priority = false,
 }: ResultCardMediaProps) {
   return (
     <div className={`relative block overflow-hidden bg-zinc-100 ${compact ? "aspect-[16/7] sm:aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}>
       <img
         src={image}
         alt={title || "Property"}
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : "auto"}
+        decoding="async"
         className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
         onError={onImageError}
       />
@@ -94,15 +99,21 @@ export function ResultCardMedia({
         </span>
       )}
       {hasCarousel && (
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1 rounded-md bg-zinc-950/55 px-1.5 py-1">
+        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-0.5 rounded-full bg-zinc-950/60 px-1 py-0.5">
           {safeImages.slice(0, 5).map((_, index) => (
             <button
               key={index}
               type="button"
               aria-label={`Show photo ${index + 1}`}
               onClick={(event) => onChooseImage(event, index)}
-              className={`relative z-20 h-1.5 w-1.5 rounded-full transition ${index === activeImage ? "bg-white" : "bg-white/45"}`}
-            />
+              className="relative z-20 flex h-6 w-6 items-center justify-center p-1 cursor-pointer focus:outline-none"
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full transition-all ${
+                  index === activeImage ? "bg-white scale-125" : "bg-white/50"
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}

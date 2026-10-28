@@ -8,8 +8,6 @@ import { buildCanonical, SITE_URL } from "@/constants/seo";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
   interactiveWidget: "overlays-content",
 };
@@ -91,6 +89,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev" />
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7884603260618662"
