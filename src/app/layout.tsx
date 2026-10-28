@@ -92,7 +92,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev" />
         <link rel="dns-prefetch" href="https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev" />
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />

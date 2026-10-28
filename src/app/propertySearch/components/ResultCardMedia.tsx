@@ -1,6 +1,5 @@
 import React from "react";
-import { BadgeCheck, Camera, ChevronLeft, ChevronRight, ShieldCheck, Sparkles } from "lucide-react";
-import { CDN_ASSETS } from "@/config/cdn";
+import { BadgeCheck, Building2, Camera, ChevronLeft, ChevronRight, ShieldCheck, Sparkles } from "lucide-react";
 
 type ResultCardMediaProps = {
   image: string;
@@ -43,28 +42,36 @@ export function ResultCardMedia({
 
   React.useEffect(() => {
     if (!deferImage || loaded) return;
-    if ("requestIdleCallback" in window) {
-      const handle = (window as any).requestIdleCallback(() => setLoaded(true), { timeout: 1200 });
-      return () => (window as any).cancelIdleCallback(handle);
-    } else {
-      const timer = setTimeout(() => setLoaded(true), 800);
-      return () => clearTimeout(timer);
-    }
+    const trigger = () => setLoaded(true);
+    window.addEventListener("scroll", trigger, { once: true, passive: true });
+    window.addEventListener("touchstart", trigger, { once: true, passive: true });
+    window.addEventListener("click", trigger, { once: true, passive: true });
+    const timer = setTimeout(trigger, 2500);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", trigger);
+      window.removeEventListener("touchstart", trigger);
+      window.removeEventListener("click", trigger);
+    };
   }, [deferImage, loaded]);
 
-  const activeSrc = loaded ? image : CDN_ASSETS.placeholderWebp;
-
   return (
-    <div className={`relative block overflow-hidden bg-zinc-100 ${compact ? "aspect-[16/7] sm:aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}>
-      <img
-        src={activeSrc}
-        alt={title || "Property"}
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "auto"}
-        decoding="async"
-        className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-        onError={onImageError}
-      />
+    <div className={`relative block overflow-hidden bg-gradient-to-br from-slate-100 via-zinc-100 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 ${compact ? "aspect-[16/7] sm:aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}>
+      {loaded ? (
+        <img
+          src={image}
+          alt={title || "Property"}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          decoding="async"
+          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+          onError={onImageError}
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center">
+          <Building2 className="h-8 w-8 text-slate-300/70 dark:text-slate-600" />
+        </div>
+      )}
       {hasCarousel && (
         <>
           <button
