@@ -301,11 +301,7 @@ export function HomeExperience({
           listings={freshListings}
         />
 
-        <FeaturedProjectsSection selectedCity={selectedCity} />
-
         <PreferredAgentsSection selectedCity={selectedCity} />
-
-        <FeaturedFlatmatesSection selectedCity={selectedCity} />
 
         <ListingBlock
           title={
@@ -349,6 +345,10 @@ export function HomeExperience({
           }}
           listings={budgetListings}
         />
+
+        <FeaturedProjectsSection selectedCity={selectedCity} />
+
+        <FeaturedFlatmatesSection selectedCity={selectedCity} />
 
       </main>
       </div>
@@ -567,7 +567,12 @@ function ListingBlock({
         <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
           {listings.slice(0, 10).map((item, idx) => (
             <div key={item.id} className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]">
-              <ResultCard {...toResultCardProps(item)} compact priority={Boolean(isFirstBlock && idx === 0)} />
+              <ResultCard
+                {...toResultCardProps(item)}
+                compact
+                priority={Boolean(isFirstBlock && idx === 0)}
+                deferImage={Boolean(isFirstBlock && idx > 0)}
+              />
             </div>
           ))}
         </div>

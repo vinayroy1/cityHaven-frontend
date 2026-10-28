@@ -1,5 +1,6 @@
 import React from "react";
 import { BadgeCheck, Camera, ChevronLeft, ChevronRight, ShieldCheck, Sparkles } from "lucide-react";
+import { CDN_ASSETS } from "@/config/cdn";
 
 type ResultCardMediaProps = {
   image: string;
@@ -17,6 +18,7 @@ type ResultCardMediaProps = {
   onChooseImage: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
   compact?: boolean;
   priority?: boolean;
+  deferImage?: boolean;
 };
 
 export function ResultCardMedia({
@@ -35,11 +37,27 @@ export function ResultCardMedia({
   onChooseImage,
   compact = false,
   priority = false,
+  deferImage = false,
 }: ResultCardMediaProps) {
+  const [loaded, setLoaded] = React.useState(!deferImage);
+
+  React.useEffect(() => {
+    if (!deferImage || loaded) return;
+    if ("requestIdleCallback" in window) {
+      const handle = (window as any).requestIdleCallback(() => setLoaded(true), { timeout: 1200 });
+      return () => (window as any).cancelIdleCallback(handle);
+    } else {
+      const timer = setTimeout(() => setLoaded(true), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [deferImage, loaded]);
+
+  const activeSrc = loaded ? image : CDN_ASSETS.placeholderWebp;
+
   return (
     <div className={`relative block overflow-hidden bg-zinc-100 ${compact ? "aspect-[16/7] sm:aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}>
       <img
-        src={image}
+        src={activeSrc}
         alt={title || "Property"}
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}

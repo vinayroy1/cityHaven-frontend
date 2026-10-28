@@ -20,6 +20,7 @@ export type ResultCardProps = {
   images?: string[];
   compact?: boolean;
   priority?: boolean;
+  deferImage?: boolean;
 };
 
 import { CDN_ASSETS } from "@/config/cdn";

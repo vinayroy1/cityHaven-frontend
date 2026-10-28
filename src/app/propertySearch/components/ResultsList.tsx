@@ -101,7 +101,13 @@ export function ResultsList({ results }: { results: SearchResults }) {
           isFlatmate ? (
             <FlatmateCard key={item.id} listing={item as FlatmateListing} />
           ) : (
-            <ResultCard key={item.id} {...toResultCardProps(item as PropertySearchItem)} compact priority={idx === 0} />
+            <ResultCard
+              key={item.id}
+              {...toResultCardProps(item as PropertySearchItem)}
+              compact
+              priority={idx === 0}
+              deferImage={idx > 0}
+            />
           ),
         )}
       </div>

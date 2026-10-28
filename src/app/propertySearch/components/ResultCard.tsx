@@ -50,6 +50,7 @@ export function ResultCard({
   images = [],
   compact = false,
   priority = false,
+  deferImage = false,
 }: ResultCardProps) {
   const router = useRouter();
   const [isNavigating, setIsNavigating] = React.useState(false);
@@ -497,6 +498,7 @@ export function ResultCard({
         onChooseImage={chooseImage}
         compact={compact}
         priority={priority}
+        deferImage={deferImage}
       />
       <SavePropertyButton propertyId={id} />
       <ResultCardSummary
