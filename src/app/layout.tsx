@@ -3,13 +3,7 @@ import { GoogleAdsenseDeferred } from "@/components/common/GoogleAdsenseDeferred
 import "../styles/globals.css";
 import { Providers } from "./providers";
 import { MobileBottomNav } from "@/components/common/MobileBottomNav";
-import dynamic from "next/dynamic";
 import { buildCanonical, SITE_URL } from "@/constants/seo";
-
-const WelcomeCreditModal = dynamic(
-  () => import("@/components/marketing/WelcomeCreditModal").then((m) => m.WelcomeCreditModal),
-  { ssr: false }
-);
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -112,7 +106,6 @@ export default function RootLayout({
         <Providers>
           {children}
           <MobileBottomNav />
-          <WelcomeCreditModal />
         </Providers>
         <GoogleAdsenseDeferred />
       </body>
