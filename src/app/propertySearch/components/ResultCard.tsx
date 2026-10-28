@@ -22,6 +22,11 @@ import { ScheduleVisitDialog } from "@/components/property/ScheduleVisitDialog";
 import { ResultCardMedia } from "./ResultCardMedia";
 import { ResultCardSummary, SavePropertyButton } from "./ResultCardSummary";
 import { CONTACT_PLANS, FALLBACK_IMAGE, type ContactPlan, type ContactStep, type ResultCardProps } from "./resultCardTypes";
+import {
+  PaymentProcessingModal,
+  PaymentFlowStatus,
+  PaymentSuccessData,
+} from "@/components/payment/PaymentProcessingModal";
 
 export function ResultCard({
   id,
@@ -71,6 +76,12 @@ export function ResultCard({
   const [selectedPlan, setSelectedPlan] = React.useState("credit_pack_300");
   const [walletOpen, setWalletOpen] = React.useState(false);
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
+
+  // Attractive Payment Modal States
+  const [paymentModalOpen, setPaymentModalOpen] = React.useState(false);
+  const [paymentFlowStatus, setPaymentFlowStatus] = React.useState<PaymentFlowStatus>("INITIALIZING");
+  const [paymentErrorMessage, setPaymentErrorMessage] = React.useState<string | null>(null);
+  const [paymentSuccessData, setPaymentSuccessData] = React.useState<PaymentSuccessData | null>(null);
 
   React.useEffect(() => {
     if (typeof meData?.credits === "number" && credits === 0) {
@@ -380,6 +391,11 @@ export function ResultCard({
         throw new Error("Please select a valid pack.");
       }
 
+      setPaymentFlowStatus("INITIALIZING");
+      setPaymentErrorMessage(null);
+      setPaymentSuccessData(null);
+      setPaymentModalOpen(true);
+
       const orderRes = await createBillingOrderMutation({
         planId,
         target: isOrg ? "ORG" : "USER",
@@ -388,45 +404,57 @@ export function ResultCard({
 
       const orderData = orderRes.data;
       if (orderData?.paymentSessionId) {
-        toast.info("Opening Cashfree secure checkout...");
+        setPaymentFlowStatus("CONNECTING_GATEWAY");
         const checkoutResult = await launchCashfreeCheckout(orderData.paymentSessionId, {
           redirectTarget: "_modal",
         });
 
         if (checkoutResult.status === "CLOSED") {
-          toast.info("Payment window was closed.");
+          setPaymentFlowStatus("FAILED");
+          setPaymentErrorMessage("Payment window was closed before completing checkout.");
           return;
         }
 
         if (checkoutResult.status === "FAILED") {
-          const msg = checkoutResult.error || "Payment was not completed.";
-          setContactError(msg);
-          toast.error(msg);
+          const msg = checkoutResult.error || "Payment was not completed by the gateway or bank.";
+          setPaymentFlowStatus("FAILED");
+          setPaymentErrorMessage(msg);
           return;
         }
 
         if (checkoutResult.status === "REDIRECTED") {
-          toast.info("Redirecting for payment authentication...");
           return;
         }
 
-        toast.loading("Verifying payment with Cashfree...", { id: "verify-card-payment" });
+        setPaymentFlowStatus("VERIFYING");
         const verifyRes = await verifyBillingPaymentMutation({
           orderId: orderData.orderId,
           cfPaymentId: checkoutResult.paymentDetails?.paymentId
             ? String(checkoutResult.paymentDetails.paymentId)
             : undefined,
         }).unwrap();
-        toast.dismiss("verify-card-payment");
-        setCredits(verifyRes.data?.credits ?? 0);
-        toast.success("Contact pack activated! Unlocking owner number...");
+
+        const newBalance = verifyRes.data?.credits ?? 0;
+        setCredits(newBalance);
+        setPaymentSuccessData({
+          orderId: orderData.orderId,
+          cfPaymentId: checkoutResult.paymentDetails?.paymentId
+            ? String(checkoutResult.paymentDetails.paymentId)
+            : undefined,
+          planName: verifyRes.data?.planName || currentPlan.name,
+          creditsAdded: verifyRes.data?.creditsAdded ?? currentPlan.credits,
+          newBalance,
+        });
+        setPaymentFlowStatus("SUCCESS");
       }
 
       setHasActivePlan(true);
       await unlockContact(selectedScope);
     } catch (err: any) {
-      toast.dismiss("verify-card-payment");
-      setContactError(err?.data?.message || err.message || "Purchase failed");
+      const msg = err?.data?.message || err?.message || "Purchase failed";
+      setContactError(msg);
+      setPaymentFlowStatus("FAILED");
+      setPaymentErrorMessage(msg);
     } finally {
       setLoading(false);
     }
@@ -543,6 +571,23 @@ export function ResultCard({
           void refreshScopes();
         }}
         userProfile={meData}
+      />
+      <PaymentProcessingModal
+        isOpen={paymentModalOpen}
+        status={paymentFlowStatus}
+        plan={
+          currentPlan
+            ? {
+                name: currentPlan.name,
+                price: parseFloat(currentPlan.price.replace(/[^\d.]/g, "")) || 0,
+                contactCredits: currentPlan.credits,
+              }
+            : null
+        }
+        errorMessage={paymentErrorMessage}
+        successData={paymentSuccessData}
+        onClose={() => setPaymentModalOpen(false)}
+        onRetry={() => void purchasePlan()}
       />
     </article>
   );

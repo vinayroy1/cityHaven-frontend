@@ -20,6 +20,11 @@ import {
   BillingSummary,
 } from "@/features/contactVerify/api";
 import { launchCashfreeCheckout } from "@/lib/cashfree/cashfreeCheckout";
+import {
+  PaymentProcessingModal,
+  PaymentFlowStatus,
+  PaymentSuccessData,
+} from "@/components/payment/PaymentProcessingModal";
 
 type Step = "check" | "plans";
 
@@ -51,6 +56,12 @@ export function ContactAccessFlow({
   const [selectedScope, setSelectedScope] = React.useState<"PERSONAL" | number>("PERSONAL");
   const [personalSummary, setPersonalSummary] = React.useState<BillingSummary | null>(null);
   const [orgSummary, setOrgSummary] = React.useState<BillingSummary | null>(null);
+
+  // Attractive Payment Modal States
+  const [paymentModalOpen, setPaymentModalOpen] = React.useState(false);
+  const [paymentFlowStatus, setPaymentFlowStatus] = React.useState<PaymentFlowStatus>("INITIALIZING");
+  const [paymentErrorMessage, setPaymentErrorMessage] = React.useState<string | null>(null);
+  const [paymentSuccessData, setPaymentSuccessData] = React.useState<PaymentSuccessData | null>(null);
 
   const [check] = useLazyCheckUnlockedContactQuery();
   const [fetchSummary] = useLazyGetBillingSummaryQuery();
@@ -416,6 +427,11 @@ export function ContactAccessFlow({
                   onSelectedPlanChange={setSelectedPlanId}
                   onPurchasePlan={() =>
                     void run(async () => {
+                      setPaymentFlowStatus("INITIALIZING");
+                      setPaymentErrorMessage(null);
+                      setPaymentSuccessData(null);
+                      setPaymentModalOpen(true);
+
                       const orderRes = await createBillingOrder({
                         planId: currentPlan.dbId,
                         target: isOrgScope ? "ORG" : "USER",
@@ -424,35 +440,47 @@ export function ContactAccessFlow({
 
                       const orderData = orderRes.data;
                       if (orderData?.paymentSessionId) {
-                        toast.info("Opening Cashfree checkout...");
+                        setPaymentFlowStatus("CONNECTING_GATEWAY");
                         const checkoutResult = await launchCashfreeCheckout(orderData.paymentSessionId, {
                           redirectTarget: "_modal",
                         });
 
                         if (checkoutResult.status === "CLOSED") {
-                          toast.info("Payment window was closed.");
+                          setPaymentFlowStatus("FAILED");
+                          setPaymentErrorMessage("Payment window was closed before completing checkout.");
                           return;
                         }
 
                         if (checkoutResult.status === "FAILED") {
-                          toast.error(checkoutResult.error || "Payment was not completed.");
+                          const msg = checkoutResult.error || "Payment was not completed by the gateway or bank.";
+                          setPaymentFlowStatus("FAILED");
+                          setPaymentErrorMessage(msg);
                           return;
                         }
 
                         if (checkoutResult.status === "REDIRECTED") {
-                          toast.info("Redirecting for payment authentication...");
                           return;
                         }
 
-                        toast.loading("Verifying payment with Cashfree...", { id: "verify-contact-plan" });
-                        await verifyBillingPayment({
+                        setPaymentFlowStatus("VERIFYING");
+                        const verifyRes = await verifyBillingPayment({
                           orderId: orderData.orderId,
                           cfPaymentId: checkoutResult.paymentDetails?.paymentId
                             ? String(checkoutResult.paymentDetails.paymentId)
                             : undefined,
                         }).unwrap();
-                        toast.dismiss("verify-contact-plan");
-                        toast.success("Contact pack activated! Unlocking owner number...");
+
+                        const newCredits = verifyRes.data?.credits ?? currentCredits;
+                        setPaymentSuccessData({
+                          orderId: orderData.orderId,
+                          cfPaymentId: checkoutResult.paymentDetails?.paymentId
+                            ? String(checkoutResult.paymentDetails.paymentId)
+                            : undefined,
+                          planName: verifyRes.data?.planName || currentPlan.name,
+                          creditsAdded: verifyRes.data?.creditsAdded ?? currentPlan.credits,
+                          newBalance: newCredits,
+                        });
+                        setPaymentFlowStatus("SUCCESS");
                       }
 
                       await checkAndUnlock();
@@ -472,6 +500,26 @@ export function ContactAccessFlow({
           )}
         </DialogContent>
       </Dialog>
+
+      <PaymentProcessingModal
+        isOpen={paymentModalOpen}
+        status={paymentFlowStatus}
+        plan={
+          currentPlan
+            ? {
+                name: currentPlan.name,
+                price: parseFloat(currentPlan.price.replace(/[^\d.]/g, "")) || 0,
+                contactCredits: currentPlan.credits,
+              }
+            : null
+        }
+        errorMessage={paymentErrorMessage}
+        successData={paymentSuccessData}
+        onClose={() => setPaymentModalOpen(false)}
+        onRetry={() => {
+          setPaymentModalOpen(false);
+        }}
+      />
     </>
   );
 }

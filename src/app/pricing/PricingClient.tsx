@@ -39,6 +39,11 @@ import {
 } from "@/features/contactVerify/api";
 import { launchCashfreeCheckout } from "@/lib/cashfree/cashfreeCheckout";
 import { toast } from "sonner";
+import {
+  PaymentProcessingModal,
+  PaymentFlowStatus,
+  PaymentSuccessData,
+} from "@/components/payment/PaymentProcessingModal";
 
 type CategoryMeta = {
   label: string;
@@ -105,6 +110,13 @@ export function PricingClient() {
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [couponCode, setCouponCode] = useState("");
+
+  // Attractive Payment Modal States
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [paymentFlowStatus, setPaymentFlowStatus] = useState<PaymentFlowStatus>("INITIALIZING");
+  const [activePaymentPlan, setActivePaymentPlan] = useState<Plan | null>(null);
+  const [paymentErrorMessage, setPaymentErrorMessage] = useState<string | null>(null);
+  const [paymentSuccessData, setPaymentSuccessData] = useState<PaymentSuccessData | null>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
   const isAuthenticated = Boolean(token);
@@ -185,6 +197,11 @@ export function PricingClient() {
     }
 
     setSelectedPlanId(plan.id);
+    setActivePaymentPlan(plan);
+    setPaymentFlowStatus("INITIALIZING");
+    setPaymentErrorMessage(null);
+    setPaymentSuccessData(null);
+    setPaymentModalOpen(true);
 
     try {
       // 1. Create order on backend which registers with Cashfree
@@ -197,38 +214,43 @@ export function PricingClient() {
       const orderData = orderRes.data;
       if (!orderData?.paymentSessionId) {
         // Direct / free activation fallback
-        setPurchaseSuccess(
-          `Successfully activated ${orderData?.plan?.name || plan.name}!`
-        );
+        const creditsAdded = plan.contactCredits ?? 0;
+        setPaymentSuccessData({
+          planName: orderData?.plan?.name || plan.name,
+          creditsAdded,
+          newBalance: summary?.credits ? summary.credits + creditsAdded : undefined,
+          amountPaid: plan.price,
+        });
+        setPaymentFlowStatus("SUCCESS");
         void refetchSummary();
         return;
       }
 
-      // 2. Open Cashfree checkout modal
-      toast.info("Opening Cashfree secure payment...");
+      // 2. Open Cashfree checkout modal with connecting gateway state
+      setPaymentFlowStatus("CONNECTING_GATEWAY");
       const checkoutResult = await launchCashfreeCheckout(orderData.paymentSessionId, {
         redirectTarget: "_modal",
       });
 
       if (checkoutResult.status === "CLOSED") {
-        toast.info("Payment window was closed.");
+        setPaymentFlowStatus("FAILED");
+        setPaymentErrorMessage("The payment window was closed before completing the transaction.");
         return;
       }
 
       if (checkoutResult.status === "FAILED") {
-        const msg = checkoutResult.error || "Payment was not completed.";
-        setPurchaseError(msg);
-        toast.error(msg);
+        const msg = checkoutResult.error || "Payment was not completed by the gateway or bank.";
+        setPaymentFlowStatus("FAILED");
+        setPaymentErrorMessage(msg);
         return;
       }
 
       if (checkoutResult.status === "REDIRECTED") {
-        toast.info("Redirecting to authenticate payment...");
         return;
       }
 
       // 3. Completed modal payment: verify with backend
-      toast.loading("Verifying payment with Cashfree...", { id: "verify-plan" });
+      setPaymentFlowStatus("VERIFYING");
       const verifyRes = await verifyBillingPayment({
         orderId: orderData.orderId,
         cfPaymentId: checkoutResult.paymentDetails?.paymentId
@@ -236,18 +258,26 @@ export function PricingClient() {
           : undefined,
       }).unwrap();
 
-      toast.dismiss("verify-plan");
       const creditsAdded = verifyRes.data?.creditsAdded ?? plan.contactCredits ?? 0;
-      setPurchaseSuccess(
-        `🎉 Successfully activated ${verifyRes.data?.planName || plan.name}! +${creditsAdded} credits added. Current balance: ${verifyRes.data?.credits ?? 0} contact credits.`
-      );
-      toast.success(`+${creditsAdded} Credits added to your wallet!`);
+      setPaymentSuccessData({
+        orderId: orderData.orderId,
+        cfPaymentId: checkoutResult.paymentDetails?.paymentId
+          ? String(checkoutResult.paymentDetails.paymentId)
+          : undefined,
+        planName: verifyRes.data?.planName || plan.name,
+        creditsAdded,
+        newBalance: verifyRes.data?.credits ?? ((summary?.credits ?? 0) + creditsAdded),
+        amountPaid: plan.price,
+      });
+      setPaymentFlowStatus("SUCCESS");
       void refetchSummary();
     } catch (err: any) {
-      toast.dismiss("verify-plan");
-      const msg = err?.data?.message || err?.message || "Payment initiation or verification failed. Please try again.";
-      setPurchaseError(msg);
-      toast.error(msg);
+      const msg =
+        err?.data?.message ||
+        err?.message ||
+        "Payment initiation or verification failed. If your money was deducted, our webhook will automatically credit your account.";
+      setPaymentFlowStatus("FAILED");
+      setPaymentErrorMessage(msg);
     } finally {
       setSelectedPlanId(null);
     }
@@ -778,6 +808,21 @@ export function PricingClient() {
           </div>
         </div>
       </main>
+
+      {/* Interactive Payment Flow Modal (Loader, Success Celebration, Reassuring Failure) */}
+      <PaymentProcessingModal
+        isOpen={paymentModalOpen}
+        status={paymentFlowStatus}
+        plan={activePaymentPlan}
+        errorMessage={paymentErrorMessage}
+        successData={paymentSuccessData}
+        onClose={() => setPaymentModalOpen(false)}
+        onRetry={() => {
+          if (activePaymentPlan) {
+            void handleAction(activePaymentPlan);
+          }
+        }}
+      />
 
       <FooterLinks />
     </div>
