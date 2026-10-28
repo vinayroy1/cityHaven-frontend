@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "../styles/globals.css";
 import { Providers } from "./providers";
 import { MobileBottomNav } from "@/components/common/MobileBottomNav";
@@ -93,11 +94,6 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7884603260618662"
-          crossOrigin="anonymous"
-        />
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -113,6 +109,11 @@ export default function RootLayout({
           <MobileBottomNav />
           <WelcomeCreditModal />
         </Providers>
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7884603260618662"
+          strategy="lazyOnload"
+          crossOrigin="anonymous"
+        />
       </body>
     </html>
   );

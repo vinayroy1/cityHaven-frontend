@@ -5,6 +5,26 @@ import { HomeExperience } from "./homePage/components/HomeExperience";
 import { FooterLinks } from "./homePage/components/FooterLinks";
 import { SITE_URL, buildCanonical } from "@/constants/seo";
 import { CDN_ASSETS } from "@/config/cdn";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import type { PropertySearchItem } from "@/types/propertySearch.types";
+import { toResultCardProps } from "@/app/propertySearch/components/propertyCardAdapter";
+
+async function getInitialFreshListings(): Promise<PropertySearchItem[]> {
+  try {
+    const endpoint = toInternalApiUrl(
+      `${API_ENDPOINTS.propertyListing.search}?pageSize=8&status=APPROVED&sortBy=createdAt&sortOrder=DESC`
+    );
+    const res = await fetch(endpoint, {
+      next: { revalidate: 300 }, // 5 min ISR cache
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { data?: { items?: PropertySearchItem[] } };
+    return json?.data?.items ?? [];
+  } catch {
+    return [];
+  }
+}
 
 export const metadata: Metadata = {
   title: "Awasio - Find Verified Homes, Apartments & Local Property Advisors",
@@ -29,7 +49,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootPage() {
+export default async function RootPage() {
+  const initialFreshListings = await getInitialFreshListings();
+  const firstCard = initialFreshListings[0];
+  const lcpImage = firstCard ? toResultCardProps(firstCard).images?.[0] : null;
+
   // Schema.org Structured Data: WebSite with Sitelinks SearchBox & RealEstateOrganization
   const websiteSchema = {
     "@context": "https://schema.org",
@@ -91,13 +115,21 @@ export default function RootPage() {
 
   return (
     <>
+      {lcpImage && (
+        <link
+          rel="preload"
+          as="image"
+          href={lcpImage}
+          fetchPriority="high"
+        />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
       <div className="min-h-screen overflow-x-clip bg-white text-slate-900 transition-colors duration-150 dark:bg-slate-950 dark:text-slate-100">
         <HeaderNav />
-        <HomeExperience />
+        <HomeExperience initialFreshListings={initialFreshListings} />
         <FooterLinks />
       </div>
     </>

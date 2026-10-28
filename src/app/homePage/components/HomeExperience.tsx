@@ -24,7 +24,11 @@ import { CDN_ASSETS } from "@/config/cdn";
 const CITY_OPTIONS = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
 const STORAGE_KEY = "awasio.home.city";
 
-export function HomeExperience() {
+export function HomeExperience({
+  initialFreshListings = [],
+}: {
+  initialFreshListings?: PropertySearchItem[];
+} = {}) {
   const router = useRouter();
   // Server and first client render must match. Browser preferences are restored
   // in the effect below after hydration.
@@ -168,8 +172,14 @@ export function HomeExperience() {
   const rawFresh = (freshQuery.items as PropertySearchItem[]) ?? [];
   const trendingListings = (trendingFallbackQuery.items as PropertySearchItem[]) ?? [];
 
-  // If local city has items, show them; otherwise fallback to top trending across metros
-  const freshListings = (rawFresh.length > 0 ? rawFresh : trendingListings).slice(0, 4);
+  // If local city has items, show them; otherwise fallback to top trending across metros or SSR initial items
+  const freshListings = (
+    rawFresh.length > 0
+      ? rawFresh
+      : trendingListings.length > 0
+      ? trendingListings
+      : initialFreshListings
+  ).slice(0, 4);
 
   const rawOwnerListings = (ownerQuery.items as PropertySearchItem[]) ?? [];
   const filteredOwnerListings = rawOwnerListings.filter(
@@ -245,7 +255,7 @@ export function HomeExperience() {
               : "Featured Verified Listings"
           }
           href={buildSearchHref({ ...initialSearchState(), cityName: selectedCity || undefined, sort: "newest" })}
-          loading={freshQuery.isLoading && trendingFallbackQuery.isLoading}
+          loading={(freshQuery.isLoading && trendingFallbackQuery.isLoading) && freshListings.length === 0}
           error={freshQuery.isError && trendingFallbackQuery.isError}
           onRetry={() => {
             freshQuery.refetch();
@@ -431,7 +441,7 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
                       <Sparkles className="h-3 w-3 text-rose-500" />
                       {agent.badge || "Top Rated"}
                     </span>
-                    <span className="flex items-center gap-1 whitespace-nowrap text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="flex items-center gap-1 whitespace-nowrap text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
                       <ShieldCheck className="h-3.5 w-3.5" />
                       RERA Verified
                     </span>

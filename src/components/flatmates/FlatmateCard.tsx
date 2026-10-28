@@ -77,7 +77,6 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
   return (
     <>
       <article
-        role="link"
         tabIndex={0}
         aria-label={`View details for ${listing.title}`}
         onClick={() => router.push(detailsHref)}
