@@ -38,6 +38,11 @@ function formatPrice(value?: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
 
+const normalizeR2Url = (url?: string | null): string => {
+  if (!url) return "";
+  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+};
+
 export function ProjectDetailInteractive({ project }: { project: ProjectListing }) {
   const [createInquiry, { isLoading: isSubmittingInquiry }] = useCreateProjectInquiryMutation();
   const [selectedBhkTab, setSelectedBhkTab] = useState<string>("ALL");
@@ -126,9 +131,11 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
           {/* Main Large Image */}
           <div className="relative h-72 sm:h-96 lg:col-span-8 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
             <img
-              src={project.images?.[0] || CDN_ASSETS.placeholderWebp}
+              src={normalizeR2Url(project.images?.[0] || CDN_ASSETS.placeholderWebp)}
               alt={project.name}
               className="h-full w-full object-cover"
+              fetchPriority="high"
+              decoding="async"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
@@ -160,16 +167,20 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
           <div className="hidden lg:grid lg:col-span-4 grid-rows-2 gap-2">
             <div className="h-48 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
               <img
-                src={project.images?.[1] || project.images?.[0] || CDN_ASSETS.placeholderWebp}
+                src={normalizeR2Url(project.images?.[1] || project.images?.[0] || CDN_ASSETS.placeholderWebp)}
                 alt="Project View 2"
                 className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div className="h-48 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
               <img
-                src={project.images?.[2] || project.images?.[0] || CDN_ASSETS.placeholderWebp}
+                src={normalizeR2Url(project.images?.[2] || project.images?.[0] || CDN_ASSETS.placeholderWebp)}
                 alt="Project View 3"
                 className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>

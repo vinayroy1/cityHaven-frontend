@@ -5,6 +5,8 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { NewProjectsClient } from "./components/NewProjectsClient";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "New Projects & Township Developments - Awasio",
   description:

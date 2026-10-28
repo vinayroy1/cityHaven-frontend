@@ -14,6 +14,13 @@ import { ProjectDetailInteractive } from "../components/ProjectDetailInteractive
 import { NewProjectsClient } from "../components/NewProjectsClient";
 import { BackButton } from "@/components/common/BackButton";
 
+export const revalidate = 60;
+
+const normalizeR2Url = (url?: string | null): string => {
+  if (!url) return "";
+  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+};
+
 type Props = {
   params: Promise<{ segments: string[] }>;
 };
@@ -60,24 +67,26 @@ const getProject = cache(async (slug: string): Promise<ProjectListing | null> =>
   }
 });
 
-async function getProjectCount(city: string, localities: string[] = []): Promise<number | null> {
+const getInitialProjects = cache(async (city?: string, localities: string[] = []): Promise<{ items: ProjectListing[]; total: number }> => {
   try {
     const rawEndpoint = API_ENDPOINTS.projects.search;
     const endpoint = toInternalApiUrl(rawEndpoint);
     const url = new URL(endpoint);
-    url.searchParams.set("city", city);
+    if (city && city !== "All") url.searchParams.set("city", city);
     if (localities.length) url.searchParams.set("locality", localities.join(","));
     url.searchParams.set("page", "1");
-    url.searchParams.set("pageSize", "1");
-    const response = await fetch(url, { next: { revalidate: 3600 }, headers: { Accept: "application/json" } });
-    if (!response.ok) return null;
+    url.searchParams.set("pageSize", "24");
+    url.searchParams.set("sortBy", "featured");
+    const response = await fetch(url, { next: { revalidate: 60 }, headers: { Accept: "application/json" } });
+    if (!response.ok) return { items: [], total: 0 };
     const payload = await response.json();
-    const total = Number(payload?.data?.total ?? payload?.total);
-    return Number.isFinite(total) ? total : null;
+    const items = payload?.data?.items ?? payload?.items ?? [];
+    const total = Number(payload?.data?.total ?? payload?.total ?? items.length);
+    return { items, total };
   } catch {
-    return null;
+    return { items: [], total: 0 };
   }
-}
+});
 
 function formatPrice(value?: number) {
   if (!value) return "Price on request";
@@ -119,7 +128,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           description,
           url: canonical,
           type: "website",
-          images: (project.images || []).map((img) => ({ url: img })),
+          images: (project.images || []).map((img) => ({ url: normalizeR2Url(img) })),
         },
       };
     }
@@ -127,9 +136,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // It's a city landing page or project category (e.g. /new-projects/bengaluru)
     const location = parseLocation(segments);
     const cityName = location?.city || fromSearchSlug(segments[0]);
-    const count = location ? await getProjectCount(location.city) : null;
-    const hasResults = count !== null && count > 0;
-    const countLabel = hasResults ? `${count} ` : "";
+    const { total: count } = location ? await getInitialProjects(location.city) : { total: 0 };
+    const countLabel = count > 0 ? `${count} ` : "";
     const title = `${countLabel}New Residential Projects in ${cityName} | Awasio`;
     const description = `Explore ${countLabel || "verified "}new residential projects, luxury apartments, and township developments in ${cityName} with RERA verification, floor plans, and developer pricing.`;
     const canonical = buildCanonical(`/new-projects/${toSearchSlug(cityName)}`);
@@ -144,26 +152,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
       openGraph: { title, description, url: canonical, type: "website" },
     };
-
-    return {
-      title,
-      description,
-      alternates: { canonical },
-      robots: {
-        index: hasResults,
-        follow: true,
-      },
-      openGraph: { title, description, url: canonical, type: "website" },
-    };
   }
 
   // Case 2: Locality landing page (e.g. /new-projects/bengaluru/whitefield)
   const location = parseLocation(segments);
   if (!location) return {};
   const label = [...location.localities, location.city].join(", ");
-  const count = await getProjectCount(location.city, location.localities);
-  const hasResults = count !== null && count > 0;
-  const countLabel = hasResults ? `${count} ` : "";
+  const { total: count } = await getInitialProjects(location.city, location.localities);
+  const countLabel = count > 0 ? `${count} ` : "";
   const title = `${countLabel}New Projects in ${label} | Price & Floor Plans | Awasio`;
   const description = `Browse ${countLabel || "verified "}new residential projects, high-rises and gated societies in ${label}. Compare RERA IDs, amenities, price per sqft and developer reputation.`;
   const canonical = buildCanonical(`/new-projects/${segments.join("/")}`);
@@ -173,7 +169,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical },
     robots: {
-      index: hasResults,
+      index: count > 0,
       follow: true,
     },
     openGraph: { title, description, url: canonical, type: "website" },
@@ -191,6 +187,7 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
     const project = await getProject(segments[0]);
     if (project) {
       const cityName = typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "");
+      const lcpImage = project.images?.[0] ? normalizeR2Url(project.images[0]) : null;
       const jsonLd = {
         "@context": "https://schema.org",
         "@type": "RealEstateListing",
@@ -215,6 +212,14 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
 
       return (
         <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
+          {lcpImage && (
+            <link
+              rel="preload"
+              as="image"
+              href={lcpImage}
+              fetchPriority="high"
+            />
+          )}
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
           <HeaderNav />
 
@@ -269,6 +274,10 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
     }
   }
 
+  const { items: initialProjects, total: initialTotal } = await getInitialProjects(city, localities);
+  const firstProject = initialProjects[0];
+  const lcpImage = firstProject?.images?.[0] ? normalizeR2Url(firstProject.images[0]) : null;
+
   const breadcrumbsJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -306,10 +315,23 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      {lcpImage && (
+        <link
+          rel="preload"
+          as="image"
+          href={lcpImage}
+          fetchPriority="high"
+        />
+      )}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }} />
       <HeaderNav />
       <main className="flex-1">
-        <NewProjectsClient initialCity={city} initialLocalities={localities} />
+        <NewProjectsClient
+          initialCity={city}
+          initialLocalities={localities}
+          initialProjects={initialProjects}
+          initialTotal={initialTotal}
+        />
       </main>
       <FooterLinks />
     </div>

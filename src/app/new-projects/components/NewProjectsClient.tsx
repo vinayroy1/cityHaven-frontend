@@ -47,9 +47,24 @@ const buildProjectSearchHref = (city: string, localities: string[] = []) => {
   return segments.length ? `/new-projects/${segments.join("/")}` : "/new-projects";
 };
 
-type NewProjectsClientProps = { initialCity?: string; initialLocalities?: string[] };
+const normalizeR2Url = (url?: string | null): string => {
+  if (!url) return "";
+  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+};
 
-export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: NewProjectsClientProps = {}) {
+type NewProjectsClientProps = {
+  initialCity?: string;
+  initialLocalities?: string[];
+  initialProjects?: ProjectListing[];
+  initialTotal?: number;
+};
+
+export function NewProjectsClient({
+  initialCity = "",
+  initialLocalities = [],
+  initialProjects = [],
+  initialTotal,
+}: NewProjectsClientProps = {}) {
   const router = useRouter();
   const initialLocalitiesKey = initialLocalities.join("\u001f");
   // Search inputs state (draft)
@@ -168,8 +183,10 @@ export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: 
     page: 1,
     pageSize: 24,
   });
-  const projects = data?.items || [];
-  const totalProjects = data?.total || 0;
+  const projects = (data?.items && data.items.length > 0)
+    ? data.items
+    : (data?.items ? [] : (initialProjects.length > 0 ? initialProjects : []));
+  const totalProjects = data?.total ?? initialTotal ?? projects.length;
 
   return (
     <div className="pb-16 min-w-0">
@@ -328,29 +345,33 @@ export function NewProjectsClient({ initialCity = "", initialLocalities = [] }: 
         <div className="flex items-start gap-6">
           <div className="min-w-0 flex-1">
         {/* Project Cards Grid */}
-        {isLoading || isFetching ? (
+        {(isLoading || isFetching) && projects.length === 0 ? (
           <div className="flex min-h-64 items-center justify-center rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <Loader2 className="h-7 w-7 animate-spin text-rose-600" />
           </div>
-        ) : isError ? (
+        ) : isError && projects.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-rose-300 p-8 text-center dark:border-rose-900">
             <h3 className="font-bold text-slate-900 dark:text-white">Projects could not be loaded</h3>
             <button type="button" onClick={() => refetch()} className="mt-4 rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white">Try again</button>
           </div>
         ) : projects.length > 0 ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 xl:gap-4">
-            {projects.map((project) => (
+            {projects.map((project, idx) => (
               <Link
                 key={project.id}
                 href={`/new-projects/${project.slug}`}
+                prefetch={false}
                 className="group flex w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:bg-slate-900 sm:rounded-3xl"
               >
                 {/* Project Image */}
                 <div className="relative h-40 w-full overflow-hidden bg-slate-100 sm:h-44 xl:h-40 dark:bg-slate-800">
                   <img
-                    src={project.images[0] || CDN_ASSETS.placeholderWebp}
+                    src={normalizeR2Url(project.images[0] || CDN_ASSETS.placeholderWebp)}
                     alt={project.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fetchPriority={idx === 0 ? "high" : "auto"}
+                    loading={idx === 0 ? "eager" : "lazy"}
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/15" />
 
