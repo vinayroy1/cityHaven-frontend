@@ -13,7 +13,7 @@ import { toResultCardProps } from "@/app/propertySearch/components/propertyCardA
 async function getInitialFreshListings(): Promise<PropertySearchItem[]> {
   try {
     const endpoint = toInternalApiUrl(
-      `${API_ENDPOINTS.propertyListing.search}?pageSize=8&status=APPROVED&sortBy=createdAt&sortOrder=DESC`
+      `${API_ENDPOINTS.propertyListing.search}?listingType=SELL&pageSize=8&sort=newest`
     );
     const res = await fetch(endpoint, {
       next: { revalidate: 300 }, // 5 min ISR cache

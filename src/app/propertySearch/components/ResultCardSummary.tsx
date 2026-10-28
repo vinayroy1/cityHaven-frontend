@@ -124,9 +124,9 @@ export function ResultCardSummary({
       </div>
 
       <div>
-        <h3 title={title} className={`line-clamp-1 font-bold leading-snug text-zinc-950 group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 ${compact ? "text-sm sm:text-[15px]" : "text-[15px] sm:line-clamp-2 sm:text-base"}`}>
+        <h2 title={title} className={`line-clamp-1 font-bold leading-snug text-zinc-950 group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 ${compact ? "text-sm sm:text-[15px]" : "text-[15px] sm:line-clamp-2 sm:text-base"}`}>
           {displayTitle}
-        </h3>
+        </h2>
         {subtitle && (
           <p className={`flex min-w-0 items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-slate-400 ${compact ? "mt-0.5 sm:mt-1" : "mt-1 sm:text-sm"}`}>
             <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-400" />

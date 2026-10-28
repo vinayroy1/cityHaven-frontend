@@ -25,14 +25,26 @@ import {
 } from "@/components/search/searchQuery";
 import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
 
+import type { PropertySearchItem } from "@/types/propertySearch.types";
+import type { FlatmateListing } from "@/types/flatmate.types";
+
 type SearchPageClientProps = {
   routeCity?: string;
   routeLocalities?: string[];
   routeIntent?: IntentKey;
   routeState?: string;
+  initialItems?: (PropertySearchItem | FlatmateListing)[];
+  initialTotal?: number;
 };
 
-export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent, routeState }: SearchPageClientProps = {}) {
+export function SearchPageClient({
+  routeCity,
+  routeLocalities = [],
+  routeIntent,
+  routeState,
+  initialItems,
+  initialTotal,
+}: SearchPageClientProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const routeLocalitiesKey = routeLocalities.join("\u001f");
@@ -151,7 +163,7 @@ export function SearchPageClient({ routeCity, routeLocalities = [], routeIntent,
     [router],
   );
 
-  const results = useSearchResults(state);
+  const results = useSearchResults(state, initialItems, initialTotal);
   const resultCount = results.refining
     ? results.visible.length
     : results.total ?? results.visible.length;

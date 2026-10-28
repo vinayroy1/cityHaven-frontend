@@ -97,11 +97,11 @@ export function ResultsList({ results }: { results: SearchResults }) {
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-        {visible.map((item) =>
+        {visible.map((item, idx) =>
           isFlatmate ? (
             <FlatmateCard key={item.id} listing={item as FlatmateListing} />
           ) : (
-            <ResultCard key={item.id} {...toResultCardProps(item as PropertySearchItem)} compact />
+            <ResultCard key={item.id} {...toResultCardProps(item as PropertySearchItem)} compact priority={idx === 0} />
           ),
         )}
       </div>

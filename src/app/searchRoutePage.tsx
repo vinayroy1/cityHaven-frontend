@@ -11,6 +11,9 @@ import {
 } from "@/components/search/searchQuery";
 import { buildCanonical } from "@/constants/seo";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
+import type { PropertySearchItem } from "@/types/propertySearch.types";
+import type { FlatmateListing } from "@/types/flatmate.types";
+import { toResultCardProps } from "@/app/propertySearch/components/propertyCardAdapter";
 
 export type IntentSearchRouteProps = {
   params: Promise<{ intent: string; segments?: string[] }>;
@@ -190,13 +193,67 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
     itemListElement: breadcrumbElements,
   };
 
+  let initialItems: (PropertySearchItem | FlatmateListing)[] = [];
+  let initialTotal: number | undefined = undefined;
+  let lcpImage: string | null = null;
+
+  try {
+    const isFlatmate = intent === "FLATMATE";
+    const endpoint = toInternalApiUrl(
+      isFlatmate ? `${API_BASE}/api/v1/flatmates` : `${API_BASE}/api/v1/propertyListing/search`
+    );
+    const url = new URL(endpoint);
+    url.searchParams.set("pageSize", "12");
+    if (isFlatmate) {
+      if (location.city) url.searchParams.set("city", location.city);
+      if (location.localities[0]) url.searchParams.set("locality", location.localities[0]);
+    } else {
+      url.searchParams.set("listingType", copy.listingType);
+      if (location.city) url.searchParams.set("cityName", location.city);
+      if (location.state) url.searchParams.set("q", location.state);
+      for (const locality of location.localities) url.searchParams.append("locality", locality);
+      if (intent === "COMMERCIAL") url.searchParams.set("resCom", "COMMERCIAL");
+    }
+    const response = await fetch(url, { next: { revalidate: 300 } });
+    if (response.ok) {
+      const payload = await response.json();
+      initialItems = payload?.data?.items ?? payload?.items ?? [];
+      initialTotal = Number(payload?.data?.total ?? payload?.total ?? initialItems.length);
+      const first = initialItems[0];
+      if (first) {
+        if (isFlatmate) {
+          lcpImage = (first as FlatmateListing).photos?.[0] ?? null;
+        } else {
+          lcpImage = toResultCardProps(first as PropertySearchItem).images?.[0] ?? null;
+        }
+      }
+    }
+  } catch {
+    // Gracefully fallback to client hydration
+  }
+
   return (
     <>
+      {lcpImage && (
+        <link
+          rel="preload"
+          as="image"
+          href={lcpImage}
+          fetchPriority="high"
+        />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <SearchPageClient routeIntent={intent} routeCity={location.city} routeLocalities={location.localities} routeState={location.state} />
+      <SearchPageClient
+        routeIntent={intent}
+        routeCity={location.city}
+        routeLocalities={location.localities}
+        routeState={location.state}
+        initialItems={initialItems}
+        initialTotal={initialTotal}
+      />
     </>
   );
 }

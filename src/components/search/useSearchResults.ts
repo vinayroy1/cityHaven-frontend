@@ -36,7 +36,11 @@ export type SearchResults = {
   isFlatmate: boolean;
 };
 
-export function useSearchResults(state: SearchState): SearchResults {
+export function useSearchResults(
+  state: SearchState,
+  initialItems?: (PropertySearchItem | FlatmateListing)[],
+  initialTotal?: number,
+): SearchResults {
   const isFlatmate = state.intent === "FLATMATE";
   const refining = hasClientRefinements(state);
 
@@ -81,13 +85,15 @@ export function useSearchResults(state: SearchState): SearchResults {
   const visible = React.useMemo(() => {
     if (isFlatmate) {
       const items = (flatmateQuery.items || []) as FlatmateListing[];
-      return refining ? applyFlatmateRefinements(items, state) : items;
+      const source = items.length > 0 ? items : (initialItems as FlatmateListing[] | undefined) ?? [];
+      return refining ? applyFlatmateRefinements(source, state) : source;
     }
     const items = (propertyQuery.items || []) as PropertySearchItem[];
+    const source = items.length > 0 ? items : (initialItems as PropertySearchItem[] | undefined) ?? [];
     return refining
-      ? applyClientRefinements(items, state, subTypeSlugToId)
-      : items;
-  }, [isFlatmate, flatmateQuery.items, propertyQuery.items, refining, state]);
+      ? applyClientRefinements(source, state, subTypeSlugToId)
+      : source;
+  }, [isFlatmate, flatmateQuery.items, propertyQuery.items, initialItems, refining, state]);
 
   // When client refinement hides most of a page, pull more pages automatically
   // (bounded) so the user doesn't see a near-empty list.
@@ -106,10 +112,14 @@ export function useSearchResults(state: SearchState): SearchResults {
 
   return {
     visible,
-    fetchedCount: activeQuery.items.length,
-    total: activeQuery.total,
+    fetchedCount: activeQuery.items.length || (initialItems?.length ?? 0),
+    total: activeQuery.total ?? initialTotal,
     refining,
-    isLoading: activeQuery.isFetching && !activeQuery.isFetchingNextPage && activeQuery.items.length === 0,
+    isLoading:
+      activeQuery.isFetching &&
+      !activeQuery.isFetchingNextPage &&
+      activeQuery.items.length === 0 &&
+      (!initialItems || initialItems.length === 0),
     isFetchingNextPage: activeQuery.isFetchingNextPage,
     hasNextPage: activeQuery.hasNextPage,
     isError: activeQuery.isError,
