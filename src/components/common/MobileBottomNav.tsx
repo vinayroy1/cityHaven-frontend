@@ -36,7 +36,12 @@ import { APP_CONFIG } from "@/constants/app-config";
 import { ThemeToggle } from "./ThemeToggle";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 import { useGetMyCreditsQuery, useGetCreditPlatformConfigQuery } from "@/features/contactVerify/api";
-import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
+import dynamic from "next/dynamic";
+
+const CreditWalletModal = dynamic(
+  () => import("@/components/billing/CreditWalletModal").then((m) => m.CreditWalletModal),
+  { ssr: false }
+);
 
 interface UserProfile {
   name?: string;
@@ -224,6 +229,7 @@ export function MobileBottomNav() {
           {/* TAB 1: HOME */}
           <Link
             href="/"
+            prefetch={false}
             className={`flex flex-col items-center justify-center py-1 transition-colors group ${
               isHomeActive
                 ? "text-rose-600 dark:text-rose-400 font-bold"
@@ -246,6 +252,7 @@ export function MobileBottomNav() {
           {/* TAB 2: SEARCH */}
           <Link
             href="/propertySearch"
+            prefetch={false}
             className={`flex flex-col items-center justify-center py-1 transition-colors group ${
               isSearchActive
                 ? "text-rose-600 dark:text-rose-400 font-bold"
@@ -283,6 +290,7 @@ export function MobileBottomNav() {
           {/* TAB 4: SAVED / FAVORITES */}
           <Link
             href="/favorites"
+            prefetch={false}
             className={`flex flex-col items-center justify-center py-1 transition-colors group ${
               isSavedActive
                 ? "text-rose-600 dark:text-rose-400 font-bold"
@@ -563,11 +571,13 @@ export function MobileBottomNav() {
         )}
 
       {/* Credit Wallet & Rewards Modal */}
-      <CreditWalletModal
-        isOpen={creditModalOpen}
-        onClose={() => setCreditModalOpen(false)}
-        userProfile={userProfile}
-      />
+      {creditModalOpen && (
+        <CreditWalletModal
+          isOpen={creditModalOpen}
+          onClose={() => setCreditModalOpen(false)}
+          userProfile={userProfile}
+        />
+      )}
     </>
   );
 }

@@ -15,18 +15,32 @@ import {
   useUnlockPropertyContactMutation,
   BillingSummary,
 } from "@/features/contactVerify/api";
-import { launchCashfreeCheckout } from "@/lib/cashfree/cashfreeCheckout";
-import { ContactUnlockDialog, ScopeOption } from "./ContactUnlockDialog";
-import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
-import { ScheduleVisitDialog } from "@/components/property/ScheduleVisitDialog";
+import dynamic from "next/dynamic";
+import type { ScopeOption } from "./ContactUnlockDialog";
 import { ResultCardMedia } from "./ResultCardMedia";
 import { ResultCardSummary, SavePropertyButton } from "./ResultCardSummary";
 import { CONTACT_PLANS, FALLBACK_IMAGE, type ContactPlan, type ContactStep, type ResultCardProps } from "./resultCardTypes";
-import {
-  PaymentProcessingModal,
+import type {
   PaymentFlowStatus,
   PaymentSuccessData,
 } from "@/components/payment/PaymentProcessingModal";
+
+const ScheduleVisitDialog = dynamic(
+  () => import("@/components/property/ScheduleVisitDialog").then((mod) => mod.ScheduleVisitDialog),
+  { ssr: false }
+);
+const ContactUnlockDialog = dynamic(
+  () => import("./ContactUnlockDialog").then((mod) => mod.ContactUnlockDialog),
+  { ssr: false }
+);
+const CreditWalletModal = dynamic(
+  () => import("@/components/billing/CreditWalletModal").then((mod) => mod.CreditWalletModal),
+  { ssr: false }
+);
+const PaymentProcessingModal = dynamic(
+  () => import("@/components/payment/PaymentProcessingModal").then((mod) => mod.PaymentProcessingModal),
+  { ssr: false }
+);
 
 export function ResultCard({
   id,
@@ -407,6 +421,7 @@ export function ResultCard({
       const orderData = orderRes.data;
       if (orderData?.paymentSessionId) {
         setPaymentFlowStatus("CONNECTING_GATEWAY");
+        const { launchCashfreeCheckout } = await import("@/lib/cashfree/cashfreeCheckout");
         const checkoutResult = await launchCashfreeCheckout(orderData.paymentSessionId, {
           redirectTarget: "_modal",
         });
@@ -519,79 +534,87 @@ export function ResultCard({
         compact={compact}
         isContactChecking={checkingContact}
       />
-      <ScheduleVisitDialog
-        open={scheduleOpen}
-        onOpenChange={setScheduleOpen}
-        property={{
-          id,
-          title,
-          locality: subtitle,
-          price,
-          ownerName: owner,
-        }}
-      />
-      <ContactUnlockDialog
-        open={contactOpen}
-        onOpenChange={setContactOpen}
-        contactStep={contactStep}
-        hasActivePlan={hasActivePlan}
-        loading={loading}
-        plansList={plansList}
-        selectedPlan={selectedPlan}
-        currentPlan={currentPlan}
-        contactError={contactError}
-        ownerContact={ownerContact}
-        owner={owner}
-        credits={
-          selectedScope === "PERSONAL"
-            ? (personalSummary?.credits ?? meData?.credits ?? credits)
-            : (orgSummaries[selectedScope]?.credits ?? 0)
-        }
-        scopes={scopes}
-        selectedScope={selectedScope}
-        onScopeChange={(s) => {
-          setSelectedScope(s);
-          if (s === "PERSONAL") {
-            setCredits(personalSummary?.credits ?? meData?.credits ?? credits);
-          } else {
-            setCredits(orgSummaries[s]?.credits ?? 0);
+      {scheduleOpen && (
+        <ScheduleVisitDialog
+          open={scheduleOpen}
+          onOpenChange={setScheduleOpen}
+          property={{
+            id,
+            title,
+            locality: subtitle,
+            price,
+            ownerName: owner,
+          }}
+        />
+      )}
+      {contactOpen && (
+        <ContactUnlockDialog
+          open={contactOpen}
+          onOpenChange={setContactOpen}
+          contactStep={contactStep}
+          hasActivePlan={hasActivePlan}
+          loading={loading}
+          plansList={plansList}
+          selectedPlan={selectedPlan}
+          currentPlan={currentPlan}
+          contactError={contactError}
+          ownerContact={ownerContact}
+          owner={owner}
+          credits={
+            selectedScope === "PERSONAL"
+              ? (personalSummary?.credits ?? meData?.credits ?? credits)
+              : (orgSummaries[selectedScope]?.credits ?? 0)
           }
-        }}
-        onUnlockContact={() => void unlockContact(selectedScope)}
-        onSelectedPlanChange={setSelectedPlan}
-        onPurchasePlan={purchasePlan}
-        purchaseEnabled={creditPurchasesEnabled}
-        onOpenWallet={() => {
-          setContactOpen(false);
-          setWalletOpen(true);
-        }}
-        contactCost={contactCost}
-      />
-      <CreditWalletModal
-        isOpen={walletOpen}
-        onClose={() => {
-          setWalletOpen(false);
-          void refreshScopes();
-        }}
-        userProfile={meData}
-      />
-      <PaymentProcessingModal
-        isOpen={paymentModalOpen}
-        status={paymentFlowStatus}
-        plan={
-          currentPlan
-            ? {
-                name: currentPlan.name,
-                price: parseFloat(currentPlan.price.replace(/[^\d.]/g, "")) || 0,
-                contactCredits: currentPlan.credits,
-              }
-            : null
-        }
-        errorMessage={paymentErrorMessage}
-        successData={paymentSuccessData}
-        onClose={() => setPaymentModalOpen(false)}
-        onRetry={() => void purchasePlan()}
-      />
+          scopes={scopes}
+          selectedScope={selectedScope}
+          onScopeChange={(s) => {
+            setSelectedScope(s);
+            if (s === "PERSONAL") {
+              setCredits(personalSummary?.credits ?? meData?.credits ?? credits);
+            } else {
+              setCredits(orgSummaries[s]?.credits ?? 0);
+            }
+          }}
+          onUnlockContact={() => void unlockContact(selectedScope)}
+          onSelectedPlanChange={setSelectedPlan}
+          onPurchasePlan={purchasePlan}
+          purchaseEnabled={creditPurchasesEnabled}
+          onOpenWallet={() => {
+            setContactOpen(false);
+            setWalletOpen(true);
+          }}
+          contactCost={contactCost}
+        />
+      )}
+      {walletOpen && (
+        <CreditWalletModal
+          isOpen={walletOpen}
+          onClose={() => {
+            setWalletOpen(false);
+            void refreshScopes();
+          }}
+          userProfile={meData}
+        />
+      )}
+      {paymentModalOpen && (
+        <PaymentProcessingModal
+          isOpen={paymentModalOpen}
+          status={paymentFlowStatus}
+          plan={
+            currentPlan
+              ? {
+                  name: currentPlan.name,
+                  price: parseFloat(currentPlan.price.replace(/[^\d.]/g, "")) || 0,
+                  contactCredits: currentPlan.credits,
+                }
+              : null
+          }
+          errorMessage={paymentErrorMessage}
+          successData={paymentSuccessData}
+          onClose={() => setPaymentModalOpen(false)}
+          onRetry={() => void purchasePlan()}
+        />
+      )}
     </article>
   );
 }

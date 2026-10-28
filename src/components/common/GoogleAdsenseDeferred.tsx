@@ -32,7 +32,7 @@ export function GoogleAdsenseDeferred() {
     window.addEventListener("mousemove", loadScript, { once: true, passive: true });
     window.addEventListener("keydown", loadScript, { once: true, passive: true });
 
-    const timer = setTimeout(loadScript, 5000);
+    const timer = setTimeout(loadScript, 12000);
 
     return () => {
       clearTimeout(timer);

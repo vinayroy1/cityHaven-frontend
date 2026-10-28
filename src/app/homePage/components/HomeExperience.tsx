@@ -408,6 +408,7 @@ function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
         <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
           <Link
             href="/agents"
+            prefetch={false}
             className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400"
           >
             View all <ArrowRight className="h-4 w-4" />
