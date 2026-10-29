@@ -20,11 +20,15 @@ import {
   Laptop,
   Music,
   Smile,
+  Camera,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { FlatmateListing } from "@/types/flatmate.types";
+import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 
 const FlatmateContactModal = dynamic(
   () => import("./FlatmateContactModal").then((mod) => mod.FlatmateContactModal),
@@ -82,7 +86,23 @@ export function FlatmateCard({
   const badge = modeBadge();
   const ModeIcon = badge.icon;
 
-  const roomPhoto = normalizeR2Url(listing.photos?.[0]);
+  const safePhotos = (listing.photos || []).map(normalizeR2Url).filter(Boolean);
+  const {
+    activeImage,
+    nextImage,
+    prevImage,
+    hasCarousel,
+    containerRef: imageContainerRef,
+    handleClickCapture,
+    handleCardTouchStart,
+    handleCardTouchMove,
+    handleCardTouchEnd,
+    isCardDragged,
+  } = useCardImageSwipe({
+    totalImages: safePhotos.length,
+  });
+
+  const roomPhoto = safePhotos[activeImage] || safePhotos[0] || normalizeR2Url(listing.photos?.[0]);
   const profile = listing.profile;
   const hostPhoto = normalizeR2Url(profile?.profilePhoto);
   const avatarPhoto = hostPhoto || (!isPlaceListing ? roomPhoto : undefined);
@@ -107,13 +127,19 @@ export function FlatmateCard({
           role="link"
           tabIndex={0}
           aria-label={`View details for ${listing.title}`}
-          onClick={() => router.push(detailsHref)}
+          onClick={() => {
+            if (isCardDragged()) return;
+            router.push(detailsHref);
+          }}
           onKeyDown={(event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
               router.push(detailsHref);
             }
           }}
+          onTouchStart={handleCardTouchStart}
+          onTouchMove={handleCardTouchMove}
+          onTouchEnd={handleCardTouchEnd}
           className={`group relative flex w-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 h-full ${
             listing.isBoosted
               ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40"
@@ -122,12 +148,16 @@ export function FlatmateCard({
         >
           <div className="flex flex-col sm:flex-1">
             {/* Variant 1: Room Available (16:10 Landscape Photo Banner) */}
-            <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900">
+            <div
+              ref={imageContainerRef}
+              onClickCapture={handleClickCapture}
+              className="relative aspect-[16/10] w-full overflow-hidden select-none touch-pan-y bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900"
+            >
               {roomPhoto ? (
                 <img
                   src={roomPhoto}
                   alt={listing.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 pointer-events-none"
                   loading={priority ? "eager" : "lazy"}
                   fetchPriority={priority ? "high" : "auto"}
                   decoding="async"
@@ -146,8 +176,30 @@ export function FlatmateCard({
               {/* Gradient Scrim */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/20" />
 
+              {/* Desktop prev/next chevron buttons */}
+              {hasCarousel && (
+                <>
+                  <button
+                    type="button"
+                    aria-label="Previous photo"
+                    onClick={prevImage}
+                    className="absolute left-2 top-1/2 z-20 hidden sm:inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-zinc-800 shadow-md transition hover:bg-white focus:opacity-100 sm:left-2.5 sm:opacity-0 sm:group-hover:opacity-100"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Next photo"
+                    onClick={nextImage}
+                    className="absolute right-2 top-1/2 z-20 hidden sm:inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-zinc-800 shadow-md transition hover:bg-white focus:opacity-100 sm:right-2.5 sm:opacity-0 sm:group-hover:opacity-100"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </>
+              )}
+
               {/* Mode Tag */}
-              <div className="absolute left-2.5 top-2.5">
+              <div className="absolute left-2.5 top-2.5 z-10 pointer-events-none">
                 <span
                   className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-xs backdrop-blur-md ${badge.className}`}
                 >
@@ -157,14 +209,14 @@ export function FlatmateCard({
               </div>
 
               {listing.isBoosted && (
-                <span className="absolute left-2.5 top-9 rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">
+                <span className="absolute left-2.5 top-9 z-10 pointer-events-none rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">
                   ⭐ FEATURED
                 </span>
               )}
 
               {/* Compatibility Score */}
               {listing.compatibilityScore != null && (
-                <div className="absolute right-2.5 top-2.5 rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700 shadow-xs backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
+                <div className="absolute right-2.5 top-2.5 z-10 pointer-events-none rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700 shadow-xs backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
                   {listing.compatibilityScore}% match
                 </div>
               )}
@@ -181,9 +233,12 @@ export function FlatmateCard({
               </div>
 
               {/* Photo count badge */}
-              {listing.photos && listing.photos.length > 1 && (
-                <div className="absolute bottom-2.5 right-2.5 rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-semibold text-white shadow-xs backdrop-blur-md">
-                  1 of {listing.photos.length} photos
+              {hasCarousel && (
+                <div className="absolute bottom-2.5 right-2.5 z-10 inline-flex items-center gap-1 rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-semibold text-white shadow-xs backdrop-blur-md pointer-events-none">
+                  <Camera className="h-2.5 w-2.5" />
+                  <span>
+                    {activeImage + 1} of {safePhotos.length}
+                  </span>
                 </div>
               )}
             </div>
@@ -410,13 +465,19 @@ export function FlatmateCard({
         role="link"
         tabIndex={0}
         aria-label={`View details for ${profile?.displayName || listing.title}`}
-        onClick={() => router.push(detailsHref)}
+        onClick={() => {
+          if (isCardDragged()) return;
+          router.push(detailsHref);
+        }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             router.push(detailsHref);
           }
         }}
+        onTouchStart={handleCardTouchStart}
+        onTouchMove={handleCardTouchMove}
+        onTouchEnd={handleCardTouchEnd}
         className={`group relative flex w-full cursor-pointer justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 ${
           isForceVertical
             ? "flex-col h-full"

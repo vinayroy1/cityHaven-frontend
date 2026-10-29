@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Home, Loader2, MapPin, Phone, PhoneCall, RotateCcw, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, Building2, Calendar, Camera, CheckCircle2, ChevronLeft, ChevronRight, Home, Loader2, MapPin, Phone, PhoneCall, RotateCcw, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
 import { SearchBar } from "@/components/search/SearchBar";
 import { buildSearchHref, initialSearchState, type SearchState } from "@/components/search/searchQuery";
 import { usePropertySearchInfinite } from "@/features/propertyListing/useQueries";
@@ -19,6 +19,12 @@ import { useSearchProjectsQuery } from "@/features/projects/api";
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import { FlatmateCard } from "@/components/flatmates/FlatmateCard";
 import { CDN_ASSETS } from "@/config/cdn";
+import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
+
+const normalizeR2Url = (url?: string | null): string => {
+  if (!url) return "";
+  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+};
 
 const CITY_OPTIONS = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];
 const STORAGE_KEY = "awasio.home.city";
@@ -598,6 +604,142 @@ function formatProjectPrice(value?: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
 
+function FeaturedProjectCard({ project }: { project: any }) {
+  const router = useRouter();
+  const safeImages = (project.images || []).map(normalizeR2Url).filter(Boolean);
+  const {
+    activeImage,
+    nextImage,
+    prevImage,
+    hasCarousel,
+    containerRef: imageContainerRef,
+    handleClickCapture,
+    handleCardTouchStart,
+    handleCardTouchMove,
+    handleCardTouchEnd,
+    isCardDragged,
+  } = useCardImageSwipe({
+    totalImages: safeImages.length,
+  });
+
+  const projectImage = safeImages[activeImage] || safeImages[0] || CDN_ASSETS.placeholderWebp;
+  const projectHref = `/new-projects/${project.slug}`;
+
+  const openDetails = () => {
+    if (isCardDragged()) return;
+    router.push(projectHref);
+  };
+
+  return (
+    <article
+      tabIndex={0}
+      role="link"
+      onClick={openDetails}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          router.push(projectHref);
+        }
+      }}
+      onTouchStart={handleCardTouchStart}
+      onTouchMove={handleCardTouchMove}
+      onTouchEnd={handleCardTouchEnd}
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:bg-slate-900"
+    >
+      <div
+        ref={imageContainerRef}
+        onClickCapture={handleClickCapture}
+        className="relative aspect-[16/10] w-full overflow-hidden select-none touch-pan-y bg-slate-100 dark:bg-slate-800"
+      >
+        <img
+          src={projectImage}
+          alt={project.name}
+          className="h-full w-full object-cover transition duration-300 group-hover:scale-105 pointer-events-none"
+          loading="lazy"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/10" />
+
+        {hasCarousel && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous photo"
+              onClick={prevImage}
+              className="absolute left-2 top-1/2 z-20 hidden sm:inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-zinc-800 shadow-md transition hover:bg-white focus:opacity-100 sm:left-2.5 sm:opacity-0 sm:group-hover:opacity-100"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next photo"
+              onClick={nextImage}
+              className="absolute right-2 top-1/2 z-20 hidden sm:inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-zinc-800 shadow-md transition hover:bg-white focus:opacity-100 sm:right-2.5 sm:opacity-0 sm:group-hover:opacity-100"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </>
+        )}
+
+        <div className="absolute left-2.5 top-2.5 z-10 flex items-center gap-1 pointer-events-none">
+          <span className="inline-flex items-center gap-1 rounded-full border border-white/60 bg-white/95 px-2 py-0.5 text-[9px] font-black text-emerald-700 shadow-xs backdrop-blur-md">
+            <ShieldCheck className="h-3 w-3 text-emerald-600" />
+            RERA
+          </span>
+        </div>
+
+        <div className="absolute right-2.5 top-2.5 z-10 pointer-events-none">
+          <span className="rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
+            {project.status?.replace(/_/g, " ") || "NEW LAUNCH"}
+          </span>
+        </div>
+
+        <div className="absolute inset-x-2.5 bottom-2.5 z-10 flex items-end justify-between pointer-events-none">
+          <div>
+            <span className="text-[9px] font-bold uppercase text-slate-300 drop-shadow-xs">Starts at</span>
+            <p className="text-sm font-black text-white drop-shadow-md">{formatProjectPrice(project.priceMin)}</p>
+          </div>
+
+          {hasCarousel && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-semibold text-white shadow-xs backdrop-blur-md">
+              <Camera className="h-2.5 w-2.5" />
+              {activeImage + 1} of {safeImages.length}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col p-3">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+          {project.developerName || "Featured Developer"}
+        </p>
+        <h3 className="line-clamp-1 text-sm font-bold text-slate-950 group-hover:text-rose-600 transition dark:text-white">
+          {project.name}
+        </h3>
+        <p className="mt-1 flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 truncate">
+          <MapPin className="h-3 w-3 shrink-0 text-rose-500" />
+          <span className="truncate">
+            {project.locality ? `${project.locality}, ` : ""}
+            {typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "Top Metros")}
+          </span>
+        </p>
+
+        {project.configurations && project.configurations.length > 0 && (
+          <div className="mt-2.5 flex flex-wrap gap-1">
+            {project.configurations.slice(0, 3).map((config: any) => (
+              <span
+                key={config.id}
+                className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+              >
+                {config.bhkType}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    </article>
+  );
+}
+
 function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
   const isIdle = useIdleState(1200);
   const normalizedCity = selectedCity?.toLowerCase().includes("delhi")
@@ -659,68 +801,7 @@ function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
               key={project.id}
               className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]"
             >
-              <Link
-                href={`/new-projects/${project.slug}`}
-                prefetch={false}
-                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
-              >
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
-                  <img
-                    src={project.images?.[0] || CDN_ASSETS.placeholderWebp}
-                    alt={project.name}
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/10" />
-
-                  <div className="absolute left-2.5 top-2.5 flex items-center gap-1">
-                    <span className="inline-flex items-center gap-1 rounded-full border border-white/60 bg-white/95 px-2 py-0.5 text-[9px] font-black text-emerald-700 shadow-xs backdrop-blur-md">
-                      <ShieldCheck className="h-3 w-3 text-emerald-600" />
-                      RERA
-                    </span>
-                  </div>
-
-                  <div className="absolute right-2.5 top-2.5">
-                    <span className="rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
-                      {project.status?.replace(/_/g, " ") || "NEW LAUNCH"}
-                    </span>
-                  </div>
-
-                  <div className="absolute inset-x-2.5 bottom-2.5">
-                    <span className="text-[9px] font-bold uppercase text-slate-300">Starts at</span>
-                    <p className="text-sm font-black text-white">{formatProjectPrice(project.priceMin)}</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-1 flex-col p-3">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-                    {project.developerName || "Featured Developer"}
-                  </p>
-                  <h3 className="line-clamp-1 text-sm font-bold text-slate-950 group-hover:text-rose-600 transition dark:text-white">
-                    {project.name}
-                  </h3>
-                  <p className="mt-1 flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                    <MapPin className="h-3 w-3 shrink-0 text-rose-500" />
-                    <span className="truncate">
-                      {project.locality ? `${project.locality}, ` : ""}
-                      {typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "Top Metros")}
-                    </span>
-                  </p>
-
-                  {project.configurations && project.configurations.length > 0 && (
-                    <div className="mt-2.5 flex flex-wrap gap-1">
-                      {project.configurations.slice(0, 3).map((config: any) => (
-                        <span
-                          key={config.id}
-                          className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                        >
-                          {config.bhkType}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Link>
+              <FeaturedProjectCard project={project} />
             </div>
           ))}
         </div>

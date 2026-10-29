@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Building2,
+  Camera,
+  ChevronLeft,
   ChevronRight,
   CalendarDays,
   Layers3,
@@ -23,6 +25,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { CDN_ASSETS } from "@/config/cdn";
+import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
 import {
@@ -51,6 +54,201 @@ const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
   return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
 };
+
+function ProjectGridCard({
+  project,
+  idx,
+  onContactClick,
+}: {
+  project: ProjectListing;
+  idx: number;
+  onContactClick: (project: ProjectListing) => void;
+}) {
+  const router = useRouter();
+  const safeImages = (project.images || []).map(normalizeR2Url).filter(Boolean);
+  const {
+    activeImage,
+    nextImage,
+    prevImage,
+    hasCarousel,
+    containerRef: imageContainerRef,
+    handleClickCapture,
+    handleCardTouchStart,
+    handleCardTouchMove,
+    handleCardTouchEnd,
+    isCardDragged,
+  } = useCardImageSwipe({
+    totalImages: safeImages.length,
+  });
+
+  const projectImage = safeImages[activeImage] || safeImages[0] || CDN_ASSETS.placeholderWebp;
+  const projectHref = `/new-projects/${project.slug}`;
+
+  const openDetails = () => {
+    if (isCardDragged()) return;
+    router.push(projectHref);
+  };
+
+  return (
+    <article
+      tabIndex={0}
+      role="link"
+      onClick={openDetails}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          router.push(projectHref);
+        }
+      }}
+      onTouchStart={handleCardTouchStart}
+      onTouchMove={handleCardTouchMove}
+      onTouchEnd={handleCardTouchEnd}
+      className="group flex w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:bg-slate-900 sm:rounded-3xl"
+    >
+      {/* Project Image */}
+      <div
+        ref={imageContainerRef}
+        onClickCapture={handleClickCapture}
+        className="relative h-40 w-full overflow-hidden select-none touch-pan-y bg-slate-100 sm:h-44 xl:h-40 dark:bg-slate-800"
+      >
+        <img
+          src={projectImage}
+          alt={project.name}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
+          fetchPriority={idx === 0 ? "high" : "auto"}
+          loading={idx === 0 ? "eager" : "lazy"}
+          decoding="async"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/15" />
+
+        {/* Desktop Prev / Next Buttons */}
+        {hasCarousel && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous photo"
+              onClick={prevImage}
+              className="absolute left-2 top-1/2 z-20 hidden sm:inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-zinc-800 shadow-md transition hover:bg-white focus:opacity-100 sm:left-2.5 sm:opacity-0 sm:group-hover:opacity-100"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next photo"
+              onClick={nextImage}
+              className="absolute right-2 top-1/2 z-20 hidden sm:inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-zinc-800 shadow-md transition hover:bg-white focus:opacity-100 sm:right-2.5 sm:opacity-0 sm:group-hover:opacity-100"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </>
+        )}
+
+        {/* Badges */}
+        <div className="absolute left-2.5 top-2.5 z-10 flex flex-wrap gap-1.5 pointer-events-none sm:left-3 sm:top-3">
+          <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/95 px-2 py-1 text-[9px] font-black text-emerald-700 shadow-sm backdrop-blur-md sm:px-2.5 sm:text-[10px]">
+            <ShieldCheck className="h-3 w-3 text-emerald-600 sm:h-3.5 sm:w-3.5" />
+            <span>RERA Verified</span>
+          </span>
+        </div>
+
+        <div className="absolute right-2.5 top-2.5 z-10 pointer-events-none sm:right-3 sm:top-3">
+          <span className="rounded-full border border-white/15 bg-slate-950/80 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white backdrop-blur-md sm:px-2.5 sm:text-[10px]">
+            {project.status.replace(/_/g, " ")}
+          </span>
+        </div>
+
+        <div className="absolute inset-x-2.5 bottom-2.5 z-10 flex items-end justify-between gap-2 pointer-events-none sm:inset-x-3 sm:bottom-3">
+          <div className="rounded-xl bg-slate-950/85 px-3 py-1.5 text-white shadow-lg backdrop-blur-md">
+            <p className="text-[8px] font-semibold uppercase tracking-wider text-slate-300">Starting from</p>
+            <p className="text-base font-black leading-tight sm:text-lg">{formatPrice(project.priceMin)}</p>
+          </div>
+          {hasCarousel && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/80 px-2 py-1 text-[9px] font-bold text-white backdrop-blur-md">
+              <Camera className="h-3 w-3" /> {activeImage + 1} of {safeImages.length}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Card Body */}
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
+        <p className="text-[9px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 sm:text-[10px]">
+          By {project.developerName}
+        </p>
+        <h3 className="mt-0.5 line-clamp-1 text-base font-black tracking-tight text-slate-950 transition-colors group-hover:text-rose-600 dark:text-white sm:text-lg">
+          {project.name}
+        </h3>
+        <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 sm:text-xs">
+          <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
+          <span className="truncate">
+            {project.locality ? `${project.locality}, ` : ""}
+            {typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "")}
+          </span>
+        </div>
+
+        {/* Specs Pill Strip */}
+        <div className="mt-2.5 grid grid-cols-2 gap-1.5 text-[10px] font-semibold text-slate-600 dark:text-slate-300 sm:text-[11px]">
+          {project.totalLandArea && (
+            <span className="inline-flex min-w-0 items-center gap-1 rounded-lg bg-slate-100 px-2 py-1.5 dark:bg-slate-800">
+              <Layers3 className="h-3 w-3" /> {project.totalLandArea}
+            </span>
+          )}
+          {project.totalTowers && (
+            <span className="inline-flex min-w-0 items-center gap-1 rounded-lg bg-slate-100 px-2 py-1.5 dark:bg-slate-800">
+              <Building2 className="h-3 w-3" /> {project.totalTowers} Towers
+            </span>
+          )}
+        </div>
+
+        {/* Configurations Chips */}
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          {project.configurations.slice(0, 3).map((cfg) => (
+            <span
+              key={cfg.id}
+              className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 sm:text-[11px]"
+            >
+              {cfg.bhkType}<span className="hidden sm:inline"> · {cfg.carpetArea} sq.ft</span>
+            </span>
+          ))}
+        </div>
+
+        {/* Price & Action CTA */}
+        <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-2.5 dark:border-slate-800 sm:mt-auto">
+          <div className="min-w-0">
+            <span className="flex items-center gap-1 text-[9px] font-semibold text-slate-500 sm:text-[10px]">
+              <CalendarDays className="h-3 w-3 text-slate-400" /> Possession {project.possessionDate}
+            </span>
+            {project.priceMax && project.priceMin && project.priceMax > project.priceMin ? (
+              <span className="mt-0.5 block truncate text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                Up to {formatPrice(project.priceMax)}
+              </span>
+            ) : null}
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {project.salesPhone && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onContactClick(project);
+                }}
+                className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-700 transition hover:bg-rose-100 hover:border-rose-300 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"
+              >
+                <PhoneCall className="h-3 w-3 text-rose-600" />
+                <span>View Contact</span>
+              </button>
+            )}
+            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition group-hover:bg-rose-600 group-hover:text-white dark:bg-rose-950/40 dark:text-rose-400">
+              <ArrowRight className="h-4 w-4" />
+            </span>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
 
 type NewProjectsClientProps = {
   initialCity?: string;
@@ -357,128 +555,12 @@ export function NewProjectsClient({
         ) : projects.length > 0 ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 xl:gap-4">
             {projects.map((project, idx) => (
-              <Link
+              <ProjectGridCard
                 key={project.id}
-                href={`/new-projects/${project.slug}`}
-                prefetch={false}
-                className="group flex w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:bg-slate-900 sm:rounded-3xl"
-              >
-                {/* Project Image */}
-                <div className="relative h-40 w-full overflow-hidden bg-slate-100 sm:h-44 xl:h-40 dark:bg-slate-800">
-                  <img
-                    src={normalizeR2Url(project.images[0] || CDN_ASSETS.placeholderWebp)}
-                    alt={project.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    fetchPriority={idx === 0 ? "high" : "auto"}
-                    loading={idx === 0 ? "eager" : "lazy"}
-                    decoding="async"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/15" />
-
-                  {/* Badges */}
-                  <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1.5 sm:left-3 sm:top-3">
-                    <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/95 px-2 py-1 text-[9px] font-black text-emerald-700 shadow-sm backdrop-blur-md sm:px-2.5 sm:text-[10px]">
-                      <ShieldCheck className="h-3 w-3 text-emerald-600 sm:h-3.5 sm:w-3.5" />
-                      <span>RERA Verified</span>
-                    </span>
-                  </div>
-
-                  <div className="absolute right-2.5 top-2.5 sm:right-3 sm:top-3">
-                    <span className="rounded-full border border-white/15 bg-slate-950/80 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white backdrop-blur-md sm:px-2.5 sm:text-[10px]">
-                      {project.status.replace(/_/g, " ")}
-                    </span>
-                  </div>
-
-                  <div className="absolute inset-x-2.5 bottom-2.5 flex items-end justify-between gap-2 sm:inset-x-3 sm:bottom-3">
-                    <div className="rounded-xl bg-slate-950/85 px-3 py-1.5 text-white shadow-lg backdrop-blur-md">
-                      <p className="text-[8px] font-semibold uppercase tracking-wider text-slate-300">Starting from</p>
-                      <p className="text-base font-black leading-tight sm:text-lg">{formatPrice(project.priceMin)}</p>
-                    </div>
-                    {project.images.length > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/75 px-2 py-1 text-[9px] font-bold text-white backdrop-blur-md">
-                        <Images className="h-3 w-3" /> {project.images.length} photo{project.images.length === 1 ? "" : "s"}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Card Body */}
-                <div className="flex flex-1 flex-col p-3 sm:p-4">
-                  <p className="text-[9px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 sm:text-[10px]">
-                    By {project.developerName}
-                  </p>
-                  <h3 className="mt-0.5 line-clamp-1 text-base font-black tracking-tight text-slate-950 transition-colors group-hover:text-rose-600 dark:text-white sm:text-lg">
-                    {project.name}
-                  </h3>
-                  <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 sm:text-xs">
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
-                    <span className="truncate">
-                      {project.locality ? `${project.locality}, ` : ""}
-                      {typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "")}
-                    </span>
-                  </div>
-
-                  {/* Specs Pill Strip */}
-                  <div className="mt-2.5 grid grid-cols-2 gap-1.5 text-[10px] font-semibold text-slate-600 dark:text-slate-300 sm:text-[11px]">
-                    {project.totalLandArea && (
-                      <span className="inline-flex min-w-0 items-center gap-1 rounded-lg bg-slate-100 px-2 py-1.5 dark:bg-slate-800">
-                        <Layers3 className="h-3 w-3" /> {project.totalLandArea}
-                      </span>
-                    )}
-                    {project.totalTowers && (
-                      <span className="inline-flex min-w-0 items-center gap-1 rounded-lg bg-slate-100 px-2 py-1.5 dark:bg-slate-800">
-                        <Building2 className="h-3 w-3" /> {project.totalTowers} Towers
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Configurations Chips */}
-                  <div className="mt-2.5 flex flex-wrap gap-1.5">
-                      {project.configurations.slice(0, 3).map((cfg) => (
-                        <span
-                          key={cfg.id}
-                          className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 sm:text-[11px]"
-                        >
-                          {cfg.bhkType}<span className="hidden sm:inline"> · {cfg.carpetArea} sq.ft</span>
-                        </span>
-                      ))}
-                  </div>
-
-                  {/* Price & Action CTA */}
-                  <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-2.5 dark:border-slate-800 sm:mt-auto">
-                    <div className="min-w-0">
-                      <span className="flex items-center gap-1 text-[9px] font-semibold text-slate-500 sm:text-[10px]">
-                        <CalendarDays className="h-3 w-3 text-slate-400" /> Possession {project.possessionDate}
-                      </span>
-                      {project.priceMax && project.priceMin && project.priceMax > project.priceMin ? (
-                        <span className="mt-0.5 block truncate text-[10px] font-bold text-slate-700 dark:text-slate-300">
-                          Up to {formatPrice(project.priceMax)}
-                        </span>
-                      ) : null}
-                    </div>
-
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {project.salesPhone && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setContactModalProject(project);
-                          }}
-                          className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-700 transition hover:bg-rose-100 hover:border-rose-300 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"
-                        >
-                          <PhoneCall className="h-3 w-3 text-rose-600" />
-                          <span>View Contact</span>
-                        </button>
-                      )}
-                      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition group-hover:bg-rose-600 group-hover:text-white dark:bg-rose-950/40 dark:text-rose-400">
-                        <ArrowRight className="h-4 w-4" />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+                project={project}
+                idx={idx}
+                onContactClick={(p) => setContactModalProject(p)}
+              />
             ))}
           </div>
         ) : (
