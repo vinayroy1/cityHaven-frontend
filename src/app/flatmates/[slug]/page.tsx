@@ -26,11 +26,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import dynamic from "next/dynamic";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
-import { FlatmateContactModal } from "@/components/flatmates/FlatmateContactModal";
 import { useGetFlatmateListingQuery } from "@/features/flatmates/api";
 import { BackButton } from "@/components/common/BackButton";
 import { FlatmateDetailSkeleton } from "@/components/flatmates/FlatmateDetailSkeleton";
+
+const FlatmateContactModal = dynamic(
+  () => import("@/components/flatmates/FlatmateContactModal").then((mod) => mod.FlatmateContactModal),
+  { ssr: false }
+);
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
@@ -518,11 +523,13 @@ export default function FlatmateDetailPage() {
         </Button>
       </div>
 
-      <FlatmateContactModal
-        listing={listing}
-        isOpen={isContactModalOpen}
-        onClose={() => setIsContactModalOpen(false)}
-      />
+      {isContactModalOpen && (
+        <FlatmateContactModal
+          listing={listing}
+          isOpen={isContactModalOpen}
+          onClose={() => setIsContactModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
