@@ -44,12 +44,21 @@ export function ResultCardMedia({
   const isHorizontalRef = React.useRef<boolean | null>(null);
   const hasDraggedRef = React.useRef(false);
 
+  const dragResetTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (dragResetTimerRef.current) clearTimeout(dragResetTimerRef.current);
+    };
+  }, []);
+
   React.useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
     const onTouchStart = (e: TouchEvent) => {
       if (!hasCarousel || photoCount <= 1) return;
+      if (dragResetTimerRef.current) clearTimeout(dragResetTimerRef.current);
       const touch = e.touches[0];
       touchStartRef.current = { x: touch.clientX, y: touch.clientY };
       hasDraggedRef.current = false;
@@ -110,6 +119,13 @@ export function ResultCardMedia({
           }
         }
       }
+
+      if (hasDraggedRef.current) {
+        if (dragResetTimerRef.current) clearTimeout(dragResetTimerRef.current);
+        dragResetTimerRef.current = setTimeout(() => {
+          hasDraggedRef.current = false;
+        }, 300);
+      }
     };
 
     const onTouchCancel = () => {
@@ -138,6 +154,7 @@ export function ResultCardMedia({
       e.preventDefault();
       e.stopPropagation();
       hasDraggedRef.current = false;
+      if (dragResetTimerRef.current) clearTimeout(dragResetTimerRef.current);
     }
   };
 

@@ -232,8 +232,56 @@ export function ResultCard({
     setActiveImage(index);
   };
 
+  const cardTouchStartRef = React.useRef<{ x: number; y: number } | null>(null);
+  const cardDraggedRef = React.useRef(false);
+  const cardDragResetTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (cardDragResetTimerRef.current) clearTimeout(cardDragResetTimerRef.current);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (isNavigating) {
+      const timer = setTimeout(() => setIsNavigating(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [isNavigating]);
+
+  const handleCardTouchStart = (e: React.TouchEvent<HTMLElement>) => {
+    if (cardDragResetTimerRef.current) clearTimeout(cardDragResetTimerRef.current);
+    const touch = e.touches[0];
+    cardTouchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    cardDraggedRef.current = false;
+  };
+
+  const handleCardTouchMove = (e: React.TouchEvent<HTMLElement>) => {
+    if (!cardTouchStartRef.current) return;
+    const touch = e.touches[0];
+    const diffX = Math.abs(touch.clientX - cardTouchStartRef.current.x);
+    const diffY = Math.abs(touch.clientY - cardTouchStartRef.current.y);
+    if (diffX > 8 || diffY > 8) {
+      cardDraggedRef.current = true;
+    }
+  };
+
+  const handleCardTouchEnd = () => {
+    cardTouchStartRef.current = null;
+    if (cardDraggedRef.current) {
+      if (cardDragResetTimerRef.current) clearTimeout(cardDragResetTimerRef.current);
+      cardDragResetTimerRef.current = setTimeout(() => {
+        cardDraggedRef.current = false;
+      }, 350);
+    }
+  };
+
   const openDetails = () => {
     if (isNavigating) return;
+    if (cardDraggedRef.current) {
+      cardDraggedRef.current = false;
+      return;
+    }
     setIsNavigating(true);
     router.push(detailsHref);
   };
@@ -241,6 +289,7 @@ export function ResultCard({
     if (event.target !== event.currentTarget) return;
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
+    cardDraggedRef.current = false;
     openDetails();
   };
 
@@ -482,6 +531,9 @@ export function ResultCard({
       tabIndex={0}
       onClick={openDetails}
       onKeyDown={handleCardKeyDown}
+      onTouchStart={handleCardTouchStart}
+      onTouchMove={handleCardTouchMove}
+      onTouchEnd={handleCardTouchEnd}
       aria-busy={isNavigating}
       className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-200 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 ${isNavigating ? "pointer-events-none scale-[0.995] opacity-80" : ""}`}
     >
