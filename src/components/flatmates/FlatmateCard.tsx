@@ -68,7 +68,7 @@ export function FlatmateCard({
         return {
           label: "Looking for Room",
           icon: Search,
-          className: "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800",
+          className: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800",
         };
       case "BUDDY_UP":
         return {
@@ -417,7 +417,7 @@ export function FlatmateCard({
             router.push(detailsHref);
           }
         }}
-        className={`group relative flex w-full cursor-pointer justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-slate-900 ${
+        className={`group relative flex w-full cursor-pointer justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 ${
           isForceVertical
             ? "flex-col h-full"
             : isForceHorizontal
@@ -426,7 +426,7 @@ export function FlatmateCard({
         } ${
           listing.isBoosted
             ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40"
-            : "border-slate-200/90 hover:border-indigo-300 dark:border-slate-800 dark:hover:border-indigo-900/60"
+            : "border-slate-200/90 hover:border-rose-300 dark:border-slate-800 dark:hover:border-rose-900/60"
         }`}
       >
         {/* ================================================================ */}
@@ -437,12 +437,12 @@ export function FlatmateCard({
             isForceVertical
               ? "w-full aspect-[16/10] block border-b"
               : isForceHorizontal
-              ? "w-[136px] xs:w-[146px] flex flex-col justify-between items-center p-2.5 border-r border-b-0"
-              : "w-[136px] xs:w-[146px] sm:w-full flex flex-col justify-between items-center p-2.5 sm:p-0 sm:block sm:aspect-[16/10] border-r sm:border-r-0 sm:border-b"
+              ? "w-[120px] xs:w-[130px] flex flex-col justify-between items-center p-2 border-r border-b-0"
+              : "w-[120px] xs:w-[130px] sm:w-full flex flex-col justify-between items-center p-2 sm:p-0 sm:block sm:aspect-[16/10] border-r sm:border-r-0 sm:border-b"
           } ${
             listing.mode === "BUDDY_UP"
-              ? "bg-gradient-to-br from-amber-700 via-rose-800 to-purple-900 dark:from-slate-950 dark:via-amber-950 dark:to-rose-950 border-amber-600/30"
-              : "bg-gradient-to-br from-indigo-800 via-purple-850 to-pink-800 dark:from-slate-950 dark:via-indigo-950 dark:to-purple-950 border-indigo-600/30"
+              ? "bg-gradient-to-br from-amber-800 via-rose-900 to-slate-950 dark:from-slate-950 dark:via-amber-950 dark:to-slate-950 border-amber-600/30"
+              : "bg-gradient-to-br from-rose-900 via-rose-950 to-slate-950 dark:from-slate-950 dark:via-rose-950 dark:to-slate-950 border-rose-700/30"
           }`}
         >
           {/* Subtle radial glow */}
@@ -511,16 +511,16 @@ export function FlatmateCard({
               isForceVertical
                 ? "absolute left-3 bottom-2.5"
                 : isForceHorizontal
-                ? "my-1"
-                : "my-1 sm:my-0 sm:absolute sm:left-3 sm:bottom-2.5"
+                ? "my-0.5"
+                : "my-0.5 sm:my-0 sm:absolute sm:left-3 sm:bottom-2.5"
             }`}
           >
             <div className="relative">
               <div
-                className={`h-13 w-13 xs:h-14 xs:w-14 sm:h-14 sm:w-14 rounded-2xl overflow-hidden ring-2 ring-white/90 dark:ring-slate-900 shadow-md flex items-center justify-center font-extrabold text-lg sm:text-xl text-white ${
+                className={`h-11 w-11 xs:h-12 xs:w-12 rounded-xl overflow-hidden ring-2 ring-white/90 dark:ring-slate-900 shadow-md flex items-center justify-center font-extrabold text-base sm:text-lg text-white ${
                   listing.mode === "BUDDY_UP"
                     ? "bg-gradient-to-tr from-amber-500 to-rose-500"
-                    : "bg-gradient-to-tr from-indigo-600 to-pink-500"
+                    : "bg-gradient-to-tr from-rose-500 to-amber-500"
                 }`}
               >
                 {avatarPhoto ? (
@@ -537,8 +537,8 @@ export function FlatmateCard({
                 )}
               </div>
               {listing.mode === "BUDDY_UP" && (
-                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 sm:h-4.5 sm:w-4.5 items-center justify-center rounded-full bg-amber-500 text-white shadow ring-2 ring-white dark:ring-slate-900">
-                  <Users className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
+                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-white shadow ring-2 ring-white dark:ring-slate-900">
+                  <Users className="h-2 w-2" />
                 </span>
               )}
             </div>
@@ -550,19 +550,19 @@ export function FlatmateCard({
               isForceVertical
                 ? "absolute bottom-2.5 right-2.5"
                 : isForceHorizontal
-                ? "w-full px-1"
-                : "w-full sm:w-auto sm:absolute sm:bottom-2.5 sm:right-2.5 px-1 sm:px-0"
+                ? "w-full px-0.5"
+                : "w-full sm:w-auto sm:absolute sm:bottom-2.5 sm:right-2.5 px-0.5 sm:px-0"
             }`}
           >
             <div
               className={`${
                 isForceVertical ? "w-auto" : isForceHorizontal ? "w-full" : "w-full sm:w-auto"
-              } rounded-lg sm:rounded-xl bg-slate-950/95 px-1.5 py-1 sm:px-3 sm:py-1.5 text-white shadow-md sm:shadow-lg backdrop-blur-md text-center sm:text-right border border-white/20`}
+              } rounded-lg bg-slate-950/95 px-1.5 py-0.5 sm:py-1 text-white shadow-md backdrop-blur-md text-center sm:text-right border border-white/20`}
             >
-              <span className="block text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-rose-300 leading-none mb-0.5">
+              <span className="block text-[8px] font-bold uppercase tracking-wider text-rose-300 leading-none mb-0.5">
                 {listing.mode === "BUDDY_UP" ? "Team Budget" : "Max Budget"}
               </span>
-              <span className="block text-[10px] xs:text-[11px] sm:text-base font-black text-white leading-tight tracking-tight whitespace-nowrap">
+              <span className="block text-[10px] xs:text-[11px] sm:text-xs font-black text-white leading-tight tracking-tight whitespace-nowrap">
                 {formattedRent()}
               </span>
             </div>
@@ -574,23 +574,23 @@ export function FlatmateCard({
         {/* ================================================================ */}
         <div
           className={`flex flex-1 min-w-0 flex-col justify-between ${
-            isForceVertical ? "p-3 sm:p-3.5 space-y-2" : "p-2.5 sm:p-3.5 space-y-1.5 sm:space-y-2"
+            isForceVertical ? "p-3 sm:p-3.5 space-y-2" : "p-2 sm:p-2.5 space-y-1"
           }`}
         >
-          <div className="space-y-1.5 sm:space-y-2">
+          <div className="space-y-1">
             {/* Header: Name, Age, Occupation, Verified & Match % */}
             <div className="flex items-center justify-between gap-1 min-w-0">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <h3 className="shrink-0 max-w-[150px] truncate text-sm sm:text-base font-bold text-slate-900 transition-colors group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
+              <div className="flex items-center gap-1 min-w-0">
+                <h3 className="shrink-0 max-w-[130px] sm:max-w-[150px] truncate text-xs sm:text-sm font-bold text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
                   {profile?.displayName || (listing.mode === "BUDDY_UP" ? "Buddy-Up Group" : "Room Seeker")}
                 </h3>
                 {age && (
-                  <span className="shrink-0 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  <span className="shrink-0 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                     · {age} yrs
                   </span>
                 )}
                 {profile?.occupation && (
-                  <span className="truncate max-w-[120px] text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                  <span className="truncate max-w-[100px] text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">
                     · {profile.occupation}
                   </span>
                 )}
@@ -606,21 +606,21 @@ export function FlatmateCard({
               {(!isForceVertical || isForceHorizontal) && (
                 <div className={`flex items-center gap-1 shrink-0 ${isForceHorizontal ? "flex" : "sm:hidden"}`}>
                   {listing.compatibilityScore != null && (
-                    <span className="rounded-full bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 text-[9px] font-extrabold text-emerald-700 dark:bg-slate-800 dark:border-emerald-800 dark:text-emerald-300">
-                      {listing.compatibilityScore}% match
+                    <span className="rounded-full bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 text-[9px] font-extrabold text-emerald-700 dark:bg-slate-800 dark:border-emerald-800 dark:text-emerald-300">
+                      {listing.compatibilityScore}%
                     </span>
                   )}
                 </div>
               )}
             </div>
 
-            {/* Preferred Areas / Location: Prominently displayed with line-clamp-2 (no ellipsis truncation) */}
-            <div className="flex items-start gap-1 text-[11px] sm:text-xs text-slate-600 dark:text-slate-300">
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-indigo-500 mt-0.5" />
-              <div className="min-w-0 flex-1 leading-snug">
+            {/* Preferred Areas / Location: Prominently displayed with line-clamp-2 */}
+            <div className="flex items-start gap-1 text-[11px] text-slate-600 dark:text-slate-300 leading-snug">
+              <MapPin className="h-3 w-3 shrink-0 text-rose-500 mt-0.5" />
+              <div className="min-w-0 flex-1">
                 {preferredAreas.length > 0 ? (
                   <p className="line-clamp-2">
-                    <strong className="font-bold text-indigo-600 dark:text-indigo-400">Preferred areas: </strong>
+                    <strong className="font-bold text-rose-600 dark:text-rose-400">Preferred areas: </strong>
                     <span className="font-semibold text-slate-900 dark:text-white">
                       {preferredAreas.join(" · ")}
                     </span>
@@ -642,8 +642,8 @@ export function FlatmateCard({
               </div>
             </div>
 
-            {/* Preferences Chips: Single-line horizontal scroll */}
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 text-[10px] sm:text-[11px] whitespace-nowrap">
+            {/* Compact Specifications & Key Badges: Combined single horizontal scroll row */}
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 text-[10px] whitespace-nowrap">
               {listing.bhk && (
                 <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                   {listing.bhk} BHK preferred
@@ -659,28 +659,6 @@ export function FlatmateCard({
                   {listing.furnishing}
                 </span>
               )}
-            </div>
-
-            {/* Bio Snippet / Statement */}
-            <div className="rounded-lg bg-slate-50/90 px-2 py-1 text-[10px] sm:text-[11px] text-slate-600 dark:bg-slate-800/60 dark:text-slate-300 overflow-hidden">
-              <p className="truncate italic">
-                {profile?.bio || listing.description
-                  ? `“${profile?.bio || listing.description}”`
-                  : [profile?.gender, profile?.occupation].filter(Boolean).join(" · ") || "Ready to move in"}
-              </p>
-            </div>
-
-            {/* Lifestyle Badges: Horizontal scroll */}
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar flex-nowrap py-0.5 whitespace-nowrap">
-              {listing.compatibilityReasons?.map((reason) => (
-                <Badge
-                  key={reason}
-                  variant="outline"
-                  className="shrink-0 border-emerald-200 bg-emerald-50/50 px-1.5 py-0 text-[9px] font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300"
-                >
-                  <Sparkles className="mr-0.5 h-2 w-2" /> {reason}
-                </Badge>
-              ))}
               {(listing.preferredGenders?.length ?? 0) > 0 && (
                 <Badge
                   variant="outline"
@@ -715,25 +693,43 @@ export function FlatmateCard({
                   <span>Non-smoker</span>
                 </Badge>
               )}
-              {listing.drinkingAllowed === false && (
-                <Badge
-                  variant="outline"
-                  className="shrink-0 border-slate-200 bg-slate-50 px-1.5 py-0 text-[9px] font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400"
-                >
-                  No drinking
-                </Badge>
-              )}
             </div>
+
+            {/* In vertical mode, retain bio snippet and compatibility badges */}
+            {isVertical && (
+              <>
+                <div className="rounded-lg bg-slate-50/90 px-2 py-1 text-[10px] text-slate-600 dark:bg-slate-800/60 dark:text-slate-300 overflow-hidden">
+                  <p className="truncate italic">
+                    {profile?.bio || listing.description
+                      ? `“${profile?.bio || listing.description}”`
+                      : [profile?.gender, profile?.occupation].filter(Boolean).join(" · ") || "Ready to move in"}
+                  </p>
+                </div>
+                {listing.compatibilityReasons && listing.compatibilityReasons.length > 0 && (
+                  <div className="flex items-center gap-1 overflow-x-auto no-scrollbar flex-nowrap py-0.5 whitespace-nowrap">
+                    {listing.compatibilityReasons.map((reason) => (
+                      <Badge
+                        key={reason}
+                        variant="outline"
+                        className="shrink-0 border-emerald-200 bg-emerald-50/50 px-1.5 py-0 text-[9px] font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300"
+                      >
+                        <Sparkles className="mr-0.5 h-2 w-2" /> {reason}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
-          {/* Unified Footer */}
+          {/* Unified Compact Footer */}
           <div
             className={`flex ${
-              isVertical ? "h-11 sm:h-12 mt-auto" : "h-9 sm:h-12 sm:mt-auto"
-            } items-center justify-between pt-1 sm:pt-0 border-t border-slate-100 dark:border-slate-800/80`}
+              isVertical ? "h-11 sm:h-12 mt-auto" : "h-7 sm:h-8 mt-auto"
+            } items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/80`}
           >
-            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate min-w-0 pr-1">
-              <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-400 shrink-0" />
+            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 truncate min-w-0 pr-1">
+              <Calendar className="h-3 w-3 text-slate-400 shrink-0" />
               <span className="truncate font-medium">
                 {listing.availableFrom
                   ? `Move-in: ${new Date(listing.availableFrom).toLocaleDateString("en-IN", {
@@ -751,10 +747,10 @@ export function FlatmateCard({
                 event.stopPropagation();
                 setIsContactModalOpen(true);
               }}
-              className={`h-7 rounded-full text-white font-semibold text-[10px] sm:text-[11px] px-2.5 sm:px-3 shadow-xs shrink-0 transition-transform active:scale-95 ${
+              className={`h-6.5 sm:h-7 rounded-full text-white font-semibold text-[10px] sm:text-[11px] px-2.5 sm:px-3 shadow-xs shrink-0 transition-transform active:scale-95 ${
                 listing.mode === "BUDDY_UP"
                   ? "bg-amber-600 hover:bg-amber-700"
-                  : "bg-indigo-600 hover:bg-indigo-700"
+                  : "bg-rose-600 hover:bg-rose-700"
               }`}
             >
               <HeartHandshake className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />

@@ -850,8 +850,8 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
     <section className="mt-6 sm:mt-10">
       <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-            <Users className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+            <Users className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
             <span>Room Seekers & Co-Living</span>
           </div>
           <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
@@ -863,7 +863,7 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
         <Link
           href="/flatmates?mode=NEED_ROOM"
           prefetch={false}
-          className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 shrink-0"
+          className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 shrink-0"
         >
           View all <ArrowRight className="h-4 w-4" />
         </Link>
@@ -872,7 +872,7 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
       {isLoading ? (
         <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-1.5rem)/2)]">
+            <div key={i} className="w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] sm:max-w-none lg:w-[calc((100%-1.5rem)/3)]">
               <PropertyCardSkeleton />
             </div>
           ))}
@@ -882,7 +882,7 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
           {listings.slice(0, 8).map((item) => (
             <div
               key={item.id}
-              className="flex h-full w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-1.5rem)/2)]"
+              className="flex h-full w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] sm:max-w-none lg:w-[calc((100%-1.5rem)/3)]"
             >
               <FlatmateCard listing={item} layout="horizontal" />
             </div>
