@@ -132,7 +132,7 @@ export function WelcomeCreditModal() {
         role="dialog"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
-        className="cursor-default relative z-10 w-full max-w-lg my-auto max-h-[calc(100dvh-1.5rem)] flex flex-col rounded-2xl sm:rounded-3xl border border-amber-500/40 bg-slate-950 p-0 text-white shadow-[0_0_60px_rgba(245,158,11,0.25)] overflow-hidden animate-in zoom-in-95 duration-200"
+        className="cursor-default relative z-10 w-full max-w-lg my-auto max-h-[calc(100dvh-5rem)] flex flex-col rounded-2xl sm:rounded-3xl border border-amber-500/40 bg-slate-950 p-0 text-white shadow-[0_0_60px_rgba(245,158,11,0.25)] overflow-hidden animate-in zoom-in-95 duration-200"
       >
         {/* Glow Gradients */}
         <div className="absolute -top-24 -left-20 h-48 w-48 rounded-full bg-rose-600/30 blur-3xl pointer-events-none" />

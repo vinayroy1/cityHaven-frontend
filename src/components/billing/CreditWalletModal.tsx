@@ -148,7 +148,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-[9999] flex min-h-[100dvh] items-center justify-center p-2.5 sm:p-4 overflow-y-auto cursor-pointer"
+      className="fixed inset-0 z-[9999] flex min-h-[100dvh] items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto cursor-pointer"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -175,7 +175,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
         aria-labelledby="credit-wallet-title"
         onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
-        className="cursor-default relative z-10 w-full max-w-xl my-auto max-h-[calc(100dvh-1.5rem)] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white shadow-2xl overflow-hidden dark:border-slate-800 dark:bg-slate-950 animate-in zoom-in-95 duration-200"
+        className="cursor-default relative z-10 w-full max-w-xl my-auto max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white shadow-2xl overflow-hidden dark:border-slate-800 dark:bg-slate-950 animate-in zoom-in-95 duration-200"
       >
         {/* Top Header Banner with Gradient */}
         <div className="relative overflow-hidden bg-gradient-to-br from-rose-600 via-pink-600 to-amber-600 px-4 sm:px-6 py-3.5 sm:py-5 text-white shrink-0">
