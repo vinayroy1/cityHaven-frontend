@@ -11,23 +11,39 @@ import {
   SlidersHorizontal,
   ChevronRight,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FlatmateCard } from "@/components/flatmates/FlatmateCard";
 import { FlatmateGridSkeleton } from "@/components/flatmates/FlatmateCardSkeleton";
 import { canonicalizeCity, CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
-import { FilterRail, FilterSheet } from "@/components/search/FilterSheet";
+import { FilterRail } from "@/components/search/FilterSheet";
 import { countActiveFilters, initialSearchState, type SearchState } from "@/components/search/searchQuery";
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
-import type { FlatmateListingMode } from "@/types/flatmate.types";
+import type { FlatmateListing, FlatmateListingMode } from "@/types/flatmate.types";
 import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
 
-type FlatmatesDiscoveryPageProps = { initialCity?: string; initialLocality?: string };
+const FilterSheet = dynamic(
+  () => import("@/components/search/FilterSheet").then((mod) => mod.FilterSheet),
+  { ssr: false }
+);
+
+type FlatmatesDiscoveryPageProps = {
+  initialCity?: string;
+  initialLocality?: string;
+  initialItems?: FlatmateListing[];
+  initialTotal?: number;
+};
 
 const locationSlug = (value: string) => value.trim().toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const SINGLE_SELECT_FLATMATE_FILTERS = new Set(["flatmateMode", "roomType", "gender", "diet", "bhkTypes", "furnishing"]);
 
-export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocality = "" }: FlatmatesDiscoveryPageProps) {
+export default function FlatmatesDiscoveryPage({
+  initialCity = "",
+  initialLocality = "",
+  initialItems = [],
+  initialTotal = 0,
+}: FlatmatesDiscoveryPageProps) {
   const router = useRouter();
   const [city, setCity] = useState(initialCity);
   const [localities, setLocalities] = useState<string[]>(initialLocality ? [initialLocality] : []);
@@ -105,8 +121,10 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
     if (cityDraft && typeof window !== "undefined") window.localStorage.setItem("awasio.home.city", cityDraft);
   };
 
-  const listings = data?.items || [];
-  const total = data?.total || 0;
+  const hasInitialData = initialItems.length > 0;
+  const listings = data?.items ?? (hasInitialData ? initialItems : []);
+  const total = data?.total ?? (hasInitialData ? initialTotal : 0);
+  const showSkeleton = (isLoading || isFetching) && listings.length === 0;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
@@ -228,15 +246,17 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
             </div>
           </div>
 
-          <FilterSheet
-            open={filtersOpen}
-            onClose={() => setFiltersOpen(false)}
-            state={filterState}
-            singleSelectKeys={SINGLE_SELECT_FLATMATE_FILTERS}
-            onApply={(next) => {
-              setFilterState(next);
-            }}
-          />
+          {filtersOpen && (
+            <FilterSheet
+              open={filtersOpen}
+              onClose={() => setFiltersOpen(false)}
+              state={filterState}
+              singleSelectKeys={SINGLE_SELECT_FLATMATE_FILTERS}
+              onApply={(next) => {
+                setFilterState(next);
+              }}
+            />
+          )}
 
           <div className="flex items-start gap-6">
             <div className="min-w-0 flex-1">
@@ -257,12 +277,12 @@ export default function FlatmatesDiscoveryPage({ initialCity = "", initialLocali
 
 
           {/* Cards Grid */}
-          {isLoading || isFetching ? (
+          {showSkeleton ? (
             <FlatmateGridSkeleton count={6} />
           ) : listings.length > 0 ? (
             <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 sm:gap-4.5">
-              {listings.map((item) => (
-                <FlatmateCard key={item.id} listing={item} />
+              {listings.map((item, idx) => (
+                <FlatmateCard key={item.id} listing={item} priority={idx === 0} />
               ))}
             </div>
           ) : (

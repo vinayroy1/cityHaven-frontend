@@ -15,13 +15,19 @@ import {
   Utensils,
   BedDouble,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FlatmateContactModal } from "./FlatmateContactModal";
 import type { FlatmateListing } from "@/types/flatmate.types";
+
+const FlatmateContactModal = dynamic(
+  () => import("./FlatmateContactModal").then((mod) => mod.FlatmateContactModal),
+  { ssr: false }
+);
 
 interface FlatmateCardProps {
   listing: FlatmateListing;
+  priority?: boolean;
 }
 
 const normalizeR2Url = (url?: string | null): string => {
@@ -29,7 +35,7 @@ const normalizeR2Url = (url?: string | null): string => {
   return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
 };
 
-export function FlatmateCard({ listing }: FlatmateCardProps) {
+export function FlatmateCard({ listing, priority = false }: FlatmateCardProps) {
   const router = useRouter();
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const detailsHref = `/flatmates/${listing.slug}`;
@@ -110,7 +116,8 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
                   src={roomPhoto}
                   alt={listing.title}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
+                  loading={priority ? "eager" : "lazy"}
+                  fetchPriority={priority ? "high" : "auto"}
                   decoding="async"
                 />
               ) : (
@@ -216,7 +223,8 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
                       <img
                         src={avatarPhoto}
                         alt={profile?.displayName || listing.title}
-                        loading="lazy"
+                        loading={priority ? "eager" : "lazy"}
+                        fetchPriority={priority ? "high" : "auto"}
                         decoding="async"
                         className="h-full w-full object-cover"
                       />
@@ -545,11 +553,13 @@ export function FlatmateCard({ listing }: FlatmateCardProps) {
         </div>
       </article>
 
-      <FlatmateContactModal
-        listing={listing}
-        isOpen={isContactModalOpen}
-        onClose={() => setIsContactModalOpen(false)}
-      />
+      {isContactModalOpen && (
+        <FlatmateContactModal
+          listing={listing}
+          isOpen={isContactModalOpen}
+          onClose={() => setIsContactModalOpen(false)}
+        />
+      )}
     </>
   );
 }
