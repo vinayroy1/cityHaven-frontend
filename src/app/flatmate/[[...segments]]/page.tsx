@@ -98,12 +98,13 @@ export default async function FlatmateSearchPage({ params }: Props) {
   const locality = segments[1] ? fromSearchSlug(segments[1]) : "";
 
   const initialData = await getInitialFlatmates(city || undefined, locality || undefined);
-  const firstItem = initialData.items[0];
-  const lcpRaw =
-    firstItem?.mode === "HAVE_ROOM"
-      ? firstItem?.photos?.[0]
-      : firstItem?.profile?.profilePhoto || firstItem?.photos?.[0];
-  const lcpImage = lcpRaw ? normalizeR2Url(lcpRaw) : null;
+  const getCardImage = (item?: FlatmateListing) => {
+    if (!item) return null;
+    const raw = item.mode === "HAVE_ROOM" ? item.photos?.[0] : item.profile?.profilePhoto || item.photos?.[0];
+    return raw ? normalizeR2Url(raw) : null;
+  };
+  const lcpImage1 = getCardImage(initialData.items[0]);
+  const lcpImage2 = getCardImage(initialData.items[1]);
 
   const breadcrumbElements: Array<{ "@type": string; position: number; name: string; item: string }> = [
     { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
@@ -134,8 +135,11 @@ export default async function FlatmateSearchPage({ params }: Props) {
 
   return (
     <>
-      {lcpImage && (
-        <link rel="preload" as="image" href={lcpImage} fetchPriority="high" />
+      {lcpImage1 && (
+        <link rel="preload" as="image" href={lcpImage1} fetchPriority="high" />
+      )}
+      {lcpImage2 && (
+        <link rel="preload" as="image" href={lcpImage2} fetchPriority="high" />
       )}
       <script
         type="application/ld+json"
