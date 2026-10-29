@@ -39,61 +39,105 @@ export function ResultCardMedia({
 }: ResultCardMediaProps) {
   const [loaded, setLoaded] = React.useState(!deferImage);
 
-  // Touch swipe tracking
-  const touchStartRef = React.useRef<{ x: number; y: number; time: number } | null>(null);
-  const swipedRef = React.useRef(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const touchStartRef = React.useRef<{ x: number; y: number } | null>(null);
+  const isHorizontalRef = React.useRef<boolean | null>(null);
+  const hasDraggedRef = React.useRef(false);
 
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!hasCarousel || photoCount <= 1) return;
-    const touch = e.touches[0];
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
-    swipedRef.current = false;
-  };
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
 
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!touchStartRef.current || !hasCarousel || photoCount <= 1) return;
-    const touch = e.touches[0];
-    const diffX = touch.clientX - touchStartRef.current.x;
-    const diffY = touch.clientY - touchStartRef.current.y;
+    const onTouchStart = (e: TouchEvent) => {
+      if (!hasCarousel || photoCount <= 1) return;
+      const touch = e.touches[0];
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+      hasDraggedRef.current = false;
+      isHorizontalRef.current = null;
+    };
 
-    if (Math.abs(diffX) > 20 && Math.abs(diffX) > Math.abs(diffY) * 1.2) {
-      swipedRef.current = true;
-    }
-  };
+    const onTouchMove = (e: TouchEvent) => {
+      if (!touchStartRef.current || !hasCarousel || photoCount <= 1) return;
+      const touch = e.touches[0];
+      const diffX = touch.clientX - touchStartRef.current.x;
+      const diffY = touch.clientY - touchStartRef.current.y;
 
-  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!touchStartRef.current || !hasCarousel || photoCount <= 1) {
-      touchStartRef.current = null;
-      return;
-    }
-
-    const touch = e.changedTouches[0];
-    const diffX = touch.clientX - touchStartRef.current.x;
-    const diffY = touch.clientY - touchStartRef.current.y;
-    const elapsed = Date.now() - touchStartRef.current.time;
-    touchStartRef.current = null;
-
-    const isHorizontalSwipe = Math.abs(diffX) > 30 && Math.abs(diffX) > Math.abs(diffY);
-    const isQuickFlick = elapsed < 350 && Math.abs(diffX) > 20 && Math.abs(diffX) > Math.abs(diffY);
-
-    if (isHorizontalSwipe || isQuickFlick) {
-      swipedRef.current = true;
-      e.stopPropagation();
-      if (diffX < 0) {
-        // Swiped left -> next photo
-        onMoveImage(e, 1);
-      } else {
-        // Swiped right -> previous photo
-        onMoveImage(e, -1);
+      // Determine gesture direction on initial movement (> 5px)
+      if (isHorizontalRef.current === null) {
+        if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
+          isHorizontalRef.current = Math.abs(diffX) >= Math.abs(diffY);
+        }
       }
-    }
-  };
+
+      // If horizontal gesture on the image:
+      // Prevent parent card row from scrolling horizontally!
+      if (isHorizontalRef.current === true) {
+        if (e.cancelable) {
+          e.preventDefault();
+        }
+        e.stopPropagation();
+        hasDraggedRef.current = true;
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!touchStartRef.current || !hasCarousel || photoCount <= 1) {
+        touchStartRef.current = null;
+        isHorizontalRef.current = null;
+        return;
+      }
+
+      const touch = e.changedTouches[0];
+      const diffX = touch.clientX - touchStartRef.current.x;
+      const isHorizontal = isHorizontalRef.current === true;
+
+      touchStartRef.current = null;
+      isHorizontalRef.current = null;
+
+      if (isHorizontal) {
+        if (e.cancelable) {
+          e.preventDefault();
+        }
+        e.stopPropagation();
+
+        // Dragged horizontally > 20px -> switch photo
+        if (Math.abs(diffX) > 20) {
+          hasDraggedRef.current = true;
+          if (diffX < 0) {
+            onMoveImage(e as unknown as React.SyntheticEvent, 1);
+          } else {
+            onMoveImage(e as unknown as React.SyntheticEvent, -1);
+          }
+        }
+      }
+    };
+
+    const onTouchCancel = () => {
+      touchStartRef.current = null;
+      isHorizontalRef.current = null;
+    };
+
+    // Non-passive listener is required so e.preventDefault() can block parent horizontal card scroll
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: false });
+    el.addEventListener("touchcancel", onTouchCancel, { passive: true });
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchCancel);
+    };
+  }, [hasCarousel, photoCount, onMoveImage]);
 
   const handleClickCapture = (e: React.MouseEvent) => {
-    if (swipedRef.current) {
+    // If the user dragged horizontally to swipe the image, kill the click event
+    // so it NEVER triggers card navigation to details page.
+    if (hasDraggedRef.current) {
       e.preventDefault();
       e.stopPropagation();
-      swipedRef.current = false;
+      hasDraggedRef.current = false;
     }
   };
 
@@ -114,9 +158,7 @@ export function ResultCardMedia({
 
   return (
     <div
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
+      ref={containerRef}
       onClickCapture={handleClickCapture}
       className={`relative block overflow-hidden touch-pan-y select-none bg-gradient-to-br from-slate-100 via-zinc-100 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 ${compact ? "aspect-[16/7] sm:aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}
     >
