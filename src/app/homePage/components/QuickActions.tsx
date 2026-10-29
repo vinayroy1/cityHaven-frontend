@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 const actions = [
   { icon: <Home className="h-5 w-5 text-red-500" />, title: "Buy / Rent", description: "Browse flats, villas, plots, and commercial spaces.", href: "/propertySearch" },
-  { icon: <Megaphone className="h-5 w-5 text-amber-500" />, title: "List Property Free", description: "Post your property and reach verified buyers.", href: "/propertyListing", type: "list" as const },
+  { icon: <Megaphone className="h-5 w-5 text-amber-500" />, title: "List Property", description: "Post your property and reach verified buyers.", href: "/propertyListing", type: "list" as const },
   { icon: <Banknote className="h-5 w-5 text-emerald-500" />, title: "Home Loans", description: "Compare offers and get instant eligibility checks.", href: "/home-loans" },
   { icon: <ShieldCheck className="h-5 w-5 text-sky-500" />, title: "Price Trends", description: "Check city-wise rates and transaction insights.", href: "/price-trends" },
   { icon: <Building2 className="h-5 w-5 text-indigo-500" />, title: "New Projects", description: "Discover RERA approved projects and builders.", href: "/new-projects" },

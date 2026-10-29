@@ -115,8 +115,83 @@ export function ResultCardSummary({
     ?.replace(/^(?:carpet|built[ -]?up|super built[ -]?up)\s*(?:area)?\s*[:\-]?\s*/i, "")
     .trim();
 
+  if (compact) {
+    return (
+      <div className="relative z-0 flex flex-1 flex-col p-3">
+        {/* Category & Poster Indicator */}
+        <p className="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 truncate">
+          {type || (listingType?.toUpperCase() === "RENT" ? "For Rent" : listingType?.toUpperCase() === "PG" ? "PG / Co-Living" : "For Sale")}
+          {owner ? ` • By ${owner}` : ""}
+        </p>
+
+        {/* Title */}
+        <h3
+          title={title}
+          className="line-clamp-1 text-sm font-bold text-slate-950 group-hover:text-rose-600 transition dark:text-white mt-0.5"
+        >
+          {displayTitle}
+        </h3>
+
+        {/* Location with MapPin */}
+        {subtitle && (
+          <p className="mt-1 flex min-w-0 items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 truncate">
+            <MapPin className="h-3 w-3 shrink-0 text-rose-500" />
+            <span className="truncate">{subtitle}</span>
+          </p>
+        )}
+
+        {/* Specifications chips: Single-line horizontal scroll, never wrap */}
+        <div className="mt-2 flex items-center gap-1 overflow-x-auto no-scrollbar whitespace-nowrap py-0.5">
+          {!isPg && bedrooms != null && bedrooms > 0 && (
+            <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              {bedrooms} BHK
+            </span>
+          )}
+          {bathrooms != null && bathrooms > 0 && (
+            <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              {bathrooms} Bath
+            </span>
+          )}
+          {compactArea && (
+            <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              {compactArea}
+            </span>
+          )}
+        </div>
+
+        {/* Action Buttons: Visit & Contact (Anchored to bottom across all cards) */}
+        <div className="mt-auto pt-2.5 flex items-center gap-1.5 border-t border-slate-100 dark:border-slate-800/80">
+          {onScheduleClick && (
+            <button
+              type="button"
+              title="Schedule a Site Visit"
+              className="relative z-20 flex-1 inline-flex items-center justify-center gap-1 h-7.5 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 shadow-xs transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-700 dark:bg-slate-850 dark:text-slate-200"
+              onClick={onScheduleClick}
+            >
+              <Calendar className="h-3 w-3 text-rose-600 dark:text-rose-400" />
+              <span>Visit</span>
+            </button>
+          )}
+          <button
+            type="button"
+            disabled={isContactChecking}
+            className="relative z-20 flex-1 inline-flex items-center justify-center gap-1 h-7.5 rounded-lg bg-rose-600 px-2 text-[11px] font-semibold text-white shadow-xs shadow-rose-200 transition hover:bg-rose-700 disabled:opacity-75 dark:shadow-none"
+            onClick={onContactClick}
+          >
+            {isContactChecking ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              <PhoneCall className="h-3 w-3" />
+            )}
+            <span>{isContactChecking ? "Checking..." : "Contact"}</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`relative z-0 flex flex-1 flex-col ${compact ? "gap-1.5 p-2.5 sm:gap-2 sm:p-3" : "gap-2.5 p-3 sm:gap-3 sm:p-4"}`}>
+    <div className="relative z-0 flex flex-1 flex-col gap-2.5 p-3 sm:gap-3 sm:p-4">
       <div className="flex flex-wrap gap-1.5">
         {contextBadge && <span className="rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-950 dark:text-rose-300">{contextBadge}</span>}
         {posterBadge && <span className="rounded-md bg-sky-50 px-2 py-0.5 text-xs font-bold text-sky-700 dark:bg-sky-950 dark:text-sky-300">{posterBadge}</span>}
@@ -124,53 +199,19 @@ export function ResultCardSummary({
       </div>
 
       <div>
-        <h2 title={title} className={`line-clamp-1 font-bold leading-snug text-zinc-950 group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 ${compact ? "text-sm sm:text-[15px]" : "text-[15px] sm:line-clamp-2 sm:text-base"}`}>
+        <h2 title={title} className="text-[15px] font-bold leading-snug text-zinc-950 group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 sm:line-clamp-2 sm:text-base">
           {displayTitle}
         </h2>
         {subtitle && (
-          <p className={`flex min-w-0 items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-slate-400 ${compact ? "mt-0.5 sm:mt-1" : "mt-1 sm:text-sm"}`}>
+          <p className="mt-1 flex min-w-0 items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-slate-400 sm:text-sm">
             <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
             <span className="truncate">{subtitle}</span>
           </p>
         )}
       </div>
 
-      <p className={`font-black tracking-tight text-zinc-950 dark:text-white ${compact ? "text-base sm:text-lg" : "text-lg sm:text-xl"}`}>{price}</p>
+      <p className="text-lg font-black tracking-tight text-zinc-950 dark:text-white sm:text-xl">{price}</p>
 
-      {compact && decisionDetails?.length ? (
-        <div className="flex min-w-0 items-center overflow-hidden rounded-md bg-zinc-50 px-2 py-1 text-[11px] font-semibold text-zinc-700 dark:bg-slate-800/80 dark:text-slate-300 sm:py-1.5">
-          {decisionDetails.slice(0, 3).map((detail, index) => (
-            <span
-              key={`${detail}-${index}`}
-              className={`min-w-0 truncate whitespace-nowrap ${index > 0 ? "ml-2 border-l border-zinc-200 pl-2 dark:border-slate-700" : ""}`}
-              title={detail}
-            >
-              {detail}
-            </span>
-          ))}
-        </div>
-      ) : compact ? (
-        <div className="flex min-w-0 items-center gap-2 overflow-hidden rounded-md bg-zinc-50 px-2 py-1 text-[11px] font-semibold text-zinc-700 dark:bg-slate-800/80 dark:text-slate-300 sm:py-1.5">
-          {!isPg && bedrooms != null && bedrooms > 0 && (
-            <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap">
-              <BedDouble className="h-3.5 w-3.5 text-zinc-400" />
-              {bedrooms} BHK
-            </span>
-          )}
-          {bathrooms != null && bathrooms > 0 && (
-            <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap border-l border-zinc-200 pl-2 dark:border-slate-700">
-              <Bath className="h-3.5 w-3.5 text-zinc-400" />
-              {bathrooms} Bath
-            </span>
-          )}
-          {compactArea && (
-            <span className="inline-flex min-w-0 items-center gap-1 whitespace-nowrap border-l border-zinc-200 pl-2 dark:border-slate-700">
-              <Ruler className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
-              <span className="truncate">{compactArea}</span>
-            </span>
-          )}
-        </div>
-      ) : (
       <div className="grid grid-cols-2 gap-1.5 text-xs font-medium text-zinc-700 dark:text-slate-300 sm:gap-2">
         {!isPg && bedrooms != null && bedrooms > 0 && (
           <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">
@@ -188,17 +229,16 @@ export function ResultCardSummary({
           <Ruler className="h-3.5 w-3.5 text-zinc-400" />
           <span className="truncate">{area}</span>
         </span>
-        {!compact && <span className="truncate rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">{owner}</span>}
+        <span className="truncate rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">{owner}</span>
       </div>
-      )}
 
-      <div className={`mt-auto flex items-center justify-end gap-2 border-t border-zinc-100 dark:border-slate-800 ${compact ? "pt-1.5 sm:pt-2" : "pt-2.5 sm:gap-2.5 sm:pt-3"}`}>
+      <div className="mt-auto flex items-center justify-end gap-2 border-t border-zinc-100 pt-2.5 dark:border-slate-800 sm:gap-2.5 sm:pt-3">
         <div className="grid w-full grid-cols-2 gap-1.5 sm:flex sm:w-auto sm:items-center">
           {onScheduleClick && (
             <button
               type="button"
               title="Schedule a Site Visit"
-              className={`relative z-20 inline-flex shrink-0 items-center justify-center gap-1 rounded-md border border-zinc-200 bg-white px-2 text-xs font-semibold text-zinc-700 shadow-sm transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-rose-900/60 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 sm:px-2.5 ${compact ? "min-h-8 py-1" : "min-h-9 py-1.5"}`}
+              className="relative z-20 inline-flex shrink-0 items-center justify-center gap-1 min-h-9 py-1.5 rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-semibold text-zinc-700 shadow-sm transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-200"
               onClick={onScheduleClick}
             >
               <Calendar className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
@@ -208,7 +248,7 @@ export function ResultCardSummary({
           <button
             type="button"
             disabled={isContactChecking}
-            className={`relative z-20 inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md bg-rose-600 px-2 text-xs font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:opacity-75 sm:px-3 ${compact ? "min-h-8 py-1" : "min-h-9 py-1.5"}`}
+            className="relative z-20 inline-flex shrink-0 items-center justify-center gap-1.5 min-h-9 py-1.5 rounded-md bg-rose-600 px-3 text-xs font-semibold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 disabled:opacity-75 dark:shadow-none"
             onClick={onContactClick}
           >
             {isContactChecking ? (

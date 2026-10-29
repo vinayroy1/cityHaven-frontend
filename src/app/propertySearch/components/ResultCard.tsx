@@ -566,6 +566,8 @@ export function ResultCard({
         compact={compact}
         priority={priority}
         deferImage={deferImage}
+        price={price}
+        listingType={listingType}
       />
       <SavePropertyButton propertyId={id} />
       <ResultCardSummary

@@ -10,6 +10,8 @@ import {
   Loader2,
   SlidersHorizontal,
   ChevronRight,
+  Home,
+  UserPlus,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
@@ -38,6 +40,16 @@ type FlatmatesDiscoveryPageProps = {
 const locationSlug = (value: string) => value.trim().toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const SINGLE_SELECT_FLATMATE_FILTERS = new Set(["flatmateMode", "roomType", "gender", "diet", "bhkTypes", "furnishing"]);
 
+const FLATMATE_MODE_TABS: Array<{
+  label: string;
+  mode: FlatmateListingMode;
+  icon: React.ComponentType<{ className?: string }>;
+}> = [
+  { label: "Room Available", mode: "HAVE_ROOM", icon: Home },
+  { label: "Room Seeker", mode: "NEED_ROOM", icon: Search },
+  { label: "Buddy Up", mode: "BUDDY_UP", icon: UserPlus },
+];
+
 export default function FlatmatesDiscoveryPage({
   initialCity = "",
   initialLocality = "",
@@ -50,12 +62,35 @@ export default function FlatmatesDiscoveryPage({
   const [cityDraft, setCityDraft] = useState(initialCity);
   const [localityDrafts, setLocalityDrafts] = useState<string[]>(initialLocality ? [initialLocality] : []);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [filterState, setFilterState] = useState<SearchState>(() => ({ ...initialSearchState(""), intent: "FLATMATE" }));
-  const [appliedFilterState, setAppliedFilterState] = useState<SearchState>(() => ({ ...initialSearchState(""), intent: "FLATMATE" }));
+  const [filterState, setFilterState] = useState<SearchState>(() => {
+    const s = initialSearchState("");
+    s.intent = "FLATMATE";
+    s.refine.flatmateMode = ["HAVE_ROOM"];
+    return s;
+  });
+  const [appliedFilterState, setAppliedFilterState] = useState<SearchState>(() => {
+    const s = initialSearchState("");
+    s.intent = "FLATMATE";
+    s.refine.flatmateMode = ["HAVE_ROOM"];
+    return s;
+  });
   const [page, setPage] = useState(1);
 
   const refine = appliedFilterState.refine;
-  const mode = refine.flatmateMode?.[0] as FlatmateListingMode | undefined;
+  const mode = (refine.flatmateMode?.[0] as FlatmateListingMode | undefined) || "HAVE_ROOM";
+
+  const handleSelectMode = (selectedMode: FlatmateListingMode) => {
+    const nextFilters: SearchState = {
+      ...filterState,
+      refine: {
+        ...filterState.refine,
+        flatmateMode: [selectedMode],
+      },
+    };
+    setFilterState(nextFilters);
+    setAppliedFilterState(nextFilters);
+    setPage(1);
+  };
   const gender = refine.gender?.[0]?.replace(" Only", "");
   const preferredDiet = refine.diet?.[0] === "Any Diet" ? undefined : refine.diet?.[0];
   const lifestyle = refine.lifestyle || [];
@@ -122,8 +157,9 @@ export default function FlatmatesDiscoveryPage({
   };
 
   const hasInitialData = initialItems.length > 0;
-  const listings = data?.items ?? (hasInitialData ? initialItems : []);
-  const total = data?.total ?? (hasInitialData ? initialTotal : 0);
+  const filteredInitialItems = initialItems.filter((item) => item.mode === mode);
+  const listings = data?.items ?? (hasInitialData ? (filteredInitialItems.length > 0 ? filteredInitialItems : initialItems) : []);
+  const total = data?.total ?? (hasInitialData ? (filteredInitialItems.length > 0 ? filteredInitialItems.length : initialTotal) : 0);
   const showSkeleton = (isLoading || isFetching) && listings.length === 0;
 
   return (
@@ -166,7 +202,34 @@ export default function FlatmatesDiscoveryPage({
 
         {/* Filters and Controls */}
         <section className="mx-auto w-full max-w-7xl px-3 py-2 sm:px-6 sm:py-5 lg:px-8">
-          <div className="flex flex-col gap-2 rounded-2xl border border-slate-200/90 bg-white p-2.5 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:gap-4 sm:rounded-3xl sm:p-5">
+          <div className="flex flex-col gap-2.5 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:gap-4 sm:rounded-3xl sm:p-5">
+            {/* Header Tabs for Flatmate Category Filter (Like Home Screen Buy / Rent / Commercial) */}
+            <div
+              className="no-scrollbar flex items-center gap-4 sm:gap-6 overflow-x-auto border-b border-slate-100 pb-1 dark:border-slate-800"
+              aria-label="Flatmate categories"
+            >
+              {FLATMATE_MODE_TABS.map((tab) => {
+                const isActive = mode === tab.mode;
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.label}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => handleSelectMode(tab.mode)}
+                    className={`shrink-0 flex items-center gap-1.5 border-b-2 pb-2.5 text-xs sm:text-sm font-bold transition-all ${
+                      isActive
+                        ? "border-rose-600 text-rose-600 dark:border-rose-400 dark:text-rose-400"
+                        : "border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                    }`}
+                  >
+                    <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isActive ? "text-rose-600 dark:text-rose-400" : "text-slate-400"}`} />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-2 min-w-0 md:grid-cols-[auto_minmax(12rem,1fr)_auto]">
               <CitySelectorDropdown
                 compact
@@ -258,19 +321,38 @@ export default function FlatmatesDiscoveryPage({
             />
           )}
 
-          <div className="flex items-start gap-6">
+          <div className="mt-4 sm:mt-5 flex items-start gap-6">
             <div className="min-w-0 flex-1">
-              {/* Listings count & Active indicator (hidden on mobile to save height) */}
-              <div className="hidden sm:flex my-4 items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              {/* Listings count & Active indicator */}
+              <div className="my-2.5 sm:my-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-0.5">
                 <div>
-                  Showing <span className="font-bold text-slate-900 dark:text-white">{listings.length}</span> of{" "}
-                  <span className="font-bold text-slate-900 dark:text-white">{total}</span> flatmate listings in{" "}
-                  {city ? <span className="font-semibold text-rose-600">{city}</span> : <span>India</span>}
+                  <span className="sm:hidden">
+                    <span className="font-bold text-slate-900 dark:text-white">{listings.length}</span>{" "}
+                    {mode === "HAVE_ROOM"
+                      ? "rooms available"
+                      : mode === "NEED_ROOM"
+                        ? "room seekers"
+                        : "buddy-up listings"}{" "}
+                    {city ? <span className="font-medium text-rose-600">in {city}</span> : ""}
+                  </span>
+                  <span className="hidden sm:inline">
+                    Showing <span className="font-bold text-slate-900 dark:text-white">{listings.length}</span> of{" "}
+                    <span className="font-bold text-slate-900 dark:text-white">{total}</span>{" "}
+                    {mode === "HAVE_ROOM"
+                      ? "rooms available"
+                      : mode === "NEED_ROOM"
+                        ? "room seekers"
+                        : mode === "BUDDY_UP"
+                          ? "buddy-up teams"
+                          : "flatmate listings"}{" "}
+                    in {city ? <span className="font-semibold text-rose-600">{city}</span> : <span>India</span>}
+                  </span>
                 </div>
                 {isFetching && (
-                  <div className="flex items-center gap-1.5 rounded-full border border-rose-200/80 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600 shadow-xs dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Finding compatible flatmates...</span>
+                  <div className="flex items-center gap-1.5 rounded-full border border-rose-200/80 bg-rose-50 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold text-rose-600 shadow-xs dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
+                    <Loader2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin" />
+                    <span className="hidden xs:inline">Finding flatmates...</span>
+                    <span className="xs:hidden">Loading...</span>
                   </div>
                 )}
               </div>
@@ -280,7 +362,7 @@ export default function FlatmatesDiscoveryPage({
           {showSkeleton ? (
             <FlatmateGridSkeleton count={6} />
           ) : listings.length > 0 ? (
-            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 sm:gap-4.5">
+            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 sm:gap-4.5">
               {listings.map((item, idx) => (
                 <FlatmateCard key={item.id} listing={item} priority={idx < 2} />
               ))}
@@ -292,7 +374,7 @@ export default function FlatmatesDiscoveryPage({
               </div>
               <div className="space-y-1">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  No flatmate listings found in {city} {localities.length ? `(${localities.join(", ")})` : ""}
+                  No {mode === "HAVE_ROOM" ? "rooms available" : mode === "NEED_ROOM" ? "room seekers" : mode === "BUDDY_UP" ? "buddy-up listings" : "flatmate listings"} found in {city} {localities.length ? `(${localities.join(", ")})` : ""}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
                   Be the first one to post a room or your requirement in this area and connect with thousands of active room seekers!

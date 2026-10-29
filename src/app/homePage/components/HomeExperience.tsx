@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Loader2, MapPin, Phone, PhoneCall, RotateCcw, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, Building2, Calendar, CheckCircle2, Home, Loader2, MapPin, Phone, PhoneCall, RotateCcw, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
 import { SearchBar } from "@/components/search/SearchBar";
 import { buildSearchHref, initialSearchState, type SearchState } from "@/components/search/searchQuery";
 import { usePropertySearchInfinite } from "@/features/propertyListing/useQueries";
@@ -349,7 +349,9 @@ export function HomeExperience({
 
         <FeaturedProjectsSection selectedCity={selectedCity} />
 
-        <FeaturedFlatmatesSection selectedCity={selectedCity} />
+        <FeaturedFlatAvailableSection selectedCity={selectedCity} />
+
+        <FeaturedSeekersBuddyUpSection selectedCity={selectedCity} />
 
       </main>
       </div>
@@ -727,7 +729,7 @@ function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
   );
 }
 
-function FeaturedFlatmatesSection({ selectedCity }: { selectedCity: string }) {
+function FeaturedFlatAvailableSection({ selectedCity }: { selectedCity: string }) {
   const isIdle = useIdleState(1200);
   const normalizedCity = selectedCity?.toLowerCase().includes("delhi")
     ? "Delhi"
@@ -735,37 +737,47 @@ function FeaturedFlatmatesSection({ selectedCity }: { selectedCity: string }) {
 
   // Try local city first, then fallback
   const { data: cityData, isLoading: isCityLoading } = useSearchFlatmatesQuery(
-    { city: normalizedCity, pageSize: 6 },
+    { city: normalizedCity, pageSize: 24 },
     { skip: !isIdle || !normalizedCity }
   );
   const { data: fallbackData, isLoading: isFallbackLoading } = useSearchFlatmatesQuery(
-    { pageSize: 6 },
-    { skip: !isIdle || Boolean(normalizedCity) }
+    { pageSize: 24 },
+    { skip: !isIdle }
   );
 
-  const cityFlatmates = cityData?.items ?? [];
-  const fallbackFlatmates = fallbackData?.items ?? [];
-  const flatmates = cityFlatmates.length > 0 ? cityFlatmates : fallbackFlatmates;
+  const cityItems = (cityData?.items ?? []).filter((item) => item.mode === "HAVE_ROOM");
+  const fallbackItems = (fallbackData?.items ?? []).filter((item) => item.mode === "HAVE_ROOM");
+
+  const listings = [...cityItems];
+  if (listings.length < 4 && fallbackItems.length > 0) {
+    const existingIds = new Set(listings.map((x) => x.id));
+    for (const item of fallbackItems) {
+      if (!existingIds.has(item.id)) {
+        listings.push(item);
+      }
+    }
+  }
+
   const isLoading = normalizedCity ? isCityLoading : isFallbackLoading;
 
-  if (!isLoading && flatmates.length === 0) return null;
+  if (!isLoading && listings.length === 0) return null;
 
   return (
     <section className="mt-6 sm:mt-10">
       <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-            <Users className="h-3.5 w-3.5" />
-            <span>Zero Brokerage Co-Living</span>
+            <Home className="h-3.5 w-3.5 text-rose-600" />
+            <span>Zero Brokerage Shared Flats</span>
           </div>
           <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
-            {cityFlatmates.length > 0 && selectedCity
-              ? `Rooms & Flatmates in ${selectedCity}`
-              : "Verified Flatmates & Shared Rooms"}
+            {cityItems.length > 0 && selectedCity
+              ? `Available Rooms in ${selectedCity}`
+              : "Available Rooms in Shared Flats"}
           </h2>
         </div>
         <Link
-          href="/flatmates"
+          href="/flatmates?mode=HAVE_ROOM"
           prefetch={false}
           className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 shrink-0"
         >
@@ -783,12 +795,96 @@ function FeaturedFlatmatesSection({ selectedCity }: { selectedCity: string }) {
         </div>
       ) : (
         <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory items-stretch">
-          {flatmates.slice(0, 8).map((item) => (
+          {listings.slice(0, 8).map((item) => (
             <div
               key={item.id}
               className="flex h-full w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]"
             >
-              <FlatmateCard listing={item} />
+              <FlatmateCard listing={item} layout="vertical" />
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string }) {
+  const isIdle = useIdleState(1200);
+  const normalizedCity = selectedCity?.toLowerCase().includes("delhi")
+    ? "Delhi"
+    : (selectedCity || undefined);
+
+  // Try local city first, then fallback
+  const { data: cityData, isLoading: isCityLoading } = useSearchFlatmatesQuery(
+    { city: normalizedCity, pageSize: 24 },
+    { skip: !isIdle || !normalizedCity }
+  );
+  const { data: fallbackData, isLoading: isFallbackLoading } = useSearchFlatmatesQuery(
+    { pageSize: 24 },
+    { skip: !isIdle }
+  );
+
+  const cityItems = (cityData?.items ?? []).filter(
+    (item) => item.mode === "NEED_ROOM" || item.mode === "BUDDY_UP"
+  );
+  const fallbackItems = (fallbackData?.items ?? []).filter(
+    (item) => item.mode === "NEED_ROOM" || item.mode === "BUDDY_UP"
+  );
+
+  const listings = [...cityItems];
+  if (listings.length < 4 && fallbackItems.length > 0) {
+    const existingIds = new Set(listings.map((x) => x.id));
+    for (const item of fallbackItems) {
+      if (!existingIds.has(item.id)) {
+        listings.push(item);
+      }
+    }
+  }
+
+  const isLoading = normalizedCity ? isCityLoading : isFallbackLoading;
+
+  if (!isLoading && listings.length === 0) return null;
+
+  return (
+    <section className="mt-6 sm:mt-10">
+      <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+            <Users className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+            <span>Room Seekers & Co-Living</span>
+          </div>
+          <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+            {cityItems.length > 0 && selectedCity
+              ? `Room Seekers & Buddy Up in ${selectedCity}`
+              : "Room Seekers & Buddy-Up Groups"}
+          </h2>
+        </div>
+        <Link
+          href="/flatmates?mode=NEED_ROOM"
+          prefetch={false}
+          className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 shrink-0"
+        >
+          View all <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+
+      {isLoading ? (
+        <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-1.5rem)/2)]">
+              <PropertyCardSkeleton />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory items-stretch">
+          {listings.slice(0, 8).map((item) => (
+            <div
+              key={item.id}
+              className="flex h-full w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-1.5rem)/2)]"
+            >
+              <FlatmateCard listing={item} layout="horizontal" />
             </div>
           ))}
         </div>

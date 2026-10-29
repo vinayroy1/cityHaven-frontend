@@ -14,6 +14,12 @@ import {
   PawPrint,
   Utensils,
   BedDouble,
+  Coffee,
+  Compass,
+  Headphones,
+  Laptop,
+  Music,
+  Smile,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
@@ -25,9 +31,10 @@ const FlatmateContactModal = dynamic(
   { ssr: false }
 );
 
-interface FlatmateCardProps {
+export interface FlatmateCardProps {
   listing: FlatmateListing;
   priority?: boolean;
+  layout?: "auto" | "vertical" | "horizontal";
 }
 
 const normalizeR2Url = (url?: string | null): string => {
@@ -35,12 +42,19 @@ const normalizeR2Url = (url?: string | null): string => {
   return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
 };
 
-export function FlatmateCard({ listing, priority = false }: FlatmateCardProps) {
+export function FlatmateCard({
+  listing,
+  priority = false,
+  layout = "auto",
+}: FlatmateCardProps) {
   const router = useRouter();
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const detailsHref = `/flatmates/${listing.slug}`;
 
   const isPlaceListing = listing.mode === "HAVE_ROOM";
+  const isForceVertical = layout === "vertical";
+  const isForceHorizontal = layout === "horizontal";
+  const isVertical = isForceVertical;
 
   const modeBadge = () => {
     switch (listing.mode) {
@@ -86,31 +100,29 @@ export function FlatmateCard({ listing, priority = false }: FlatmateCardProps) {
     return listing.budgetMax != null ? `Up to ₹${listing.budgetMax.toLocaleString("en-IN")}` : "Flexible";
   };
 
-  return (
-    <>
-      <article
-        tabIndex={0}
-        aria-label={`View details for ${listing.title}`}
-        onClick={() => router.push(detailsHref)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            router.push(detailsHref);
-          }
-        }}
-        className={`group relative flex w-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 sm:h-full sm:min-h-[400px] ${
-          listing.isBoosted
-            ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40"
-            : "border-slate-200/90 hover:border-rose-300 dark:border-slate-800 dark:hover:border-rose-900/60"
-        }`}
-      >
-        <div className="flex flex-col sm:flex-1">
-          {/* ======================================================== */}
-          {/* TOP SECTION: Clean visual distinction, ZERO overlapping   */}
-          {/* ======================================================== */}
-          {isPlaceListing ? (
-            /* Variant 1: Room Available (16:9 Landscape Photo Banner) */
-            <div className="relative h-36 sm:h-40 w-full overflow-hidden bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900">
+  if (isPlaceListing) {
+    return (
+      <>
+        <article
+          role="link"
+          tabIndex={0}
+          aria-label={`View details for ${listing.title}`}
+          onClick={() => router.push(detailsHref)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              router.push(detailsHref);
+            }
+          }}
+          className={`group relative flex w-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 h-full ${
+            listing.isBoosted
+              ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40"
+              : "border-slate-200/90 hover:border-rose-300 dark:border-slate-800 dark:hover:border-rose-900/60"
+          }`}
+        >
+          <div className="flex flex-col sm:flex-1">
+            {/* Variant 1: Room Available (16:10 Landscape Photo Banner) */}
+            <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-tr from-slate-100 via-rose-50/30 to-amber-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900">
               {roomPhoto ? (
                 <img
                   src={roomPhoto}
@@ -132,7 +144,7 @@ export function FlatmateCard({ listing, priority = false }: FlatmateCardProps) {
               )}
 
               {/* Gradient Scrim */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/25" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/20" />
 
               {/* Mode Tag */}
               <div className="absolute left-2.5 top-2.5">
@@ -145,7 +157,7 @@ export function FlatmateCard({ listing, priority = false }: FlatmateCardProps) {
               </div>
 
               {listing.isBoosted && (
-                <span className="absolute left-2.5 top-10 rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">
+                <span className="absolute left-2.5 top-9 rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">
                   ⭐ FEATURED
                 </span>
               )}
@@ -157,136 +169,56 @@ export function FlatmateCard({ listing, priority = false }: FlatmateCardProps) {
                 </div>
               )}
 
-              {/* Price Badge */}
-              <div className="absolute bottom-2 left-2.5">
-                <div className="rounded-lg bg-slate-950/85 px-2.5 py-1 text-white backdrop-blur-md shadow-md">
-                  <span className="text-sm font-extrabold tracking-tight sm:text-base">
-                    {formattedRent()}
-                  </span>
-                  <span className="text-[10px] font-medium text-slate-300 ml-1">/mo</span>
-                </div>
+              {/* Price Overlay on Photo */}
+              <div className="absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-300 drop-shadow-xs">
+                  Monthly Rent
+                </span>
+                <p className="text-sm sm:text-base font-black text-white leading-tight drop-shadow-md">
+                  {formattedRent()}
+                  <span className="text-[10px] font-normal text-slate-300 ml-1">/mo</span>
+                </p>
               </div>
 
               {/* Photo count badge */}
               {listing.photos && listing.photos.length > 1 && (
-                <div className="absolute bottom-2 right-2.5 rounded-full bg-slate-950/70 px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur">
+                <div className="absolute bottom-2.5 right-2.5 rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-semibold text-white shadow-xs backdrop-blur-md">
                   1 of {listing.photos.length} photos
                 </div>
               )}
             </div>
-          ) : (
-            /* Variant 2 & 3: Seeking Room & Buddy Up (Profile Card Header with Floating Avatar) */
-            <div>
-              {/* Header Gradient Top Bar */}
-              <div
-                className={`relative h-20 sm:h-22 w-full p-2.5 flex items-start justify-between select-none ${
-                  listing.mode === "BUDDY_UP"
-                    ? "bg-gradient-to-r from-amber-500/25 via-orange-500/20 to-rose-500/15 dark:from-amber-950/60 dark:via-orange-950/40 dark:to-slate-900 border-b border-amber-200/50 dark:border-amber-900/30"
-                    : "bg-gradient-to-r from-indigo-500/25 via-purple-500/20 to-pink-500/15 dark:from-indigo-950/60 dark:via-purple-950/40 dark:to-slate-900 border-b border-indigo-200/50 dark:border-indigo-900/30"
-                }`}
-              >
-                {/* Mode Tag */}
-                <span
-                  className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-xs backdrop-blur-md ${badge.className}`}
-                >
-                  <ModeIcon className="h-2.5 w-2.5" />
-                  <span>{badge.label}</span>
-                </span>
 
-                {/* Match or Featured */}
-                <div className="flex items-center gap-1">
-                  {listing.isBoosted && (
-                    <span className="rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">
-                      ⭐ FEATURED
-                    </span>
-                  )}
-                  {listing.compatibilityScore != null && (
-                    <span className="rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700 shadow-xs backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
-                      {listing.compatibilityScore}% match
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Floating Avatar & Budget Row - Clear breathing room, NO collisions */}
-              <div className="relative -mt-9 px-3.5 flex items-end justify-between">
-                {/* Portrait Avatar */}
-                <div className="relative">
-                  <div
-                    className={`h-16 w-16 sm:h-17 sm:w-17 rounded-2xl overflow-hidden ring-4 ring-white dark:ring-slate-900 shadow-md flex items-center justify-center font-extrabold text-xl text-white ${
-                      listing.mode === "BUDDY_UP"
-                        ? "bg-gradient-to-tr from-amber-500 to-rose-500"
-                        : "bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500"
-                    }`}
-                  >
-                    {avatarPhoto ? (
-                      <img
-                        src={avatarPhoto}
-                        alt={profile?.displayName || listing.title}
-                        loading={priority ? "eager" : "lazy"}
-                        fetchPriority={priority ? "high" : "auto"}
-                        decoding="async"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <span>{(profile?.displayName || "R")[0].toUpperCase()}</span>
-                    )}
-                  </div>
-                  {listing.mode === "BUDDY_UP" && (
-                    <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white shadow ring-2 ring-white dark:ring-slate-900">
-                      <Users className="h-3 w-3" />
-                    </span>
-                  )}
-                </div>
-
-                {/* Budget Pill */}
-                <div className="rounded-xl bg-slate-950/85 px-2.5 py-1 text-white backdrop-blur-md shadow-xs text-right">
-                  <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-300">
-                    {listing.mode === "BUDDY_UP" ? "Team Budget" : "Max Budget"}
-                  </span>
-                  <span className="text-sm sm:text-base font-extrabold tracking-tight">
-                    {formattedRent()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ======================================================== */}
-          {/* CARD BODY: Clean Typography & Balanced Padding           */}
-          {/* ======================================================== */}
-          <div className="flex flex-col sm:flex-1 sm:justify-between p-3 sm:p-3.5 space-y-2">
-            {isPlaceListing ? (
-              /* HAVE_ROOM Content */
+            {/* CARD BODY: Clean Typography & Balanced Padding */}
+            <div className="flex flex-col sm:flex-1 sm:justify-between p-3 sm:p-3.5 space-y-2">
               <div className="space-y-2">
                 <div className="space-y-1">
-                  <h3 className="line-clamp-1 text-sm sm:text-base font-bold text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
+                  <h3 className="truncate text-sm sm:text-base font-bold text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
                     {listing.title}
                   </h3>
 
-                  <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 truncate min-w-0">
                     <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
-                    <span className="line-clamp-1 font-medium">
+                    <span className="truncate font-medium">
                       {listing.locality ? `${listing.locality}, ${listing.cityName}` : listing.cityName}
                     </span>
                   </div>
                 </div>
 
-                {/* Quick Specs */}
-                <div className="flex flex-wrap items-center gap-1 text-[11px]">
+                {/* Quick Specs: Horizontal scrolling chips */}
+                <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 text-[11px] whitespace-nowrap">
                   {listing.roomType && (
-                    <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                       <BedDouble className="h-3 w-3 text-slate-500" />
                       {listing.roomType}
                     </span>
                   )}
                   {listing.furnishing && (
-                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                       {listing.furnishing}
                     </span>
                   )}
                   {listing.availableFrom && (
-                    <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                       <Calendar className="h-3 w-3 text-slate-500" />
                       Available{" "}
                       {new Date(listing.availableFrom).toLocaleDateString("en-IN", {
@@ -297,132 +229,450 @@ export function FlatmateCard({ listing, priority = false }: FlatmateCardProps) {
                   )}
                 </div>
 
-                {/* Financial & Occupancy Decision Row */}
-                {(listing.deposit != null ||
-                  listing.maintenance != null ||
-                  listing.currentOccupants != null ||
-                  listing.spotsAvailable > 0 ||
-                  listing.minimumStayMonths != null) && (
-                  <div className="rounded-lg bg-slate-50/90 px-2.5 py-1.5 text-[11px] text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                      {listing.deposit != null && (
-                        <span>
+                {/* Financial & Occupancy Decision Row: Horizontal scrolling chips */}
+                <div className="rounded-lg bg-slate-50/90 px-2 py-1 text-[11px] text-slate-600 dark:bg-slate-800/60 dark:text-slate-300 overflow-hidden">
+                  <div className="flex items-center gap-x-2 overflow-x-auto no-scrollbar whitespace-nowrap text-[11px]">
+                    {listing.deposit != null ? (
+                      <>
+                        <span className="shrink-0">
                           <strong>{formatMoney(listing.deposit)}</strong> deposit
                         </span>
-                      )}
-                      {listing.deposit != null && listing.maintenance != null && (
-                        <span className="text-slate-300 dark:text-slate-600">·</span>
-                      )}
-                      {listing.maintenance != null && (
-                        <span>
-                          <strong>{formatMoney(listing.maintenance)}</strong> maintenance
-                        </span>
-                      )}
-                      {(listing.deposit != null || listing.maintenance != null) &&
-                        (listing.currentOccupants != null ||
-                          listing.spotsAvailable > 0 ||
-                          listing.minimumStayMonths != null) && (
-                          <span className="text-slate-300 dark:text-slate-600">·</span>
+                        {listing.maintenance != null && (
+                          <span className="shrink-0 text-slate-300 dark:text-slate-600">·</span>
                         )}
-                      {listing.currentOccupants != null && (
-                        <span>
-                          {listing.currentOccupants} current occupant{listing.currentOccupants === 1 ? "" : "s"}
-                        </span>
-                      )}
-                      {listing.currentOccupants != null && listing.spotsAvailable > 0 && (
-                        <span className="text-slate-300 dark:text-slate-600">·</span>
-                      )}
-                      {listing.spotsAvailable > 0 && (
-                        <span className="font-semibold text-emerald-700 dark:text-emerald-400">
-                          {listing.spotsAvailable} spot{listing.spotsAvailable === 1 ? "" : "s"} open
-                        </span>
-                      )}
-                      {(listing.spotsAvailable > 0 || listing.currentOccupants != null) &&
-                        listing.minimumStayMonths != null && (
-                          <span className="text-slate-300 dark:text-slate-600">·</span>
+                        {listing.maintenance != null && (
+                          <span className="shrink-0">
+                            <strong>{formatMoney(listing.maintenance)}</strong> maintenance
+                          </span>
                         )}
-                      {listing.minimumStayMonths != null && (
-                        <span>{listing.minimumStayMonths}+ month stay</span>
-                      )}
-                    </div>
+                        {(listing.currentOccupants != null || listing.spotsAvailable > 0) && (
+                          <span className="shrink-0 text-slate-300 dark:text-slate-600">·</span>
+                        )}
+                        {listing.currentOccupants != null && (
+                          <span className="shrink-0">
+                            {listing.currentOccupants} current occupant{listing.currentOccupants === 1 ? "" : "s"}
+                          </span>
+                        )}
+                        {listing.currentOccupants != null && listing.spotsAvailable > 0 && (
+                          <span className="shrink-0 text-slate-300 dark:text-slate-600">·</span>
+                        )}
+                        {listing.spotsAvailable > 0 && (
+                          <span className="shrink-0 font-semibold text-emerald-700 dark:text-emerald-400">
+                            {listing.spotsAvailable} spot open
+                          </span>
+                        )}
+                        {listing.minimumStayMonths != null && (
+                          <span className="shrink-0 text-slate-300 dark:text-slate-600">·</span>
+                        )}
+                        {listing.minimumStayMonths != null && (
+                          <span className="shrink-0">
+                            {listing.minimumStayMonths}+ month stay
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="shrink-0 text-slate-500 dark:text-slate-400">
+                        Direct from flatmate · Zero brokerage · Flexible stay
+                      </span>
+                    )}
                   </div>
+                </div>
+              </div>
+
+              {/* Lifestyle Badges: Horizontal scrolling chips */}
+              <div className="flex items-center gap-1 overflow-x-auto no-scrollbar flex-nowrap pt-1 sm:mt-auto py-0.5 whitespace-nowrap">
+                {listing.compatibilityReasons?.map((reason) => (
+                  <Badge
+                    key={reason}
+                    variant="outline"
+                    className="shrink-0 border-emerald-200 bg-emerald-50/50 px-1.5 py-0 text-[9px] font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300"
+                  >
+                    <Sparkles className="mr-0.5 h-2 w-2" /> {reason}
+                  </Badge>
+                ))}
+                {(listing.preferredGenders?.length ?? 0) > 0 && (
+                  <Badge
+                    variant="outline"
+                    className="shrink-0 border-rose-200 bg-rose-50/50 px-1.5 py-0 text-[9px] font-medium text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-300"
+                  >
+                    {listing.preferredGenders?.join(" / ")}
+                  </Badge>
+                )}
+                {listing.preferredDiet && (
+                  <Badge
+                    variant="outline"
+                    className="shrink-0 inline-flex items-center gap-0.5 border-emerald-200 bg-emerald-50/50 px-1.5 py-0 text-[9px] font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300"
+                  >
+                    <Utensils className="h-2 w-2" />
+                    <span>{listing.preferredDiet}</span>
+                  </Badge>
+                )}
+                {listing.petsAllowed && (
+                  <Badge
+                    variant="outline"
+                    className="shrink-0 inline-flex items-center gap-0.5 border-amber-200 bg-amber-50/50 px-1.5 py-0 text-[9px] font-medium text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-300"
+                  >
+                    <PawPrint className="h-2 w-2" />
+                    <span>Pet-friendly</span>
+                  </Badge>
+                )}
+                {listing.smokingAllowed === false && (
+                  <Badge
+                    variant="outline"
+                    className="shrink-0 inline-flex items-center gap-0.5 border-slate-200 bg-slate-50 px-1.5 py-0 text-[9px] font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400"
+                  >
+                    <span>Non-smoker</span>
+                  </Badge>
+                )}
+                {listing.drinkingAllowed === false && (
+                  <Badge
+                    variant="outline"
+                    className="shrink-0 border-slate-200 bg-slate-50 px-1.5 py-0 text-[9px] font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-850 dark:text-slate-400"
+                  >
+                    No drinking
+                  </Badge>
                 )}
               </div>
-            ) : (
-              /* NEED_ROOM / BUDDY_UP Content */
-              <div className="space-y-2 pt-1">
-                {/* Name, Age & Verified Tag */}
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <h3 className="line-clamp-1 text-sm sm:text-base font-bold text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
-                      {profile?.displayName || (listing.mode === "BUDDY_UP" ? "Buddy-Up Group" : "Room Seeker")}
-                    </h3>
-                    {age && (
-                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                        · {age} yrs
-                      </span>
-                    )}
-                    {profile?.isIdentityVerified && (
-                      <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                        <ShieldCheck className="h-3 w-3 shrink-0" />
-                        <span>Verified</span>
-                      </span>
-                    )}
-                  </div>
+            </div>
+          </div>
 
-                  <p className="line-clamp-1 text-xs font-medium text-slate-600 dark:text-slate-300">
-                    {[profile?.gender, profile?.occupation, profile?.companyOrCollege ? `@ ${profile.companyOrCollege}` : ""].filter(Boolean).join(" · ") || listing.title}
-                  </p>
-                </div>
-
-                {/* Preferred Areas / Target Locality Box */}
-                {preferredAreas.length > 0 ? (
-                  <div className="flex items-center gap-1.5 rounded-lg bg-indigo-50/80 px-2 py-1 text-[11px] text-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300">
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
-                    <span className="line-clamp-1">
-                      <strong>Preferred areas:</strong> {preferredAreas.join(" · ")}
-                    </span>
-                  </div>
+          {/* UNIFIED FOOTER: Always fixed h-11 on mobile, h-12 on desktop */}
+          <div className="flex h-11 sm:h-12 items-center justify-between border-t border-slate-100 px-3 sm:px-3.5 dark:border-slate-800/80">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 font-bold text-white shadow-inner flex items-center justify-center text-[11px]">
+                {hostPhoto ? (
+                  <img
+                    src={hostPhoto}
+                    alt={profile?.displayName || "Host"}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 ) : (
-                  <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
-                    <span className="line-clamp-1">
-                      {listing.locality ? `${listing.locality}, ${listing.cityName}` : listing.cityName}
-                    </span>
-                  </div>
+                  <span>{(profile?.displayName || "R")[0].toUpperCase()}</span>
                 )}
-
-                {/* Room Preferences Tags */}
-                <div className="flex flex-wrap items-center gap-1 text-[11px]">
-                  {listing.bhk && (
-                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                      {listing.bhk} BHK preferred
-                    </span>
-                  )}
-                  {listing.roomType && (
-                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                      {listing.roomType}
-                    </span>
-                  )}
-                  {listing.furnishing && (
-                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                      {listing.furnishing}
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1">
+                  <span className="truncate text-xs font-bold text-slate-900 dark:text-slate-100">
+                    {profile?.displayName || "Flat Host"}
+                  </span>
+                  {profile?.isIdentityVerified && (
+                    <span className="inline-flex shrink-0 items-center gap-0.5 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
+                      <ShieldCheck className="h-3 w-3 shrink-0" />
+                      <span className="hidden xl:inline">Verified</span>
                     </span>
                   )}
                 </div>
+                <p className="truncate text-[9px] text-slate-500 dark:text-slate-400">
+                  {[profile?.gender, age ? `${age} yrs` : "", profile?.occupation].filter(Boolean).join(" · ") ||
+                    "Flat Host"}
+                </p>
+              </div>
+            </div>
 
-                {/* Bio snippet */}
-                {(profile?.bio || listing.description) && (
-                  <p className="line-clamp-1 text-[11px] italic text-slate-500 dark:text-slate-400">
-                    &ldquo;{profile?.bio || listing.description}&rdquo;
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Button
+                type="button"
+                size="sm"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setIsContactModalOpen(true);
+                }}
+                className="h-7 rounded-full text-white font-semibold text-[11px] px-3 shadow-xs bg-rose-600 hover:bg-rose-700 transition-transform active:scale-95"
+              >
+                <HeartHandshake className="w-3 h-3 mr-1" />
+                Connect
+              </Button>
+            </div>
+          </div>
+        </article>
+
+        {isContactModalOpen && (
+          <FlatmateContactModal
+            listing={listing}
+            isOpen={isContactModalOpen}
+            onClose={() => setIsContactModalOpen(false)}
+          />
+        )}
+      </>
+    );
+  }
+
+  /* ======================================================================= */
+  /* VARIANT 2 & 3: Room Seeker (NEED_ROOM) & Buddy Up (BUDDY_UP)            */
+  /* Mobile: Space-efficient horizontal split (left visual, right details)   */
+  /* Desktop: Vertical card (sm:flex-col) matching Room Available grid height*/
+  /* ======================================================================= */
+  return (
+    <>
+      <article
+        role="link"
+        tabIndex={0}
+        aria-label={`View details for ${profile?.displayName || listing.title}`}
+        onClick={() => router.push(detailsHref)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            router.push(detailsHref);
+          }
+        }}
+        className={`group relative flex w-full cursor-pointer justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-slate-900 ${
+          isForceVertical
+            ? "flex-col h-full"
+            : isForceHorizontal
+            ? "flex-row h-full"
+            : "flex-row sm:flex-col sm:h-full"
+        } ${
+          listing.isBoosted
+            ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40"
+            : "border-slate-200/90 hover:border-indigo-300 dark:border-slate-800 dark:hover:border-indigo-900/60"
+        }`}
+      >
+        {/* ================================================================ */}
+        {/* VISUAL THUMBNAIL                                                 */}
+        {/* ================================================================ */}
+        <div
+          className={`relative shrink-0 select-none overflow-hidden ${
+            isForceVertical
+              ? "w-full aspect-[16/10] block border-b"
+              : isForceHorizontal
+              ? "w-[136px] xs:w-[146px] flex flex-col justify-between items-center p-2.5 border-r border-b-0"
+              : "w-[136px] xs:w-[146px] sm:w-full flex flex-col justify-between items-center p-2.5 sm:p-0 sm:block sm:aspect-[16/10] border-r sm:border-r-0 sm:border-b"
+          } ${
+            listing.mode === "BUDDY_UP"
+              ? "bg-gradient-to-br from-amber-700 via-rose-800 to-purple-900 dark:from-slate-950 dark:via-amber-950 dark:to-rose-950 border-amber-600/30"
+              : "bg-gradient-to-br from-indigo-800 via-purple-850 to-pink-800 dark:from-slate-950 dark:via-indigo-950 dark:to-purple-950 border-indigo-600/30"
+          }`}
+        >
+          {/* Subtle radial glow */}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.18),transparent_65%)]" />
+
+          {/* Floating Micro-Icons (Strictly top-right on vertical) */}
+          <div className={`pointer-events-none absolute inset-0 overflow-hidden ${isForceVertical ? "block" : isForceHorizontal ? "hidden" : "hidden sm:block"}`}>
+            <span className="absolute right-3.5 top-3 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md border border-white/30 shadow-xs rotate-6">
+              <Coffee className="h-3 w-3" />
+            </span>
+            <span className="absolute right-11.5 top-3.5 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md border border-white/30 shadow-xs -rotate-6">
+              <Headphones className="h-3 w-3" />
+            </span>
+            <span className="absolute right-19.5 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md border border-white/30 shadow-xs rotate-12">
+              <Sparkles className="h-3 w-3" />
+            </span>
+          </div>
+
+          {/* Scrim overlay */}
+          <div className={`pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-black/25 ${isForceVertical ? "block" : isForceHorizontal ? "hidden" : "hidden sm:block"}`} />
+
+          {/* Mode Tag */}
+          <div
+            className={`relative z-10 w-full ${
+              isForceVertical
+                ? "absolute left-2.5 top-2.5 w-auto"
+                : isForceHorizontal
+                ? "flex justify-center"
+                : "flex justify-center sm:justify-start sm:absolute sm:left-2.5 sm:top-2.5 sm:w-auto"
+            }`}
+          >
+            <span
+              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-xs backdrop-blur-md ${badge.className}`}
+            >
+              <ModeIcon className="h-2.5 w-2.5" />
+              <span className={isForceVertical ? "hidden sm:inline" : isForceHorizontal ? "inline" : "sm:hidden"}>
+                {listing.mode === "BUDDY_UP" ? "Buddy Up" : "Seeker"}
+              </span>
+              <span className={isForceVertical ? "inline sm:hidden" : isForceHorizontal ? "hidden" : "hidden sm:inline"}>
+                {badge.label}
+              </span>
+            </span>
+          </div>
+
+          {/* Match or Featured */}
+          <div
+            className={`absolute right-2.5 top-2.5 z-10 items-center gap-1 ${
+              isForceVertical ? "flex" : isForceHorizontal ? "hidden" : "hidden sm:flex"
+            }`}
+          >
+            {listing.isBoosted && (
+              <span className="rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">
+                ⭐ FEATURED
+              </span>
+            )}
+            {listing.compatibilityScore != null && (
+              <span className="rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700 shadow-xs backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
+                {listing.compatibilityScore}% match
+              </span>
+            )}
+          </div>
+
+          {/* Prominent Profile Avatar */}
+          <div
+            className={`relative z-10 ${
+              isForceVertical
+                ? "absolute left-3 bottom-2.5"
+                : isForceHorizontal
+                ? "my-1"
+                : "my-1 sm:my-0 sm:absolute sm:left-3 sm:bottom-2.5"
+            }`}
+          >
+            <div className="relative">
+              <div
+                className={`h-13 w-13 xs:h-14 xs:w-14 sm:h-14 sm:w-14 rounded-2xl overflow-hidden ring-2 ring-white/90 dark:ring-slate-900 shadow-md flex items-center justify-center font-extrabold text-lg sm:text-xl text-white ${
+                  listing.mode === "BUDDY_UP"
+                    ? "bg-gradient-to-tr from-amber-500 to-rose-500"
+                    : "bg-gradient-to-tr from-indigo-600 to-pink-500"
+                }`}
+              >
+                {avatarPhoto ? (
+                  <img
+                    src={avatarPhoto}
+                    alt={profile?.displayName || listing.title}
+                    loading={priority ? "eager" : "lazy"}
+                    fetchPriority={priority ? "high" : "auto"}
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span>{(profile?.displayName || "R")[0].toUpperCase()}</span>
+                )}
+              </div>
+              {listing.mode === "BUDDY_UP" && (
+                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 sm:h-4.5 sm:w-4.5 items-center justify-center rounded-full bg-amber-500 text-white shadow ring-2 ring-white dark:ring-slate-900">
+                  <Users className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Budget Pill */}
+          <div
+            className={`relative z-10 pointer-events-none ${
+              isForceVertical
+                ? "absolute bottom-2.5 right-2.5"
+                : isForceHorizontal
+                ? "w-full px-1"
+                : "w-full sm:w-auto sm:absolute sm:bottom-2.5 sm:right-2.5 px-1 sm:px-0"
+            }`}
+          >
+            <div
+              className={`${
+                isForceVertical ? "w-auto" : isForceHorizontal ? "w-full" : "w-full sm:w-auto"
+              } rounded-lg sm:rounded-xl bg-slate-950/95 px-1.5 py-1 sm:px-3 sm:py-1.5 text-white shadow-md sm:shadow-lg backdrop-blur-md text-center sm:text-right border border-white/20`}
+            >
+              <span className="block text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-rose-300 leading-none mb-0.5">
+                {listing.mode === "BUDDY_UP" ? "Team Budget" : "Max Budget"}
+              </span>
+              <span className="block text-[10px] xs:text-[11px] sm:text-base font-black text-white leading-tight tracking-tight whitespace-nowrap">
+                {formattedRent()}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ================================================================ */}
+        {/* DETAILS SECTION                                                  */}
+        {/* ================================================================ */}
+        <div
+          className={`flex flex-1 min-w-0 flex-col justify-between ${
+            isForceVertical ? "p-3 sm:p-3.5 space-y-2" : "p-2.5 sm:p-3.5 space-y-1.5 sm:space-y-2"
+          }`}
+        >
+          <div className="space-y-1.5 sm:space-y-2">
+            {/* Header: Name, Age, Occupation, Verified & Match % */}
+            <div className="flex items-center justify-between gap-1 min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <h3 className="shrink-0 max-w-[150px] truncate text-sm sm:text-base font-bold text-slate-900 transition-colors group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
+                  {profile?.displayName || (listing.mode === "BUDDY_UP" ? "Buddy-Up Group" : "Room Seeker")}
+                </h3>
+                {age && (
+                  <span className="shrink-0 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    · {age} yrs
+                  </span>
+                )}
+                {profile?.occupation && (
+                  <span className="truncate max-w-[120px] text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                    · {profile.occupation}
+                  </span>
+                )}
+                {profile?.isIdentityVerified && (
+                  <span className="shrink-0 inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    <ShieldCheck className="h-3 w-3 shrink-0" />
+                    <span className="hidden xs:inline">Verified</span>
+                  </span>
+                )}
+              </div>
+
+              {/* Match badge on mobile or horizontal mode */}
+              {(!isForceVertical || isForceHorizontal) && (
+                <div className={`flex items-center gap-1 shrink-0 ${isForceHorizontal ? "flex" : "sm:hidden"}`}>
+                  {listing.compatibilityScore != null && (
+                    <span className="rounded-full bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 text-[9px] font-extrabold text-emerald-700 dark:bg-slate-800 dark:border-emerald-800 dark:text-emerald-300">
+                      {listing.compatibilityScore}% match
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Preferred Areas / Location: Prominently displayed with line-clamp-2 (no ellipsis truncation) */}
+            <div className="flex items-start gap-1 text-[11px] sm:text-xs text-slate-600 dark:text-slate-300">
+              <MapPin className="h-3.5 w-3.5 shrink-0 text-indigo-500 mt-0.5" />
+              <div className="min-w-0 flex-1 leading-snug">
+                {preferredAreas.length > 0 ? (
+                  <p className="line-clamp-2">
+                    <strong className="font-bold text-indigo-600 dark:text-indigo-400">Preferred areas: </strong>
+                    <span className="font-semibold text-slate-900 dark:text-white">
+                      {preferredAreas.join(" · ")}
+                    </span>
+                    {listing.cityName && (
+                      <span className="text-slate-500 dark:text-slate-400 text-[10px] ml-1 font-normal">
+                        ({listing.cityName})
+                      </span>
+                    )}
+                  </p>
+                ) : listing.locality ? (
+                  <p className="truncate font-medium text-slate-700 dark:text-slate-300">
+                    {listing.locality}, {listing.cityName}
+                  </p>
+                ) : (
+                  <p className="truncate font-medium text-slate-700 dark:text-slate-300">
+                    {listing.cityName}
                   </p>
                 )}
               </div>
-            )}
+            </div>
 
-            {/* Lifestyle Badges (Clamped to 1 single clean row, NO multiline wrapping) */}
-            <div className="flex items-center gap-1 overflow-hidden flex-nowrap pt-1 sm:mt-auto">
-              {listing.compatibilityReasons?.slice(0, 1).map((reason) => (
+            {/* Preferences Chips: Single-line horizontal scroll */}
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 text-[10px] sm:text-[11px] whitespace-nowrap">
+              {listing.bhk && (
+                <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                  {listing.bhk} BHK preferred
+                </span>
+              )}
+              {listing.roomType && (
+                <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                  {listing.roomType}
+                </span>
+              )}
+              {listing.furnishing && (
+                <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                  {listing.furnishing}
+                </span>
+              )}
+            </div>
+
+            {/* Bio Snippet / Statement */}
+            <div className="rounded-lg bg-slate-50/90 px-2 py-1 text-[10px] sm:text-[11px] text-slate-600 dark:bg-slate-800/60 dark:text-slate-300 overflow-hidden">
+              <p className="truncate italic">
+                {profile?.bio || listing.description
+                  ? `“${profile?.bio || listing.description}”`
+                  : [profile?.gender, profile?.occupation].filter(Boolean).join(" · ") || "Ready to move in"}
+              </p>
+            </div>
+
+            {/* Lifestyle Badges: Horizontal scroll */}
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar flex-nowrap py-0.5 whitespace-nowrap">
+              {listing.compatibilityReasons?.map((reason) => (
                 <Badge
                   key={reason}
                   variant="outline"
@@ -475,62 +725,25 @@ export function FlatmateCard({ listing, priority = false }: FlatmateCardProps) {
               )}
             </div>
           </div>
-        </div>
 
-        {/* ======================================================== */}
-        {/* UNIFIED FOOTER: Always fixed h-11 on mobile, h-12 on desktop */}
-        {/* ======================================================== */}
-        <div className="flex h-11 sm:h-12 items-center justify-between border-t border-slate-100 px-3 sm:px-3.5 dark:border-slate-800/80">
-          <div className="flex items-center gap-2 min-w-0">
-            {isPlaceListing ? (
-              <>
-                <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 font-bold text-white shadow-inner flex items-center justify-center text-[11px]">
-                  {hostPhoto ? (
-                    <img
-                      src={hostPhoto}
-                      alt={profile?.displayName || "Host"}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <span>{(profile?.displayName || "R")[0].toUpperCase()}</span>
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1">
-                    <span className="line-clamp-1 text-xs font-bold text-slate-900 dark:text-slate-100">
-                      {profile?.displayName || "Flat Host"}
-                    </span>
-                    {profile?.isIdentityVerified && (
-                      <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
-                        <ShieldCheck className="h-3 w-3 shrink-0" />
-                        <span className="hidden xl:inline">Verified</span>
-                      </span>
-                    )}
-                  </div>
-                  <p className="line-clamp-1 text-[9px] text-slate-500 dark:text-slate-400">
-                    {[profile?.gender, age ? `${age} yrs` : "", profile?.occupation].filter(Boolean).join(" · ") ||
-                      "Flat Host"}
-                  </p>
-                </div>
-              </>
-            ) : (
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-                <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                <span className="line-clamp-1 font-medium">
-                  {listing.availableFrom
-                    ? `Move-in: ${new Date(listing.availableFrom).toLocaleDateString("en-IN", {
-                        month: "short",
-                        day: "numeric",
-                      })}`
-                    : "Flexible move-in"}
-                </span>
-              </div>
-            )}
-          </div>
+          {/* Unified Footer */}
+          <div
+            className={`flex ${
+              isVertical ? "h-11 sm:h-12 mt-auto" : "h-9 sm:h-12 sm:mt-auto"
+            } items-center justify-between pt-1 sm:pt-0 border-t border-slate-100 dark:border-slate-800/80`}
+          >
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate min-w-0 pr-1">
+              <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-slate-400 shrink-0" />
+              <span className="truncate font-medium">
+                {listing.availableFrom
+                  ? `Move-in: ${new Date(listing.availableFrom).toLocaleDateString("en-IN", {
+                      month: "short",
+                      day: "numeric",
+                    })}`
+                  : "Flexible move-in"}
+              </span>
+            </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
             <Button
               type="button"
               size="sm"
@@ -538,15 +751,13 @@ export function FlatmateCard({ listing, priority = false }: FlatmateCardProps) {
                 event.stopPropagation();
                 setIsContactModalOpen(true);
               }}
-              className={`h-7 rounded-full text-white font-semibold text-[11px] px-3 shadow-xs transition-transform active:scale-95 ${
+              className={`h-7 rounded-full text-white font-semibold text-[10px] sm:text-[11px] px-2.5 sm:px-3 shadow-xs shrink-0 transition-transform active:scale-95 ${
                 listing.mode === "BUDDY_UP"
                   ? "bg-amber-600 hover:bg-amber-700"
-                  : listing.mode === "NEED_ROOM"
-                  ? "bg-indigo-600 hover:bg-indigo-700"
-                  : "bg-rose-600 hover:bg-rose-700"
+                  : "bg-indigo-600 hover:bg-indigo-700"
               }`}
             >
-              <HeartHandshake className="w-3 h-3 mr-1" />
+              <HeartHandshake className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
               {listing.mode === "BUDDY_UP" ? "Team Up" : "Connect"}
             </Button>
           </div>

@@ -466,7 +466,6 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
 
         {/* Right Side CTAs & Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2.5" ref={accountRef}>
-          {/* Post Property Glowing CTA - Always visible on mobile and desktop */}
           <Link
             href={isAuthed ? "/propertyListing" : "/login?redirect=/propertyListing"}
             prefetch={false}
@@ -480,15 +479,12 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                 );
               }
             }}
-            className="group relative inline-flex items-center gap-1.5 sm:gap-2 overflow-hidden rounded-full bg-gradient-to-r from-rose-600 via-pink-600 to-rose-600 bg-[length:200%_auto] px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-bold text-white shadow-md shadow-rose-600/20 transition-all duration-300 hover:bg-right hover:shadow-lg hover:shadow-rose-600/30 hover:-translate-y-0.5 active:translate-y-0"
+            className="group relative inline-flex items-center gap-1.5 sm:gap-2 overflow-hidden rounded-full bg-gradient-to-r from-rose-600 via-pink-600 to-rose-600 bg-[length:200%_auto] px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white shadow-md shadow-rose-600/20 transition-all duration-300 hover:bg-right hover:shadow-lg hover:shadow-rose-600/30 hover:-translate-y-0.5 active:translate-y-0"
           >
             <PlusCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-200 group-hover:rotate-90 shrink-0" />
             <span className="whitespace-nowrap">
-              <span className="inline sm:hidden">Post</span>
-              <span className="hidden sm:inline">Post Property</span>
-            </span>
-            <span className="rounded-full bg-white/25 px-1 sm:px-1.5 py-0.2 sm:py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-rose-50 backdrop-blur-xs">
-              Free
+              <span className="hidden xs:inline">Post Property</span>
+              <span className="xs:hidden">Post</span>
             </span>
           </Link>
 

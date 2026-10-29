@@ -277,13 +277,13 @@ export function MobileBottomNav() {
             <button
               type="button"
               onClick={handlePostClick}
-              aria-label="Post Property for free"
+              aria-label="Post Property"
               className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-tr from-rose-600 via-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/35 ring-4 ring-white dark:ring-slate-950 transition-all duration-200 active:scale-90 hover:scale-105 hover:shadow-rose-500/50"
             >
               <Plus className="h-6 w-6 stroke-[2.6]" />
             </button>
             <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200 mt-0.5 tracking-tight">
-              Post Free
+              Post
             </span>
           </div>
 

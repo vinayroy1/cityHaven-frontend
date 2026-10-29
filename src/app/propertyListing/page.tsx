@@ -8,9 +8,9 @@ import { buildCanonical } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
 
 export const metadata: Metadata = {
-  title: "Post Property Free - Get 1,000 Free Credits on Signup | Awasio",
+  title: "Post Property - Get 1,000 Free Credits on Signup | Awasio",
   description:
-    "Post your property for free on Awasio. Get 1,000 free credits on signup to list properties, unlock verified tenant & buyer contacts, and boost your listing with zero brokerage.",
+    "Post your property on Awasio. Get 1,000 free credits on signup to list properties, unlock verified tenant & buyer contacts, and boost your listing with zero brokerage.",
   keywords: [
     "post property free",
     "free 1000 credits property",
@@ -68,8 +68,8 @@ export default function PropertyListingPage() {
 
             <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 px-2.5 sm:px-3 py-1 rounded-full shrink-0">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="hidden sm:inline">100% Free Listing • Direct Verified Inquiries</span>
-              <span className="sm:hidden">100% Free Listing</span>
+              <span className="hidden sm:inline">Direct Verified Inquiries • Zero Brokerage</span>
+              <span className="sm:hidden">Direct Verified Inquiries</span>
             </div>
           </div>
 

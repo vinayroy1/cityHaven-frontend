@@ -18,6 +18,8 @@ type ResultCardMediaProps = {
   compact?: boolean;
   priority?: boolean;
   deferImage?: boolean;
+  price?: string;
+  listingType?: string | null;
 };
 
 export function ResultCardMedia({
@@ -36,6 +38,8 @@ export function ResultCardMedia({
   compact = false,
   priority = false,
   deferImage = false,
+  price,
+  listingType,
 }: ResultCardMediaProps) {
   const [loaded, setLoaded] = React.useState(!deferImage);
 
@@ -177,7 +181,7 @@ export function ResultCardMedia({
     <div
       ref={containerRef}
       onClickCapture={handleClickCapture}
-      className={`relative block overflow-hidden touch-pan-y select-none bg-gradient-to-br from-slate-100 via-zinc-100 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 ${compact ? "aspect-[16/7] sm:aspect-[16/9]" : "aspect-[16/10] sm:aspect-[4/3]"}`}
+      className={`relative block overflow-hidden touch-pan-y select-none bg-gradient-to-br from-slate-100 via-zinc-100 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 ${compact ? "aspect-[16/10]" : "aspect-[16/10] sm:aspect-[4/3]"}`}
     >
       {loaded ? (
         <img
@@ -194,6 +198,12 @@ export function ResultCardMedia({
           <Building2 className="h-8 w-8 text-slate-300/70 dark:text-slate-600" />
         </div>
       )}
+
+      {/* Subtle bottom gradient on compact to make price readable like project cards */}
+      {compact && price && (
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-slate-950/10 pointer-events-none" />
+      )}
+
       {hasCarousel && (
         <>
           <button
@@ -214,34 +224,73 @@ export function ResultCardMedia({
           </button>
         </>
       )}
-      {type && (
-        <span className="absolute left-3 top-3 max-w-[75%] truncate rounded-md bg-white/95 px-2.5 py-1 text-xs font-semibold text-zinc-800 shadow-sm">
-          {type}
-        </span>
+
+      {compact ? (
+        <div className="absolute left-2.5 top-2.5 z-10 flex items-center gap-1">
+          {isMyProperty ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-indigo-400/50 bg-indigo-600 px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
+              <ShieldCheck className="h-3 w-3" />
+              Your Listing
+            </span>
+          ) : isVerified ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/60 bg-white/95 px-2 py-0.5 text-[9px] font-black text-emerald-700 shadow-xs backdrop-blur-md">
+              <BadgeCheck className="h-3 w-3 text-emerald-600" />
+              VERIFIED
+            </span>
+          ) : isNew ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-400 px-2 py-0.5 text-[9px] font-black text-zinc-950 shadow-xs">
+              <Sparkles className="h-3 w-3" />
+              NEW
+            </span>
+          ) : type ? (
+            <span className="rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
+              {type}
+            </span>
+          ) : null}
+        </div>
+      ) : (
+        <>
+          {type && (
+            <span className="absolute left-3 top-3 max-w-[75%] truncate rounded-md bg-white/95 px-2.5 py-1 text-xs font-semibold text-zinc-800 shadow-sm">
+              {type}
+            </span>
+          )}
+          <div className="absolute bottom-3 left-3 flex flex-wrap gap-1.5">
+            {isMyProperty && (
+              <span className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-2 py-1 text-[11px] font-bold text-white shadow-md">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Your Listing
+              </span>
+            )}
+            {isVerified && !isMyProperty && (
+              <span className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-2 py-1 text-[11px] font-semibold text-white shadow-sm">
+                <BadgeCheck className="h-3.5 w-3.5" />
+                Verified
+              </span>
+            )}
+            {isNew && (
+              <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 px-2 py-1 text-[11px] font-semibold text-zinc-950 shadow-sm">
+                <Sparkles className="h-3.5 w-3.5" />
+                New
+              </span>
+            )}
+          </div>
+        </>
       )}
-      <div className="absolute bottom-3 left-3 flex flex-wrap gap-1.5">
-        {isMyProperty && (
-          <span className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-2 py-1 text-[11px] font-bold text-white shadow-md">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Your Listing
+
+      {/* Price overlay on compact like project cards */}
+      {compact && price && (
+        <div className="absolute left-2.5 bottom-2.5 z-10 max-w-[calc(100%-4.5rem)] pointer-events-none">
+          <span className="block text-[9px] font-bold uppercase tracking-wider text-slate-300 drop-shadow-xs">
+            {listingType?.toUpperCase() === "RENT" ? "Rent" : listingType?.toUpperCase() === "PG" ? "Starts at" : "Price"}
           </span>
-        )}
-        {isVerified && !isMyProperty && (
-          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-2 py-1 text-[11px] font-semibold text-white shadow-sm">
-            <BadgeCheck className="h-3.5 w-3.5" />
-            Verified
-          </span>
-        )}
-        {isNew && (
-          <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 px-2 py-1 text-[11px] font-semibold text-zinc-950 shadow-sm">
-            <Sparkles className="h-3.5 w-3.5" />
-            New
-          </span>
-        )}
-      </div>
+          <p className="truncate text-sm sm:text-base font-black text-white leading-tight drop-shadow-md">{price}</p>
+        </div>
+      )}
+
       {photoCount > 1 && (
-        <span className="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1 rounded-md bg-zinc-950/75 px-1.5 py-0.5 text-[10px] font-semibold text-white shadow-xs backdrop-blur-xs">
-          <Camera className="h-3 w-3" />
+        <span className={`absolute z-10 inline-flex items-center gap-1 rounded-full bg-slate-950/80 px-2 py-0.5 text-[9px] font-semibold text-white shadow-xs backdrop-blur-md ${compact ? "bottom-2.5 right-2.5" : "bottom-3 right-3"}`}>
+          <Camera className="h-2.5 w-2.5" />
           {activeImage + 1}/{photoCount}
         </span>
       )}

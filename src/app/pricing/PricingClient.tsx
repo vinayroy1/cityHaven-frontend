@@ -67,7 +67,7 @@ const CATEGORY_CONFIG: Record<PlanCategory | string, CategoryMeta> = {
   },
   OWNER_LANDLORD: {
     label: "Property Owners",
-    badgeLabel: "100% Free Listing",
+    badgeLabel: "Zero Brokerage",
     subtitle: "Post your property for ₹0. Boost visibility with top-rank locality spotlights and rental agreement assistance.",
     icon: Home,
   },
