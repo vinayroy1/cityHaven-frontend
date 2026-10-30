@@ -44,18 +44,18 @@ export const metadata: Metadata = {
 
 export default function PropertyListingPage() {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
       {/* Global Navigation Header */}
       <HeaderNav />
 
       {/* Main Content Area */}
-      <main className="relative flex-1 bg-gradient-to-br from-rose-50/70 via-white to-emerald-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <main className="relative flex-1 w-full max-w-full overflow-x-hidden bg-gradient-to-br from-rose-50/70 via-white to-emerald-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_12%,rgba(244,63,94,0.10),transparent_38%),radial-gradient(circle_at_92%_0%,rgba(16,185,129,0.10),transparent_34%)]" />
 
-        <div className="relative mx-auto max-w-6xl px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
+        <div className="relative mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
           {/* Top Breadcrumbs & Back Bar */}
           <div className="mb-3 sm:mb-4 flex flex-row items-center justify-between gap-2 border-b border-slate-200/80 dark:border-slate-800 pb-2.5 sm:pb-3">
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <BackButton fallbackHref="/dashboard/properties" label="Back" variant="pill" />
 
               <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
@@ -69,19 +69,19 @@ export default function PropertyListingPage() {
             <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 px-2.5 sm:px-3 py-1 rounded-full shrink-0">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span className="hidden sm:inline">Direct Verified Inquiries • Zero Brokerage</span>
-              <span className="sm:hidden">Direct Verified Inquiries</span>
+              <span className="sm:hidden">Direct Verified</span>
             </div>
           </div>
 
           {/* 1,000 Free Credits Signup Highlight */}
           <div className="mb-4 sm:mb-6 rounded-2xl border border-amber-200/90 bg-gradient-to-r from-amber-50/90 via-rose-50/40 to-emerald-50/50 p-3 sm:p-4 shadow-2xs dark:border-amber-900/40 dark:from-amber-950/20 dark:via-slate-900 dark:to-slate-900">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
+              <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400">
                   <Sparkles className="h-5 w-5" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     <span className="inline-flex items-center rounded-md bg-amber-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-2xs">
                       1,000 Free Credits
                     </span>

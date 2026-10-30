@@ -319,8 +319,8 @@ function PropertiesContent() {
         </div>
       )}
 
-      <main className="flex-1">
-        <div className="mx-auto max-w-6xl px-3 sm:px-6 py-3 sm:py-8">
+      <main className="flex-1 w-full max-w-full overflow-x-hidden">
+        <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 py-3 sm:py-8">
           {/* Header Banner */}
           <div className="mb-3 sm:mb-6 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
             <div>

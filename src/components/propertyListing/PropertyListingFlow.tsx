@@ -622,16 +622,18 @@ export function PropertyListingFlow({
 
       {/* sticky action bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90 lg:sticky lg:bottom-4 lg:mt-4 lg:rounded-2xl lg:border">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2.5 sm:gap-3 sm:px-6 sm:py-3">
           <Button
             type="button"
             variant="ghost"
+            size="sm"
             disabled={stepIndex === 0}
             onClick={() => goToStep(Math.max(0, stepIndex - 1))}
+            className="px-2.5 sm:px-4"
           >
             Back
           </Button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {step.kind !== "custom" && missingRequiredFields.length > 0 && !isLast && (
               <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-amber-200/90 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300 mr-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
@@ -641,6 +643,8 @@ export function PropertyListingFlow({
             <Button
               type="button"
               variant="outline"
+              size="sm"
+              className="px-2.5 sm:px-4 text-xs sm:text-sm"
               onClick={() => {
                 const currentVals = form.getValues();
                 dispatch(saveDraft(currentVals));
@@ -653,7 +657,8 @@ export function PropertyListingFlow({
             {isLast ? (
               <Button
                 type="button"
-                className="bg-slate-900 px-6 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                size="sm"
+                className="bg-slate-900 px-3.5 sm:px-6 hover:bg-slate-800 text-xs sm:text-sm dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                 onClick={handlePublish}
                 disabled={busy || isViewerInSelectedOrg}
               >
@@ -662,7 +667,8 @@ export function PropertyListingFlow({
             ) : (
               <Button
                 type="button"
-                className="bg-slate-900 px-6 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                size="sm"
+                className="bg-slate-900 px-3.5 sm:px-6 hover:bg-slate-800 text-xs sm:text-sm dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                 onClick={handleNext}
                 disabled={isViewerInSelectedOrg}
               >

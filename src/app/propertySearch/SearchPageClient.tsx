@@ -198,7 +198,7 @@ export function SearchPageClient({
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
+    <main className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
       <HeaderNav isMobileHidden={isScrolledDown} hideOnPhone />
 
       <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 px-2 pb-2 shadow-xs backdrop-blur-xl sm:hidden dark:border-slate-800 dark:bg-slate-950/95">
@@ -250,7 +250,7 @@ export function SearchPageClient({
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-3 pb-4 pt-2 sm:px-6 sm:pt-4 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-3 pb-4 pt-2 sm:px-6 sm:pt-4 lg:px-8">
         {/* sticky search + quick filters — sits just below the site header on desktop,
             docks directly to top-0 when user scrolls down on mobile to maximize viewport. */}
         <div

@@ -426,14 +426,14 @@ export function PlanSelectionStep(props: {
   return (
     <div className="space-y-4">
       {/* Insufficient Credit Alert Banner */}
-      <div className="rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50 via-pink-50 to-amber-50 p-4 shadow-xs">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white shadow-sm">
-              <Zap className="h-5 w-5 fill-white" />
+      <div className="rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50 via-pink-50 to-amber-50 p-3.5 sm:p-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white shadow-sm">
+              <Zap className="h-4 w-4 sm:h-5 sm:w-5 fill-white" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span className="text-xs font-black uppercase tracking-wider text-rose-950">
                   Credits Needed
                 </span>
@@ -451,9 +451,9 @@ export function PlanSelectionStep(props: {
             <button
               type="button"
               onClick={onOpenWallet}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-rose-300 bg-white px-3 py-1.5 text-xs font-bold text-rose-700 shadow-2xs hover:bg-rose-50 transition"
+              className="inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-xl border border-rose-300 bg-white px-3.5 py-2 sm:py-1.5 text-xs font-bold text-rose-700 shadow-2xs hover:bg-rose-50 transition active:scale-98 shrink-0"
             >
-              <Gift className="h-3.5 w-3.5 text-rose-600" />
+              <Gift className="h-3.5 w-3.5 text-rose-600 shrink-0" />
               <span>Redeem Promo Code</span>
             </button>
           )}

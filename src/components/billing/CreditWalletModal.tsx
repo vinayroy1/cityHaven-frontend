@@ -337,18 +337,18 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
                 <span>Have a Coupon or Promo Code?</span>
               </div>
 
-              <form onSubmit={handleRedeemCoupon} className="flex gap-2">
+              <form onSubmit={handleRedeemCoupon} className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                   placeholder="e.g. TEST100, WELCOME100"
-                  className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-900 outline-none focus:border-rose-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                  className="w-full sm:flex-1 min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-900 outline-none focus:border-rose-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                 />
                 <button
                   type="submit"
                   disabled={isRedeeming || !couponCode.trim()}
-                  className="inline-flex items-center gap-1 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800 disabled:opacity-50 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 transition"
+                  className="inline-flex shrink-0 items-center justify-center gap-1 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800 disabled:opacity-50 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 transition"
                 >
                   {isRedeeming ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Redeem"}
                 </button>
