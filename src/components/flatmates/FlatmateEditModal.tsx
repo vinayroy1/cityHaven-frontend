@@ -521,3 +521,4 @@ export function FlatmateEditModal({ listing, isOpen, onClose, onSuccess }: Flatm
     </Dialog>
   );
 }
+
