@@ -12,7 +12,8 @@ import {
   Loader2,
   Sparkles,
   ShieldCheck,
-  Share2
+  Share2,
+  Coins
 } from "lucide-react";
 import {
   Dialog,
@@ -22,6 +23,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useScheduleVisitMutation } from "@/features/propertyListing/api";
+import { useMeQuery } from "@/features/auth/api";
 import { APP_CONFIG } from "@/constants/app-config";
 import { getStoredUserContact } from "@/lib/auth/storedUser";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
@@ -105,6 +107,11 @@ export function ScheduleVisitDialog({
   const [isSuccess, setIsSuccess] = useState(false);
   const [confirmedData, setConfirmedData] = useState<any>(null);
 
+  const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
+  const { data: meData, refetch: refetchMe } = useMeQuery(undefined, { skip: !token });
+  const userCredits = meData?.credits;
+  const hasInsufficientCredits = Boolean(token && userCredits !== undefined && userCredits < 5);
+
   const [scheduleVisit, { isLoading }] = useScheduleVisitMutation();
 
   React.useEffect(() => {
@@ -121,12 +128,16 @@ export function ScheduleVisitDialog({
     e.preventDefault();
     setError(null);
 
+    if (hasInsufficientCredits) {
+      setError("Insufficient credits. 5 credits are required to schedule a site visit.");
+      return;
+    }
+
     // Compute estimated ISO time for scheduledAt based on slot
     const slotHour = selectedSlot === "MORNING" ? 11 : selectedSlot === "AFTERNOON" ? 14 : 17;
     const scheduledDateTime = new Date(selectedDate);
     scheduledDateTime.setHours(slotHour, 0, 0, 0);
 
-    const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
     if (!token && phone.replace(/\D/g, "").length < 10) {
       setError("Please provide a valid 10-digit mobile number");
       return;
@@ -143,6 +154,11 @@ export function ScheduleVisitDialog({
         visitorPhone: phone.replace(/\D/g, "").slice(0, 10) || undefined,
         note: note.trim() || undefined,
       }).unwrap();
+
+      void refetchMe();
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("awasio:credits-updated"));
+      }
 
       setConfirmedData(res.data);
       setIsSuccess(true);
@@ -193,8 +209,8 @@ export function ScheduleVisitDialog({
             <div className="shrink-0 bg-gradient-to-r from-rose-600 to-rose-700 px-4 pb-3 pt-4 text-white dark:from-rose-700 dark:to-rose-800 sm:p-5">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-semibold backdrop-blur-md">
-                  <Sparkles className="h-3 w-3 text-amber-300" />
-                  100% Free • Direct Owner Connection
+                  <Coins className="h-3 w-3 text-amber-300" />
+                  5 Credits • Direct Owner Connection
                 </span>
                 {property.price && (
                   <span className="w-fit rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold text-white/95 sm:bg-transparent sm:px-0 sm:py-0 sm:text-sm">{property.price}</span>
@@ -202,7 +218,7 @@ export function ScheduleVisitDialog({
               </div>
               <DialogHeader className="mt-2 text-left">
                 <DialogTitle className="text-lg font-extrabold text-white sm:text-xl">
-                  Schedule a Site Visit
+                  Schedule Site Visit
                 </DialogTitle>
                 <DialogDescription className="text-xs text-rose-100 line-clamp-1">
                   {property.title || "Explore this verified property at your preferred time"}
@@ -212,6 +228,40 @@ export function ScheduleVisitDialog({
 
             <form onSubmit={handleSubmit} className="flex min-h-0 min-w-0 flex-1 flex-col">
               <div className="min-h-0 min-w-0 flex-1 space-y-3 overflow-x-hidden overflow-y-auto overscroll-contain p-3.5 pb-6 sm:space-y-5 sm:p-5">
+                {/* Credit Balance & Cost Status */}
+                <div className="flex items-center justify-between rounded-xl border border-zinc-200/90 bg-zinc-50/80 p-2.5 sm:p-3 dark:border-slate-800 dark:bg-slate-800/40">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
+                      <Coins className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-medium text-zinc-500 dark:text-slate-400">Your Balance</p>
+                      <p className="text-xs font-bold text-zinc-900 dark:text-white">
+                        {token ? (userCredits !== undefined ? `${userCredits} credits` : "Loading...") : "Guest visitor"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="inline-flex items-center rounded-lg bg-rose-100 px-2 py-0.5 text-xs font-extrabold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
+                      Cost: 5 Credits
+                    </span>
+                  </div>
+                </div>
+
+                {hasInsufficientCredits && (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200 flex flex-col gap-2">
+                    <p className="font-semibold">
+                      Insufficient Credits: You have {userCredits ?? 0} credits. 5 credits are required to schedule a site visit.
+                    </p>
+                    <a
+                      href="/pricing"
+                      className="inline-flex w-fit items-center gap-1 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-amber-700"
+                    >
+                      <span>Recharge Credits</span>
+                    </a>
+                  </div>
+                )}
+
                 {/* Tour Mode Toggle: In-Person vs Video Tour */}
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-slate-400">
@@ -383,7 +433,7 @@ export function ScheduleVisitDialog({
               <div className="shrink-0 space-y-1.5 border-t border-zinc-100 bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-8px_24px_-22px_rgba(15,23,42,0.8)] dark:border-slate-800 dark:bg-slate-900 sm:space-y-2 sm:p-5">
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || hasInsufficientCredits}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-rose-200 transition hover:bg-rose-700 disabled:opacity-50 dark:shadow-rose-950"
                 >
                   {isLoading ? (
@@ -394,13 +444,13 @@ export function ScheduleVisitDialog({
                   ) : (
                     <>
                       <CalendarIcon className="h-4 w-4" />
-                      <span>Confirm Free Site Visit</span>
+                      <span>Confirm Site Visit (5 Credits)</span>
                     </>
                   )}
                 </button>
                 <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-zinc-500 dark:text-slate-400">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>Free booking • No charges • Saved to your visit history</span>
+                  <Coins className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                  <span>Deducts 5 credits • Saved to your visit history</span>
                 </p>
               </div>
             </form>
@@ -417,8 +467,14 @@ export function ScheduleVisitDialog({
                 Site Visit Confirmed!
               </h3>
               <p className="mt-1 text-xs text-zinc-500 dark:text-slate-400">
-                Your request has been saved. Awasio can notify the owner once notification channels are enabled.
+                5 credits deducted. Your request has been confirmed and saved to your visit history.
               </p>
+              {confirmedData?.credits !== undefined && (
+                <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  <Coins className="h-3.5 w-3.5 text-amber-500" />
+                  <span>Remaining balance: {confirmedData.credits} credits</span>
+                </div>
+              )}
             </div>
 
             {/* Visit Details Card */}

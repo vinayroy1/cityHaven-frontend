@@ -33,6 +33,16 @@ export function OwnerContactCard({
   const [phone, setPhone] = React.useState<string | null>(null);
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
 
+  React.useEffect(() => {
+    const handleUnlocked = (e: any) => {
+      if (String(e.detail?.propertyId) === String(propertyId) && e.detail?.phone) {
+        setPhone(e.detail.phone);
+      }
+    };
+    window.addEventListener("awasio:contact-unlocked", handleUnlocked);
+    return () => window.removeEventListener("awasio:contact-unlocked", handleUnlocked);
+  }, [propertyId]);
+
   const digits = phone?.replace(/\D/g, "") ?? "";
   const contactNumber = digits.length === 10 ? `91${digits}` : digits;
   const buttonClass =
@@ -49,7 +59,7 @@ export function OwnerContactCard({
           <div className="mb-5 rounded-xl bg-gradient-to-tr from-rose-50 to-amber-50/50 p-3.5 border border-rose-100 dark:border-rose-900/40 dark:from-rose-950/40 dark:to-slate-900">
             <div className="flex items-center gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-400">
               <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-              <span>Direct Site Visit • Free</span>
+              <span>Direct Site Visit • 5 Credits</span>
             </div>
             <p className="mt-1 text-xs text-zinc-600 dark:text-slate-300">
               Pick a convenient date and time to inspect this property in person or via live video tour.
@@ -60,7 +70,7 @@ export function OwnerContactCard({
               className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 active:scale-[0.98] dark:shadow-rose-950 sm:text-sm"
             >
               <CalendarIcon className="h-4 w-4" />
-              <span>Schedule a Free Visit</span>
+              <span>Schedule Visit</span>
             </button>
           </div>
 

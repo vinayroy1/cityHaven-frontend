@@ -97,6 +97,20 @@ export function ContactAccessFlow({
     });
   const currentPlan = plans.find((p) => p.id === selectedPlanId) ?? plans[0];
 
+  const notifyContact = React.useCallback(
+    (phone: string) => {
+      onContact(phone);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("awasio:contact-unlocked", {
+            detail: { propertyId: String(propertyId), phone },
+          })
+        );
+      }
+    },
+    [onContact, propertyId]
+  );
+
   const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) ?? "" : "";
   const { data: meData } = useMeQuery(undefined, { skip: !token });
 
@@ -119,7 +133,7 @@ export function ContactAccessFlow({
         const isUnlocked = Boolean(contact?.unlocked || contact?.data?.unlocked);
         const ownerPhone = contact?.data?.ownerPhone || (contact as any)?.ownerPhone;
         if (isUnlocked && ownerPhone) {
-          onContact(ownerPhone);
+          notifyContact(ownerPhone);
           return;
         }
         // If returning from login with autoUnlock, immediately trigger the flow
@@ -166,7 +180,7 @@ export function ContactAccessFlow({
       const isAlreadyUnlocked = Boolean(contact?.unlocked || contact?.data?.unlocked);
       const ownerPhone = contact?.data?.ownerPhone || (contact as any)?.ownerPhone;
       if (isAlreadyUnlocked && ownerPhone) {
-        onContact(ownerPhone);
+        notifyContact(ownerPhone);
         setOpen(false);
         return;
       }
@@ -218,7 +232,7 @@ export function ContactAccessFlow({
         }).unwrap();
 
         if (res.data?.ownerPhone) {
-          onContact(res.data.ownerPhone);
+          notifyContact(res.data.ownerPhone);
           setOpen(false);
           return;
         }
