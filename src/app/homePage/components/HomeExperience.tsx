@@ -953,7 +953,7 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
       {isLoading ? (
         <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] sm:max-w-none lg:w-[calc((100%-1.5rem)/3)]">
+            <div key={i} className="h-[174px] w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] sm:max-w-none lg:w-[calc((100%-1.5rem)/3)]">
               <PropertyCardSkeleton />
             </div>
           ))}
@@ -963,7 +963,7 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
           {listings.slice(0, 8).map((item) => (
             <div
               key={item.id}
-              className="flex h-full w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] sm:max-w-none lg:w-[calc((100%-1.5rem)/3)]"
+              className="flex h-[174px] w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] sm:max-w-none lg:w-[calc((100%-1.5rem)/3)]"
             >
               <FlatmateCard listing={item} layout="horizontal" />
             </div>

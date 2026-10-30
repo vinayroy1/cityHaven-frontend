@@ -482,8 +482,8 @@ export function FlatmateCard({
           isForceVertical
             ? "flex-col h-full"
             : isForceHorizontal
-            ? "flex-row h-full"
-            : "flex-row sm:flex-col sm:h-full"
+            ? "flex-row h-[174px]"
+            : "flex-row h-[174px] sm:h-full sm:flex-col"
         } ${
           listing.isBoosted
             ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40"
@@ -491,220 +491,126 @@ export function FlatmateCard({
         }`}
       >
         {/* ================================================================ */}
-        {/* VISUAL THUMBNAIL                                                 */}
+        {/* VISUAL THUMBNAIL: Full area profile image                        */}
         {/* ================================================================ */}
         <div
           className={`relative shrink-0 select-none overflow-hidden ${
             isForceVertical
-              ? "w-full aspect-[16/10] block border-b"
+              ? "w-full aspect-[16/10] block border-b border-slate-100 dark:border-slate-800"
               : isForceHorizontal
-              ? "w-[120px] xs:w-[130px] flex flex-col justify-between items-center p-2 border-r border-b-0"
-              : "w-[120px] xs:w-[130px] sm:w-full flex flex-col justify-between items-center p-2 sm:p-0 sm:block sm:aspect-[16/10] border-r sm:border-r-0 sm:border-b"
-          } ${
-            listing.mode === "BUDDY_UP"
-              ? "bg-gradient-to-br from-amber-800 via-rose-900 to-slate-950 dark:from-slate-950 dark:via-amber-950 dark:to-slate-950 border-amber-600/30"
-              : "bg-gradient-to-br from-rose-900 via-rose-950 to-slate-950 dark:from-slate-950 dark:via-rose-950 dark:to-slate-950 border-rose-700/30"
-          }`}
+              ? "w-[130px] xs:w-[135px] sm:w-[140px] h-full border-r border-slate-100 dark:border-slate-800"
+              : "w-[130px] xs:w-[135px] sm:w-full h-full sm:h-auto sm:aspect-[16/10] border-r sm:border-r-0 sm:border-b border-slate-100 dark:border-slate-800"
+          } bg-slate-100 dark:bg-slate-850`}
         >
-          {/* Subtle radial glow */}
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.18),transparent_65%)]" />
-
-          {/* Floating Micro-Icons (Strictly top-right on vertical) */}
-          <div className={`pointer-events-none absolute inset-0 overflow-hidden ${isForceVertical ? "block" : isForceHorizontal ? "hidden" : "hidden sm:block"}`}>
-            <span className="absolute right-3.5 top-3 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md border border-white/30 shadow-xs rotate-6">
-              <Coffee className="h-3 w-3" />
-            </span>
-            <span className="absolute right-11.5 top-3.5 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md border border-white/30 shadow-xs -rotate-6">
-              <Headphones className="h-3 w-3" />
-            </span>
-            <span className="absolute right-19.5 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md border border-white/30 shadow-xs rotate-12">
-              <Sparkles className="h-3 w-3" />
-            </span>
-          </div>
-
-          {/* Scrim overlay */}
-          <div className={`pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-black/25 ${isForceVertical ? "block" : isForceHorizontal ? "hidden" : "hidden sm:block"}`} />
-
-          {/* Mode Tag */}
-          <div
-            className={`relative z-10 w-full ${
-              isForceVertical
-                ? "absolute left-2.5 top-2.5 w-auto"
-                : isForceHorizontal
-                ? "flex justify-center"
-                : "flex justify-center sm:justify-start sm:absolute sm:left-2.5 sm:top-2.5 sm:w-auto"
-            }`}
-          >
-            <span
-              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold shadow-xs backdrop-blur-md ${badge.className}`}
-            >
-              <ModeIcon className="h-2.5 w-2.5" />
-              <span className={isForceVertical ? "hidden sm:inline" : isForceHorizontal ? "inline" : "sm:hidden"}>
-                {listing.mode === "BUDDY_UP" ? "Buddy Up" : "Seeker"}
-              </span>
-              <span className={isForceVertical ? "inline sm:hidden" : isForceHorizontal ? "hidden" : "hidden sm:inline"}>
-                {badge.label}
-              </span>
-            </span>
-          </div>
-
-          {/* Match or Featured */}
-          <div
-            className={`absolute right-2.5 top-2.5 z-10 items-center gap-1 ${
-              isForceVertical ? "flex" : isForceHorizontal ? "hidden" : "hidden sm:flex"
-            }`}
-          >
-            {listing.isBoosted && (
-              <span className="rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black text-amber-950 shadow">
-                ⭐ FEATURED
-              </span>
-            )}
-            {listing.compatibilityScore != null && (
-              <span className="rounded-full bg-white/95 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700 shadow-xs backdrop-blur dark:bg-slate-900/95 dark:text-emerald-300">
-                {listing.compatibilityScore}% match
-              </span>
-            )}
-          </div>
-
-          {/* Prominent Profile Avatar */}
-          <div
-            className={`relative z-10 ${
-              isForceVertical
-                ? "absolute left-3 bottom-2.5"
-                : isForceHorizontal
-                ? "my-0.5"
-                : "my-0.5 sm:my-0 sm:absolute sm:left-3 sm:bottom-2.5"
-            }`}
-          >
-            <div className="relative">
-              <div
-                className={`h-11 w-11 xs:h-12 xs:w-12 rounded-xl overflow-hidden ring-2 ring-white/90 dark:ring-slate-900 shadow-md flex items-center justify-center font-extrabold text-base sm:text-lg text-white ${
-                  listing.mode === "BUDDY_UP"
-                    ? "bg-gradient-to-tr from-amber-500 to-rose-500"
-                    : "bg-gradient-to-tr from-rose-500 to-amber-500"
-                }`}
-              >
-                {avatarPhoto ? (
-                  <img
-                    src={avatarPhoto}
-                    alt={profile?.displayName || listing.title}
-                    loading={priority ? "eager" : "lazy"}
-                    fetchPriority={priority ? "high" : "auto"}
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span>{(profile?.displayName || "R")[0].toUpperCase()}</span>
-                )}
-              </div>
-              {listing.mode === "BUDDY_UP" && (
-                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-white shadow ring-2 ring-white dark:ring-slate-900">
-                  <Users className="h-2 w-2" />
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Budget Pill */}
-          <div
-            className={`relative z-10 pointer-events-none ${
-              isForceVertical
-                ? "absolute bottom-2.5 right-2.5"
-                : isForceHorizontal
-                ? "w-full px-0.5"
-                : "w-full sm:w-auto sm:absolute sm:bottom-2.5 sm:right-2.5 px-0.5 sm:px-0"
-            }`}
-          >
+          {avatarPhoto ? (
+            <img
+              src={avatarPhoto}
+              alt={profile?.displayName || listing.title}
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : "auto"}
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 pointer-events-none"
+            />
+          ) : (
             <div
-              className={`${
-                isForceVertical ? "w-auto" : isForceHorizontal ? "w-full" : "w-full sm:w-auto"
-              } rounded-lg bg-slate-950/95 px-1.5 py-0.5 sm:py-1 text-white shadow-md backdrop-blur-md text-center sm:text-right border border-white/20`}
+              className={`absolute inset-0 h-full w-full flex flex-col items-center justify-center p-3 text-center ${
+                listing.mode === "BUDDY_UP"
+                  ? "bg-gradient-to-br from-amber-600 via-rose-600 to-amber-700 text-white"
+                  : "bg-gradient-to-br from-rose-600 via-pink-600 to-rose-700 text-white"
+              }`}
             >
-              <span className="block text-[8px] font-bold uppercase tracking-wider text-rose-300 leading-none mb-0.5">
-                {listing.mode === "BUDDY_UP" ? "Team Budget" : "Max Budget"}
-              </span>
-              <span className="block text-[10px] xs:text-[11px] sm:text-xs font-black text-white leading-tight tracking-tight whitespace-nowrap">
-                {formattedRent()}
+              <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md shadow-inner text-2xl sm:text-3xl font-black">
+                {(profile?.displayName || "R")[0].toUpperCase()}
+              </div>
+              <span className="mt-1.5 text-[10px] sm:text-[11px] font-bold text-white/90">
+                {profile?.gender || (listing.mode === "BUDDY_UP" ? "Group" : "Seeker")}
               </span>
             </div>
+          )}
+
+          {/* Subtle gradient overlay at bottom for depth */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+
+          {/* Mode Tag overlay on image (Reduced font size to make fully visible) */}
+          <div className="absolute left-1.5 top-1.5 z-10 pointer-events-none max-w-[calc(100%-12px)]">
+            <span
+              className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[7px] xs:text-[7.5px] font-bold shadow-xs backdrop-blur-md leading-none tracking-tight whitespace-nowrap ${badge.className}`}
+            >
+              <ModeIcon className="h-2 w-2 shrink-0" />
+              <span>{badge.label}</span>
+            </span>
           </div>
+
+          {/* Featured badge if boosted */}
+          {listing.isBoosted && (
+            <span className="absolute left-1.5 bottom-1.5 z-10 pointer-events-none rounded-full bg-amber-400 px-1.5 py-0.5 text-[8px] font-black text-amber-950 shadow">
+              ⭐ FEATURED
+            </span>
+          )}
+
+          {/* Buddy-Up icon badge on photo corner */}
+          {listing.mode === "BUDDY_UP" && (
+            <span className="absolute bottom-1.5 right-1.5 z-10 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-amber-500 text-white shadow ring-2 ring-white dark:ring-slate-900">
+              <Users className="h-2.5 w-2.5" />
+            </span>
+          )}
         </div>
 
         {/* ================================================================ */}
         {/* DETAILS SECTION                                                  */}
         {/* ================================================================ */}
         <div
-          className={`flex flex-1 min-w-0 flex-col justify-between ${
-            isForceVertical ? "p-3 sm:p-3.5 space-y-2" : "p-2 sm:p-2.5 space-y-1"
+          className={`flex flex-1 min-w-0 flex-col justify-between h-full ${
+            isForceVertical ? "p-3 sm:p-3.5 space-y-2" : "p-3 sm:p-3.5"
           }`}
         >
-          <div className="space-y-1">
-            {/* Header: Name, Age, Occupation, Verified & Match % */}
-            <div className="flex items-center justify-between gap-1 min-w-0">
-              <div className="flex items-center gap-1 min-w-0">
-                <h3 className="shrink-0 max-w-[130px] sm:max-w-[150px] truncate text-xs sm:text-sm font-bold text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
-                  {profile?.displayName || (listing.mode === "BUDDY_UP" ? "Buddy-Up Group" : "Room Seeker")}
-                </h3>
-                {age && (
-                  <span className="shrink-0 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                    · {age} yrs
-                  </span>
-                )}
-                {profile?.occupation && (
-                  <span className="truncate max-w-[100px] text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">
-                    · {profile.occupation}
-                  </span>
-                )}
-                {profile?.isIdentityVerified && (
-                  <span className="shrink-0 inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                    <ShieldCheck className="h-3 w-3 shrink-0" />
-                    <span className="hidden xs:inline">Verified</span>
-                  </span>
-                )}
-              </div>
-
-              {/* Match badge on mobile or horizontal mode */}
-              {(!isForceVertical || isForceHorizontal) && (
-                <div className={`flex items-center gap-1 shrink-0 ${isForceHorizontal ? "flex" : "sm:hidden"}`}>
-                  {listing.compatibilityScore != null && (
-                    <span className="rounded-full bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 text-[9px] font-extrabold text-emerald-700 dark:bg-slate-800 dark:border-emerald-800 dark:text-emerald-300">
-                      {listing.compatibilityScore}%
-                    </span>
-                  )}
-                </div>
+          <div className="space-y-1 min-w-0">
+            {/* Row 1: Clean Name & Age */}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <h3 className="truncate text-xs sm:text-sm font-bold text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
+                {profile?.displayName || (listing.mode === "BUDDY_UP" ? "Buddy-Up Group" : "Room Seeker")}
+              </h3>
+              {age && (
+                <span className="shrink-0 text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  ({age} yrs)
+                </span>
               )}
             </div>
 
-            {/* Preferred Areas / Location: Prominently displayed with line-clamp-2 */}
-            <div className="flex items-start gap-1 text-[11px] text-slate-600 dark:text-slate-300 leading-snug">
-              <MapPin className="h-3 w-3 shrink-0 text-rose-500 mt-0.5" />
-              <div className="min-w-0 flex-1">
-                {preferredAreas.length > 0 ? (
-                  <p className="line-clamp-2">
-                    <strong className="font-bold text-rose-600 dark:text-rose-400">Preferred areas: </strong>
-                    <span className="font-semibold text-slate-900 dark:text-white">
-                      {preferredAreas.join(" · ")}
-                    </span>
-                    {listing.cityName && (
-                      <span className="text-slate-500 dark:text-slate-400 text-[10px] ml-1 font-normal">
-                        ({listing.cityName})
-                      </span>
-                    )}
-                  </p>
-                ) : listing.locality ? (
-                  <p className="truncate font-medium text-slate-700 dark:text-slate-300">
-                    {listing.locality}, {listing.cityName}
-                  </p>
-                ) : (
-                  <p className="truncate font-medium text-slate-700 dark:text-slate-300">
-                    {listing.cityName}
-                  </p>
-                )}
-              </div>
+            {/* Row 2: Dedicated Budget Row (No ellipsis, full price guaranteed) */}
+            <div className="flex items-baseline gap-1.5 min-w-0 overflow-x-auto no-scrollbar whitespace-nowrap py-0.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 shrink-0">
+                {listing.mode === "BUDDY_UP" ? "Team Budget" : "Max Budget"}
+              </span>
+              <span className="text-xs sm:text-sm font-black text-rose-600 dark:text-rose-400 shrink-0">
+                {formattedRent()}
+              </span>
+              <span className="text-[10px] font-normal text-slate-400 shrink-0">/mo</span>
             </div>
 
-            {/* Compact Specifications & Key Badges: Combined single horizontal scroll row */}
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 text-[10px] whitespace-nowrap">
+            {/* Row 4: Preferred Areas: One-line smooth scroll */}
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300 overflow-x-auto no-scrollbar whitespace-nowrap min-w-0 py-0.5">
+              <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
+              <span className="font-bold text-rose-600 dark:text-rose-400 shrink-0">Preferred areas: </span>
+              <span className="font-semibold text-slate-900 dark:text-white shrink-0">
+                {preferredAreas.length > 0
+                  ? preferredAreas.join(" · ")
+                  : listing.locality || listing.cityName}
+              </span>
+              {listing.cityName && preferredAreas.length > 0 && (
+                <span className="text-slate-400 text-[10px] shrink-0 font-normal">
+                  ({listing.cityName})
+                </span>
+              )}
+            </div>
+
+            {/* Row 5: Compact Specifications & Occupation: Combined single horizontal scroll row */}
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 text-[10px] whitespace-nowrap min-w-0">
+              {profile?.occupation && (
+                <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                  {profile.occupation}
+                </span>
+              )}
               {listing.bhk && (
                 <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                   {listing.bhk} BHK preferred
@@ -756,6 +662,20 @@ export function FlatmateCard({
               )}
             </div>
 
+            {/* Row 6: Move-in Date Row (Moved above footer into available whitespace to eliminate ...) */}
+            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 min-w-0 overflow-x-auto no-scrollbar whitespace-nowrap py-0.5">
+              <Calendar className="h-3 w-3 text-slate-400 shrink-0" />
+              <span className="font-semibold text-slate-700 dark:text-slate-300 shrink-0">Move-in:</span>
+              <span className="font-medium text-slate-600 dark:text-slate-300 shrink-0">
+                {listing.availableFrom
+                  ? new Date(listing.availableFrom).toLocaleDateString("en-IN", {
+                      month: "short",
+                      day: "numeric",
+                    })
+                  : "Flexible move-in"}
+              </span>
+            </div>
+
             {/* In vertical mode, retain bio snippet and compatibility badges */}
             {isVertical && (
               <>
@@ -789,16 +709,9 @@ export function FlatmateCard({
               isVertical ? "h-11 sm:h-12 mt-auto" : "h-7 sm:h-8 mt-auto"
             } items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/80`}
           >
-            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 truncate min-w-0 pr-1">
-              <Calendar className="h-3 w-3 text-slate-400 shrink-0" />
-              <span className="truncate font-medium">
-                {listing.availableFrom
-                  ? `Move-in: ${new Date(listing.availableFrom).toLocaleDateString("en-IN", {
-                      month: "short",
-                      day: "numeric",
-                    })}`
-                  : "Flexible move-in"}
-              </span>
+            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 truncate min-w-0 pr-1">
+              <ShieldCheck className="h-3 w-3 shrink-0" />
+              <span className="truncate">Verified</span>
             </div>
 
             <Button
