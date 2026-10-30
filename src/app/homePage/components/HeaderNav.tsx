@@ -36,12 +36,14 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 import { useGetMyCreditsQuery, useGetCreditPlatformConfigQuery } from "@/features/contactVerify/api";
 import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
+import { useMeQuery } from "@/features/auth/api";
 
 interface UserProfile {
   name?: string;
   email?: string;
   mobileNumber?: string;
   role?: string;
+  profileImage?: string | null;
 }
 
 const primaryNavLinks = [
@@ -107,6 +109,14 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   const [creditModalOpen, setCreditModalOpen] = React.useState(false);
   const accountRef = React.useRef<HTMLDivElement | null>(null);
   const moreNavRef = React.useRef<HTMLDivElement | null>(null);
+
+  const { data: meData } = useMeQuery(undefined, { skip: !isAuthed });
+  const activeProfileImage = meData?.profileImage ?? userProfile?.profileImage ?? null;
+  const [avatarFailed, setAvatarFailed] = React.useState(false);
+
+  React.useEffect(() => {
+    setAvatarFailed(false);
+  }, [activeProfileImage]);
 
   const { data: creditsData } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
   const { data: platformData } = useGetCreditPlatformConfigQuery();
@@ -220,6 +230,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
 
   const accountMenuItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, badge: null, onClick: undefined },
+    { label: "My Profile", href: "/dashboard/profile", icon: User, badge: null, onClick: undefined },
     { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null, onClick: undefined },
     { label: "Organization", href: "/dashboard/organization", icon: ShieldCheck, badge: null, onClick: undefined },
     purchaseEnabled
@@ -232,14 +243,18 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   ];
 
   const userDisplayName =
+    meData?.name ||
     userProfile?.name ||
+    meData?.email?.split("@")[0] ||
     userProfile?.email?.split("@")[0] ||
+    meData?.mobileNumber ||
     userProfile?.mobileNumber ||
     "Account";
 
   const userInitials =
-    userProfile?.name
+    (meData?.name || userProfile?.name)
       ?.split(" ")
+      .filter(Boolean)
       .map((n) => n[0])
       .join("")
       .substring(0, 2)
@@ -552,8 +567,17 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                 aria-label="User Account Menu"
                 aria-expanded={accountOpen}
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-rose-600 to-pink-500 text-xs font-bold text-white shadow-2xs">
-                  {userInitials}
+                <div className="flex h-7 w-7 items-center justify-center rounded-full overflow-hidden bg-gradient-to-tr from-rose-600 to-pink-500 text-xs font-bold text-white shadow-2xs">
+                  {activeProfileImage && !avatarFailed ? (
+                    <img
+                      src={activeProfileImage}
+                      alt={userDisplayName}
+                      className="h-full w-full object-cover"
+                      onError={() => setAvatarFailed(true)}
+                    />
+                  ) : (
+                    <span>{userInitials}</span>
+                  )}
                 </div>
                 <span className="hidden max-w-[80px] truncate text-xs font-semibold text-slate-800 sm:inline-block dark:text-slate-200">
                   {userDisplayName}
@@ -571,8 +595,17 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                   {/* User Profile Header */}
                   <div className="rounded-xl bg-slate-50/80 p-3 dark:bg-slate-900/80">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-rose-600 to-pink-500 text-sm font-bold text-white shadow-xs">
-                        {userInitials}
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full overflow-hidden bg-gradient-to-tr from-rose-600 to-pink-500 text-sm font-bold text-white shadow-xs">
+                        {activeProfileImage && !avatarFailed ? (
+                          <img
+                            src={activeProfileImage}
+                            alt={userDisplayName}
+                            className="h-full w-full object-cover"
+                            onError={() => setAvatarFailed(true)}
+                          />
+                        ) : (
+                          <span>{userInitials}</span>
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-xs font-bold text-slate-900 dark:text-white">

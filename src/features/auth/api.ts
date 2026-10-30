@@ -8,7 +8,14 @@ export type LoginPayload = { loginId: string; password: string };
 export type SignupPayload = { name: string; email: string; mobileNumber: string; password: string; otp?: string; referralCode?: string };
 export type SendSignupOtpPayload = { name: string; email: string; mobileNumber: string };
 export type TokenResponse = { accessToken?: string; refreshToken?: string; user?: any; isNewUser?: boolean };
-export type UpdateProfilePayload = { name?: string; email?: string };
+export type UpdateProfilePayload = {
+  name?: string;
+  email?: string;
+  mobileNumber?: string;
+  profileImage?: string | null;
+  address?: string | null;
+  otp?: string;
+};
 
 export type ForgotPasswordPayload = { email: string };
 export type ResetPasswordPayload = { email: string; otp: string; newPassword: string };
@@ -16,12 +23,27 @@ export type ResetPasswordPayload = { email: string; otp: string; newPassword: st
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
+  tagTypes: ["Me"],
   endpoints: (builder) => ({
-    me: builder.query<{ id?: number; email?: string; name?: string; credits?: number; mobileNumber?: string; systemRole?: any; organizations?: any[] }, void>({
+    me: builder.query<{
+      id?: number;
+      email?: string;
+      name?: string;
+      credits?: number;
+      mobileNumber?: string;
+      profileImage?: string | null;
+      address?: string | null;
+      isVerified?: boolean;
+      kycVerified?: boolean;
+      systemRole?: any;
+      organizations?: any[];
+      createdAt?: string;
+    }, void>({
       query: () => ({
         url: API_ENDPOINTS.auth.me,
         method: "GET",
       }),
+      providesTags: ["Me"],
     }),
     loginWithPassword: builder.mutation<TokenResponse, LoginPayload>({
       query: (body) => ({
@@ -88,13 +110,32 @@ export const authApi = createApi({
         message: response.message,
       }),
     }),
-    updateProfile: builder.mutation<{ success?: boolean; user?: any }, UpdateProfilePayload>({
+    requestProfileOtp: builder.mutation<
+      { success: boolean; message: string; targetEmail?: string; devOtp?: string },
+      { newEmail?: string; newMobileNumber?: string }
+    >({
+      query: (body) => ({
+        url: `${API_ENDPOINTS.auth.me}/request-otp`,
+        method: "POST",
+        body,
+      }),
+    }),
+    updateProfile: builder.mutation<
+      { success?: boolean; user?: any; data?: any; message?: string },
+      UpdateProfilePayload
+    >({
       query: (body) => ({
         url: API_ENDPOINTS.auth.profile,
         method: "PUT",
         body,
       }),
-      transformResponse: (response: { data?: any }) => response.data ?? {},
+      invalidatesTags: ["Me"],
+      transformResponse: (response: { data?: any; user?: any; message?: string }) => ({
+        success: true,
+        user: response.data || response.user,
+        data: response.data || response.user,
+        message: response.message,
+      }),
     }),
     logout: builder.mutation<{ success?: boolean; message?: string }, { refreshToken?: string } | void>({
       query: (body) => ({
@@ -118,6 +159,7 @@ export const {
   useVerifyOtpMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
+  useRequestProfileOtpMutation,
   useUpdateProfileMutation,
   useLogoutMutation,
   useMeQuery,

@@ -36,6 +36,7 @@ import { APP_CONFIG } from "@/constants/app-config";
 import { ThemeToggle } from "./ThemeToggle";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 import { useGetMyCreditsQuery, useGetCreditPlatformConfigQuery } from "@/features/contactVerify/api";
+import { useMeQuery } from "@/features/auth/api";
 import dynamic from "next/dynamic";
 
 const CreditWalletModal = dynamic(
@@ -48,6 +49,7 @@ interface UserProfile {
   email?: string;
   mobileNumber?: string;
   role?: string;
+  profileImage?: string | null;
 }
 
 // Routes where the bottom bar should be hidden (form steppers, auth flows)
@@ -96,6 +98,14 @@ export function MobileBottomNav() {
   const [creditModalOpen, setCreditModalOpen] = React.useState(false);
   const [isAuthed, setIsAuthed] = React.useState(false);
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
+
+  const { data: meData } = useMeQuery(undefined, { skip: !isAuthed });
+  const activeProfileImage = meData?.profileImage ?? userProfile?.profileImage ?? null;
+  const [avatarFailed, setAvatarFailed] = React.useState(false);
+
+  React.useEffect(() => {
+    setAvatarFailed(false);
+  }, [activeProfileImage]);
 
   const { data: creditsData, refetch: refetchCredits } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
   const { data: platformData } = useGetCreditPlatformConfigQuery();
@@ -384,15 +394,28 @@ export function MobileBottomNav() {
                   <div className="rounded-2xl border border-slate-200/90 bg-gradient-to-br from-slate-50 to-slate-100/60 p-3.5 dark:border-slate-800 dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-900/60">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-rose-600 to-pink-500 text-sm font-bold text-white shadow-sm">
-                          {userProfile?.name ? userProfile.name.charAt(0).toUpperCase() : "U"}
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full overflow-hidden bg-gradient-to-tr from-rose-600 to-pink-500 text-sm font-bold text-white shadow-sm">
+                          {activeProfileImage && !avatarFailed ? (
+                            <img
+                              src={activeProfileImage}
+                              alt={userProfile?.name || meData?.name || "User"}
+                              className="h-full w-full object-cover"
+                              onError={() => setAvatarFailed(true)}
+                            />
+                          ) : (
+                            <span>
+                              {(meData?.name || userProfile?.name)
+                                ? (meData?.name || userProfile?.name)!.charAt(0).toUpperCase()
+                                : "U"}
+                            </span>
+                          )}
                         </div>
                         <div className="min-w-0">
                           <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                            {userProfile?.name || "Verified Member"}
+                            {meData?.name || userProfile?.name || "Verified Member"}
                           </p>
                           <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
-                            {userProfile?.email || userProfile?.mobileNumber || "Member"}
+                            {meData?.email || userProfile?.email || meData?.mobileNumber || userProfile?.mobileNumber || "Member"}
                           </p>
                         </div>
                       </div>

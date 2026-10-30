@@ -9,6 +9,22 @@ const nextConfig: NextConfig = {
   // The app does not depend on compiler-specific semantics. Enabling the React
   // Compiler transforms every component and substantially increases CI time.
   reactCompiler: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.r2.dev",
+      },
+      {
+        protocol: "https",
+        hostname: "pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+  },
   async redirects() {
     return [
       {

@@ -339,9 +339,9 @@ function PropertiesContent() {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-between sm:justify-end gap-2">
+            <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
               {/* Scope Switcher */}
-              <div className="flex rounded-full border border-slate-200 bg-white p-0.5 sm:p-1 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex rounded-full border border-slate-200 bg-white p-0.5 sm:p-1 shadow-2xs dark:border-slate-800 dark:bg-slate-900 shrink-0">
                 <button
                   type="button"
                   onClick={() => router.push("/dashboard/properties")}
@@ -360,11 +360,14 @@ function PropertiesContent() {
                   }`}
                 >
                   <Building2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                  <span>Organization</span>
+                  <span>
+                    <span className="inline sm:hidden">Org</span>
+                    <span className="hidden sm:inline">Organization</span>
+                  </span>
                 </button>
               </div>
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 shrink-0 ml-auto sm:ml-0">
                 <button
                   type="button"
                   onClick={() => (scope === "org" ? (orgQuery.refetch(), refetchOrgProperties()) : refetch())}
@@ -379,7 +382,7 @@ function PropertiesContent() {
 
                 <Link
                   href={scope === "org" ? `/propertyListing?scope=org${orgId ? `&orgId=${orgId}` : ""}` : "/propertyListing"}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-rose-600 px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 hover:shadow-md active:scale-95 dark:shadow-none shrink-0"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-rose-600 px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 hover:shadow-md active:scale-95 dark:shadow-none whitespace-nowrap shrink-0"
                 >
                   <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Post Property</span>
