@@ -205,3 +205,7 @@ export const {
   useGetUnlockedFlatmateContactQuery,
 } = flatmatesApi;
 
+// Explicit exports for strict IDE / TSServer symbol resolution
+export const updateFlatmateListingMutationHook = flatmatesApi.endpoints.updateFlatmateListing.useMutation;
+
+

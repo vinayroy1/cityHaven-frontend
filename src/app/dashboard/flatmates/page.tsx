@@ -41,7 +41,7 @@ import {
   useGetMyFlatmateInterestsQuery,
   useUpdateFlatmateInterestStatusMutation,
   useArchiveFlatmateListingMutation,
-  useUpdateFlatmateListingMutation,
+  flatmatesApi,
 } from "@/features/flatmates/api";
 import type { FlatmateListing, FlatmateInterestStatus } from "@/types/flatmate.types";
 import { CreditBoostButton } from "@/components/billing/CreditBoostButton";
@@ -66,7 +66,8 @@ export default function DashboardFlatmatesPage() {
   const { data: listings = [], isLoading: isLoadingListings, refetch: refetchListings } = useGetMyFlatmateListingsQuery();
   const { data: interestsData, isLoading: isLoadingInterests, refetch: refetchInterests } = useGetMyFlatmateInterestsQuery();
 
-  const [updateListing, { isLoading: isUpdatingListing }] = useUpdateFlatmateListingMutation();
+  const [updateListing, { isLoading: isUpdatingListing }] =
+    flatmatesApi.endpoints.updateFlatmateListing.useMutation();
   const [archiveListing, { isLoading: isArchiving }] = useArchiveFlatmateListingMutation();
   const [updateInterestStatus, { isLoading: isUpdatingStatus }] = useUpdateFlatmateInterestStatusMutation();
 

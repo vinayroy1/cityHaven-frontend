@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { useUpdateFlatmateListingMutation } from "@/features/flatmates/api";
+import { flatmatesApi } from "@/features/flatmates/api";
 import { useGetPresignedUploadUrlMutation } from "@/features/propertyListing/api";
 import type { FlatmateListing, FlatmateListingInput } from "@/types/flatmate.types";
 import { isRealUserPhoto } from "./FlatmateCard";
@@ -41,7 +41,8 @@ const DIET_OPTIONS = ["Any Diet", "Pure Vegetarian", "Vegetarian & Eggetarian", 
 const WORK_MODE_OPTIONS = ["Remote / WFH", "Hybrid", "In-Office"];
 
 export function FlatmateEditModal({ listing, isOpen, onClose, onSuccess }: FlatmateEditModalProps) {
-  const [updateListing, { isLoading: isSaving }] = useUpdateFlatmateListingMutation();
+  const [updateListing, { isLoading: isSaving }] =
+    flatmatesApi.endpoints.updateFlatmateListing.useMutation();
   const [getPresignedUploadUrl] = useGetPresignedUploadUrlMutation();
 
   const [title, setTitle] = useState("");
