@@ -215,32 +215,32 @@ export function SearchPageClient({
             <Heart size={20} />
           </Link>
         </div>
-        <div className="flex h-10 w-full items-center gap-2 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 pl-3 shadow-inner transition dark:border-slate-700 dark:bg-slate-900">
+        <div className="flex h-12 w-full items-center gap-2 rounded-xl border border-slate-200 bg-white pl-3 pr-1.5 text-left shadow-xs transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900">
           <button
             type="button"
             onClick={() => setMobileSearchOpen(true)}
             aria-label="Open search filters"
             className="flex min-w-0 flex-1 items-center gap-2 text-left focus:outline-none"
           >
-            <Search size={16} className="shrink-0 text-rose-600 dark:text-rose-400" />
-            <span className="min-w-0 flex-1 truncate text-xs font-semibold text-slate-800 dark:text-slate-100">
+            <Search size={18} className="shrink-0 text-slate-500 dark:text-slate-400" />
+            <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700 dark:text-slate-200">
               {[state.cityName, ...state.localities.map((locality) => locality.label), state.q]
                 .filter(Boolean)
-                .join(" • ") || "Search locality, project or landmark"}
+                .join(" • ") || "Search by locality, project or landmark"}
             </span>
           </button>
           <button
             type="button"
             disabled={isMobileSearching || results.isLoading}
             onClick={handleMobileHeaderSubmit}
-            aria-label="Submit search"
-            className={`flex h-full shrink-0 items-center justify-center gap-1.5 bg-rose-600 px-3.5 text-xs font-bold text-white transition hover:bg-rose-700 active:scale-[0.98] dark:bg-rose-500 ${
+            aria-label="Search properties"
+            className={`flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3.5 text-xs font-bold text-white shadow-xs transition hover:bg-rose-700 active:scale-[0.98] ${
               isMobileSearching || results.isLoading ? "opacity-80 cursor-not-allowed" : ""
             }`}
           >
             {isMobileSearching || results.isLoading ? (
               <>
-                <Loader2 size={13} className="animate-spin" />
+                <Loader2 size={13.5} className="animate-spin" />
                 <span>Searching...</span>
               </>
             ) : (
