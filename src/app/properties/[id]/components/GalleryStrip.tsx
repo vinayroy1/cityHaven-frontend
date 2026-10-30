@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Maximize, X } from "lucide-react";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
+import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 
 type GalleryStripProps = {
   images: string[];
@@ -11,7 +12,6 @@ type GalleryStripProps = {
 };
 
 export function GalleryStrip({ images, title = "Property gallery", subtitle = "Curated by owner • High resolution" }: GalleryStripProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
   const [open, setOpen] = useState(false);
 
   useModalBackHandler({
@@ -20,40 +20,99 @@ export function GalleryStrip({ images, title = "Property gallery", subtitle = "C
     name: "GalleryLightbox",
   });
 
-  const orderedImages = useMemo(() => images.filter(Boolean), [images]);
-  const activeImage = orderedImages[activeIndex] ?? orderedImages[0];
-  const hasMultipleImages = orderedImages.length > 1;
+  const orderedImages = useMemo(() => Array.from(new Set(images.filter(Boolean))), [images]);
 
-  const next = () => setActiveIndex((idx) => (idx + 1) % orderedImages.length);
-  const prev = () => setActiveIndex((idx) => (idx - 1 + orderedImages.length) % orderedImages.length);
+  const {
+    activeImage: activeIndex,
+    setActiveImage: setActiveIndex,
+    nextImage: next,
+    prevImage: prev,
+    hasCarousel: hasMultipleImages,
+    hasInteracted,
+    handleMouseEnter,
+    containerRef,
+    handleClickCapture,
+    isCardDragged,
+  } = useCardImageSwipe({
+    images: orderedImages,
+    totalImages: orderedImages.length,
+  });
+
+  const activeImage = orderedImages[activeIndex] ?? orderedImages[0];
 
   const openAt = (idx: number) => {
     setActiveIndex(idx);
     setOpen(true);
   };
 
+  const handleHeroClick = () => {
+    if (isCardDragged()) return;
+    setOpen(true);
+  };
+
+  // Lightbox swipe gesture tracking
+  const lightboxTouchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleLightboxTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    lightboxTouchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleLightboxTouchEnd = (e: React.TouchEvent) => {
+    if (!lightboxTouchStartRef.current) return;
+    const touch = e.changedTouches[0];
+    const diffX = touch.clientX - lightboxTouchStartRef.current.x;
+    const diffY = touch.clientY - lightboxTouchStartRef.current.y;
+    lightboxTouchStartRef.current = null;
+
+    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX < 0) {
+        next();
+      } else {
+        prev();
+      }
+    }
+  };
+
+  // Keyboard navigation inside lightbox
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, next, prev]);
+
   if (!orderedImages.length) return null;
 
   return (
     <>
       <div className="overflow-hidden rounded-lg bg-zinc-100 dark:bg-slate-900 border border-transparent dark:border-slate-800">
-        <div className="relative aspect-[4/3] sm:aspect-[16/10]">
+        <div
+          ref={containerRef}
+          onClickCapture={handleClickCapture}
+          onMouseEnter={handleMouseEnter}
+          onClick={handleHeroClick}
+          className="relative aspect-[4/3] sm:aspect-[16/10] select-none touch-pan-y cursor-pointer"
+        >
           <img
             src={activeImage}
             alt="Property cover"
             fetchPriority="high"
             decoding="async"
-            className="h-full w-full cursor-pointer object-cover"
-            onClick={() => setOpen(true)}
+            className="h-full w-full object-cover pointer-events-none"
           />
-          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 via-black/20 to-transparent px-4 py-3 text-white">
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 via-black/20 to-transparent px-4 py-3 text-white pointer-events-none">
             <div>
               <p className="text-sm font-semibold">{title}</p>
               <p className="text-xs text-white/70">{subtitle}</p>
             </div>
             {hasMultipleImages && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 pointer-events-auto">
                 <button
+                  type="button"
                   className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur transition hover:bg-white/30"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -64,6 +123,7 @@ export function GalleryStrip({ images, title = "Property gallery", subtitle = "C
                   <ChevronLeft className="h-4 w-4" />
                 </button>
                 <button
+                  type="button"
                   className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur transition hover:bg-white/30"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -77,39 +137,57 @@ export function GalleryStrip({ images, title = "Property gallery", subtitle = "C
             )}
           </div>
           <button
-            className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full bg-slate-900/70 px-3 py-1 text-xs font-semibold text-white backdrop-blur transition hover:bg-slate-900/90"
-            onClick={() => setOpen(true)}
+            type="button"
+            className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full bg-slate-900/70 px-3 py-1 text-xs font-semibold text-white backdrop-blur transition hover:bg-slate-900/90 pointer-events-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(true);
+            }}
           >
             <Maximize className="h-4 w-4" /> View full
           </button>
         </div>
 
-        {hasMultipleImages && <div className="grid grid-cols-3 gap-2 p-3 sm:grid-cols-4">
-          {orderedImages.map((src, idx) => (
-            <button
-              key={src + idx}
-              onClick={() => openAt(idx)}
-              aria-label={`View photo ${idx + 1}`}
-              className={`relative h-20 overflow-hidden rounded-md border ${idx === activeIndex ? "border-emerald-500 ring-2 ring-emerald-100 dark:ring-emerald-950" : "border-slate-100 dark:border-slate-800"} transition`}
-            >
-              <img
-                src={src}
-                alt={`Property image ${idx + 1}`}
-                loading="lazy"
-                decoding="async"
-                className="h-full w-full object-cover"
-              />
-              {idx === orderedImages.length - 1 && (
-                <div className="absolute inset-0 flex items-center justify-center bg-slate-900/60 text-sm font-semibold text-white">View all</div>
-              )}
-            </button>
-          ))}
-        </div>}
+        {hasMultipleImages && (
+          <div className="grid grid-cols-3 gap-2 p-3 sm:grid-cols-4">
+            {orderedImages.map((src, idx) => (
+              <button
+                type="button"
+                key={src + idx}
+                onClick={() => openAt(idx)}
+                aria-label={`View photo ${idx + 1}`}
+                className={`relative h-20 overflow-hidden rounded-md border ${
+                  idx === activeIndex
+                    ? "border-emerald-500 ring-2 ring-emerald-100 dark:ring-emerald-950"
+                    : "border-slate-100 dark:border-slate-800"
+                } transition`}
+              >
+                <img
+                  src={src}
+                  alt={`Property image ${idx + 1}`}
+                  loading={hasInteracted ? "eager" : "lazy"}
+                  decoding="async"
+                  className="h-full w-full object-cover"
+                />
+                {idx === orderedImages.length - 1 && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-slate-900/60 text-sm font-semibold text-white">
+                    View all
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-6">
+        <div
+          onTouchStart={handleLightboxTouchStart}
+          onTouchEnd={handleLightboxTouchEnd}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-6 select-none touch-pan-y"
+        >
           <button
+            type="button"
             aria-label="Close"
             className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
             onClick={() => setOpen(false)}
@@ -119,6 +197,7 @@ export function GalleryStrip({ images, title = "Property gallery", subtitle = "C
 
           {hasMultipleImages && (
             <button
+              type="button"
               aria-label="Previous"
               className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white hover:bg-white/20"
               onClick={prev}
@@ -126,9 +205,16 @@ export function GalleryStrip({ images, title = "Property gallery", subtitle = "C
               <ChevronLeft className="h-6 w-6" />
             </button>
           )}
-          <img src={activeImage} alt="Active property view" className="max-h-[80vh] max-w-full rounded-lg object-contain shadow-2xl" />
+          <img
+            src={activeImage}
+            alt="Active property view"
+            fetchPriority="high"
+            decoding="async"
+            className="max-h-[80vh] max-w-full rounded-lg object-contain shadow-2xl pointer-events-none"
+          />
           {hasMultipleImages && (
             <button
+              type="button"
               aria-label="Next"
               className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white hover:bg-white/20"
               onClick={next}

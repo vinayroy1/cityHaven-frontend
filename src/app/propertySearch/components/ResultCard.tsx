@@ -69,7 +69,7 @@ export function ResultCard({
   const router = useRouter();
   const [isNavigating, setIsNavigating] = React.useState(false);
   const detailsHref = `/properties/${slug || id}`;
-  const safeImages = React.useMemo(() => images.filter(Boolean), [images]);
+  const safeImages = React.useMemo(() => Array.from(new Set(images.filter(Boolean))), [images]);
   const [activeImage, setActiveImage] = React.useState(0);
   const [imageFailed, setImageFailed] = React.useState(false);
   const [contactOpen, setContactOpen] = React.useState(false);

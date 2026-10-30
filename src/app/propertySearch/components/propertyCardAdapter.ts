@@ -119,8 +119,12 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     isBoosted: item.isBoosted,
     posterBadge: postedAsLabel(item.postedAs),
     ownerId: item.ownerId ?? item.createdById ?? undefined,
-    images: [item.thumbnailUrl, ...(item.media?.map((m) => m.url) ?? [])]
-      .filter((u): u is string => Boolean(u))
-      .map(normalizeR2Url),
+    images: Array.from(
+      new Set(
+        [item.thumbnailUrl, ...(item.media?.map((m) => m.url) ?? [])]
+          .filter((u): u is string => Boolean(u))
+          .map(normalizeR2Url)
+      )
+    ),
   };
 }

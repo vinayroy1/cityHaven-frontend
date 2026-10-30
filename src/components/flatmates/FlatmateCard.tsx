@@ -86,7 +86,7 @@ export function FlatmateCard({
   const badge = modeBadge();
   const ModeIcon = badge.icon;
 
-  const safePhotos = (listing.photos || []).map(normalizeR2Url).filter(Boolean);
+  const safePhotos = Array.from(new Set((listing.photos || []).map(normalizeR2Url).filter(Boolean)));
   const {
     activeImage,
     nextImage,

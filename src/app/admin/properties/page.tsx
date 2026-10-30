@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAdmin } from "@/features/admin/adminStore";
 import { PropertyQcItem, PropertyQcStatus } from "@/features/admin/types";
 import { useIsMounted, formatDateSafe } from "@/features/admin/dateUtils";
+import { preloadAdjacentCardImages, preloadImage } from "@/components/common/useCardImageSwipe";
 import {
   Building2,
   CheckCircle2,
@@ -52,6 +53,12 @@ export default function AdminPropertyQcPage() {
   const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
   const [actionErrorMessage, setActionErrorMessage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    if (!selectedProperty?.media || selectedProperty.media.length <= 1) return;
+    const mediaUrls = selectedProperty.media.map((m) => m.url).filter(Boolean);
+    preloadAdjacentCardImages(mediaUrls, activePhotoIndex);
+  }, [selectedProperty?.media, activePhotoIndex]);
 
   const isOpsOrSuperAdmin = currentStaff?.roles.includes("SUPER_ADMIN") || currentStaff?.roles.includes("OPERATIONS_MANAGER");
   const qcEligibleStaff = staffList.filter((s) => s.status === "ACTIVE" && (s.roles.includes("QC_REVIEWER") || s.roles.includes("OPERATIONS_MANAGER")));

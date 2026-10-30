@@ -606,7 +606,7 @@ function formatProjectPrice(value?: number) {
 
 function FeaturedProjectCard({ project }: { project: any }) {
   const router = useRouter();
-  const safeImages = (project.images || []).map(normalizeR2Url).filter(Boolean);
+  const safeImages: string[] = Array.from(new Set<string>((project.images || []).map(normalizeR2Url).filter(Boolean)));
   const {
     activeImage,
     nextImage,

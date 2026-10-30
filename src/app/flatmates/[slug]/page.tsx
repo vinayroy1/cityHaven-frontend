@@ -29,6 +29,8 @@ import {
   CheckCircle2,
   MessageCircle,
   ThumbsUp,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +40,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { useGetFlatmateListingQuery } from "@/features/flatmates/api";
 import { BackButton } from "@/components/common/BackButton";
 import { FlatmateDetailSkeleton } from "@/components/flatmates/FlatmateDetailSkeleton";
+import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 
 const FlatmateContactModal = dynamic(
   () => import("@/components/flatmates/FlatmateContactModal").then((mod) => mod.FlatmateContactModal),
@@ -57,7 +60,6 @@ export default function FlatmateDetailPage() {
   });
 
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [activePhotoIdx, setActivePhotoIdx] = useState(0);
 
   const handleShare = async () => {
     if (typeof window === "undefined") return;
@@ -103,7 +105,7 @@ export default function FlatmateDetailPage() {
   }
 
   const profile = listing.profile;
-  const photos = (listing.photos?.length ? listing.photos : []).map(normalizeR2Url);
+  const photos = Array.from(new Set((listing.photos?.length ? listing.photos : []).map(normalizeR2Url)));
   const profilePhoto = normalizeR2Url(profile?.profilePhoto);
   // For seeker/buddy-up, prioritize profilePhoto, fallback to first uploaded photo
   const heroPhoto = profilePhoto || photos[0] || null;
@@ -602,38 +604,7 @@ export default function FlatmateDetailPage() {
                 <div className="space-y-6">
                   {/* Property Photos Media Gallery */}
                   {photos.length > 0 ? (
-                    <div className="space-y-3">
-                      <div className="relative h-72 sm:h-96 w-full rounded-3xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-                        <img
-                          src={photos[activePhotoIdx]}
-                          alt={listing.title}
-                          className="w-full h-full object-cover"
-                          fetchPriority="high"
-                          decoding="async"
-                        />
-                        <div className="absolute bottom-3 right-3 rounded-full bg-slate-950/70 px-3 py-1 text-xs font-bold text-white backdrop-blur">
-                          {activePhotoIdx + 1} of {photos.length}
-                        </div>
-                      </div>
-
-                      {photos.length > 1 && (
-                        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                          {photos.map((p, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              onClick={() => setActivePhotoIdx(idx)}
-                              aria-label={`View photo ${idx + 1} of ${photos.length}`}
-                              className={`relative h-16 w-24 shrink-0 rounded-2xl overflow-hidden border-2 transition ${
-                                activePhotoIdx === idx ? "border-rose-500 scale-95" : "border-transparent opacity-70"
-                              }`}
-                            >
-                              <img src={p} alt={`Thumb ${idx}`} className="w-full h-full object-cover" loading="lazy" decoding="async" />
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <RoomPhotoGallery photos={photos} title={listing.title} />
                   ) : (
                     <div className="h-60 rounded-3xl bg-gradient-to-tr from-rose-50 via-white to-amber-50 dark:from-slate-900 dark:via-slate-850 dark:to-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center p-6 text-center">
                       <Home className="w-12 h-12 text-rose-500 mb-2" />
@@ -884,6 +855,92 @@ export default function FlatmateDetailPage() {
           isOpen={isContactModalOpen}
           onClose={() => setIsContactModalOpen(false)}
         />
+      )}
+    </div>
+  );
+}
+
+function RoomPhotoGallery({ photos, title }: { photos: string[]; title: string }) {
+  const {
+    activeImage,
+    setActiveImage,
+    nextImage,
+    prevImage,
+    hasCarousel,
+    hasInteracted,
+    handleMouseEnter,
+    containerRef,
+    handleClickCapture,
+  } = useCardImageSwipe({
+    images: photos,
+    totalImages: photos.length,
+  });
+
+  return (
+    <div className="space-y-3">
+      <div
+        ref={containerRef}
+        onClickCapture={handleClickCapture}
+        onMouseEnter={handleMouseEnter}
+        className="relative h-72 sm:h-96 w-full rounded-3xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm select-none touch-pan-y group"
+      >
+        <img
+          src={photos[activeImage]}
+          alt={title}
+          className="w-full h-full object-cover pointer-events-none transition duration-300"
+          fetchPriority="high"
+          loading={hasInteracted ? "eager" : "eager"}
+          decoding="async"
+        />
+
+        {hasCarousel && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous photo"
+              onClick={prevImage}
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-800 shadow-md backdrop-blur transition hover:bg-white"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next photo"
+              onClick={nextImage}
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 hidden sm:inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-800 shadow-md backdrop-blur transition hover:bg-white"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </>
+        )}
+
+        <div className="absolute bottom-3 right-3 rounded-full bg-slate-950/70 px-3 py-1 text-xs font-bold text-white backdrop-blur pointer-events-none">
+          {activeImage + 1} of {photos.length}
+        </div>
+      </div>
+
+      {photos.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {photos.map((p, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setActiveImage(idx)}
+              aria-label={`View photo ${idx + 1} of ${photos.length}`}
+              className={`relative h-16 w-24 shrink-0 rounded-2xl overflow-hidden border-2 transition ${
+                activeImage === idx ? "border-rose-500 scale-95" : "border-transparent opacity-70"
+              }`}
+            >
+              <img
+                src={p}
+                alt={`Thumb ${idx}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
