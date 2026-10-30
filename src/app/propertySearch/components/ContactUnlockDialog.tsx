@@ -86,34 +86,35 @@ export function ContactUnlockDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={`max-h-[92vh] overflow-y-auto border-0 bg-white p-0 shadow-2xl sm:max-w-md ${contactStep === "plans" ? "lg:max-w-5xl" : "lg:max-w-md"}`}
+        showCloseButton={false}
+        className={`flex flex-col gap-0 max-h-[92vh] overflow-y-auto overflow-x-hidden w-full max-w-[calc(100vw-1.5rem)] border-0 bg-white p-0 shadow-2xl sm:max-w-md ${contactStep === "plans" ? "lg:max-w-4xl" : "lg:max-w-md"}`}
         onClick={(event) => event.stopPropagation()}
         onPointerDown={(event) => event.stopPropagation()}
         onPointerDownOutside={() => onOpenChange(false)}
         onInteractOutside={() => onOpenChange(false)}
       >
-        <div className="relative bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 px-5 py-5 text-white overflow-hidden shrink-0">
+        <div className="relative bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 px-4 sm:px-5 py-4 sm:py-5 text-white overflow-hidden shrink-0">
           {/* Prominent High-Contrast Close Button */}
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white text-rose-600 shadow-md hover:bg-rose-50 hover:scale-105 active:scale-90 transition-all font-bold focus:outline-none focus:ring-2 focus:ring-white"
+            className="absolute right-3.5 top-3.5 sm:right-4 sm:top-4 z-20 flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-white text-rose-600 shadow-md hover:bg-rose-50 hover:scale-105 active:scale-90 transition-all font-bold focus:outline-none focus:ring-2 focus:ring-white"
             aria-label="Close dialog"
             title="Close (Esc)"
           >
-            <X className="h-5 w-5 stroke-[2.5]" />
+            <X className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.5]" />
           </button>
 
-          <DialogHeader className="text-left pr-12">
-            <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur-md">
+          <DialogHeader className="text-left pr-10 sm:pr-12 min-w-0">
+            <div className="mb-2 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur-md">
               {contactStep === "contact" ? <PhoneCall className="h-5 w-5" /> : <Zap className="h-5 w-5 fill-amber-300 stroke-amber-300" />}
             </div>
-            <DialogTitle className="text-xl font-bold">
+            <DialogTitle className="text-lg sm:text-xl font-bold leading-tight break-words">
               {contactStep === "contact"
                 ? "Owner contact details"
                 : "Get Credits to Unlock Contact"}
             </DialogTitle>
-            <DialogDescription className="text-rose-100 text-xs sm:text-sm">
+            <DialogDescription className="text-rose-100 text-xs sm:text-sm mt-1">
               {contactStep === "contact"
                 ? isOrgScope
                   ? `Unlocked for all team members in ${activeScopeObj?.name || "your organization"}.`
@@ -123,7 +124,7 @@ export function ContactUnlockDialog({
           </DialogHeader>
         </div>
 
-        <div className="space-y-4 p-5">
+        <div className="space-y-4 p-3.5 sm:p-5 min-w-0 w-full">
           <StepIndicator contactStep={contactStep} />
 
           {/* Workspace / Account Scope Selector (when authenticated & has orgs) */}
@@ -172,13 +173,13 @@ export function ContactUnlockDialog({
             <>
               {/* If user has enough credits in active scope */}
               {(activeScopeObj?.credits ?? credits) >= contactCost && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5">
-                  <div className="flex items-center gap-2.5">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 sm:p-3.5 w-full min-w-0">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white">
                       <Zap className="h-4 w-4 fill-white" />
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-emerald-950">You have {activeScopeObj?.credits ?? credits} Credits</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-emerald-950 truncate">You have {activeScopeObj?.credits ?? credits} Credits</p>
                       <p className="text-[11px] text-emerald-700">Unlock this verified owner contact for {contactCost} credits.</p>
                     </div>
                   </div>
@@ -233,14 +234,14 @@ export function ContactUnlockDialog({
         </div>
 
         {/* Footer info & explicit Close Button */}
-        <div className="flex items-center justify-between border-t border-zinc-200 bg-zinc-50 px-5 py-3 text-xs dark:border-slate-800 dark:bg-slate-900/60 shrink-0">
-          <span className="text-[11px] text-zinc-500 dark:text-slate-400">
+        <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-2.5 border-t border-zinc-200 bg-zinc-50 px-4 sm:px-5 py-3 text-xs dark:border-slate-800 dark:bg-slate-900/60 shrink-0">
+          <span className="text-[11px] text-zinc-500 dark:text-slate-400 text-center sm:text-left min-w-0">
             Universal Credits never expire &bull; Verified direct owners
           </span>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="inline-flex items-center gap-1 rounded-xl border border-zinc-300 bg-white px-4 py-1.5 text-xs font-bold text-zinc-800 shadow-2xs hover:bg-zinc-50 hover:border-zinc-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1 rounded-xl border border-zinc-300 bg-white px-4 py-1.5 text-xs font-bold text-zinc-800 shadow-2xs hover:bg-zinc-50 hover:border-zinc-400 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition shrink-0"
           >
             Close
           </button>
@@ -257,9 +258,9 @@ function StepIndicator({ contactStep }: { contactStep: ContactStep }) {
         ["1", "Recharge Credits", contactStep === "plans"],
         ["2", "Verified Contact", contactStep === "contact"],
       ].map(([num, label, active]) => (
-        <div key={label as string} className={`whitespace-nowrap rounded-lg px-2.5 py-2 text-center transition ${active ? "bg-rose-50 text-rose-700 font-bold border border-rose-200" : "bg-zinc-50 text-zinc-500 border border-transparent"}`}>
+        <div key={label as string} className={`rounded-lg px-2 py-2 text-center transition truncate ${active ? "bg-rose-50 text-rose-700 font-bold border border-rose-200" : "bg-zinc-50 text-zinc-500 border border-transparent"}`}>
           <span className="mr-1">{num}.</span>
-          {label}
+          <span>{label}</span>
         </div>
       ))}
     </div>
@@ -386,7 +387,7 @@ export function LeadDetailsStep(props: {
         <span>Sign In &amp; Continue</span>
       </button>
 
-      <div className="flex items-center justify-between text-xs text-zinc-500 pt-2 border-t border-zinc-100">
+      <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs text-zinc-500 pt-2 border-t border-zinc-100">
         <span>Don&apos;t have an account?</span>
         <Link href={registerRedirectUrl} className="font-bold text-rose-600 hover:underline">
           Register now (Free 100 Credits)
