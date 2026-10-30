@@ -92,6 +92,8 @@ export function FlatmateCard({
     nextImage,
     prevImage,
     hasCarousel,
+    hasInteracted,
+    handleMouseEnter,
     containerRef: imageContainerRef,
     handleClickCapture,
     handleCardTouchStart,
@@ -99,6 +101,7 @@ export function FlatmateCard({
     handleCardTouchEnd,
     isCardDragged,
   } = useCardImageSwipe({
+    images: safePhotos,
     totalImages: safePhotos.length,
   });
 
@@ -140,6 +143,7 @@ export function FlatmateCard({
           onTouchStart={handleCardTouchStart}
           onTouchMove={handleCardTouchMove}
           onTouchEnd={handleCardTouchEnd}
+          onMouseEnter={handleMouseEnter}
           className={`group relative flex w-full cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border bg-white shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-900 h-full ${
             listing.isBoosted
               ? "border-amber-400 ring-2 ring-amber-200/60 dark:border-amber-600 dark:ring-amber-900/40"
@@ -158,8 +162,8 @@ export function FlatmateCard({
                   src={roomPhoto}
                   alt={listing.title}
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 pointer-events-none"
-                  loading={priority ? "eager" : "lazy"}
-                  fetchPriority={priority ? "high" : "auto"}
+                  loading={hasInteracted || priority ? "eager" : "lazy"}
+                  fetchPriority={hasInteracted || priority ? "high" : "auto"}
                   decoding="async"
                 />
               ) : (

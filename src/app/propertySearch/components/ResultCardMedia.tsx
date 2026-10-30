@@ -1,5 +1,6 @@
 import React from "react";
 import { BadgeCheck, Building2, Camera, ChevronLeft, ChevronRight, ShieldCheck, Sparkles } from "lucide-react";
+import { preloadImage, preloadAdjacentCardImages } from "@/components/common/useCardImageSwipe";
 
 type ResultCardMediaProps = {
   image: string;
@@ -42,6 +43,38 @@ export function ResultCardMedia({
   listingType,
 }: ResultCardMediaProps) {
   const [loaded, setLoaded] = React.useState(!deferImage);
+  const [hasInteracted, setHasInteracted] = React.useState(activeImage > 0);
+
+  // Preload the 2nd image (index 1) during idle time so first swipe is instantaneous
+  React.useEffect(() => {
+    if (!safeImages || safeImages.length <= 1) return;
+    const schedule = () => {
+      if (safeImages[1]) preloadImage(safeImages[1]);
+    };
+    if (typeof window !== "undefined") {
+      if ("requestIdleCallback" in window) {
+        const idleId = (window as any).requestIdleCallback(schedule, { timeout: 2500 });
+        return () => (window as any).cancelIdleCallback(idleId);
+      } else {
+        const timer = setTimeout(schedule, 1200);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [safeImages]);
+
+  // Preload adjacent images whenever activeImage changes
+  React.useEffect(() => {
+    if (safeImages && safeImages.length > 1) {
+      preloadAdjacentCardImages(safeImages, activeImage);
+      if (safeImages.length > 3) {
+        const aheadIdx = (activeImage + 2) % safeImages.length;
+        if (safeImages[aheadIdx]) preloadImage(safeImages[aheadIdx]);
+      }
+      if (activeImage > 0) {
+        setHasInteracted(true);
+      }
+    }
+  }, [safeImages, activeImage]);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const touchStartRef = React.useRef<{ x: number; y: number } | null>(null);
@@ -62,6 +95,8 @@ export function ResultCardMedia({
 
     const onTouchStart = (e: TouchEvent) => {
       if (!hasCarousel || photoCount <= 1) return;
+      setHasInteracted(true);
+      preloadAdjacentCardImages(safeImages, activeImage);
       if (dragResetTimerRef.current) clearTimeout(dragResetTimerRef.current);
       const touch = e.touches[0];
       touchStartRef.current = { x: touch.clientX, y: touch.clientY };
@@ -181,14 +216,19 @@ export function ResultCardMedia({
     <div
       ref={containerRef}
       onClickCapture={handleClickCapture}
+      onMouseEnter={() => {
+        if (safeImages && safeImages.length > 1) {
+          preloadAdjacentCardImages(safeImages, activeImage);
+        }
+      }}
       className={`relative block overflow-hidden touch-pan-y select-none bg-gradient-to-br from-slate-100 via-zinc-100 to-slate-200 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 ${compact ? "aspect-[16/10]" : "aspect-[16/10] sm:aspect-[4/3]"}`}
     >
       {loaded ? (
         <img
           src={image}
           alt={title || "Property"}
-          loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : "auto"}
+          loading={hasInteracted || priority ? "eager" : "lazy"}
+          fetchPriority={hasInteracted || priority ? "high" : "auto"}
           decoding="async"
           className="h-full w-full object-cover transition duration-300 group-hover:scale-105 pointer-events-none"
           onError={onImageError}

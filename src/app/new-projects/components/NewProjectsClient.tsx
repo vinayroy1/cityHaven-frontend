@@ -71,6 +71,8 @@ function ProjectGridCard({
     nextImage,
     prevImage,
     hasCarousel,
+    hasInteracted,
+    handleMouseEnter,
     containerRef: imageContainerRef,
     handleClickCapture,
     handleCardTouchStart,
@@ -78,6 +80,7 @@ function ProjectGridCard({
     handleCardTouchEnd,
     isCardDragged,
   } = useCardImageSwipe({
+    images: safeImages,
     totalImages: safeImages.length,
   });
 
@@ -103,6 +106,7 @@ function ProjectGridCard({
       onTouchStart={handleCardTouchStart}
       onTouchMove={handleCardTouchMove}
       onTouchEnd={handleCardTouchEnd}
+      onMouseEnter={handleMouseEnter}
       className="group flex w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:bg-slate-900 sm:rounded-3xl"
     >
       {/* Project Image */}
@@ -115,8 +119,8 @@ function ProjectGridCard({
           src={projectImage}
           alt={project.name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
-          fetchPriority={idx === 0 ? "high" : "auto"}
-          loading={idx === 0 ? "eager" : "lazy"}
+          fetchPriority={idx === 0 || hasInteracted ? "high" : "auto"}
+          loading={idx === 0 || hasInteracted ? "eager" : "lazy"}
           decoding="async"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/15" />

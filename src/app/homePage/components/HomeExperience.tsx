@@ -612,6 +612,8 @@ function FeaturedProjectCard({ project }: { project: any }) {
     nextImage,
     prevImage,
     hasCarousel,
+    hasInteracted,
+    handleMouseEnter,
     containerRef: imageContainerRef,
     handleClickCapture,
     handleCardTouchStart,
@@ -619,6 +621,7 @@ function FeaturedProjectCard({ project }: { project: any }) {
     handleCardTouchEnd,
     isCardDragged,
   } = useCardImageSwipe({
+    images: safeImages,
     totalImages: safeImages.length,
   });
 
@@ -635,6 +638,7 @@ function FeaturedProjectCard({ project }: { project: any }) {
       tabIndex={0}
       role="link"
       onClick={openDetails}
+      onMouseEnter={handleMouseEnter}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -655,7 +659,9 @@ function FeaturedProjectCard({ project }: { project: any }) {
           src={projectImage}
           alt={project.name}
           className="h-full w-full object-cover transition duration-300 group-hover:scale-105 pointer-events-none"
-          loading="lazy"
+          loading={hasInteracted ? "eager" : "lazy"}
+          fetchPriority={hasInteracted ? "high" : "auto"}
+          decoding="async"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/10" />
 

@@ -2,23 +2,93 @@
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
 
-interface UseCardImageSwipeOptions {
-  totalImages: number;
+const preloadedImageUrls = new Set<string>();
+
+/**
+ * Preload a single image into browser cache so that when rendered,
+ * it displays instantaneously with 0 network latency.
+ */
+export function preloadImage(url?: string | null) {
+  if (!url || typeof window === "undefined" || preloadedImageUrls.has(url)) return;
+  preloadedImageUrls.add(url);
+  const img = new Image();
+  img.decoding = "async";
+  img.src = url;
+}
+
+/**
+ * Preload next and previous adjacent images in a card's carousel.
+ */
+export function preloadAdjacentCardImages(
+  images?: (string | null | undefined)[],
+  currentIndex: number = 0
+) {
+  if (!images || images.length <= 1) return;
+  const validImages = images.filter((img): img is string => Boolean(img));
+  if (validImages.length <= 1) return;
+  const nextIdx = (currentIndex + 1) % validImages.length;
+  const prevIdx = (currentIndex - 1 + validImages.length) % validImages.length;
+  if (validImages[nextIdx]) preloadImage(validImages[nextIdx]);
+  if (validImages[prevIdx]) preloadImage(validImages[prevIdx]);
+}
+
+export interface UseCardImageSwipeOptions {
+  totalImages?: number;
+  images?: (string | null | undefined)[];
   initialIndex?: number;
 }
 
 export function useCardImageSwipe({
   totalImages,
+  images,
   initialIndex = 0,
 }: UseCardImageSwipeOptions) {
+  const effectiveTotal = images ? images.filter(Boolean).length : (totalImages ?? 0);
   const [activeImage, setActiveImage] = useState(initialIndex);
+  const [hasInteracted, setHasInteracted] = useState(initialIndex > 0);
 
-  // Keep activeImage bounded within totalImages if totalImages changes
+  // Keep activeImage bounded within effectiveTotal if total changes
   useEffect(() => {
-    if (totalImages > 0 && activeImage >= totalImages) {
+    if (effectiveTotal > 0 && activeImage >= effectiveTotal) {
       setActiveImage(0);
     }
-  }, [totalImages, activeImage]);
+  }, [effectiveTotal, activeImage]);
+
+  // Preload the 2nd image (index 1) in idle time so the first swipe is instantaneous
+  useEffect(() => {
+    if (!images || images.length <= 1) return;
+    const validImages = images.filter((img): img is string => Boolean(img));
+    if (validImages.length <= 1) return;
+
+    const schedule = () => {
+      if (validImages[1]) preloadImage(validImages[1]);
+    };
+
+    if (typeof window !== "undefined") {
+      if ("requestIdleCallback" in window) {
+        const idleId = (window as any).requestIdleCallback(schedule, { timeout: 2500 });
+        return () => (window as any).cancelIdleCallback(idleId);
+      } else {
+        const timer = setTimeout(schedule, 1200);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [images]);
+
+  // Preload adjacent images whenever activeImage changes
+  useEffect(() => {
+    if (!images || images.length <= 1) return;
+    const validImages = images.filter((img): img is string => Boolean(img));
+    if (validImages.length <= 1) return;
+
+    preloadAdjacentCardImages(validImages, activeImage);
+
+    // If 4+ images, also pre-fetch 2 ahead for rapid consecutive swipes
+    if (validImages.length > 3) {
+      const aheadIdx = (activeImage + 2) % validImages.length;
+      if (validImages[aheadIdx]) preloadImage(validImages[aheadIdx]);
+    }
+  }, [images, activeImage]);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
@@ -31,26 +101,28 @@ export function useCardImageSwipe({
   const cardDraggedRef = useRef(false);
   const cardDragResetTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const hasCarousel = totalImages > 1;
+  const hasCarousel = effectiveTotal > 1;
 
   const nextImage = useCallback(
     (event?: React.SyntheticEvent) => {
       if (event?.preventDefault) event.preventDefault();
       if (event?.stopPropagation) event.stopPropagation();
-      if (totalImages <= 1) return;
-      setActiveImage((prev) => (prev + 1) % totalImages);
+      if (effectiveTotal <= 1) return;
+      setHasInteracted(true);
+      setActiveImage((prev) => (prev + 1) % effectiveTotal);
     },
-    [totalImages]
+    [effectiveTotal]
   );
 
   const prevImage = useCallback(
     (event?: React.SyntheticEvent) => {
       if (event?.preventDefault) event.preventDefault();
       if (event?.stopPropagation) event.stopPropagation();
-      if (totalImages <= 1) return;
-      setActiveImage((prev) => (prev - 1 + totalImages) % totalImages);
+      if (effectiveTotal <= 1) return;
+      setHasInteracted(true);
+      setActiveImage((prev) => (prev - 1 + effectiveTotal) % effectiveTotal);
     },
-    [totalImages]
+    [effectiveTotal]
   );
 
   const moveImage = useCallback(
@@ -63,6 +135,12 @@ export function useCardImageSwipe({
     },
     [nextImage, prevImage]
   );
+
+  const handleMouseEnter = useCallback(() => {
+    if (images && images.length > 1) {
+      preloadAdjacentCardImages(images, activeImage);
+    }
+  }, [images, activeImage]);
 
   useEffect(() => {
     return () => {
@@ -78,6 +156,10 @@ export function useCardImageSwipe({
     if (!el || !hasCarousel) return;
 
     const onTouchStart = (e: TouchEvent) => {
+      setHasInteracted(true);
+      if (images && images.length > 1) {
+        preloadAdjacentCardImages(images, activeImage);
+      }
       if (dragResetTimerRef.current) clearTimeout(dragResetTimerRef.current);
       const touch = e.touches[0];
       touchStartRef.current = { x: touch.clientX, y: touch.clientY };
@@ -218,6 +300,8 @@ export function useCardImageSwipe({
     prevImage,
     moveImage,
     hasCarousel,
+    hasInteracted,
+    handleMouseEnter,
     containerRef,
     handleClickCapture,
     handleCardTouchStart,
