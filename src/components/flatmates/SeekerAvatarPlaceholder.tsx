@@ -20,53 +20,6 @@ function getDeterministicHash(str: string): number {
   return Math.abs(hash);
 }
 
-// Extract 2-letter initials
-function getInitials(name?: string | null): string {
-  if (!name) return "AW";
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-  return name.substring(0, 2).toUpperCase();
-}
-
-// Map occupation to cute emoji & clean short label
-function formatOccupation(occupation?: string | null, mode?: string): { emoji: string; label: string } {
-  if (mode === "BUDDY_UP") {
-    return { emoji: "🤝", label: "Buddy-Up Duo" };
-  }
-  if (!occupation) {
-    return { emoji: "⚡", label: "Room Seeker" };
-  }
-
-  const lower = occupation.toLowerCase();
-  let emoji = "⚡";
-  if (lower.includes("tech") || lower.includes("engineer") || lower.includes("developer") || lower.includes("software") || lower.includes("coder") || lower.includes("backend") || lower.includes("frontend") || lower.includes("it")) {
-    emoji = "💻";
-  } else if (lower.includes("design") || lower.includes("art") || lower.includes("creative") || lower.includes("content") || lower.includes("writer") || lower.includes("editor") || lower.includes("journalist")) {
-    emoji = "🎨";
-  } else if (lower.includes("manager") || lower.includes("consultant") || lower.includes("analyst") || lower.includes("finance") || lower.includes("bank") || lower.includes("corporate")) {
-    emoji = "💼";
-  } else if (lower.includes("student") || lower.includes("research") || lower.includes("scholar") || lower.includes("univ") || lower.includes("college")) {
-    emoji = "🎓";
-  } else if (lower.includes("doctor") || lower.includes("health") || lower.includes("medical") || lower.includes("nurse")) {
-    emoji = "🩺";
-  } else if (lower.includes("marketing") || lower.includes("sales") || lower.includes("growth")) {
-    emoji = "📈";
-  }
-
-  // Shorten label if too long for the badge
-  let label = occupation;
-  if (label.length > 15) {
-    label = label.replace(/Engineer/i, "Eng").replace(/Developer/i, "Dev").replace(/Professional/i, "Pro");
-    if (label.length > 15) {
-      label = label.substring(0, 13) + "…";
-    }
-  }
-
-  return { emoji, label };
-}
-
 // 6 Modern Gradient Themes
 const GRADIENT_THEMES = [
   {
@@ -134,15 +87,13 @@ const GRADIENT_THEMES = [
 export function SeekerAvatarPlaceholder({
   displayName,
   gender,
-  occupation,
+  occupation: _occupation,
   mode,
   className = "",
 }: SeekerAvatarPlaceholderProps) {
   const uniqueId = useId().replace(/:/g, "");
   const hash = getDeterministicHash(displayName || "Room Seeker");
   const theme = GRADIENT_THEMES[hash % GRADIENT_THEMES.length];
-  const initials = getInitials(displayName);
-  const occInfo = formatOccupation(occupation, mode);
 
   const isBuddyUp = mode === "BUDDY_UP";
   const isFemale = gender?.toLowerCase() === "female" || (!gender && (hash % 5 === 0));
@@ -197,12 +148,12 @@ export function SeekerAvatarPlaceholder({
 
         {/* 2. Abstract Decorative Sparkles & Star Accents */}
         <path
-          d="M116 20 Q118 25 123 27 Q118 29 116 34 Q114 29 109 27 Q114 25 116 20 Z"
+          d="M118 22 Q120 27 125 29 Q120 31 118 36 Q116 31 111 29 Q116 27 118 22 Z"
           fill={theme.sparkleColor}
           opacity="0.85"
         />
         <circle cx="22" cy="34" r="1.5" fill="#FFFFFF" opacity="0.6" />
-        <circle cx="124" cy="54" r="2" fill="#FFFFFF" opacity="0.5" />
+        <circle cx="124" cy="42" r="2" fill="#FFFFFF" opacity="0.5" />
         <path
           d="M24 74 Q25 77 28 78 Q25 79 24 82 Q23 79 20 78 Q23 77 24 74 Z"
           fill="#FDE047"
@@ -424,61 +375,14 @@ export function SeekerAvatarPlaceholder({
           </g>
         )}
 
-        {/* 4. Floating Monogram Stamp (Top Right) */}
-        <g transform="translate(104, 8)">
-          <rect
-            width="28"
-            height="20"
-            rx="10"
-            fill="rgba(255,255,255,0.25)"
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth="1"
-          />
-          <text
-            x="14"
-            y="14"
-            textAnchor="middle"
-            fill="#FFFFFF"
-            fontSize="8.5"
-            fontWeight="900"
-            fontFamily="system-ui, -apple-system, sans-serif"
-            letterSpacing="0.5px"
-          >
-            {initials}
-          </text>
-        </g>
-
-        {/* 5. Bottom Gradient Vignette for Depth */}
+        {/* 4. Bottom Gradient Vignette for Depth */}
         <rect
-          y="120"
+          y="110"
           width="140"
-          height="54"
+          height="64"
           fill={`url(#bottom-fade-${uniqueId})`}
-          opacity="0.4"
+          opacity="0.32"
         />
-
-        {/* 6. Floating Micro-Pill (Bottom Center) */}
-        <g transform="translate(12, 145)">
-          <rect
-            width="116"
-            height="20"
-            rx="10"
-            fill="rgba(15,23,42,0.85)"
-            stroke="rgba(255,255,255,0.22)"
-            strokeWidth="1"
-          />
-          <text
-            x="58"
-            y="14"
-            textAnchor="middle"
-            fill="#F8FAFC"
-            fontSize="8.5"
-            fontWeight="700"
-            fontFamily="system-ui, -apple-system, sans-serif"
-          >
-            {`${occInfo.emoji} ${occInfo.label}`}
-          </text>
-        </g>
       </svg>
     </div>
   );
