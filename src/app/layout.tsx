@@ -3,7 +3,7 @@ import { GoogleAdsenseDeferred } from "@/components/common/GoogleAdsenseDeferred
 import "../styles/globals.css";
 import { Providers } from "./providers";
 import { MobileBottomNav } from "@/components/common/MobileBottomNav";
-import { buildCanonical, SITE_URL } from "@/constants/seo";
+import { buildCanonical, SITE_URL, SOCIAL_LINKS } from "@/constants/seo";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -51,7 +51,8 @@ export const metadata: Metadata = {
     title: "Awasio - Verified Real Estate & Certified Local Advisors",
     description:
       "Search verified properties and book private walkthroughs with certified RERA advisors.",
-    creator: "@awasio",
+    site: `@${SOCIAL_LINKS.x.handle}`,
+    creator: `@${SOCIAL_LINKS.x.handle}`,
   },
   robots: {
     index: true,

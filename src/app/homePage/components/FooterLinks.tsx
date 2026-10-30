@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { Phone, Mail } from "lucide-react";
+import { Phone, Mail, Linkedin, Youtube } from "lucide-react";
 import { BrandLogo } from "@/components/common/BrandLogo";
+import { SOCIAL_LINKS } from "@/constants/seo";
 
 const columns = [
   {
@@ -38,7 +39,7 @@ export function FooterLinks() {
             <p className="hidden sm:block max-w-md text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               Buy, rent, post and manage approved property listings across Indian cities with transparent pricing.
             </p>
-            {/* Compact Horizontal Contact Pills (Single-line row on mobile, saves vertical height) */}
+            {/* Compact Horizontal Contact Pills */}
             <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
               <a
                 href="tel:+918848510629"
@@ -55,6 +56,43 @@ export function FooterLinks() {
               >
                 <Mail className="h-3 w-3 text-rose-500 shrink-0" />
                 <span>contact@awasio.com</span>
+              </a>
+            </div>
+
+            {/* Official Social Media Channels */}
+            <div className="flex items-center gap-2 pt-2">
+              <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500 mr-0.5">Follow us:</span>
+              <a
+                href={SOCIAL_LINKS.linkedin.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Awasio on LinkedIn"
+                title="LinkedIn: awasio-official"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/90 bg-slate-50 text-slate-600 transition hover:border-[#0A66C2] hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:text-[#0A66C2]"
+              >
+                <Linkedin className="h-3.5 w-3.5" />
+              </a>
+              <a
+                href={SOCIAL_LINKS.x.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Awasio on X"
+                title="X: @awasioofficial"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/90 bg-slate-50 text-slate-600 transition hover:border-slate-900 hover:bg-slate-200 hover:text-black dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+              >
+                <svg className="h-3 w-3 fill-current" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </a>
+              <a
+                href={SOCIAL_LINKS.youtube.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Awasio on YouTube"
+                title="YouTube: @awasio-official"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/90 bg-slate-50 text-slate-600 transition hover:border-[#FF0000] hover:bg-[#FF0000]/10 hover:text-[#FF0000] dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:text-[#FF0000]"
+              >
+                <Youtube className="h-3.5 w-3.5" />
               </a>
             </div>
           </div>
@@ -83,8 +121,45 @@ export function FooterLinks() {
           </div>
         </div>
       </div>
-      <div className="border-t border-slate-100 py-3.5 text-center text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
-        © 2026 Awasio. Property search and listing management.
+      <div className="border-t border-slate-100 py-3 px-4 text-center text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+        <div className="mx-auto flex max-w-6xl flex-col sm:flex-row items-center justify-between gap-2.5">
+          <span>© 2026 Awasio. Property search and listing management.</span>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-slate-400 dark:text-slate-500">Connect:</span>
+            <a
+              href={SOCIAL_LINKS.linkedin.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              title="LinkedIn: awasio-official"
+              className="text-slate-500 hover:text-[#0A66C2] transition"
+            >
+              <Linkedin className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href={SOCIAL_LINKS.x.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X (Twitter)"
+              title="X: @awasioofficial"
+              className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition"
+            >
+              <svg className="h-3 w-3 fill-current" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+            <a
+              href={SOCIAL_LINKS.youtube.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+              title="YouTube: @awasio-official"
+              className="text-slate-500 hover:text-[#FF0000] transition"
+            >
+              <Youtube className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   );

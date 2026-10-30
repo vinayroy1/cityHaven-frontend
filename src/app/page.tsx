@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { HeaderNav } from "./homePage/components/HeaderNav";
 import { HomeExperience } from "./homePage/components/HomeExperience";
 import { FooterLinks } from "./homePage/components/FooterLinks";
-import { SITE_URL, buildCanonical } from "@/constants/seo";
+import { SITE_URL, buildCanonical, SOCIAL_LINKS, SOCIAL_SAME_AS } from "@/constants/seo";
 import { CDN_ASSETS } from "@/config/cdn";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
@@ -79,6 +79,8 @@ export const metadata: Metadata = {
     title: "Awasio - Verified Real Estate & Certified Local Advisors",
     description:
       "Search verified properties and book private walkthroughs with certified RERA advisors.",
+    site: `@${SOCIAL_LINKS.x.handle}`,
+    creator: `@${SOCIAL_LINKS.x.handle}`,
     images: [`${SITE_URL}/og-image.png`],
   },
 };
@@ -126,6 +128,7 @@ export default async function RootPage() {
         legalName: "Awasio Real Estate",
         alternateName: ["Awasio Real Estate", "awasio.com", "Awasio Properties"],
         url: SITE_URL,
+        sameAs: SOCIAL_SAME_AS,
         logo: CDN_ASSETS.logoPrimarySvg,
         image: `${SITE_URL}/og-image.png`,
         description:

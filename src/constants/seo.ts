@@ -1,5 +1,29 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://awasio.com";
 
+export const SOCIAL_LINKS = {
+  linkedin: {
+    handle: "awasio-official",
+    url: "https://www.linkedin.com/company/awasio-official",
+    label: "LinkedIn",
+  },
+  x: {
+    handle: "awasioofficial",
+    url: "https://x.com/awasioofficial",
+    label: "X (Twitter)",
+  },
+  youtube: {
+    handle: "awasio-official",
+    url: "https://www.youtube.com/@awasio-official",
+    label: "YouTube",
+  },
+} as const;
+
+export const SOCIAL_SAME_AS = [
+  SOCIAL_LINKS.linkedin.url,
+  SOCIAL_LINKS.x.url,
+  SOCIAL_LINKS.youtube.url,
+];
+
 export const seoDefaults = {
   title: "Awasio - Find homes & commercial spaces",
   description: "Search, list, and discover verified properties across top cities with Awasio.",

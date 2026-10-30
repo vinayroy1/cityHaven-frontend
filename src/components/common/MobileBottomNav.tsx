@@ -31,7 +31,10 @@ import {
   Phone,
   BookOpenText,
   Zap,
+  Linkedin,
+  Youtube,
 } from "lucide-react";
+import { SOCIAL_LINKS } from "@/constants/seo";
 import { APP_CONFIG } from "@/constants/app-config";
 import { ThemeToggle } from "./ThemeToggle";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
@@ -564,6 +567,44 @@ export function MobileBottomNav() {
                         </Link>
                       );
                     })}
+                  </div>
+                </div>
+
+                {/* Official Social Media Channels */}
+                <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-3 dark:border-slate-800/60 dark:bg-slate-900/40">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
+                    Follow Awasio
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={SOCIAL_LINKS.linkedin.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-white py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:text-[#0A66C2] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                    >
+                      <Linkedin className="h-3.5 w-3.5 text-[#0A66C2]" />
+                      <span>LinkedIn</span>
+                    </a>
+                    <a
+                      href={SOCIAL_LINKS.x.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-white py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:text-white"
+                    >
+                      <svg className="h-3 w-3 fill-current" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                      <span>X</span>
+                    </a>
+                    <a
+                      href={SOCIAL_LINKS.youtube.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-white py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:text-[#FF0000] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                    >
+                      <Youtube className="h-3.5 w-3.5 text-[#FF0000]" />
+                      <span>YouTube</span>
+                    </a>
                   </div>
                 </div>
 

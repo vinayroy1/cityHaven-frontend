@@ -1,8 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buildCanonical } from "@/constants/seo";
-import { Mail, Phone, MessageSquare, MapPin, Clock, ShieldCheck, ArrowLeft } from "lucide-react";
+import { buildCanonical, SOCIAL_LINKS } from "@/constants/seo";
+import { Mail, Phone, MessageSquare, MapPin, Clock, ShieldCheck, ArrowLeft, Linkedin, Youtube } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { ContactForm } from "./ContactForm";
@@ -122,6 +122,44 @@ export default function ContactPage() {
                 <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs font-semibold text-white ring-1 ring-white/20">
                   <Clock className="h-4 w-4" />
                   Scheduled tours available
+                </div>
+              </div>
+
+              {/* Official Social Media Channels */}
+              <div className="rounded-2xl border border-slate-200/90 bg-white/95 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/90">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                  Official Channels
+                </p>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <a
+                    href={SOCIAL_LINKS.linkedin.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-slate-50/80 p-2.5 text-xs font-semibold text-slate-700 transition hover:border-[#0A66C2] hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-200"
+                  >
+                    <Linkedin className="h-4 w-4 text-[#0A66C2]" />
+                    <span className="text-[11px]">LinkedIn</span>
+                  </a>
+                  <a
+                    href={SOCIAL_LINKS.x.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-slate-50/80 p-2.5 text-xs font-semibold text-slate-700 transition hover:border-slate-900 hover:bg-slate-200 hover:text-black dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:text-white"
+                  >
+                    <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                    <span className="text-[11px]">X</span>
+                  </a>
+                  <a
+                    href={SOCIAL_LINKS.youtube.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-slate-50/80 p-2.5 text-xs font-semibold text-slate-700 transition hover:border-[#FF0000] hover:bg-[#FF0000]/10 hover:text-[#FF0000] dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-200"
+                  >
+                    <Youtube className="h-4 w-4 text-[#FF0000]" />
+                    <span className="text-[11px]">YouTube</span>
+                  </a>
                 </div>
               </div>
             </div>
