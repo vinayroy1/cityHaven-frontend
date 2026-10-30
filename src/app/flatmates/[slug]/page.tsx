@@ -41,6 +41,8 @@ import { useGetFlatmateListingQuery } from "@/features/flatmates/api";
 import { BackButton } from "@/components/common/BackButton";
 import { FlatmateDetailSkeleton } from "@/components/flatmates/FlatmateDetailSkeleton";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
+import { SeekerAvatarPlaceholder } from "@/components/flatmates/SeekerAvatarPlaceholder";
+import { isRealUserPhoto } from "@/components/flatmates/FlatmateCard";
 
 const FlatmateContactModal = dynamic(
   () => import("@/components/flatmates/FlatmateContactModal").then((mod) => mod.FlatmateContactModal),
@@ -185,23 +187,21 @@ export default function FlatmateDetailPage() {
                               : "bg-gradient-to-br from-rose-500 via-pink-500 to-rose-600"
                           }`}
                         >
-                          {heroPhoto ? (
+                          {isRealUserPhoto(heroPhoto) ? (
                             <img
-                              src={heroPhoto}
+                              src={heroPhoto!}
                               alt={displayName}
                               fetchPriority="high"
                               decoding="async"
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <div className="h-full w-full flex flex-col items-center justify-center text-white">
-                              <span className="text-4xl sm:text-5xl font-black">
-                                {displayName[0]?.toUpperCase() || "R"}
-                              </span>
-                              <span className="text-[11px] font-bold tracking-wider uppercase opacity-90 mt-1">
-                                {isBuddyUp ? "Team" : "Seeker"}
-                              </span>
-                            </div>
+                            <SeekerAvatarPlaceholder
+                              displayName={displayName}
+                              gender={profile?.gender}
+                              occupation={profile?.occupation}
+                              mode={listing.mode}
+                            />
                           )}
                         </div>
 

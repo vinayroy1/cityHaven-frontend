@@ -29,6 +29,23 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { FlatmateListing } from "@/types/flatmate.types";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
+import { SeekerAvatarPlaceholder } from "./SeekerAvatarPlaceholder";
+
+export const isRealUserPhoto = (url?: string | null): boolean => {
+  if (!url) return false;
+  const lower = url.toLowerCase();
+  if (
+    lower.includes("avatar_rose.svg") ||
+    lower.includes("avatar_amber.svg") ||
+    lower.includes("avatar_blue.svg") ||
+    lower.includes("advisors/avatars/avatar_") ||
+    lower.includes("default_avatar") ||
+    lower.includes("placeholder")
+  ) {
+    return false;
+  }
+  return true;
+};
 
 const FlatmateContactModal = dynamic(
   () => import("./FlatmateContactModal").then((mod) => mod.FlatmateContactModal),
@@ -399,7 +416,7 @@ export function FlatmateCard({
           <div className="flex h-11 sm:h-12 items-center justify-between border-t border-slate-100 px-3 sm:px-3.5 dark:border-slate-800/80">
             <div className="flex items-center gap-2 min-w-0">
               <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 font-bold text-white shadow-inner flex items-center justify-center text-[11px]">
-                {hostPhoto ? (
+                {hostPhoto && isRealUserPhoto(hostPhoto) ? (
                   <img
                     src={hostPhoto}
                     alt={profile?.displayName || "Host"}
@@ -506,34 +523,27 @@ export function FlatmateCard({
               : "w-[130px] xs:w-[135px] sm:w-full h-full sm:h-auto sm:aspect-[16/10] border-r sm:border-r-0 sm:border-b border-slate-100 dark:border-slate-800"
           } bg-slate-100 dark:bg-slate-850`}
         >
-          {avatarPhoto ? (
-            <img
-              src={avatarPhoto}
-              alt={profile?.displayName || listing.title}
-              loading={priority ? "eager" : "lazy"}
-              fetchPriority={priority ? "high" : "auto"}
-              decoding="async"
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 pointer-events-none"
-            />
+          {isRealUserPhoto(avatarPhoto) ? (
+            <>
+              <img
+                src={avatarPhoto!}
+                alt={profile?.displayName || listing.title}
+                loading={priority ? "eager" : "lazy"}
+                fetchPriority={priority ? "high" : "auto"}
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 pointer-events-none"
+              />
+              {/* Subtle gradient overlay at bottom for depth on real photos */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+            </>
           ) : (
-            <div
-              className={`absolute inset-0 h-full w-full flex flex-col items-center justify-center p-3 text-center ${
-                listing.mode === "BUDDY_UP"
-                  ? "bg-gradient-to-br from-amber-600 via-rose-600 to-amber-700 text-white"
-                  : "bg-gradient-to-br from-rose-600 via-pink-600 to-rose-700 text-white"
-              }`}
-            >
-              <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md shadow-inner text-2xl sm:text-3xl font-black">
-                {(profile?.displayName || "R")[0].toUpperCase()}
-              </div>
-              <span className="mt-1.5 text-[10px] sm:text-[11px] font-bold text-white/90">
-                {profile?.gender || (listing.mode === "BUDDY_UP" ? "Group" : "Seeker")}
-              </span>
-            </div>
+            <SeekerAvatarPlaceholder
+              displayName={profile?.displayName || listing.title}
+              gender={profile?.gender}
+              occupation={profile?.occupation}
+              mode={listing.mode}
+            />
           )}
-
-          {/* Subtle gradient overlay at bottom for depth */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
 
           {/* Mode Tag overlay on image (Reduced font size to make fully visible) */}
           <div className="absolute left-1.5 top-1.5 z-10 pointer-events-none max-w-[calc(100%-12px)]">
