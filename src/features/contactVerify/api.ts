@@ -3,6 +3,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { baseQueryWithReauth } from "@/lib/api/baseQueryWithReauth";
+import { propertyListingApi } from "@/features/propertyListing/api";
+import { flatmatesApi } from "@/features/flatmates/api";
+import { organizationsApi } from "@/features/organizations/api";
 
 export interface RequestContactOtpPayload {
   name?: string;
@@ -275,6 +278,16 @@ export const contactVerifyApi = createApi({
     >({
       query: (body) => ({ url: API_ENDPOINTS.billing.promotions, method: "POST", body }),
       invalidatesTags: ["Promotions", "Credits", "BillingSummary"],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(propertyListingApi.util.invalidateTags(["Property"]));
+          dispatch(flatmatesApi.util.invalidateTags(["MyFlatmateListings", "FlatmateListing"]));
+          dispatch(organizationsApi.util.invalidateTags(["OrganizationProperty"]));
+        } catch {
+          // ignore error
+        }
+      },
     }),
     getMyPromotions: builder.query<{ success: boolean; data: CreditPromotion[] }, void>({
       query: () => ({ url: API_ENDPOINTS.billing.myPromotions, method: "GET" }),

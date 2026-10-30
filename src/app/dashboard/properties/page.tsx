@@ -633,7 +633,11 @@ function PropertiesContent() {
                 return (
                   <div
                     key={item.id}
-                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
+                    className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900 ${
+                      item.isBoosted
+                        ? "border-amber-300 ring-2 ring-amber-400/30 dark:border-amber-700/60"
+                        : "border-slate-200 hover:border-slate-300 dark:border-slate-800 dark:hover:border-slate-700"
+                    }`}
                   >
                     {/* Media Thumbnail */}
                     <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
@@ -652,6 +656,14 @@ function PropertiesContent() {
                         <StatusIcon className="h-3.5 w-3.5" />
                         <span>{cfg.label}</span>
                       </span>
+
+                      {/* Boosted / Featured Badge */}
+                      {item.isBoosted && (
+                        <span className="absolute left-3 top-11 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 text-[11px] font-black text-white shadow-md backdrop-blur-md">
+                          <Sparkles className="h-3 w-3 fill-amber-200" />
+                          <span>⚡ Featured</span>
+                        </span>
+                      )}
 
                       {/* Photo count */}
                       {item.media?.length > 0 && (
@@ -734,7 +746,22 @@ function PropertiesContent() {
                         </span>
 
                         <div className="flex items-center gap-1.5">
-                          {isItemActive && <CreditBoostButton targetType="PROPERTY" targetId={Number(item.id)} organizationId={scope === "org" ? effectiveOrgId : undefined} />}
+                          {isItemActive && (
+                            <CreditBoostButton
+                              targetType="PROPERTY"
+                              targetId={Number(item.id)}
+                              isBoosted={item.isBoosted}
+                              boostEndsAt={item.boostEndsAt}
+                              organizationId={scope === "org" ? effectiveOrgId : undefined}
+                              onSuccess={() => {
+                                refetch();
+                                if (scope === "org") {
+                                  orgQuery.refetch();
+                                  refetchOrgProperties();
+                                }
+                              }}
+                            />
+                          )}
                           <Link
                             href={`/properties/${item.id}`}
                             className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-rose-400"

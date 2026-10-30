@@ -306,7 +306,9 @@ export default function DashboardFlatmatesPage() {
                       <div
                         key={item.id}
                         className={`rounded-3xl border bg-white p-5 shadow-xs transition dark:bg-slate-900 ${
-                          item.status === "ACTIVE"
+                          item.isBoosted
+                            ? "border-amber-300 ring-2 ring-amber-400/30 dark:border-amber-700/60"
+                            : item.status === "ACTIVE"
                             ? "border-slate-200 hover:border-rose-300 dark:border-slate-800"
                             : item.status === "PAUSED"
                             ? "border-amber-200/90 bg-amber-50/20 dark:border-amber-900/40 dark:bg-amber-950/10"
@@ -359,6 +361,13 @@ export default function DashboardFlatmatesPage() {
                                     ? "Roommate Found"
                                     : item.status}
                                 </Badge>
+
+                                {item.isBoosted && (
+                                  <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-transparent flex items-center gap-1 shadow-xs font-bold text-[10px]">
+                                    <Sparkles className="w-3 h-3 fill-amber-200 stroke-amber-100" />
+                                    <span>⚡ Featured Boost</span>
+                                  </Badge>
+                                )}
 
                                 <span className="text-xs font-black text-rose-600 dark:text-rose-400">
                                   {isPlace
@@ -420,7 +429,13 @@ export default function DashboardFlatmatesPage() {
                           {/* Top Right Boost Button */}
                           <div className="shrink-0 flex sm:flex-col items-end gap-2">
                             {item.status === "ACTIVE" && (
-                              <CreditBoostButton targetType="FLATMATE" targetId={item.id} />
+                              <CreditBoostButton
+                                targetType="FLATMATE"
+                                targetId={item.id}
+                                isBoosted={item.isBoosted}
+                                boostEndsAt={item.boostEndsAt}
+                                onSuccess={() => refetchListings()}
+                              />
                             )}
                           </div>
                         </div>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { Crown, Loader2, Sparkles, X, Zap, ArrowRight } from "lucide-react";
+import { Crown, Loader2, Sparkles, X, Zap, ArrowRight, Clock } from "lucide-react";
 import { toast } from "sonner";
 import {
   useActivateCreditPromotionMutation,
@@ -13,15 +13,37 @@ import {
 
 type TargetType = "PROPERTY" | "FLATMATE" | "ADVISOR";
 
+export interface CreditBoostButtonProps {
+  targetType: TargetType;
+  targetId: number;
+  organizationId?: number;
+  isBoosted?: boolean;
+  boostEndsAt?: string | Date | null;
+  onSuccess?: () => void;
+}
+
+function formatRemainingTime(dateStr: string | Date | null | undefined): string | null {
+  if (!dateStr) return null;
+  const end = new Date(dateStr).getTime();
+  const now = Date.now();
+  const diffMs = end - now;
+  if (diffMs <= 0) return "Expiring";
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays > 0) return `${diffDays}d left`;
+  if (diffHours > 0) return `${diffHours}h left`;
+  const diffMins = Math.max(1, Math.floor(diffMs / (1000 * 60)));
+  return `${diffMins}m left`;
+}
+
 export function CreditBoostButton({
   targetType,
   targetId,
   organizationId,
-}: {
-  targetType: TargetType;
-  targetId: number;
-  organizationId?: number;
-}) {
+  isBoosted = false,
+  boostEndsAt = null,
+  onSuccess,
+}: CreditBoostButtonProps) {
   const { data } = useGetCreditPlatformConfigQuery();
   const { data: creditsData } = useGetMyCreditsQuery();
   const [activate, { isLoading }] = useActivateCreditPromotionMutation();
@@ -57,14 +79,21 @@ export function CreditBoostButton({
   if (!enabled || !actions.length) return null;
 
   const currentBalance = creditsData?.data?.credits ?? 0;
+  const timeLeft = isBoosted ? formatRemainingTime(boostEndsAt) : null;
 
   const buy = async (actionKey: string) => {
     try {
       const result = await activate({ actionKey, targetType, targetId, organizationId }).unwrap();
+      const endsFormatted = new Date(result.data.promotion.endsAt).toLocaleDateString(undefined, {
+        dateStyle: "medium",
+      });
       toast.success(
-        `Boost activated! Listing featured until ${new Date(result.data.promotion.endsAt).toLocaleDateString()}`
+        isBoosted
+          ? `Boost extended! Featured placement active until ${endsFormatted}`
+          : `Boost activated! Featured placement active until ${endsFormatted}`
       );
       setOpen(false);
+      onSuccess?.();
     } catch (error: any) {
       toast.error(error?.data?.message || "Could not activate boost");
     }
@@ -108,10 +137,12 @@ export function CreditBoostButton({
               </div>
               <div className="min-w-0">
                 <h3 id="boost-modal-title" className="text-sm sm:text-base font-black tracking-tight text-white truncate">
-                  Boost {targetLabel}
+                  {isBoosted ? `Extend ${targetLabel} Boost` : `Boost ${targetLabel}`}
                 </h3>
                 <p className="text-[11px] text-amber-100 font-medium truncate">
-                  Pin to top of search results &amp; get 5x more leads
+                  {isBoosted
+                    ? "Add extra days to keep top search placement"
+                    : "Pin to top of search results & get 5x more leads"}
                 </p>
               </div>
             </div>
@@ -134,12 +165,29 @@ export function CreditBoostButton({
               {currentBalance} Credits
             </span>
           </div>
+
+          {/* Active boost indicator banner */}
+          {isBoosted && boostEndsAt && (
+            <div className="mt-2.5 flex items-start gap-2 rounded-xl border border-amber-300/40 bg-black/30 px-3 py-2 text-xs backdrop-blur-md">
+              <Clock className="h-4 w-4 shrink-0 text-amber-300 mt-0.5" />
+              <div className="min-w-0 leading-tight">
+                <span className="font-extrabold text-amber-200 block text-[11px]">Boost Currently Active</span>
+                <span className="text-[11px] text-amber-100">
+                  Featured until{" "}
+                  <strong className="text-white underline decoration-amber-300 font-semibold">
+                    {new Date(boostEndsAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
+                  </strong>
+                  . Purchasing below adds additional days onto this expiration!
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Scrollable Action Options */}
         <div className="flex-1 overflow-y-auto overscroll-contain p-3.5 sm:p-5 space-y-2.5">
           <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            Choose Boost Duration
+            {isBoosted ? "Choose Duration to Add" : "Choose Boost Duration"}
           </p>
 
           <div className="space-y-2">
@@ -158,7 +206,7 @@ export function CreditBoostButton({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">
-                        {action.durationDays} Days Featured
+                        {isBoosted ? `+${action.durationDays} Days Extension` : `${action.durationDays} Days Featured`}
                       </span>
                       <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-950/70 dark:text-amber-300">
                         ⚡ Top Placement
@@ -184,7 +232,7 @@ export function CreditBoostButton({
                         <Loader2 className="h-3 w-3 animate-spin" />
                       ) : (
                         <>
-                          <span>Boost</span>
+                          <span>{isBoosted ? "Extend" : "Boost"}</span>
                           <ArrowRight className="h-3 w-3" />
                         </>
                       )}
@@ -198,7 +246,7 @@ export function CreditBoostButton({
           {currentBalance < 20 && (
             <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50/80 p-2.5 text-center dark:border-amber-900/50 dark:bg-amber-950/30">
               <p className="text-[11px] text-amber-800 dark:text-amber-300">
-                Low on credits? Invite friends or explore recharge plans to boost more properties.
+                Low on credits? Invite friends or explore recharge plans to boost more listings.
               </p>
               <Link
                 href="/pricing"
@@ -230,16 +278,42 @@ export function CreditBoostButton({
 
   return (
     <>
-      <button
-        type="button"
-        disabled={isLoading}
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-3 py-1.5 text-xs font-black text-white shadow-sm hover:bg-amber-600 active:scale-95 transition disabled:opacity-60"
-        title="Boost property visibility"
-      >
-        {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-        <span>Boost</span>
-      </button>
+      {isBoosted ? (
+        <button
+          type="button"
+          disabled={isLoading}
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 px-3 py-1.5 text-xs font-black text-white shadow-md shadow-amber-500/25 ring-2 ring-amber-400/50 hover:from-amber-600 hover:to-orange-600 active:scale-95 transition disabled:opacity-60"
+          title={
+            boostEndsAt
+              ? `Featured boost active until ${new Date(boostEndsAt).toLocaleDateString()}. Click to extend.`
+              : "Featured boost active. Click to extend."
+          }
+        >
+          {isLoading ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Sparkles className="h-3.5 w-3.5 fill-amber-200 stroke-amber-100 animate-pulse" />
+          )}
+          <span>Boosted</span>
+          {timeLeft && (
+            <span className="rounded-full bg-black/25 px-1.5 py-0.5 text-[10px] font-bold text-amber-100 tracking-tight">
+              {timeLeft}
+            </span>
+          )}
+        </button>
+      ) : (
+        <button
+          type="button"
+          disabled={isLoading}
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-3 py-1.5 text-xs font-black text-white shadow-sm hover:bg-amber-600 active:scale-95 transition disabled:opacity-60"
+          title={`Boost ${targetLabel.toLowerCase()} visibility`}
+        >
+          {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+          <span>Boost</span>
+        </button>
+      )}
 
       {mounted && typeof document !== "undefined" && modalContent
         ? createPortal(modalContent, document.body)
