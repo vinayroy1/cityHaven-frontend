@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Users,
@@ -20,9 +20,20 @@ import {
   Mail,
   User,
   HeartHandshake,
+  Search,
+  PauseCircle,
+  PlayCircle,
+  Edit3,
+  Sparkles,
+  AlertTriangle,
+  RotateCcw,
+  IndianRupee,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import {
@@ -30,30 +41,88 @@ import {
   useGetMyFlatmateInterestsQuery,
   useUpdateFlatmateInterestStatusMutation,
   useArchiveFlatmateListingMutation,
+  useUpdateFlatmateListingMutation,
 } from "@/features/flatmates/api";
-import type { FlatmateInterestStatus } from "@/types/flatmate.types";
+import type { FlatmateListing, FlatmateInterestStatus } from "@/types/flatmate.types";
 import { CreditBoostButton } from "@/components/billing/CreditBoostButton";
+import { FlatmateEditModal } from "@/components/flatmates/FlatmateEditModal";
+import { SeekerAvatarPlaceholder } from "@/components/flatmates/SeekerAvatarPlaceholder";
+import { isRealUserPhoto } from "@/components/flatmates/FlatmateCard";
 
 export default function DashboardFlatmatesPage() {
   const [activeTab, setActiveTab] = useState<"listings" | "received" | "sent">("listings");
+  const [modeFilter, setModeFilter] = useState<"ALL" | "NEED_ROOM" | "BUDDY_UP" | "HAVE_ROOM">("ALL");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "ACTIVE" | "PAUSED" | "MATCHED" | "ARCHIVED">("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Edit modal state
+  const [editingListing, setEditingListing] = useState<FlatmateListing | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Delete / Archive confirmation modal state
+  const [deletingListing, setDeletingListing] = useState<FlatmateListing | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const { data: listings = [], isLoading: isLoadingListings, refetch: refetchListings } = useGetMyFlatmateListingsQuery();
   const { data: interestsData, isLoading: isLoadingInterests, refetch: refetchInterests } = useGetMyFlatmateInterestsQuery();
 
+  const [updateListing, { isLoading: isUpdatingListing }] = useUpdateFlatmateListingMutation();
   const [archiveListing, { isLoading: isArchiving }] = useArchiveFlatmateListingMutation();
   const [updateInterestStatus, { isLoading: isUpdatingStatus }] = useUpdateFlatmateInterestStatusMutation();
 
   const receivedInterests = interestsData?.received || [];
   const sentInterests = interestsData?.sent || [];
 
-  const handleArchive = async (id: number) => {
-    if (!confirm("Are you sure you want to archive this flatmate listing?")) return;
+  // Summary counts
+  const totalCount = listings.length;
+  const activeCount = listings.filter((l) => l.status === "ACTIVE").length;
+  const pausedCount = listings.filter((l) => l.status === "PAUSED").length;
+  const matchedCount = listings.filter((l) => l.status === "MATCHED").length;
+
+  // Filtered listings
+  const filteredListings = useMemo(() => {
+    return listings.filter((item) => {
+      if (modeFilter !== "ALL" && item.mode !== modeFilter) return false;
+      if (statusFilter !== "ALL" && item.status !== statusFilter) return false;
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const titleMatch = item.title?.toLowerCase().includes(query);
+        const cityMatch = item.cityName?.toLowerCase().includes(query);
+        const locMatch = item.locality?.toLowerCase().includes(query);
+        if (!titleMatch && !cityMatch && !locMatch) return false;
+      }
+      return true;
+    });
+  }, [listings, modeFilter, statusFilter, searchQuery]);
+
+  // Toggle pause vs active status
+  const handleToggleStatus = async (id: number, newStatus: "ACTIVE" | "PAUSED" | "MATCHED") => {
     try {
-      await archiveListing(id).unwrap();
-      toast.success("Listing archived successfully");
+      await updateListing({ id, data: { status: newStatus } }).unwrap();
+      const statusLabel =
+        newStatus === "ACTIVE"
+          ? "Listing is now live on Awasio!"
+          : newStatus === "PAUSED"
+          ? "Listing paused. It is now hidden from search."
+          : "Listing marked as roommate found!";
+      toast.success(statusLabel);
       refetchListings();
     } catch (err: any) {
-      toast.error(err?.data?.message || "Failed to archive listing");
+      toast.error(err?.data?.message || "Failed to update listing status");
+    }
+  };
+
+  // Perform archive or permanent delete
+  const handleConfirmDelete = async (permanent: boolean) => {
+    if (!deletingListing) return;
+    try {
+      await archiveListing({ id: deletingListing.id, permanent }).unwrap();
+      toast.success(permanent ? "Listing permanently deleted" : "Listing archived successfully");
+      setIsDeleteDialogOpen(false);
+      setDeletingListing(null);
+      refetchListings();
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to delete listing");
     }
   };
 
@@ -78,13 +147,13 @@ export default function DashboardFlatmatesPage() {
             <div className="space-y-1">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-bold w-fit">
                 <Users className="w-3.5 h-3.5" />
-                <span>Roommate Hub</span>
+                <span>Roommate Hub & Control Center</span>
               </div>
-              <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-                My Flatmate Listings & Inquiries
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+                My Flatmates & Co-Living
               </h1>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Manage your posted room requirements and connect directly with interested roommates.
+                Manage your seeker profiles, room postings, edit details, pause or reactivate listings, and connect with interested roommates.
               </p>
             </div>
 
@@ -99,6 +168,28 @@ export default function DashboardFlatmatesPage() {
             </div>
           </div>
 
+          {/* Quick Summary Stats Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Postings</span>
+              <p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{totalCount}</p>
+            </div>
+            <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/50 p-4 shadow-2xs dark:border-emerald-900/50 dark:bg-emerald-950/20">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live / Active
+              </span>
+              <p className="mt-1 text-2xl font-black text-emerald-700 dark:text-emerald-300">{activeCount}</p>
+            </div>
+            <div className="rounded-2xl border border-amber-200/80 bg-amber-50/50 p-4 shadow-2xs dark:border-amber-900/50 dark:bg-amber-950/20">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">Paused / Inactive</span>
+              <p className="mt-1 text-2xl font-black text-amber-700 dark:text-amber-300">{pausedCount}</p>
+            </div>
+            <div className="rounded-2xl border border-sky-200/80 bg-sky-50/50 p-4 shadow-2xs dark:border-sky-900/50 dark:bg-sky-950/20">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">Inquiries Received</span>
+              <p className="mt-1 text-2xl font-black text-sky-700 dark:text-sky-300">{receivedInterests.length}</p>
+            </div>
+          </div>
+
           {/* Navigation Tabs */}
           <div className="flex items-center gap-2 p-1 rounded-2xl bg-slate-100 dark:bg-slate-800/80 w-fit">
             <button
@@ -110,7 +201,7 @@ export default function DashboardFlatmatesPage() {
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              My Listings ({listings.length})
+              My Postings ({listings.length})
             </button>
             <button
               type="button"
@@ -141,91 +232,322 @@ export default function DashboardFlatmatesPage() {
             </button>
           </div>
 
-          {/* TAB 1: My Listings */}
+          {/* TAB 1: My Listings & Control Panel */}
           {activeTab === "listings" && (
             <div className="space-y-4">
-              {isLoadingListings ? (
-                <div className="p-8 text-center text-slate-500 flex flex-col items-center gap-2">
-                  <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
-                  <span className="text-xs">Loading your listings...</span>
-                </div>
-              ) : listings.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {listings.map((item) => (
-                    <div
-                      key={item.id}
-                      className="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between space-y-4"
+              {/* Filter and Search Toolbar */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs dark:bg-slate-900 dark:border-slate-800">
+                {/* Mode Filter Pills */}
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-slate-500 mr-1 hidden sm:inline">Type:</span>
+                  {[
+                    { key: "ALL", label: "All" },
+                    { key: "NEED_ROOM", label: "Seekers" },
+                    { key: "BUDDY_UP", label: "Buddy Up" },
+                    { key: "HAVE_ROOM", label: "Have Room" },
+                  ].map((m) => (
+                    <button
+                      key={m.key}
+                      type="button"
+                      onClick={() => setModeFilter(m.key as any)}
+                      className={`px-3 py-1 rounded-full text-xs font-bold transition ${
+                        modeFilter === m.key
+                          ? "bg-rose-600 text-white shadow-xs"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                      }`}
                     >
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Badge
-                            className={
-                              item.status === "ACTIVE"
-                                ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300"
-                                : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-                            }
-                          >
-                            {item.status}
-                          </Badge>
-                          <span className="text-xs font-bold text-slate-900 dark:text-white">
-                            {item.mode === "HAVE_ROOM"
-                              ? `Rent: ₹${(item.rent ?? 0).toLocaleString("en-IN")}/mo`
-                              : `Budget: ₹${(item.budgetMax ?? 0).toLocaleString("en-IN")}`}
-                          </span>
-                        </div>
-
-                        <Link href={`/flatmates/${item.slug}`} className="block group">
-                          <h3 className="font-bold text-base text-slate-900 group-hover:text-rose-600 dark:text-white line-clamp-1 transition">
-                            {item.title}
-                          </h3>
-                        </Link>
-
-                        <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                          <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                          <span>{item.locality ? `${item.locality}, ${item.cityName}` : item.cityName}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3">
-                        {item.status === "ACTIVE" && <CreditBoostButton targetType="FLATMATE" targetId={item.id} />}
-                        <Link
-                          href={`/flatmates/${item.slug}`}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-700"
-                        >
-                          <span>View Public Page</span>
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </Link>
-
-                        <button
-                          type="button"
-                          onClick={() => handleArchive(item.id)}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-rose-600 transition"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          <span>Archive</span>
-                        </button>
-                      </div>
-                    </div>
+                      {m.label}
+                    </button>
                   ))}
                 </div>
+
+                {/* Status Filter & Search */}
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value as any)}
+                    className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                  >
+                    <option value="ALL">All Statuses</option>
+                    <option value="ACTIVE">Live (Active)</option>
+                    <option value="PAUSED">Paused</option>
+                    <option value="MATCHED">Matched</option>
+                    <option value="ARCHIVED">Archived</option>
+                  </select>
+
+                  <div className="relative w-full sm:w-48">
+                    <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
+                    <Input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search title, city..."
+                      className="rounded-xl pl-8 pr-2.5 py-1 text-xs h-8"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {isLoadingListings ? (
+                <div className="p-12 text-center text-slate-500 flex flex-col items-center gap-2">
+                  <Loader2 className="w-7 h-7 animate-spin text-rose-500" />
+                  <span className="text-xs">Loading your listings...</span>
+                </div>
+              ) : filteredListings.length > 0 ? (
+                <div className="space-y-4">
+                  {filteredListings.map((item) => {
+                    const isPlace = item.mode === "HAVE_ROOM";
+                    const photos = item.photos || [];
+                    const hasRealPhoto =
+                      photos.some(isRealUserPhoto) || isRealUserPhoto(item.profile?.profilePhoto);
+                    const displayPhoto = photos.find(isRealUserPhoto) || (isRealUserPhoto(item.profile?.profilePhoto) ? item.profile?.profilePhoto : null);
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={`rounded-3xl border bg-white p-5 shadow-xs transition dark:bg-slate-900 ${
+                          item.status === "ACTIVE"
+                            ? "border-slate-200 hover:border-rose-300 dark:border-slate-800"
+                            : item.status === "PAUSED"
+                            ? "border-amber-200/90 bg-amber-50/20 dark:border-amber-900/40 dark:bg-amber-950/10"
+                            : "border-slate-200/80 opacity-80 dark:border-slate-800"
+                        }`}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                          {/* Visual Avatar / Photo + Details */}
+                          <div className="flex items-start gap-4">
+                            {/* Thumbnail */}
+                            <div className="relative w-20 h-24 sm:w-24 sm:h-28 rounded-2xl overflow-hidden border border-slate-100 bg-slate-100 dark:border-slate-800 dark:bg-slate-800 shrink-0">
+                              {hasRealPhoto && displayPhoto ? (
+                                <img
+                                  src={displayPhoto}
+                                  alt={item.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <SeekerAvatarPlaceholder
+                                  displayName={item.profile?.displayName || item.title}
+                                  gender={item.profile?.gender}
+                                  mode={item.mode}
+                                />
+                              )}
+                              <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-slate-950/80 text-white text-[9px] font-bold backdrop-blur-xs">
+                                {item.mode === "HAVE_ROOM" ? "Host" : item.mode === "BUDDY_UP" ? "Buddy" : "Seeker"}
+                              </span>
+                            </div>
+
+                            {/* Info */}
+                            <div className="space-y-1.5 flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <Badge
+                                  className={
+                                    item.status === "ACTIVE"
+                                      ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 flex items-center gap-1"
+                                      : item.status === "PAUSED"
+                                      ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300"
+                                      : item.status === "MATCHED"
+                                      ? "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-300"
+                                      : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                                  }
+                                >
+                                  {item.status === "ACTIVE" && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+                                  {item.status === "ACTIVE"
+                                    ? "Live on Awasio"
+                                    : item.status === "PAUSED"
+                                    ? "Paused (Hidden)"
+                                    : item.status === "MATCHED"
+                                    ? "Roommate Found"
+                                    : item.status}
+                                </Badge>
+
+                                <span className="text-xs font-black text-rose-600 dark:text-rose-400">
+                                  {isPlace
+                                    ? `Rent: ₹${(item.rent ?? 0).toLocaleString("en-IN")}/mo`
+                                    : item.budgetMin && item.budgetMax
+                                    ? `Budget: ₹${item.budgetMin.toLocaleString("en-IN")} - ₹${item.budgetMax.toLocaleString("en-IN")}/mo`
+                                    : item.budgetMax
+                                    ? `Budget: Up to ₹${item.budgetMax.toLocaleString("en-IN")}/mo`
+                                    : "Flexible Budget"}
+                                </span>
+                              </div>
+
+                              <Link href={`/flatmates/${item.slug}`} className="block group">
+                                <h3 className="font-extrabold text-base text-slate-900 group-hover:text-rose-600 dark:text-white line-clamp-1 transition">
+                                  {item.title}
+                                </h3>
+                              </Link>
+
+                              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                <span className="inline-flex items-center gap-1 font-medium">
+                                  <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                                  <span>{item.locality ? `${item.locality}, ${item.cityName}` : item.cityName}</span>
+                                </span>
+
+                                {item.roomType && (
+                                  <span className="font-medium text-slate-600 dark:text-slate-300">
+                                    • {item.roomType}
+                                  </span>
+                                )}
+
+                                {item.furnishing && (
+                                  <span className="text-slate-400">
+                                    • {item.furnishing}
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Badges */}
+                              <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[11px]">
+                                {item.profile?.diet && (
+                                  <span className="rounded-md bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                                    {item.profile.diet}
+                                  </span>
+                                )}
+                                {item.petsAllowed && (
+                                  <span className="rounded-md bg-emerald-50 text-emerald-700 px-2 py-0.5 dark:bg-emerald-950/40 dark:text-emerald-300">
+                                    🐾 Pet Friendly
+                                  </span>
+                                )}
+                                {!item.smokingAllowed && (
+                                  <span className="rounded-md bg-slate-100 px-2 py-0.5 text-slate-500 dark:bg-slate-800">
+                                    🚭 Non-Smoker
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Top Right Boost Button */}
+                          <div className="shrink-0 flex sm:flex-col items-end gap-2">
+                            {item.status === "ACTIVE" && (
+                              <CreditBoostButton targetType="FLATMATE" targetId={item.id} />
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Control Actions Bottom Bar */}
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 dark:border-slate-800 pt-3.5 mt-4">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {/* Pause / Resume Button */}
+                            {item.status === "ACTIVE" ? (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleToggleStatus(item.id, "PAUSED")}
+                                disabled={isUpdatingListing}
+                                className="rounded-full text-xs font-bold border-amber-300 text-amber-700 hover:bg-amber-50 dark:border-amber-800 dark:text-amber-300"
+                              >
+                                <PauseCircle className="w-3.5 h-3.5 mr-1" />
+                                Pause / Deactivate
+                              </Button>
+                            ) : item.status === "PAUSED" ? (
+                              <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => handleToggleStatus(item.id, "ACTIVE")}
+                                disabled={isUpdatingListing}
+                                className="rounded-full text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white"
+                              >
+                                <PlayCircle className="w-3.5 h-3.5 mr-1" />
+                                Activate / Go Live
+                              </Button>
+                            ) : null}
+
+                            {/* Edit Listing */}
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setEditingListing(item);
+                                setIsEditModalOpen(true);
+                              }}
+                              className="rounded-full text-xs font-bold border-slate-200 dark:border-slate-700"
+                            >
+                              <Edit3 className="w-3.5 h-3.5 mr-1" />
+                              Edit
+                            </Button>
+
+                            {/* Mark as Matched / Roommate Found */}
+                            {item.status === "ACTIVE" && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleToggleStatus(item.id, "MATCHED")}
+                                disabled={isUpdatingListing}
+                                className="rounded-full text-xs font-medium text-slate-600 hover:text-emerald-700 dark:text-slate-400"
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                                Found Roommate
+                              </Button>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <Link
+                              href={`/flatmates/${item.slug}`}
+                              className="inline-flex items-center gap-1 text-xs font-bold text-rose-600 hover:text-rose-700"
+                            >
+                              <span>View Public Page</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </Link>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setDeletingListing(item);
+                                setIsDeleteDialogOpen(true);
+                              }}
+                              className="inline-flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-rose-600 transition"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               ) : (
-                <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-3">
+                <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-3">
                   <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto">
                     <Home className="w-6 h-6" />
                   </div>
                   <h3 className="font-bold text-base text-slate-900 dark:text-white">
-                    You haven&apos;t posted any flatmate listings yet
+                    {searchQuery || modeFilter !== "ALL" || statusFilter !== "ALL"
+                      ? "No flatmate listings match your filters"
+                      : "You haven't posted any flatmate listings yet"}
                   </h3>
                   <p className="text-xs text-slate-500 max-w-md mx-auto">
-                    Whether you have an extra room in your flat or need to find roommates in your city, post for free.
+                    {searchQuery || modeFilter !== "ALL" || statusFilter !== "ALL"
+                      ? "Try resetting your search query or status filter to see all your posted listings."
+                      : "Whether you need a room in a new city or have an extra bedroom to fill, post for free on Awasio."}
                   </p>
                   <div className="pt-2">
-                    <Link
-                      href="/flatmates/post"
-                      className="inline-flex items-center gap-1.5 rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-md shadow-rose-600/20"
-                    >
-                      <PlusCircle className="w-4 h-4" /> Post Flatmate Requirement
-                    </Link>
+                    {searchQuery || modeFilter !== "ALL" || statusFilter !== "ALL" ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSearchQuery("");
+                          setModeFilter("ALL");
+                          setStatusFilter("ALL");
+                        }}
+                        className="rounded-full text-xs font-bold"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5 mr-1" />
+                        Reset Filters
+                      </Button>
+                    ) : (
+                      <Link
+                        href="/flatmates/post"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-rose-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-600/20"
+                      >
+                        <PlusCircle className="w-4 h-4" /> Post Flatmate Requirement
+                      </Link>
+                    )}
                   </div>
                 </div>
               )}
@@ -245,7 +567,7 @@ export default function DashboardFlatmatesPage() {
                   {receivedInterests.map((interest) => (
                     <div
                       key={interest.id}
-                      className="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      className="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                     >
                       <div className="flex items-start gap-3.5">
                         <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 text-white font-bold flex items-center justify-center shrink-0">
@@ -315,13 +637,13 @@ export default function DashboardFlatmatesPage() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-2">
+                <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-2">
                   <HeartHandshake className="w-10 h-10 text-slate-400 mx-auto" />
                   <h3 className="font-bold text-base text-slate-900 dark:text-white">
                     No inquiries received yet
                   </h3>
                   <p className="text-xs text-slate-500">
-                    When room seekers connect with your listing, their messages will appear here.
+                    When room seekers connect with your listing, their messages and contact details will appear here.
                   </p>
                 </div>
               )}
@@ -341,7 +663,7 @@ export default function DashboardFlatmatesPage() {
                   {sentInterests.map((interest) => (
                     <div
                       key={interest.id}
-                      className="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      className="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                     >
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-2">
@@ -382,7 +704,7 @@ export default function DashboardFlatmatesPage() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-2">
+                <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-2">
                   <MessageSquare className="w-10 h-10 text-slate-400 mx-auto" />
                   <h3 className="font-bold text-base text-slate-900 dark:text-white">
                     You haven&apos;t sent any roomie inquiries yet
@@ -392,7 +714,7 @@ export default function DashboardFlatmatesPage() {
                   </p>
                   <div className="pt-2">
                     <Link
-                      href="/flatmate"
+                      href="/flatmates?mode=NEED_ROOM"
                       className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-md shadow-rose-600/20"
                     >
                       Explore Flatmates
@@ -404,6 +726,81 @@ export default function DashboardFlatmatesPage() {
           )}
         </div>
       </main>
+
+      {/* Edit Listing Modal */}
+      <FlatmateEditModal
+        listing={editingListing}
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingListing(null);
+        }}
+        onSuccess={() => refetchListings()}
+      />
+
+      {/* Delete / Archive Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={(open) => !open && setIsDeleteDialogOpen(false)}>
+        <DialogContent className="max-w-md rounded-3xl p-6">
+          <DialogHeader className="space-y-2">
+            <div className="w-11 h-11 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <DialogTitle className="text-lg font-extrabold text-slate-900 dark:text-white">
+              Remove Flatmate Listing
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              How would you like to handle &ldquo;{deletingListing?.title}&rdquo;?
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 py-3">
+            <button
+              type="button"
+              onClick={() => handleConfirmDelete(false)}
+              disabled={isArchiving}
+              className="w-full text-left p-3.5 rounded-2xl border border-slate-200 hover:border-amber-300 hover:bg-amber-50/40 dark:border-slate-800 dark:hover:border-amber-900 transition flex items-start gap-3"
+            >
+              <PauseCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs font-bold text-slate-900 dark:text-white block">
+                  Archive Listing (Recommended)
+                </span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 block leading-tight">
+                  Hides the listing from public search. Your inquiries and data are preserved and you can reactivate anytime.
+                </span>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleConfirmDelete(true)}
+              disabled={isArchiving}
+              className="w-full text-left p-3.5 rounded-2xl border border-rose-200 hover:border-rose-400 hover:bg-rose-50/40 dark:border-rose-950 dark:hover:border-rose-800 transition flex items-start gap-3"
+            >
+              <Trash2 className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs font-bold text-rose-600 dark:text-rose-400 block">
+                  Permanently Delete
+                </span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 block leading-tight">
+                  Completely erases this listing and all its inquiries. This action cannot be undone.
+                </span>
+              </div>
+            </button>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              className="rounded-full text-xs w-full"
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

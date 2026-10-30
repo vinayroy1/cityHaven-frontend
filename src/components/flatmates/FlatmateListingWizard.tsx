@@ -47,6 +47,7 @@ import { useMeQuery } from "@/features/auth/api";
 import { getStoredUserContact } from "@/lib/auth/storedUser";
 import type { FlatmateListingMode, FlatmateListingInput } from "@/types/flatmate.types";
 import { registerBackHandler } from "@/lib/navigation/backNavigation";
+import { SeekerAvatarPlaceholder } from "./SeekerAvatarPlaceholder";
 
 const ROOM_TYPES = ["Private Room", "Shared Room (Twin)", "Shared Room (3+)", "Whole Flat"];
 const BHK_OPTIONS = [1, 2, 3, 4, 5];
@@ -141,8 +142,11 @@ export function FlatmateListingWizard() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
+  const [hideProfilePhoto, setHideProfilePhoto] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  const existingProfilePhoto = flatmateProfile?.profilePhoto || meData?.profileImage || null;
 
   // Autofill logged-in user profile details, phone and email
   React.useEffect(() => {
@@ -173,11 +177,13 @@ export function FlatmateListingWizard() {
       if (flatmateProfile.workMode) setWorkMode((prev) => prev || flatmateProfile.workMode || "Hybrid");
       if (flatmateProfile.sleepSchedule) setSleepSchedule((prev) => prev || flatmateProfile.sleepSchedule || "Flexible");
       if (flatmateProfile.diet) setPreferredDiet((prev) => (prev === "Any Diet" ? flatmateProfile.diet || "Any Diet" : prev));
-      if (flatmateProfile.profilePhoto && mode !== "HAVE_ROOM") {
-        setPhotos((prev) => (prev.length === 0 ? [flatmateProfile.profilePhoto!] : prev));
-      }
     }
-  }, [meData, flatmateProfile, mode]);
+
+    const userPhoto = flatmateProfile?.profilePhoto || meData?.profileImage || null;
+    if (userPhoto && mode !== "HAVE_ROOM" && !hideProfilePhoto) {
+      setPhotos((prev) => (prev.length === 0 ? [userPhoto] : prev));
+    }
+  }, [meData, flatmateProfile, mode, hideProfilePhoto]);
 
   React.useEffect(() => {
     if (!window.localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)) {
@@ -295,6 +301,12 @@ export function FlatmateListingWizard() {
         return;
       }
 
+      const finalPhotos = hideProfilePhoto
+        ? []
+        : mode !== "HAVE_ROOM"
+        ? (photos.length > 0 ? photos : (existingProfilePhoto ? [existingProfilePhoto] : []))
+        : photos;
+
       const finalTitle = computedTitle();
       const primaryLoc = preferredLocalities[0] || locality.trim();
       const payload: FlatmateListingInput = {
@@ -321,7 +333,7 @@ export function FlatmateListingWizard() {
         minimumStayMonths: minimumStayMonths ? Number(minimumStayMonths) : undefined,
         spotsAvailable: 1,
         amenities,
-        photos,
+        photos: finalPhotos,
         preferredGenders,
         preferredOccupations,
         preferredDiet: preferredDiet !== "Any Diet" ? preferredDiet : undefined,
@@ -338,6 +350,7 @@ export function FlatmateListingWizard() {
         },
         profile: {
           displayName: displayName || undefined,
+          profilePhoto: hideProfilePhoto ? null : (finalPhotos[0] || null),
           birthYear: birthYear ? Number(birthYear) : undefined,
           gender: gender || undefined,
           occupation: occupation || undefined,
@@ -1203,97 +1216,228 @@ export function FlatmateListingWizard() {
                 )}
               </div>
 
-              {mode !== "HAVE_ROOM" && (
-                <div className="flex items-start gap-2.5 rounded-2xl bg-indigo-50/70 p-3 text-xs text-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/40">
-                  <Info className="w-4 h-4 mt-0.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
-                  <span>
-                    <strong>Searching for a room or flat?</strong> You don&apos;t have a property to show yet, so flat photos are not required. You can optionally upload your profile photo so flatmates can put a face to your listing.
-                  </span>
-                </div>
-              )}
+              {mode !== "HAVE_ROOM" ? (
+                /* ======================================================== */
+                /* ROOM SEEKER / BUDDY-UP PROFILE IMAGE FLOW               */
+                /* ======================================================== */
+                <div className="space-y-3.5">
+                  {(photos[0] || existingProfilePhoto) ? (
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-900/70 space-y-3.5 shadow-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                          Profile Picture for Listing
+                        </span>
+                        {!hideProfilePhoto && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> Auto-detected from Profile
+                          </span>
+                        )}
+                      </div>
 
-              <label className={`flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center transition hover:border-rose-400 hover:bg-rose-50/40 dark:border-slate-700 dark:bg-slate-800/50 ${isUploadingPhotos ? "pointer-events-none opacity-70" : ""}`}>
-                {isUploadingPhotos ? (
-                  <Loader2 className="mb-2 h-6 w-6 animate-spin text-rose-500" />
-                ) : (
-                  <Upload className="mb-2 h-6 w-6 text-rose-500" />
-                )}
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                  {isUploadingPhotos
-                    ? "Uploading photo…"
-                    : mode === "HAVE_ROOM"
-                    ? "Choose room or flat photos"
-                    : photos.length > 0
-                    ? "Change profile photo"
-                    : "Upload profile picture (Optional)"}
-                </span>
-                <span className="mt-1 text-[11px] text-slate-500">
-                  {mode === "HAVE_ROOM"
-                    ? "Up to 8 JPG, PNG or WebP images · 10 MB each"
-                    : "1 JPG, PNG or WebP image · 10 MB max · Completely optional"}
-                </span>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  multiple={mode === "HAVE_ROOM"}
-                  className="sr-only"
-                  onChange={(e) => void uploadPhotos(e.target.files)}
-                />
-              </label>
+                      <div className="flex items-center gap-4">
+                        {hideProfilePhoto ? (
+                          <div className="relative w-20 h-24 rounded-2xl overflow-hidden border-2 border-dashed border-rose-300 bg-rose-50/60 dark:border-rose-800 dark:bg-rose-950/40 flex items-center justify-center shrink-0 shadow-inner">
+                            <SeekerAvatarPlaceholder
+                              displayName={displayName || "Room Seeker"}
+                              gender={gender}
+                              mode={mode}
+                            />
+                          </div>
+                        ) : (
+                          <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-rose-500 shadow-md shrink-0 bg-slate-200 dark:bg-slate-800">
+                            <img
+                              src={photos[0] || existingProfilePhoto!}
+                              alt={displayName || "Profile photo"}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
 
-              <details className="rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-800">
-                <summary className="cursor-pointer text-[11px] font-semibold text-slate-500">
-                  {mode === "HAVE_ROOM" ? "Or add an image URL" : "Or paste a profile image URL"}
-                </summary>
-                <div className="mt-2 flex gap-2">
-                  <Input
-                    value={newPhotoUrl}
-                    onChange={(e) => setNewPhotoUrl(e.target.value)}
-                    placeholder="Paste photo URL (https://...)"
-                    className="rounded-2xl text-sm"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addPhoto();
-                      }
-                    }}
-                  />
-                  <Button type="button" onClick={addPhoto} className="rounded-2xl shrink-0">
-                    <Plus className="w-4 h-4 mr-1" /> Add Photo
-                  </Button>
-                </div>
-              </details>
+                        <div className="space-y-1 flex-1 min-w-0">
+                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            {hideProfilePhoto
+                              ? "Illustrated Persona Mode Active"
+                              : (displayName || "Your Account Photo")}
+                          </p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
+                            {hideProfilePhoto
+                              ? "Your real photo will be hidden. Your listing will showcase an eye-catching illustrated character persona."
+                              : "This photo will appear on your seeker card and public profile for interested roommates."}
+                          </p>
 
-              {photos.length > 0 && (
-                <div className={mode === "HAVE_ROOM" ? "grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2" : "flex items-center gap-4 pt-2"}>
-                  {photos.map((url, idx) => (
-                    <div
-                      key={idx}
-                      className={
-                        mode === "HAVE_ROOM"
-                          ? "relative group rounded-2xl overflow-hidden h-28 border border-slate-200 dark:border-slate-800"
-                          : "relative group rounded-full overflow-hidden w-24 h-24 border-2 border-rose-400 dark:border-rose-600 shadow-sm"
-                      }
-                    >
-                      <img
-                        src={url}
-                        alt={mode === "HAVE_ROOM" ? `Room photo ${idx + 1}` : "Profile photo"}
-                        className="w-full h-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removePhoto(idx)}
-                        className="absolute top-1 right-1 p-1 rounded-full bg-slate-950/70 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                        aria-label="Remove photo"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
+                          {!hideProfilePhoto && (
+                            <div className="flex items-center gap-2.5 pt-1">
+                              <label className="cursor-pointer text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:underline">
+                                <span>Change photo</span>
+                                <input
+                                  type="file"
+                                  accept="image/jpeg,image/png,image/webp"
+                                  className="sr-only"
+                                  onChange={(e) => void uploadPhotos(e.target.files)}
+                                />
+                              </label>
+                              <span className="text-slate-300 dark:text-slate-700">•</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPhotos([]);
+                                  setHideProfilePhoto(true);
+                                }}
+                                className="text-[11px] font-medium text-slate-500 hover:text-rose-600 transition"
+                              >
+                                Remove photo
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Checkbox: Don't show profile photo in listing */}
+                      <label className="flex items-start gap-3 p-3 rounded-xl border border-slate-200/90 bg-white dark:border-slate-800 dark:bg-slate-900 cursor-pointer select-none transition hover:border-rose-300 dark:hover:border-rose-900/60 shadow-xs">
+                        <input
+                          type="checkbox"
+                          checked={hideProfilePhoto}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setHideProfilePhoto(checked);
+                            if (checked) {
+                              setPhotos([]);
+                            } else if (existingProfilePhoto) {
+                              setPhotos([existingProfilePhoto]);
+                            }
+                          }}
+                          className="mt-0.5 w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-slate-300 dark:border-slate-700"
+                        />
+                        <div className="text-xs space-y-0.5">
+                          <span className="font-bold text-slate-900 dark:text-slate-100 block">
+                            Don&apos;t show profile image in listing
+                          </span>
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400 block leading-tight">
+                            Check this to keep your photo private and display a modern illustrated avatar on your card instead.
+                          </span>
+                        </div>
+                      </label>
                     </div>
-                  ))}
-                  {mode !== "HAVE_ROOM" && (
-                    <div className="text-xs text-slate-500 dark:text-slate-400">
-                      <p className="font-medium text-slate-700 dark:text-slate-300">Profile photo set</p>
-                      <p className="text-[11px]">Click upload above to change, or hover to remove.</p>
+                  ) : (
+                    /* User has no photo yet */
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-2.5 rounded-2xl bg-indigo-50/70 p-3 text-xs text-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/40">
+                        <Info className="w-4 h-4 mt-0.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                        <span>
+                          <strong>Searching for a room?</strong> Flat photos are not required. You can optionally upload your profile photo, or skip and we&apos;ll automatically assign an illustrated character avatar.
+                        </span>
+                      </div>
+
+                      <label className={`flex min-h-24 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center transition hover:border-rose-400 hover:bg-rose-50/40 dark:border-slate-700 dark:bg-slate-800/50 ${isUploadingPhotos ? "pointer-events-none opacity-70" : ""}`}>
+                        {isUploadingPhotos ? (
+                          <Loader2 className="mb-2 h-6 w-6 animate-spin text-rose-500" />
+                        ) : (
+                          <Upload className="mb-2 h-6 w-6 text-rose-500" />
+                        )}
+                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                          {isUploadingPhotos ? "Uploading photo…" : "Upload profile picture (Optional)"}
+                        </span>
+                        <span className="mt-1 text-[11px] text-slate-500">
+                          1 JPG, PNG or WebP image · 10 MB max · Completely optional
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          className="sr-only"
+                          onChange={(e) => void uploadPhotos(e.target.files)}
+                        />
+                      </label>
+
+                      <label className="flex items-start gap-3 p-3 rounded-xl border border-slate-200/90 bg-white dark:border-slate-800 dark:bg-slate-900 cursor-pointer select-none transition hover:border-rose-300 dark:hover:border-rose-900/60 shadow-xs">
+                        <input
+                          type="checkbox"
+                          checked={hideProfilePhoto}
+                          onChange={(e) => setHideProfilePhoto(e.target.checked)}
+                          className="mt-0.5 w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-slate-300 dark:border-slate-700"
+                        />
+                        <div className="text-xs space-y-0.5">
+                          <span className="font-bold text-slate-900 dark:text-slate-100 block">
+                            Don&apos;t show profile image in listing
+                          </span>
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400 block leading-tight">
+                            Use an illustrated character persona avatar on your listing card.
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* ======================================================== */
+                /* HAVE_ROOM PROPERTY PHOTOS FLOW                           */
+                /* ======================================================== */
+                <div className="space-y-3">
+                  <label className={`flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-center transition hover:border-rose-400 hover:bg-rose-50/40 dark:border-slate-700 dark:bg-slate-800/50 ${isUploadingPhotos ? "pointer-events-none opacity-70" : ""}`}>
+                    {isUploadingPhotos ? (
+                      <Loader2 className="mb-2 h-6 w-6 animate-spin text-rose-500" />
+                    ) : (
+                      <Upload className="mb-2 h-6 w-6 text-rose-500" />
+                    )}
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                      {isUploadingPhotos ? "Uploading photo…" : "Choose room or flat photos"}
+                    </span>
+                    <span className="mt-1 text-[11px] text-slate-500">
+                      Up to 8 JPG, PNG or WebP images · 10 MB each
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      multiple
+                      className="sr-only"
+                      onChange={(e) => void uploadPhotos(e.target.files)}
+                    />
+                  </label>
+
+                  <details className="rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-800">
+                    <summary className="cursor-pointer text-[11px] font-semibold text-slate-500">
+                      Or add an image URL
+                    </summary>
+                    <div className="mt-2 flex gap-2">
+                      <Input
+                        value={newPhotoUrl}
+                        onChange={(e) => setNewPhotoUrl(e.target.value)}
+                        placeholder="Paste photo URL (https://...)"
+                        className="rounded-2xl text-sm"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addPhoto();
+                          }
+                        }}
+                      />
+                      <Button type="button" onClick={addPhoto} className="rounded-2xl shrink-0">
+                        <Plus className="w-4 h-4 mr-1" /> Add Photo
+                      </Button>
+                    </div>
+                  </details>
+
+                  {photos.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                      {photos.map((url, idx) => (
+                        <div
+                          key={idx}
+                          className="relative group rounded-2xl overflow-hidden h-28 border border-slate-200 dark:border-slate-800"
+                        >
+                          <img
+                            src={url}
+                            alt={`Room photo ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removePhoto(idx)}
+                            className="absolute top-1 right-1 p-1 rounded-full bg-slate-950/70 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                            aria-label="Remove photo"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>

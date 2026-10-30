@@ -26,6 +26,7 @@ export default function DashboardPage() {
     { href: "/pricing", title: "Plans & Contact Packs", description: "Buy contact unlock packs, seller tiers, and agency subscriptions.", icon: CreditCard },
     { href: "/dashboard/favorites", title: "Liked Properties", description: "Your shortlisted homes and saved properties.", icon: Heart },
     { href: "/dashboard/properties", title: "Properties", description: "Manage drafts, active listings, and boosts.", icon: NotebookTabs },
+    { href: "/dashboard/flatmates", title: "Flatmates & Roommates", description: "Manage room seeker postings, spare rooms, roommate inquiries, and boosts.", icon: Users },
     { href: "/dashboard/organization", title: "Organization", description: "Manage company workspaces, employees, and roles.", icon: Building2 },
     { href: "/dashboard/leads", title: "Leads & CRM", description: "Track enquiries, visits, and follow-ups.", icon: Users },
     { href: "/dashboard/documents", title: "Documents", description: "Property records, title deeds, and NOCs.", icon: FileText },
@@ -60,8 +61,8 @@ export default function DashboardPage() {
           }
         />
 
-        {/* Role switcher: Buyer / Owner / Org Agent */}
-        <div className="grid gap-3 sm:grid-cols-3">
+        {/* Role switcher: Buyer / Owner / Flatmates / Org Agent */}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href="/dashboard/enquiries"
             className="group flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm transition hover:-translate-y-1 hover:border-sky-100 dark:border-slate-800 dark:bg-slate-900/90"
@@ -90,13 +91,32 @@ export default function DashboardPage() {
                 <NotebookTabs className="h-4 w-4" />
               </span>
               <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">My listings</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">My properties</p>
                 <p className="text-xs text-slate-600 dark:text-slate-400">Drafts, active, under review</p>
               </div>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-400">View and edit your own properties.</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400">View and edit your posted properties.</p>
             <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-rose-500 dark:text-rose-400 group-hover:translate-x-0.5 transition">
               Manage listings
+            </span>
+          </Link>
+
+          <Link
+            href="/dashboard/flatmates"
+            className="group flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm transition hover:-translate-y-1 hover:border-rose-200 dark:border-slate-800 dark:bg-slate-900/90"
+          >
+            <div className="flex items-center gap-2">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 shadow-inner shadow-rose-100/80 dark:bg-rose-950/60 dark:text-rose-300">
+                <Users className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">Roommates & Co-Living</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Seekers, buddy-up & rooms</p>
+              </div>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-400">Manage seeker profiles, edit, pause, and inquiries.</p>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-rose-600 dark:text-rose-400 group-hover:translate-x-0.5 transition">
+              Flatmate Hub
             </span>
           </Link>
 

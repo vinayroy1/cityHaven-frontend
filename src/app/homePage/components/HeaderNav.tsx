@@ -232,6 +232,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, badge: null, onClick: undefined },
     { label: "My Profile", href: "/dashboard/profile", icon: User, badge: null, onClick: undefined },
     { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null, onClick: undefined },
+    { label: "My Flatmates", href: "/dashboard/flatmates", icon: Users, badge: null, onClick: undefined },
     { label: "Organization", href: "/dashboard/organization", icon: ShieldCheck, badge: null, onClick: undefined },
     purchaseEnabled
       ? { label: "Plans & Credits", href: "/pricing", icon: CreditCard, badge: "PRO", onClick: undefined }

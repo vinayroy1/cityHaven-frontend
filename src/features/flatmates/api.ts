@@ -111,11 +111,15 @@ export const flatmatesApi = createApi({
       invalidatesTags: ["FlatmateListing", "MyFlatmateListings"],
     }),
 
-    archiveFlatmateListing: builder.mutation<{ success: boolean }, number>({
-      query: (id) => ({
-        url: API_ENDPOINTS.flatmates.delete(id),
-        method: "DELETE",
-      }),
+    archiveFlatmateListing: builder.mutation<{ success: boolean; message?: string }, number | { id: number; permanent?: boolean }>({
+      query: (arg) => {
+        const id = typeof arg === "number" ? arg : arg.id;
+        const permanent = typeof arg === "object" ? arg.permanent : false;
+        return {
+          url: `${API_ENDPOINTS.flatmates.delete(id)}${permanent ? "?permanent=true" : ""}`,
+          method: "DELETE",
+        };
+      },
       invalidatesTags: ["FlatmateListing", "MyFlatmateListings"],
     }),
 
