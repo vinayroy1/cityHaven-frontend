@@ -21,6 +21,7 @@ import {
   Check,
   Mail,
   Smartphone,
+  MapPin,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -1189,21 +1190,24 @@ function LoginContent() {
           </div>
         </section>
 
-        {/* Right Column: Premium Real Estate Showcase with Glassmorphic Preview */}
-        <section className="relative hidden lg:flex flex-col justify-between bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-12 text-white overflow-hidden">
+        {/* Right Column: Premium Real Estate Showcase Matching App Theme */}
+        <section className="relative hidden lg:flex flex-col justify-between border-l border-slate-200/80 bg-gradient-to-br from-rose-50/60 via-slate-50/70 to-amber-50/40 p-12 text-slate-900 overflow-hidden dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-white">
           {/* Subtle Ambient Radial Glows & Grid Mesh */}
-          <div className="absolute inset-0 bg-[radial-gradient(#ffffff10_1px,transparent_1px)] [background-size:28px_28px] opacity-60 pointer-events-none" />
-          <div className="absolute top-[-10%] right-[-10%] h-[450px] w-[450px] rounded-full bg-rose-600/20 blur-[100px] pointer-events-none" />
-          <div className="absolute bottom-[-10%] left-[-10%] h-[450px] w-[450px] rounded-full bg-emerald-600/20 blur-[100px] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(#e11d4812_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] opacity-70 pointer-events-none" />
+          <div className="absolute top-[-10%] right-[-10%] h-[450px] w-[450px] rounded-full bg-gradient-to-br from-rose-400/15 to-amber-400/15 dark:from-rose-600/15 dark:to-amber-500/10 blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-[-10%] left-[-10%] h-[450px] w-[450px] rounded-full bg-gradient-to-tr from-emerald-400/15 to-sky-400/10 dark:from-emerald-600/15 dark:to-sky-500/10 blur-[100px] pointer-events-none" />
 
           {/* Top Pill & Live Activity Bar */}
           <div className="relative z-10 flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-3.5 py-1.5 text-xs font-bold text-white shadow-inner backdrop-blur-md">
-              <Sparkles className="h-3.5 w-3.5 text-amber-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-rose-200/80 bg-white/90 px-3.5 py-1.5 text-xs font-bold text-slate-800 shadow-sm backdrop-blur-md dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200">
+              <Sparkles className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400 animate-pulse" />
               <span>India&apos;s #1 Direct Owner Portal</span>
             </div>
-            <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400 backdrop-blur-md">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+            <div className="flex items-center gap-2 rounded-full border border-emerald-200/80 bg-emerald-50/90 px-3 py-1 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur-md dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
               <span>Live Platform</span>
             </div>
           </div>
@@ -1211,90 +1215,101 @@ function LoginContent() {
           {/* Center Showcase with Realistic Interactive Glass Card */}
           <div className="relative z-10 my-auto max-w-lg space-y-6">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-1 text-amber-400 text-xs font-bold tracking-wider uppercase">
-                <Star className="h-3.5 w-3.5 fill-amber-400" />
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-rose-200/70 bg-rose-50/80 px-3 py-1 text-xs font-bold uppercase tracking-wider text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300">
+                <Star className="h-3.5 w-3.5 fill-rose-500 text-rose-500 dark:fill-rose-400 dark:text-rose-400" />
                 <span>Zero Brokerage • 100% Direct Contact</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight text-white">
+              <h2 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight text-slate-950 dark:text-white">
                 Find Your Haven. <br />
-                <span className="bg-gradient-to-r from-rose-400 via-amber-300 to-emerald-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-500 bg-clip-text text-transparent dark:from-rose-400 dark:via-rose-300 dark:to-amber-400">
                   Direct from Verified Owners.
                 </span>
               </h2>
-              <p className="text-sm leading-relaxed text-slate-300">
+              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 font-medium">
                 Unlock instant phone numbers, schedule direct site visits, and manage multi-seat agency teams with zero friction.
               </p>
             </div>
 
             {/* Interactive Floating Glass Property Preview Card */}
-            <div className="rounded-3xl border border-white/15 bg-white/[0.07] p-5 shadow-2xl backdrop-blur-2xl transition hover:border-white/25">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30">
-                    <Home className="h-4 w-4" />
+            <div className="group rounded-3xl border border-slate-200/90 bg-white/95 p-5 shadow-[0_20px_50px_-15px_rgba(15,23,42,0.08)] backdrop-blur-xl transition duration-300 hover:shadow-[0_24px_60px_-15px_rgba(225,29,72,0.12)] hover:border-rose-200/90 dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-2xl dark:hover:border-slate-700">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3.5 dark:border-slate-800/80">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-md shadow-rose-500/20">
+                    <Home className="h-5 w-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-black text-white">3 BHK Luxury Sky Villa</h4>
-                    <p className="text-[10px] text-slate-400">Indiranagar, Bangalore • 1,850 sq.ft</p>
+                    <h4 className="text-sm font-black text-slate-900 dark:text-white">3 BHK Luxury Sky Villa</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium mt-0.5">
+                      <MapPin className="h-3 w-3 text-rose-500 shrink-0" />
+                      <span>Indiranagar, Bangalore • 1,850 sq.ft</span>
+                    </p>
                   </div>
                 </div>
-                <span className="rounded-full bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-black text-emerald-300">
-                  Verified Owner
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-300 shadow-sm">
+                  <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                  <span>Verified Owner</span>
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 text-xs mb-3">
-                <div className="rounded-2xl bg-black/30 p-2.5 border border-white/5">
-                  <span className="block text-[10px] uppercase font-bold text-slate-400">Expected Price</span>
-                  <span className="text-sm font-black text-white">₹1.45 Cr</span>
+              <div className="grid grid-cols-2 gap-3 text-xs mb-3.5">
+                <div className="rounded-2xl border border-slate-150 bg-slate-50/80 p-3 dark:border-slate-800/80 dark:bg-slate-950/60">
+                  <span className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Expected Price</span>
+                  <span className="text-base font-black text-slate-900 dark:text-white">₹1.45 Cr</span>
                 </div>
-                <div className="rounded-2xl bg-black/30 p-2.5 border border-white/5">
-                  <span className="block text-[10px] uppercase font-bold text-slate-400">Brokerage</span>
-                  <span className="text-sm font-black text-emerald-400">₹0 (Zero)</span>
+                <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/70 p-3 dark:border-emerald-900/50 dark:bg-emerald-950/40">
+                  <div className="flex items-center justify-between">
+                    <span className="block text-[10px] uppercase font-bold tracking-wider text-emerald-700 dark:text-emerald-400">Brokerage</span>
+                    <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[9px] font-black text-emerald-800 dark:bg-emerald-900/80 dark:text-emerald-200">100% SAVED</span>
+                  </div>
+                  <span className="text-base font-black text-emerald-600 dark:text-emerald-400">₹0 (Zero)</span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-emerald-500/20 via-slate-800/40 to-rose-500/20 p-2.5 border border-white/10 text-xs">
-                <div className="flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-full bg-emerald-500/30 flex items-center justify-center text-emerald-300 font-bold text-xs">
-                    <Phone className="h-3.5 w-3.5" />
+              <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50/80 via-white to-amber-50/70 p-3 shadow-sm dark:border-slate-800 dark:bg-gradient-to-r dark:from-slate-850 dark:via-slate-900 dark:to-slate-850">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-8 w-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-sm shadow-emerald-500/25">
+                    <Phone className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-bold text-white">Owner Contact Verified</p>
-                    <p className="text-[9px] text-slate-400">+91 98••• •••89 • Instant Access</p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <span>Owner Contact Verified</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">+91 98••• •••89 • Instant Access</p>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold bg-white text-slate-950 px-2.5 py-1 rounded-xl shadow-sm">
-                  1-Click Unlock
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-slate-950 text-white dark:bg-rose-600 dark:text-white px-3 py-1.5 rounded-xl shadow-md transition hover:bg-slate-800 dark:hover:bg-rose-500">
+                  <Sparkles className="h-3 w-3 text-amber-300" />
+                  <span>1-Click Unlock</span>
                 </span>
               </div>
             </div>
 
             {/* Quick Metrics & Feature Chips */}
-            <div className="grid grid-cols-3 gap-2.5 pt-1 text-center">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-2.5 backdrop-blur-md">
-                <div className="text-sm font-black text-white">50k+</div>
-                <div className="text-[10px] text-slate-400 font-medium">Verified Homes</div>
+            <div className="grid grid-cols-3 gap-3 pt-1 text-center">
+              <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-3 shadow-sm backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80">
+                <div className="text-lg font-black text-slate-900 dark:text-white">50k+</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Verified Homes</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-2.5 backdrop-blur-md">
-                <div className="text-sm font-black text-white">0%</div>
-                <div className="text-[10px] text-slate-400 font-medium">Brokerage</div>
+              <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/40 p-3 shadow-sm backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80">
+                <div className="text-lg font-black text-emerald-600 dark:text-emerald-400">0%</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Brokerage</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-2.5 backdrop-blur-md">
-                <div className="text-sm font-black text-emerald-400">Instant</div>
-                <div className="text-[10px] text-slate-400 font-medium">Owner Access</div>
+              <div className="rounded-2xl border border-rose-200/60 bg-rose-50/40 p-3 shadow-sm backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80">
+                <div className="text-lg font-black text-rose-600 dark:text-rose-400">Instant</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Owner Access</div>
               </div>
             </div>
           </div>
 
           {/* Bottom Trust Line with Security & Privacy Badges */}
-          <div className="relative z-10 border-t border-white/10 pt-6 flex items-center justify-between text-xs text-slate-400">
+          <div className="relative z-10 border-t border-slate-200/80 pt-6 flex items-center justify-between text-xs text-slate-500 dark:border-slate-800/80 dark:text-slate-400 font-medium">
             <span className="flex items-center gap-1.5">
-              <Lock className="h-3.5 w-3.5 text-emerald-400" />
+              <Lock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>End-to-end encrypted OTP</span>
             </span>
-            <span className="flex items-center gap-1">
-              <ShieldCheck className="h-3.5 w-3.5 text-rose-400" />
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
               <span>DPDP Act & RERA Compliant</span>
             </span>
           </div>
@@ -1302,7 +1317,7 @@ function LoginContent() {
       </main>
 
       {/* Simplified Footer */}
-      <footer className="border-t border-slate-200/60 bg-white/80 py-4 px-6 text-xs text-slate-500 dark:border-slate-850 dark:bg-slate-950/80 dark:text-slate-400">
+      <footer className="border-t border-slate-200/60 bg-white/80 py-4 px-6 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-400">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <div>© {year} Awasio. All rights reserved.</div>
           <nav className="flex items-center gap-4 text-slate-600 dark:text-slate-400 font-medium">
