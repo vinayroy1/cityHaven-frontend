@@ -45,7 +45,7 @@ function intentCopy(intent: IntentKey) {
     case "RENT": return { listingType: "RENT", label: "Properties for Rent" } as const;
     case "PG": return { listingType: "PG", label: "PG & Co-Living Spaces" } as const;
     case "FLATMATE": return { listingType: "PG", label: "Flatmates & Shared Homes" } as const;
-    case "COMMERCIAL": return { listingType: "SELL", label: "Commercial Properties" } as const;
+    case "COMMERCIAL": return { listingType: undefined, label: "Commercial Properties" } as const;
     case "PLOT": return { listingType: "SELL", label: "Plots & Land" } as const;
     default: return { listingType: "SELL", label: "Properties for Sale" } as const;
   }
@@ -70,11 +70,14 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
       if (location.city) url.searchParams.set("city", location.city);
       if (location.localities[0]) url.searchParams.set("locality", location.localities[0]);
     } else {
-      url.searchParams.set("listingType", copy.listingType);
+      if (intent === "COMMERCIAL") {
+        url.searchParams.set("resCom", "COMMERCIAL");
+      } else if (copy.listingType) {
+        url.searchParams.set("listingType", copy.listingType);
+      }
       if (location.city) url.searchParams.set("cityName", location.city);
       if (location.state) url.searchParams.set("q", location.state);
       for (const locality of location.localities) url.searchParams.append("locality", locality);
-      if (intent === "COMMERCIAL") url.searchParams.set("resCom", "COMMERCIAL");
     }
     const response = await fetch(url, { next: { revalidate: 3600 } });
     if (response.ok) {
@@ -209,11 +212,14 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
       if (location.city) url.searchParams.set("city", location.city);
       if (location.localities[0]) url.searchParams.set("locality", location.localities[0]);
     } else {
-      url.searchParams.set("listingType", copy.listingType);
+      if (intent === "COMMERCIAL") {
+        url.searchParams.set("resCom", "COMMERCIAL");
+      } else if (copy.listingType) {
+        url.searchParams.set("listingType", copy.listingType);
+      }
       if (location.city) url.searchParams.set("cityName", location.city);
       if (location.state) url.searchParams.set("q", location.state);
       for (const locality of location.localities) url.searchParams.append("locality", locality);
-      if (intent === "COMMERCIAL") url.searchParams.set("resCom", "COMMERCIAL");
     }
   const cacheKey = url.toString();
   const cached = searchSsrCache.get(cacheKey);
