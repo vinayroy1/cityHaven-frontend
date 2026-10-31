@@ -9,29 +9,52 @@ import { getAllAgentIds } from "@/data/agents";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
+import { SITEMAP_CLUSTERS, type SitemapCluster } from "@/constants/sitemapClusters";
 
-async function getActiveProperties(): Promise<Array<{
-  id: number;
-  slug?: string | null;
-  cityName?: string | null;
-  locality?: string | null;
-  listingType?: string | null;
-  updatedAt?: string | null;
-}>> {
+const CITY_CANONICAL_MAP: Record<string, string> = {
+  delhi: "new-delhi",
+  bangalore: "bengaluru",
+  gurgaon: "gurugram",
+};
+
+async function getInventoryData(): Promise<{
+  properties: Array<{ id: number; slug?: string | null; updatedAt?: string | null }>;
+  clusters: Array<SitemapCluster>;
+}> {
   try {
-    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.propertyListing.search}?pageSize=200`);
+    const endpoint = toInternalApiUrl(API_ENDPOINTS.propertyListing.sitemapInventory);
     const res = await fetch(endpoint, {
       next: { revalidate: 3600 },
     });
+    if (res.ok) {
+      const json = await res.json();
+      if (json?.data?.clusters && Array.isArray(json.data.clusters) && json.data.clusters.length > 0) {
+        return {
+          properties: json.data.properties || [],
+          clusters: json.data.clusters,
+        };
+      }
+    }
+  } catch {
+    // Graceful fallback to static verified clusters
+  }
+
+  return {
+    properties: [],
+    clusters: SITEMAP_CLUSTERS,
+  };
+}
+
+async function getFallbackProperties(): Promise<Array<{ id: number; slug?: string | null; updatedAt?: string | null }>> {
+  try {
+    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.propertyListing.search}?pageSize=200`);
+    const res = await fetch(endpoint, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
     const json = (await res.json()) as {
       data?: {
         items?: Array<{
           id: number;
           slug?: string | null;
-          cityName?: string | null;
-          locality?: string | null;
-          listingType?: string | null;
           updatedAt?: string | null;
         }>;
       };
@@ -186,8 +209,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  // 3. Dynamic Active Properties with SEO Slugs
-  const properties = await getActiveProperties();
+  // 3. Dynamic Active Properties & Clusters from PostgreSQL Inventory
+  const { properties: liveProps, clusters: liveClusters } = await getInventoryData();
+  const properties = liveProps.length > 0 ? liveProps : await getFallbackProperties();
+  const clusters = liveClusters.length > 0 ? liveClusters : SITEMAP_CLUSTERS;
+
   const propertyRoutes: MetadataRoute.Sitemap = properties.map((prop) => ({
     url: `${SITE_URL}/properties/${prop.slug || prop.id}`,
     lastModified: prop.updatedAt ? new Date(prop.updatedAt) : now,
@@ -195,26 +221,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  // 4. Populated City & Locality Landing Pages (ONLY for cities/localities with active inventory!)
-  const activeCitiesSet = new Set<string>();
-  const activeLocalityPairs: Array<{ city: string; locality: string }> = [];
-
-  for (const prop of properties) {
-    if (prop.cityName) {
-      const citySlug = toSearchSlug(prop.cityName);
-      if (citySlug) {
-        activeCitiesSet.add(citySlug);
-        if (prop.locality) {
-          const locSlug = toSearchSlug(prop.locality);
-          if (locSlug && !activeLocalityPairs.some((p) => p.city === citySlug && p.locality === locSlug)) {
-            activeLocalityPairs.push({ city: citySlug, locality: locSlug });
-          }
-        }
-      }
-    }
-  }
-
-  // 4. Populated City & Locality Landing Pages
+  // 4. Populated City Landing Pages
   // A. All 59 Cities for Buy, Rent, Commercial, and Plot (Indexable & populated across India)
   const CORE_59_CITY_INTENTS = ["buy", "rent", "commercial", "plot"] as const;
   const citySearchRoutes: MetadataRoute.Sitemap = CORE_59_CITY_INTENTS.flatMap((intent) =>
@@ -226,16 +233,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  // B. Active PG Cities (only cities with confirmed inventory to prevent noindex warnings)
-  const activeCities = Array.from(activeCitiesSet);
-  const pgCityRoutes: MetadataRoute.Sitemap = activeCities.map((city) => ({
+  // B. Active PG Cities (only cities with confirmed PG inventory)
+  const activePgCities = ["bengaluru", "gurugram", "dhanwar"];
+  const pgCityRoutes: MetadataRoute.Sitemap = activePgCities.map((city) => ({
     url: `${SITE_URL}/pg/${city}`,
     lastModified: now,
     changeFrequency: "daily" as const,
     priority: 0.8,
   }));
 
-  // C. Active Flatmate cities (cities with confirmed listings in DB)
+  // C. Active Flatmate cities (20 cities with confirmed active listings)
   const activeFlatmateCities = [
     "bengaluru", "mumbai", "pune", "new-delhi", "gurugram", "noida", "hyderabad",
     "chennai", "kolkata", "ahmedabad", "jaipur", "lucknow", "indore", "bhopal",
@@ -248,16 +255,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  const localitySearchRoutes: MetadataRoute.Sitemap = ["rent", "buy", "commercial", "plot"].flatMap((intent) =>
-    activeLocalityPairs.map(({ city, locality }) => ({
-      url: `${SITE_URL}/${intent}/${city}/${locality}`,
-      lastModified: now,
-      changeFrequency: "daily" as const,
-      priority: 0.8,
-    }))
-  );
+  // 5. Populated Locality Landing Pages (STRICT: ONLY pairs with active listings!)
+  const localitySearchRoutes: MetadataRoute.Sitemap = [];
+  const visitedLocalityUrls = new Set<string>();
 
-  // 5. Verified Real Estate Advisor Profiles
+  for (const cluster of clusters) {
+    if (!cluster.city || !cluster.locality || cluster.count <= 0) continue;
+
+    let citySlug = toSearchSlug(cluster.city);
+    if (CITY_CANONICAL_MAP[citySlug]) {
+      citySlug = CITY_CANONICAL_MAP[citySlug];
+    }
+    const locSlug = toSearchSlug(cluster.locality);
+
+    if (citySlug && locSlug) {
+      const url = `${SITE_URL}/${cluster.intent}/${citySlug}/${locSlug}`;
+      if (!visitedLocalityUrls.has(url)) {
+        visitedLocalityUrls.add(url);
+        localitySearchRoutes.push({
+          url,
+          lastModified: now,
+          changeFrequency: "daily" as const,
+          priority: 0.8,
+        });
+      }
+    }
+  }
+
+  // 6. Verified Real Estate Advisor Profiles
   const agentIds = getAllAgentIds();
   const agentRoutes: MetadataRoute.Sitemap = agentIds.map((id) => ({
     url: `${SITE_URL}/agents/${id.toLowerCase().replace(/\s+/g, "-")}`,
@@ -266,7 +291,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 6. Dynamic Active Projects with SEO Slugs (all 359 projects)
+  // 7. Dynamic Active Projects with SEO Slugs
   const projects = await getActiveProjects();
   const projectDetailRoutes: MetadataRoute.Sitemap = projects.map((proj) => ({
     url: `${SITE_URL}/new-projects/${proj.slug}`,
@@ -283,7 +308,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  // 7. Published Blog Posts
+  // 8. Published Blog Posts
   const blogPosts = await getPublishedBlogPosts();
   const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
@@ -292,7 +317,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.78,
   }));
 
-  return [
+  // 9. Consolidate and Deduplicate all URLs
+  const allRoutes = [
     ...staticRoutes,
     ...intentLandingRoutes,
     ...citySearchRoutes,
@@ -305,4 +331,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...projectDetailRoutes,
     ...blogRoutes,
   ];
+
+  const uniqueUrls = new Map<string, MetadataRoute.Sitemap[number]>();
+  for (const route of allRoutes) {
+    if (route?.url && !uniqueUrls.has(route.url)) {
+      uniqueUrls.set(route.url, route);
+    }
+  }
+
+  return Array.from(uniqueUrls.values());
 }

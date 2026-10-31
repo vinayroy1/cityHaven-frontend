@@ -64,6 +64,7 @@ export const API_ENDPOINTS = {
     unlockedContact: (id: number | string) => `${BASE}/propertyListing/${id}/unlocked-contact`,
     favorite: (id: number | string) => `${BASE}/propertyListing/${id}/favorite`,
     search: `${BASE}/propertyListing/search`,
+    sitemapInventory: `${BASE}/propertyListing/sitemap-inventory`,
     my: `${BASE}/propertyListing/my`,
     org: `${BASE}/propertyListing/org`,
     favorites: `${BASE}/propertyListing/me/favorites`,
