@@ -14,7 +14,14 @@ import {
   ShieldCheck,
   UserRoundCheck,
 } from "lucide-react";
-import { useGetAssignedLeadsQuery, useUpdateLeadStatusMutation, type ApiLead } from "@/features/leads/api";
+import {
+  useGetAssignedLeadsQuery,
+  useGetMyVisitsQuery,
+  useUpdateLeadStatusMutation,
+  useUpdateVisitStatusMutation,
+  type ApiLead,
+  type ApiPropertyVisit,
+} from "@/features/leads/api";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PageHeader } from "../components/PageHeader";
 import { SectionCard } from "../components/SectionCard";
@@ -42,7 +49,7 @@ type UnifiedLead = {
   locality?: string;
   price?: string | number | null;
   message?: string | null;
-  status: "NEW" | "CONTACTED" | "VISIT_SCHEDULED" | "WON";
+  status: "NEW" | "CONTACTED" | "VISIT_SCHEDULED" | "WON" | (string & {});
   updatedAt?: string | null;
   createdAt?: string | null;
   notes?: string;
@@ -86,14 +93,16 @@ export default function LeadsPage() {
   }, []);
 
   const { data: apiLeads = [], isFetching, refetch } = useGetAssignedLeadsQuery({ pageSize: 100 });
+  const { data: apiVisits = [], isFetching: isVisitsFetching, refetch: refetchVisits } = useGetMyVisitsQuery();
   const [updateLeadStatusMutation] = useUpdateLeadStatusMutation();
-  const leadsQuery = { data: apiLeads, isFetching, refetch };
+  const [updateVisitStatusMutation] = useUpdateVisitStatusMutation();
+  const leadsQuery = { data: apiLeads, isFetching: isFetching || isVisitsFetching, refetch: () => { refetch(); refetchVisits(); } };
 
   // Convert API leads to Unified format
   const unifiedApiLeads: UnifiedLead[] = useMemo(() => {
     return apiLeads.map((lead) => ({
       id: lead.id,
-      isTourBooking: false,
+      isTourBooking: (lead.status as any) === "VISIT_SCHEDULED",
       visitorName: lead.buyer?.name || lead.guestName || "Prospective buyer",
       visitorPhone: lead.buyer?.mobileNumber || lead.guestContact || "",
       propertyTitle: lead.property?.title || "Property Enquiry",
@@ -106,6 +115,25 @@ export default function LeadsPage() {
       updatedAt: lead.updatedAt,
     }));
   }, [apiLeads]);
+
+  // Convert backend visits to Unified format
+  const unifiedApiVisits: UnifiedLead[] = useMemo(() => {
+    return apiVisits.map((v) => ({
+      id: `visit-${v.id}`,
+      isTourBooking: true,
+      visitorName: v.buyer?.name || "Prospective buyer",
+      visitorPhone: v.buyer?.mobileNumber || "",
+      propertyTitle: v.property?.title || "Property Visit",
+      cityName: v.property?.cityName || undefined,
+      locality: v.property?.locality || undefined,
+      price: v.property?.price,
+      tourDay: v.scheduledAt ? new Date(v.scheduledAt).toLocaleDateString("en-IN") : undefined,
+      status: (v.status as any) || "VISIT_SCHEDULED",
+      createdAt: v.createdAt || v.scheduledAt,
+      updatedAt: v.createdAt || v.scheduledAt,
+      notes: v.notes || undefined,
+    }));
+  }, [apiVisits]);
 
   // Convert local visit bookings to Unified format
   const unifiedVisitBookings: UnifiedLead[] = useMemo(() => {
@@ -129,17 +157,33 @@ export default function LeadsPage() {
     }));
   }, [localVisits]);
 
-  // Combined Leads
+  // Combined Leads (deduplicate if both backend visit and local exist)
   const allLeads = useMemo(() => {
-    const combined = [...unifiedVisitBookings, ...unifiedApiLeads];
-    if (selectedAgentFilter === "ALL") return combined;
-    return combined.filter(
+    // Unique by id or phone+propertyTitle
+    const combined = [...unifiedVisitBookings, ...unifiedApiVisits, ...unifiedApiLeads];
+    const seen = new Set<string>();
+    const deduplicated: UnifiedLead[] = [];
+
+    for (const lead of combined) {
+      const key = `${lead.visitorPhone || ""}_${lead.propertyTitle || ""}_${lead.status || ""}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        deduplicated.push(lead);
+      }
+    }
+
+    if (selectedAgentFilter === "ALL") return deduplicated;
+    return deduplicated.filter(
       (item) => item.agentId === selectedAgentFilter || !item.isTourBooking
     );
-  }, [unifiedVisitBookings, unifiedApiLeads, selectedAgentFilter]);
+  }, [unifiedVisitBookings, unifiedApiVisits, unifiedApiLeads, selectedAgentFilter]);
 
   const handleStageTransition = (lead: UnifiedLead, nextStage: string) => {
+    const rawId = String(lead.id).replace("visit-", "");
     if (lead.isTourBooking) {
+      if (String(lead.id).startsWith("visit-") || !isNaN(Number(rawId))) {
+        void updateVisitStatusMutation({ id: Number(rawId), status: nextStage });
+      }
       updateVisitBookingStatus(String(lead.id), nextStage as any);
       syncVisits();
     } else {

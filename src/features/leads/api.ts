@@ -7,13 +7,15 @@ import { baseQueryWithReauth } from "@/lib/api/baseQueryWithReauth";
 export interface ApiLead {
   id: number;
   status?: string | null;
+  tag?: string | null;
   guestName?: string | null;
   guestContact?: string | null;
   message?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
   propertyId?: number | null;
-  buyer?: { name?: string | null; mobileNumber?: string | null } | null;
+  buyer?: { name?: string | null; mobileNumber?: string | null; email?: string | null } | null;
+  assignedTo?: { id?: number; name?: string | null; mobileNumber?: string | null } | null;
   property?: {
     id?: number;
     title?: string | null;
@@ -22,6 +24,37 @@ export interface ApiLead {
     listingType?: string | null;
     price?: number | string | null;
   } | null;
+  visits?: Array<{
+    id: number;
+    scheduledAt: string;
+    status: string;
+    notes?: string | null;
+  }>;
+}
+
+export interface ApiPropertyVisit {
+  id: number;
+  scheduledAt: string;
+  status: string;
+  notes?: string | null;
+  createdAt?: string;
+  propertyId?: number;
+  property?: {
+    id: number;
+    title?: string | null;
+    cityName?: string | null;
+    locality?: string | null;
+    price?: number | string | null;
+    media?: Array<{ url: string; order?: number }>;
+    owner?: { id: number; name?: string | null; mobileNumber?: string | null };
+  };
+  buyer?: {
+    id: number;
+    name?: string | null;
+    mobileNumber?: string | null;
+    email?: string | null;
+  };
+  lead?: ApiLead | null;
 }
 
 export interface GetAssignedLeadsParams {
@@ -33,7 +66,7 @@ export interface GetAssignedLeadsParams {
 export const leadsApi = createApi({
   reducerPath: "leadsApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Leads"],
+  tagTypes: ["Leads", "Visits"],
   endpoints: (builder) => ({
     getAssignedLeads: builder.query<ApiLead[], GetAssignedLeadsParams | void>({
       query: (params) => ({
@@ -41,13 +74,26 @@ export const leadsApi = createApi({
         method: "GET",
         params: params || {},
       }),
-      transformResponse: (response: { items?: ApiLead[]; data?: ApiLead[] } | ApiLead[]) => {
+      transformResponse: (response: any) => {
         if (Array.isArray(response)) return response;
+        if (Array.isArray(response?.data?.items)) return response.data.items;
         if (Array.isArray(response?.data)) return response.data;
         if (Array.isArray(response?.items)) return response.items;
         return [];
       },
       providesTags: ["Leads"],
+    }),
+    getMyVisits: builder.query<ApiPropertyVisit[], void>({
+      query: () => ({
+        url: API_ENDPOINTS.leads.visits,
+        method: "GET",
+      }),
+      transformResponse: (response: any) => {
+        if (Array.isArray(response)) return response;
+        if (Array.isArray(response?.data)) return response.data;
+        return [];
+      },
+      providesTags: ["Visits"],
     }),
     updateLeadStatus: builder.mutation<
       { success: boolean; data?: any },
@@ -60,7 +106,23 @@ export const leadsApi = createApi({
       }),
       invalidatesTags: ["Leads"],
     }),
+    updateVisitStatus: builder.mutation<
+      { success: boolean; data?: any },
+      { id: number | string; status: string; notes?: string }
+    >({
+      query: ({ id, status, notes }) => ({
+        url: API_ENDPOINTS.leads.visit(id),
+        method: "PATCH",
+        body: { status, notes },
+      }),
+      invalidatesTags: ["Visits", "Leads"],
+    }),
   }),
 });
 
-export const { useGetAssignedLeadsQuery, useUpdateLeadStatusMutation } = leadsApi;
+export const {
+  useGetAssignedLeadsQuery,
+  useGetMyVisitsQuery,
+  useUpdateLeadStatusMutation,
+  useUpdateVisitStatusMutation,
+} = leadsApi;
