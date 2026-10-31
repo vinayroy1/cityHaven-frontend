@@ -82,6 +82,7 @@ export type PropertySearchItem = {
   media?: PropertySearchMedia[];
   createdAt?: string;
   isBoosted?: boolean;
+  boostTier?: "LOCALITY_SPOTLIGHT" | "CITY_FEATURED" | null;
   boostEndsAt?: string | null;
 };
 

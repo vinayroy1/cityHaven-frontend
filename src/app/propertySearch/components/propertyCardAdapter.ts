@@ -117,6 +117,7 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     isNew: isFreshListing(item.createdAt),
     isVerified: item.qcStatus === "APPROVED",
     isBoosted: item.isBoosted,
+    boostTier: item.boostTier,
     posterBadge: postedAsLabel(item.postedAs),
     ownerId: item.ownerId ?? item.createdById ?? undefined,
     images: Array.from(

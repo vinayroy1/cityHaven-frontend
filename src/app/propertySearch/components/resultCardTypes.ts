@@ -16,6 +16,7 @@ export type ResultCardProps = {
   isNew?: boolean;
   isVerified?: boolean;
   isBoosted?: boolean;
+  boostTier?: "LOCALITY_SPOTLIGHT" | "CITY_FEATURED" | null;
   posterBadge?: string;
   images?: string[];
   compact?: boolean;

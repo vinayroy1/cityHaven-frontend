@@ -60,6 +60,7 @@ export function ResultCard({
   isNew,
   isVerified,
   isBoosted,
+  boostTier,
   posterBadge,
   images = [],
   compact = false,
@@ -535,7 +536,13 @@ export function ResultCard({
       onTouchMove={handleCardTouchMove}
       onTouchEnd={handleCardTouchEnd}
       aria-busy={isNavigating}
-      className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:border-zinc-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-200 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 ${isNavigating ? "pointer-events-none scale-[0.995] opacity-80" : ""}`}
+      className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border ${
+        isBoosted
+          ? boostTier === "LOCALITY_SPOTLIGHT"
+            ? "border-amber-400 ring-2 ring-amber-300/50 dark:border-amber-500 dark:ring-amber-900/30"
+            : "border-indigo-400 ring-2 ring-indigo-300/40 dark:border-indigo-500 dark:ring-indigo-900/30"
+          : "border-zinc-200 hover:border-zinc-300 dark:border-slate-800 dark:hover:border-slate-700"
+      } bg-white shadow-sm transition hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-200 dark:bg-slate-900 ${isNavigating ? "pointer-events-none scale-[0.995] opacity-80" : ""}`}
     >
       {isNavigating && (
         <div
@@ -582,7 +589,13 @@ export function ResultCard({
         listingType={listingType}
         decisionDetails={decisionDetails}
         contextBadge={contextBadge}
-        posterBadge={isBoosted ? "⭐ FEATURED" : posterBadge}
+        posterBadge={
+          isBoosted
+            ? boostTier === "LOCALITY_SPOTLIGHT"
+              ? "★ SPOTLIGHT"
+              : "✦ FEATURED"
+            : posterBadge
+        }
         onContactClick={openContactFlow}
         onScheduleClick={openScheduleFlow}
         compact={compact}
