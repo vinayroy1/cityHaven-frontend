@@ -148,6 +148,16 @@ export const authApi = createApi({
         message: response.message,
       }),
     }),
+    changePassword: builder.mutation<
+      { success: boolean; message?: string },
+      { currentPassword?: string; newPassword: string }
+    >({
+      query: (body) => ({
+        url: API_ENDPOINTS.auth.changePassword,
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -162,6 +172,7 @@ export const {
   useRequestProfileOtpMutation,
   useUpdateProfileMutation,
   useLogoutMutation,
+  useChangePasswordMutation,
   useMeQuery,
   useLazyMeQuery,
 } = authApi;

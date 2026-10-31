@@ -117,6 +117,13 @@ export const API_ENDPOINTS = {
   },
   notifications: {
     list: `${BASE}/notifications`,
+    markRead: (id: number | string) => `${BASE}/notifications/${id}/read`,
+    markAllRead: `${BASE}/notifications/read-all`,
+  },
+  messaging: {
+    conversations: `${BASE}/conversations`,
+    conversation: (id: number | string) => `${BASE}/conversations/${id}`,
+    messages: (id: number | string) => `${BASE}/conversations/${id}/messages`,
   },
   leads: {
     my: `${BASE}/my`,
