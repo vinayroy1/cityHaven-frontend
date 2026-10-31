@@ -23,6 +23,7 @@ import {
   Zap,
 } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
+import { BackButton } from "@/components/common/BackButton";
 import {
   DEFAULT_PROFILE,
   getAgentProfile,
@@ -295,13 +296,7 @@ export default function AdvisorProfilePage() {
         <section className="w-full rounded-2xl border border-slate-200/90 bg-white/95 p-3 sm:p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900/95 space-y-2.5">
           {/* Top Row: Back Link + Quick Actions */}
           <div className="flex items-center justify-between gap-2">
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Dashboard</span>
-            </Link>
+            <BackButton fallbackHref="/dashboard" label="Back to Dashboard" variant="ghost" size="sm" />
 
             <div className="flex items-center gap-1.5 shrink-0">
               {/* RERA Status Pill */}

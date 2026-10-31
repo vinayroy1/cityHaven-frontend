@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
+import { BackButton } from "@/components/common/BackButton";
 import {
   Organization,
   OrganizationMember,
@@ -363,13 +364,7 @@ function OrganizationDashboardContent() {
       <HeaderNav />
       <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:gap-5 px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
         <div>
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Back to Dashboard</span>
-          </Link>
+          <BackButton fallbackHref="/dashboard" label="Back to Dashboard" variant="ghost" size="sm" />
         </div>
 
         <div className="flex flex-col gap-2.5 sm:gap-4 border-b border-slate-200/80 pb-3 sm:pb-5 dark:border-slate-800 lg:flex-row lg:items-center lg:justify-between">

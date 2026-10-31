@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Heart, MapPin, MessageCircle, PhoneCall, RefreshCw } from "lucide-react";
 import { useFavoritesInfinite, useEnquiriesInfinite, useVisitsInfinite } from "@/features/propertyListing/useQueries";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
+import { BackButton } from "@/components/common/BackButton";
 
 export default function EnquiriesPage() {
   const [filter, setFilter] = useState<"saved" | "enquiries" | "visits">("saved");
@@ -152,13 +153,7 @@ export default function EnquiriesPage() {
       <HeaderNav />
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
         <div>
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Back to Dashboard</span>
-          </Link>
+          <BackButton fallbackHref="/dashboard" label="Back to Dashboard" variant="ghost" size="sm" />
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3">

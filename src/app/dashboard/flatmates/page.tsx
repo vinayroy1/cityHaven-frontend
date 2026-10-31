@@ -36,6 +36,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
+import { BackButton } from "@/components/common/BackButton";
 import {
   useGetMyFlatmateListingsQuery,
   useGetMyFlatmateInterestsQuery,
@@ -143,6 +144,11 @@ export default function DashboardFlatmatesPage() {
 
       <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl space-y-6">
+          {/* Back Navigation */}
+          <div>
+            <BackButton fallbackHref="/dashboard" label="Back to Dashboard" variant="ghost" size="sm" />
+          </div>
+
           {/* Dashboard Header Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800 pb-5">
             <div className="space-y-1">

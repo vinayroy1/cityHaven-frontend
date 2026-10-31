@@ -47,6 +47,7 @@ import { useOrganizationPropertiesQuery, useMyOrganizationsQuery } from "@/featu
 import { useGetBillingSummaryQuery } from "@/features/contactVerify/api";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { CreditBoostButton } from "@/components/billing/CreditBoostButton";
+import { BackButton } from "@/components/common/BackButton";
 
 import { APP_CONFIG } from "@/constants/app-config";
 
@@ -321,6 +322,11 @@ function PropertiesContent() {
 
       <main className="flex-1 w-full max-w-full overflow-x-hidden">
         <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 py-3 sm:py-8">
+          {/* Back Navigation */}
+          <div className="mb-2 sm:mb-4">
+            <BackButton fallbackHref="/dashboard" label="Back to Dashboard" variant="ghost" size="sm" />
+          </div>
+
           {/* Header Banner */}
           <div className="mb-3 sm:mb-6 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
             <div>
