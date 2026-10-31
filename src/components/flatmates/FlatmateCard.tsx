@@ -124,6 +124,13 @@ export function FlatmateCard({
 
   const roomPhoto = safePhotos[activeImage] || safePhotos[0] || normalizeR2Url(listing.photos?.[0]);
   const profile = listing.profile;
+  const effectiveGender =
+    profile?.gender ||
+    (listing.preferredGenders?.some((g) => g.toUpperCase().includes("FEMALE"))
+      ? "Female"
+      : listing.preferredGenders?.some((g) => g.toUpperCase().includes("MALE"))
+      ? "Male"
+      : undefined);
   const hostPhoto = normalizeR2Url(profile?.profilePhoto);
   const avatarPhoto = hostPhoto || (!isPlaceListing ? roomPhoto : undefined);
   const age = profile?.birthYear ? new Date().getFullYear() - profile.birthYear : undefined;
@@ -539,7 +546,7 @@ export function FlatmateCard({
           ) : (
             <SeekerAvatarPlaceholder
               displayName={profile?.displayName || listing.title}
-              gender={profile?.gender}
+              gender={effectiveGender}
               occupation={profile?.occupation}
               mode={listing.mode}
             />

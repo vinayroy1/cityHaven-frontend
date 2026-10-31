@@ -96,7 +96,13 @@ export function SeekerAvatarPlaceholder({
   const theme = GRADIENT_THEMES[hash % GRADIENT_THEMES.length];
 
   const isBuddyUp = mode === "BUDDY_UP";
-  const isFemale = gender?.toLowerCase() === "female" || (!gender && (hash % 5 === 0));
+  const cleanGender = (gender || "").trim().toLowerCase();
+  const isFemale =
+    cleanGender === "female" ||
+    cleanGender === "f" ||
+    cleanGender.includes("woman") ||
+    cleanGender.includes("women") ||
+    (!cleanGender && hash % 5 === 0);
 
   // Persona index (0 to 2 for male, 0 to 1 for female)
   const personaVariant = hash % 3;
@@ -162,45 +168,104 @@ export function SeekerAvatarPlaceholder({
 
         {/* 3. Illustrated Characters */}
         {isBuddyUp ? (
-          /* ======================================================== */
-          /* BUDDY-UP TEAM (Two Friendly Flatmates Side by Side)      */
-          /* ======================================================== */
-          <g filter={`url(#shadow-${uniqueId})`}>
-            {/* Left Mate Body */}
-            <path d="M5 174 C5 140, 25 130, 48 130 C71 130, 85 140, 85 174 Z" fill="#1E293B" />
-            {/* Right Mate Body */}
-            <path d="M55 174 C55 138, 75 128, 98 128 C121 128, 135 138, 135 174 Z" fill="#0284C7" />
+          isFemale ? (
+            /* ======================================================== */
+            /* BUDDY-UP FEMALE TEAM (Two Friendly Female Flatmates)     */
+            /* ======================================================== */
+            <g filter={`url(#shadow-${uniqueId})`}>
+              {/* Left Mate Body */}
+              <path d="M5 174 C5 140, 24 130, 48 130 C72 130, 85 140, 85 174 Z" fill="#DB2777" />
+              <path d="M38 130 C42 138, 54 138, 58 130 Z" fill="#F43F5E" />
 
-            {/* Left Mate Head */}
-            <circle cx="48" cy="85" r="16" fill="#FDBA74" />
-            {/* Left Mate Hair */}
-            <path
-              d="M32 82 C32 64, 42 60, 52 60 C62 60, 64 68, 64 82 C60 76, 54 72, 48 72 C40 72, 34 76, 32 82 Z"
-              fill="#18181B"
-            />
-            {/* Left Mate Eyes & Smile */}
-            <circle cx="44" cy="84" r="2" fill="#18181B" />
-            <circle cx="54" cy="84" r="2" fill="#18181B" />
-            <path d="M46 91 Q49 94 52 91" stroke="#9A3412" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+              {/* Right Mate Body */}
+              <path d="M55 174 C55 138, 74 128, 98 128 C122 128, 135 138, 135 174 Z" fill="#7C3AED" />
+              <path d="M88 128 C92 136, 104 136, 108 128 Z" fill="#A855F7" />
 
-            {/* Right Mate Head */}
-            <circle cx="92" cy="82" r="16" fill="#FED7AA" />
-            {/* Right Mate Curly Hair */}
-            <path
-              d="M76 80 C76 60, 88 56, 96 56 C106 56, 108 64, 108 80 C104 74, 98 70, 92 70 C86 70, 80 74, 76 80 Z"
-              fill="#78350F"
-            />
-            <circle cx="86" cy="62" r="5" fill="#78350F" />
-            <circle cx="96" cy="60" r="5" fill="#78350F" />
-            <circle cx="104" cy="64" r="4.5" fill="#78350F" />
-            {/* Right Mate Glasses & Smile */}
-            <circle cx="88" cy="80" r="5" fill="none" stroke="#0F172A" strokeWidth="1.5" />
-            <circle cx="98" cy="80" r="5" fill="none" stroke="#0F172A" strokeWidth="1.5" />
-            <line x1="93" y1="80" x2="93" y2="80" stroke="#0F172A" strokeWidth="1.5" />
-            <circle cx="88" cy="80" r="1.5" fill="#0F172A" />
-            <circle cx="98" cy="80" r="1.5" fill="#0F172A" />
-            <path d="M89 88 Q93 92 97 88" stroke="#9A3412" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-          </g>
+              {/* Left Mate Head & Neck */}
+              <circle cx="48" cy="84" r="15" fill="#FDBA74" />
+              {/* Left Mate Chic Bob Hair */}
+              <path
+                d="M33 82 C32 64, 40 58, 48 58 C56 58, 64 64, 63 82 C61 74, 55 70, 48 70 C41 70, 35 74, 33 82 Z"
+                fill="#18181B"
+              />
+              <path d="M32 82 C32 90, 34 94, 36 96 C36 90, 34 84, 34 82 Z" fill="#18181B" />
+              <path d="M64 82 C64 90, 62 94, 60 96 C60 90, 62 84, 62 82 Z" fill="#18181B" />
+              {/* Left Mate Gold Hoop Earring */}
+              <circle cx="34" cy="85" r="2.8" fill="none" stroke="#FBBF24" strokeWidth="1.2" />
+
+              {/* Left Mate Eyes & Smile */}
+              <circle cx="44" cy="83" r="2" fill="#18181B" />
+              <circle cx="53" cy="83" r="2" fill="#18181B" />
+              <circle cx="44.6" cy="82.3" r="0.7" fill="#FFFFFF" />
+              <circle cx="53.6" cy="82.3" r="0.7" fill="#FFFFFF" />
+              {/* Blush */}
+              <ellipse cx="42" cy="87" rx="2.5" ry="1.2" fill="#FB7185" opacity="0.6" />
+              <ellipse cx="55" cy="87" rx="2.5" ry="1.2" fill="#FB7185" opacity="0.6" />
+              <path d="M46 89 Q48.5 93 51 89" stroke="#BE123C" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+
+              {/* Right Mate Head & Topknot / Bun */}
+              <circle cx="94" cy="82" r="15" fill="#FED7AA" />
+              {/* Bun */}
+              <circle cx="94" cy="54" r="7" fill="#18181B" />
+              {/* Hair Base */}
+              <path
+                d="M79 80 C78 62, 86 58, 94 58 C102 58, 110 62, 109 80 C106 73, 100 69, 94 69 C88 69, 82 73, 79 80 Z"
+                fill="#18181B"
+              />
+              {/* Right Mate Earring */}
+              <circle cx="108" cy="83" r="2.8" fill="none" stroke="#FBBF24" strokeWidth="1.2" />
+
+              {/* Right Mate Eyes & Smile */}
+              <circle cx="89" cy="81" r="2" fill="#18181B" />
+              <circle cx="98" cy="81" r="2" fill="#18181B" />
+              <circle cx="89.6" cy="80.3" r="0.7" fill="#FFFFFF" />
+              <circle cx="98.6" cy="80.3" r="0.7" fill="#FFFFFF" />
+              {/* Blush */}
+              <ellipse cx="87" cy="85" rx="2.5" ry="1.2" fill="#FB7185" opacity="0.6" />
+              <ellipse cx="100" cy="85" rx="2.5" ry="1.2" fill="#FB7185" opacity="0.6" />
+              <path d="M91 87 Q93.5 91 96 87" stroke="#BE123C" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+            </g>
+          ) : (
+            /* ======================================================== */
+            /* BUDDY-UP MALE TEAM (Two Friendly Flatmates Side by Side) */
+            /* ======================================================== */
+            <g filter={`url(#shadow-${uniqueId})`}>
+              {/* Left Mate Body */}
+              <path d="M5 174 C5 140, 25 130, 48 130 C71 130, 85 140, 85 174 Z" fill="#1E293B" />
+              {/* Right Mate Body */}
+              <path d="M55 174 C55 138, 75 128, 98 128 C121 128, 135 138, 135 174 Z" fill="#0284C7" />
+
+              {/* Left Mate Head */}
+              <circle cx="48" cy="85" r="16" fill="#FDBA74" />
+              {/* Left Mate Hair */}
+              <path
+                d="M32 82 C32 64, 42 60, 52 60 C62 60, 64 68, 64 82 C60 76, 54 72, 48 72 C40 72, 34 76, 32 82 Z"
+                fill="#18181B"
+              />
+              {/* Left Mate Eyes & Smile */}
+              <circle cx="44" cy="84" r="2" fill="#18181B" />
+              <circle cx="54" cy="84" r="2" fill="#18181B" />
+              <path d="M46 91 Q49 94 52 91" stroke="#9A3412" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+
+              {/* Right Mate Head */}
+              <circle cx="92" cy="82" r="16" fill="#FED7AA" />
+              {/* Right Mate Curly Hair */}
+              <path
+                d="M76 80 C76 60, 88 56, 96 56 C106 56, 108 64, 108 80 C104 74, 98 70, 92 70 C86 70, 80 74, 76 80 Z"
+                fill="#78350F"
+              />
+              <circle cx="86" cy="62" r="5" fill="#78350F" />
+              <circle cx="96" cy="60" r="5" fill="#78350F" />
+              <circle cx="104" cy="64" r="4.5" fill="#78350F" />
+              {/* Right Mate Glasses & Smile */}
+              <circle cx="88" cy="80" r="5" fill="none" stroke="#0F172A" strokeWidth="1.5" />
+              <circle cx="98" cy="80" r="5" fill="none" stroke="#0F172A" strokeWidth="1.5" />
+              <line x1="93" y1="80" x2="93" y2="80" stroke="#0F172A" strokeWidth="1.5" />
+              <circle cx="88" cy="80" r="1.5" fill="#0F172A" />
+              <circle cx="98" cy="80" r="1.5" fill="#0F172A" />
+              <path d="M89 88 Q93 92 97 88" stroke="#9A3412" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+            </g>
+          )
         ) : isFemale ? (
           /* ======================================================== */
           /* FEMALE PERSONAS                                          */

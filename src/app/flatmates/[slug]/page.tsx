@@ -107,6 +107,13 @@ export default function FlatmateDetailPage() {
   }
 
   const profile = listing.profile;
+  const effectiveGender =
+    profile?.gender ||
+    (listing.preferredGenders?.some((g) => g.toUpperCase().includes("FEMALE"))
+      ? "Female"
+      : listing.preferredGenders?.some((g) => g.toUpperCase().includes("MALE"))
+      ? "Male"
+      : undefined);
   const photos = Array.from(new Set((listing.photos?.length ? listing.photos : []).map(normalizeR2Url)));
   const profilePhoto = normalizeR2Url(profile?.profilePhoto);
   // For seeker/buddy-up, prioritize profilePhoto, fallback to first uploaded photo
@@ -198,7 +205,7 @@ export default function FlatmateDetailPage() {
                           ) : (
                             <SeekerAvatarPlaceholder
                               displayName={displayName}
-                              gender={profile?.gender}
+                              gender={effectiveGender}
                               occupation={profile?.occupation}
                               mode={listing.mode}
                             />

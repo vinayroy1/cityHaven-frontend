@@ -301,6 +301,13 @@ export default function DashboardFlatmatesPage() {
                     const hasRealPhoto =
                       photos.some(isRealUserPhoto) || isRealUserPhoto(item.profile?.profilePhoto);
                     const displayPhoto = photos.find(isRealUserPhoto) || (isRealUserPhoto(item.profile?.profilePhoto) ? item.profile?.profilePhoto : null);
+                    const itemEffectiveGender =
+                      item.profile?.gender ||
+                      (item.preferredGenders?.some((g) => g.toUpperCase().includes("FEMALE"))
+                        ? "Female"
+                        : item.preferredGenders?.some((g) => g.toUpperCase().includes("MALE"))
+                        ? "Male"
+                        : undefined);
 
                     return (
                       <div
@@ -329,7 +336,7 @@ export default function DashboardFlatmatesPage() {
                               ) : (
                                 <SeekerAvatarPlaceholder
                                   displayName={item.profile?.displayName || item.title}
-                                  gender={item.profile?.gender}
+                                  gender={itemEffectiveGender}
                                   mode={item.mode}
                                 />
                               )}

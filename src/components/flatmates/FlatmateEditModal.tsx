@@ -95,6 +95,13 @@ export function FlatmateEditModal({ listing, isOpen, onClose, onSuccess }: Flatm
   if (!listing) return null;
 
   const isPlaceListing = listing.mode === "HAVE_ROOM";
+  const modalEffectiveGender =
+    listing.profile?.gender ||
+    (listing.preferredGenders?.some((g) => g.toUpperCase().includes("FEMALE"))
+      ? "Female"
+      : listing.preferredGenders?.some((g) => g.toUpperCase().includes("MALE"))
+      ? "Male"
+      : undefined);
 
   const handleUploadPhoto = async (files: FileList | null) => {
     if (!files?.length) return;
@@ -357,7 +364,7 @@ export function FlatmateEditModal({ listing, isOpen, onClose, onSuccess }: Flatm
                   <div className="relative w-16 h-20 rounded-2xl overflow-hidden border-2 border-dashed border-rose-300 bg-rose-50/50 dark:border-rose-800 dark:bg-rose-950/30 flex items-center justify-center shrink-0">
                     <SeekerAvatarPlaceholder
                       displayName={listing.profile?.displayName || listing.title}
-                      gender={listing.profile?.gender}
+                      gender={modalEffectiveGender}
                       mode={listing.mode}
                     />
                   </div>
@@ -373,7 +380,7 @@ export function FlatmateEditModal({ listing, isOpen, onClose, onSuccess }: Flatm
                   <div className="relative w-16 h-20 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shrink-0">
                     <SeekerAvatarPlaceholder
                       displayName={listing.profile?.displayName || listing.title}
-                      gender={listing.profile?.gender}
+                      gender={modalEffectiveGender}
                       mode={listing.mode}
                     />
                   </div>
