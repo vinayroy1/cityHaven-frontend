@@ -140,6 +140,7 @@ const STORAGE_KEYS = {
   CURRENT_STAFF: "awasio_admin_current_staff",
   STAFF_LIST: "awasio_admin_staff_roster",
   QC_QUEUE: "awasio_admin_qc_queue",
+  DOCUMENT_QC: "awasio_admin_document_qc",
   ORG_VERIF: "awasio_admin_org_verifications",
   USERS: "awasio_admin_users",
   BILLING: "awasio_admin_billing_orders",
@@ -238,8 +239,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           setPropertyQcList(properties.value);
           if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.QC_QUEUE, JSON.stringify(properties.value));
         }
-        if (documents.status === "fulfilled" && documents.value?.length) {
-          setDocumentQcList(documents.value);
+        if (documents.status === "fulfilled" && documents.value) {
+          const docsList = Array.isArray(documents.value) ? documents.value : (documents.value as any).data || [];
+          setDocumentQcList(docsList);
+          if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DOCUMENT_QC, JSON.stringify(docsList));
         }
         if (organizations.status === "fulfilled" && organizations.value?.length) {
           setOrgVerificationList(organizations.value);
@@ -301,6 +304,16 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       const storedQc = localStorage.getItem(STORAGE_KEYS.QC_QUEUE);
       if (storedQc) setPropertyQcList(JSON.parse(storedQc));
+
+      const storedDocs = localStorage.getItem(STORAGE_KEYS.DOCUMENT_QC);
+      if (storedDocs) {
+        try {
+          const parsed = JSON.parse(storedDocs);
+          if (Array.isArray(parsed)) setDocumentQcList(parsed);
+        } catch {
+          // ignore
+        }
+      }
 
       const storedOrgs = localStorage.getItem(STORAGE_KEYS.ORG_VERIF);
       if (storedOrgs) setOrgVerificationList(JSON.parse(storedOrgs));
@@ -426,7 +439,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       if (staffRoster.status === "fulfilled" && staffRoster.value?.length) setStaffList(staffRoster.value);
       if (properties.status === "fulfilled" && properties.value?.length) setPropertyQcList(properties.value);
-      if (documents.status === "fulfilled" && documents.value?.length) setDocumentQcList(documents.value);
+      if (documents.status === "fulfilled" && documents.value) {
+        const docsList = Array.isArray(documents.value) ? documents.value : (documents.value as any).data || [];
+        setDocumentQcList(docsList);
+        if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DOCUMENT_QC, JSON.stringify(docsList));
+      }
       if (organizations.status === "fulfilled" && organizations.value?.length) setOrgVerificationList(organizations.value);
       if (users.status === "fulfilled" && users.value?.length) setUserList(users.value);
       if (billing.status === "fulfilled" && billing.value?.length) setBillingOrders(billing.value);
@@ -557,9 +574,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const fetchDocumentQueue = async () => {
     try {
       const docs = await adminApi.listDocumentQueue();
-      if (docs) {
-        setDocumentQcList(docs);
-      }
+      const docsList = Array.isArray(docs) ? docs : (docs as any)?.data || [];
+      setDocumentQcList(docsList);
+      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DOCUMENT_QC, JSON.stringify(docsList));
     } catch (e) {
       console.warn("Failed fetching document queue:", e);
     }

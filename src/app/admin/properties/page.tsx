@@ -142,8 +142,11 @@ export default function AdminPropertyQcPage() {
     return true;
   });
 
+  // Safe Document list
+  const safeDocumentQcList = Array.isArray(documentQcList) ? documentQcList : [];
+
   // Filter documents
-  const filteredDocuments = documentQcList.filter((doc) => {
+  const filteredDocuments = safeDocumentQcList.filter((doc) => {
     if (docStatusFilter !== "ALL") {
       if (docStatusFilter === "REVIEWING") {
         if (doc.status !== "REVIEWING" && doc.status !== "PENDING") return false;
@@ -174,7 +177,7 @@ export default function AdminPropertyQcPage() {
     return true;
   });
 
-  const pendingDocsCount = documentQcList.filter(
+  const pendingDocsCount = safeDocumentQcList.filter(
     (d) => d.status === "REVIEWING" || d.status === "PENDING"
   ).length;
 
@@ -418,7 +421,7 @@ export default function AdminPropertyQcPage() {
             </span>
           ) : (
             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium">
-              {documentQcList.length}
+              {safeDocumentQcList.length}
             </span>
           )}
         </button>
@@ -621,7 +624,7 @@ export default function AdminPropertyQcPage() {
             <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
               <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase">Total Documents</div>
               <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">
-                {documentQcList.length}
+                {safeDocumentQcList.length}
               </div>
               <div className="text-[10px] text-slate-400 mt-0.5">Across all registered listings</div>
             </div>
@@ -641,7 +644,7 @@ export default function AdminPropertyQcPage() {
                 <ShieldCheck className="w-3.5 h-3.5" /> Verified Badges
               </div>
               <div className="text-xl font-bold text-emerald-800 dark:text-emerald-300 mt-1">
-                {documentQcList.filter((d) => d.status === "VERIFIED").length}
+                {safeDocumentQcList.filter((d) => d.status === "VERIFIED").length}
               </div>
               <div className="text-[10px] text-emerald-600 dark:text-emerald-400/80 mt-0.5">Ownership confirmed</div>
             </div>
@@ -651,7 +654,7 @@ export default function AdminPropertyQcPage() {
                 <XCircle className="w-3.5 h-3.5" /> Rejected Proofs
               </div>
               <div className="text-xl font-bold text-rose-800 dark:text-rose-300 mt-1">
-                {documentQcList.filter((d) => d.status === "REJECTED").length}
+                {safeDocumentQcList.filter((d) => d.status === "REJECTED").length}
               </div>
               <div className="text-[10px] text-rose-600 dark:text-rose-400/80 mt-0.5">Pending user re-upload</div>
             </div>
@@ -675,10 +678,10 @@ export default function AdminPropertyQcPage() {
                     <span className="ml-1.5 text-[10px] opacity-80 font-mono">
                       (
                       {tab.value === "ALL"
-                        ? documentQcList.length
+                        ? safeDocumentQcList.length
                         : tab.value === "REVIEWING"
-                        ? documentQcList.filter((d) => d.status === "REVIEWING" || d.status === "PENDING").length
-                        : documentQcList.filter((d) => d.status === tab.value).length}
+                        ? safeDocumentQcList.filter((d) => d.status === "REVIEWING" || d.status === "PENDING").length
+                        : safeDocumentQcList.filter((d) => d.status === tab.value).length}
                       )
                     </span>
                   </button>
