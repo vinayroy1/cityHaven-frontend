@@ -10,6 +10,7 @@ import { ShareArticleButton } from "@/components/blog/ShareArticleButton";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { buildCanonical } from "@/constants/seo";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 import type { BlogPost } from "@/types/blog.types";
 
@@ -57,6 +58,15 @@ export default async function BlogDetailPage({ params }: Props) {
           <header className="relative overflow-hidden border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(244,63,94,.10),transparent_30%),radial-gradient(circle_at_85%_10%,rgba(99,102,241,.09),transparent_32%)]" />
             <div className="relative mx-auto max-w-4xl px-3.5 py-4 sm:px-6 sm:py-14">
+              <PageBreadcrumbs
+                items={[
+                  { label: "Blog", href: "/blog" },
+                  ...(post.category ? [{ label: post.category.name, href: `/blog?category=${post.category.slug}` }] : []),
+                  { label: post.title },
+                ]}
+                className="mb-4"
+                renderJsonLd={true}
+              />
               <Link
                 href="/blog"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 transition hover:text-rose-600"

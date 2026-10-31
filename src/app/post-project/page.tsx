@@ -33,6 +33,7 @@ import { LocalitySearchDropdown } from "./components/LocalitySearchDropdown";
 import { ProjectMediaUpload, type UploadedBrochure } from "./components/ProjectMediaUpload";
 import { CDN_ASSETS } from "@/config/cdn";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 import { registerBackHandler } from "@/lib/navigation/backNavigation";
 
 
@@ -451,8 +452,12 @@ export default function PostProjectPage() {
           {/* Top Bar */}
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
-              <div className="mb-1.5">
+              <div className="mb-2 flex flex-wrap items-center gap-3">
                 <BackButton fallbackHref="/new-projects" label="Back to New Projects" variant="ghost" />
+                <PageBreadcrumbs
+                  items={[{ label: "New Projects", href: "/new-projects" }, { label: "Post Developer Project" }]}
+                  renderJsonLd={true}
+                />
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white">
                 Builder & Developer Project Portal

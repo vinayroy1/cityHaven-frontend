@@ -18,6 +18,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { buildCanonical } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
   title: "Terms of Service & Regulatory Compliance",
@@ -153,9 +154,10 @@ export default function TermsPage() {
 
       <main className="flex-1 bg-gradient-to-b from-rose-50/60 via-white to-amber-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
-          {/* Back button */}
-          <div>
+          {/* Back button & Breadcrumb */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <BackButton fallbackHref="/" label="Back to Home" variant="pill" size="sm" />
+            <PageBreadcrumbs items={[{ label: "Terms of Service" }]} renderJsonLd={true} />
           </div>
 
           {/* Hero Header */}

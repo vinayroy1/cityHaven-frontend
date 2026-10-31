@@ -5,6 +5,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { ALL_AGENTS } from "@/data/agents";
 import { AgentsDirectoryClient } from "./components/AgentsDirectoryClient";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
   title: "Verified Real Estate Advisors & Local Tour Guides | Awasio",
@@ -126,6 +127,7 @@ export default function AgentsDirectoryPage() {
         {/* Hero Header */}
         <section className="border-b border-slate-200/80 bg-white py-2.5 sm:py-8 dark:border-slate-800 dark:bg-slate-900/60">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <PageBreadcrumbs items={[{ label: "Verified Advisors" }]} className="mb-2 sm:mb-4" renderJsonLd={true} />
             <div className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 mb-1 sm:mb-3">
               <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span>Awasio Certified Advisor Network</span>

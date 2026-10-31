@@ -39,6 +39,8 @@ import dynamic from "next/dynamic";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { useGetFlatmateListingQuery } from "@/features/flatmates/api";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
+import { toSearchSlug } from "@/components/search/searchQuery";
 import { FlatmateDetailSkeleton } from "@/components/flatmates/FlatmateDetailSkeleton";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { SeekerAvatarPlaceholder } from "@/components/flatmates/SeekerAvatarPlaceholder";
@@ -136,6 +138,28 @@ export default function FlatmateDetailPage() {
   const isBuddyUp = listing.mode === "BUDDY_UP";
   const displayName = profile?.displayName || (isBuddyUp ? "Buddy-Up Group" : "Room Seeker");
 
+  const citySlug = listing.cityName ? toSearchSlug(listing.cityName) : "";
+  const localityName = preferredAreas[0] || listing.locality || "";
+  const localitySlug = localityName ? toSearchSlug(localityName) : "";
+
+  const flatmateBreadcrumbs: BreadcrumbTrailItem[] = [
+    {
+      label: listing.cityName ? `Flatmates in ${listing.cityName}` : "Flatmates",
+      href: citySlug ? `/flatmate/${citySlug}` : "/flatmate",
+    },
+    ...(localityName && citySlug
+      ? [
+          {
+            label: localityName,
+            href: `/flatmate/${citySlug}/${localitySlug}`,
+          },
+        ]
+      : []),
+    {
+      label: displayName || "Listing Details",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
       <HeaderNav />
@@ -143,8 +167,11 @@ export default function FlatmateDetailPage() {
       <main className="flex-1 px-4 pb-32 pt-5 sm:px-6 lg:px-8 lg:pb-12">
         <div className="mx-auto max-w-6xl space-y-6">
           {/* Top Bar Navigation & Share */}
-          <div className="flex items-center justify-between">
-            <BackButton fallbackHref="/flatmate" label="Back to Flatmates" variant="pill" size="sm" />
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <BackButton fallbackHref="/flatmate" label="Back to Flatmates" variant="pill" size="sm" />
+              <PageBreadcrumbs items={flatmateBreadcrumbs} renderJsonLd={true} />
+            </div>
 
             <div className="flex items-center gap-2">
               <button

@@ -28,6 +28,7 @@ import { CDN_ASSETS } from "@/config/cdn";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
+import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
 import {
   ProjectFilterSheet,
   ProjectFilterRail,
@@ -390,6 +391,30 @@ export function NewProjectsClient({
     : (data?.items ? [] : (initialProjects.length > 0 ? initialProjects : []));
   const totalProjects = data?.total ?? initialTotal ?? projects.length;
 
+  const breadcrumbItems = useMemo(() => {
+    const items: BreadcrumbTrailItem[] = [
+      { label: "New Projects", href: "/new-projects" },
+    ];
+    if (appliedCity) {
+      const citySlug = toSearchSlug(appliedCity);
+      const locality = appliedLocalities[0];
+      if (locality) {
+        items.push({
+          label: `Projects in ${appliedCity}`,
+          href: `/new-projects/${citySlug}`,
+        });
+        items.push({
+          label: locality,
+        });
+      } else {
+        items.push({
+          label: `Projects in ${appliedCity}`,
+        });
+      }
+    }
+    return items;
+  }, [appliedCity, appliedLocalities]);
+
   return (
     <div className="pb-16 min-w-0">
       {/* Hero Header & Search Section */}
@@ -397,6 +422,7 @@ export function NewProjectsClient({
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(244,63,94,0.08),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(16,185,129,0.06),transparent_50%)]" />
 
         <div className="relative mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-7 lg:px-8">
+          <PageBreadcrumbs items={breadcrumbItems} className="mb-3" renderJsonLd={true} />
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div className="max-w-3xl">
               <div className="hidden items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 sm:flex">

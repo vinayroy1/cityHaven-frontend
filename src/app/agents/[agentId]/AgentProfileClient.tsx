@@ -28,6 +28,7 @@ import { saveVisitBooking } from "@/lib/services/visitBookings";
 import { BookVisitModal } from "@/components/agents/BookVisitModal";
 import { getAgentProfile } from "@/lib/services/agentProfile";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 interface AgentProfileClientProps {
   agent: Agent;
@@ -105,26 +106,17 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
 
   return (
     <div>
-      {/* Breadcrumbs Navigation (Desktop only to prevent vertical clutter on mobile) */}
-      <div className="hidden sm:block border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/60 py-2.5">
+      {/* Breadcrumbs Navigation */}
+      <div className="border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/60 py-2 sm:py-2.5">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-            <Link href="/" className="hover:text-rose-600 transition">
-              Home
-            </Link>
-            <ChevronRight className="h-3 w-3 text-slate-400" />
-            <Link href="/agents" className="hover:text-rose-600 transition">
-              Verified Advisors
-            </Link>
-            <ChevronRight className="h-3 w-3 text-slate-400" />
-            <Link href={`/agents?city=${encodeURIComponent(agent.city)}`} className="hover:text-rose-600 transition">
-              {agent.city}
-            </Link>
-            <ChevronRight className="h-3 w-3 text-slate-400" />
-            <span className="font-semibold text-slate-900 dark:text-white truncate">
-              {agent.name}
-            </span>
-          </nav>
+          <PageBreadcrumbs
+            items={[
+              { label: "Verified Advisors", href: "/agents" },
+              { label: agent.city, href: `/agents?city=${encodeURIComponent(agent.city)}` },
+              { label: agent.name },
+            ]}
+            renderJsonLd={false}
+          />
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import { BlogCard } from "@/components/blog/BlogCard";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { buildCanonical } from "@/constants/seo";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 import { getDefaultBlogListResponse } from "@/constants/defaultBlogs";
 import type { BlogListResponse } from "@/types/blog.types";
 
@@ -71,6 +72,11 @@ export default async function BlogPage({ searchParams }: PageProps) {
         <section className="relative overflow-hidden border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(244,63,94,.10),transparent_28%),radial-gradient(circle_at_85%_15%,rgba(99,102,241,.09),transparent_30%)]" />
           <div className="relative mx-auto max-w-6xl px-3.5 py-4 sm:px-6 sm:py-12">
+            <PageBreadcrumbs
+              items={category ? [{ label: "Blog", href: "/blog" }, { label: category }] : [{ label: "Real Estate Blog & Insights" }]}
+              className="mb-4"
+              renderJsonLd={true}
+            />
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">
                 <Sparkles className="h-3 w-3" />

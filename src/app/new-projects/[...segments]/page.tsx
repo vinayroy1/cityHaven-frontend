@@ -13,6 +13,7 @@ import type { ProjectListing } from "@/types/project.types";
 import { ProjectDetailInteractive } from "../components/ProjectDetailInteractive";
 import { NewProjectsClient } from "../components/NewProjectsClient";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const revalidate = 60;
 
@@ -226,28 +227,16 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
           <main className="flex-1 pb-20">
             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
               {/* Breadcrumb Bar */}
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <BackButton fallbackHref="/new-projects" label="Back to all projects" variant="pill" size="sm" />
-
-                <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400">
-                  <Link href="/" className="hover:underline">
-                    Home
-                  </Link>
-                  <span>/</span>
-                  <Link href="/new-projects" className="hover:underline">
-                    New Projects
-                  </Link>
-                  {cityName && (
-                    <>
-                      <span>/</span>
-                      <Link href={`/new-projects/${toSearchSlug(cityName)}`} className="hover:underline">
-                        {cityName}
-                      </Link>
-                    </>
-                  )}
-                  <span>/</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{project.name}</span>
-                </div>
+                <PageBreadcrumbs
+                  items={[
+                    { label: "New Projects", href: "/new-projects" },
+                    ...(cityName ? [{ label: cityName, href: `/new-projects/${toSearchSlug(cityName)}` }] : []),
+                    { label: project.name },
+                  ]}
+                  renderJsonLd={false}
+                />
               </div>
 
               {/* Interactive Project Client View */}

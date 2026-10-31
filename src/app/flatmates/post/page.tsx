@@ -6,6 +6,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FlatmateListingWizard } from "@/components/flatmates/FlatmateListingWizard";
 import { buildCanonical } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
   title: "Post Flatmate Requirement - Get 1,000 Free Credits on Signup | Awasio",
@@ -48,14 +49,7 @@ export default function PostFlatmatePage() {
             <div className="flex items-center gap-3">
               <BackButton fallbackHref="/flatmate" label="Back to Flatmates" variant="pill" />
 
-              <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                <span>/</span>
-                <Link href="/" className="hover:underline">Home</Link>
-                <span>/</span>
-                <Link href="/flatmate" className="hover:underline">Flatmates</Link>
-                <span>/</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200">Post Requirement</span>
-              </div>
+              <PageBreadcrumbs items={[{ label: "Flatmates", href: "/flatmate" }, { label: "Post Requirement" }]} renderJsonLd={true} />
             </div>
 
             <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 px-3 py-1 rounded-full w-fit">

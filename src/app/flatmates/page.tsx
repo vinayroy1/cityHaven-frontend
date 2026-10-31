@@ -20,7 +20,8 @@ import { FlatmateGridSkeleton } from "@/components/flatmates/FlatmateCardSkeleto
 import { canonicalizeCity, CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
 import { FilterRail } from "@/components/search/FilterSheet";
-import { countActiveFilters, initialSearchState, type SearchState } from "@/components/search/searchQuery";
+import { countActiveFilters, initialSearchState, toSearchSlug, type SearchState } from "@/components/search/searchQuery";
+import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import type { FlatmateListing, FlatmateListingMode } from "@/types/flatmate.types";
 import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
@@ -162,6 +163,33 @@ export default function FlatmatesDiscoveryPage({
   const total = data?.total ?? (hasInitialData ? (filteredInitialItems.length > 0 ? filteredInitialItems.length : initialTotal) : 0);
   const showSkeleton = (isLoading || isFetching) && listings.length === 0;
 
+  const breadcrumbItems = React.useMemo(() => {
+    const items: BreadcrumbTrailItem[] = [];
+    const citySlug = city ? toSearchSlug(city) : "";
+    const localityName = localities[0];
+    const localitySlug = localityName ? toSearchSlug(localityName) : "";
+
+    if (city) {
+      items.push({
+        label: `Flatmates in ${city}`,
+        href: `/flatmate/${citySlug}`,
+      });
+      if (localityName) {
+        items.push({
+          label: localityName,
+          href: `/flatmate/${citySlug}/${localitySlug}`,
+        });
+      }
+    } else {
+      items.push({
+        label: "Flatmates in India",
+        href: "/flatmate",
+      });
+    }
+
+    return items;
+  }, [city, localities]);
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
       <HeaderNav />
@@ -172,6 +200,7 @@ export default function FlatmatesDiscoveryPage({
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(244,63,94,0.08),transparent_40%),radial-gradient(circle_at_85%_30%,rgba(245,158,11,0.08),transparent_40%)]" />
 
           <div className="relative mx-auto max-w-7xl">
+            <PageBreadcrumbs items={breadcrumbItems} className="mb-2" renderJsonLd={false} />
             <div className="flex items-center justify-between gap-4">
               <div className="max-w-2xl space-y-1 sm:space-y-2">
                 <div className="hidden w-fit items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-bold text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 sm:inline-flex sm:px-3 sm:text-xs">

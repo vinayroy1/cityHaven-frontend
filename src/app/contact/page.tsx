@@ -6,6 +6,7 @@ import { Mail, Phone, MessageSquare, MapPin, Clock, ShieldCheck, ArrowLeft, Link
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { ContactForm } from "./ContactForm";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
   title: "Contact Awasio Support",
@@ -53,7 +54,7 @@ export default function ContactPage() {
 
       <main className="flex-1 bg-gradient-to-b from-rose-50 via-white to-amber-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-8 sm:px-8">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <Link
               href="/"
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
@@ -61,6 +62,7 @@ export default function ContactPage() {
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Back to Home</span>
             </Link>
+            <PageBreadcrumbs items={[{ label: "Contact Us" }]} renderJsonLd={true} />
           </div>
 
           <header className="overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-6 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.5)] backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">

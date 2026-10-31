@@ -17,6 +17,8 @@ import { QuickFactsGrid, type QuickFact } from "./components/QuickFactsGrid";
 import { TransactionCard } from "./components/TransactionCard";
 import { getBrokerageDisplay } from "@/lib/propertyListing/formatBrokerage";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
+import { toSearchSlug } from "@/components/search/searchQuery";
 
 type PropertyMedia = { url?: string | null; type?: string | null };
 type AmenityGroup = {
@@ -705,30 +707,47 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     },
   };
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: buildCanonical("/"),
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Properties",
-        item: buildCanonical("/propertySearch"),
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: title,
-        item: buildCanonical(`/properties/${property.slug || id}`),
-      },
-    ],
-  };
+  const propIntent = isPg
+    ? "pg"
+    : property.resCom === "COMMERCIAL"
+    ? "commercial"
+    : (property.propertyType?.name || "").toLowerCase().includes("plot")
+    ? "plot"
+    : (property.listingType || "").toLowerCase().includes("rent")
+    ? "rent"
+    : "buy";
+
+  const propIntentLabel =
+    propIntent === "pg"
+      ? "PG & Co-Living"
+      : propIntent === "commercial"
+      ? "Commercial"
+      : propIntent === "plot"
+      ? "Plots & Land"
+      : propIntent === "rent"
+      ? "Rent"
+      : "Buy";
+
+  const citySlug = property.cityName ? toSearchSlug(property.cityName) : "";
+  const localitySlug = property.locality ? toSearchSlug(property.locality) : "";
+
+  const propertyBreadcrumbs = [
+    {
+      label: property.cityName ? `${propIntentLabel} in ${property.cityName}` : `${propIntentLabel} Properties`,
+      href: citySlug ? `/${propIntent}/${citySlug}` : `/${propIntent}`,
+    },
+    ...(property.locality && citySlug
+      ? [
+          {
+            label: property.locality,
+            href: `/${propIntent}/${citySlug}/${localitySlug}`,
+          },
+        ]
+      : []),
+    {
+      label: title,
+    },
+  ];
 
   const heroImage = images?.[0];
 
@@ -741,22 +760,12 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(propertyJsonLd) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
       <HeaderNav />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:py-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <BackButton fallbackHref="/propertySearch" label="Back to Search" variant="pill" size="sm" />
-          <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-slate-400">
-            <a href="/" className="hover:text-emerald-700 dark:hover:text-emerald-400">Home</a>
-            <span>/</span>
-            <a href="/propertySearch" className="hover:text-emerald-700 dark:hover:text-emerald-400">Properties</a>
-            <span>/</span>
-            <span className="truncate max-w-[200px] sm:max-w-none">{property.propertySubType?.name ?? property.propertyType?.name ?? "Details"}</span>
-          </nav>
+          <PageBreadcrumbs items={propertyBreadcrumbs} renderJsonLd={true} />
         </div>
 
         <section className="py-4">

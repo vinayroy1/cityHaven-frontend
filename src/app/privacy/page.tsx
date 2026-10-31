@@ -18,6 +18,7 @@ import {
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { buildCanonical } from "@/constants/seo";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
   title: "Privacy Policy & Data Protection",
@@ -84,8 +85,8 @@ export default function PrivacyPage() {
 
       <main className="flex-1 bg-gradient-to-b from-rose-50/60 via-white to-amber-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
-          {/* Back button */}
-          <div>
+          {/* Back button & Breadcrumb */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <Link
               href="/"
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
@@ -93,6 +94,7 @@ export default function PrivacyPage() {
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Back to Home</span>
             </Link>
+            <PageBreadcrumbs items={[{ label: "Privacy Policy" }]} renderJsonLd={true} />
           </div>
 
           {/* Hero Header */}

@@ -6,6 +6,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { buildCanonical } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
   title: "Policies & Safety - Awasio",
@@ -21,8 +22,9 @@ export default function PoliciesPage() {
       <main className="flex-1">
         <div className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/50">
           <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-            <div className="mb-4">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <BackButton fallbackHref="/" label="Back to Home" variant="ghost" size="sm" />
+              <PageBreadcrumbs items={[{ label: "Policies & Safety" }]} renderJsonLd={true} />
             </div>
 
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">

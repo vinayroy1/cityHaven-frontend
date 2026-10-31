@@ -29,9 +29,11 @@ import {
   buildSearchHref,
   countActiveFilters,
   parseSearchParams,
+  toSearchSlug,
   type IntentKey,
   type SearchState,
 } from "@/components/search/searchQuery";
+import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
 import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
 
 import type { PropertySearchItem } from "@/types/propertySearch.types";
@@ -197,6 +199,59 @@ export function SearchPageClient({
     setTimeout(() => setIsMobileSearching(false), 2000);
   };
 
+  const breadcrumbItems = React.useMemo(() => {
+    const items: BreadcrumbTrailItem[] = [];
+    const intentLabel =
+      state.intent === "RENT"
+        ? "Rent"
+        : state.intent === "COMMERCIAL"
+        ? "Commercial"
+        : state.intent === "PLOT"
+        ? "Plots & Land"
+        : state.intent === "PG"
+        ? "PG & Co-Living"
+        : state.intent === "FLATMATE"
+        ? "Flatmates"
+        : "Buy";
+
+    const intentSlug =
+      state.intent === "RENT"
+        ? "/rent"
+        : state.intent === "COMMERCIAL"
+        ? "/commercial"
+        : state.intent === "PLOT"
+        ? "/plot"
+        : state.intent === "PG"
+        ? "/pg"
+        : state.intent === "FLATMATE"
+        ? "/flatmate"
+        : "/buy";
+
+    const citySlug = state.cityName ? toSearchSlug(state.cityName) : "";
+    const localityName = state.localities?.[0]?.label;
+    const localitySlug = localityName ? toSearchSlug(localityName) : "";
+
+    if (state.cityName) {
+      items.push({
+        label: `${intentLabel} in ${state.cityName}`,
+        href: `${intentSlug}/${citySlug}`,
+      });
+      if (localityName) {
+        items.push({
+          label: localityName,
+          href: `${intentSlug}/${citySlug}/${localitySlug}`,
+        });
+      }
+    } else {
+      items.push({
+        label: `${intentLabel} in India`,
+        href: intentSlug,
+      });
+    }
+
+    return items;
+  }, [state.intent, state.cityName, state.localities]);
+
   return (
     <main className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
       <HeaderNav isMobileHidden={isScrolledDown} hideOnPhone />
@@ -285,6 +340,9 @@ export function SearchPageClient({
             <QuickFilterChips state={state} onOpenFilters={openFilters} />
           </div>
         </div>
+
+        {/* Breadcrumb Trail for SEO & Hierarchy */}
+        <PageBreadcrumbs items={breadcrumbItems} className="mb-1.5 sm:mb-2" renderJsonLd={false} />
 
         {/* Semantic H1 & Results Status Bar for Google SEO & UX */}
         <div className="mt-3 sm:mt-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-200/60 pb-3 dark:border-slate-800/60">

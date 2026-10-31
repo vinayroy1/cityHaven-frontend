@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 import { APP_CONFIG } from "@/constants/app-config";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import {
@@ -287,8 +288,12 @@ export function PricingClient() {
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
       <HeaderNav />
 
-      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
+          <div className="mb-6 sm:mb-8">
+            <PageBreadcrumbs items={[{ label: "Pricing & Plans" }]} renderJsonLd={true} />
+          </div>
+
           {/* Hero Section */}
           <div className="text-center max-w-3xl mx-auto mb-10">
             <div className="inline-flex items-center gap-2 rounded-full bg-rose-50 border border-rose-200 px-3.5 py-1 text-xs font-bold text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300 mb-3 shadow-sm">

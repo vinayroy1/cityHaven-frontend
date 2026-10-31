@@ -6,6 +6,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PropertyListingFlow } from "@/components/propertyListing/PropertyListingFlow";
 import { buildCanonical } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
   title: "Post Property - Get 1,000 Free Credits on Signup | Awasio",
@@ -58,12 +59,7 @@ export default function PropertyListingPage() {
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <BackButton fallbackHref="/dashboard/properties" label="Back" variant="pill" />
 
-              <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                <span>/</span>
-                <Link href="/" className="hover:underline">Home</Link>
-                <span>/</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200">Post Property</span>
-              </div>
+              <PageBreadcrumbs items={[{ label: "Post Property" }]} renderJsonLd={true} />
             </div>
 
             <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 px-2.5 sm:px-3 py-1 rounded-full shrink-0">

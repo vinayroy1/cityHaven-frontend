@@ -5,6 +5,7 @@ import { buildCanonical } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { EmiCalculator } from "@/components/emi/EmiCalculator";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const revalidate = 86400;
 
@@ -34,8 +35,11 @@ export default function EmiCalculatorPage() {
       <main className="flex-1">
         <section className="relative overflow-hidden border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-950">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(251,113,133,0.12),transparent_32%),radial-gradient(circle_at_15%_80%,rgba(251,146,60,0.10),transparent_28%)]" />
-          <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
-            <Link href="/" className="mb-7 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400"><ArrowLeft className="h-3.5 w-3.5" /> Back to home</Link>
+          <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400"><ArrowLeft className="h-3.5 w-3.5" /> Back to home</Link>
+              <PageBreadcrumbs items={[{ label: "EMI Calculator" }]} renderJsonLd={true} />
+            </div>
             <div className="max-w-3xl">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"><Sparkles className="h-3.5 w-3.5" /> Free financial planning tool</div>
               <h1 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-5xl">Know your EMI before you <span className="bg-gradient-to-r from-rose-600 to-orange-500 bg-clip-text text-transparent">choose your home.</span></h1>

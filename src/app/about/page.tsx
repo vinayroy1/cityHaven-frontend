@@ -20,6 +20,7 @@ import {
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
   title: "About Awasio - Smarter Real Estate Discovery",
@@ -122,8 +123,9 @@ export default function AboutPage() {
 
         <div className="relative mx-auto flex max-w-6xl flex-col gap-10 px-4 py-8 sm:px-6 lg:px-8">
           {/* Breadcrumb / Back Button */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <BackButton fallbackHref="/" label="Back to Home" variant="pill" size="sm" />
+            <PageBreadcrumbs items={[{ label: "About Us" }]} renderJsonLd={true} />
           </div>
 
           {/* Hero Section */}

@@ -29,6 +29,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { ResultCard } from "@/app/propertySearch/components/ResultCard";
 import { BackButton } from "@/components/common/BackButton";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export default function FavoritesPage() {
   const router = useRouter();
@@ -75,8 +76,9 @@ export default function FavoritesPage() {
       <main className="flex-1">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
           {/* Top Breadcrumb & Header */}
-          <div className="mb-4">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <BackButton fallbackHref="/dashboard" label="Back to Dashboard" variant="ghost" size="sm" />
+            <PageBreadcrumbs items={[{ label: "Dashboard", href: "/dashboard" }, { label: "Saved Properties" }]} renderJsonLd={false} />
           </div>
 
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
