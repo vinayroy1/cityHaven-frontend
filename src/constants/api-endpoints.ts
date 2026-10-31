@@ -221,4 +221,13 @@ export const API_ENDPOINTS = {
     adminVerifyRera: (id: string | number) => `${BASE}/advisors/admin/${id}/verify-rera`,
     adminFeature: (id: string | number) => `${BASE}/advisors/admin/${id}/feature`,
   },
+  documents: {
+    list: `${BASE}/documents`,
+    stats: `${BASE}/documents/stats`,
+    presignedUrl: `${BASE}/documents/presigned-url`,
+    create: `${BASE}/documents`,
+    detail: (id: number | string) => `${BASE}/documents/${id}`,
+    download: (id: number | string) => `${BASE}/documents/${id}/download`,
+    delete: (id: number | string) => `${BASE}/documents/${id}`,
+  },
 };

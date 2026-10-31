@@ -12,6 +12,7 @@ import { blogApi } from "@/features/blog/api";
 import { locationsApi } from "@/features/locations/api";
 import locationsReducer from "@/features/locations/slice";
 import { leadsApi } from "@/features/leads/api";
+import { documentsApi } from "@/features/documents/api";
 
 export const makeStore = () =>
   configureStore({
@@ -28,6 +29,7 @@ export const makeStore = () =>
       [blogApi.reducerPath]: blogApi.reducer,
       [locationsApi.reducerPath]: locationsApi.reducer,
       [leadsApi.reducerPath]: leadsApi.reducer,
+      [documentsApi.reducerPath]: documentsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
@@ -40,7 +42,8 @@ export const makeStore = () =>
         projectsApi.middleware,
         blogApi.middleware,
         locationsApi.middleware,
-        leadsApi.middleware
+        leadsApi.middleware,
+        documentsApi.middleware
       ),
     devTools: true,
   });
