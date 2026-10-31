@@ -359,11 +359,35 @@ export const INITIAL_FEATURED_AGENTS: Agent[] = [
   },
 ];
 
-export const ALL_AGENTS: Agent[] = CITY_ADVISORS && CITY_ADVISORS.length > 0 ? CITY_ADVISORS : INITIAL_FEATURED_AGENTS;
+// Merge INITIAL_FEATURED_AGENTS and CITY_ADVISORS (deduped by normalized ID)
+// so that no legacy or featured agent route ever 404s for search engines or users.
+const mergedAgentsMap = new Map<string, Agent>();
+for (const agent of INITIAL_FEATURED_AGENTS) {
+  mergedAgentsMap.set(agent.id.toLowerCase().replace(/\s+/g, "-"), agent);
+}
+for (const agent of CITY_ADVISORS || []) {
+  mergedAgentsMap.set(agent.id.toLowerCase().replace(/\s+/g, "-"), agent);
+}
+
+export const ALL_AGENTS: Agent[] = Array.from(mergedAgentsMap.values());
 
 export function getAgentById(id: string): Agent | undefined {
-  const target = id.toLowerCase();
-  return ALL_AGENTS.find((agent) => agent.id.toLowerCase() === target || ((agent as any).slug && (agent as any).slug.toLowerCase() === target));
+  if (!id) return undefined;
+  const decoded = decodeURIComponent(id).toLowerCase();
+  const normalized = decoded.replace(/\s+/g, "-");
+  return ALL_AGENTS.find((agent) => {
+    const aId = agent.id.toLowerCase();
+    const aIdNorm = aId.replace(/\s+/g, "-");
+    const aSlug = ((agent as any).slug || "").toLowerCase();
+    const aSlugNorm = aSlug.replace(/\s+/g, "-");
+    return (
+      aIdNorm === normalized ||
+      aSlugNorm === normalized ||
+      aId === decoded ||
+      aSlug === decoded ||
+      aId === id.toLowerCase()
+    );
+  });
 }
 
 export function getAllAgentIds(): string[] {

@@ -260,7 +260,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 5. Verified Real Estate Advisor Profiles
   const agentIds = getAllAgentIds();
   const agentRoutes: MetadataRoute.Sitemap = agentIds.map((id) => ({
-    url: `${SITE_URL}/agents/${id}`,
+    url: `${SITE_URL}/agents/${id.toLowerCase().replace(/\s+/g, "-")}`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.8,

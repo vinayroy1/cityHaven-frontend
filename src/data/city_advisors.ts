@@ -2304,8 +2304,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "simran-choudhary-bokaro steel city-1",
-    "slug": "simran-choudhary-bokaro steel city-1",
+    "id": "simran-choudhary-bokaro-steel-city-1",
+    "slug": "simran-choudhary-bokaro-steel-city-1",
     "name": "Simran Choudhary",
     "role": "Senior Residential Rental Specialist",
     "agency": "Bokaro Steel City Prime Realty",
@@ -2364,8 +2364,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "priya-kumar-bokaro steel city-2",
-    "slug": "priya-kumar-bokaro steel city-2",
+    "id": "priya-kumar-bokaro-steel-city-2",
+    "slug": "priya-kumar-bokaro-steel-city-2",
     "name": "Priya Kumar",
     "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Bokaro Steel City Asset Advisors",
@@ -2424,8 +2424,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "rajesh-choudhary-bokaro steel city-3",
-    "slug": "rajesh-choudhary-bokaro steel city-3",
+    "id": "rajesh-choudhary-bokaro-steel-city-3",
+    "slug": "rajesh-choudhary-bokaro-steel-city-3",
     "name": "Rajesh Choudhary",
     "role": "Commercial Corridors & Retail Specialist",
     "agency": "Bokaro Steel City Heritage Estates",
@@ -2484,8 +2484,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "gaurav-kumar-bokaro steel city-4",
-    "slug": "gaurav-kumar-bokaro steel city-4",
+    "id": "gaurav-kumar-bokaro-steel-city-4",
+    "slug": "gaurav-kumar-bokaro-steel-city-4",
     "name": "Gaurav Kumar",
     "role": "Plots, Land & Township Consultant",
     "agency": "Bokaro Steel City Capital Properties",
@@ -2544,8 +2544,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "arjun-choudhary-bokaro steel city-5",
-    "slug": "arjun-choudhary-bokaro steel city-5",
+    "id": "arjun-choudhary-bokaro-steel-city-5",
+    "slug": "arjun-choudhary-bokaro-steel-city-5",
     "name": "Arjun Choudhary",
     "role": "Ready-to-Move & RERA Advisory Specialist",
     "agency": "Bokaro Steel City Corridor Homes",
@@ -6351,8 +6351,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "anita-tripathi-greater noida-1",
-    "slug": "anita-tripathi-greater noida-1",
+    "id": "anita-tripathi-greater-noida-1",
+    "slug": "anita-tripathi-greater-noida-1",
     "name": "Anita Tripathi",
     "role": "Senior Residential Rental Specialist",
     "agency": "Greater Noida Prime Realty",
@@ -6411,8 +6411,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "poonam-mishra-greater noida-2",
-    "slug": "poonam-mishra-greater noida-2",
+    "id": "poonam-mishra-greater-noida-2",
+    "slug": "poonam-mishra-greater-noida-2",
     "name": "Poonam Mishra",
     "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Greater Noida Asset Advisors",
@@ -6471,8 +6471,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "mayank-tripathi-greater noida-3",
-    "slug": "mayank-tripathi-greater noida-3",
+    "id": "mayank-tripathi-greater-noida-3",
+    "slug": "mayank-tripathi-greater-noida-3",
     "name": "Mayank Tripathi",
     "role": "Commercial Corridors & Retail Specialist",
     "agency": "Greater Noida Heritage Estates",
@@ -6531,8 +6531,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "meera-mishra-greater noida-4",
-    "slug": "meera-mishra-greater noida-4",
+    "id": "meera-mishra-greater-noida-4",
+    "slug": "meera-mishra-greater-noida-4",
     "name": "Meera Mishra",
     "role": "Plots, Land & Township Consultant",
     "agency": "Greater Noida Capital Properties",
@@ -6591,8 +6591,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "neha-tripathi-greater noida-5",
-    "slug": "neha-tripathi-greater noida-5",
+    "id": "neha-tripathi-greater-noida-5",
+    "slug": "neha-tripathi-greater-noida-5",
     "name": "Neha Tripathi",
     "role": "Ready-to-Move & RERA Advisory Specialist",
     "agency": "Greater Noida Corridor Homes",
@@ -12885,8 +12885,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "sunita-shinde-navi mumbai-1",
-    "slug": "sunita-shinde-navi mumbai-1",
+    "id": "sunita-shinde-navi-mumbai-1",
+    "slug": "sunita-shinde-navi-mumbai-1",
     "name": "Sunita Shinde",
     "role": "Senior Residential Rental Specialist",
     "agency": "Navi Mumbai Prime Realty",
@@ -12946,8 +12946,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "preeti-bhosale-navi mumbai-2",
-    "slug": "preeti-bhosale-navi mumbai-2",
+    "id": "preeti-bhosale-navi-mumbai-2",
+    "slug": "preeti-bhosale-navi-mumbai-2",
     "name": "Preeti Bhosale",
     "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "Navi Mumbai Asset Advisors",
@@ -13007,8 +13007,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "vikas-shinde-navi mumbai-3",
-    "slug": "vikas-shinde-navi mumbai-3",
+    "id": "vikas-shinde-navi-mumbai-3",
+    "slug": "vikas-shinde-navi-mumbai-3",
     "name": "Vikas Shinde",
     "role": "Commercial Corridors & Retail Specialist",
     "agency": "Navi Mumbai Heritage Estates",
@@ -13068,8 +13068,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "vikram-bhosale-navi mumbai-4",
-    "slug": "vikram-bhosale-navi mumbai-4",
+    "id": "vikram-bhosale-navi-mumbai-4",
+    "slug": "vikram-bhosale-navi-mumbai-4",
     "name": "Vikram Bhosale",
     "role": "Plots, Land & Township Consultant",
     "agency": "Navi Mumbai Capital Properties",
@@ -13129,8 +13129,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "deepika-shinde-navi mumbai-5",
-    "slug": "deepika-shinde-navi mumbai-5",
+    "id": "deepika-shinde-navi-mumbai-5",
+    "slug": "deepika-shinde-navi-mumbai-5",
     "name": "Deepika Shinde",
     "role": "Ready-to-Move & RERA Advisory Specialist",
     "agency": "Navi Mumbai Corridor Homes",
@@ -13190,8 +13190,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "sunita-bhosale-navi mumbai-6",
-    "slug": "sunita-bhosale-navi mumbai-6",
+    "id": "sunita-bhosale-navi-mumbai-6",
+    "slug": "sunita-bhosale-navi-mumbai-6",
     "name": "Sunita Bhosale",
     "role": "NRI Investment & High-Rise Advisor",
     "agency": "Navi Mumbai Metropolis Realty",
@@ -13251,8 +13251,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "divya-chawla-new delhi-1",
-    "slug": "divya-chawla-new delhi-1",
+    "id": "divya-chawla-new-delhi-1",
+    "slug": "divya-chawla-new-delhi-1",
     "name": "Divya Chawla",
     "role": "Senior Residential Rental Specialist",
     "agency": "New Delhi Prime Realty",
@@ -13311,8 +13311,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "ananya-kapoor-new delhi-2",
-    "slug": "ananya-kapoor-new delhi-2",
+    "id": "ananya-kapoor-new-delhi-2",
+    "slug": "ananya-kapoor-new-delhi-2",
     "name": "Ananya Kapoor",
     "role": "Luxury Residential Resale & Villa Consultant",
     "agency": "New Delhi Asset Advisors",
@@ -13371,8 +13371,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "alok-chawla-new delhi-3",
-    "slug": "alok-chawla-new delhi-3",
+    "id": "alok-chawla-new-delhi-3",
+    "slug": "alok-chawla-new-delhi-3",
     "name": "Alok Chawla",
     "role": "Commercial Corridors & Retail Specialist",
     "agency": "New Delhi Heritage Estates",
@@ -13431,8 +13431,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "kavita-kapoor-new delhi-4",
-    "slug": "kavita-kapoor-new delhi-4",
+    "id": "kavita-kapoor-new-delhi-4",
+    "slug": "kavita-kapoor-new-delhi-4",
     "name": "Kavita Kapoor",
     "role": "Plots, Land & Township Consultant",
     "agency": "New Delhi Capital Properties",
@@ -13491,8 +13491,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "sneha-chawla-new delhi-5",
-    "slug": "sneha-chawla-new delhi-5",
+    "id": "sneha-chawla-new-delhi-5",
+    "slug": "sneha-chawla-new-delhi-5",
     "name": "Sneha Chawla",
     "role": "Ready-to-Move & RERA Advisory Specialist",
     "agency": "New Delhi Corridor Homes",
@@ -13551,8 +13551,8 @@ export const CITY_ADVISORS: Agent[] = [
     ]
   },
   {
-    "id": "divya-kapoor-new delhi-6",
-    "slug": "divya-kapoor-new delhi-6",
+    "id": "divya-kapoor-new-delhi-6",
+    "slug": "divya-kapoor-new-delhi-6",
     "name": "Divya Kapoor",
     "role": "NRI Investment & High-Rise Advisor",
     "agency": "New Delhi Metropolis Realty",
