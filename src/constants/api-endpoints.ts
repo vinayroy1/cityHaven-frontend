@@ -170,6 +170,12 @@ export const API_ENDPOINTS = {
       review: (id: number | string) => `${BASE}/admin/properties/${id}/review`,
       suspend: (id: number | string) => `${BASE}/admin/properties/${id}/suspend`,
     },
+    documents: {
+      queue: `${BASE}/admin/documents/qc-queue`,
+      detail: (id: number | string) => `${BASE}/admin/documents/${id}`,
+      review: (id: number | string) => `${BASE}/admin/documents/${id}/review`,
+      download: (id: number | string) => `${BASE}/admin/documents/${id}/download`,
+    },
     organizations: {
       queue: `${BASE}/admin/organizations/verification-queue`,
       detail: (id: number | string) => `${BASE}/admin/organizations/${id}`,

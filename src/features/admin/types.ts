@@ -262,3 +262,32 @@ export interface AdminGovernanceSettings {
   updatedAt: string;
   updatedByStaffName: string;
 }
+
+export type DocumentQcStatus = "REVIEWING" | "PENDING" | "VERIFIED" | "REJECTED";
+
+export interface AdminDocumentQcItem {
+  id: number;
+  ownerUserId: number;
+  ownerName: string;
+  ownerEmail?: string | null;
+  ownerPhone?: string | null;
+  propertyId?: number | null;
+  propertyTitle?: string | null;
+  propertyCity?: string | null;
+  propertyLocality?: string | null;
+  propertyPrice?: number | null;
+  propertyQcStatus?: string | null;
+  type: string;
+  fileUrl: string;
+  title: string;
+  status: DocumentQcStatus;
+  notes?: string | null;
+  rejectionReason?: string | null;
+  documentNumber?: string | null;
+  fileSize?: number | null;
+  mimeType?: string | null;
+  storageKey?: string | null;
+  reviewedAt?: string | null;
+  reviewerName?: string | null;
+  createdAt: string;
+}

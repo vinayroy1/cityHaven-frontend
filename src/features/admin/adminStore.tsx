@@ -17,6 +17,7 @@ import type {
   AdminDisputeCase,
   AdminContactUnlockTrace,
   AdminFraudAlert,
+  AdminDocumentQcItem,
   DisputeStatus,
   AdminGovernanceSettings,
 } from "./types";
@@ -40,6 +41,7 @@ interface AdminContextType {
   setCurrentStaff: (staff: StaffUser | null) => void;
   staffList: StaffUser[];
   propertyQcList: PropertyQcItem[];
+  documentQcList: AdminDocumentQcItem[];
   orgVerificationList: OrgVerificationItem[];
   userList: UserAccountItem[];
   billingOrders: AdminBillingOrder[];
@@ -65,6 +67,10 @@ interface AdminContextType {
   // Property QC
   reviewPropertyQc: (propertyId: number, status: PropertyQcStatus, notes?: string) => void;
   suspendProperty: (propertyId: number, reason: string) => void;
+  
+  // Document QC
+  reviewDocumentQc: (documentId: number, action: "APPROVE" | "REJECT", reason?: string, grantPropertyBadge?: boolean) => Promise<any>;
+  fetchDocumentQueue: () => Promise<void>;
   
   // Org Verification
   reviewOrgVerification: (orgId: number, status: OrgVerificationStatus, notes?: string) => void;
@@ -150,6 +156,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [currentStaff, setCurrentStaffState] = useState<StaffUser | null>(null);
   const [staffList, setStaffList] = useState<StaffUser[]>(INITIAL_STAFF_MEMBERS);
   const [propertyQcList, setPropertyQcList] = useState<PropertyQcItem[]>(INITIAL_PROPERTY_QC_QUEUE);
+  const [documentQcList, setDocumentQcList] = useState<AdminDocumentQcItem[]>([]);
   const [orgVerificationList, setOrgVerificationList] = useState<OrgVerificationItem[]>(INITIAL_ORG_VERIFICATIONS);
   const [userList, setUserList] = useState<UserAccountItem[]>(INITIAL_USER_ACCOUNTS);
   const [billingOrders, setBillingOrders] = useState<AdminBillingOrder[]>(INITIAL_BILLING_ORDERS);
@@ -197,6 +204,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         const [
           staffRoster,
           properties,
+          documents,
           organizations,
           users,
           billing,
@@ -209,6 +217,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         ] = await Promise.allSettled([
           adminApi.listStaff(),
           adminApi.listPropertyQueue(),
+          adminApi.listDocumentQueue(),
           adminApi.listOrganizations(),
           adminApi.listUsers(),
           adminApi.listBillingOrders(),
@@ -228,6 +237,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         if (properties.status === "fulfilled" && properties.value?.length) {
           setPropertyQcList(properties.value);
           if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.QC_QUEUE, JSON.stringify(properties.value));
+        }
+        if (documents.status === "fulfilled" && documents.value?.length) {
+          setDocumentQcList(documents.value);
         }
         if (organizations.status === "fulfilled" && organizations.value?.length) {
           setOrgVerificationList(organizations.value);
@@ -387,6 +399,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       const [
         staffRoster,
         properties,
+        documents,
         organizations,
         users,
         billing,
@@ -399,6 +412,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       ] = await Promise.allSettled([
         adminApi.listStaff(),
         adminApi.listPropertyQueue(),
+        adminApi.listDocumentQueue(),
         adminApi.listOrganizations(),
         adminApi.listUsers(),
         adminApi.listBillingOrders(),
@@ -412,6 +426,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       if (staffRoster.status === "fulfilled" && staffRoster.value?.length) setStaffList(staffRoster.value);
       if (properties.status === "fulfilled" && properties.value?.length) setPropertyQcList(properties.value);
+      if (documents.status === "fulfilled" && documents.value?.length) setDocumentQcList(documents.value);
       if (organizations.status === "fulfilled" && organizations.value?.length) setOrgVerificationList(organizations.value);
       if (users.status === "fulfilled" && users.value?.length) setUserList(users.value);
       if (billing.status === "fulfilled" && billing.value?.length) setBillingOrders(billing.value);
@@ -537,6 +552,56 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const suspendProperty = async (propertyId: number, reason: string) => {
     return reviewPropertyQc(propertyId, "SUSPENDED", reason);
+  };
+
+  const fetchDocumentQueue = async () => {
+    try {
+      const docs = await adminApi.listDocumentQueue();
+      if (docs) {
+        setDocumentQcList(docs);
+      }
+    } catch (e) {
+      console.warn("Failed fetching document queue:", e);
+    }
+  };
+
+  const reviewDocumentQc = async (
+    documentId: number,
+    action: "APPROVE" | "REJECT",
+    reason?: string,
+    grantPropertyBadge?: boolean
+  ) => {
+    const res = await adminApi.reviewDocument(documentId, { action, reason, grantPropertyBadge });
+    setDocumentQcList((prev) =>
+      prev.map((d) =>
+        d.id === documentId
+          ? {
+              ...d,
+              status: action === "APPROVE" ? "VERIFIED" : "REJECTED",
+              reviewedAt: new Date().toISOString(),
+              reviewerName: currentStaff?.name || "QC Admin",
+              rejectionReason: action === "REJECT" ? reason || "Rejected by QC" : null,
+              notes: reason || d.notes,
+            }
+          : d
+      )
+    );
+    if (action === "APPROVE" && res?.propertyBadgeGranted && res?.propertyId) {
+      setPropertyQcList((prev) =>
+        prev.map((p) =>
+          p.id === res.propertyId
+            ? { ...p, qcStatus: "APPROVED", verifiedById: currentStaff?.id || 10 }
+            : p
+        )
+      );
+    }
+    logAuditAction(
+      `DOCUMENT_QC_${action === "APPROVE" ? "APPROVED" : "REJECTED"}`,
+      "PROPERTY",
+      documentId,
+      reason || `Document marked as ${action === "APPROVE" ? "VERIFIED" : "REJECTED"}`
+    );
+    return res;
   };
 
   const reviewOrgVerification = async (orgId: number, status: OrgVerificationStatus, notes?: string) => {
@@ -878,6 +943,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         setCurrentStaff,
         staffList,
         propertyQcList,
+        documentQcList,
         orgVerificationList,
         userList,
         billingOrders,
@@ -901,6 +967,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         updateStaffRoles,
         reviewPropertyQc,
         suspendProperty,
+        reviewDocumentQc,
+        fetchDocumentQueue,
         reviewOrgVerification,
         updateOrgAllowance,
         setUserAccountStatus,

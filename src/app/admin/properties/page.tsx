@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAdmin } from "@/features/admin/adminStore";
-import { PropertyQcItem, PropertyQcStatus } from "@/features/admin/types";
+import { PropertyQcItem, PropertyQcStatus, AdminDocumentQcItem, DocumentQcStatus } from "@/features/admin/types";
 import { useIsMounted, formatDateSafe } from "@/features/admin/dateUtils";
-import { preloadAdjacentCardImages, preloadImage } from "@/components/common/useCardImageSwipe";
+import { preloadAdjacentCardImages } from "@/components/common/useCardImageSwipe";
+import { adminApi } from "@/features/admin/api";
 import {
   Building2,
   CheckCircle2,
@@ -19,6 +20,17 @@ import {
   RotateCw,
   UserCheck,
   Users2,
+  FileCheck2,
+  FileText,
+  ShieldCheck,
+  Download,
+  ExternalLink,
+  BadgeCheck,
+  FileSpreadsheet,
+  FileImage,
+  Sparkles,
+  ArrowRight,
+  Layers,
 } from "lucide-react";
 
 const STATUS_FILTERS: { label: string; value: PropertyQcStatus | "ALL" }[] = [
@@ -31,10 +43,29 @@ const STATUS_FILTERS: { label: string; value: PropertyQcStatus | "ALL" }[] = [
   { label: "Suspended", value: "SUSPENDED" },
 ];
 
+const DOC_STATUS_FILTERS: { label: string; value: DocumentQcStatus | "ALL" }[] = [
+  { label: "All Documents", value: "ALL" },
+  { label: "Pending Review", value: "REVIEWING" },
+  { label: "Verified & Approved", value: "VERIFIED" },
+  { label: "Rejected", value: "REJECTED" },
+];
+
+const DOC_TYPE_FILTERS = [
+  { label: "All Types", value: "ALL" },
+  { label: "Ownership Proofs", value: "OWNERSHIP_PROOF" },
+  { label: "Rental Agreements", value: "RENTAL_AGREEMENT" },
+  { label: "ID & KYC Proofs", value: "ID_PROOF" },
+  { label: "Address Proofs", value: "ADDRESS_PROOF" },
+  { label: "Other Documents", value: "OTHER" },
+];
+
 export default function AdminPropertyQcPage() {
   const mounted = useIsMounted();
   const {
     propertyQcList,
+    documentQcList,
+    fetchDocumentQueue,
+    reviewDocumentQc,
     reviewPropertyQc,
     suspendProperty,
     currentStaff,
@@ -43,6 +74,10 @@ export default function AdminPropertyQcPage() {
     assignTicketToStaff,
   } = useAdmin();
 
+  // Active top-level sub-view tab: "LISTINGS" or "DOCUMENTS"
+  const [activeTab, setActiveTab] = useState<"LISTINGS" | "DOCUMENTS">("LISTINGS");
+
+  // Listings State
   const [activeFilter, setActiveFilter] = useState<PropertyQcStatus | "ALL">("ALL");
   const [assignmentScope, setAssignmentScope] = useState<"ALL" | "MINE" | "UNASSIGNED">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,22 +89,44 @@ export default function AdminPropertyQcPage() {
   const [actionErrorMessage, setActionErrorMessage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Documents QC State
+  const [docStatusFilter, setDocStatusFilter] = useState<DocumentQcStatus | "ALL">("ALL");
+  const [docTypeFilter, setDocTypeFilter] = useState<string>("ALL");
+  const [docSearchQuery, setDocSearchQuery] = useState("");
+  const [selectedDoc, setSelectedDoc] = useState<AdminDocumentQcItem | null>(null);
+  const [docReviewReason, setDocReviewReason] = useState("");
+  const [grantPropertyBadge, setGrantPropertyBadge] = useState(true);
+  const [isDocProcessing, setIsDocProcessing] = useState(false);
+  const [docSuccessMessage, setDocSuccessMessage] = useState<string | null>(null);
+  const [docErrorMessage, setDocErrorMessage] = useState<string | null>(null);
+  const [downloadingDocId, setDownloadingDocId] = useState<number | null>(null);
+
+  // Fetch latest documents queue on mount
+  useEffect(() => {
+    fetchDocumentQueue();
+  }, [fetchDocumentQueue]);
+
   useEffect(() => {
     if (!selectedProperty?.media || selectedProperty.media.length <= 1) return;
     const mediaUrls = selectedProperty.media.map((m) => m.url).filter(Boolean);
     preloadAdjacentCardImages(mediaUrls, activePhotoIndex);
   }, [selectedProperty?.media, activePhotoIndex]);
 
-  const isOpsOrSuperAdmin = currentStaff?.roles.includes("SUPER_ADMIN") || currentStaff?.roles.includes("OPERATIONS_MANAGER");
-  const qcEligibleStaff = staffList.filter((s) => s.status === "ACTIVE" && (s.roles.includes("QC_REVIEWER") || s.roles.includes("OPERATIONS_MANAGER")));
+  const isOpsOrSuperAdmin =
+    currentStaff?.roles.includes("SUPER_ADMIN") ||
+    currentStaff?.roles.includes("OPERATIONS_MANAGER");
+  const qcEligibleStaff = staffList.filter(
+    (s) =>
+      s.status === "ACTIVE" &&
+      (s.roles.includes("QC_REVIEWER") || s.roles.includes("OPERATIONS_MANAGER"))
+  );
 
   // Filter listings
   const filteredListings = propertyQcList.filter((item) => {
     if (activeFilter !== "ALL" && item.qcStatus !== activeFilter) return false;
-    
-    // Assignment scope filtering
+
     if (assignmentScope === "MINE" && currentStaff && item.qcReviewerId !== currentStaff.id) return false;
-    if (assignmentScope === "UNASSIGNED" && (item.qcReviewerId && item.qcReviewerName !== "Unassigned")) return false;
+    if (assignmentScope === "UNASSIGNED" && item.qcReviewerId && item.qcReviewerName !== "Unassigned") return false;
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -85,9 +142,48 @@ export default function AdminPropertyQcPage() {
     return true;
   });
 
+  // Filter documents
+  const filteredDocuments = documentQcList.filter((doc) => {
+    if (docStatusFilter !== "ALL") {
+      if (docStatusFilter === "REVIEWING") {
+        if (doc.status !== "REVIEWING" && doc.status !== "PENDING") return false;
+      } else if (doc.status !== docStatusFilter) {
+        return false;
+      }
+    }
+
+    if (docTypeFilter !== "ALL" && doc.type !== docTypeFilter) return false;
+
+    if (docSearchQuery.trim()) {
+      const q = docSearchQuery.toLowerCase();
+      const title = (doc.title || "").toLowerCase();
+      const propTitle = (doc.propertyTitle || "").toLowerCase();
+      const owner = (doc.ownerName || "").toLowerCase();
+      const ownerEmail = (doc.ownerEmail || "").toLowerCase();
+      const locality = (doc.propertyLocality || "").toLowerCase();
+      const city = (doc.propertyCity || "").toLowerCase();
+      return (
+        title.includes(q) ||
+        propTitle.includes(q) ||
+        owner.includes(q) ||
+        ownerEmail.includes(q) ||
+        locality.includes(q) ||
+        city.includes(q)
+      );
+    }
+    return true;
+  });
+
+  const pendingDocsCount = documentQcList.filter(
+    (d) => d.status === "REVIEWING" || d.status === "PENDING"
+  ).length;
+
   const handleAction = async (status: PropertyQcStatus) => {
     if (!selectedProperty || isProcessing) return;
-    if ((status === "CHANGES_REQUESTED" || status === "REJECTED" || status === "SUSPENDED") && !reviewNotes.trim()) {
+    if (
+      (status === "CHANGES_REQUESTED" || status === "REJECTED" || status === "SUSPENDED") &&
+      !reviewNotes.trim()
+    ) {
       alert("Please provide specific reviewer notes or rationale for changes/rejection/suspension.");
       return;
     }
@@ -107,10 +203,65 @@ export default function AdminPropertyQcPage() {
       setReviewNotes("");
     } catch (err: any) {
       console.error("Failed to update property status:", err);
-      const msg = err?.response?.data?.message || err?.message || "Failed to update property status. Please check network.";
+      const msg =
+        err?.response?.data?.message || err?.message || "Failed to update property status. Please check network.";
       setActionErrorMessage(msg);
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleDocumentReview = async (action: "APPROVE" | "REJECT") => {
+    if (!selectedDoc || isDocProcessing) return;
+
+    if (action === "REJECT" && !docReviewReason.trim()) {
+      alert("Please provide a reason for rejecting this document so the owner can correct and re-upload.");
+      return;
+    }
+
+    setIsDocProcessing(true);
+    setDocErrorMessage(null);
+    try {
+      await reviewDocumentQc(
+        selectedDoc.id,
+        action,
+        docReviewReason,
+        action === "APPROVE" ? grantPropertyBadge : false
+      );
+
+      const msg =
+        action === "APPROVE"
+          ? `Document #${selectedDoc.id} approved successfully!${grantPropertyBadge && selectedDoc.propertyId ? " 'Verified Property' badge granted to listing." : ""}`
+          : `Document #${selectedDoc.id} marked as Rejected. Reason recorded.`;
+
+      setDocSuccessMessage(msg);
+      setTimeout(() => setDocSuccessMessage(null), 4000);
+      setSelectedDoc(null);
+      setDocReviewReason("");
+    } catch (err: any) {
+      console.error("Failed to review document:", err);
+      const msg = err?.response?.data?.message || err?.message || "Failed to submit document QC review.";
+      setDocErrorMessage(msg);
+    } finally {
+      setIsDocProcessing(false);
+    }
+  };
+
+  const handleDownloadDoc = async (doc: AdminDocumentQcItem) => {
+    try {
+      setDownloadingDocId(doc.id);
+      const data = await adminApi.getDocumentDownloadUrl(doc.id);
+      if (data?.downloadUrl) {
+        window.open(data.downloadUrl, "_blank", "noopener,noreferrer");
+      } else if (doc.fileUrl) {
+        window.open(doc.fileUrl, "_blank", "noopener,noreferrer");
+      }
+    } catch (e) {
+      if (doc.fileUrl) {
+        window.open(doc.fileUrl, "_blank", "noopener,noreferrer");
+      }
+    } finally {
+      setDownloadingDocId(null);
     }
   };
 
@@ -155,17 +306,57 @@ export default function AdminPropertyQcPage() {
     }
   };
 
+  const getDocStatusBadge = (status: DocumentQcStatus) => {
+    switch (status) {
+      case "VERIFIED":
+        return (
+          <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20 flex items-center gap-1.5 w-fit">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Verified & QC Approved
+          </span>
+        );
+      case "REJECTED":
+        return (
+          <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-300 border border-rose-500/20 flex items-center gap-1.5 w-fit">
+            <XCircle className="w-3.5 h-3.5 text-rose-500" /> Rejected
+          </span>
+        );
+      case "REVIEWING":
+      case "PENDING":
+      default:
+        return (
+          <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/20 flex items-center gap-1.5 w-fit">
+            <Clock className="w-3.5 h-3.5 text-amber-500 animate-pulse" /> Pending Document Review
+          </span>
+        );
+    }
+  };
+
+  const getDocTypeIcon = (type: string) => {
+    switch (type) {
+      case "OWNERSHIP_PROOF":
+        return <ShieldCheck className="w-4 h-4 text-rose-500" />;
+      case "RENTAL_AGREEMENT":
+        return <FileSpreadsheet className="w-4 h-4 text-indigo-500" />;
+      case "ID_PROOF":
+        return <BadgeCheck className="w-4 h-4 text-emerald-500" />;
+      case "ADDRESS_PROOF":
+        return <FileText className="w-4 h-4 text-blue-500" />;
+      default:
+        return <FileText className="w-4 h-4 text-slate-500" />;
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Primary Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Building2 className="w-6 h-6 text-rose-500" />
-            Property Quality Control (QC) Studio
+            Quality Control & Verification Studio
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Review submitted real estate listings, inspect photo legitimacy, verify coordinates, and detect duplicate listings.
+            Review submitted real estate listings, inspect photos, examine title deeds, and approve ownership badges.
           </p>
         </div>
 
@@ -191,11 +382,46 @@ export default function AdminPropertyQcPage() {
               <span>⚡ Auto-Distribute Work</span>
             </button>
           )}
-
-          <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 font-mono shadow-sm">
-            Total in Queue: <span className="text-rose-600 dark:text-rose-400 font-bold">{propertyQcList.length}</span>
-          </div>
         </div>
+      </div>
+
+      {/* View Switcher: Listings QC vs Pending Document QC */}
+      <div className="flex items-center gap-2 p-1.5 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl w-fit shadow-sm">
+        <button
+          onClick={() => setActiveTab("LISTINGS")}
+          className={`px-4 py-2 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-2 ${
+            activeTab === "LISTINGS"
+              ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm border border-slate-200/80 dark:border-slate-800"
+              : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+          }`}
+        >
+          <Layers className="w-4 h-4 text-rose-500" />
+          <span>Listings QC Studio</span>
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 font-bold">
+            {propertyQcList.length}
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("DOCUMENTS")}
+          className={`px-4 py-2 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-2 ${
+            activeTab === "DOCUMENTS"
+              ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm border border-slate-200/80 dark:border-slate-800"
+              : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+          }`}
+        >
+          <FileCheck2 className="w-4 h-4 text-indigo-500" />
+          <span>Pending Document QC</span>
+          {pendingDocsCount > 0 ? (
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-indigo-600 text-white font-bold animate-pulse">
+              {pendingDocsCount} Pending
+            </span>
+          ) : (
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium">
+              {documentQcList.length}
+            </span>
+          )}
+        </button>
       </div>
 
       {actionSuccessMessage && (
@@ -205,173 +431,409 @@ export default function AdminPropertyQcPage() {
         </div>
       )}
 
-      {/* Scope Switcher & Status Filters */}
-      <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          {/* Assignment Scope */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
-            <button
-              onClick={() => setAssignmentScope("ALL")}
-              className={`px-3 py-1 rounded-lg font-medium transition cursor-pointer ${
-                assignmentScope === "ALL"
-                  ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm font-semibold"
-                  : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              All Team Pool
-            </button>
-            <button
-              onClick={() => setAssignmentScope("MINE")}
-              className={`px-3 py-1 rounded-lg font-medium transition cursor-pointer flex items-center gap-1 ${
-                assignmentScope === "MINE"
-                  ? "bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 shadow-sm font-semibold"
-                  : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <UserCheck className="w-3.5 h-3.5" /> Assigned to Me
-            </button>
-            <button
-              onClick={() => setAssignmentScope("UNASSIGNED")}
-              className={`px-3 py-1 rounded-lg font-medium transition cursor-pointer flex items-center gap-1 ${
-                assignmentScope === "UNASSIGNED"
-                  ? "bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 shadow-sm font-semibold"
-                  : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <Users2 className="w-3.5 h-3.5" /> Unassigned Backlog
-            </button>
+      {docSuccessMessage && (
+        <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-700/60 text-xs text-emerald-700 dark:text-emerald-300 flex items-center gap-2 animate-in fade-in duration-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <span>{docSuccessMessage}</span>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* VIEW A: LISTINGS QC STUDIO */}
+      {/* ========================================================================= */}
+      {activeTab === "LISTINGS" && (
+        <div className="space-y-6">
+          {/* Scope Switcher & Status Filters */}
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              {/* Assignment Scope */}
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
+                <button
+                  onClick={() => setAssignmentScope("ALL")}
+                  className={`px-3 py-1 rounded-lg font-medium transition cursor-pointer ${
+                    assignmentScope === "ALL"
+                      ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm font-semibold"
+                      : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  All Team Pool
+                </button>
+                <button
+                  onClick={() => setAssignmentScope("MINE")}
+                  className={`px-3 py-1 rounded-lg font-medium transition cursor-pointer flex items-center gap-1 ${
+                    assignmentScope === "MINE"
+                      ? "bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 shadow-sm font-semibold"
+                      : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  <UserCheck className="w-3.5 h-3.5" /> Assigned to Me
+                </button>
+                <button
+                  onClick={() => setAssignmentScope("UNASSIGNED")}
+                  className={`px-3 py-1 rounded-lg font-medium transition cursor-pointer flex items-center gap-1 ${
+                    assignmentScope === "UNASSIGNED"
+                      ? "bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 shadow-sm font-semibold"
+                      : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  <Users2 className="w-3.5 h-3.5" /> Unassigned Backlog
+                </button>
+              </div>
+
+              <div className="text-[11px] font-mono text-slate-500">
+                Showing <strong className="text-slate-900 dark:text-white">{filteredListings.length}</strong> matching listings
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1.5 bg-white dark:bg-slate-900/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800/80 shadow-sm">
+              {STATUS_FILTERS.map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => setActiveFilter(tab.value)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
+                    activeFilter === tab.value
+                      ? "bg-gradient-to-r from-rose-600 to-indigo-600 text-white shadow-md font-semibold"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                  }`}
+                >
+                  {tab.label}
+                  <span className="ml-1.5 text-[10px] opacity-80 font-mono">
+                    (
+                    {tab.value === "ALL"
+                      ? propertyQcList.length
+                      : propertyQcList.filter((p) => p.qcStatus === tab.value).length}
+                    )
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search listings by title, locality, city, owner name, organization, or reviewer..."
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-rose-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none transition shadow-sm"
+              />
+            </div>
           </div>
 
-          <div className="text-[11px] font-mono text-slate-500">
-            Showing <strong className="text-slate-900 dark:text-white">{filteredListings.length}</strong> matching listings
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5 bg-white dark:bg-slate-900/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800/80 shadow-sm">
-          {STATUS_FILTERS.map((tab) => (
-            <button
-              key={tab.value}
-              onClick={() => setActiveFilter(tab.value)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-                activeFilter === tab.value
-                  ? "bg-gradient-to-r from-rose-600 to-indigo-600 text-white shadow-md font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
-              }`}
-            >
-              {tab.label}
-              <span className="ml-1.5 text-[10px] opacity-80 font-mono">
-                (
-                {tab.value === "ALL"
-                  ? propertyQcList.length
-                  : propertyQcList.filter((p) => p.qcStatus === tab.value).length}
-                )
-              </span>
-            </button>
-          ))}
-        </div>
-
-        <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search listings by title, locality, city, owner name, organization, or reviewer..."
-            className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-rose-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none transition shadow-sm"
-          />
-        </div>
-      </div>
-
-      {/* Listings Table / Cards */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
-              <tr>
-                <th className="py-3.5 px-4">Listing & ID</th>
-                <th className="py-3.5 px-4">Price & Type</th>
-                <th className="py-3.5 px-4">Location</th>
-                <th className="py-3.5 px-4">Posted By / Scope</th>
-                <th className="py-3.5 px-4">Quality Control Status</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
-              {filteredListings.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-400 dark:text-slate-500">
-                    No listings found matching the selected filter.
-                  </td>
-                </tr>
-              ) : (
-                filteredListings.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition group">
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-300 transition flex items-center gap-2">
-                        <span>{item.title}</span>
-                        {item.duplicateSuspected && (
-                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/20 dark:border-rose-500/30">
-                            DUPLICATE ALERT
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">
-                        ID: #{item.id} • {item.media.length} media files • Updated {mounted ? formatDateSafe(item.updatedAt) : "Recently"}
-                      </div>
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-slate-900 dark:text-white">
-                        ₹{(item.price / 100000).toFixed(2)} Lakh
-                      </div>
-                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                        {item.listingType} • {item.resCom}
-                      </div>
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <div className="font-medium text-slate-800 dark:text-slate-200">{item.locality}</div>
-                      <div className="text-[10px] text-slate-500 dark:text-slate-400">{item.cityName}</div>
-                    </td>
-
-                    <td className="py-3.5 px-4">
-                      <div className="font-medium text-slate-800 dark:text-slate-200">
-                        {item.ownerType === "ORGANIZATION" ? item.organizationName : item.creatorName || "Personal Owner"}
-                      </div>
-                      <div className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">
-                        {item.ownerType} {item.creatorPhone ? `• ${item.creatorPhone}` : ""}
-                      </div>
-                      <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
-                        <Users2 className="w-3 h-3 text-slate-400" />
-                        <span>Reviewer: {item.qcReviewerName || <span className="text-amber-500 font-semibold">Unassigned</span>}</span>
-                      </div>
-                    </td>
-
-                    <td className="py-3.5 px-4">{getStatusBadge(item.qcStatus)}</td>
-
-                    <td className="py-3.5 px-4 text-right">
-                      <button
-                        onClick={() => {
-                          setSelectedProperty(item);
-                          setReviewNotes(item.qcNotes || "");
-                          setSelectedAssigneeId(item.qcReviewerId || "");
-                          setActivePhotoIndex(0);
-                        }}
-                        className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer shadow-sm"
-                      >
-                        <Eye className="w-3.5 h-3.5 text-rose-500" />
-                        Inspect & Verify
-                      </button>
-                    </td>
+          {/* Listings Table / Cards */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
+                  <tr>
+                    <th className="py-3.5 px-4">Listing & ID</th>
+                    <th className="py-3.5 px-4">Price & Type</th>
+                    <th className="py-3.5 px-4">Location</th>
+                    <th className="py-3.5 px-4">Posted By / Scope</th>
+                    <th className="py-3.5 px-4">Quality Control Status</th>
+                    <th className="py-3.5 px-4 text-right">Actions</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  {filteredListings.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-12 text-center text-slate-400 dark:text-slate-500">
+                        No listings found matching the selected filter.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredListings.map((item) => (
+                      <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition group">
+                        <td className="py-3.5 px-4">
+                          <div className="font-semibold text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-300 transition flex items-center gap-2">
+                            <span>{item.title}</span>
+                            {item.duplicateSuspected && (
+                              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/20 dark:border-rose-500/30">
+                                DUPLICATE ALERT
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">
+                            ID: #{item.id} • {item.media.length} media files • Updated {mounted ? formatDateSafe(item.updatedAt) : "Recently"}
+                          </div>
+                        </td>
 
-      {/* Property Inspection & Moderation Modal */}
+                        <td className="py-3.5 px-4">
+                          <div className="font-semibold text-slate-900 dark:text-white">
+                            ₹{(item.price / 100000).toFixed(2)} Lakh
+                          </div>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                            {item.listingType} • {item.resCom}
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <div className="font-medium text-slate-800 dark:text-slate-200">{item.locality}</div>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400">{item.cityName}</div>
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <div className="font-medium text-slate-800 dark:text-slate-200">
+                            {item.ownerType === "ORGANIZATION" ? item.organizationName : item.creatorName || "Personal Owner"}
+                          </div>
+                          <div className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">
+                            {item.ownerType} {item.creatorPhone ? `• ${item.creatorPhone}` : ""}
+                          </div>
+                          <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
+                            <Users2 className="w-3 h-3 text-slate-400" />
+                            <span>Reviewer: {item.qcReviewerName || <span className="text-amber-500 font-semibold">Unassigned</span>}</span>
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-4">{getStatusBadge(item.qcStatus)}</td>
+
+                        <td className="py-3.5 px-4 text-right">
+                          <button
+                            onClick={() => {
+                              setSelectedProperty(item);
+                              setReviewNotes(item.qcNotes || "");
+                              setSelectedAssigneeId(item.qcReviewerId || "");
+                              setActivePhotoIndex(0);
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer shadow-sm"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-rose-500" />
+                            Inspect & Verify
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* VIEW B: PENDING DOCUMENT QC STUDIO */}
+      {/* ========================================================================= */}
+      {activeTab === "DOCUMENTS" && (
+        <div className="space-y-6 animate-in fade-in duration-150">
+          {/* Quick Metrics Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase">Total Documents</div>
+              <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">
+                {documentQcList.length}
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">Across all registered listings</div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/40 shadow-sm">
+              <div className="text-[11px] font-mono text-amber-700 dark:text-amber-400 uppercase flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" /> Pending Review
+              </div>
+              <div className="text-xl font-bold text-amber-800 dark:text-amber-300 mt-1">
+                {pendingDocsCount}
+              </div>
+              <div className="text-[10px] text-amber-600 dark:text-amber-400/80 mt-0.5">Requires QC specialist action</div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-700/40 shadow-sm">
+              <div className="text-[11px] font-mono text-emerald-700 dark:text-emerald-400 uppercase flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5" /> Verified Badges
+              </div>
+              <div className="text-xl font-bold text-emerald-800 dark:text-emerald-300 mt-1">
+                {documentQcList.filter((d) => d.status === "VERIFIED").length}
+              </div>
+              <div className="text-[10px] text-emerald-600 dark:text-emerald-400/80 mt-0.5">Ownership confirmed</div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-800/40 shadow-sm">
+              <div className="text-[11px] font-mono text-rose-700 dark:text-rose-400 uppercase flex items-center gap-1">
+                <XCircle className="w-3.5 h-3.5" /> Rejected Proofs
+              </div>
+              <div className="text-xl font-bold text-rose-800 dark:text-rose-300 mt-1">
+                {documentQcList.filter((d) => d.status === "REJECTED").length}
+              </div>
+              <div className="text-[10px] text-rose-600 dark:text-rose-400/80 mt-0.5">Pending user re-upload</div>
+            </div>
+          </div>
+
+          {/* Filters & Search */}
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center gap-1.5 bg-white dark:bg-slate-900/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800/80 shadow-sm">
+                {DOC_STATUS_FILTERS.map((tab) => (
+                  <button
+                    key={tab.value}
+                    onClick={() => setDocStatusFilter(tab.value)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
+                      docStatusFilter === tab.value
+                        ? "bg-gradient-to-r from-indigo-600 to-rose-600 text-white shadow-md font-semibold"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    {tab.label}
+                    <span className="ml-1.5 text-[10px] opacity-80 font-mono">
+                      (
+                      {tab.value === "ALL"
+                        ? documentQcList.length
+                        : tab.value === "REVIEWING"
+                        ? documentQcList.filter((d) => d.status === "REVIEWING" || d.status === "PENDING").length
+                        : documentQcList.filter((d) => d.status === tab.value).length}
+                      )
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="text-[11px] font-mono text-slate-500">
+                Showing <strong className="text-slate-900 dark:text-white">{filteredDocuments.length}</strong> matching documents
+              </div>
+            </div>
+
+            {/* Type selector pills */}
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              {DOC_TYPE_FILTERS.map((pill) => (
+                <button
+                  key={pill.value}
+                  onClick={() => setDocTypeFilter(pill.value)}
+                  className={`px-3 py-1 rounded-lg border transition cursor-pointer text-[11px] font-medium ${
+                    docTypeFilter === pill.value
+                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white font-semibold shadow-sm"
+                      : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300"
+                  }`}
+                >
+                  {pill.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={docSearchQuery}
+                onChange={(e) => setDocSearchQuery(e.target.value)}
+                placeholder="Search documents by document name, property title, owner name, phone, locality..."
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none transition shadow-sm"
+              />
+            </div>
+          </div>
+
+          {/* Documents Table */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
+                  <tr>
+                    <th className="py-3.5 px-4">Document Details</th>
+                    <th className="py-3.5 px-4">Document Type</th>
+                    <th className="py-3.5 px-4">Associated Property</th>
+                    <th className="py-3.5 px-4">Uploaded By</th>
+                    <th className="py-3.5 px-4">QC Status</th>
+                    <th className="py-3.5 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                  {filteredDocuments.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-12 text-center text-slate-400 dark:text-slate-500">
+                        <FileCheck2 className="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
+                        No documents found matching the selected filter.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredDocuments.map((doc) => (
+                      <tr key={doc.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition group">
+                        <td className="py-3.5 px-4">
+                          <div className="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition flex items-center gap-2">
+                            {getDocTypeIcon(doc.type)}
+                            <span>{doc.title}</span>
+                          </div>
+                          <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-2">
+                            <span>ID: #{doc.id}</span>
+                            <span>•</span>
+                            <span>Uploaded {mounted ? formatDateSafe(doc.createdAt) : "Recently"}</span>
+                            {doc.fileSize && (
+                              <>
+                                <span>•</span>
+                                <span>{(doc.fileSize / 1024).toFixed(1)} KB</span>
+                              </>
+                            )}
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <span className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80">
+                            {doc.type.replace(/_/g, " ")}
+                          </span>
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          {doc.propertyTitle ? (
+                            <div>
+                              <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                                <span>{doc.propertyTitle}</span>
+                                {doc.propertyQcStatus === "APPROVED" && (
+                                  <BadgeCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                                )}
+                              </div>
+                              <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                                {doc.propertyLocality ? `${doc.propertyLocality}, ` : ""}{doc.propertyCity || "Listing"} • ID: #{doc.propertyId}
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-slate-400 dark:text-slate-500 italic text-[11px]">
+                              Unlinked general proof
+                            </span>
+                          )}
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <div className="font-medium text-slate-800 dark:text-slate-200">{doc.ownerName}</div>
+                          <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                            {doc.ownerPhone || doc.ownerEmail || `User ID: ${doc.ownerUserId}`}
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-4">{getDocStatusBadge(doc.status)}</td>
+
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => handleDownloadDoc(doc)}
+                              disabled={downloadingDocId === doc.id}
+                              title="Download or preview file"
+                              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setSelectedDoc(doc);
+                                setDocReviewReason(doc.rejectionReason || doc.notes || "");
+                                setGrantPropertyBadge(true);
+                              }}
+                              className="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/50 text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer shadow-sm"
+                            >
+                              <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
+                              Inspect & Verify
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 1: PROPERTY QC MODERATION MODAL */}
+      {/* ========================================================================= */}
       {selectedProperty && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
@@ -394,7 +856,7 @@ export default function AdminPropertyQcPage() {
 
               <button
                 onClick={() => setSelectedProperty(null)}
-                className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 text-xs"
+                className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 text-xs cursor-pointer"
               >
                 ✕ Close
               </button>
@@ -598,6 +1060,234 @@ export default function AdminPropertyQcPage() {
                     <CheckCircle2 className="w-4 h-4" /> {isProcessing ? "Saving to Database..." : "Approve & Publish Live"}
                   </button>
                 )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 2: DOCUMENT QC INSPECTION & VERIFICATION MODAL */}
+      {/* ========================================================================= */}
+      {selectedDoc && (
+        <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-3xl shadow-2xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span>{selectedDoc.title}</span>
+                    {getDocStatusBadge(selectedDoc.status)}
+                  </h3>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+                    Doc ID: #{selectedDoc.id} • Type: {selectedDoc.type.replace(/_/g, " ")} • Uploaded by {selectedDoc.ownerName}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelectedDoc(null)}
+                className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 text-xs cursor-pointer"
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-6 overflow-y-auto flex-1">
+              {/* Document Preview Card */}
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-indigo-500" />
+                    <span>Document File & Storage Inspection</span>
+                  </div>
+                  <button
+                    onClick={() => handleDownloadDoc(selectedDoc)}
+                    className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Download / Open Original</span>
+                  </button>
+                </div>
+
+                {/* If it's an image, render preview */}
+                {selectedDoc.mimeType?.startsWith("image/") || selectedDoc.fileUrl.match(/\.(jpg|jpeg|png|webp)$/i) ? (
+                  <div className="relative aspect-video rounded-xl bg-slate-100 dark:bg-slate-900 overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center">
+                    <img
+                      src={selectedDoc.fileUrl}
+                      alt={selectedDoc.title}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 text-center space-y-2">
+                    <FileText className="w-10 h-10 mx-auto text-indigo-500" />
+                    <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      {selectedDoc.title} ({selectedDoc.mimeType || "PDF / Document"})
+                    </div>
+                    <div className="text-[11px] text-slate-500 font-mono">
+                      Stored in Cloudflare R2: {selectedDoc.storageKey || "Secure bucket storage"}
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => handleDownloadDoc(selectedDoc)}
+                        className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1 mt-1 cursor-pointer"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Preview full document in new tab
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Linked Property Details */}
+              {selectedDoc.propertyId ? (
+                <div className="p-4 rounded-xl bg-indigo-50/40 dark:bg-indigo-950/20 border border-indigo-200/60 dark:border-indigo-800/40 space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-indigo-900 dark:text-indigo-300 flex items-center gap-1.5">
+                      <Building2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      Associated Property Listing
+                    </span>
+                    <Link
+                      href={`/properties/${selectedDoc.propertyId}`}
+                      target="_blank"
+                      className="text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1 font-medium"
+                    >
+                      <span>View live listing</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Link>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
+                    <div>
+                      <span className="text-slate-500">Property Title:</span>
+                      <div className="font-sans font-semibold text-slate-900 dark:text-white">
+                        {selectedDoc.propertyTitle || `Property #${selectedDoc.propertyId}`}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Location:</span>
+                      <div className="font-sans font-semibold text-slate-900 dark:text-white">
+                        {selectedDoc.propertyLocality ? `${selectedDoc.propertyLocality}, ` : ""}{selectedDoc.propertyCity || "N/A"}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Current QC Badge:</span>
+                      <div className="font-sans font-semibold">
+                        {selectedDoc.propertyQcStatus === "APPROVED" ? (
+                          <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                            <BadgeCheck className="w-3.5 h-3.5" /> Verified
+                          </span>
+                        ) : (
+                          <span className="text-amber-600 dark:text-amber-400">
+                            {selectedDoc.propertyQcStatus || "Unverified"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-500 italic">
+                  Note: This document was uploaded as a general profile proof and is not linked to a specific property listing.
+                </div>
+              )}
+
+              {/* Owner Info Grid */}
+              <div className="grid grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-950/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
+                <div>
+                  <div className="text-[10px] text-slate-500 uppercase font-mono">Owner Name</div>
+                  <div className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                    {selectedDoc.ownerName}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-slate-500 uppercase font-mono">Contact Phone</div>
+                  <div className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                    {selectedDoc.ownerPhone || "Not provided"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-slate-500 uppercase font-mono">Contact Email</div>
+                  <div className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5 truncate">
+                    {selectedDoc.ownerEmail || "Not provided"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Badge Grant Toggle */}
+              {selectedDoc.propertyId && (
+                <label className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/40 text-xs cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={grantPropertyBadge}
+                    onChange={(e) => setGrantPropertyBadge(e.target.checked)}
+                    className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                  />
+                  <div>
+                    <span className="font-bold text-emerald-900 dark:text-emerald-300">
+                      Grant "Verified Property" badge to listing on approval
+                    </span>
+                    <p className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-0.5">
+                      Automatically marks the listing as QC APPROVED and awards the verified trust shield on search cards.
+                    </p>
+                  </div>
+                </label>
+              )}
+
+              {/* Error Banner */}
+              {docErrorMessage && (
+                <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2">
+                  <XCircle className="w-4 h-4 text-rose-500 shrink-0" />
+                  <span>{docErrorMessage}</span>
+                </div>
+              )}
+
+              {/* Reviewer Reason / Notes */}
+              <div className="space-y-1.5 pt-1">
+                <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  Reviewer Rationale & Notes (Required for rejection)
+                </label>
+                <textarea
+                  rows={3}
+                  value={docReviewReason}
+                  disabled={isDocProcessing}
+                  onChange={(e) => setDocReviewReason(e.target.value)}
+                  placeholder="Record verification notes or reason for rejection (e.g. 'Khata certificate verified with local municipal registry', or 'Name on electric bill does not match registered owner')..."
+                  className="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition disabled:opacity-50"
+                />
+              </div>
+            </div>
+
+            {/* Modal Actions Footer */}
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80 flex flex-wrap items-center justify-between gap-3">
+              <div className="text-[11px] text-slate-500 font-mono">
+                Reviewer: <span className="text-indigo-600 dark:text-indigo-400 font-semibold">{currentStaff?.name || "QC Specialist"}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  disabled={isDocProcessing}
+                  onClick={() => handleDocumentReview("REJECT")}
+                  className="px-3.5 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-700/50 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
+                >
+                  <XCircle className="w-3.5 h-3.5" /> Reject Document
+                </button>
+
+                <button
+                  disabled={isDocProcessing}
+                  onClick={() => handleDocumentReview("APPROVE")}
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition cursor-pointer disabled:opacity-50"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  {isDocProcessing ? "Updating QC Record..." : "Approve & Verify Proof"}
+                </button>
               </div>
             </div>
           </div>

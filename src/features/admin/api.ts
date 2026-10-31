@@ -8,6 +8,7 @@ import type {
   AdminFraudAlert,
   AdminGovernanceSettings,
   AdminRefundCase,
+  AdminDocumentQcItem,
   DisputeStatus,
   OrgVerificationItem,
   OrgVerificationStatus,
@@ -81,6 +82,20 @@ export const adminApi = {
   },
   async suspendProperty(propertyId: number, reason: string) {
     return unwrap(await apiClient.post(API_ENDPOINTS.admin.properties.suspend(propertyId), { reason }));
+  },
+  async listDocumentQueue(filters?: { status?: string; type?: string; propertyId?: number }) {
+    return unwrap(await apiClient.get<AdminDocumentQcItem[]>(API_ENDPOINTS.admin.documents.queue, { params: filters }));
+  },
+  async reviewDocument(id: number, body: { action: "APPROVE" | "REJECT"; reason?: string; grantPropertyBadge?: boolean }) {
+    return unwrap(
+      await apiClient.post<{ success: boolean; data?: any; propertyBadgeGranted?: boolean; propertyId?: number }>(
+        API_ENDPOINTS.admin.documents.review(id),
+        body
+      )
+    ) as { success: boolean; propertyBadgeGranted?: boolean; propertyId?: number };
+  },
+  async getDocumentDownloadUrl(id: number) {
+    return unwrap(await apiClient.get<{ downloadUrl: string; title: string; mimeType: string }>(API_ENDPOINTS.admin.documents.download(id)));
   },
   async listOrganizations() {
     return unwrap(await apiClient.get<OrgVerificationItem[]>(API_ENDPOINTS.admin.organizations.queue));
