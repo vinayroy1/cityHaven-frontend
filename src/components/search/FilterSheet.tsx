@@ -147,6 +147,8 @@ function SectionBody({
   setDraft: (s: SearchState) => void;
   singleSelectKeys?: ReadonlySet<string>;
 }) {
+  const refine = draft.refine || ({} as any);
+
   if (section.kind === "range") {
     const budget = section.key === "budget";
     const cfg = budgetConfig(draft);
@@ -167,18 +169,18 @@ function SectionBody({
   }
 
   if (section.kind === "min-chips") {
-    const current = draft.refine.bathroomsMin;
+    const current = refine.bathroomsMin;
     return (
       <div className="flex flex-wrap gap-2">
         {section.options.map((o) => (
           <Chip
-            key={o.value}
+            key={String(o.value)}
             size="sm"
             showCheck={false}
             selected={current === o.value}
             onClick={() => {
               const val = current === o.value ? undefined : (o.value as number);
-              setDraft({ ...draft, refine: { ...draft.refine, bathroomsMin: val } });
+              setDraft({ ...draft, refine: { ...refine, bathroomsMin: val } });
             }}
           >
             {o.label}
@@ -188,25 +190,28 @@ function SectionBody({
     );
   }
 
-  const arr = (draft.refine[section.key] as string[]) || [];
+  const arr = (refine[section.key] as string[]) || [];
   return (
     <div className="flex flex-wrap gap-2">
       {section.options.map((o) => (
         <Chip
-          key={o.value}
+          key={String(o.value)}
           size="sm"
-          selected={arr.includes(o.value)}
-          onClick={() =>
+          selected={arr.includes(String(o.value))}
+          onClick={() => {
+            const val = String(o.value);
+            const isSingle = singleSelectKeys?.has(section.key);
+            const nextArr = isSingle
+              ? (arr.includes(val) ? [] : [val])
+              : toggleInArray(arr, val);
             setDraft({
               ...draft,
               refine: {
-                ...draft.refine,
-                [section.key]: singleSelectKeys?.has(section.key)
-                  ? (arr.includes(o.value) ? [] : [o.value])
-                  : toggleInArray(arr, o.value),
+                ...refine,
+                [section.key]: nextArr,
               },
-            })
-          }
+            });
+          }}
         >
           {o.label}
         </Chip>
@@ -284,12 +289,12 @@ export function FilterRail({
 }) {
   const [draft, setDraft] = React.useState(state);
   React.useEffect(() => setDraft(state), [state]);
-  const displayedState = deferred ? draft : state;
+
   const updateState = (next: SearchState) => {
-    if (deferred) setDraft(next);
+    setDraft(next);
     onChange(next);
   };
-  const count = countActiveFilters(displayedState);
+  const count = countActiveFilters(draft);
   return (
     <aside className="sticky top-[8.5rem] hidden h-fit max-h-[calc(100vh-10rem)] w-[300px] shrink-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex">
       <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
@@ -297,13 +302,13 @@ export function FilterRail({
           Filters {count > 0 && <span className="ml-1 text-rose-600 dark:text-rose-400">({count})</span>}
         </p>
         {count > 0 && (
-          <button type="button" onClick={() => updateState(clearAllFilters(displayedState))} className={linkButton}>
+          <button type="button" onClick={() => updateState(clearAllFilters(draft))} className={linkButton}>
             Clear all
           </button>
         )}
       </div>
       <div className="overflow-y-auto px-5 py-2">
-        <FilterSectionsEditor draft={displayedState} setDraft={updateState} singleSelectKeys={singleSelectKeys} />
+        <FilterSectionsEditor draft={draft} setDraft={updateState} singleSelectKeys={singleSelectKeys} />
       </div>
       {deferred && onApply && (
         <div className="shrink-0 border-t border-slate-100 p-4 dark:border-slate-800">
@@ -325,6 +330,8 @@ export function FilterSheet({
   onSubmit,
   onApply,
   singleSelectKeys,
+  focusKey,
+  resultCount,
 }: {
   open: boolean;
   onClose: () => void;
@@ -356,7 +363,17 @@ export function FilterSheet({
       setDraft(state);
       setIsSubmitting(false);
     }
-  }, [open]);
+  }, [open, state]);
+
+  React.useEffect(() => {
+    if (open && focusKey) {
+      const timer = setTimeout(() => {
+        const el = document.querySelector(`[data-section="${focusKey}"]`);
+        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [open, focusKey]);
 
   // Bulletproof mobile bottom sheet positioning using visualViewport (same pattern as CitySelectorDropdown)
   React.useEffect(() => {
