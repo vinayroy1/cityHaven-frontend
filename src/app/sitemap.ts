@@ -1,4 +1,7 @@
 import type { MetadataRoute } from "next";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 import {
   SITE_URL,
   SEO_SEARCH_INTENTS,
