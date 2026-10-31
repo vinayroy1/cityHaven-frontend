@@ -178,6 +178,9 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
     subType: splitList(sp.get("r.subType")),
     furnishing: splitList(sp.get("r.furnishing")),
     postedAs: splitList(sp.get("r.postedAs")).map((s) => s.toUpperCase()),
+    possessionStatus: splitList(sp.get("r.possession") ?? sp.get("r.possessionStatus")),
+    gatedCommunity: splitList(sp.get("r.gatedCommunity")),
+    amenities: splitList(sp.get("r.amenities")),
     bathroomsMin: toNum(sp.get("r.bath")),
     areaMin: toNum(sp.get("r.areaMin")),
     areaMax: toNum(sp.get("r.areaMax")),
@@ -222,6 +225,9 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   if (r.subType.length) sp.set("r.subType", r.subType.join(","));
   if (r.furnishing.length) sp.set("r.furnishing", r.furnishing.join(","));
   if (r.postedAs.length) sp.set("r.postedAs", r.postedAs.join(","));
+  if (r.possessionStatus && r.possessionStatus.length) sp.set("r.possession", r.possessionStatus.join(","));
+  if (r.gatedCommunity && r.gatedCommunity.length) sp.set("r.gatedCommunity", r.gatedCommunity.join(","));
+  if (r.amenities && r.amenities.length) sp.set("r.amenities", r.amenities.join(","));
   if (r.bathroomsMin != null) sp.set("r.bath", String(r.bathroomsMin));
   if (r.areaMin != null) sp.set("r.areaMin", String(r.areaMin));
   if (r.areaMax != null) sp.set("r.areaMax", String(r.areaMax));
@@ -323,7 +329,20 @@ export function toApiParams(state: SearchState, pageSize: number): ApiSearchPara
   if (cityName && (!state.localities.length || (state.localities.length === 1 && state.localities[0]?.city === state.localities[0]?.label))) {
     out.cityName = cityName;
   }
-  if (state.bedroomsMin != null) out.bedrooms = state.bedroomsMin;
+  if (state.bedroomsMin != null) {
+    out.bedrooms = state.bedroomsMin;
+  } else if (state.refine.bhkTypes && state.refine.bhkTypes.length > 0) {
+    // If user clicked BHK chip(s) in filter sheet, calculate lowest selected bedroom count to pre-filter API
+    const bedNums = state.refine.bhkTypes
+      .map((b) => {
+        const m = b.match(/\d+/);
+        return m ? Number(m[0]) : null;
+      })
+      .filter((n): n is number => n !== null);
+    if (bedNums.length > 0) {
+      out.bedrooms = Math.min(...bedNums);
+    }
+  }
   if (state.priceMin != null) out.priceMin = state.priceMin;
   if (state.priceMax != null) out.priceMax = state.priceMax;
   if (state.sort !== "relevance") out.sort = state.sort;
@@ -331,14 +350,17 @@ export function toApiParams(state: SearchState, pageSize: number): ApiSearchPara
   return out;
 }
 
-/** True when the state carries any filter that is only applied in the browser. */
+/** True when the state carries any filter that is applied in the browser. */
 export function hasClientRefinements(state: SearchState): boolean {
   const r = state.refine;
   return (
     r.subType.length > 0 ||
     r.furnishing.length > 0 ||
-    // postedAs with multiple values still needs client refinement (API only accepts single value)
-    r.postedAs.length > 1 ||
+    r.postedAs.length > 0 ||
+    (r.bhkTypes != null && r.bhkTypes.length > 0) ||
+    (r.possessionStatus != null && r.possessionStatus.length > 0) ||
+    (r.amenities != null && r.amenities.length > 0) ||
+    (r.gatedCommunity != null && r.gatedCommunity.length > 0) ||
     r.bathroomsMin != null ||
     r.areaMin != null ||
     r.areaMax != null ||
@@ -362,6 +384,13 @@ export type RefinableItem = {
   furnishing?: string | null;
   postedAs?: string | null;
   bathrooms?: number | null;
+  bedrooms?: number | null;
+  possessionStatus?: string | null;
+  availabilityStatus?: string | null;
+  amenities?: string[] | null;
+  amenitiesRelation?: any;
+  ownerId?: number | null;
+  listingType?: string | null;
   carpetArea?: number | null;
   carpetAreaUnit?: string | null;
   builtUpArea?: number | null;
@@ -442,27 +471,124 @@ export function applyClientRefinements<T extends RefinableItem>(
 
     if (refine.furnishing.length) {
       const f = (item.furnishing ?? "").toUpperCase();
-      if (!refine.furnishing.includes(f)) return false;
+      const matchesFurnishing = refine.furnishing.some((wanted) => {
+        const w = wanted.toUpperCase();
+        if (w === "FURNISHED") {
+          return f === "FURNISHED" || f === "FULLY_FURNISHED";
+        }
+        if (w === "UNFURNISHED") {
+          return f === "UNFURNISHED" || !f;
+        }
+        return f === w;
+      });
+      if (!matchesFurnishing) return false;
     }
 
     if (refine.postedAs.length) {
       const p = (item.postedAs ?? "").toUpperCase();
-      if (!refine.postedAs.includes(p)) return false;
+      const effectiveP = p || (item.ownerId ? "OWNER" : "");
+      if (!refine.postedAs.includes(effectiveP)) return false;
     }
 
     if (refine.possessionStatus?.length) {
-      const st = ((item as any).status ?? (item as any).availabilityStatus ?? "").toUpperCase();
-      if (!refine.possessionStatus.some((wanted) => st.includes(wanted) || (wanted === "READY_TO_MOVE" && st.includes("READY")))) {
-        return false;
-      }
+      const poss = (
+        (item as any).possessionStatus ??
+        (item as any).availabilityStatus ??
+        ""
+      ).toUpperCase();
+      const titleDesc = `${item.title || ""} ${(item as any).description || ""}`.toLowerCase();
+
+      const isUnderConstruction =
+        poss.includes("UNDER_CONSTRUCTION") ||
+        poss.includes("LAUNCH") ||
+        titleDesc.includes("under construction") ||
+        titleDesc.includes("new launch") ||
+        titleDesc.includes("upcoming project");
+
+      const isReadyToMove =
+        poss.includes("READY") ||
+        titleDesc.includes("ready to move") ||
+        titleDesc.includes("immediate possession") ||
+        (!isUnderConstruction && (item.listingType === "RENT" || item.listingType === "SELL" || !poss));
+
+      const matchesPossession = refine.possessionStatus.some((wanted) => {
+        if (wanted === "READY_TO_MOVE") return isReadyToMove;
+        if (wanted === "UNDER_CONSTRUCTION") return isUnderConstruction;
+        return poss.includes(wanted);
+      });
+
+      if (!matchesPossession) return false;
     }
 
     if (refine.bhkTypes?.length) {
-      const beds = (item as any).bedrooms;
-      const bhkStr = beds ? `${beds} BHK` : "";
-      if (bhkStr && !refine.bhkTypes.some((b) => b.includes(String(beds)))) {
-        return false;
-      }
+      const beds = item.bedrooms;
+      const titleDesc = `${item.title || ""} ${(item as any).description || ""}`.toLowerCase();
+
+      const matchesBhk = refine.bhkTypes.some((wanted) => {
+        if (wanted === "1 RK" || wanted === "Studio") {
+          return beds === 0 || beds === 1 || titleDesc.includes("1 rk") || titleDesc.includes("1rk") || titleDesc.includes("studio");
+        }
+        if (wanted === "6+ BHK") {
+          return beds != null && beds >= 6;
+        }
+        const numMatch = wanted.match(/(\d+(\.\d+)?)/);
+        if (!numMatch) return false;
+        const targetNum = parseFloat(numMatch[1]);
+        if (beds == null) {
+          const intNum = Math.floor(targetNum);
+          return titleDesc.includes(`${intNum} bhk`) || titleDesc.includes(`${intNum}bhk`) || titleDesc.includes(`${intNum} bedroom`);
+        }
+        return beds === targetNum || (targetNum % 1 !== 0 && beds === Math.floor(targetNum));
+      });
+
+      if (!matchesBhk) return false;
+    }
+
+    if (refine.amenities?.length) {
+      const rawAmenities = [
+        ...((item as any).amenities || []),
+        ...(((item as any).amenitiesRelation || []).map((r: any) => r.amenity?.name || r.amenity?.slug || "")),
+      ].map((a: string) => String(a).toLowerCase().replace(/[^a-z0-9]/g, ""));
+
+      const titleDesc = `${item.title || ""} ${(item as any).description || ""}`.toLowerCase();
+
+      const amenityKeywords: Record<string, string[]> = {
+        SECURITY: ["security", "cctv", "guard", "fire alarm", "securitypersonnel", "24x7 security"],
+        POWER_BACKUP: ["power backup", "powerbackup", "generator", "inverter", "fullpowerbackup", "partialpowerbackup"],
+        SWIMMING_POOL: ["swimming pool", "pool", "swimmingpool"],
+        MARKET: ["market", "grocery", "attached market", "closetomarket", "shopping", "mall"],
+        CLUBHOUSE: ["clubhouse", "club house", "community center", "clubhousecommunitycenter"],
+        PARKING: ["parking", "visitor parking", "reserved parking", "visitorparking", "car parking", "garage"],
+        CENTRAL_AC: ["central ac", "centrally air conditioned", "air conditioner", "ac", "air conditioned"],
+        INTERCOM: ["intercom", "wifi", "internet", "connectivity"],
+      };
+
+      const allMatched = refine.amenities.every((wanted) => {
+        const keywords = amenityKeywords[wanted] || [wanted.toLowerCase().replace(/_/g, " ")];
+        const inAmenitiesList = rawAmenities.some((a) =>
+          keywords.some((kw) => a.includes(kw.replace(/[^a-z0-9]/g, "")))
+        );
+        const inText = keywords.some((kw) => titleDesc.includes(kw));
+        return inAmenitiesList || inText;
+      });
+
+      if (!allMatched) return false;
+    }
+
+    if (refine.gatedCommunity?.length && refine.gatedCommunity.includes("YES")) {
+      const rawAmenities = [
+        ...((item as any).amenities || []),
+        ...(((item as any).amenitiesRelation || []).map((r: any) => r.amenity?.name || r.amenity?.slug || "")),
+      ].map((a: string) => String(a).toLowerCase().replace(/[^a-z0-9]/g, ""));
+      const titleDesc = `${item.title || ""} ${(item as any).description || ""}`.toLowerCase();
+      const isGated =
+        rawAmenities.some((a) => a.includes("gated")) ||
+        titleDesc.includes("gated") ||
+        titleDesc.includes("society") ||
+        titleDesc.includes("township") ||
+        titleDesc.includes("enclave") ||
+        Boolean((item as any).societyOrProjectName);
+      if (!isGated) return false;
     }
 
     if (refine.food?.length) {
@@ -568,6 +694,9 @@ export function countActiveFilters(state: SearchState): number {
   n += r.subType.length;
   n += r.furnishing.length;
   n += r.postedAs.length;
+  if (r.possessionStatus?.length) n += r.possessionStatus.length;
+  if (r.amenities?.length) n += r.amenities.length;
+  if (r.gatedCommunity?.length) n += r.gatedCommunity.length;
   if (r.food?.length) n += r.food.length;
   if (r.bathroomsMin != null) n += 1;
   if (r.areaMin != null || r.areaMax != null) n += 1;
@@ -747,6 +876,13 @@ export function describeFilters(
           refine: { ...s.refine, bhkTypes: nextBhkTypes } 
         };
       }
+    });
+  });
+  (state.refine.gatedCommunity || []).forEach((v) => {
+    chips.push({
+      id: "gatedCommunity",
+      label: "Gated Society",
+      remove: (s) => ({ ...s, refine: { ...s.refine, gatedCommunity: [] } }),
     });
   });
   (state.refine.amenities || []).forEach((v) => {

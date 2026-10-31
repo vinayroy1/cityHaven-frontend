@@ -44,6 +44,10 @@ export type PropertySearchItem = {
   resCom?: string | null;
   postedAs?: string | null;
   furnishing?: string | null;
+  possessionStatus?: string | null;
+  availabilityStatus?: string | null;
+  amenities?: string[] | null;
+  amenitiesRelation?: any;
   floorNumber?: string | number | null;
   totalFloors?: number | null;
   propertyFacing?: string | null;

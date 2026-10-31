@@ -46,6 +46,12 @@ function summarise(state: SearchState, key: string): string | null {
       return state.refine.lifestyle?.length ? `Lifestyle · ${state.refine.lifestyle.length}` : null;
     case "bhkTypes":
       return state.refine.bhkTypes?.length ? `BHK · ${state.refine.bhkTypes.length}` : null;
+    case "possessionStatus":
+      return state.refine.possessionStatus?.length ? `Possession · ${state.refine.possessionStatus.length}` : null;
+    case "amenities":
+      return state.refine.amenities?.length ? `Amenities · ${state.refine.amenities.length}` : null;
+    case "gatedCommunity":
+      return state.refine.gatedCommunity?.length ? "Gated Society" : null;
     default:
       return null;
   }
@@ -61,6 +67,9 @@ const DEFAULT_LABELS: Record<string, string> = {
   food: "Food & Mess",
   furnishing: "Furnishing",
   postedAs: "Posted by",
+  possessionStatus: "Possession",
+  amenities: "Amenities",
+  gatedCommunity: "Gated Society",
   flatmateMode: "Mode",
   roomType: "Room type",
   gender: "Gender",
