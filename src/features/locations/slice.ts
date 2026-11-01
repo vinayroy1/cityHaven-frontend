@@ -38,6 +38,25 @@ const initialState: LocationsState = {
   error: null,
 };
 
+const PRIORITY_METRO_ORDER = [
+  "new delhi",
+  "delhi",
+  "mumbai",
+  "bengaluru",
+  "bangalore",
+  "gurugram",
+  "gurgaon",
+  "noida",
+  "pune",
+  "hyderabad",
+  "chennai",
+  "kolkata",
+  "ahmedabad",
+  "chandigarh",
+  "jaipur",
+  "lucknow",
+];
+
 // Non-paginated API call managed via Redux Toolkit createAsyncThunk
 export const fetchPopularCities = createAsyncThunk<CityItem[], void>(
   "locations/fetchPopularCities",
@@ -55,7 +74,20 @@ export const fetchPopularCities = createAsyncThunk<CityItem[], void>(
       }
       const unique = dedupeCities(eligible);
       if (unique.length >= 4) {
-        return unique.slice(0, 14);
+        // Sort with top Tier-1 real estate hubs prioritized (New Delhi, Mumbai, Bengaluru, etc.)
+        // rather than arbitrary alphabetical order where New Delhi gets sliced off
+        const sorted = [...unique].sort((a, b) => {
+          const aKey = a.name.toLowerCase().trim();
+          const bKey = b.name.toLowerCase().trim();
+          const aRank = PRIORITY_METRO_ORDER.indexOf(aKey);
+          const bRank = PRIORITY_METRO_ORDER.indexOf(bKey);
+          if (aRank !== -1 && bRank !== -1) return aRank - bRank;
+          if (aRank !== -1) return -1;
+          if (bRank !== -1) return 1;
+          return a.name.localeCompare(b.name);
+        });
+
+        return sorted.slice(0, 16);
       }
     }
     return DEFAULT_POPULAR_CITIES;
