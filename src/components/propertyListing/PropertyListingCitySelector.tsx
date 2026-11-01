@@ -345,13 +345,15 @@ export function PropertyListingCitySelector({
               </div>
             )}
 
-            {cities.map((c) => {
+            {cities
+              .filter((c, i, arr) => arr.findIndex((x) => x.id === c.id) === i)
+              .map((c, idx) => {
               const cityName = c.location.city || c.title;
               const isSelected = value.toLowerCase() === cityName.toLowerCase();
 
               return (
                 <button
-                  key={c.id}
+                  key={`${c.id}-${idx}`}
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleSelectCity(c)}

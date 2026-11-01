@@ -257,5 +257,18 @@ export const API_ENDPOINTS = {
     projects: `${BASE}/interiors/me/projects`,
     projectDetail: (id: string | number) => `${BASE}/interiors/me/projects/${id}`,
     unlockInquiry: (inquiryId: string | number) => `${BASE}/interiors/me/inquiries/${inquiryId}/unlock`,
+    // ---- v2 wizard ----
+    section: (section: string) => `${BASE}/interiors/me/sections/${section}`,
+    readiness: `${BASE}/interiors/me/readiness`,
+    submitMe: `${BASE}/interiors/me/submit`,
+    statusMe: `${BASE}/interiors/me/status`,
+    organization: `${BASE}/interiors/me/organization`,
+    branchDetail: (id: string | number) => `${BASE}/interiors/me/branches/${id}`,
+    packagesOrder: `${BASE}/interiors/me/packages/order`,
+    team: `${BASE}/interiors/me/team`,
+    teamDetail: (id: string | number) => `${BASE}/interiors/me/team/${id}`,
+    documents: `${BASE}/interiors/me/documents`,
+    documentDetail: (id: string | number) => `${BASE}/interiors/me/documents/${id}`,
+    myInquiries: `${BASE}/interiors/me/inquiries`,
   },
 };

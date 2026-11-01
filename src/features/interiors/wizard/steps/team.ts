@@ -1,0 +1,66 @@
+import type { StepConfig } from "@/lib/listingEngine/types";
+import { preset } from "@/lib/listingEngine/conditions";
+
+export const teamStep: StepConfig = {
+  id: "team",
+  label: "Team & credentials",
+  title: "Build trust with credentials",
+  caption: "Trust & publish · Credentials",
+  phase: "Trust & publish",
+  description: "Verified profiles rank higher. Documents are private and only seen by our review team.",
+  icon: "shield-check",
+  kind: "config",
+  visibleWhen: preset("hasProviderType"),
+  sections: [
+    {
+      id: "individualCredentials",
+      title: "Qualifications",
+      visibleWhen: preset("isIndividual"),
+      fields: [
+        { id: "team.qualification", label: "Highest qualification", type: "text", placeholder: "e.g. B.Des Interior Design" },
+        { id: "team.institute", label: "Institute", type: "text", placeholder: "e.g. NID, CEPT" },
+        { id: "team.coaRegistrationNumber", label: "COA registration no.", type: "text", placeholder: "Council of Architecture (if applicable)" },
+        { id: "team.iiidMembershipNumber", label: "IIID membership no.", type: "text" },
+        { id: "team.awards", label: "Awards", type: "tags", placeholder: "Type and press Enter", maxItems: 20 },
+        { id: "team.certifications", label: "Certifications", type: "tags", placeholder: "Type and press Enter", maxItems: 20 },
+      ],
+    },
+    {
+      id: "companyRegistration",
+      title: "Business registration",
+      visibleWhen: preset("isCompany"),
+      fields: [
+        { id: "team.gstin", label: "GSTIN", type: "text", placeholder: "22AAAAA0000A1Z5", helpText: "15 characters, validated.", meta: { uppercase: true } },
+        { id: "team.panNumber", label: "Business PAN", type: "text", placeholder: "AAAAA0000A", meta: { uppercase: true } },
+        { id: "team.cinNumber", label: "CIN / LLPIN", type: "text", meta: { uppercase: true } },
+        { id: "team.awards", label: "Awards", type: "tags", placeholder: "Type and press Enter", maxItems: 20 },
+      ],
+    },
+    {
+      id: "members",
+      title: "Who is on your team?",
+      description: "Import from your organization or add manually.",
+      kind: "custom",
+      component: "TeamManager",
+      visibleWhen: preset("isCompany"),
+      props: { field: "team.members", branchesField: "location.branches" },
+      scorePaths: ["team.members"],
+      weight: 2,
+      fields: [],
+    },
+    {
+      id: "documents",
+      title: "Upload a verification document",
+      description: "Individuals: ID proof. Companies: GST certificate or certificate of incorporation.",
+      kind: "custom",
+      component: "DocumentUploader",
+      badge: "SUBMIT",
+      moderated: true,
+      props: { field: "team.credentials" },
+      requires: [{ path: "team.credentials", label: "Verification document" }],
+      scorePaths: ["team.credentials"],
+      weight: 4,
+      fields: [],
+    },
+  ],
+};

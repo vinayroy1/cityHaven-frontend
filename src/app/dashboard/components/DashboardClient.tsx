@@ -134,7 +134,7 @@ export function DashboardClient() {
     },
     {
       href: "/dashboard/interior-profile",
-      title: "Interior Studio Profile",
+      title: "Interior Business Listing",
       description: "Manage your designer or firm profile, multi-city branches, packages & portfolio projects.",
       icon: Paintbrush,
       iconClass: "bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400",

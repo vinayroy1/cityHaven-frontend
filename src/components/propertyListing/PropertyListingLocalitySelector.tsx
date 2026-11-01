@@ -488,7 +488,9 @@ export function PropertyListingLocalitySelector({
           )}
 
           {/* Render locality items */}
-          {localities.map((sg) => {
+          {localities
+            .filter((sg, i, arr) => arr.findIndex((x) => x.id === sg.id) === i)
+            .map((sg, idx) => {
             const title = sg.title;
             const subtitle = sg.subtitle || `${cityName} (${sg.location.pincode || ""})`;
             const isSelected = multiple
@@ -497,7 +499,7 @@ export function PropertyListingLocalitySelector({
 
             return (
               <button
-                key={sg.id}
+                key={`${sg.id}-${idx}`}
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => handleSelectLocality(sg)}
