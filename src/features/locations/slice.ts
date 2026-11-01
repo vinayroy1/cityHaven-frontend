@@ -40,12 +40,9 @@ const initialState: LocationsState = {
 
 const PRIORITY_METRO_ORDER = [
   "new delhi",
-  "delhi",
   "mumbai",
   "bengaluru",
-  "bangalore",
   "gurugram",
-  "gurgaon",
   "noida",
   "pune",
   "hyderabad",
@@ -55,6 +52,10 @@ const PRIORITY_METRO_ORDER = [
   "chandigarh",
   "jaipur",
   "lucknow",
+  "vadodara",
+  "kochi",
+  "thiruvananthapuram",
+  "prayagraj",
 ];
 
 // Non-paginated API call managed via Redux Toolkit createAsyncThunk
