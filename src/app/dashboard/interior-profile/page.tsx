@@ -29,6 +29,7 @@ import {
   useGetMyInteriorProfileQuery,
   useSaveMyInteriorProfileMutation,
   usePublishMyInteriorProfileMutation,
+  useSaveInteriorPackageMutation,
   useSavePortfolioProjectMutation,
   useUnlockInteriorInquiryMutation,
 } from "@/features/interiors/api";
@@ -69,11 +70,12 @@ export default function InteriorProfileWizardPage() {
   const { data: profile, isLoading } = useGetMyInteriorProfileQuery();
   const [saveProfile, { isLoading: isSaving }] = useSaveMyInteriorProfileMutation();
   const [publishProfile, { isLoading: isPublishing }] = usePublishMyInteriorProfileMutation();
+  const [savePackage, { isLoading: isPackageSaving }] = useSaveInteriorPackageMutation();
   const [saveProject, { isLoading: isProjectSaving }] = useSavePortfolioProjectMutation();
   const [unlockInquiry, { isLoading: isUnlocking }] = useUnlockInteriorInquiryMutation();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [activeTab, setActiveTab] = useState<"WIZARD" | "PROJECTS" | "LEADS">("WIZARD");
+  const [activeTab, setActiveTab] = useState<"WIZARD" | "PACKAGES" | "PROJECTS" | "LEADS">("WIZARD");
 
   // Step 1: Business Identity
   const [providerType, setProviderType] = useState<"INDIVIDUAL" | "COMPANY">("INDIVIDUAL");
@@ -133,6 +135,21 @@ export default function InteriorProfileWizardPage() {
   const [civilWarrantyYears, setCivilWarrantyYears] = useState(1);
   const [freeMaintenanceMonths, setFreeMaintenanceMonths] = useState(6);
   const [gstin, setGstin] = useState("");
+
+  // Package Form State
+  const [isAddingPackage, setIsAddingPackage] = useState(false);
+  const [packageName, setPackageName] = useState("");
+  const [packageCategory, setPackageCategory] = useState("Full Home Turnkey");
+  const [packagePriceMin, setPackagePriceMin] = useState(1450000);
+  const [packagePriceMax, setPackagePriceMax] = useState(1850000);
+  const [packageUnit, setPackageUnit] = useState<any>("FIXED_PRICE");
+  const [packageConfigs, setPackageConfigs] = useState<string[]>(["2 BHK Apartment", "3 BHK Apartment"]);
+  const [packageInclusions, setPackageInclusions] = useState<string>("");
+  const [packageExclusions, setPackageExclusions] = useState<string>("");
+  const [packageBoardSpec, setPackageBoardSpec] = useState("CenturyPly BWP Marine Ply (IS 710)");
+  const [packageFinishSpec, setPackageFinishSpec] = useState("1mm Anti-Fingerprint Matte Laminate");
+  const [packageHardwareSpec, setPackageHardwareSpec] = useState("Hafele & Blum Soft-Close Hinges & Tandem Drawers");
+  const [packageWarrantyYears, setPackageWarrantyYears] = useState(10);
 
   // Step 7/Portfolio Form State
   const [isAddingProject, setIsAddingProject] = useState(false);
@@ -253,6 +270,48 @@ export default function InteriorProfileWizardPage() {
     }
   };
 
+  const handleCreatePackage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!packageName.trim()) {
+      alert("Please provide a package name.");
+      return;
+    }
+
+    try {
+      await savePackage({
+        data: {
+          packageName: packageName.trim(),
+          packageCategory,
+          priceMin: Number(packagePriceMin) || 1200,
+          priceMax: Number(packagePriceMax) || null,
+          pricingUnit: packageUnit,
+          applicablePropertyTypes: packageConfigs,
+          inclusions: packageInclusions
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          exclusions: packageExclusions
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          boardMaterialAndBrand: packageBoardSpec,
+          finishAndBrand: packageFinishSpec,
+          hardwareAndBrand: packageHardwareSpec,
+          woodworkWarrantyYears: Number(packageWarrantyYears) || 10,
+          isActive: true,
+        },
+      }).unwrap();
+
+      alert("Package created successfully!");
+      setIsAddingPackage(false);
+      setPackageName("");
+      setPackageInclusions("");
+      setPackageExclusions("");
+    } catch (err: any) {
+      alert(err?.data?.message || "Failed to save package.");
+    }
+  };
+
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectTitle.trim() || !projectCover.trim()) {
@@ -348,6 +407,18 @@ export default function InteriorProfileWizardPage() {
 
         <button
           type="button"
+          onClick={() => setActiveTab("PACKAGES")}
+          className={`shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            activeTab === "PACKAGES"
+              ? "bg-slate-900 text-white shadow-xs dark:bg-rose-600"
+              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+          }`}
+        >
+          Packages ({profile?.packages?.length || 0})
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab("PROJECTS")}
           className={`shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition ${
             activeTab === "PROJECTS"
@@ -358,17 +429,20 @@ export default function InteriorProfileWizardPage() {
           Portfolio Projects ({profile?.projects?.length || 0})
         </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab("LEADS")}
-          className={`shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition ${
-            activeTab === "LEADS"
-              ? "bg-slate-900 text-white shadow-xs dark:bg-rose-600"
-              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-          }`}
-        >
-          Client Inquiries & Leads ({profile?.inquiries?.length || 0})
-        </button>
+        {/* Client Inquiries Tab - ONLY visible if listing is published */}
+        {profile?.isPublished && (
+          <button
+            type="button"
+            onClick={() => setActiveTab("LEADS")}
+            className={`shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition ${
+              activeTab === "LEADS"
+                ? "bg-slate-900 text-white shadow-xs dark:bg-rose-600"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            Client Inquiries & Leads ({profile?.inquiries?.length || 0})
+          </button>
+        )}
       </div>
 
       {/* TAB 1: 7-STEP WIZARD */}
@@ -912,6 +986,28 @@ export default function InteriorProfileWizardPage() {
                     />
                     <p className="text-[11px] text-slate-400 mt-1">Set to 0 if your studio offers Free Initial Consultation.</p>
                   </div>
+
+                  {/* Material Packages Callout in Step 5 */}
+                  <div className="rounded-2xl border border-rose-200 bg-rose-50/60 p-4 text-xs dark:border-rose-900/50 dark:bg-rose-950/20">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                          <Package className="h-4 w-4 text-rose-600" />
+                          <span>Material-Based Turnkey Packages ({profile?.packages?.length || 0})</span>
+                        </h4>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          Package configurations (e.g. Essential ₹1,400/sq.ft, Premium ₹1,900/sq.ft, Luxe ₹2,600/sq.ft) with custom deliverables.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("PACKAGES")}
+                        className="rounded-xl bg-rose-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-rose-700 shrink-0"
+                      >
+                        Manage Packages &rarr;
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -1035,7 +1131,252 @@ export default function InteriorProfileWizardPage() {
         </div>
       )}
 
-      {/* TAB 2: PORTFOLIO PROJECTS */}
+      {/* TAB 2: PACKAGES */}
+      {activeTab === "PACKAGES" && (
+        <div className="mt-6 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Material & Pricing Packages</h2>
+              <p className="text-xs text-slate-500">
+                Create structured turnkey packages (Essential, Premium, Luxe) with defined materials & deliverables.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsAddingPackage(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-rose-700"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Create New Package</span>
+            </button>
+          </div>
+
+          {/* New Package Form */}
+          {isAddingPackage && (
+            <form
+              onSubmit={handleCreatePackage}
+              className="rounded-3xl border border-rose-200 bg-rose-50/40 p-5 sm:p-7 space-y-4 dark:border-rose-950 dark:bg-rose-950/20"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                  Create Material Turnkey Package
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingPackage(false)}
+                  className="text-xs font-bold text-slate-500 hover:text-slate-800"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Package Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Premium 3BHK Turnkey Interior Package"
+                    value={packageName}
+                    onChange={(e) => setPackageName(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Package Category *
+                  </label>
+                  <select
+                    value={packageCategory}
+                    onChange={(e) => setPackageCategory(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                  >
+                    <option value="Full Home Turnkey">Full Home Turnkey</option>
+                    <option value="Modular Kitchen Only">Modular Kitchen Only</option>
+                    <option value="Wardrobes & Storage">Wardrobes & Storage</option>
+                    <option value="Living & Dining Makeover">Living & Dining Makeover</option>
+                    <option value="Commercial Office Fitout">Commercial Office Fitout</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Starting Price (₹) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={packagePriceMin}
+                    onChange={(e) => setPackagePriceMin(Number(e.target.value))}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Max Price (₹) (Optional)
+                  </label>
+                  <input
+                    type="number"
+                    value={packagePriceMax}
+                    onChange={(e) => setPackagePriceMax(Number(e.target.value))}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Pricing Unit *
+                  </label>
+                  <select
+                    value={packageUnit}
+                    onChange={(e) => setPackageUnit(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                  >
+                    <option value="FIXED_PRICE">Fixed Lump-Sum Package (₹)</option>
+                    <option value="PER_SQFT">₹ per Sq. Ft.</option>
+                    <option value="PER_ROOM">₹ per Room</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Material Specs */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Board / Plywood Spec
+                  </label>
+                  <input
+                    type="text"
+                    value={packageBoardSpec}
+                    onChange={(e) => setPackageBoardSpec(e.target.value)}
+                    placeholder="e.g. CenturyPly BWP 710"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Finish & Brand Spec
+                  </label>
+                  <input
+                    type="text"
+                    value={packageFinishSpec}
+                    onChange={(e) => setPackageFinishSpec(e.target.value)}
+                    placeholder="e.g. Merino 1mm Matte / Acrylic"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Hardware & Fittings Spec
+                  </label>
+                  <input
+                    type="text"
+                    value={packageHardwareSpec}
+                    onChange={(e) => setPackageHardwareSpec(e.target.value)}
+                    placeholder="e.g. Hafele Soft-Close Hinges"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+              </div>
+
+              {/* Inclusions & Exclusions */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Inclusions (Comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={packageInclusions}
+                    onChange={(e) => setPackageInclusions(e.target.value)}
+                    placeholder="e.g. 3D Renders, Modular Kitchen, Beds, False Ceiling, Painting"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Exclusions (Comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={packageExclusions}
+                    onChange={(e) => setPackageExclusions(e.target.value)}
+                    placeholder="e.g. Civil structural changes, White goods, Appliances"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isPackageSaving}
+                className="w-full rounded-xl bg-rose-600 py-3 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-rose-700"
+              >
+                {isPackageSaving ? "Saving Package..." : "Publish Package"}
+              </button>
+            </form>
+          )}
+
+          {/* Package Cards List */}
+          {(profile?.packages || []).length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-800 dark:bg-slate-900">
+              <Package className="mx-auto h-12 w-12 text-slate-400" />
+              <h3 className="mt-3 text-base font-bold text-slate-900 dark:text-white">No packages configured yet</h3>
+              <p className="mt-1 text-xs text-slate-500 max-w-sm mx-auto">
+                Offering turnkey packages with upfront material specs boosts lead conversion and builds client trust.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {profile!.packages!.map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="rounded-full bg-rose-50 px-2.5 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
+                        {pkg.packageCategory}
+                      </span>
+                      <span className="text-xs font-bold text-emerald-600">Active</span>
+                    </div>
+                    <h4 className="mt-2 text-base font-bold text-slate-900 dark:text-white line-clamp-1">
+                      {pkg.packageName}
+                    </h4>
+                    <p className="mt-1 text-xl font-black text-slate-900 dark:text-white">
+                      ₹{pkg.priceMin?.toLocaleString("en-IN")}
+                      <span className="text-xs font-normal text-slate-400 ml-1">
+                        {pkg.pricingUnit === "PER_SQFT" ? "/sq.ft." : "Lump sum"}
+                      </span>
+                    </p>
+
+                    <div className="mt-3 text-xs text-slate-500 space-y-1 border-t border-slate-100 pt-3 dark:border-slate-800">
+                      {pkg.boardMaterialAndBrand && (
+                        <p className="truncate"><strong>Board:</strong> {pkg.boardMaterialAndBrand}</p>
+                      )}
+                      {pkg.hardwareAndBrand && (
+                        <p className="truncate"><strong>Hardware:</strong> {pkg.hardwareAndBrand}</p>
+                      )}
+                      <p><strong>Warranty:</strong> {pkg.woodworkWarrantyYears || 10} Years</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 3: PORTFOLIO PROJECTS */}
       {activeTab === "PROJECTS" && (
         <div className="mt-6 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
