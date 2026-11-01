@@ -291,6 +291,8 @@ export function HomeExperience({
 
       <div className="bg-gradient-to-b from-slate-50/80 via-white to-white dark:from-slate-900/45 dark:via-slate-950 dark:to-slate-950">
       <main className="mx-auto max-w-6xl overflow-x-clip px-4 pt-2 pb-5 sm:pt-3 sm:pb-6 sm:px-6">
+        <FeaturedProjectsSection selectedCity={selectedCity} />
+
         <ListingBlock
           isFirstBlock
           title={
@@ -352,8 +354,6 @@ export function HomeExperience({
           }}
           listings={budgetListings}
         />
-
-        <FeaturedProjectsSection selectedCity={selectedCity} />
 
         <FeaturedFlatAvailableSection selectedCity={selectedCity} />
 
@@ -746,31 +746,157 @@ function FeaturedProjectCard({ project }: { project: any }) {
   );
 }
 
+const MUMBAI_FALLBACK_PROJECTS: any[] = [
+  {
+    id: 355,
+    slug: "mayfair-vishwaraja-titwala",
+    name: "Mayfair Vishwaraja",
+    developerName: "Mayfair Housing",
+    locality: "Titwala East",
+    cityName: "Mumbai",
+    status: "READY_TO_MOVE",
+    priceMin: 2200000,
+    priceMax: 4800000,
+    images: [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&auto=format&fit=crop&q=80",
+    ],
+    configurations: [
+      { id: 1050, bhkType: "1 RK" },
+      { id: 1051, bhkType: "1 BHK" },
+      { id: 1052, bhkType: "2 BHK" },
+    ],
+  },
+  {
+    id: 356,
+    slug: "unnathi-woods-thane",
+    name: "Unnathi Woods",
+    developerName: "Raunak Group",
+    locality: "Ghodbunder Road, Thane West",
+    cityName: "Mumbai",
+    status: "READY_TO_MOVE",
+    priceMin: 5200000,
+    priceMax: 9200000,
+    images: [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&auto=format&fit=crop&q=80",
+    ],
+    configurations: [
+      { id: 1053, bhkType: "1 BHK" },
+      { id: 1054, bhkType: "2 BHK" },
+    ],
+  },
+  {
+    id: 225,
+    slug: "oberoi-sky-city-borivali-east-mumbai",
+    name: "Oberoi Sky City",
+    developerName: "Oberoi Realty",
+    locality: "Borivali East",
+    cityName: "Mumbai",
+    status: "UNDER_CONSTRUCTION",
+    priceMin: 35000000,
+    priceMax: 68000000,
+    images: [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/oberoi-sky-city-borivali-east-mumbai/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/oberoi-sky-city-borivali-east-mumbai/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/oberoi-sky-city-borivali-east-mumbai/photo_3.webp",
+    ],
+    configurations: [
+      { id: 660, bhkType: "3 BHK Compact" },
+      { id: 661, bhkType: "3 BHK Large" },
+      { id: 662, bhkType: "4 BHK" },
+    ],
+  },
+  {
+    id: 224,
+    slug: "piramal-mahalaxmi-mahalaxmi-mumbai",
+    name: "Piramal Mahalaxmi",
+    developerName: "Piramal Realty",
+    locality: "Mahalaxmi",
+    cityName: "Mumbai",
+    status: "UNDER_CONSTRUCTION",
+    priceMin: 62000000,
+    priceMax: 125000000,
+    images: [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/piramal-mahalaxmi-mahalaxmi-mumbai/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/piramal-mahalaxmi-mahalaxmi-mumbai/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/piramal-mahalaxmi-mahalaxmi-mumbai/photo_3.webp",
+    ],
+    configurations: [
+      { id: 657, bhkType: "2 BHK" },
+      { id: 658, bhkType: "3 BHK" },
+      { id: 659, bhkType: "4 BHK" },
+    ],
+  },
+  {
+    id: 223,
+    slug: "kalpataru-avana-parel-mumbai",
+    name: "Kalpataru Avana",
+    developerName: "Kalpataru Limited",
+    locality: "Parel",
+    cityName: "Mumbai",
+    status: "READY_TO_MOVE",
+    priceMin: 85000000,
+    priceMax: 145000000,
+    images: [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/kalpataru-avana-parel-mumbai/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/kalpataru-avana-parel-mumbai/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/kalpataru-avana-parel-mumbai/photo_3.webp",
+    ],
+    configurations: [
+      { id: 654, bhkType: "3 BHK" },
+      { id: 655, bhkType: "4 BHK" },
+      { id: 656, bhkType: "5 BHK Duplex" },
+    ],
+  },
+  {
+    id: 222,
+    slug: "rustomjee-crown-prabhadevi-mumbai",
+    name: "Rustomjee Crown",
+    developerName: "Rustomjee Group",
+    locality: "Prabhadevi",
+    cityName: "Mumbai",
+    status: "UNDER_CONSTRUCTION",
+    priceMin: 75000000,
+    priceMax: 155000000,
+    images: [
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/rustomjee-crown-prabhadevi-mumbai/photo_1.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/rustomjee-crown-prabhadevi-mumbai/photo_2.webp",
+      "https://pub-47ad872a9b3848e190cdf10b7ad7a298.r2.dev/projects/photos/rustomjee-crown-prabhadevi-mumbai/photo_3.webp",
+    ],
+    configurations: [
+      { id: 651, bhkType: "3 BHK" },
+      { id: 652, bhkType: "4 BHK" },
+      { id: 653, bhkType: "5 BHK" },
+    ],
+  },
+];
+
 function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
   const isIdle = useIdleState(1200);
-  const normalizedCity = selectedCity?.toLowerCase().includes("delhi")
+  const effectiveCity = selectedCity || "Mumbai";
+  const normalizedCity = effectiveCity.toLowerCase().includes("delhi")
     ? "New Delhi"
-    : (selectedCity || undefined);
+    : effectiveCity;
 
-  // Try local city first, then nationwide fallback
+  // Try local city projects first (defaults to Mumbai projects)
   const { data: cityData, isLoading: isCityLoading } = useSearchProjectsQuery(
     { city: normalizedCity, pageSize: 6 },
-    { skip: !isIdle || !normalizedCity }
-  );
-  const { data: fallbackData, isLoading: isFallbackLoading } = useSearchProjectsQuery(
-    { pageSize: 6 },
-    { skip: !isIdle || Boolean(normalizedCity) }
+    { skip: !isIdle }
   );
 
-  const cityProjects = cityData?.items ?? [];
-  const fallbackProjects = fallbackData?.items ?? [];
-  const projects = cityProjects.length > 0 ? cityProjects : fallbackProjects;
-  const isLoading = normalizedCity ? isCityLoading : isFallbackLoading;
+  const apiProjects = cityData?.items ?? [];
+  const projects = apiProjects.length > 0
+    ? apiProjects
+    : (effectiveCity.toLowerCase() === "mumbai" ? MUMBAI_FALLBACK_PROJECTS : []);
+  const isLoading = isCityLoading && projects.length === 0;
 
-  if (!isLoading && projects.length === 0) return null;
+  const displayCity = projects.length > 0
+    ? (typeof projects[0].city === "string" ? projects[0].city : (projects[0].cityName || effectiveCity))
+    : effectiveCity;
 
   return (
-    <section className="mt-6 sm:mt-10">
+    <section className="mt-2 sm:mt-4">
       <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
@@ -778,13 +904,11 @@ function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
             <span>Direct From Top Developers</span>
           </div>
           <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
-            {cityProjects.length > 0 && selectedCity
-              ? `New Projects in ${selectedCity}`
-              : "Featured New Residential Projects"}
+            {`New Projects in ${displayCity}`}
           </h2>
         </div>
         <Link
-          href="/new-projects"
+          href={`/new-projects${displayCity ? `?city=${encodeURIComponent(displayCity)}` : ""}`}
           prefetch={false}
           className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 shrink-0"
         >
@@ -802,7 +926,7 @@ function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
         </div>
       ) : (
         <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
-          {projects.slice(0, 8).map((project) => (
+          {projects.slice(0, 6).map((project) => (
             <div
               key={project.id}
               className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]"
