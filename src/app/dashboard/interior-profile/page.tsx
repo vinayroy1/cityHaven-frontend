@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useGetMyInteriorListingsQuery, useCreateInteriorListingMutation } from "@/features/interiors/api";
 import { StatusBadge } from "@/components/interiors/manage/StatusBadge";
+import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { InteriorListingStatus, InteriorProfile } from "@/types/interior.types";
 
 export default function MyInteriorListingsPage() {
@@ -30,6 +31,9 @@ export default function MyInteriorListingsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [businessName, setBusinessName] = useState("");
   const [primaryCity, setPrimaryCity] = useState("");
+  const [primaryState, setPrimaryState] = useState("");
+  const [primaryLat, setPrimaryLat] = useState<number | null>(null);
+  const [primaryLng, setPrimaryLng] = useState<number | null>(null);
   const [providerType, setProviderType] = useState<"INDIVIDUAL" | "COMPANY">("COMPANY");
 
   const handleCreateNew = async (e: React.FormEvent) => {
@@ -40,11 +44,17 @@ export default function MyInteriorListingsPage() {
         businessName: businessName.trim(),
         displayName: businessName.trim(),
         primaryCity: primaryCity.trim(),
+        primaryState: primaryState || undefined,
+        primaryLat: primaryLat ?? undefined,
+        primaryLng: primaryLng ?? undefined,
         providerType,
       }).unwrap();
       setShowCreateModal(false);
       setBusinessName("");
       setPrimaryCity("");
+      setPrimaryState("");
+      setPrimaryLat(null);
+      setPrimaryLng(null);
       router.push(`/dashboard/interior-profile/setup?profileId=${res.id}`);
     } catch (err) {
       console.error("Failed to create interior listing", err);
@@ -248,14 +258,23 @@ export default function MyInteriorListingsPage() {
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Primary Operating City *
                 </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Mumbai, Bengaluru, Delhi NCR"
-                  value={primaryCity}
-                  onChange={(e) => setPrimaryCity(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-purple-600 focus:outline-none focus:ring-1 focus:ring-purple-600 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
+                <div className="mt-1">
+                  <PropertyListingCitySelector
+                    value={primaryCity}
+                    placeholder="Search and select city (e.g. Mumbai, Bengaluru)"
+                    onChange={(selected) => {
+                      setPrimaryCity(selected.name || "");
+                      if (selected.state) setPrimaryState(selected.state);
+                      setPrimaryLat(selected.lat ?? null);
+                      setPrimaryLng(selected.lng ?? null);
+                    }}
+                  />
+                </div>
+                {primaryState && (
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    State: <span className="font-medium text-slate-700 dark:text-slate-300">{primaryState}</span>
+                  </p>
+                )}
               </div>
 
               <div>
