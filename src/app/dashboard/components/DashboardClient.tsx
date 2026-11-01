@@ -12,6 +12,7 @@ import {
   BadgeCheck,
   Heart,
   Settings,
+  Paintbrush,
   Plus,
   ArrowUpRight,
   Coins,
@@ -130,6 +131,13 @@ export function DashboardClient() {
       description: "Agent license, RERA credentials, and in-person walkthrough service badges.",
       icon: BadgeCheck,
       iconClass: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400",
+    },
+    {
+      href: "/dashboard/interior-profile",
+      title: "Interior Studio Profile",
+      description: "Manage your designer or firm profile, multi-city branches, packages & portfolio projects.",
+      icon: Paintbrush,
+      iconClass: "bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400",
     },
     {
       href: "/dashboard/favorites",

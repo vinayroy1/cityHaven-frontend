@@ -1,0 +1,860 @@
+AWASIO
+Interior Designer & Design Company Listing
+Product Requirements Document (PRD)
+
+Version: 1.0
+Status: Finalized Product Requirements
+Module: Interior Designer Marketplace
+Platform: Awasio
+Scope: Listing Creation, Business Configuration and Listing Management
+
+1. Product Overview
+
+Awasio will introduce an Interior Designer & Design Company listing vertical within its existing property and flatmate ecosystem.
+
+The objective is to allow independent interior designers, architects, interior design studios and interior execution companies to create professional business listings using their existing Awasio accounts.
+
+The module will provide homeowners with the ability to discover interior professionals, compare services, understand material specifications, compare pricing packages and submit project enquiries.
+
+The interior listing must integrate with Awasio's existing common user profile, Organization functionality and credit wallet.
+
+1.1 Finalized Business Rules
+A single Awasio account will be used across all platform activities.
+No separate authentication system will be created for interior designers.
+Individual designers can create one interior business listing and manage one primary operating location.
+Companies must use their existing Awasio Organization.
+Companies can create multiple branches under one company listing.
+Both starting-price and material-based package pricing must be supported.
+Custom-quotation-only pricing must also be supported.
+At least one approved completed portfolio project is mandatory before publication.
+Material specifications must be captured separately from package pricing and actual project materials.
+Existing property and flatmate listing workflows must remain unchanged.
+Existing Awasio credit wallet functionality will be reused.
+2. Account and Listing Ownership
+2.1 Individual Interior Designer
+
+An existing Awasio user can activate an Individual Interior Designer listing.
+
+Information includes:
+
+Designer name.
+Professional profile.
+Business name.
+Profile photograph.
+Professional experience.
+Primary operating location.
+Services and specializations.
+Materials and brands.
+Pricing packages.
+Completed projects.
+Credentials.
+Contact information.
+
+Individual designers cannot create multiple branches.
+
+2.2 Interior Design Company
+
+An existing Awasio Organization owner can activate an Interior Design Company listing.
+
+The existing Organization will remain the primary business identity.
+
+Company-level information includes:
+
+Company name.
+Logo.
+Business description.
+Registered office information.
+Website and social links.
+Central contact information.
+Company credentials.
+Common portfolio.
+Company-wide services.
+
+The company can add multiple branches.
+
+Each branch can independently configure:
+
+Address and contact information.
+Services.
+Service locations.
+Material availability.
+Pricing packages.
+Starting prices.
+Consultation availability.
+Working hours.
+Project acceptance status.
+3. Listing Creation Wizard
+
+The listing creation process will consist of nine steps.
+
+Business Identity
+Location and Branches
+Services and Specializations
+Materials and Brands
+Pricing and Packages
+Portfolio and Completed Projects
+Team and Credentials
+Warranty and Customer Support
+Review and Publish
+
+Providers must be able to save their progress and continue later.
+
+4. Step 1 – Business Identity
+4.1 Provider Classification
+Individual Interior Designer
+Interior Design Company
+4.2 Business Categories
+
+Allow multiple selections:
+
+Interior Design Studio
+Interior Design Company
+Interior Architect
+Architecture Firm
+Turnkey Interior Contractor
+Modular Furniture Company
+Interior Renovation Company
+Interior Design Consultant
+4.3 Business Information
+Field	Requirement
+Provider type	Mandatory
+Business name	Mandatory
+Display name	Mandatory
+Business category	Mandatory
+Logo / profile image	Mandatory
+Cover banner	Optional
+Tagline	Optional
+About business	Mandatory
+Year established	Mandatory for companies
+Professional experience	Mandatory
+Team size	Conditional
+Website	Optional
+Instagram	Optional
+Facebook	Optional
+LinkedIn	Optional
+YouTube	Optional
+4.4 Professional Specializations
+Luxury Interior Design
+Residential Interior Design
+Commercial Interior Design
+Modular Interiors
+Turnkey Execution
+Space Planning
+Furniture Design
+Interior Styling
+Sustainable Interiors
+5. Step 2 – Location and Branch Management
+5.1 Individual Designer Location
+
+An individual designer can configure one primary operating location.
+
+Required information:
+
+Studio / Office name (optional).
+Address.
+City.
+Locality.
+PIN code.
+Map location.
+Contact number.
+Email.
+Working hours.
+Service cities.
+Service localities.
+Outstation project availability.
+5.2 Company Branch Management
+
+Companies can add multiple branches under the same company listing.
+
+Branch Information
+Field	Requirement
+Branch name	Mandatory
+Branch type	Mandatory
+Branch address	Mandatory
+City	Mandatory
+Locality	Mandatory
+PIN code	Mandatory
+Map location	Recommended
+Branch manager	Mandatory
+Contact number	Mandatory
+Branch email	Optional
+Working hours	Mandatory
+Branch photographs	Optional
+Services available	Mandatory
+Localities served	Mandatory
+Outstation projects	Optional
+Branch Types
+Head Office
+Design Studio
+Experience Centre
+Showroom
+Regional Office
+Manufacturing Unit
+Sales Office
+5.3 Branch Configurations
+
+Every company branch should independently manage:
+
+Available services.
+Service locations.
+Material availability.
+Pricing packages.
+Starting prices.
+Consultation options.
+Working hours.
+Project availability.
+
+Companies should have three configuration options:
+
+Use common company information and pricing.
+Override pricing for individual branches.
+Enable different packages and services at different branches.
+6. Step 3 – Services and Specializations
+6.1 Residential Interior Design
+Full Home Interior Design
+Living Room Design
+Bedroom Design
+Modular Kitchen
+Wardrobe Design
+Bathroom Design
+Balcony Design
+Furniture and Decor
+6.2 Commercial Interior Design
+Corporate Offices
+Retail Showrooms
+Restaurants and Cafes
+Hotels
+Clinics and Hospitals
+Educational Institutions
+Co-working Spaces
+6.3 Modular Interiors
+Modular Kitchen
+Modular Wardrobes
+Storage Units
+Custom Furniture
+Modular Workstations
+6.4 Renovation and Remodeling
+Full Home Renovation
+Kitchen Renovation
+Bathroom Renovation
+Civil Modifications
+Electrical Work
+Plumbing Work
+Painting
+False Ceiling
+6.5 Design and Consultation
+2D Floor Plans
+3D Visualization
+Space Planning
+Lighting Design
+Material Consultation
+Furniture Layout
+Site Supervision
+6.6 Execution Capabilities
+Design Only
+Material Procurement
+Manufacturing
+Installation
+Turnkey Execution
+Site Supervision
+Project Management
+Post-completion Maintenance
+6.7 Property Types Handled
+Studio Apartment
+1 BHK
+2 BHK
+3 BHK
+4 BHK
+5+ BHK
+Villa / Bungalow
+Penthouse
+Independent House
+Builder Floor
+Office
+Shop
+Restaurant
+Hotel
+Other
+6.8 Project Area Capacity
+
+Capture:
+
+Minimum project area.
+Maximum project area.
+Preferred project size.
+Small project acceptance.
+Large project acceptance.
+
+Suggested predefined area ranges:
+
+Below 500 sq.ft.
+500–1,000 sq.ft.
+1,000–1,500 sq.ft.
+1,500–2,500 sq.ft.
+2,500–5,000 sq.ft.
+Above 5,000 sq.ft.
+6.9 Design Styles
+Modern
+Contemporary
+Minimalist
+Scandinavian
+Traditional
+Luxury
+Industrial
+Bohemian
+Japandi
+Rustic
+Modern Classic
+Indian Ethnic
+Art Deco
+Sustainable
+7. Step 4 – Materials and Brands
+
+Awasio will provide a detailed material specification section to improve pricing transparency and homeowner confidence.
+
+7.1 Boards and Substrates
+BWP Marine Plywood
+BWR Plywood
+HDHMR
+MDF
+Particle Board
+Commercial Plywood
+
+Suggested brands:
+
+CenturyPly
+Greenply
+Austin
+Action TESA
+Greenpanel
+Merino
+7.2 Surface Finishes
+Matte Laminate
+Glossy Laminate
+Anti-fingerprint Laminate
+Acrylic
+Veneer
+PU Finish
+Duco Finish
+Melamine Polish
+PVC Membrane
+
+Suggested brands:
+
+Merino
+Greenlam
+CenturyLaminates
+Royale Touche
+7.3 Hardware and Fittings
+Hinges
+Soft-close Hinges
+Drawer Channels
+Tandem Boxes
+Lift-up Systems
+Sliding Systems
+Wardrobe Accessories
+Handles
+
+Suggested brands:
+
+Hettich
+Hafele
+Blum
+Ebco
+Godrej
+7.4 Countertops and Stones
+Granite
+Quartz
+Marble
+Engineered Stone
+Nano Surfaces
+7.5 Flooring and Wall Materials
+Vitrified Tiles
+Ceramic Tiles
+Marble
+Wooden Flooring
+SPC Flooring
+Wallpaper
+Wall Panels
+Natural Stone
+7.6 Electrical, Lighting and Plumbing
+Modular Switches
+Lighting Fixtures
+LED Profiles
+Smart Home Equipment
+Faucets
+Kitchen Sinks
+Bathroom Fittings
+Concealed Plumbing Systems
+7.7 Material Specification Fields
+
+For every selected material, capture:
+
+Field	Example
+Material category	Board
+Material name	BWP Plywood
+Brand	CenturyPly
+Product/model	Specific product
+Grade	IS 710
+Thickness	18 mm
+Finish	Applicable finish
+Application	Kitchen cabinets
+Warranty	Declared warranty
+Available branches	Delhi, Mumbai
+Package availability	Premium, Luxury
+Custom material	Yes / No
+
+Providers should be allowed to add custom materials and brands.
+
+Custom entries should be reviewed before inclusion in standardized material comparison filters.
+
+8. Step 5 – Pricing and Packages
+
+Awasio will support two mandatory pricing capabilities:
+
+Starting Price.
+Material-Based Packages.
+
+Providers can additionally choose Custom Quotation Only.
+
+8.1 Starting Price Configuration
+Field	Requirement
+Pricing type	Mandatory
+Minimum price	Mandatory when publishing a rate
+Maximum price	Optional
+Pricing unit	Mandatory
+Applicable service	Mandatory
+Applicable branch	Mandatory for companies
+Material level	Mandatory
+Material included	Yes / No
+Labour included	Yes / No
+Design included	Yes / No
+Installation included	Yes / No
+GST included	Yes / No
+Exclusions	Recommended
+
+Supported pricing units:
+
+Per sq.ft.
+Per room.
+Per unit.
+Fixed price.
+Per project.
+Custom quotation.
+
+Custom quotation-only providers can publish without displaying a numeric starting price.
+
+8.2 Material-Based Packages
+
+Providers can create multiple packages.
+
+Illustrative example:
+
+Package	Starting Price
+Essential	₹1,400/sq.ft.
+Premium	₹1,900/sq.ft.
+Luxury	₹2,600/sq.ft.
+
+These are sample prices and not prescribed market rates.
+
+Package Identity
+Package name.
+Package description.
+Package image.
+Package category.
+Package status.
+Package Pricing
+Minimum price.
+Maximum price.
+Pricing unit.
+Applicable property types.
+Applicable branches.
+Applicable services.
+Package Inclusions
+Design.
+2D drawings.
+3D visualization.
+Material procurement.
+Carpentry.
+Electrical.
+Plumbing.
+Painting.
+Installation.
+Site supervision.
+Package Material Specifications
+Board material and brand.
+Finish and brand.
+Hardware and brand.
+Countertop.
+Flooring.
+Lighting.
+Other materials.
+Package Warranty
+Woodwork warranty.
+Hardware warranty.
+Civil warranty.
+Electrical warranty.
+After-sales support.
+Package Conditions
+Exclusions.
+Additional charges.
+Transportation.
+GST.
+Payment terms.
+Package validity.
+8.3 Room-Wise Pricing
+
+Optional pricing configurations:
+
+Modular Kitchen.
+Wardrobe.
+Living Room.
+Bedroom.
+Bathroom.
+TV Unit.
+False Ceiling.
+Study Unit.
+Furniture.
+Other.
+
+Capture starting price, price range, fixed price, pricing unit, included materials and exclusions.
+
+8.4 Consultation Pricing
+
+Supported options:
+
+Free Online Consultation.
+Free Site Visit.
+Paid Online Consultation.
+Paid Site Visit.
+Paid Design Consultation.
+
+Capture consultation fee, duration, refundable status and applicable service area.
+
+8.5 Branch-Wise Pricing
+
+Companies can:
+
+Apply common pricing across branches.
+Configure custom prices for individual branches.
+Enable selected packages at specific branches.
+Configure different material availability by branch.
+
+Branch-specific pricing should override company pricing only when explicitly configured.
+
+9. Step 6 – Portfolio and Completed Projects
+
+At least one approved completed project is mandatory before public listing publication.
+
+9.1 Project Information
+Field	Requirement
+Project title	Mandatory
+Project category	Mandatory
+Property configuration	Mandatory
+City	Mandatory
+Locality	Optional
+Associated property / society	Optional
+Carpet area	Optional
+Project budget	Optional
+Completion date	Mandatory
+Execution duration	Optional
+Design style	Mandatory
+Services performed	Mandatory
+Project description	Mandatory
+Cover image	Mandatory
+9.2 Project Categories
+Residential
+Commercial
+Renovation
+Modular Kitchen
+Luxury Interiors
+Office Interiors
+Retail Interiors
+Hospitality Interiors
+9.3 Project Gallery
+
+Photos can be categorized into:
+
+Living Room
+Kitchen
+Master Bedroom
+Kids Bedroom
+Guest Bedroom
+Bathroom
+Dining Room
+Balcony
+Wardrobe
+Office
+Other
+
+Additional uploads:
+
+Before photographs.
+After photographs.
+Project videos.
+Design renders.
+9.4 Project Material Information
+
+Optionally capture actual materials used:
+
+Board brand and grade.
+Finish brand and type.
+Hardware brand.
+Countertop.
+Flooring.
+Lighting.
+Plumbing fittings.
+Warranty offered.
+
+Project materials must represent actual completed work, not simply the company's general material capabilities.
+
+9.5 Awasio Property Association
+
+Where a completed interior project relates to an existing Awasio property or society, providers can search and associate the relevant record.
+
+Client personal information and private property details must not be exposed without authorization.
+
+10. Step 7 – Team and Credentials
+10.1 Individual Designer
+
+Capture:
+
+Full name.
+Professional title.
+Education.
+Design qualification.
+Professional experience.
+Portfolio.
+Certifications.
+Professional registration, where applicable.
+Profile photograph.
+10.2 Company Team
+
+Companies can add multiple team members.
+
+Field	Requirement
+Team member name	Mandatory
+Profile photo	Optional
+Designation	Mandatory
+Experience	Recommended
+Qualification	Recommended
+Specialization	Recommended
+Branch association	Mandatory
+Introduction	Optional
+
+Supported designations:
+
+Founder
+Managing Director
+Principal Architect
+Interior Designer
+Architect
+Project Manager
+Site Engineer
+Execution Manager
+10.3 Individual Verification Documents
+PAN or other accepted identity document.
+Design qualification certificate.
+Council of Architecture registration, if claiming registered architect status.
+10.4 Company Verification Documents
+GSTIN, where applicable.
+Business registration.
+CIN / LLPIN, where applicable.
+Trade licence, where applicable.
+Company PAN.
+
+Verification must follow applicable legal requirements.
+
+11. Step 8 – Warranty and Customer Support
+
+Capture warranty information separately by category.
+
+Category	Information
+Woodwork	Duration, coverage, exclusions
+Hardware	Duration, coverage, exclusions
+Civil	Duration, coverage, exclusions
+Electrical	Duration, coverage, exclusions
+Plumbing	Duration, coverage, exclusions
+Waterproofing	Duration, coverage, exclusions
+Installation	Duration, coverage, exclusions
+
+Additional information:
+
+Free maintenance period.
+Paid maintenance availability.
+Warranty claim process.
+Support contact.
+Service response time.
+Warranty provider.
+
+Manufacturer warranties must be distinguished from company-provided warranties.
+
+12. Step 9 – Contact, Availability and Publication
+12.1 Contact Information
+Contact person.
+Primary mobile number.
+WhatsApp number.
+Business email.
+Public phone visibility.
+Public email visibility.
+Preferred contact method.
+Enquiry acceptance.
+12.2 Project Availability
+Accepting new projects.
+Not accepting new projects.
+Consultation only.
+Design-only availability.
+Turnkey availability.
+Expected project start date.
+Typical execution duration.
+12.3 Consultation Configuration
+Free online consultation.
+Free site visit.
+Paid site visit.
+Paid online consultation.
+Appointment required.
+
+Companies should be able to configure consultation availability separately for each branch.
+
+12.4 Publication Options
+Save as Draft.
+Preview Listing.
+Submit for Verification.
+Publish when eligible.
+Pause Listing.
+Mark Temporarily Unavailable.
+Archive Listing.
+
+A public listing must have at least one approved completed portfolio project and satisfy all mandatory publication requirements.
+
+13. Public Listing Page Requirements
+
+The public profile should display information in the following order:
+
+Business Overview.
+About Company / Designer.
+Services.
+Branches and Service Locations.
+Pricing and Packages.
+Material Specifications.
+Portfolio.
+Team.
+Credentials and Verification.
+Warranty and After-Sales Service.
+Reviews.
+Contact and Enquiry.
+13.1 Search Listing Card
+
+Display:
+
+Business name.
+Logo or cover photograph.
+Verification badge, where approved.
+Provider type.
+Primary city and locality.
+Experience.
+Starting price or Custom Quote label.
+Available package names.
+Primary services.
+Number of branches.
+Completed portfolio count.
+
+Do not overload the search card with detailed material specifications.
+
+14. Mandatory and Optional Field Matrix
+Section	Required for submission	Required for publication
+Provider type	Yes	Yes
+Business name	Yes	Yes
+Logo / profile image	Yes	Yes
+About description	Yes	Yes
+Primary location	Yes	Yes
+Company branch	At least one	At least one approved
+Services	At least one	At least one
+Property types	At least one	At least one
+Design styles	No	Recommended
+Material categories	Basic selections	Recommended
+Material brands	No	No
+Starting price / custom quote	Yes	Yes
+Material packages	Recommended	No
+Portfolio project	At least one submitted	At least one approved
+Project gallery	Yes	Approved gallery
+Team details	Conditional	No
+Credentials	Conditional	According to claims
+Warranty	No	No
+Contact information	Yes	Yes
+Project availability	Yes	Yes
+Verification	Documents as applicable	Required for verified badge
+15. Dashboard Management Requirements
+
+After publication, providers must be able to manage their business information through the existing Awasio dashboard.
+
+Required management sections:
+
+Interior Business Profile.
+Branches and Locations.
+Services and Specializations.
+Materials and Brands.
+Pricing and Packages.
+Portfolio Projects.
+Team Management.
+Verification and Credentials.
+Warranty and Support.
+Interior Enquiries and Leads.
+Reviews and Ratings.
+Promotions and Boosts.
+
+All information should be editable according to the provider's account permissions.
+
+16. Product Rules
+
+The following rules are considered finalized for version 1:
+
+One Awasio account across all activities.
+No separate interior designer login.
+Existing Organization reused for companies.
+Individual designers cannot add multiple branches.
+Companies can add multiple branches.
+Branches can configure services and prices independently.
+Starting-price and material-package pricing are both supported.
+Custom quotation-only pricing is supported.
+Package inclusions and exclusions must be disclosed.
+Material capabilities and actual project materials remain separate.
+One approved completed project is mandatory for publication.
+Verification badges require actual verification.
+Company identity and branch-specific commercial information remain separate.
+Existing property and flatmate workflows remain unchanged.
+Existing Awasio credit wallet is reused.
+17. Suggested Product Release Plan
+V1 – Interior Listing
+Business identity.
+Primary location.
+Company branches.
+Services.
+Property types.
+Materials and brands.
+Starting prices.
+Material-based packages.
+Portfolio.
+Publication workflow.
+V1.1 – Business Management
+Branch management.
+Team management.
+Credentials.
+Warranty.
+Enquiry management.
+Reviews and ratings.
+V1.2 – Advanced Discovery
+Advanced material filters.
+Material comparison.
+Project cost estimator.
+Branch-level promotions.
+Enhanced lead management.
+18. Final Product Direction
+
+Awasio should treat the Interior Designer module as a reusable professional business listing rather than a basic classified advertisement.
+
+The provider should manage business identity, branches, service capabilities, material specifications, pricing packages, completed projects and customer enquiries through one common Awasio dashboard.
+
+This structure will allow Awasio to introduce additional professional service categories in the future without disrupting its existing property search, property listing, flatmate search and flatmate listing ecosystem.
+
+End of Document

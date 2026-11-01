@@ -19,6 +19,7 @@ import {
   LogOut,
   MapPin,
   MessageSquare,
+  Paintbrush,
   PlusCircle,
   Settings,
   Shield,
@@ -50,6 +51,7 @@ const primaryNavLinks = [
   { label: "Buy", href: "/buy", icon: Home },
   { label: "Rent", href: "/rent", icon: Key },
   { label: "New Projects", href: "/new-projects", icon: Sparkles, isNew: true },
+  { label: "Interiors", href: "/interior-designers", icon: Paintbrush, isNew: true },
   { label: "PG / Coliving", href: "/pg", icon: BedDouble, xlOnly: true },
   { label: "Commercial", href: "/commercial", icon: Building2 },
   { label: "Plans", href: "/pricing", icon: CreditCard, badge: "PRO" },
@@ -73,6 +75,7 @@ const emiCalculatorLinks = [
 ];
 
 const categoryExploreLinks = [
+  { label: "Interior Designers", href: "/interior-designers", icon: Paintbrush, desc: "Architects, modular experts & decor firms" },
   { label: "PG & Co-living", href: "/pg", icon: BedDouble, desc: "Verified hostels & coliving spaces" },
   { label: "Plots & Land", href: "/plot", icon: MapPin, desc: "Residential & commercial plots" },
   { label: "Price Trends", href: "/price-trends", icon: TrendingUp, desc: "Locality price index & appreciation rates" },
@@ -231,6 +234,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   const accountMenuItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, badge: null, onClick: undefined },
     { label: "My Profile", href: "/dashboard/profile", icon: User, badge: null, onClick: undefined },
+    { label: "Interior Designer Profile", href: "/dashboard/interior-profile", icon: Paintbrush, badge: "New", onClick: undefined },
     { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null, onClick: undefined },
     { label: "My Flatmates", href: "/dashboard/flatmates", icon: Users, badge: null, onClick: undefined },
     { label: "Organization", href: "/dashboard/organization", icon: ShieldCheck, badge: null, onClick: undefined },

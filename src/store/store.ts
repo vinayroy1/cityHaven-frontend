@@ -15,6 +15,7 @@ import { leadsApi } from "@/features/leads/api";
 import { documentsApi } from "@/features/documents/api";
 import { notificationsApi } from "@/features/notifications/api";
 import { messagingApi } from "@/features/messaging/api";
+import { interiorsApi } from "@/features/interiors/api";
 
 export const makeStore = () =>
   configureStore({
@@ -28,6 +29,7 @@ export const makeStore = () =>
       [advisorsApi.reducerPath]: advisorsApi.reducer,
       [flatmatesApi.reducerPath]: flatmatesApi.reducer,
       [projectsApi.reducerPath]: projectsApi.reducer,
+      [interiorsApi.reducerPath]: interiorsApi.reducer,
       [blogApi.reducerPath]: blogApi.reducer,
       [locationsApi.reducerPath]: locationsApi.reducer,
       [leadsApi.reducerPath]: leadsApi.reducer,
@@ -44,6 +46,7 @@ export const makeStore = () =>
         advisorsApi.middleware,
         flatmatesApi.middleware,
         projectsApi.middleware,
+        interiorsApi.middleware,
         blogApi.middleware,
         locationsApi.middleware,
         leadsApi.middleware,

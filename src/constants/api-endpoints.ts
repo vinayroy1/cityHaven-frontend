@@ -244,4 +244,18 @@ export const API_ENDPOINTS = {
     download: (id: number | string) => `${BASE}/documents/${id}/download`,
     delete: (id: number | string) => `${BASE}/documents/${id}`,
   },
+  interiors: {
+    search: `${BASE}/interiors`,
+    detail: (slugOrId: string | number) => `${BASE}/interiors/detail/${slugOrId}`,
+    submitInquiry: (profileId: string | number) => `${BASE}/interiors/${profileId}/inquiries`,
+    me: `${BASE}/interiors/me`,
+    saveMe: `${BASE}/interiors/me`,
+    publishMe: `${BASE}/interiors/me/publish`,
+    branches: `${BASE}/interiors/me/branches`,
+    packages: `${BASE}/interiors/me/packages`,
+    packageDetail: (id: string | number) => `${BASE}/interiors/me/packages/${id}`,
+    projects: `${BASE}/interiors/me/projects`,
+    projectDetail: (id: string | number) => `${BASE}/interiors/me/projects/${id}`,
+    unlockInquiry: (inquiryId: string | number) => `${BASE}/interiors/me/inquiries/${inquiryId}/unlock`,
+  },
 };
