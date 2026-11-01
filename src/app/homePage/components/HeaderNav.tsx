@@ -52,8 +52,9 @@ const primaryNavLinks = [
   { label: "Rent", href: "/rent", icon: Key },
   { label: "New Projects", href: "/new-projects", icon: Sparkles, isNew: true },
   { label: "Interiors", href: "/interior-designers", icon: Paintbrush, isNew: true },
+  // Lower-priority links collapse into "More" on narrower desktops so the bar never overflows.
   { label: "PG / Coliving", href: "/pg", icon: BedDouble, xlOnly: true },
-  { label: "Commercial", href: "/commercial", icon: Building2 },
+  { label: "Commercial", href: "/commercial", icon: Building2, xxlOnly: true },
   { label: "Plans", href: "/pricing", icon: CreditCard, badge: "PRO" },
 ];
 
@@ -77,6 +78,7 @@ const emiCalculatorLinks = [
 const categoryExploreLinks = [
   { label: "Interior Designers", href: "/interior-designers", icon: Paintbrush, desc: "Architects, modular experts & decor firms" },
   { label: "PG & Co-living", href: "/pg", icon: BedDouble, desc: "Verified hostels & coliving spaces" },
+  { label: "Commercial", href: "/commercial", icon: Building2, desc: "Offices, shops & commercial spaces" },
   { label: "Plots & Land", href: "/plot", icon: MapPin, desc: "Residential & commercial plots" },
   { label: "Price Trends", href: "/price-trends", icon: TrendingUp, desc: "Locality price index & appreciation rates" },
   { label: "Find Flatmates", href: "/flatmate", icon: Users, desc: "Find verified roommates nearby" },
@@ -286,7 +288,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
         </div>
 
         {/* Center Desktop Navigation - Guaranteed Single Line */}
-        <nav className="hidden items-center gap-0.5 rounded-full border border-slate-200/70 bg-slate-100/60 p-1 backdrop-blur-md dark:border-slate-800/70 dark:bg-slate-900/60 lg:flex shrink-0">
+        <nav className="hidden shrink-0 items-center gap-0.5 rounded-full border border-slate-200/70 bg-slate-100/60 p-1 backdrop-blur-md dark:border-slate-800/70 dark:bg-slate-900/60 lg:flex">
           {primaryNavLinks
             .filter((link) => link.href !== "/pricing" || purchaseEnabled)
             .map((link) => {
@@ -297,7 +299,11 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                 href={link.href}
                 prefetch={false}
                 className={`relative items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-semibold tracking-wide whitespace-nowrap transition-all duration-200 ${
-                  "xlOnly" in link && link.xlOnly ? "hidden xl:flex" : "flex"
+                  "xxlOnly" in link && link.xxlOnly
+                    ? "hidden 2xl:flex"
+                    : "xlOnly" in link && link.xlOnly
+                      ? "hidden xl:flex"
+                      : "flex"
                 } ${
                   active
                     ? "bg-white text-rose-600 shadow-xs dark:bg-slate-800 dark:text-rose-400"
@@ -306,7 +312,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
               >
                 <span>{link.label}</span>
                 {"isNew" in link && link.isNew && (
-                  <span className="rounded-full bg-rose-500/10 px-1 py-0.2 text-[9px] font-black uppercase tracking-wider text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">
+                  <span className="hidden rounded-full bg-rose-500/10 px-1 py-0.2 text-[9px] font-black uppercase tracking-wider text-rose-600 dark:bg-rose-400/15 dark:text-rose-300 xl:inline">
                     New
                   </span>
                 )}
