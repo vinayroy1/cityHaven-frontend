@@ -52,12 +52,16 @@ export function InteriorWizard() {
     );
   }
 
+  const exitHref = profile?.id
+    ? `/dashboard/interior-profile/manage?profileId=${profile.id}`
+    : "/dashboard/interior-profile";
+
   return (
     <ListingWizardShell
       vertical={config}
       heading="List your interior studio"
       subheading="About 10 minutes. Saved as you go — come back any time."
-      exitHref="/dashboard/interior-profile/manage"
+      exitHref={exitHref}
       submitLabel="Submit for review"
       publishLabel="Submit & publish"
       onSubmitted={() => setDone("submitted")}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -10,54 +10,25 @@ import {
   MapPin,
   ExternalLink,
   ChevronRight,
-  Sparkles,
-  Layers,
-  ArrowRight,
-  ShieldCheck,
   Briefcase,
   AlertCircle,
   Loader2,
-  Calendar,
 } from "lucide-react";
 import { useGetMyInteriorListingsQuery, useCreateInteriorListingMutation } from "@/features/interiors/api";
 import { StatusBadge } from "@/components/interiors/manage/StatusBadge";
-import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
-import { InteriorListingStatus, InteriorProfile } from "@/types/interior.types";
+import { InteriorListingStatus } from "@/types/interior.types";
 
 export default function MyInteriorListingsPage() {
   const router = useRouter();
   const { data: listings = [], isLoading, isError, refetch } = useGetMyInteriorListingsQuery();
   const [createListing, { isLoading: isCreating }] = useCreateInteriorListingMutation();
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [businessName, setBusinessName] = useState("");
-  const [primaryCity, setPrimaryCity] = useState("");
-  const [primaryState, setPrimaryState] = useState("");
-  const [primaryLat, setPrimaryLat] = useState<number | null>(null);
-  const [primaryLng, setPrimaryLng] = useState<number | null>(null);
-  const [providerType, setProviderType] = useState<"INDIVIDUAL" | "COMPANY">("COMPANY");
 
-  const handleCreateNew = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!businessName.trim() || !primaryCity.trim()) return;
+  const handleStartNewListing = async () => {
     try {
-      const res = await createListing({
-        businessName: businessName.trim(),
-        displayName: businessName.trim(),
-        primaryCity: primaryCity.trim(),
-        primaryState: primaryState || undefined,
-        primaryLat: primaryLat ?? undefined,
-        primaryLng: primaryLng ?? undefined,
-        providerType,
-      }).unwrap();
-      setShowCreateModal(false);
-      setBusinessName("");
-      setPrimaryCity("");
-      setPrimaryState("");
-      setPrimaryLat(null);
-      setPrimaryLng(null);
+      const res = await createListing({}).unwrap();
       router.push(`/dashboard/interior-profile/setup?profileId=${res.id}`);
     } catch (err) {
-      console.error("Failed to create interior listing", err);
+      console.error("Failed to start interior listing", err);
     }
   };
 
@@ -80,11 +51,21 @@ export default function MyInteriorListingsPage() {
 
         <button
           type="button"
-          onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-purple-700 active:scale-[0.99]"
+          onClick={handleStartNewListing}
+          disabled={isCreating}
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-purple-700 active:scale-[0.99] disabled:opacity-60"
         >
-          <Plus className="h-4 w-4" />
-          <span>Add Interior Business / Studio</span>
+          {isCreating ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Starting Wizard…</span>
+            </>
+          ) : (
+            <>
+              <Plus className="h-4 w-4" />
+              <span>Add Interior Business / Studio</span>
+            </>
+          )}
         </button>
       </div>
 
@@ -122,11 +103,21 @@ export default function MyInteriorListingsPage() {
           </p>
           <button
             type="button"
-            onClick={() => setShowCreateModal(true)}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-purple-700"
+            onClick={handleStartNewListing}
+            disabled={isCreating}
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-purple-700 disabled:opacity-60"
           >
-            <Plus className="h-4 w-4" />
-            <span>Create Your First Listing</span>
+            {isCreating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Starting Wizard…</span>
+              </>
+            ) : (
+              <>
+                <Plus className="h-4 w-4" />
+                <span>Create Your First Listing</span>
+              </>
+            )}
           </button>
         </div>
       )}
@@ -225,115 +216,6 @@ export default function MyInteriorListingsPage() {
               </div>
             );
           })}
-        </div>
-      )}
-
-      {/* Modal to create a new interior listing */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              Add New Interior Business / Studio
-            </h2>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Create an independent business listing for your design firm or portfolio.
-            </p>
-
-            <form onSubmit={handleCreateNew} className="mt-4 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Business / Studio Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Aura Spaces Studio or Rohan Varma Designs"
-                  value={businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-purple-600 focus:outline-none focus:ring-1 focus:ring-purple-600 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Primary Operating City *
-                </label>
-                <div className="mt-1">
-                  <PropertyListingCitySelector
-                    value={primaryCity}
-                    placeholder="Search and select city (e.g. Mumbai, Bengaluru)"
-                    onChange={(selected) => {
-                      setPrimaryCity(selected.name || "");
-                      if (selected.state) setPrimaryState(selected.state);
-                      setPrimaryLat(selected.lat ?? null);
-                      setPrimaryLng(selected.lng ?? null);
-                    }}
-                  />
-                </div>
-                {primaryState && (
-                  <p className="mt-1 text-[11px] text-slate-500">
-                    State: <span className="font-medium text-slate-700 dark:text-slate-300">{primaryState}</span>
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Listing Type
-                </label>
-                <div className="mt-1.5 grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setProviderType("COMPANY")}
-                    className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
-                      providerType === "COMPANY"
-                        ? "border-purple-600 bg-purple-50 text-purple-700 dark:border-purple-500 dark:bg-purple-950/50 dark:text-purple-300"
-                        : "border-slate-200 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:text-slate-400"
-                    }`}
-                  >
-                    🏢 Company / Studio
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setProviderType("INDIVIDUAL")}
-                    className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
-                      providerType === "INDIVIDUAL"
-                        ? "border-purple-600 bg-purple-50 text-purple-700 dark:border-purple-500 dark:bg-purple-950/50 dark:text-purple-300"
-                        : "border-slate-200 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:text-slate-400"
-                    }`}
-                  >
-                    👤 Freelance Designer
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-6 flex items-center justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isCreating || !businessName.trim() || !primaryCity.trim()}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-purple-700 disabled:opacity-60"
-                >
-                  {isCreating ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" /> Creating…
-                    </>
-                  ) : (
-                    <>
-                      <span>Continue to Wizard</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       )}
     </div>
