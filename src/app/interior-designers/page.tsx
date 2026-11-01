@@ -31,9 +31,18 @@ import {
   DESIGN_STYLES,
   SERVICES_OFFERED,
 } from "@/constants/interior-data";
+import {
+  PropertyListingCitySelector,
+  type CitySelection,
+} from "@/components/propertyListing/PropertyListingCitySelector";
+import {
+  PropertyListingLocalitySelector,
+  type LocalitySelection,
+} from "@/components/propertyListing/PropertyListingLocalitySelector";
 
 export default function InteriorDesignersDirectoryPage() {
   const [selectedCity, setSelectedCity] = useState("Mumbai");
+  const [selectedState, setSelectedState] = useState("Maharashtra");
   const [selectedLocality, setSelectedLocality] = useState("ALL");
   const [providerType, setProviderType] = useState<InteriorProviderType | "ALL">("ALL");
   const [selectedService, setSelectedService] = useState("ALL");
@@ -211,7 +220,7 @@ export default function InteriorDesignersDirectoryPage() {
           {/* Top Search & Primary Filters Row */}
           <div className="grid grid-cols-1 gap-3 md:grid-cols-12 items-center">
             {/* Search Input Box */}
-            <div className="relative md:col-span-4">
+            <div className="relative md:col-span-3">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <input
                 type="text"
@@ -231,40 +240,33 @@ export default function InteriorDesignersDirectoryPage() {
               )}
             </div>
 
-            {/* City Dropdown */}
-            <div className="md:col-span-2">
+            {/* City Dropdown (Property Listing Nationwide Search) */}
+            <div className="md:col-span-3">
               <label className="sr-only">City</label>
-              <select
+              <PropertyListingCitySelector
                 value={selectedCity}
-                onChange={(e) => {
-                  setSelectedCity(e.target.value);
+                selectedState={selectedState}
+                onChange={(cityData: CitySelection) => {
+                  setSelectedCity(cityData.name);
+                  if (cityData.state) setSelectedState(cityData.state);
                   setSelectedLocality("ALL");
                 }}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-800 shadow-2xs focus:border-rose-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              >
-                {INTERIOR_CITIES.map((c) => (
-                  <option key={c} value={c}>
-                    City: {c}
-                  </option>
-                ))}
-              </select>
+                placeholder="Search city across India..."
+              />
             </div>
 
-            {/* Locality Dropdown (Dependent on City) */}
+            {/* Locality Dropdown (Property Listing Locality Search) */}
             <div className="md:col-span-3">
               <label className="sr-only">Locality</label>
-              <select
-                value={selectedLocality}
-                onChange={(e) => setSelectedLocality(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-800 shadow-2xs focus:border-rose-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              >
-                <option value="ALL">All Localities in {selectedCity}</option>
-                {availableLocalities.map((loc) => (
-                  <option key={loc} value={loc}>
-                    {loc}
-                  </option>
-                ))}
-              </select>
+              <PropertyListingLocalitySelector
+                value={selectedLocality === "ALL" ? "" : selectedLocality}
+                cityName={selectedCity}
+                selectedState={selectedState}
+                onChange={(locData: LocalitySelection) => {
+                  setSelectedLocality(locData.name);
+                }}
+                placeholder={`All localities in ${selectedCity || "city"}...`}
+              />
             </div>
 
             {/* Mobile Filter Toggle & Quick Actions */}

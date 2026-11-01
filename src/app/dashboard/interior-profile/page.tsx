@@ -46,6 +46,14 @@ import {
   PROPERTY_TYPES,
   PRICING_UNITS,
 } from "@/constants/interior-data";
+import {
+  PropertyListingCitySelector,
+  type CitySelection,
+} from "@/components/propertyListing/PropertyListingCitySelector";
+import {
+  PropertyListingLocalitySelector,
+  type LocalitySelection,
+} from "@/components/propertyListing/PropertyListingLocalitySelector";
 
 const WIZARD_STEPS = [
   { id: 1, title: "Identity", desc: "Studio & Type" },
@@ -80,6 +88,7 @@ export default function InteriorProfileWizardPage() {
 
   // Step 2: Location
   const [primaryCity, setPrimaryCity] = useState("Mumbai");
+  const [primaryState, setPrimaryState] = useState("Maharashtra");
   const [primaryLocality, setPrimaryLocality] = useState("Bandra West");
   const [primaryAddress, setPrimaryAddress] = useState("");
   const [serviceCities, setServiceCities] = useState<string[]>(["Mumbai"]);
@@ -132,6 +141,7 @@ export default function InteriorProfileWizardPage() {
   const [projectStyle, setProjectStyle] = useState("Modern");
   const [projectBudget, setProjectBudget] = useState(1800000);
   const [projectCity, setProjectCity] = useState("Mumbai");
+  const [projectState, setProjectState] = useState("Maharashtra");
   const [projectLocality, setProjectLocality] = useState("Bandra West");
   const [projectArea, setProjectArea] = useState(1350);
   const [projectDurationDays, setProjectDurationDays] = useState(50);
@@ -555,58 +565,43 @@ export default function InteriorProfileWizardPage() {
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 2: Location & Coverage</h3>
-                    <p className="text-xs text-slate-500">Specify your headquarters and local delivery zones.</p>
+                    <p className="text-xs text-slate-500">
+                      Search and select your primary operating city and hub across India using verified database suggestions.
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {/* Primary City Dropdown */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Primary City Search Dropdown from Property Listing Flow */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        Primary City *
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        Primary Operating City *
                       </label>
-                      <select
+                      <PropertyListingCitySelector
                         value={primaryCity}
-                        onChange={(e) => {
-                          setPrimaryCity(e.target.value);
-                          const firstLoc = CITY_LOCALITIES[e.target.value]?.[0] || "";
-                          setPrimaryLocality(firstLoc);
+                        selectedState={primaryState}
+                        onChange={(cityData: CitySelection) => {
+                          setPrimaryCity(cityData.name);
+                          if (cityData.state) setPrimaryState(cityData.state);
+                          setPrimaryLocality("");
                         }}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 shadow-2xs dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                      >
-                        {INTERIOR_CITIES.map((c) => (
-                          <option key={c} value={c}>
-                            {c}
-                          </option>
-                        ))}
-                      </select>
+                        placeholder="Search city across India..."
+                      />
                     </div>
 
-                    {/* Primary Locality Dropdown */}
+                    {/* Primary Locality Search Dropdown from Property Listing Flow */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                         Primary Locality / Hub *
                       </label>
-                      {availableLocalities.length > 0 ? (
-                        <select
-                          value={primaryLocality}
-                          onChange={(e) => setPrimaryLocality(e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 shadow-2xs dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                        >
-                          {availableLocalities.map((loc) => (
-                            <option key={loc} value={loc}>
-                              {loc}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <input
-                          type="text"
-                          value={primaryLocality}
-                          onChange={(e) => setPrimaryLocality(e.target.value)}
-                          placeholder="e.g. Bandra West"
-                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                        />
-                      )}
+                      <PropertyListingLocalitySelector
+                        value={primaryLocality}
+                        cityName={primaryCity}
+                        selectedState={primaryState}
+                        onChange={(locData: LocalitySelection) => {
+                          setPrimaryLocality(locData.name);
+                        }}
+                        placeholder={`Search localities in ${primaryCity || "city"}...`}
+                      />
                     </div>
                   </div>
 
@@ -1112,47 +1107,31 @@ export default function InteriorProfileWizardPage() {
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Project City *
                   </label>
-                  <select
+                  <PropertyListingCitySelector
                     value={projectCity}
-                    onChange={(e) => {
-                      setProjectCity(e.target.value);
-                      setProjectLocality(CITY_LOCALITIES[e.target.value]?.[0] || "");
+                    selectedState={projectState}
+                    onChange={(cityData: CitySelection) => {
+                      setProjectCity(cityData.name);
+                      if (cityData.state) setProjectState(cityData.state);
+                      setProjectLocality("");
                     }}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
-                  >
-                    {INTERIOR_CITIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="Search city across India..."
+                  />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Locality Dropdown *
                   </label>
-                  {availableProjectLocalities.length > 0 ? (
-                    <select
-                      value={projectLocality}
-                      onChange={(e) => setProjectLocality(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
-                    >
-                      {availableProjectLocalities.map((loc) => (
-                        <option key={loc} value={loc}>
-                          {loc}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type="text"
-                      value={projectLocality}
-                      onChange={(e) => setProjectLocality(e.target.value)}
-                      placeholder="e.g. Bandra West"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
-                    />
-                  )}
+                  <PropertyListingLocalitySelector
+                    value={projectLocality}
+                    cityName={projectCity}
+                    selectedState={projectState}
+                    onChange={(locData: LocalitySelection) => {
+                      setProjectLocality(locData.name);
+                    }}
+                    placeholder={`Locality in ${projectCity || "city"}...`}
+                  />
                 </div>
 
                 <div>
