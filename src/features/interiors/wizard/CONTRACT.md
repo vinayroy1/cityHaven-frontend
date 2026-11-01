@@ -282,7 +282,6 @@ Step ids == section keys == `InteriorWizardSection` == `:section` in `PATCH /int
 | Section | Kind / component | Badge | Visible when | Fields / requires |
 |---|---|---|---|---|
 | `providerType` | custom `ProviderTypeCards` | SUBMIT |  | requires: `identity.providerType`; props: - |
-| `organization` | custom `OrganizationLinker` | SUBMIT | {"preset":"isCompany"} | requires: `identity.organizationId` when {"preset":"isCompany"}; props: - |
 | `individualBasics` | config | SUBMIT | {"preset":"isIndividual"} | `identity.fullName` (text, required)<br>`identity.displayName` (text, required)<br>`identity.experienceYears` (number) |
 | `companyBasics` | config | SUBMIT | {"preset":"isCompany"} | `identity.businessName` (text, required)<br>`identity.legalName` (text)<br>`identity.yearEstablished` (number)<br>`identity.teamSizeRange` (chip-radio) |
 | `pitch` | config | PUBLISH | {"preset":"hasProviderType"} | `identity.tagline` (text)<br>`identity.about` (textarea, requiredFor PUBLISH) |
@@ -362,7 +361,6 @@ Write through `form.setValue(path, v, { shouldDirty: true, shouldValidate: true 
 | Name | Owns path(s) | Notes |
 |---|---|---|
 | `ProviderTypeCards` | `identity.providerType` | Two big cards; AlertDialog confirm when switching with data present. |
-| `OrganizationLinker` | `identity.organizationId` | `useMyOrganizationsQuery` (OWNER/ADMIN), inline create via `useCreateOrganizationMutation`, then `useLinkInteriorOrganizationMutation`. |
 | `PrimaryLocationEditor` | `location.primary*`, `serviceCities`, `serviceLocalities` | Paths come in `props.*Field`. City/Locality selectors, "Serve all of my state" chip. |
 | `BranchManager` | `location.branches` | Cards + Sheet/Drawer; add/update/delete mutations immediately; sets `serverId`; one HEAD_OFFICE. |
 | `MaterialSpecTable` | `materials.materialSpecs` | Accordions per `MaterialCategory`, quick-add chips, custom material/brand (`isCustom`). |
@@ -370,7 +368,7 @@ Write through `form.setValue(path, v, { shouldDirty: true, shouldValidate: true 
 | `RoomPricingTable` | `pricing.roomPricing` | Rows of `RoomPricingRow`. |
 | `BranchPricingOverrides` | `pricing.branchOverrides` | Only branches with `overridesCompanyPricing` and a `serverId`. |
 | `PortfolioManager` | `portfolio.projects` | Grid + multi-section editor (basics, room galleries, before/after, materials used, services+description). `props.minImages = 3`. |
-| `TeamManager` | `team.members` | "Import from organization" via `useOrganizationMembersQuery`. |
+| `TeamManager` | `team.members` | Manual add/edit only (no property Organization import). |
 | `DocumentUploader` | `team.credentials` | Doc types filtered by provider (`CREDENTIAL_DOC_TYPES[].for`); status chips. |
 | `WarrantyMatrix` | `warranty.warranties` | One row per `WarrantyCategory`; add more categories. |
 | `ReadinessChecklist` | — | `readiness` matrix Submit × Publish; item click → `goToStep(stepId, fieldPath)`. |
@@ -651,7 +649,6 @@ export interface InteriorWizardValues {
   wizardStep: number;
   identity: {
     providerType: InteriorProviderType | "";
-    organizationId: number | null;
     fullName: string;
     displayName: string;
     businessName: string;
@@ -780,7 +777,6 @@ Auth: every `/interiors/me/**` route requires a logged-in user and acts **only**
 | `useSubmitMyInteriorProfileMutation` | POST `/interiors/me/submit` | `{}` | `InteriorProfile` (status → SUBMITTED, `lastSubmittedAt`) ; 422 with `fieldErrors` if submit readiness fails |
 | `usePublishMyInteriorProfileMutation` (existing) | POST `/interiors/me/publish` | — | `InteriorProfile`; 422 unless publish readiness passes **and** ≥1 approved project **and** verified doc |
 | `useUpdateMyInteriorStatusMutation` | POST `/interiors/me/status` | `{ status: "PAUSED"\|"TEMP_UNAVAILABLE"\|"ARCHIVED"\|"PUBLISHED", until?: ISOString\|null, reason?: string }` | `InteriorProfile`. `PUBLISHED` = resume; only allowed from PAUSED/TEMP_UNAVAILABLE/ARCHIVED when previously published. |
-| `useLinkInteriorOrganizationMutation` | POST `/interiors/me/organization` | `{ organizationId: number }` | `InteriorProfile` (caller must be OWNER/ADMIN of org) |
 | `useAddCompanyBranchMutation` (existing) | POST `/interiors/me/branches` | `Partial<InteriorBranch>` | `InteriorBranch` |
 | `useUpdateCompanyBranchMutation` | PUT `/interiors/me/branches/:id` | `Partial<InteriorBranch>` | `InteriorBranch` |
 | `useDeleteCompanyBranchMutation` | DELETE `/interiors/me/branches/:id` | — | `{ id }` |
@@ -830,7 +826,7 @@ InteriorTeamMember add: `branchId int?, orgMemberId int?, isPublic bool default 
 
 ### Section PATCH payload mapping (data keys per `:section`)
 `formToProfilePayload(section, values)` (Chunk B mapper) sends `InteriorProfile` keys; legacy flat fields are derived client-side and should also be accepted:
-- `identity`: providerType, organizationId, fullName, displayName, businessName, legalName, tagline, about, experienceYears, yearEstablished, teamSizeRange, logo, coverBanner, slug, website, instagram, facebook, linkedin, youtube
+- `identity`: providerType, fullName, displayName, businessName, legalName, tagline, about, experienceYears, yearEstablished, teamSizeRange, logo, coverBanner, slug, website, instagram, facebook, linkedin, youtube
 - `location`: primaryCity, primaryState, primaryLocality, primaryAddress, primaryPincode, primaryLat, primaryLng, serviceCities, serviceLocalities, servesOutstation, siteVisitRadiusKm (branches use own endpoints)
 - `services`: servicesOffered, commercialServices, propertyTypesHandled, budgetSegments, designStyles, executionCapabilities, areaCapacity, minProjectAreaSqft, maxProjectAreaSqft
 - `materials`: materialSpecs + derived boardMaterials, boardBrands, surfaceFinishes, finishBrands, hardwareFittings, hardwareBrands, countertops, flooringAndWalls
@@ -839,3 +835,7 @@ InteriorTeamMember add: `branchId int?, orgMemberId int?, isPublic bool default 
 - `team`: qualification, institute, coaRegistrationNumber, iiidMembershipNumber, awards, certifications, gstin, panNumber, cinNumber (members/documents use own endpoints)
 - `warranty`: warranties, support + derived woodworkWarrantyYears, hardwareWarrantyYears, civilWarrantyYears, freeMaintenanceMonths
 - `contact`: contact (ContactAvailability) + derived contactPerson, primaryPhone, whatsappPhone, businessEmail, isPhonePublic, isEmailPublic, preferredContactMethod, isAcceptingProjects
+
+## Separation from property Organizations
+
+Interior listings are independent of property `Organization`s. Company identity (business/legal name, logo, year established, team size), team members (`InteriorTeamMember`) and verification documents (`InteriorCredentialDocument`, GST/PAN/COI) live entirely on the interior listing. The wizard never reads, writes or requires `organizationId`; the nullable `InteriorProfile.organizationId` column remains in the schema/API type for backward compatibility only and is ignored.

@@ -37,7 +37,6 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
     ["contactPhone", ["SUBMIT", "PUBLISH"], (v) => void (v.contact.phone = "12345")],
   ];
   if (kind === "COMPANY") {
-    cases.push(["organization", ["SUBMIT", "PUBLISH"], (v) => void (v.identity.organizationId = null)]);
     cases.push(["headOffice", ["SUBMIT", "PUBLISH"], (v) => void (v.location.branches[0].branchType = "BRANCH")]);
   }
 
@@ -60,9 +59,13 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
 });
 
 describe("interior readiness specifics", () => {
+  it("company listings never require a property organization", () => {
+    const ids = run(completeValues("COMPANY")).items.map((i) => i.id);
+    expect(ids.some((id) => id.startsWith("organization"))).toBe(false);
+  });
+
   it("company-only rules do not apply to individuals", () => {
     const ids = run(completeValues("INDIVIDUAL")).items.map((i) => i.id);
-    expect(ids).not.toContain("organization:SUBMIT");
     expect(ids).not.toContain("headOffice:SUBMIT");
   });
 

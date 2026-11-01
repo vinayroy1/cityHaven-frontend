@@ -53,7 +53,7 @@ describe("interior step config", () => {
       expect.arrayContaining(["identity.providerType", "identity.fullName", "identity.displayName"]),
     );
     expect(requiredPathsForStep(stepById("identity"), co, ctx)).toEqual(
-      expect.arrayContaining(["identity.organizationId", "identity.businessName"]),
+      expect.arrayContaining(["identity.businessName"]),
     );
     expect(requiredPathsForStep(stepById("identity"), co, ctx)).not.toContain("identity.fullName");
     // Branches are "add later" in the wizard (readiness still gates submit on a head office).

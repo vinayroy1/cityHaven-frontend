@@ -55,15 +55,6 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     check: (v) => filled(v.identity.logo),
   },
   {
-    id: "organization",
-    stepId: "identity",
-    label: "Link your company organization",
-    levels: ["SUBMIT", "PUBLISH"],
-    fieldPath: "identity.organizationId",
-    appliesWhen: isCompany,
-    check: (v) => v.identity.organizationId != null,
-  },
-  {
     id: "primaryLocation",
     stepId: "location",
     label: "Set your primary city and locality",

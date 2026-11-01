@@ -123,7 +123,6 @@ export function formToProfilePayload(section: InteriorWizardSection, values: Int
       const i = values.identity;
       return asPayload({
         providerType: i.providerType || undefined,
-        organizationId: i.organizationId,
         fullName: i.fullName,
         displayName: i.displayName,
         businessName: i.businessName,
@@ -520,7 +519,6 @@ export function profileToForm(profile: Partial<InteriorProfile> | null | undefin
 
   v.identity = {
     providerType: p.providerType ?? "",
-    organizationId: p.organizationId ?? null,
     fullName: str(p.fullName),
     displayName: str(p.displayName),
     businessName: str(p.businessName),

@@ -30,7 +30,6 @@ export const interiorSteps: StepConfig[] = [
 /** Every custom component name referenced by the step config. */
 export const INTERIOR_CUSTOM_COMPONENT_NAMES = [
   "ProviderTypeCards",
-  "OrganizationLinker",
   "PrimaryLocationEditor",
   "BranchManager",
   "MaterialSpecTable",

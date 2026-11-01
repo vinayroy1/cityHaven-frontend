@@ -39,7 +39,7 @@ export const teamStep: StepConfig = {
     {
       id: "members",
       title: "Who is on your team?",
-      description: "Import from your organization or add manually.",
+      description: "Add the people clients will work with.",
       kind: "custom",
       component: "TeamManager",
       visibleWhen: preset("isCompany"),

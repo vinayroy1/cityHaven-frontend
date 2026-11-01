@@ -17,7 +17,6 @@ export const createInteriorInitialValues = (): InteriorWizardValues => ({
   wizardStep: 1,
   identity: {
     providerType: "",
-    organizationId: null,
     fullName: "",
     displayName: "",
     businessName: "",

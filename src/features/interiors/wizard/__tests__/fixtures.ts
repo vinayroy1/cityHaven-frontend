@@ -8,7 +8,6 @@ export function completeValues(kind: "INDIVIDUAL" | "COMPANY"): InteriorWizardVa
   v.identity = {
     ...v.identity,
     providerType: kind,
-    organizationId: kind === "COMPANY" ? 7 : null,
     fullName: "Test Person",
     displayName: "Test Studio",
     businessName: kind === "COMPANY" ? "Test Interiors Pvt Ltd" : "",

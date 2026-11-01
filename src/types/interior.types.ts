@@ -645,7 +645,6 @@ export interface InteriorWizardValues {
   wizardStep: number;
   identity: {
     providerType: InteriorProviderType | "";
-    organizationId: number | null;
     fullName: string;
     displayName: string;
     businessName: string;

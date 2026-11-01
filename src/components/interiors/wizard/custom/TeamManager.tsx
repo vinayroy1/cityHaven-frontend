@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Loader2, Pencil, Plus, Trash2, Users } from "lucide-react";
+import { Loader2, Pencil, Plus, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import type { CustomStepProps } from "@/lib/listingEngine/types";
 import type { InteriorBranchDraft, InteriorTeamMemberDraft, InteriorWizardValues } from "@/types/interior.types";
 import { useDeleteInteriorTeamMemberMutation, useSaveInteriorTeamMemberMutation } from "@/features/interiors/api";
-import { useOrganizationMembersQuery } from "@/features/organizations/api";
 import { memberDraftToPayload } from "@/features/interiors/wizard/mapper";
 import { cn } from "@/lib/utils";
 import {
@@ -46,8 +45,6 @@ export default function TeamManager({ values, form, props }: CustomStepProps<Int
   const path = propPath(props, "field", "team.members");
   const members = getAt<InteriorTeamMemberDraft[]>(values, path) ?? [];
   const branches = (getAt<InteriorBranchDraft[]>(values, propPath(props, "branchesField", "location.branches")) ?? []).filter((b) => b.serverId);
-  const orgId = values.identity?.organizationId;
-  const { data: orgMembers = [], isFetching } = useOrganizationMembersQuery(orgId ?? 0, { skip: !orgId });
   const [saveMember, { isLoading: saving }] = useSaveInteriorTeamMemberMutation();
   const [deleteMember] = useDeleteInteriorTeamMemberMutation();
   const [editing, setEditing] = useState<InteriorTeamMemberDraft | null>(null);
@@ -80,27 +77,8 @@ export default function TeamManager({ values, form, props }: CustomStepProps<Int
     write(members.filter((x) => x.id !== m.id));
   };
 
-  const importable = orgMembers.filter((om) => !members.some((m) => m.orgMemberId === om.id));
-  const importAll = async () => {
-    let list = members;
-    for (const om of importable) {
-      const next = await persist({ ...emptyMember(), name: om.user?.name ?? om.user?.email ?? "Team member", photo: om.user?.profilePhoto ?? "", orgMemberId: om.id, designation: "Interior designer" }, list);
-      if (!next) break;
-      list = next;
-    }
-    toast.success("Team imported — add roles and experience");
-  };
-
   return (
     <div className="space-y-4">
-      {orgId && importable.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-50 p-4 dark:bg-slate-900">
-          <p className="text-sm">{importable.length} people in your organization aren&apos;t on your listing yet.</p>
-          <button type="button" className={secondaryBtn} onClick={importAll} disabled={isFetching || saving}>
-            <Download className="size-4" /> Import from organization
-          </button>
-        </div>
-      )}
       {members.length === 0 ? (
         <EmptyState
           icon={<Users className="size-5" />}

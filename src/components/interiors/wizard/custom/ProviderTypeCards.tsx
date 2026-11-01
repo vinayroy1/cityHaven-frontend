@@ -29,7 +29,6 @@ function hasTypeSpecificData(v: InteriorWizardValues) {
   return Boolean(
     v.identity.fullName ||
       v.identity.businessName ||
-      v.identity.organizationId ||
       v.location.branches.length ||
       v.team.members.length ||
       v.team.gstin,
@@ -105,7 +104,7 @@ export function ProviderTypeCards({ form, values, mode }: CustomStepProps<Interi
             <AlertDialogTitle>Switch to {pending === "COMPANY" ? "Company / Firm" : "Individual designer"}?</AlertDialogTitle>
             <AlertDialogDescription>
               {pending === "INDIVIDUAL"
-                ? "Branches, team members and the linked organization will be hidden from your listing. Your data is kept if you switch back."
+                ? "Branches, team members and company details will be hidden from your listing. Your data is kept if you switch back."
                 : "Your individual details stay saved, but the listing will show your business name, branches and team instead."}
             </AlertDialogDescription>
           </AlertDialogHeader>

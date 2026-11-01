@@ -9,7 +9,6 @@
  *   }
  * and `props` = SectionConfig.props:
  *   ProviderTypeCards       identity.providerType (confirm via AlertDialog when changing with data)
- *   OrganizationLinker      identity.organizationId (POST /interiors/me/organization)
  *   PrimaryLocationEditor   props: cityField,stateField,localityField,addressField,pincodeField,latField,lngField,serviceCitiesField,serviceLocalitiesField
  *   BranchManager           location.branches (own endpoints; single HEAD_OFFICE)
  *   MaterialSpecTable       props.field = "materials.materialSpecs"

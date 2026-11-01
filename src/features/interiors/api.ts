@@ -277,12 +277,6 @@ export const interiorsApi = createApi({
       invalidatesTags: ["InteriorProfile", "InteriorList", "InteriorReadiness"],
     }),
 
-    linkInteriorOrganization: builder.mutation<InteriorProfile, { organizationId: number }>({
-      query: (body) => ({ url: API_ENDPOINTS.interiors.organization, method: "POST", body }),
-      transformResponse: (response: ApiEnvelope<InteriorProfile>) => response.data,
-      invalidatesTags: ["InteriorProfile", "InteriorReadiness"],
-    }),
-
     updateCompanyBranch: builder.mutation<InteriorBranch, { id: number; data: Partial<InteriorBranch> }>({
       query: ({ id, data }) => ({ url: API_ENDPOINTS.interiors.branchDetail(id), method: "PUT", body: data }),
       transformResponse: (response: ApiEnvelope<InteriorBranch>) => response.data,
@@ -470,7 +464,6 @@ export const {
   useGetMyInteriorReadinessQuery,
   useSubmitMyInteriorProfileMutation,
   useUpdateMyInteriorStatusMutation,
-  useLinkInteriorOrganizationMutation,
   useUpdateCompanyBranchMutation,
   useDeleteCompanyBranchMutation,
   useDeleteInteriorPackageMutation,
