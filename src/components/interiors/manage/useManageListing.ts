@@ -1,5 +1,6 @@
 "use client";
 import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { useGetMyInteriorProfileQuery } from "@/features/interiors/api";
 import { profileToForm } from "@/features/interiors/wizard/mapper";
 import { interiorReadinessRules } from "@/features/interiors/wizard/readiness";
@@ -13,7 +14,11 @@ export type StepHealth = "done" | "todo" | "hidden";
 
 /** Profile + derived form values, readiness, score and per-step health for the manage area. */
 export function useManageListing() {
-  const query = useGetMyInteriorProfileQuery();
+  const searchParams = useSearchParams();
+  const profileIdParam = searchParams.get("profileId");
+  const profileId = profileIdParam ? Number(profileIdParam) : undefined;
+
+  const query = useGetMyInteriorProfileQuery(profileId);
   const profile = query.data ?? null;
 
   const values: InteriorWizardValues = useMemo(

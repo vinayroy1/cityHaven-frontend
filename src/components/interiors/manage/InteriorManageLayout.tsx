@@ -53,8 +53,8 @@ export function InteriorManageLayout({ children }: { children: ReactNode }) {
     <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
       <header className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <Link href="/dashboard" className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">
-            <ArrowLeft className="h-3.5 w-3.5" /> Dashboard
+          <Link href="/dashboard/interior-profile" className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">
+            <ArrowLeft className="h-3.5 w-3.5" /> All Interior Listings
           </Link>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <h1 className="truncate text-xl font-bold text-slate-900 dark:text-white">{name}</h1>
@@ -86,7 +86,7 @@ export function InteriorManageLayout({ children }: { children: ReactNode }) {
                     <p className="hidden px-3 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wide text-slate-400 lg:block">{s.group}</p>
                   )}
                   <Link
-                    href={manageHref(s.id)}
+                    href={manageHref(s.id, profile?.id)}
                     aria-current={active ? "page" : undefined}
                     className={cn(
                       "flex items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors lg:rounded-xl lg:border-transparent lg:text-sm",

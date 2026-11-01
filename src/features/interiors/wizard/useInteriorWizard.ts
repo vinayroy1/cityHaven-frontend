@@ -40,6 +40,7 @@ const toSaveError = (err: unknown) => {
 };
 
 export type UseInteriorWizardOptions = {
+  profileId?: number;
   /** Chunk C's `interiorCustomComponents` (passed in to keep features/ free of component imports). */
   customComponents?: Record<string, ComponentType<CustomStepProps<InteriorWizardValues>>>;
 };
@@ -61,7 +62,8 @@ export type UseInteriorWizardResult = {
 };
 
 export function useInteriorWizard(opts: UseInteriorWizardOptions = {}): UseInteriorWizardResult {
-  const { data: profile, isLoading, isError, refetch } = useGetMyInteriorProfileQuery();
+  const profileId = opts.profileId;
+  const { data: profile, isLoading, isError, refetch } = useGetMyInteriorProfileQuery(profileId);
   const { data: serverReadiness } = useGetMyInteriorReadinessQuery(undefined, { skip: !profile });
   const [patchSection, { isLoading: isSaving }] = usePatchMyInteriorSectionMutation();
   const [submitProfile, { isLoading: isSubmitting }] = useSubmitMyInteriorProfileMutation();

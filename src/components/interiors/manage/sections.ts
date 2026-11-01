@@ -22,5 +22,7 @@ export const MANAGE_ROUTE_SECTIONS = MANAGE_SECTIONS.filter((s) => s.id !== "ove
 export const isManageRouteSection = (s: string): s is Exclude<ManageSectionId, "overview"> =>
   (MANAGE_ROUTE_SECTIONS as string[]).includes(s);
 
-export const manageHref = (id: ManageSectionId) =>
-  id === "overview" ? "/dashboard/interior-profile/manage" : `/dashboard/interior-profile/manage/${id}`;
+export const manageHref = (id: ManageSectionId, profileId?: number | null) => {
+  const base = id === "overview" ? "/dashboard/interior-profile/manage" : `/dashboard/interior-profile/manage/${id}`;
+  return profileId ? `${base}?profileId=${profileId}` : base;
+};

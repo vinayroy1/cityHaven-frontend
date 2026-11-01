@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { ListingWizardShell } from "@/components/listingEngine";
 import { useInteriorWizard } from "@/features/interiors/wizard/useInteriorWizard";
@@ -13,7 +14,14 @@ const UNDER_REVIEW = new Set<InteriorListingStatus | undefined>([InteriorListing
 
 /** Interior designer onboarding: 3 phases / 9 steps on the shared listing engine. */
 export function InteriorWizard() {
-  const { vertical, profile, isLoading, isError, refetch } = useInteriorWizard({ customComponents: interiorCustomComponents });
+  const searchParams = useSearchParams();
+  const profileIdParam = searchParams.get("profileId");
+  const profileId = profileIdParam ? Number(profileIdParam) : undefined;
+
+  const { vertical, profile, isLoading, isError, refetch } = useInteriorWizard({
+    profileId,
+    customComponents: interiorCustomComponents,
+  });
   const [done, setDone] = useState<"submitted" | "published" | null>(null);
   const config = useMemo(() => ({ ...vertical, renderPreview: renderInteriorPreview }), [vertical]);
 

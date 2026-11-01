@@ -113,13 +113,32 @@ export const interiorsApi = createApi({
       providesTags: (_res, _err, slugOrId) => [{ type: "InteriorProfile", id: slugOrId }],
     }),
 
-    getMyInteriorProfile: builder.query<InteriorProfile | null, void>({
+    getMyInteriorListings: builder.query<InteriorProfile[], void>({
       query: () => ({
-        url: API_ENDPOINTS.interiors.me,
+        url: API_ENDPOINTS.interiors.myListings,
+        method: "GET",
+      }),
+      transformResponse: (response: ApiEnvelope<InteriorProfile[]>) => response.data || [],
+      providesTags: ["InteriorList", "InteriorProfile"],
+    }),
+
+    createInteriorListing: builder.mutation<InteriorProfile, Partial<InteriorProfile>>({
+      query: (body) => ({
+        url: API_ENDPOINTS.interiors.createListing,
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: ApiEnvelope<InteriorProfile>) => response.data,
+      invalidatesTags: ["InteriorList", "InteriorProfile"],
+    }),
+
+    getMyInteriorProfile: builder.query<InteriorProfile | null, number | void>({
+      query: (profileId) => ({
+        url: profileId ? `${API_ENDPOINTS.interiors.me}?profileId=${profileId}` : API_ENDPOINTS.interiors.me,
         method: "GET",
       }),
       transformResponse: (response: ApiEnvelope<InteriorProfile | null>) => response.data,
-      providesTags: ["InteriorProfile"],
+      providesTags: (_res, _err, profileId) => (profileId ? [{ type: "InteriorProfile", id: profileId }] : ["InteriorProfile"]),
     }),
 
     saveMyInteriorProfile: builder.mutation<InteriorProfile, Partial<InteriorProfile>>({
@@ -437,6 +456,8 @@ export const interiorsApi = createApi({
 export const {
   useSearchInteriorDesignersQuery,
   useGetInteriorProfileDetailQuery,
+  useGetMyInteriorListingsQuery,
+  useCreateInteriorListingMutation,
   useGetMyInteriorProfileQuery,
   useSaveMyInteriorProfileMutation,
   usePublishMyInteriorProfileMutation,
