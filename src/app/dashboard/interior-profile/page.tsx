@@ -138,18 +138,53 @@ export default function InteriorProfileWizardPage() {
 
   // Package Form State
   const [isAddingPackage, setIsAddingPackage] = useState(false);
-  const [packageName, setPackageName] = useState("");
+  const [packageName, setPackageName] = useState("Essential");
   const [packageCategory, setPackageCategory] = useState("Full Home Turnkey");
-  const [packagePriceMin, setPackagePriceMin] = useState(1450000);
-  const [packagePriceMax, setPackagePriceMax] = useState(1850000);
-  const [packageUnit, setPackageUnit] = useState<any>("FIXED_PRICE");
+  const [packagePriceMin, setPackagePriceMin] = useState(1400);
+  const [packagePriceMax, setPackagePriceMax] = useState<number | undefined>(undefined);
+  const [packageUnit, setPackageUnit] = useState<any>("PER_SQFT");
   const [packageConfigs, setPackageConfigs] = useState<string[]>(["2 BHK Apartment", "3 BHK Apartment"]);
-  const [packageInclusions, setPackageInclusions] = useState<string>("");
-  const [packageExclusions, setPackageExclusions] = useState<string>("");
-  const [packageBoardSpec, setPackageBoardSpec] = useState("CenturyPly BWP Marine Ply (IS 710)");
-  const [packageFinishSpec, setPackageFinishSpec] = useState("1mm Anti-Fingerprint Matte Laminate");
-  const [packageHardwareSpec, setPackageHardwareSpec] = useState("Hafele & Blum Soft-Close Hinges & Tandem Drawers");
+  const [packageInclusions, setPackageInclusions] = useState<string>("Modular Kitchen, Wardrobes, False Ceiling, Painting, 3D Design");
+  const [packageExclusions, setPackageExclusions] = useState<string>("Civil demolition, Loose furniture, Appliances");
+  const [packageBoardSpec, setPackageBoardSpec] = useState("Commercial Plywood (MR Grade) / HDHMR");
+  const [packageFinishSpec, setPackageFinishSpec] = useState("1mm Suede / Matte Laminate");
+  const [packageHardwareSpec, setPackageHardwareSpec] = useState("Soft-Close Concealed Hinges & Drawer Channels");
   const [packageWarrantyYears, setPackageWarrantyYears] = useState(10);
+
+  // Quick package preset loader for Essential / Premium / Luxury
+  const applyPackagePreset = (tier: "Essential" | "Premium" | "Luxury") => {
+    if (tier === "Essential") {
+      setPackageName("Essential");
+      setPackagePriceMin(1400);
+      setPackagePriceMax(undefined);
+      setPackageUnit("PER_SQFT");
+      setPackageBoardSpec("Commercial Plywood (MR Grade) & HDHMR");
+      setPackageFinishSpec("1mm Matte / Textured Laminate");
+      setPackageHardwareSpec("Ebco / Godrej Soft-Close Hardware");
+      setPackageInclusions("Factory Modular Kitchen, Basic Wardrobes, POP Punning, Asian Paints Tractor Emulsion");
+      setPackageExclusions("Civil alterations, Designer wallpaper, Premium quartz");
+    } else if (tier === "Premium") {
+      setPackageName("Premium");
+      setPackagePriceMin(1900);
+      setPackagePriceMax(undefined);
+      setPackageUnit("PER_SQFT");
+      setPackageBoardSpec("CenturyPly BWP Marine Plywood (IS 710)");
+      setPackageFinishSpec("1mm Anti-fingerprint Matte Laminate & High-gloss Acrylic");
+      setPackageHardwareSpec("Hettich & Hafele Soft-Close Tandem Drawers & Hinges");
+      setPackageInclusions("Complete Modular Kitchen with Quartz Counter, Hydraulic Bed Storage, POP Ceiling with LED Profiles, Asian Paints Royale Finish");
+      setPackageExclusions("Electronics, Smart home gadgets, Imported chandeliers");
+    } else if (tier === "Luxury") {
+      setPackageName("Luxury");
+      setPackagePriceMin(2600);
+      setPackagePriceMax(undefined);
+      setPackageUnit("PER_SQFT");
+      setPackageBoardSpec("Century BWP Club Prime (IS 710 Marine Grade)");
+      setPackageFinishSpec("Natural Oak / Walnut Veneer with PU Polish & Acrylic");
+      setPackageHardwareSpec("Blum (Austria) Motorized Aventos & Blumotion Runners");
+      setPackageInclusions("Bespoke Italian Marble Accents, Fluted Wall Slats, Acoustic Panelling, Designer Architectural Lighting, 10-Yr Warranty");
+      setPackageExclusions("Structural civil alterations, White goods");
+    }
+  };
 
   // Step 7/Portfolio Form State
   const [isAddingProject, setIsAddingProject] = useState(false);
@@ -1168,6 +1203,48 @@ export default function InteriorProfileWizardPage() {
                 >
                   Cancel
                 </button>
+              </div>
+
+              {/* Quick Template Presets for Essential, Premium, Luxury */}
+              <div className="rounded-2xl border border-rose-200 bg-white p-3.5 dark:border-rose-900/40 dark:bg-slate-900">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                  1-Click Standard Tier Presets:
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => applyPackagePreset("Essential")}
+                    className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition ${
+                      packageName === "Essential"
+                        ? "border-rose-600 bg-rose-50 text-rose-700 dark:bg-rose-950/40"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                    }`}
+                  >
+                    Essential (₹1,400/sq.ft.)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => applyPackagePreset("Premium")}
+                    className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition ${
+                      packageName === "Premium"
+                        ? "border-rose-600 bg-rose-50 text-rose-700 dark:bg-rose-950/40"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                    }`}
+                  >
+                    Premium (₹1,900/sq.ft.)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => applyPackagePreset("Luxury")}
+                    className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition ${
+                      packageName === "Luxury"
+                        ? "border-rose-600 bg-rose-50 text-rose-700 dark:bg-rose-950/40"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                    }`}
+                  >
+                    Luxury (₹2,600/sq.ft.)
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

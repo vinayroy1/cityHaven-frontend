@@ -219,32 +219,144 @@ export default function InteriorProfileDetailPage() {
             </div>
           </section>
 
-          {/* Section 3: Material-Based Packages */}
+          {/* Section 3: Material-Based Pricing Packages (Essential, Premium, Luxury) */}
           {profile.packages && profile.packages.length > 0 && (
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Pricing Packages</h2>
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {profile.packages.map((pkg) => (
-                  <div
-                    key={pkg.id}
-                    className="rounded-2xl border border-slate-200 p-4 transition hover:border-rose-400 dark:border-slate-700"
-                  >
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-slate-900 dark:text-white">{pkg.packageName}</h3>
-                      <span className="text-xs font-black text-rose-600 dark:text-rose-400">
-                        ₹{pkg.priceMin}/{pkg.pricingUnit === "PER_SQFT" ? "sq.ft." : "unit"}
-                      </span>
+            <section className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <h2 className="text-lg font-black text-slate-900 dark:text-white">
+                    {profile.businessName} – Pricing Packages
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Choose from standard turnkey packages with transparent material and hardware commitments.
+                  </p>
+                </div>
+                <span className="self-start sm:self-auto rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
+                  {profile.packages.length} {profile.packages.length === 1 ? "Package" : "Packages"} Available
+                </span>
+              </div>
+
+              <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
+                {profile.packages.map((pkg) => {
+                  const isEssential = pkg.packageName?.toLowerCase().includes("essential");
+                  const isLuxury = pkg.packageName?.toLowerCase().includes("lux");
+                  const isPremium = !isEssential && !isLuxury;
+
+                  return (
+                    <div
+                      key={pkg.id}
+                      className={`relative flex flex-col justify-between rounded-3xl border p-5 sm:p-6 transition-all duration-200 hover:shadow-lg ${
+                        isPremium
+                          ? "border-rose-400 bg-gradient-to-b from-rose-50/50 to-white shadow-sm ring-2 ring-rose-500/20 dark:border-rose-800 dark:from-rose-950/20 dark:to-slate-900"
+                          : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+                      }`}
+                    >
+                      {isPremium && (
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-rose-600 px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-xs">
+                          Most Popular
+                        </span>
+                      )}
+
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-base font-black text-slate-900 dark:text-white">
+                            {pkg.packageName}
+                          </h3>
+                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                            {pkg.packageCategory || "Turnkey"}
+                          </span>
+                        </div>
+
+                        {/* Price headline: e.g. ₹1,400 /sq.ft. or ₹1,900 /sq.ft. */}
+                        <div className="mt-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-3xl font-black text-slate-950 dark:text-white tracking-tight">
+                              ₹{pkg.priceMin?.toLocaleString("en-IN")}
+                            </span>
+                            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                              {pkg.pricingUnit === "PER_SQFT" ? "/sq.ft." : "fixed package"}
+                            </span>
+                          </div>
+                          {pkg.priceMax && (
+                            <p className="text-[11px] text-slate-400 mt-0.5">
+                              Up to ₹{pkg.priceMax.toLocaleString("en-IN")}/sq.ft. depending on finishes
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Material Specifications */}
+                        <div className="mt-4 space-y-2.5 text-xs">
+                          {pkg.boardMaterialAndBrand && (
+                            <div className="flex items-start gap-2">
+                              <span className="h-1.5 w-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
+                              <span className="text-slate-700 dark:text-slate-300">
+                                <strong>Core Board:</strong> {pkg.boardMaterialAndBrand}
+                              </span>
+                            </div>
+                          )}
+
+                          {pkg.finishAndBrand && (
+                            <div className="flex items-start gap-2">
+                              <span className="h-1.5 w-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
+                              <span className="text-slate-700 dark:text-slate-300">
+                                <strong>Finish:</strong> {pkg.finishAndBrand}
+                              </span>
+                            </div>
+                          )}
+
+                          {pkg.hardwareAndBrand && (
+                            <div className="flex items-start gap-2">
+                              <span className="h-1.5 w-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
+                              <span className="text-slate-700 dark:text-slate-300">
+                                <strong>Hardware:</strong> {pkg.hardwareAndBrand}
+                              </span>
+                            </div>
+                          )}
+
+                          <div className="flex items-start gap-2">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                            <span className="text-slate-700 dark:text-slate-300">
+                              <strong>Warranty:</strong> {pkg.woodworkWarrantyYears || 10} Years on Modular Woodwork
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Inclusions Tags */}
+                        {pkg.inclusions && pkg.inclusions.length > 0 && (
+                          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1.5">
+                              Deliverables Included:
+                            </span>
+                            <div className="flex flex-wrap gap-1">
+                              {pkg.inclusions.map((inc, i) => (
+                                <span
+                                  key={i}
+                                  className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                                >
+                                  {inc}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-6 pt-3">
+                        <button
+                          type="button"
+                          onClick={() => setIsInquiryOpen(true)}
+                          className={`w-full rounded-2xl py-2.5 text-center text-xs font-bold transition active:scale-98 ${
+                            isPremium
+                              ? "bg-rose-600 text-white shadow-md hover:bg-rose-700"
+                              : "border border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                          }`}
+                        >
+                          Book {pkg.packageName} Estimate
+                        </button>
+                      </div>
                     </div>
-                    {pkg.description && (
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{pkg.description}</p>
-                    )}
-                    <div className="mt-3 space-y-1 text-xs text-slate-600 dark:text-slate-300">
-                      {pkg.boardMaterialAndBrand && <div>• <strong>Board:</strong> {pkg.boardMaterialAndBrand}</div>}
-                      {pkg.hardwareAndBrand && <div>• <strong>Hardware:</strong> {pkg.hardwareAndBrand}</div>}
-                      {pkg.finishAndBrand && <div>• <strong>Finish:</strong> {pkg.finishAndBrand}</div>}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           )}
