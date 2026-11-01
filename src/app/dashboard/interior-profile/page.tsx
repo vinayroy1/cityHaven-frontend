@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   Building2,
@@ -11,12 +11,19 @@ import {
   Camera,
   ShieldCheck,
   CheckCircle2,
-  DollarSign,
   Phone,
   Save,
   Send,
   Plus,
   Unlock,
+  Package,
+  Wrench,
+  Check,
+  ExternalLink,
+  ChevronRight,
+  Eye,
+  Trash2,
+  IndianRupee,
 } from "lucide-react";
 import {
   useGetMyInteriorProfileQuery,
@@ -25,17 +32,29 @@ import {
   useSavePortfolioProjectMutation,
   useUnlockInteriorInquiryMutation,
 } from "@/features/interiors/api";
+import {
+  INTERIOR_CITIES,
+  CITY_LOCALITIES,
+  BOARD_MATERIALS,
+  BOARD_BRANDS,
+  SURFACE_FINISHES,
+  FINISH_BRANDS,
+  HARDWARE_FITTINGS,
+  HARDWARE_BRANDS,
+  DESIGN_STYLES,
+  SERVICES_OFFERED,
+  PROPERTY_TYPES,
+  PRICING_UNITS,
+} from "@/constants/interior-data";
 
 const WIZARD_STEPS = [
-  "1. Business Identity",
-  "2. Location & Coverage",
-  "3. Scope & Services",
-  "4. Materials & Brands",
-  "5. Pricing & Packages",
-  "6. Portfolio Projects",
-  "7. Warranty & Support",
-  "8. Contact & Availability",
-  "9. Review & Publish",
+  { id: 1, title: "Identity", desc: "Studio & Type" },
+  { id: 2, title: "Location", desc: "City & Localities" },
+  { id: 3, title: "Services", desc: "Scope & Types" },
+  { id: 4, title: "Materials", desc: "Boards & Hardware" },
+  { id: 5, title: "Pricing", desc: "Rates & Packages" },
+  { id: 6, title: "Warranties", desc: "Guarantees & Support" },
+  { id: 7, title: "Publish", desc: "Review & Live" },
 ];
 
 export default function InteriorProfileWizardPage() {
@@ -46,54 +65,92 @@ export default function InteriorProfileWizardPage() {
   const [unlockInquiry, { isLoading: isUnlocking }] = useUnlockInteriorInquiryMutation();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [activeTab, setActiveTab] = useState<"WIZARD" | "LEADS" | "PROJECTS">("WIZARD");
+  const [activeTab, setActiveTab] = useState<"WIZARD" | "PROJECTS" | "LEADS">("WIZARD");
 
-  // Step 1 Form state
+  // Step 1: Business Identity
   const [providerType, setProviderType] = useState<"INDIVIDUAL" | "COMPANY">("INDIVIDUAL");
   const [businessName, setBusinessName] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [tagline, setTagline] = useState("");
   const [about, setAbout] = useState("");
-  const [experienceYears, setExperienceYears] = useState(3);
-  const [teamSize, setTeamSize] = useState(1);
+  const [experienceYears, setExperienceYears] = useState(5);
+  const [teamSize, setTeamSize] = useState(2);
   const [logo, setLogo] = useState("");
   const [coverBanner, setCoverBanner] = useState("");
 
-  // Step 2 Location
+  // Step 2: Location
   const [primaryCity, setPrimaryCity] = useState("Mumbai");
-  const [primaryLocality, setPrimaryLocality] = useState("");
+  const [primaryLocality, setPrimaryLocality] = useState("Bandra West");
   const [primaryAddress, setPrimaryAddress] = useState("");
+  const [serviceCities, setServiceCities] = useState<string[]>(["Mumbai"]);
   const [workingHours, setWorkingHours] = useState("Mon - Sat (10:00 AM - 7:00 PM)");
 
-  // Step 3 Services
+  // Step 3: Scope & Services
   const [servicesOffered, setServicesOffered] = useState<string[]>([
-    "Full Home Turnkey",
-    "Modular Kitchen",
-    "Wardrobe Design",
+    "Full Home Interior (Turnkey)",
+    "Modular Kitchen Design & Install",
+    "Custom Wardrobes & Storage",
   ]);
+  const [propertyTypesHandled, setPropertyTypesHandled] = useState<string[]>([
+    "2 BHK Apartment",
+    "3 BHK Apartment",
+    "4 BHK Apartment",
+  ]);
+  const [designStyles, setDesignStyles] = useState<string[]>(["Modern", "Contemporary", "Minimalist"]);
 
-  // Step 4 Materials
+  // Step 4: Materials & Brands
   const [boardMaterials, setBoardMaterials] = useState<string[]>([
     "BWP Marine Plywood (IS 710)",
-    "HDHMR",
+    "HDHMR (High Density High Moisture Resistant)",
   ]);
-  const [hardwareBrands, setHardwareBrands] = useState<string[]>(["Hettich", "Hafele"]);
+  const [boardBrands, setBoardBrands] = useState<string[]>(["CenturyPly", "Greenply"]);
+  const [surfaceFinishes, setSurfaceFinishes] = useState<string[]>([
+    "Matte Laminate (1mm)",
+    "Acrylic Finish (Scratch Resistant)",
+  ]);
+  const [finishBrands, setFinishBrands] = useState<string[]>(["Merino Laminates", "Decowood Natural Veneers"]);
+  const [hardwareBrands, setHardwareBrands] = useState<string[]>(["Hafele (Germany)", "Blum (Austria)", "Hettich (Germany)"]);
 
-  // Step 5 Pricing
-  const [startingRateMin, setStartingRateMin] = useState(1400);
-  const [pricingUnit, setPricingUnit] = useState<any>("PER_SQFT");
+  // Step 5: Pricing
+  const [startingRateMin, setStartingRateMin] = useState(1600);
+  const [startingRateMax, setStartingRateMax] = useState(2800);
+  const [pricingUnit, setPricingUnit] = useState<string>("PER_SQFT");
   const [isCustomQuotationOnly, setIsCustomQuotationOnly] = useState(false);
+  const [consultationFee, setConsultationFee] = useState(0);
 
-  // New Project Form
+  // Step 6: Warranties & Credentials
+  const [woodworkWarrantyYears, setWoodworkWarrantyYears] = useState(10);
+  const [hardwareWarrantyYears, setHardwareWarrantyYears] = useState(10);
+  const [civilWarrantyYears, setCivilWarrantyYears] = useState(1);
+  const [freeMaintenanceMonths, setFreeMaintenanceMonths] = useState(6);
+  const [gstin, setGstin] = useState("");
+
+  // Step 7/Portfolio Form State
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [projectTitle, setProjectTitle] = useState("");
-  const [projectConfig, setProjectConfig] = useState("3 BHK");
+  const [projectConfig, setProjectConfig] = useState("3 BHK Apartment");
   const [projectStyle, setProjectStyle] = useState("Modern");
-  const [projectBudget, setProjectBudget] = useState(1600000);
+  const [projectBudget, setProjectBudget] = useState(1800000);
+  const [projectCity, setProjectCity] = useState("Mumbai");
+  const [projectLocality, setProjectLocality] = useState("Bandra West");
+  const [projectArea, setProjectArea] = useState(1350);
+  const [projectDurationDays, setProjectDurationDays] = useState(50);
   const [projectCover, setProjectCover] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
+  const [projectBoardSpec, setProjectBoardSpec] = useState("CenturyPly BWP 710 Club Prime");
+  const [projectHardwareSpec, setProjectHardwareSpec] = useState("Hafele & Blum Soft-Close");
 
-  // Prepopulate form when profile loads
+  // Dynamic localities for primary city
+  const availableLocalities = useMemo(() => {
+    return CITY_LOCALITIES[primaryCity] || [];
+  }, [primaryCity]);
+
+  // Dynamic localities for project city
+  const availableProjectLocalities = useMemo(() => {
+    return CITY_LOCALITIES[projectCity] || [];
+  }, [projectCity]);
+
+  // Prepopulate form when profile is fetched
   useEffect(() => {
     if (profile) {
       setProviderType(profile.providerType);
@@ -101,55 +158,86 @@ export default function InteriorProfileWizardPage() {
       setDisplayName(profile.displayName || "");
       setTagline(profile.tagline || "");
       setAbout(profile.about || "");
-      setExperienceYears(profile.experienceYears || 3);
-      setTeamSize(profile.teamSize || 1);
+      setExperienceYears(profile.experienceYears || 5);
+      setTeamSize(profile.teamSize || 2);
       setLogo(profile.logo || "");
       setCoverBanner(profile.coverBanner || "");
       setPrimaryCity(profile.primaryCity || "Mumbai");
-      setPrimaryLocality(profile.primaryLocality || "");
+      setPrimaryLocality(profile.primaryLocality || "Bandra West");
       setPrimaryAddress(profile.primaryAddress || "");
-      setStartingRateMin(profile.startingRateMin || 1400);
+      setStartingRateMin(profile.startingRateMin || 1600);
+      setStartingRateMax(profile.startingRateMax || 2800);
+      setPricingUnit(profile.pricingUnit || "PER_SQFT");
       setIsCustomQuotationOnly(profile.isCustomQuotationOnly || false);
       if (profile.servicesOffered?.length) setServicesOffered(profile.servicesOffered);
       if (profile.boardMaterials?.length) setBoardMaterials(profile.boardMaterials);
+      if (profile.boardBrands?.length) setBoardBrands(profile.boardBrands);
+      if (profile.surfaceFinishes?.length) setSurfaceFinishes(profile.surfaceFinishes);
+      if (profile.finishBrands?.length) setFinishBrands(profile.finishBrands);
       if (profile.hardwareBrands?.length) setHardwareBrands(profile.hardwareBrands);
+      if (profile.designStyles?.length) setDesignStyles(profile.designStyles);
+      if (profile.propertyTypesHandled?.length) setPropertyTypesHandled(profile.propertyTypesHandled);
+      if (profile.woodworkWarrantyYears) setWoodworkWarrantyYears(profile.woodworkWarrantyYears);
+      if (profile.hardwareWarrantyYears) setHardwareWarrantyYears(profile.hardwareWarrantyYears);
+      if (profile.gstin) setGstin(profile.gstin);
     }
   }, [profile]);
+
+  // Toggle selection in an array state
+  const toggleArrayItem = (list: string[], setList: (items: string[]) => void, item: string) => {
+    if (list.includes(item)) {
+      setList(list.filter((x) => x !== item));
+    } else {
+      setList([...list, item]);
+    }
+  };
 
   const handleSaveProgress = async () => {
     try {
       await saveProfile({
         providerType,
-        businessName: businessName || "My Design Studio",
-        displayName: displayName || businessName || "Designer",
-        tagline,
-        about: about || "Passionate about creating modern living spaces.",
+        businessName: businessName.trim() || "My Interior Studio",
+        displayName: displayName.trim() || businessName.trim() || "Principal Designer",
+        tagline: tagline.trim() || undefined,
+        about: about.trim() || "Dedicated to creating exceptional residential and commercial spaces.",
         experienceYears: Number(experienceYears) || 1,
         teamSize: Number(teamSize) || 1,
-        logo,
-        coverBanner,
+        logo: logo.trim() || undefined,
+        coverBanner: coverBanner.trim() || undefined,
         primaryCity,
         primaryLocality,
-        primaryAddress,
+        primaryAddress: primaryAddress.trim() || undefined,
         workingHours,
         servicesOffered,
+        propertyTypesHandled,
+        designStyles,
         boardMaterials,
+        boardBrands,
+        surfaceFinishes,
+        finishBrands,
         hardwareBrands,
-        startingRateMin: Number(startingRateMin) || null,
-        pricingUnit,
+        startingRateMin: isCustomQuotationOnly ? null : Number(startingRateMin) || null,
+        startingRateMax: isCustomQuotationOnly ? null : Number(startingRateMax) || null,
+        pricingUnit: pricingUnit as any,
         isCustomQuotationOnly,
+        consultationFee: Number(consultationFee) || 0,
+        woodworkWarrantyYears: Number(woodworkWarrantyYears) || 10,
+        hardwareWarrantyYears: Number(hardwareWarrantyYears) || 10,
+        civilWarrantyYears: Number(civilWarrantyYears) || 1,
+        freeMaintenanceMonths: Number(freeMaintenanceMonths) || 6,
+        gstin: gstin.trim() || undefined,
       }).unwrap();
 
-      alert("Progress saved successfully!");
+      alert("Changes saved successfully!");
     } catch (err: any) {
-      alert(err?.data?.message || "Failed to save profile");
+      alert(err?.data?.message || "Failed to save profile progress.");
     }
   };
 
   const handlePublish = async () => {
     try {
       await publishProfile().unwrap();
-      alert("Congratulations! Your Interior Designer listing is now live on Awasio.");
+      alert("Congratulations! Your Interior Designer profile has been submitted and published.");
     } catch (err: any) {
       alert(err?.data?.message || "Failed to publish. Ensure you have added at least 1 completed project.");
     }
@@ -157,545 +245,795 @@ export default function InteriorProfileWizardPage() {
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!projectTitle.trim() || !projectCover.trim()) {
+      alert("Please provide project title and cover image URL.");
+      return;
+    }
+
     try {
       await saveProject({
         data: {
           title: projectTitle,
           projectCategory: "Residential",
           propertyConfig: projectConfig,
-          cityName: primaryCity,
-          locality: primaryLocality,
+          carpetAreaSqft: Number(projectArea) || 1200,
+          cityName: projectCity,
+          locality: projectLocality,
           designStyle: projectStyle,
-          projectBudget: Number(projectBudget) || null,
+          projectBudget: Number(projectBudget) || 1500000,
+          executionDurationDays: Number(projectDurationDays) || 45,
           completionDate: new Date().toISOString(),
           description: projectDesc || "Complete turnkey interior execution.",
-          coverImage: projectCover || "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&auto=format&fit=crop&q=80",
-          images: [],
-          servicesPerformed: servicesOffered,
+          coverImage: projectCover,
+          images: [projectCover],
+          actualBoardSpec: projectBoardSpec,
+          actualHardwareSpec: projectHardwareSpec,
         },
       }).unwrap();
 
+      alert("Project added to portfolio!");
       setIsAddingProject(false);
       setProjectTitle("");
-      alert("Project added to portfolio!");
+      setProjectCover("");
+      setProjectDesc("");
     } catch (err: any) {
-      alert(err?.data?.message || "Failed to add project");
+      alert(err?.data?.message || "Failed to save project.");
     }
   };
 
   const handleUnlockLead = async (inquiryId: number) => {
-    if (!confirm("Unlock this homeowner's phone number and consultation request for 20 Awasio Credits?")) return;
+    if (!confirm("Unlocking this verified client lead will deduct 20 credits from your wallet. Proceed?")) return;
     try {
       await unlockInquiry(inquiryId).unwrap();
-      alert("Client contact unlocked successfully!");
+      alert("Lead unlocked! Client phone & email are now visible.");
     } catch (err: any) {
-      alert(err?.data?.message || "Failed to unlock lead");
+      alert(err?.data?.message || "Failed to unlock lead. Please check your credit balance.");
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="mx-auto max-w-4xl px-4 py-16 text-center">
-        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-rose-600 border-t-transparent" />
-        <p className="mt-3 text-sm text-slate-500">Loading Interior Workspace...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-800">
+    <div className="mx-auto max-w-6xl px-3.5 py-6 sm:px-6 sm:py-8">
+      {/* Top Banner Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-800">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-            Partner Workspace
-          </span>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Interior Designer & Company Listing
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Professional Partner Control Hub</span>
+          </div>
+          <h1 className="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+            Interior Studio & Designer Profile
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Manage your public listing, completed portfolios, and client consultation leads.
+          <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            Configure your business branding, verified material standards, multi-city presence, and portfolio.
           </p>
         </div>
 
-        {/* View Switcher Tabs */}
-        <div className="flex items-center gap-1.5 rounded-xl bg-slate-100 p-1 dark:bg-slate-800 shrink-0">
-          <button
-            type="button"
-            onClick={() => setActiveTab("WIZARD")}
-            className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-              activeTab === "WIZARD"
-                ? "bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-white"
-                : "text-slate-600 dark:text-slate-400"
-            }`}
+        {/* Live Profile Link */}
+        {profile?.isPublished && (
+          <Link
+            href={`/interior-designers/${encodeURIComponent(profile.primaryCity.toLowerCase())}/${profile.slug}`}
+            target="_blank"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-800 shadow-2xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-white shrink-0"
           >
-            Listing Setup
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("PROJECTS")}
-            className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-              activeTab === "PROJECTS"
-                ? "bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-white"
-                : "text-slate-600 dark:text-slate-400"
-            }`}
-          >
-            Portfolio ({profile?.projects?.length || 0})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("LEADS")}
-            className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-              activeTab === "LEADS"
-                ? "bg-white text-slate-900 shadow-xs dark:bg-slate-900 dark:text-white"
-                : "text-slate-600 dark:text-slate-400"
-            }`}
-          >
-            Client Leads ({profile?.inquiries?.length || 0})
-          </button>
-        </div>
+            <Eye className="h-4 w-4 text-rose-600" />
+            <span>View Public Listing</span>
+            <ExternalLink className="h-3.5 w-3.5 text-slate-400" />
+          </Link>
+        )}
       </div>
 
-      {/* TAB 1: 9-STEP WIZARD */}
+      {/* Main Tab Switcher */}
+      <div className="mt-6 flex items-center gap-2 border-b border-slate-200 pb-3 dark:border-slate-800 overflow-x-auto no-scrollbar">
+        <button
+          type="button"
+          onClick={() => setActiveTab("WIZARD")}
+          className={`shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            activeTab === "WIZARD"
+              ? "bg-slate-900 text-white shadow-xs dark:bg-rose-600"
+              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+          }`}
+        >
+          Setup Wizard ({currentStep}/7)
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("PROJECTS")}
+          className={`shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            activeTab === "PROJECTS"
+              ? "bg-slate-900 text-white shadow-xs dark:bg-rose-600"
+              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+          }`}
+        >
+          Portfolio Projects ({profile?.projects?.length || 0})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("LEADS")}
+          className={`shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition ${
+            activeTab === "LEADS"
+              ? "bg-slate-900 text-white shadow-xs dark:bg-rose-600"
+              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+          }`}
+        >
+          Client Inquiries & Leads ({profile?.inquiries?.length || 0})
+        </button>
+      </div>
+
+      {/* TAB 1: 7-STEP WIZARD */}
       {activeTab === "WIZARD" && (
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-4">
-          {/* Left Stepper Navigation */}
-          <div className="lg:col-span-1 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900 h-fit space-y-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3">
-              Onboarding Steps
-            </span>
-            {WIZARD_STEPS.map((label, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setCurrentStep(idx + 1)}
-                className={`w-full rounded-xl px-3 py-2 text-left text-xs font-bold transition ${
-                  currentStep === idx + 1
-                    ? "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
-                    : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* Left Column: Progress Step Indicators */}
+          <div className="lg:col-span-4">
+            <div className="sticky top-20 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Onboarding Steps</h3>
+              <div className="mt-3 space-y-1">
+                {WIZARD_STEPS.map((step) => {
+                  const isActive = currentStep === step.id;
+                  const isDone = currentStep > step.id;
+                  return (
+                    <button
+                      key={step.id}
+                      type="button"
+                      onClick={() => setCurrentStep(step.id)}
+                      className={`flex w-full items-center gap-3 rounded-xl p-2.5 text-left text-xs font-bold transition ${
+                        isActive
+                          ? "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
+                          : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800"
+                      }`}
+                    >
+                      <div
+                        className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black ${
+                          isDone
+                            ? "bg-emerald-500 text-white"
+                            : isActive
+                            ? "bg-rose-600 text-white"
+                            : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
+                        }`}
+                      >
+                        {isDone ? <Check className="h-3.5 w-3.5" /> : step.id}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate">{step.title}</p>
+                        <p className="truncate text-[10px] font-normal text-slate-400">{step.desc}</p>
+                      </div>
+                      {isActive && <ChevronRight className="h-4 w-4 text-rose-600 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Requirement Alert */}
+              <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-200">
+                <span className="font-bold">Publication Rule:</span> At least 1 completed project must be added to the portfolio before listing can be verified and published.
+              </div>
+            </div>
           </div>
 
-          {/* Right Form Body */}
-          <div className="lg:col-span-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-            {/* Step 1: Business Identity */}
-            {currentStep === 1 && (
-              <div className="space-y-4">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 1: Business Identity</h3>
-                
-                {/* Individual vs Company Selector */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Provider Classification *
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setProviderType("INDIVIDUAL")}
-                      className={`flex items-center gap-2 rounded-xl border p-3 text-left transition ${
-                        providerType === "INDIVIDUAL"
-                          ? "border-rose-600 bg-rose-50/50 text-rose-700 dark:bg-rose-950/30"
-                          : "border-slate-200 hover:border-slate-300"
-                      }`}
-                    >
-                      <User className="h-5 w-5 shrink-0" />
-                      <div>
-                        <p className="text-xs font-bold">Independent Designer</p>
-                        <p className="text-[11px] text-slate-500">Solo Architect or Freelancer</p>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setProviderType("COMPANY")}
-                      className={`flex items-center gap-2 rounded-xl border p-3 text-left transition ${
-                        providerType === "COMPANY"
-                          ? "border-indigo-600 bg-indigo-50/50 text-indigo-700 dark:bg-indigo-950/30"
-                          : "border-slate-200 hover:border-slate-300"
-                      }`}
-                    >
-                      <Building2 className="h-5 w-5 shrink-0" />
-                      <div>
-                        <p className="text-xs font-bold">Interior Design Company</p>
-                        <p className="text-[11px] text-slate-500">Studio / Firm with team or branches</p>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 pt-2">
+          {/* Right Column: Active Step Form */}
+          <div className="lg:col-span-8">
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-7 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+              {/* STEP 1: IDENTITY */}
+              {currentStep === 1 && (
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Business / Studio Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={businessName}
-                      onChange={(e) => setBusinessName(e.target.value)}
-                      placeholder="e.g. Studio Vistara Interiors"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                    />
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 1: Business Identity</h3>
+                    <p className="text-xs text-slate-500">Choose your entity structure and brand profile.</p>
                   </div>
+
+                  {/* Provider Type Selection */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Display Name *
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Entity Classification *
                     </label>
-                    <input
-                      type="text"
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="e.g. Ar. Rohan Mehta"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Tagline (One-line specialty)
-                  </label>
-                  <input
-                    type="text"
-                    value={tagline}
-                    onChange={(e) => setTagline(e.target.value)}
-                    placeholder="e.g. Turnkey Luxury Residential Interiors in Mumbai"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    About Business & Design Philosophy *
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={about}
-                    onChange={(e) => setAbout(e.target.value)}
-                    placeholder="Describe your design approach, working style, and execution capabilities..."
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Experience (Years) *
-                    </label>
-                    <input
-                      type="number"
-                      value={experienceYears}
-                      onChange={(e) => setExperienceYears(Number(e.target.value))}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Logo / Portrait Image URL
-                    </label>
-                    <input
-                      type="url"
-                      value={logo}
-                      onChange={(e) => setLogo(e.target.value)}
-                      placeholder="https://..."
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 2: Location & Coverage */}
-            {currentStep === 2 && (
-              <div className="space-y-4">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 2: Location & Coverage</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Primary Operating City *
-                    </label>
-                    <input
-                      type="text"
-                      value={primaryCity}
-                      onChange={(e) => setPrimaryCity(e.target.value)}
-                      placeholder="e.g. Mumbai"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Primary Locality
-                    </label>
-                    <input
-                      type="text"
-                      value={primaryLocality}
-                      onChange={(e) => setPrimaryLocality(e.target.value)}
-                      placeholder="e.g. Bandra West"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Studio / Office Address
-                  </label>
-                  <input
-                    type="text"
-                    value={primaryAddress}
-                    onChange={(e) => setPrimaryAddress(e.target.value)}
-                    placeholder="Full studio street address"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Working Hours
-                  </label>
-                  <input
-                    type="text"
-                    value={workingHours}
-                    onChange={(e) => setWorkingHours(e.target.value)}
-                    placeholder="e.g. Mon - Sat (10:00 AM - 7:00 PM)"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Step 3: Scope & Services */}
-            {currentStep === 3 && (
-              <div className="space-y-4">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 3: Services & Scope</h3>
-                <p className="text-xs text-slate-500">Select all execution capabilities offered by your studio:</p>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  {[
-                    "Full Home Turnkey",
-                    "Modular Kitchen",
-                    "Wardrobe Design",
-                    "Full Renovation",
-                    "3D Visualization",
-                    "Civil Modifications",
-                    "False Ceiling & Lighting",
-                    "Commercial Offices",
-                  ].map((service) => {
-                    const isChecked = servicesOffered.includes(service);
-                    return (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
-                        key={service}
                         type="button"
-                        onClick={() => {
-                          if (isChecked) {
-                            setServicesOffered(servicesOffered.filter((s) => s !== service));
-                          } else {
-                            setServicesOffered([...servicesOffered, service]);
-                          }
-                        }}
-                        className={`rounded-xl border p-2.5 text-left font-semibold transition ${
-                          isChecked
-                            ? "border-rose-600 bg-rose-50 text-rose-700 dark:bg-rose-950/40"
-                            : "border-slate-200 hover:border-slate-300"
+                        onClick={() => setProviderType("INDIVIDUAL")}
+                        className={`flex items-center gap-3 rounded-2xl border p-3.5 text-left transition ${
+                          providerType === "INDIVIDUAL"
+                            ? "border-rose-600 bg-rose-50/60 text-rose-700 shadow-2xs dark:bg-rose-950/30 dark:text-rose-300"
+                            : "border-slate-200 hover:border-slate-300 dark:border-slate-700"
                         }`}
                       >
-                        {service}
+                        <User className="h-6 w-6 text-rose-600 shrink-0" />
+                        <div>
+                          <p className="text-xs font-bold">Independent Designer / Architect</p>
+                          <p className="text-[11px] text-slate-500">Solo professional, freelancer, or consultant</p>
+                        </div>
                       </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
-            {/* Step 4: Materials & Brands */}
-            {currentStep === 4 && (
-              <div className="space-y-4">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 4: Materials & Brand Standards</h3>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Core Boards Used
-                  </label>
-                  <p className="text-xs text-slate-500 mb-2">BWP Marine Ply (IS 710), HDHMR, etc.</p>
-                  <div className="flex flex-wrap gap-2">
-                    {["BWP Marine Plywood (IS 710)", "HDHMR", "BWR Commercial Ply", "Particle Board"].map((board) => (
                       <button
-                        key={board}
                         type="button"
-                        onClick={() => {
-                          if (boardMaterials.includes(board)) {
-                            setBoardMaterials(boardMaterials.filter((b) => b !== board));
-                          } else {
-                            setBoardMaterials([...boardMaterials, board]);
-                          }
-                        }}
-                        className={`rounded-lg px-3 py-1.5 text-xs font-bold transition border ${
-                          boardMaterials.includes(board)
-                            ? "bg-rose-50 border-rose-600 text-rose-700"
-                            : "border-slate-200"
+                        onClick={() => setProviderType("COMPANY")}
+                        className={`flex items-center gap-3 rounded-2xl border p-3.5 text-left transition ${
+                          providerType === "COMPANY"
+                            ? "border-indigo-600 bg-indigo-50/60 text-indigo-700 shadow-2xs dark:bg-indigo-950/30 dark:text-indigo-300"
+                            : "border-slate-200 hover:border-slate-300 dark:border-slate-700"
                         }`}
                       >
-                        {board}
+                        <Building2 className="h-6 w-6 text-indigo-600 shrink-0" />
+                        <div>
+                          <p className="text-xs font-bold">Design Company / Studio</p>
+                          <p className="text-[11px] text-slate-500">Firm with teams, experience centers, or branches</p>
+                        </div>
                       </button>
-                    ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Branded Hardware Partners
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {["Hettich", "Hafele", "Blum", "Ebco", "Godrej"].map((brand) => (
-                      <button
-                        key={brand}
-                        type="button"
-                        onClick={() => {
-                          if (hardwareBrands.includes(brand)) {
-                            setHardwareBrands(hardwareBrands.filter((b) => b !== brand));
-                          } else {
-                            setHardwareBrands([...hardwareBrands, brand]);
-                          }
-                        }}
-                        className={`rounded-lg px-3 py-1.5 text-xs font-bold transition border ${
-                          hardwareBrands.includes(brand)
-                            ? "bg-indigo-50 border-indigo-600 text-indigo-700"
-                            : "border-slate-200"
-                        }`}
-                      >
-                        {brand}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 5: Pricing & Rates */}
-            {currentStep === 5 && (
-              <div className="space-y-4">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 5: Pricing & Packages</h3>
-                
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="customQuoteOnly"
-                    checked={isCustomQuotationOnly}
-                    onChange={(e) => setIsCustomQuotationOnly(e.target.checked)}
-                    className="h-4 w-4 rounded text-rose-600"
-                  />
-                  <label htmlFor="customQuoteOnly" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    Custom Quotation Only (Do not display numeric starting rate)
-                  </label>
-                </div>
-
-                {!isCustomQuotationOnly && (
-                  <div className="grid grid-cols-2 gap-3 pt-2">
+                  {/* Name fields */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                        Starting Rate (₹) *
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Business / Studio Legal Name *
                       </label>
                       <input
-                        type="number"
-                        value={startingRateMin}
-                        onChange={(e) => setStartingRateMin(Number(e.target.value))}
+                        type="text"
+                        required
+                        value={businessName}
+                        onChange={(e) => setBusinessName(e.target.value)}
+                        placeholder="e.g. Aura Spaces Studio Pvt Ltd"
                         className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                       />
                     </div>
+
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                        Pricing Unit
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Display / Brand Name *
                       </label>
-                      <select
-                        value={pricingUnit}
-                        onChange={(e) => setPricingUnit(e.target.value as any)}
+                      <input
+                        type="text"
+                        required
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        placeholder="e.g. Aura Spaces Studio"
                         className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                      >
-                        <option value="PER_SQFT">Per Sq. Ft.</option>
-                        <option value="PER_ROOM">Per Room</option>
-                        <option value="FIXED_PRICE">Fixed Package</option>
-                      </select>
+                      />
                     </div>
                   </div>
-                )}
-              </div>
-            )}
 
-            {/* Other Steps: Quick overview */}
-            {currentStep >= 6 && currentStep <= 8 && (
-              <div className="space-y-4">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                  {WIZARD_STEPS[currentStep - 1]}
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Configure default warranties (10-year woodwork, 10-year hardware), GSTIN credentials, and contact preferences.
-                </p>
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 text-xs text-emerald-800">
-                  Standard warranty benchmarks (10 Years Woodwork, 10 Years Hardware, 6 Months Free Site Maintenance) have been applied automatically.
-                </div>
-              </div>
-            )}
-
-            {/* Step 9: Review & Publish */}
-            {currentStep === 9 && (
-              <div className="space-y-4">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 9: Review & Publish</h3>
-                <div className="rounded-xl border border-slate-200 p-4 text-xs space-y-2 dark:border-slate-700">
-                  <p><strong>Business:</strong> {businessName || "Not set"}</p>
-                  <p><strong>City:</strong> {primaryCity}</p>
-                  <p><strong>Services:</strong> {servicesOffered.join(", ")}</p>
-                  <p><strong>Completed Projects:</strong> {profile?.projects?.length || 0}</p>
-                </div>
-
-                {(!profile?.projects || profile.projects.length === 0) ? (
-                  <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800">
-                    ⚠️ <strong>Requirement:</strong> You must add at least 1 completed project in the <strong>Portfolio</strong> tab before your listing can be published to the public directory.
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Tagline (One-line specialty)
+                    </label>
+                    <input
+                      type="text"
+                      value={tagline}
+                      onChange={(e) => setTagline(e.target.value)}
+                      placeholder="e.g. Turnkey Luxury Residential Interiors & Hafele Modular Kitchens"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handlePublish}
-                    disabled={isPublishing}
-                    className="w-full rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white shadow-md hover:bg-emerald-700"
-                  >
-                    {isPublishing ? "Publishing..." : "Publish Listing to Awasio Directory"}
-                  </button>
-                )}
-              </div>
-            )}
 
-            {/* Wizard Action Controls */}
-            <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800">
-              <button
-                type="button"
-                onClick={handleSaveProgress}
-                disabled={isSaving}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
-              >
-                <Save className="h-4 w-4" />
-                {isSaving ? "Saving..." : "Save Draft"}
-              </button>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      About Studio & Design Philosophy *
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={about}
+                      onChange={(e) => setAbout(e.target.value)}
+                      placeholder="Highlight your experience, manufacturing units, delivery timeline guarantee, and design ethos..."
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                  </div>
 
-              <div className="flex items-center gap-2">
-                {currentStep > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep((prev) => prev - 1)}
-                    className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700 dark:border-slate-700 dark:text-slate-300"
-                  >
-                    Previous
-                  </button>
-                )}
-                {currentStep < 9 && (
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep((prev) => prev + 1)}
-                    className="rounded-xl bg-slate-900 px-5 py-2 text-xs font-bold text-white hover:bg-slate-800 dark:bg-rose-600 dark:hover:bg-rose-500"
-                  >
-                    Next Step &rarr;
-                  </button>
-                )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Years of Industry Experience *
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="50"
+                        value={experienceYears}
+                        onChange={(e) => setExperienceYears(Number(e.target.value))}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Cover Image / Studio Showcase URL
+                      </label>
+                      <input
+                        type="url"
+                        value={coverBanner}
+                        onChange={(e) => setCoverBanner(e.target.value)}
+                        placeholder="https://images.unsplash.com/..."
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 2: LOCATION */}
+              {currentStep === 2 && (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 2: Location & Coverage</h3>
+                    <p className="text-xs text-slate-500">Specify your headquarters and local delivery zones.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Primary City Dropdown */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Primary City *
+                      </label>
+                      <select
+                        value={primaryCity}
+                        onChange={(e) => {
+                          setPrimaryCity(e.target.value);
+                          const firstLoc = CITY_LOCALITIES[e.target.value]?.[0] || "";
+                          setPrimaryLocality(firstLoc);
+                        }}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 shadow-2xs dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      >
+                        {INTERIOR_CITIES.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Primary Locality Dropdown */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Primary Locality / Hub *
+                      </label>
+                      {availableLocalities.length > 0 ? (
+                        <select
+                          value={primaryLocality}
+                          onChange={(e) => setPrimaryLocality(e.target.value)}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 shadow-2xs dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                        >
+                          {availableLocalities.map((loc) => (
+                            <option key={loc} value={loc}>
+                              {loc}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          value={primaryLocality}
+                          onChange={(e) => setPrimaryLocality(e.target.value)}
+                          placeholder="e.g. Bandra West"
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Complete Experience Center / Studio Address
+                    </label>
+                    <input
+                      type="text"
+                      value={primaryAddress}
+                      onChange={(e) => setPrimaryAddress(e.target.value)}
+                      placeholder="e.g. Plot 14, Linking Road, Bandra West, Mumbai 400050"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Experience Center Visiting Hours
+                    </label>
+                    <input
+                      type="text"
+                      value={workingHours}
+                      onChange={(e) => setWorkingHours(e.target.value)}
+                      placeholder="e.g. Tue - Sun (10:00 AM - 8:00 PM)"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: SERVICES & SCOPE */}
+              {currentStep === 3 && (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 3: Services & Scope</h3>
+                    <p className="text-xs text-slate-500">Select what your studio manufactures and executes.</p>
+                  </div>
+
+                  {/* Services Checklist */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                      Services Provided (Multi-select)
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {SERVICES_OFFERED.map((svc) => {
+                        const isSelected = servicesOffered.includes(svc);
+                        return (
+                          <button
+                            key={svc}
+                            type="button"
+                            onClick={() => toggleArrayItem(servicesOffered, setServicesOffered, svc)}
+                            className={`flex items-center gap-2 rounded-xl border p-2.5 text-left text-xs font-semibold transition ${
+                              isSelected
+                                ? "border-rose-600 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
+                                : "border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:text-slate-300"
+                            }`}
+                          >
+                            <div
+                              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border ${
+                                isSelected ? "border-rose-600 bg-rose-600 text-white" : "border-slate-300"
+                              }`}
+                            >
+                              {isSelected && <Check className="h-3 w-3" />}
+                            </div>
+                            <span className="truncate">{svc}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Design Styles */}
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                      Aesthetic Styles Mastered
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {DESIGN_STYLES.map((style) => {
+                        const isSelected = designStyles.includes(style);
+                        return (
+                          <button
+                            key={style}
+                            type="button"
+                            onClick={() => toggleArrayItem(designStyles, setDesignStyles, style)}
+                            className={`rounded-full px-3 py-1 text-xs font-bold transition border ${
+                              isSelected
+                                ? "bg-rose-600 border-rose-600 text-white"
+                                : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                            }`}
+                          >
+                            {style}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Property Types */}
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                      Property Configurations Catered To
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {PROPERTY_TYPES.map((pt) => {
+                        const isSelected = propertyTypesHandled.includes(pt);
+                        return (
+                          <button
+                            key={pt}
+                            type="button"
+                            onClick={() => toggleArrayItem(propertyTypesHandled, setPropertyTypesHandled, pt)}
+                            className={`rounded-full px-3 py-1 text-xs font-bold transition border ${
+                              isSelected
+                                ? "bg-indigo-600 border-indigo-600 text-white"
+                                : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                            }`}
+                          >
+                            {pt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 4: MATERIALS & BRANDS */}
+              {currentStep === 4 && (
+                <div className="space-y-5">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 4: Materials & Brand Standards</h3>
+                    <p className="text-xs text-slate-500">Disclose genuine materials to earn Verified Material Badges.</p>
+                  </div>
+
+                  {/* Substrates / Boards */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Substrate & Core Plywood Types
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {BOARD_MATERIALS.map((b) => (
+                        <button
+                          key={b}
+                          type="button"
+                          onClick={() => toggleArrayItem(boardMaterials, setBoardMaterials, b)}
+                          className={`rounded-lg px-2.5 py-1 text-xs font-semibold border transition ${
+                            boardMaterials.includes(b)
+                              ? "bg-rose-50 border-rose-600 text-rose-700 dark:bg-rose-950/40"
+                              : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-300"
+                          }`}
+                        >
+                          {b}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Board Brands */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Plywood Brands Sourced
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {BOARD_BRANDS.map((brand) => (
+                        <button
+                          key={brand}
+                          type="button"
+                          onClick={() => toggleArrayItem(boardBrands, setBoardBrands, brand)}
+                          className={`rounded-full px-3 py-1 text-xs font-bold border transition ${
+                            boardBrands.includes(brand)
+                              ? "bg-rose-600 border-rose-600 text-white"
+                              : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-300"
+                          }`}
+                        >
+                          {brand}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Hardware Brands */}
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Hardware & Fittings Partner Brands (Hafele, Blum, Hettich)
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {HARDWARE_BRANDS.map((hb) => (
+                        <button
+                          key={hb}
+                          type="button"
+                          onClick={() => toggleArrayItem(hardwareBrands, setHardwareBrands, hb)}
+                          className={`rounded-full px-3.5 py-1 text-xs font-bold border transition ${
+                            hardwareBrands.includes(hb)
+                              ? "bg-indigo-600 border-indigo-600 text-white shadow-2xs"
+                              : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-300"
+                          }`}
+                        >
+                          {hb}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Surface Finishes */}
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Surface Finishes
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {SURFACE_FINISHES.map((f) => (
+                        <button
+                          key={f}
+                          type="button"
+                          onClick={() => toggleArrayItem(surfaceFinishes, setSurfaceFinishes, f)}
+                          className={`rounded-lg px-2.5 py-1 text-xs font-semibold border transition ${
+                            surfaceFinishes.includes(f)
+                              ? "bg-purple-50 border-purple-600 text-purple-700 dark:bg-purple-950/40"
+                              : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-300"
+                          }`}
+                        >
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 5: PRICING & RATES */}
+              {currentStep === 5 && (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 5: Pricing Models</h3>
+                    <p className="text-xs text-slate-500">Configure transparent turnkey or square-foot rates.</p>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 rounded-xl border border-slate-200 p-3 dark:border-slate-800">
+                    <input
+                      type="checkbox"
+                      id="customQuoteOnly"
+                      checked={isCustomQuotationOnly}
+                      onChange={(e) => setIsCustomQuotationOnly(e.target.checked)}
+                      className="h-4 w-4 rounded-md text-rose-600 focus:ring-rose-500"
+                    />
+                    <label
+                      htmlFor="customQuoteOnly"
+                      className="text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer"
+                    >
+                      Custom Quotation Only (Do not show starting numbers on search cards)
+                    </label>
+                  </div>
+
+                  {!isCustomQuotationOnly && (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                          Min Starting Rate (₹) *
+                        </label>
+                        <input
+                          type="number"
+                          value={startingRateMin}
+                          onChange={(e) => setStartingRateMin(Number(e.target.value))}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                          Max Rate (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={startingRateMax}
+                          onChange={(e) => setStartingRateMax(Number(e.target.value))}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                          Pricing Unit Dropdown
+                        </label>
+                        <select
+                          value={pricingUnit}
+                          onChange={(e) => setPricingUnit(e.target.value)}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                        >
+                          {PRICING_UNITS.map((u) => (
+                            <option key={u.value} value={u.value}>
+                              {u.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-2">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Initial Site Visit / Online Consultation Fee (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={consultationFee}
+                      onChange={(e) => setConsultationFee(Number(e.target.value))}
+                      placeholder="0 for Complimentary Walkthrough"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-1">Set to 0 if your studio offers Free Initial Consultation.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 6: WARRANTIES & COMPLIANCE */}
+              {currentStep === 6 && (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 6: Warranties & Trust</h3>
+                    <p className="text-xs text-slate-500">Provide official warranty commitments to gain higher search rank.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Modular Woodwork Warranty (Years)
+                      </label>
+                      <input
+                        type="number"
+                        value={woodworkWarrantyYears}
+                        onChange={(e) => setWoodworkWarrantyYears(Number(e.target.value))}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        Branded Hardware Warranty (Years)
+                      </label>
+                      <input
+                        type="number"
+                        value={hardwareWarrantyYears}
+                        onChange={(e) => setHardwareWarrantyYears(Number(e.target.value))}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      GSTIN Identification (Optional for Verified Badge)
+                    </label>
+                    <input
+                      type="text"
+                      value={gstin}
+                      onChange={(e) => setGstin(e.target.value.toUpperCase())}
+                      placeholder="e.g. 27AAAAA0000A1Z5"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 7: REVIEW & PUBLISH */}
+              {currentStep === 7 && (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Step 7: Review & Publish</h3>
+                    <p className="text-xs text-slate-500">Check your details before pushing to the public directory.</p>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs space-y-2 dark:border-slate-800 dark:bg-slate-800/60">
+                    <p><strong>Business:</strong> {businessName || "Not configured"}</p>
+                    <p><strong>Primary Hub:</strong> {primaryLocality ? `${primaryLocality}, ` : ""}{primaryCity}</p>
+                    <p><strong>Key Services:</strong> {servicesOffered.slice(0, 3).join(", ") || "None"}</p>
+                    <p><strong>Material Brands:</strong> {[...boardBrands, ...hardwareBrands].slice(0, 4).join(", ") || "Standard"}</p>
+                    <p><strong>Portfolio Projects Added:</strong> {profile?.projects?.length || 0}</p>
+                  </div>
+
+                  {(!profile?.projects || profile.projects.length === 0) ? (
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-200">
+                      ⚠️ <strong>Mandatory Step:</strong> You must upload at least 1 completed project under the <strong>Portfolio Projects</strong> tab before publishing.
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handlePublish}
+                      disabled={isPublishing}
+                      className="w-full rounded-2xl bg-emerald-600 py-3.5 text-xs sm:text-sm font-bold text-white shadow-md transition hover:bg-emerald-700 active:scale-98"
+                    >
+                      {isPublishing ? "Publishing..." : "Publish Profile to Awasio Directory"}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Bottom Buttons Row */}
+              <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-5 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={handleSaveProgress}
+                  disabled={isSaving}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200"
+                >
+                  <Save className="h-4 w-4" />
+                  <span>{isSaving ? "Saving..." : "Save Draft"}</span>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {currentStep > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentStep((prev) => prev - 1)}
+                      className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 dark:border-slate-700 dark:text-slate-300"
+                    >
+                      &larr; Back
+                    </button>
+                  )}
+                  {currentStep < 7 && (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentStep((prev) => prev + 1)}
+                      className="rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-rose-600 dark:hover:bg-rose-500"
+                    >
+                      Next Step &rarr;
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -705,99 +1043,245 @@ export default function InteriorProfileWizardPage() {
       {/* TAB 2: PORTFOLIO PROJECTS */}
       {activeTab === "PROJECTS" && (
         <div className="mt-6 space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Portfolio Projects</h2>
-              <p className="text-xs text-slate-500">Showcase completed apartments, villas, and renovation projects.</p>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Portfolio Showcase</h2>
+              <p className="text-xs text-slate-500">Add completed residential and commercial spaces.</p>
             </div>
             <button
               type="button"
               onClick={() => setIsAddingProject(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-700 shadow-xs"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-rose-700"
             >
               <Plus className="h-4 w-4" />
-              Add Project
+              <span>Add New Project</span>
             </button>
           </div>
 
-          {/* New Project Form Modal */}
+          {/* New Project Form */}
           {isAddingProject && (
-            <form onSubmit={handleCreateProject} className="rounded-2xl border border-rose-200 bg-rose-50/40 p-5 space-y-3 dark:border-rose-950 dark:bg-rose-950/20">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Add New Completed Project</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  required
-                  placeholder="Project Title (e.g. Modern 3BHK Scandinavian)"
-                  value={projectTitle}
-                  onChange={(e) => setProjectTitle(e.target.value)}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"
-                />
-                <select
-                  value={projectConfig}
-                  onChange={(e) => setProjectConfig(e.target.value)}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"
-                >
-                  <option value="1 BHK">1 BHK</option>
-                  <option value="2 BHK">2 BHK</option>
-                  <option value="3 BHK">3 BHK</option>
-                  <option value="Villa">Villa / Bungalow</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="number"
-                  placeholder="Total Budget Spent (₹)"
-                  value={projectBudget}
-                  onChange={(e) => setProjectBudget(Number(e.target.value))}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"
-                />
-                <input
-                  type="url"
-                  placeholder="Cover Photo URL (https://...)"
-                  value={projectCover}
-                  onChange={(e) => setProjectCover(e.target.value)}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"
-                />
-              </div>
-
-              <textarea
-                placeholder="Short description of the brief, scope, and materials used..."
-                value={projectDesc}
-                onChange={(e) => setProjectDesc(e.target.value)}
-                rows={2}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-800"
-              />
-
-              <div className="flex justify-end gap-2 pt-2">
+            <form onSubmit={handleCreateProject} className="rounded-3xl border border-rose-200 bg-rose-50/40 p-5 sm:p-7 space-y-4 dark:border-rose-950 dark:bg-rose-950/20">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                  Add Completed Portfolio Project
+                </h3>
                 <button
                   type="button"
                   onClick={() => setIsAddingProject(false)}
-                  className="rounded-xl border px-4 py-1.5 text-xs font-bold"
+                  className="text-xs font-bold text-slate-500 hover:text-slate-800"
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={isProjectSaving}
-                  className="rounded-xl bg-rose-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-rose-700"
-                >
-                  {isProjectSaving ? "Saving..." : "Save Project"}
-                </button>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Project Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Minimalist Scandinavian 3BHK"
+                    value={projectTitle}
+                    onChange={(e) => setProjectTitle(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Configuration *
+                  </label>
+                  <select
+                    value={projectConfig}
+                    onChange={(e) => setProjectConfig(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                  >
+                    {PROPERTY_TYPES.map((pt) => (
+                      <option key={pt} value={pt}>
+                        {pt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Project City *
+                  </label>
+                  <select
+                    value={projectCity}
+                    onChange={(e) => {
+                      setProjectCity(e.target.value);
+                      setProjectLocality(CITY_LOCALITIES[e.target.value]?.[0] || "");
+                    }}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                  >
+                    {INTERIOR_CITIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Locality Dropdown *
+                  </label>
+                  {availableProjectLocalities.length > 0 ? (
+                    <select
+                      value={projectLocality}
+                      onChange={(e) => setProjectLocality(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                    >
+                      {availableProjectLocalities.map((loc) => (
+                        <option key={loc} value={loc}>
+                          {loc}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={projectLocality}
+                      onChange={(e) => setProjectLocality(e.target.value)}
+                      placeholder="e.g. Bandra West"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                    />
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Design Style *
+                  </label>
+                  <select
+                    value={projectStyle}
+                    onChange={(e) => setProjectStyle(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                  >
+                    {DESIGN_STYLES.map((st) => (
+                      <option key={st} value={st}>
+                        {st}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Carpet Area (sq.ft.)
+                  </label>
+                  <input
+                    type="number"
+                    value={projectArea}
+                    onChange={(e) => setProjectArea(Number(e.target.value))}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Actual Project Cost (₹)
+                  </label>
+                  <input
+                    type="number"
+                    value={projectBudget}
+                    onChange={(e) => setProjectBudget(Number(e.target.value))}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Execution Days
+                  </label>
+                  <input
+                    type="number"
+                    value={projectDurationDays}
+                    onChange={(e) => setProjectDurationDays(Number(e.target.value))}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  High-Resolution Cover Photo URL *
+                </label>
+                <input
+                  type="url"
+                  required
+                  placeholder="https://images.unsplash.com/..."
+                  value={projectCover}
+                  onChange={(e) => setProjectCover(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Board Spec Used
+                  </label>
+                  <input
+                    type="text"
+                    value={projectBoardSpec}
+                    onChange={(e) => setProjectBoardSpec(e.target.value)}
+                    placeholder="e.g. CenturyPly BWP 710 Club Prime"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Hardware Spec Used
+                  </label>
+                  <input
+                    type="text"
+                    value={projectHardwareSpec}
+                    onChange={(e) => setProjectHardwareSpec(e.target.value)}
+                    placeholder="e.g. Hafele Soft-Close Hinges & Blum Drawers"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-700 dark:bg-slate-800"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isProjectSaving}
+                className="w-full rounded-xl bg-rose-600 py-3 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-rose-700"
+              >
+                {isProjectSaving ? "Saving Project..." : "Upload Project to Portfolio"}
+              </button>
             </form>
           )}
 
-          {/* List of existing projects */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {profile?.projects?.map((proj) => (
-              <div key={proj.id} className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
-                <img src={proj.coverImage} alt={proj.title} className="aspect-[16/10] w-full object-cover" />
-                <div className="p-3.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600">{proj.propertyConfig}</span>
-                  <h4 className="font-bold text-slate-900 dark:text-white line-clamp-1">{proj.title}</h4>
-                  <p className="text-xs text-slate-500 mt-1">₹{(proj.projectBudget ? proj.projectBudget / 100000 : 0).toFixed(2)} Lakhs Total</p>
+          {/* Project List Display */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {(profile?.projects || []).map((proj) => (
+              <div
+                key={proj.id}
+                className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900"
+              >
+                <div className="relative aspect-[16/10] bg-slate-100 dark:bg-slate-800">
+                  <img src={proj.coverImage} alt={proj.title} className="h-full w-full object-cover" />
+                  <span className="absolute top-2.5 left-2.5 rounded-full bg-slate-900/80 px-2.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs">
+                    {proj.propertyConfig}
+                  </span>
+                </div>
+                <div className="p-4">
+                  <h4 className="font-bold text-sm text-slate-900 dark:text-white line-clamp-1">{proj.title}</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">{proj.locality ? `${proj.locality}, ` : ""}{proj.cityName}</p>
+                  <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-xs text-slate-600 dark:border-slate-800">
+                    <span>₹{((proj.projectBudget || 0) / 100000).toFixed(1)} Lakhs</span>
+                    <span className="text-emerald-600 font-bold">Approved</span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -805,68 +1289,73 @@ export default function InteriorProfileWizardPage() {
         </div>
       )}
 
-      {/* TAB 3: CLIENT INQUIRIES & LEADS */}
+      {/* TAB 3: LEADS & INQUIRIES */}
       {activeTab === "LEADS" && (
         <div className="mt-6 space-y-4">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Client Consultation Leads</h2>
-            <p className="text-xs text-slate-500">
-              Homeowners and property buyers requesting interior estimates. Unlock contact details using your Awasio credit balance.
-            </p>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Customer Inquiries</h2>
+            <p className="text-xs text-slate-500">Homeowners requesting estimates & consultations for your studio.</p>
           </div>
 
-          <div className="space-y-3">
-            {(!profile?.inquiries || profile.inquiries.length === 0) ? (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-xs text-slate-500">
-                No client leads yet. Make sure your profile is published to receive inquiries!
-              </div>
-            ) : (
-              profile.inquiries.map((lead) => (
+          {(profile?.inquiries || []).length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-800 dark:bg-slate-900">
+              <User className="mx-auto h-12 w-12 text-slate-400" />
+              <h3 className="mt-3 text-base font-bold text-slate-900 dark:text-white">No inquiries yet</h3>
+              <p className="mt-1 text-xs text-slate-500">
+                Once homeowners view your public listing and request estimates, inquiries will appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {profile!.inquiries!.map((inq) => (
                 <div
-                  key={lead.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900"
+                  key={inq.id}
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900"
                 >
-                  <div>
+                  <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-900 dark:text-white text-sm">{lead.clientName}</span>
-                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                        {lead.bhkType} · {lead.projectScope}
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">{inq.clientName}</span>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        {inq.bhkType} ({inq.carpetAreaSqft} sq.ft.)
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Location: {lead.cityName} {lead.locality ? `(${lead.locality})` : ""} · Area: {lead.carpetAreaSqft || "N/A"} sq.ft.
+                    <p className="text-xs text-slate-500">
+                      {inq.locality ? `${inq.locality}, ` : ""}{inq.cityName} · Scope: {inq.projectScope}
                     </p>
-                    {lead.notes && <p className="text-xs text-slate-600 mt-1 italic">"{lead.notes}"</p>}
+                    {inq.isUnlocked ? (
+                      <p className="text-xs font-bold text-emerald-600">
+                        📞 {inq.clientPhone} {inq.clientEmail ? `· ✉️ ${inq.clientEmail}` : ""}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-slate-400">
+                        📞 +91 ••••• •••• (Unlock to reveal contact phone & email)
+                      </p>
+                    )}
                   </div>
 
                   <div className="shrink-0">
-                    {lead.isUnlocked ? (
-                      <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-2.5 text-xs text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300">
-                        <p className="font-bold flex items-center gap-1">
-                          <Phone className="h-3.5 w-3.5" />
-                          {lead.clientPhone}
-                        </p>
-                        {lead.clientEmail && <p className="text-[11px] text-emerald-600">{lead.clientEmail}</p>}
-                      </div>
+                    {inq.isUnlocked ? (
+                      <span className="rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 dark:bg-emerald-950/40">
+                        Unlocked Lead
+                      </span>
                     ) : (
                       <button
                         type="button"
-                        onClick={() => handleUnlockLead(lead.id)}
+                        onClick={() => handleUnlockLead(inq.id)}
                         disabled={isUnlocking}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-rose-700 active:scale-98"
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-rose-700"
                       >
                         <Unlock className="h-3.5 w-3.5" />
-                        Unlock Contact (20 Credits)
+                        <span>Unlock Lead (20 Credits)</span>
                       </button>
                     )}
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
-
