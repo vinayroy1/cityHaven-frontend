@@ -873,7 +873,6 @@ const MUMBAI_FALLBACK_PROJECTS: any[] = [
 ];
 
 function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
-  const isIdle = useIdleState(1200);
   const effectiveCity = selectedCity || "Mumbai";
   const normalizedCity = effectiveCity.toLowerCase().includes("delhi")
     ? "New Delhi"
@@ -881,8 +880,7 @@ function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
 
   // Try local city projects first (defaults to Mumbai projects)
   const { data: cityData, isLoading: isCityLoading } = useSearchProjectsQuery(
-    { city: normalizedCity, pageSize: 6 },
-    { skip: !isIdle }
+    { city: normalizedCity, pageSize: 6 }
   );
 
   const apiProjects = cityData?.items ?? [];

@@ -48,6 +48,7 @@ export function normalizeProject(raw: any): ProjectListing {
 export const projectsApi = createApi({
   reducerPath: "projectsApi",
   baseQuery: baseQueryWithReauth,
+  keepUnusedDataFor: 300, // Cache project queries for 5 minutes
   tagTypes: ["Project", "ProjectList", "MyProjects"],
   endpoints: (builder) => ({
     searchProjects: builder.query<ProjectSearchResponse, ProjectSearchParams | void>({
