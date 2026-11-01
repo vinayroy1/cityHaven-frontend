@@ -96,7 +96,7 @@ function ProjectGridCard({
   return (
     <article
       tabIndex={0}
-      role="link"
+      aria-label={`View project details for ${project.name}`}
       onClick={openDetails}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {

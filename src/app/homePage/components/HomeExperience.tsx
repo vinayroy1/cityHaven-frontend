@@ -636,7 +636,7 @@ function FeaturedProjectCard({ project }: { project: any }) {
   return (
     <article
       tabIndex={0}
-      role="link"
+      aria-label={`View project details for ${project.name}`}
       onClick={openDetails}
       onMouseEnter={handleMouseEnter}
       onKeyDown={(e) => {

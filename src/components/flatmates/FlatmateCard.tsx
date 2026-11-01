@@ -151,7 +151,6 @@ export function FlatmateCard({
     return (
       <>
         <article
-          role="link"
           tabIndex={0}
           aria-label={`View details for ${listing.title}`}
           onClick={() => {
@@ -490,7 +489,6 @@ export function FlatmateCard({
   return (
     <>
       <article
-        role="link"
         tabIndex={0}
         aria-label={`View details for ${profile?.displayName || listing.title}`}
         onClick={() => {

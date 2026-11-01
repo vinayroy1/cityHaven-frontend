@@ -1,0 +1,21 @@
+# Awasio
+
+> Awasio is a next-generation Indian real estate portal offering verified properties for sale and rent, builder floors, luxury apartments, and direct connections to RERA-certified local property advisors.
+
+## Core Navigation & Directories
+
+- [Properties for Sale](https://awasio.com/buy): Search apartments, villas, and independent floors for sale across India.
+- [Properties for Rent](https://awasio.com/rent): Verified rental homes, flats, and furnished accommodations without brokerage hassle.
+- [Commercial Properties](https://awasio.com/commercial): Offices, shops, warehouses, and commercial plots for lease and purchase.
+- [Plots & Land](https://awasio.com/plot): Residential, agricultural, and commercial land listings with title checks.
+- [PG & Co-Living Spaces](https://awasio.com/pg): Managed student and working professional accommodations.
+- [Flatmates Directory](https://awasio.com/flatmate): Find shared flats, rooms, and verified flatmates across metro cities.
+- [New Projects](https://awasio.com/new-projects): RERA-registered builder launches, floor plans, and construction updates.
+- [Verified Property Advisors](https://awasio.com/agents): Connect with certified local real estate consultants.
+- [EMI Calculator](https://awasio.com/emi-calculator): Accurate home loan EMI and amortization schedule calculator.
+- [Price Trends](https://awasio.com/price-trends): Historical locality price movements, average capital values, and rental yields.
+
+## Contact & Information
+
+- [About Awasio](https://awasio.com/about): Mission, company background, and leadership.
+- [Contact Support](https://awasio.com/contact): Reach out to our customer care and advisor helpline.
