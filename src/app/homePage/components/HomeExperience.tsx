@@ -19,6 +19,8 @@ import { useSearchProjectsQuery } from "@/features/projects/api";
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import { FlatmateCard } from "@/components/flatmates/FlatmateCard";
 import { CDN_ASSETS } from "@/config/cdn";
+import { useSearchInteriorDesignersQuery } from "@/features/interiors/api";
+import { InteriorDesignerShowcaseCard, InteriorDesignerShowcaseSkeleton } from "./InteriorDesignerShowcaseCard";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 
 const normalizeR2Url = (url?: string | null): string => {
@@ -358,6 +360,8 @@ export function HomeExperience({
         <FeaturedFlatAvailableSection selectedCity={selectedCity} />
 
         <FeaturedSeekersBuddyUpSection selectedCity={selectedCity} />
+
+        <InteriorDesignersSection selectedCity={selectedCity} />
 
       </main>
       </div>
@@ -1098,6 +1102,128 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
           ))}
         </div>
       )}
+    </section>
+  );
+}
+
+function InteriorDesignersSection({ selectedCity }: { selectedCity: string }) {
+  const isIdle = useIdleState(1200);
+  const scrollerRef = React.useRef<HTMLDivElement>(null);
+  const normalizedCity = selectedCity?.toLowerCase().includes("delhi") ? "Delhi" : (selectedCity || undefined);
+
+  const { data: cityData, isLoading: isCityLoading } = useSearchInteriorDesignersQuery(
+    { city: normalizedCity, sort: "recommended", limit: 8 },
+    { skip: !isIdle || !normalizedCity }
+  );
+  const { data: fallbackData, isLoading: isFallbackLoading } = useSearchInteriorDesignersQuery(
+    { sort: "recommended", limit: 8 },
+    { skip: !isIdle }
+  );
+
+  const cityItems = cityData?.items ?? [];
+  const items = [...cityItems];
+  if (items.length < 4) {
+    const seen = new Set(items.map((x) => x.id));
+    for (const item of fallbackData?.items ?? []) {
+      if (!seen.has(item.id)) items.push(item);
+    }
+  }
+  const isCityScoped = cityItems.length > 0 && !!selectedCity;
+  // Wait for the fallback top-up too when the city has < 4 results, so cards don't pop in late.
+  const isLoading =
+    !isIdle ||
+    (normalizedCity ? isCityLoading || (cityItems.length < 4 && isFallbackLoading) : isFallbackLoading);
+  // Directory has no /interior-designers/[city] index route (only [city]/[slug]), so link the directory.
+  const viewAllHref = "/interior-designers";
+
+  if (!isLoading && items.length === 0) return null;
+
+  const scrollBy = (dir: 1 | -1) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.9, behavior: "smooth" });
+  };
+
+  const itemClass =
+    "flex w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]";
+
+  return (
+    <section className="mt-6 sm:mt-10" aria-labelledby="home-interior-designers-heading">
+      <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
+        <div className="min-w-0">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+            <Sparkles className="h-3.5 w-3.5 text-rose-600" />
+            <span>Design your dream home</span>
+          </div>
+          <h2 id="home-interior-designers-heading" className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+            {isCityScoped ? `Top interior designers in ${selectedCity}` : "Top interior designers near you"}
+          </h2>
+          <p className="mt-0.5 hidden text-sm text-slate-500 sm:block dark:text-slate-400">
+            Verified studios and architects with real, approved project portfolios.
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <Link
+            href={viewAllHref}
+            prefetch={false}
+            className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400"
+          >
+            View all <ArrowRight className="h-4 w-4" />
+          </Link>
+          <div className="hidden items-center gap-1.5 lg:flex">
+            <button
+              type="button"
+              onClick={() => scrollBy(-1)}
+              aria-label="Scroll interior designers left"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-rose-300 hover:text-rose-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollBy(1)}
+              aria-label="Scroll interior designers right"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-rose-300 hover:text-rose-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        ref={scrollerRef}
+        className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory items-stretch"
+      >
+        {isLoading
+          ? [1, 2, 3, 4].map((i) => (
+              <div key={i} className={itemClass}>
+                <InteriorDesignerShowcaseSkeleton />
+              </div>
+            ))
+          : (
+            <>
+              {items.slice(0, 8).map((profile) => (
+                <div key={profile.id} className={itemClass}>
+                  <InteriorDesignerShowcaseCard profile={profile} />
+                </div>
+              ))}
+              <div className={itemClass}>
+                <Link
+                  href={viewAllHref}
+                  prefetch={false}
+                  className="group flex min-h-[320px] w-full flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-rose-200 bg-gradient-to-br from-rose-50 via-white to-rose-100/60 p-6 text-center transition hover:border-rose-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-rose-900/60 dark:from-rose-950/30 dark:via-slate-900 dark:to-rose-950/20"
+                >
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-rose-600 text-white shadow-lg shadow-rose-600/30 transition group-hover:scale-110">
+                    <ArrowRight className="h-5 w-5" />
+                  </span>
+                  <span className="text-base font-bold text-slate-950 dark:text-white">View all interior designers</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">Compare portfolios, rates and reviews</span>
+                </Link>
+              </div>
+            </>
+          )}
+      </div>
     </section>
   );
 }

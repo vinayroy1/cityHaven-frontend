@@ -24,14 +24,32 @@ interface InteriorCardProps {
 export function InteriorDesignerCard({ profile, onOpenInquiry }: InteriorCardProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  // Gather photos from cover and portfolio projects
-  const photos = [
-    profile.coverBanner,
-    profile.logo,
-    ...(profile.projects?.flatMap((p) => [p.coverImage, ...(p.images || [])]) || []),
-  ].filter(Boolean) as string[];
+  // Hero priority: featured project cover -> first approved cover -> first cover -> cover banner.
+  const projects = profile.projects ?? [];
+  const heroCover =
+    projects.find((p) => p.isFeatured && p.coverImage)?.coverImage ||
+    projects.find((p) => p.isApproved && p.coverImage)?.coverImage ||
+    projects.find((p) => p.coverImage)?.coverImage ||
+    profile.coverBanner ||
+    null;
 
-  const safePhotos = photos.length > 0 ? photos : ["/assets/placeholder-interior.webp"];
+  const photos = Array.from(
+    new Set(
+      [
+        heroCover,
+        ...projects.flatMap((p) => [p.coverImage, ...(p.images || [])]),
+        profile.coverBanner,
+      ].filter(Boolean) as string[]
+    )
+  );
+
+  const safePhotos = photos;
+  const initials = profile.businessName
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
   const isCompany = profile.providerType === "COMPANY";
   const profileUrl = `/interior-designers/${encodeURIComponent(profile.primaryCity.toLowerCase())}/${profile.slug}`;
 
@@ -52,12 +70,22 @@ export function InteriorDesignerCard({ profile, onOpenInquiry }: InteriorCardPro
       {/* Photo Carousel Container */}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
         <Link href={profileUrl} className="block h-full w-full">
-          <img
-            src={safePhotos[activeImageIndex]}
-            alt={profile.businessName}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
+          {safePhotos.length > 0 ? (
+            <img
+              src={safePhotos[activeImageIndex]}
+              alt={profile.businessName}
+              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-rose-500 via-rose-600 to-rose-800">
+              {profile.logo ? (
+                <img src={profile.logo} alt="" className="h-16 w-16 rounded-2xl bg-white object-cover shadow-lg" loading="lazy" />
+              ) : (
+                <span className="text-3xl font-black tracking-tight text-white/90">{initials}</span>
+              )}
+            </div>
+          )}
         </Link>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/20" />
 

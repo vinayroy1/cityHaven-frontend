@@ -24,31 +24,48 @@ function Status({ label, className, children }: { label: string; className?: str
 
 export function InteriorListingCardSkeleton() {
   return (
-    <div className={cn(card, "flex flex-col justify-between p-5 shadow-sm")} aria-hidden>
-      <div>
+    <div className={cn(card, "flex flex-col overflow-hidden shadow-xs")} aria-hidden>
+      <div className="relative">
+        <Skeleton className={cn("h-28 w-full rounded-none sm:h-32", boneSoft)} />
+        <Skeleton className={cn("absolute right-3 top-3 h-5 w-14 rounded-full", bone)} />
+        <Skeleton className={cn("absolute -bottom-6 left-4 h-14 w-14 rounded-2xl border-4 border-white dark:border-slate-900", bone)} />
+      </div>
+      <div className="p-4 pt-8">
         <div className="flex items-center justify-between gap-2">
-          <Skeleton className={cn("h-5 w-20", boneSoft)} />
-          <Skeleton className={cn("h-5 w-16 rounded-full", bone)} />
+          <Skeleton className={cn("h-5 w-3/5", bone)} />
+          <Skeleton className={cn("h-5 w-20 rounded-full", boneSoft)} />
         </div>
-        <Skeleton className={cn("mt-4 h-5 w-3/4", bone)} />
         <Skeleton className={cn("mt-2 h-3.5 w-1/2", boneSoft)} />
-        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
-          {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className={cn("h-11 rounded-lg", boneSoft)} />
-          ))}
+        <Skeleton className={cn("mt-5 h-3 w-full", boneSoft)} />
+        <Skeleton className={cn("mt-2 h-1.5 w-full rounded-full", bone)} />
+        <Skeleton className={cn("mt-4 h-3.5 w-2/5", boneSoft)} />
+        <div className="mt-4 border-t border-slate-100 pt-4 dark:border-slate-800">
+          <Skeleton className={cn("h-11 w-full rounded-full", bone)} />
         </div>
       </div>
-      <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-3.5 dark:border-slate-800">
-        <Skeleton className={cn("h-4 w-20", boneSoft)} />
-        <Skeleton className={cn("h-7 w-24 rounded-lg", bone)} />
-      </div>
+    </div>
+  );
+}
+
+export function InteriorListingStatsSkeleton() {
+  return (
+    <div className="mb-5 grid grid-cols-2 gap-2 sm:mb-6 sm:gap-3 lg:grid-cols-4" aria-hidden>
+      {[0, 1, 2, 3].map((i) => (
+        <div key={i} className={cn(card, "flex items-center gap-3 p-3 sm:p-4")}>
+          <Skeleton className={cn("h-9 w-9 shrink-0 rounded-xl sm:h-10 sm:w-10", boneSoft)} />
+          <div className="flex-1 space-y-1.5">
+            <Skeleton className={cn("h-3 w-12", boneSoft)} />
+            <Skeleton className={cn("h-6 w-8", bone)} />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
 export function InteriorListingsGridSkeleton({ count = 3 }: { count?: number }) {
   return (
-    <Status label="Loading your interior listings…" className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+    <Status label="Loading your interior listings…" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: count }, (_, i) => (
         <InteriorListingCardSkeleton key={i} />
       ))}
@@ -59,16 +76,19 @@ export function InteriorListingsGridSkeleton({ count = 3 }: { count?: number }) 
 /** Full page (route-level loading.tsx for /dashboard/interior-profile). */
 export function InteriorListingsPageSkeleton() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" aria-hidden>
-        <div className="min-w-0 flex-1 space-y-2">
-          <Skeleton className={cn("h-3.5 w-48 max-w-full", boneSoft)} />
-          <Skeleton className={cn("h-8 w-64 max-w-full", bone)} />
-          <Skeleton className={cn("h-4 w-96 max-w-full", boneSoft)} />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="mx-auto w-full max-w-6xl px-4 pb-10 pt-4 sm:px-6 sm:pt-8">
+        <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between" aria-hidden>
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className={cn("h-3 w-32", boneSoft)} />
+            <Skeleton className={cn("h-7 w-56 max-w-full sm:h-9", bone)} />
+            <Skeleton className={cn("h-4 w-80 max-w-full", boneSoft)} />
+          </div>
+          <Skeleton className={cn("hidden h-11 w-36 rounded-full sm:block", bone)} />
         </div>
-        <Skeleton className={cn("h-10 w-full rounded-xl sm:w-60", bone)} />
+        <InteriorListingStatsSkeleton />
+        <InteriorListingsGridSkeleton />
       </div>
-      <InteriorListingsGridSkeleton />
     </div>
   );
 }

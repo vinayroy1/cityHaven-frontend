@@ -92,18 +92,20 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
 
   return (
     <header className="bg-white dark:bg-slate-900">
-      <div className="relative h-40 w-full overflow-hidden bg-gradient-to-br from-stone-800 via-rose-950 to-stone-900 sm:h-56 lg:h-72">
-        {profile.coverBanner && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={profile.coverBanner} alt="" className="h-full w-full object-cover" fetchPriority="high" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+      <div className="mx-auto max-w-6xl sm:px-6 sm:pt-4">
+        <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-stone-800 via-rose-950 to-stone-900 sm:h-60 sm:rounded-3xl lg:h-72">
+          {profile.coverBanner && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={profile.coverBanner} alt="" className="h-full w-full object-cover" fetchPriority="high" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+        </div>
       </div>
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="relative -mt-12 flex flex-col gap-5 pb-6 sm:-mt-16 lg:flex-row lg:items-end lg:justify-between">
-          <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-end">
-            <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-4 border-white bg-white shadow-lg sm:h-32 sm:w-32 dark:border-slate-900 dark:bg-slate-800">
+        {/* Only the logo overlaps the cover; all text sits on the white surface below it. */}
+        <div className="relative z-10 -mt-12 sm:-mt-14 sm:ml-6">
+          <div className="h-24 w-24 overflow-hidden rounded-2xl border-4 border-white bg-white shadow-lg ring-1 ring-black/5 sm:h-28 sm:w-28 dark:border-slate-900 dark:bg-slate-800">
               {profile.logo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={profile.logo} alt={`${name} logo`} className="h-full w-full object-cover" />
@@ -112,11 +114,13 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
                   {isCompany ? <Building2 className="h-10 w-10" aria-hidden /> : <User className="h-10 w-10" aria-hidden />}
                 </div>
               )}
-            </div>
+          </div>
+        </div>
 
-            <div className="min-w-0">
+        <div className="flex flex-col gap-5 pb-6 pt-4 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
+            <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="break-words text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+                <h1 className="break-words text-2xl font-bold leading-tight tracking-tight text-slate-900 sm:text-[2rem] dark:text-white">
                   {name}
                 </h1>
                 {profile.isVerified && (
@@ -127,7 +131,7 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
                 )}
               </div>
               {profile.tagline && (
-                <p className="mt-1 text-base text-slate-600 dark:text-slate-300">{profile.tagline}</p>
+                <p className="mt-1.5 max-w-2xl text-[15px] leading-relaxed text-slate-600 dark:text-slate-300">{profile.tagline}</p>
               )}
               <ul className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-600 dark:text-slate-400">
                 <li className="inline-flex items-center gap-1">
@@ -159,18 +163,16 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
                 </li>
               </ul>
             </div>
-          </div>
 
-          <div className="flex flex-col gap-3 lg:items-end">
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              {price ? (
-                <>
-                  Starting at <strong className="text-lg text-slate-900 dark:text-white">{price}</strong>
-                </>
-              ) : (
-                <strong className="text-slate-900 dark:text-white">Custom quote</strong>
-              )}
-            </p>
+          <div className="flex shrink-0 flex-col gap-3 rounded-2xl border border-stone-200 bg-stone-50/70 p-4 lg:min-w-[300px] dark:border-slate-800 dark:bg-slate-800/40">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                {price ? "Starting at" : "Pricing"}
+              </p>
+              <p className="mt-0.5 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {price || "Custom quote"}
+              </p>
+            </div>
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
@@ -195,7 +197,7 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
                 <a
                   href={telHref(phone)}
                   aria-label={`Call ${name}`}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-stone-200 px-4 text-sm font-semibold text-slate-800 hover:bg-stone-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 text-sm font-semibold text-slate-800 hover:bg-stone-50 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                 >
                   <Phone className="h-4 w-4" aria-hidden />
                   Call
