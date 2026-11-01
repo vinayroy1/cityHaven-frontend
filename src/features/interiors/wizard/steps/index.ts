@@ -35,6 +35,7 @@ export const INTERIOR_CUSTOM_COMPONENT_NAMES = [
   "MaterialSpecTable",
   "PackageManager",
   "RoomPricingTable",
+  "ConsultationPicker",
   "BranchPricingOverrides",
   "PortfolioManager",
   "TeamManager",

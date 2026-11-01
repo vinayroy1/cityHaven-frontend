@@ -9,6 +9,7 @@ import DesignStyleTiles from "./custom/DesignStyleTiles";
 import MaterialSpecTable from "./custom/MaterialSpecTable";
 import PackageManager from "./custom/PackageManager";
 import RoomPricingTable from "./custom/RoomPricingTable";
+import ConsultationPicker from "./custom/ConsultationPicker";
 import BranchPricingOverrides from "./custom/BranchPricingOverrides";
 import PortfolioManager from "./custom/PortfolioManager";
 import TeamManager from "./custom/TeamManager";
@@ -29,6 +30,7 @@ export const interiorCustomComponents: Record<InteriorCustomComponentName, Compo
   MaterialSpecTable,
   PackageManager,
   RoomPricingTable,
+  ConsultationPicker,
   BranchPricingOverrides,
   PortfolioManager,
   TeamManager,

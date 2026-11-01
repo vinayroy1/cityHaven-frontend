@@ -81,31 +81,12 @@ export const pricingStep: StepConfig = {
       id: "consultation",
       title: "Do you offer consultations?",
       description: "Online, studio or site-visit consultations — free or paid.",
-      collapsible: true,
-      fields: [
-        {
-          id: "pricing.consultationOptions",
-          label: "Consultation options",
-          type: "repeater",
-          meta: {
-            addLabel: "Add consultation option",
-            emptyText: "No consultation options yet.",
-            idPrefix: "consult",
-            itemFields: [
-              { id: "type", label: "Type", type: "chip-radio", required: true, options: [
-                { value: "ONLINE", label: "Online call" },
-                { value: "IN_PERSON", label: "At studio / office" },
-                { value: "SITE_VISIT", label: "Site visit" },
-              ] },
-              { id: "isFree", label: "Free consultation", type: "toggle" },
-              { id: "fee", label: "Fee (₹)", type: "number", min: 0, visibleWhen: { field: "isFree", notEquals: true } },
-              { id: "durationMins", label: "Duration (minutes)", type: "number", min: 5, max: 600 },
-              { id: "adjustableAgainstProject", label: "Fee adjusted against project", type: "toggle" },
-            ],
-            newItem: { type: "", fee: null, isFree: false, durationMins: null, adjustableAgainstProject: false },
-          },
-        },
-      ],
+      kind: "custom",
+      component: "ConsultationPicker",
+      props: { field: "pricing.consultationOptions" },
+      scorePaths: ["pricing.consultationOptions"],
+      weight: 1,
+      fields: [],
     },
     {
       id: "branchOverrides",
