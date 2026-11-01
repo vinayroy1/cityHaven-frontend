@@ -2,12 +2,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 import { InteriorListingStatus } from "@/types/interior.types";
 import { MANAGE_SECTIONS, manageHref, type ManageSectionId } from "./sections";
 import { useManageListing } from "./useManageListing";
 import { StatusBadge } from "./StatusBadge";
+import { InteriorManageLayoutSkeleton } from "@/components/interiors/skeletons";
 
 function activeSection(pathname: string): ManageSectionId {
   const seg = pathname.split("/manage/")[1]?.split("/")[0];
@@ -25,13 +26,7 @@ export function InteriorManageLayout({ children }: { children: ReactNode }) {
     if (!isLoading && !profile) router.replace("/dashboard/interior-profile/setup");
   }, [isLoading, profile, router]);
 
-  if (isLoading || !profile) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center text-sm text-slate-500" role="status">
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading your listing…
-      </div>
-    );
-  }
+  if (isLoading || !profile) return <InteriorManageLayoutSkeleton />;
 
   const name = profile.displayName || profile.businessName || "Your listing";
   const isLive = profile.status === InteriorListingStatus.PUBLISHED || (!profile.status && profile.isPublished);

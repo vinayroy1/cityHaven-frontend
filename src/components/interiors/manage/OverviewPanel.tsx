@@ -7,6 +7,7 @@ import { ListingStatusCard } from "./ListingStatusCard";
 import { ListingSummary } from "./ListingSummary";
 import { manageHref, MANAGE_SECTIONS, type ManageSectionId } from "./sections";
 import { useManageListing } from "./useManageListing";
+import { OverviewSkeleton } from "@/components/interiors/skeletons";
 
 const stepLabel = (id: string) => interiorSteps.find((s) => s.id === id)?.label ?? id;
 const hrefFor = (item: ReadinessItem) =>
@@ -40,7 +41,7 @@ function Checklist({ title, items }: { title: string; items: ReadinessItem[] }) 
 
 export function OverviewPanel() {
   const { profile, readiness, score } = useManageListing();
-  if (!profile) return null;
+  if (!profile) return <OverviewSkeleton />;
 
   const inquiries = profile.inquiries ?? [];
   const leadCount = profile._count?.inquiries ?? inquiries.length;

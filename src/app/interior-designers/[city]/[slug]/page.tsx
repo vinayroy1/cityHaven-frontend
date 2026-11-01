@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ImageIcon } from "lucide-react";
 import { useGetInteriorProfileDetailQuery } from "@/features/interiors/api";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DesignerProfileSkeleton } from "@/components/interiors/skeletons";
 import { InteriorInquiryModal } from "../../components/InteriorInquiryModal";
 import { PortfolioGrid } from "../../components/profile/Portfolio";
 import {
@@ -81,17 +81,7 @@ export default function InteriorProfileDetailPage() {
   }, [profile, materials]);
 
   if (isLoading || (!slug && !error)) {
-    return (
-      <div className="min-h-screen bg-stone-50 dark:bg-slate-950" aria-busy="true" aria-label="Loading designer profile">
-        <Skeleton className="h-40 w-full rounded-none sm:h-56 lg:h-72" />
-        <div className="mx-auto max-w-6xl space-y-4 px-4 py-6 sm:px-6">
-          <Skeleton className="-mt-16 h-24 w-24 rounded-2xl sm:h-32 sm:w-32" />
-          <Skeleton className="h-8 w-2/3 max-w-sm" />
-          <Skeleton className="h-4 w-1/2 max-w-xs" />
-          <Skeleton className="mt-6 h-64 w-full rounded-3xl" />
-        </div>
-      </div>
-    );
+    return <DesignerProfileSkeleton />;
   }
 
   if (!profile || error) {

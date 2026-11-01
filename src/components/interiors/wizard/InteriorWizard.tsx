@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { InteriorWizardSkeleton } from "@/components/interiors/skeletons";
 import { ListingWizardShell } from "@/components/listingEngine";
 import { useInteriorWizard } from "@/features/interiors/wizard/useInteriorWizard";
 import { InteriorListingStatus } from "@/types/interior.types";
@@ -25,13 +25,7 @@ export function InteriorWizard() {
   const [done, setDone] = useState<"submitted" | "published" | null>(null);
   const config = useMemo(() => ({ ...vertical, renderPreview: renderInteriorPreview }), [vertical]);
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center gap-2 text-sm text-slate-500" role="status">
-        <Loader2 className="size-5 animate-spin" /> Loading your listing…
-      </div>
-    );
-  }
+  if (isLoading) return <InteriorWizardSkeleton />;
   if (isError) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-sm text-slate-600" role="alert">

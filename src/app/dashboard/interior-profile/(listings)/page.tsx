@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useGetMyInteriorListingsQuery, useCreateInteriorListingMutation } from "@/features/interiors/api";
 import { StatusBadge } from "@/components/interiors/manage/StatusBadge";
+import { InteriorListingsGridSkeleton } from "@/components/interiors/skeletons";
 import { InteriorListingStatus } from "@/types/interior.types";
 
 export default function MyInteriorListingsPage() {
@@ -70,12 +71,7 @@ export default function MyInteriorListingsPage() {
       </div>
 
       {/* Loading state */}
-      {isLoading && (
-        <div className="flex min-h-[300px] flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-slate-800 dark:bg-slate-900">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Loading your interior listings…</p>
-        </div>
-      )}
+      {isLoading && <InteriorListingsGridSkeleton />}
 
       {/* Error state */}
       {isError && (

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
+import { DesignerGridSkeleton } from "@/components/interiors/skeletons";
 import {
   Search,
   MapPin,
@@ -470,11 +471,7 @@ export default function InteriorDesignersDirectoryPage() {
         {/* Content Area */}
         <div className="mt-6">
           {isLoading ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="h-80 animate-pulse rounded-2xl bg-slate-200 dark:bg-slate-800" />
-              ))}
-            </div>
+            <DesignerGridSkeleton />
           ) : viewTab === "DIRECTORY" ? (
             filteredDesigners.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-800 dark:bg-slate-900/50">

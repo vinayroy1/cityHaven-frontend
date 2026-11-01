@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Info, Loader2 } from "lucide-react";
+import { ManageSectionSkeleton } from "@/components/interiors/skeletons";
 import { SectionRenderer } from "@/components/listingEngine";
 import { useAutosave } from "@/lib/listingEngine/useAutosave";
 import { interiorCustomComponents } from "@/components/interiors/wizard";
@@ -64,7 +65,7 @@ export function ManageSectionPage({ section }: { section: InteriorWizardSection 
   const goToStep = (stepId: string) => router.push(manageHref(stepId as ManageSectionId));
 
   if (isLoading || !profile) {
-    return <div className="flex justify-center py-10 text-sm text-slate-500" role="status"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Loading…</div>;
+    return <ManageSectionSkeleton />;
   }
 
   const sections = (step.sections ?? []).filter((s) => evaluateCondition(values, s.visibleWhen, interiorPredicates));

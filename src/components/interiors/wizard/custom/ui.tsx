@@ -8,7 +8,7 @@ import { Check, GripVertical, ImagePlus, Loader2, Minus, Plus, X } from "lucide-
 import { useWatch, type UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { MobileEditorScreen } from "./MobileEditorScreen";
 import { useIsMobile } from "@/components/ui/use-mobile";
 import { useInteriorUpload, type InteriorUploadSubFolder } from "@/features/interiors/upload";
 import { cn } from "@/lib/utils";
@@ -243,7 +243,7 @@ export function AddButton({ onClick, children }: { onClick: () => void; children
   );
 }
 
-/** Right Sheet on desktop, bottom Drawer on mobile. */
+/** Right Sheet on desktop; full-screen, keyboard-aware editor on mobile (bottom drawers break with the iOS keyboard). */
 export function EditorPanel({
   open,
   onOpenChange,
@@ -262,16 +262,9 @@ export function EditorPanel({
   const isMobile = useIsMobile();
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[92vh]">
-          <DrawerHeader className="text-left">
-            <DrawerTitle>{title}</DrawerTitle>
-            {description && <DrawerDescription>{description}</DrawerDescription>}
-          </DrawerHeader>
-          <div className="flex-1 space-y-5 overflow-y-auto px-4 pb-4">{children}</div>
-          <div className="flex gap-2 border-t border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">{footer}</div>
-        </DrawerContent>
-      </Drawer>
+      <MobileEditorScreen open={open} onOpenChange={onOpenChange} title={title} description={description} footer={footer}>
+        {children}
+      </MobileEditorScreen>
     );
   }
   return (

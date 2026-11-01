@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Coins, Inbox, Loader2, Lock, Mail, MapPin, Phone, Unlock } from "lucide-react";
+import { Coins, Inbox, Lock, Mail, MapPin, Phone, Unlock } from "lucide-react";
+import { LeadsListSkeleton } from "@/components/interiors/skeletons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -78,7 +79,7 @@ export function LeadsPanel() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-10 text-sm text-slate-500" role="status"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading leads…</div>
+        <LeadsListSkeleton />
       ) : isError ? (
         <p className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">Could not load leads. Please refresh.</p>
       ) : items.length === 0 ? (

@@ -1,18 +1,12 @@
 "use client";
 
 import { Suspense } from "react";
-import { Loader2 } from "lucide-react";
 import { InteriorWizard } from "@/components/interiors/wizard";
+import { InteriorWizardSkeleton } from "@/components/interiors/skeletons";
 
 export default function InteriorProfileSetupPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[50vh] items-center justify-center gap-2 text-sm text-slate-500" role="status">
-          <Loader2 className="size-5 animate-spin" /> Loading…
-        </div>
-      }
-    >
+    <Suspense fallback={<InteriorWizardSkeleton />}>
       <InteriorWizard />
     </Suspense>
   );
