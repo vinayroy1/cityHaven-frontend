@@ -11,16 +11,24 @@ import { ResultCard } from "@/app/propertySearch/components/ResultCard";
 import { toResultCardProps } from "@/app/propertySearch/components/propertyCardAdapter";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 
-import { ALL_AGENTS, type Agent } from "@/data/agents";
-import { getMergedHomepageFeaturedAgents } from "@/lib/services/agentProfile";
 import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
-import { useGetAdvisorsQuery } from "@/features/advisors/api";
 import { useSearchProjectsQuery } from "@/features/projects/api";
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
-import { FlatmateCard } from "@/components/flatmates/FlatmateCard";
-import { CDN_ASSETS } from "@/config/cdn";
+import dynamic from "next/dynamic";
 import { useSearchInteriorDesignersQuery } from "@/features/interiors/api";
-import { InteriorDesignerShowcaseCard, InteriorDesignerShowcaseSkeleton } from "./InteriorDesignerShowcaseCard";
+import { RenderWhenNear, useNearViewport } from "./RenderWhenNear";
+import { sizedImageUrl } from "../lib/homeImage";
+import type { ProjectListing } from "@/types/project.types";
+
+// Below-the-fold card components are split out of the initial homepage bundle.
+const PreferredAgentsSection = dynamic(() => import("./PreferredAgentsSection"));
+const FlatmateCard = dynamic(() => import("@/components/flatmates/FlatmateCard").then((m) => m.FlatmateCard));
+const InteriorDesignerShowcaseCard = dynamic(() =>
+  import("./InteriorDesignerShowcaseCard").then((m) => m.InteriorDesignerShowcaseCard)
+);
+const InteriorDesignerShowcaseSkeleton = dynamic(() =>
+  import("./InteriorDesignerShowcaseCard").then((m) => m.InteriorDesignerShowcaseSkeleton)
+);
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 
 const normalizeR2Url = (url?: string | null): string => {
@@ -48,8 +56,10 @@ function useIdleState(timeoutMs = 1200) {
 
 export function HomeExperience({
   initialFreshListings = [],
+  initialProjects = [],
 }: {
   initialFreshListings?: PropertySearchItem[];
+  initialProjects?: ProjectListing[];
 } = {}) {
   const router = useRouter();
   const isIdle = useIdleState(1000);
@@ -57,6 +67,10 @@ export function HomeExperience({
   // in the effect below after hydration.
   const [selectedCity, setSelectedCity] = React.useState("");
   const [isExplicitCity, setIsExplicitCity] = React.useState(false);
+  // City detected by geo on this visit. It personalises below-the-fold sections but
+  // must not swap the above-the-fold projects carousel (that would move the LCP late).
+  const [isGeoCity, setIsGeoCity] = React.useState(false);
+  const [belowFoldRef, isBelowFoldNear] = useNearViewport<HTMLDivElement>();
   const [searchState, setSearchState] = React.useState<SearchState>(() => initialSearchState(""));
 
   React.useEffect(() => {
@@ -76,6 +90,7 @@ export function HomeExperience({
     void detectUserLocation().then((profile) => {
       if (!cancelled && profile?.city && profile.city.trim()) {
         const matched = profile.city.trim();
+        setIsGeoCity(true);
         setSelectedCity(matched);
         setSearchState((prev) => ({ ...prev, cityName: matched }));
         try {
@@ -93,6 +108,7 @@ export function HomeExperience({
 
   const updateCity = (city: string) => {
     setIsExplicitCity(true);
+    setIsGeoCity(false);
     setSelectedCity(city);
     setSearchState((prev) => ({ ...prev, cityName: city || undefined }));
     try {
@@ -187,7 +203,7 @@ export function HomeExperience({
       sort: "newest",
       pageSize: 16,
     },
-    { enabled: isIdle && Boolean(normalizedCity) }
+    { enabled: isIdle && isBelowFoldNear && Boolean(normalizedCity) }
   );
 
   // Nationwide fallback budget query (only needed if no city selected)
@@ -198,7 +214,7 @@ export function HomeExperience({
       sort: "newest",
       pageSize: 16,
     },
-    { enabled: isIdle && !normalizedCity }
+    { enabled: isIdle && isBelowFoldNear && !normalizedCity }
   );
 
   // 4. Dedicated query for owner-posted listings
@@ -209,7 +225,7 @@ export function HomeExperience({
       sort: "newest",
       pageSize: 16,
     },
-    { enabled: isIdle }
+    { enabled: isIdle && isBelowFoldNear }
   );
 
   const rawFresh = (freshQuery.items as PropertySearchItem[]) ?? [];
@@ -293,7 +309,10 @@ export function HomeExperience({
 
       <div className="bg-gradient-to-b from-slate-50/80 via-white to-white dark:from-slate-900/45 dark:via-slate-950 dark:to-slate-950">
       <main className="mx-auto max-w-6xl overflow-x-clip px-4 pt-2 pb-5 sm:pt-3 sm:pb-6 sm:px-6">
-        <FeaturedProjectsSection selectedCity={selectedCity} />
+        <FeaturedProjectsSection
+          selectedCity={isGeoCity && !isExplicitCity ? "" : selectedCity}
+          initialProjects={initialProjects}
+        />
 
         <ListingBlock
           isFirstBlock
@@ -312,7 +331,11 @@ export function HomeExperience({
           listings={freshListings}
         />
 
-        <PreferredAgentsSection selectedCity={selectedCity} />
+        <div ref={belowFoldRef} aria-hidden />
+
+        <RenderWhenNear minHeight={260}>
+          <PreferredAgentsSection selectedCity={selectedCity} />
+        </RenderWhenNear>
 
         <ListingBlock
           title={
@@ -357,11 +380,17 @@ export function HomeExperience({
           listings={budgetListings}
         />
 
-        <FeaturedFlatAvailableSection selectedCity={selectedCity} />
+        <RenderWhenNear minHeight={360}>
+          <FeaturedFlatAvailableSection selectedCity={selectedCity} />
+        </RenderWhenNear>
 
-        <FeaturedSeekersBuddyUpSection selectedCity={selectedCity} />
+        <RenderWhenNear minHeight={360}>
+          <FeaturedSeekersBuddyUpSection selectedCity={selectedCity} />
+        </RenderWhenNear>
 
-        <InteriorDesignersSection selectedCity={selectedCity} />
+        <RenderWhenNear minHeight={420}>
+          <InteriorDesignersSection selectedCity={selectedCity} />
+        </RenderWhenNear>
 
       </main>
       </div>
@@ -369,173 +398,6 @@ export function HomeExperience({
   );
 }
 
-function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
-  const isIdle = useIdleState(1200);
-  const { data: apiAdvisors, isLoading } = useGetAdvisorsQuery(
-    {
-      city: selectedCity,
-      featured: true,
-      limit: 8,
-    },
-    { skip: !isIdle }
-  );
-
-  const [staticAgents, setStaticAgents] = React.useState<Agent[]>(() => {
-    return ALL_AGENTS.filter((agent) => agent.isHomepageFeatured);
-  });
-
-  React.useEffect(() => {
-    const refreshFeatured = () => {
-      try {
-        const featured = getMergedHomepageFeaturedAgents(selectedCity);
-        setStaticAgents(featured.length ? featured : ALL_AGENTS.filter((a) => a.isHomepageFeatured));
-      } catch {
-        const cityAgents = ALL_AGENTS.filter(
-          (agent) => agent.isHomepageFeatured && (!selectedCity || agent.city.toLowerCase() === selectedCity.toLowerCase())
-        );
-        setStaticAgents(cityAgents.length ? cityAgents : ALL_AGENTS.filter((a) => a.isHomepageFeatured));
-      }
-    };
-
-    refreshFeatured();
-    window.addEventListener("awasio:agent-profile-updated", refreshFeatured);
-    return () => window.removeEventListener("awasio:agent-profile-updated", refreshFeatured);
-  }, [selectedCity]);
-
-  // Use dynamic API advisors if available, fallback gracefully to static/local
-  const agents = (apiAdvisors && apiAdvisors.length > 0) ? apiAdvisors : staticAgents;
-
-  if (!isLoading && (!agents || agents.length === 0)) return null;
-
-  return (
-    <section className="mt-4 sm:mt-6">
-      <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
-        <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            <span>In-Person Real Estate Advisors</span>
-          </div>
-          <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
-            Meet Verified Local Agents
-          </h2>
-        </div>
-        <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
-          <Link
-            href="/agents"
-            prefetch={false}
-            className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400"
-          >
-            View all <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </div>
-
-      {isLoading && staticAgents.length === 0 ? (
-        <div className="flex w-full gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="w-[285px] sm:w-[310px] shrink-0 rounded-2xl border border-slate-200/80 bg-white p-3.5 animate-pulse dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-start gap-3.5">
-                <div className="h-14 w-14 rounded-full bg-slate-200 dark:bg-slate-800 shrink-0" />
-                <div className="flex-1 space-y-2 pt-1">
-                  <div className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-800" />
-                  <div className="h-3 w-1/2 rounded bg-slate-150 dark:bg-slate-850" />
-                </div>
-              </div>
-              <div className="mt-4 h-3 w-full rounded bg-slate-200 dark:bg-slate-800" />
-              <div className="mt-2 h-3 w-4/5 rounded bg-slate-150 dark:bg-slate-850" />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div
-          className="flex w-full gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory scroll-smooth"
-        >
-          {agents.map((agent: any) => {
-            const expText = agent.experienceYears ? `${agent.experienceYears}+ yrs` : (agent.experience || "5+ yrs");
-            const toursText = agent.tours || agent.totalToursDone || "50+ visits";
-            const homesText = agent.listingsCount || agent.activePropertiesCount || "10+";
-            const servicesList = Array.isArray(agent.services) ? agent.services : ["Private site visits", "Price negotiation"];
-            const agentKey = agent.slug || agent.id;
-
-            return (
-              <Link
-                key={agentKey}
-                href={`/agents/${agentKey}`}
-                prefetch={false}
-                className="group flex w-[285px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 sm:w-[310px]"
-              >
-                <div>
-                  {/* Agent Headshot & Identification */}
-                  <div className="flex items-start gap-3.5">
-                    <div className="relative shrink-0">
-                      <img
-                        src={agent.avatar}
-                        alt={agent.name}
-                        width={56}
-                        height={56}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-14 w-14 rounded-full object-cover ring-2 ring-slate-100 shadow-xs dark:ring-slate-800 group-hover:ring-rose-200 transition"
-                      />
-                      {/* Active / In-Person tour availability indicator */}
-                      <span
-                        title="Available for in-person tours"
-                        className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"
-                      />
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <h3 className="truncate text-sm font-bold text-slate-950 group-hover:text-rose-600 transition dark:text-white dark:group-hover:text-rose-400">
-                          {agent.name}
-                        </h3>
-                        <BadgeCheck className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
-                      </div>
-                      <p className="truncate text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                        {agent.role || agent.title || "Property Advisor"} <span className="text-slate-300 dark:text-slate-600">•</span> {agent.agency}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Badges & Verification */}
-                  <div className="mt-3 flex items-center justify-between gap-2">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
-                      <Sparkles className="h-3 w-3 text-rose-500" />
-                      {agent.badge || "Top Rated"}
-                    </span>
-                    <span className="flex items-center gap-1 whitespace-nowrap text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
-                      <ShieldCheck className="h-3.5 w-3.5" />
-                      RERA Verified
-                    </span>
-                  </div>
-
-                  {/* Operating Location */}
-                  <p className="mt-2.5 flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
-                    <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
-                    <span className="truncate">{agent.area || agent.primaryArea || agent.city}</span>
-                  </p>
-
-                  {/* Service Highlights */}
-                  <p className="mt-2 truncate text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                    {servicesList.slice(0, 2).join(" · ")}
-                  </p>
-
-                  {/* Compact stats row */}
-                  <div className="mt-3 grid grid-cols-3 divide-x divide-slate-200 rounded-lg bg-slate-50/90 py-2 text-center dark:divide-slate-700 dark:bg-slate-800/60">
-                    <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{expText}</strong>Exp</p>
-                    <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{toursText}</strong>Tours</p>
-                    <p className="text-[10px] text-slate-500"><strong className="mr-1 text-xs text-slate-950 dark:text-white">{homesText}</strong>Homes</p>
-                  </div>
-                </div>
-
-              </Link>
-            );
-          })}
-        </div>
-      )}
-    </section>
-  );
-}
 
 function ListingBlock({
   title,
@@ -590,8 +452,9 @@ function ListingBlock({
               <ResultCard
                 {...toResultCardProps(item)}
                 compact
-                priority={Boolean(isFirstBlock && idx === 0)}
-                deferImage={!(isFirstBlock && idx === 0)}
+                priority={false}
+                // Below the projects carousel: keep these out of the LCP bandwidth window.
+                deferImage
               />
             </div>
           ))}
@@ -608,9 +471,12 @@ function formatProjectPrice(value?: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
 
-function FeaturedProjectCard({ project }: { project: any }) {
+function FeaturedProjectCard({ project, priority = false }: { project: any; priority?: boolean }) {
   const router = useRouter();
-  const safeImages: string[] = Array.from(new Set<string>((project.images || []).map(normalizeR2Url).filter(Boolean)));
+  // Size before dedupe so the swipe hook preloads 640px renditions, not the API's 1200px originals.
+  const safeImages: string[] = Array.from(
+    new Set<string>((project.images || []).map((u: string) => sizedImageUrl(normalizeR2Url(u), 640)).filter(Boolean))
+  );
   const {
     activeImage,
     nextImage,
@@ -629,7 +495,7 @@ function FeaturedProjectCard({ project }: { project: any }) {
     totalImages: safeImages.length,
   });
 
-  const projectImage = safeImages[activeImage] || safeImages[0] || CDN_ASSETS.placeholderWebp;
+  const projectImage = safeImages[activeImage] || safeImages[0];
   const projectHref = `/new-projects/${project.slug}`;
 
   const openDetails = () => {
@@ -659,14 +525,20 @@ function FeaturedProjectCard({ project }: { project: any }) {
         onClickCapture={handleClickCapture}
         className="relative aspect-[16/10] w-full overflow-hidden select-none touch-pan-y bg-slate-100 dark:bg-slate-800"
       >
-        <img
-          src={projectImage}
-          alt={project.name}
-          className="h-full w-full object-cover transition duration-300 group-hover:scale-105 pointer-events-none"
-          loading={hasInteracted ? "eager" : "lazy"}
-          fetchPriority={hasInteracted ? "high" : "auto"}
-          decoding="async"
-        />
+        {projectImage ? (
+          <img
+            src={projectImage}
+            alt={project.name}
+            width={640}
+            height={400}
+            className="h-full w-full object-cover transition duration-300 group-hover:scale-105 pointer-events-none"
+            loading={priority || hasInteracted ? "eager" : "lazy"}
+            fetchPriority={priority || hasInteracted ? "high" : "auto"}
+            decoding={priority ? "sync" : "async"}
+          />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-slate-200 via-slate-100 to-slate-300 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800" />
+        )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/10" />
 
         {hasCarousel && (
@@ -762,8 +634,8 @@ const MUMBAI_FALLBACK_PROJECTS: any[] = [
     priceMin: 2200000,
     priceMax: 4800000,
     images: [
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=640&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=640&auto=format&fit=crop&q=70",
     ],
     configurations: [
       { id: 1050, bhkType: "1 RK" },
@@ -782,8 +654,8 @@ const MUMBAI_FALLBACK_PROJECTS: any[] = [
     priceMin: 5200000,
     priceMax: 9200000,
     images: [
-      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=640&auto=format&fit=crop&q=70",
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=640&auto=format&fit=crop&q=70",
     ],
     configurations: [
       { id: 1053, bhkType: "1 BHK" },
@@ -876,18 +748,30 @@ const MUMBAI_FALLBACK_PROJECTS: any[] = [
   },
 ];
 
-function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
+function FeaturedProjectsSection({
+  selectedCity,
+  initialProjects = [],
+}: {
+  selectedCity: string;
+  initialProjects?: ProjectListing[];
+}) {
   const effectiveCity = selectedCity || "Mumbai";
   const normalizedCity = effectiveCity.toLowerCase().includes("delhi")
     ? "New Delhi"
     : effectiveCity;
 
   // Try local city projects first (defaults to Mumbai projects)
+  // The default (Mumbai) list is fetched on the server; only refetch when a city is chosen.
+  const useServerProjects = !selectedCity && initialProjects.length > 0;
   const { data: cityData, isLoading: isCityLoading } = useSearchProjectsQuery(
-    { city: normalizedCity, pageSize: 6 }
+    { city: normalizedCity, pageSize: 6 },
+    { skip: useServerProjects }
   );
 
-  const apiProjects = cityData?.items ?? [];
+  // Keep showing the server list while a city-specific list loads (no empty flash).
+  const apiProjects: ProjectListing[] = useServerProjects
+    ? initialProjects
+    : (cityData?.items ?? (isCityLoading ? initialProjects : []));
   const projects = apiProjects.length > 0
     ? apiProjects
     : (effectiveCity.toLowerCase() === "mumbai" ? MUMBAI_FALLBACK_PROJECTS : []);
@@ -928,12 +812,12 @@ function FeaturedProjectsSection({ selectedCity }: { selectedCity: string }) {
         </div>
       ) : (
         <div className="flex w-full gap-3 overflow-x-auto pb-4 pt-1 no-scrollbar snap-x snap-mandatory">
-          {projects.slice(0, 6).map((project) => (
+          {projects.slice(0, 6).map((project, idx) => (
             <div
               key={project.id}
               className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]"
             >
-              <FeaturedProjectCard project={project} />
+              <FeaturedProjectCard project={project} priority={idx === 0} />
             </div>
           ))}
         </div>

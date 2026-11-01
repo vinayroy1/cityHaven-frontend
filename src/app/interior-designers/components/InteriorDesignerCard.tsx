@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { isOptimizableImage } from "../lib/image";
 import React, { useState } from "react";
 import Link from "next/link";
 import {
@@ -11,17 +13,17 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
-  Layers,
-  ArrowRight,
 } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
 
 interface InteriorCardProps {
   profile: InteriorProfile;
+  /** Preload the cover (use for above-the-fold cards). */
+  priority?: boolean;
   onOpenInquiry?: (profile: InteriorProfile) => void;
 }
 
-export function InteriorDesignerCard({ profile, onOpenInquiry }: InteriorCardProps) {
+export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false }: InteriorCardProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   // Hero priority: featured project cover -> first approved cover -> first cover -> cover banner.
@@ -71,16 +73,19 @@ export function InteriorDesignerCard({ profile, onOpenInquiry }: InteriorCardPro
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
         <Link href={profileUrl} className="block h-full w-full">
           {safePhotos.length > 0 ? (
-            <img
+            <Image
               src={safePhotos[activeImageIndex]}
               alt={profile.businessName}
-              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-              loading="lazy"
+              fill
+              preload={priority && activeImageIndex === 0}
+              sizes="(min-width: 1280px) 400px, (min-width: 1024px) 31vw, (min-width: 640px) 46vw, 92vw"
+              unoptimized={!isOptimizableImage(safePhotos[activeImageIndex])}
+              className="object-cover transition duration-300 group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-rose-500 via-rose-600 to-rose-800">
               {profile.logo ? (
-                <img src={profile.logo} alt="" className="h-16 w-16 rounded-2xl bg-white object-cover shadow-lg" loading="lazy" />
+                <Image src={profile.logo} alt="" width={64} height={64} sizes="64px" unoptimized={!isOptimizableImage(profile.logo)} className="h-16 w-16 rounded-2xl bg-white object-cover shadow-lg" />
               ) : (
                 <span className="text-3xl font-black tracking-tight text-white/90">{initials}</span>
               )}
@@ -172,9 +177,13 @@ export function InteriorDesignerCard({ profile, onOpenInquiry }: InteriorCardPro
             </p>
           </div>
           {profile.logo && (
-            <img
+            <Image
               src={profile.logo}
               alt=""
+              width={36}
+              height={36}
+              sizes="36px"
+              unoptimized={!isOptimizableImage(profile.logo)}
               className="h-9 w-9 rounded-full border border-slate-200 object-cover shrink-0 dark:border-slate-700"
             />
           )}

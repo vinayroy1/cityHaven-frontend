@@ -61,7 +61,7 @@ export function BrandLogo({
 
   if (href) {
     return (
-      <Link href={href} aria-label="Awasio Home" className="inline-block">
+      <Link href={href} prefetch={false} aria-label="Awasio Home" className="inline-block">
         {content}
       </Link>
     );

@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { isOptimizableImage } from "../../lib/image";
 import React from "react";
 import {
   Award,
@@ -432,8 +434,15 @@ export function TeamSection({ profile }: { profile: InteriorProfile }) {
           <li key={m.id} className="flex gap-4 rounded-2xl border border-stone-200 p-4 dark:border-slate-800">
             <div className="h-16 w-16 shrink-0 overflow-hidden rounded-full bg-stone-100 dark:bg-slate-800">
               {m.profilePhoto ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={m.profilePhoto} alt={m.name} loading="lazy" className="h-full w-full object-cover" />
+                <Image
+                  src={m.profilePhoto}
+                  alt={m.name}
+                  width={64}
+                  height={64}
+                  sizes="64px"
+                  unoptimized={!isOptimizableImage(m.profilePhoto)}
+                  className="h-full w-full object-cover"
+                />
               ) : (
                 <div className="flex h-full items-center justify-center text-stone-400">
                   <User className="h-7 w-7" aria-hidden />
@@ -616,7 +625,7 @@ export function ReviewsSection({ profile, onQuote }: { profile: InteriorProfile;
         <div className="flex items-center gap-4">
           <p className="text-4xl font-extrabold text-slate-900 dark:text-white">{rating.toFixed(1)}</p>
           <div>
-            <div className="flex" aria-label={`${rating.toFixed(1)} out of 5 stars`}>
+            <div className="flex" role="img" aria-label={`${rating.toFixed(1)} out of 5 stars`}>
               {[1, 2, 3, 4, 5].map((i) => (
                 <Star key={i} className={`h-5 w-5 ${i <= Math.round(rating) ? "fill-amber-400 text-amber-400" : "text-stone-300"}`} aria-hidden />
               ))}

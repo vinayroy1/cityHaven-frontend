@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   // The app does not depend on compiler-specific semantics. Enabling the React
   // Compiler transforms every component and substantially increases CI time.
   reactCompiler: false,
+  // experimental.inlineCss was tried and removed: the full Tailwind stylesheet (~406 KB raw)
+  // inlined into every page made first paint slower in Lighthouse (1.1s → 1.3s mobile).
   images: {
     remotePatterns: [
       {
@@ -23,7 +25,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "ui-avatars.com",
+      },
     ],
+    formats: ["image/webp"],
+    minimumCacheTTL: 86400,
   },
   async redirects() {
     return [
@@ -114,6 +122,9 @@ export default withSentryConfig(nextConfig, {
     treeshake: {
       // Automatically tree-shake Sentry logger statements to reduce bundle size
       removeDebugLogging: true,
+      // Replay records no iframes or shadow DOM in this app.
+      excludeReplayIframe: true,
+      excludeReplayShadowDOM: true,
     },
   },
 });

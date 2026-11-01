@@ -87,6 +87,7 @@ export function PageBreadcrumbs({
                 ) : (
                   <Link
                     href={item.href}
+                    prefetch={false}
                     className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors"
                   >
                     {isFirst && <Home className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}

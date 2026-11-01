@@ -1,162 +1,105 @@
-"use client";
-
-import React, { useMemo, useState } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import { ImageIcon } from "lucide-react";
-import { useGetInteriorProfileDetailQuery } from "@/features/interiors/api";
-import { DesignerProfileSkeleton } from "@/components/interiors/skeletons";
-import { InteriorInquiryModal } from "../../components/InteriorInquiryModal";
-import { PortfolioGrid } from "../../components/profile/Portfolio";
-import {
-  EnquiryCard,
-  MobileCtaBar,
-  ProfileHero,
-  Section,
-  SectionNav,
-} from "../../components/profile/ProfileParts";
-import {
-  AboutSection,
-  AreasSection,
-  ContactSection,
-  CredentialsSection,
-  MaterialsSection,
-  PricingSection,
-  ReviewsSection,
-  ServicesSection,
-  TeamSection,
-  WarrantySection,
-  credentialItems,
-  hasPricing,
-  hasServices,
-  hasWarranty,
-  materialGroups,
-} from "../../components/profile/ProfileSections";
+import type { Metadata } from "next";
+import { buildCanonical } from "@/constants/seo";
+import type { InteriorProfile } from "@/types/interior.types";
+import { fetchInteriorProfile } from "../../lib/server-data";
+import { breadcrumbJsonLd, cityLabel } from "../../lib/breadcrumbs";
 import { profileName } from "../../components/profile/utils";
+import { ProfilePageClient } from "./ProfilePageClient";
 
-export default function InteriorProfileDetailPage() {
-  const params = useParams<{ city: string; slug: string }>();
-  const slug = params?.slug;
-  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
-  const openQuote = () => setIsInquiryOpen(true);
+export const revalidate = 60;
 
-  const { data: profile, isLoading, error } = useGetInteriorProfileDetailQuery(slug as string, {
-    skip: !slug,
-  });
+type Params = Promise<{ city: string; slug: string }>;
 
-  const materials = useMemo(() => (profile ? materialGroups(profile) : []), [profile]);
-  const projects = useMemo(
-    () =>
-      (profile?.projects ?? [])
-        .slice()
-        .sort((a, b) => Number(!!b.isFeatured) - Number(!!a.isFeatured)),
-    [profile],
-  );
+const profilePath = (p: InteriorProfile, citySlug: string) =>
+  `/interior-designers/${encodeURIComponent((p.primaryCity || citySlug).toLowerCase())}/${p.slug}`;
 
-  const sections = useMemo(() => {
-    if (!profile) return [];
-    const cred = credentialItems(profile);
-    const team = (profile.teamMembers ?? []).filter((m) => m.isPublic !== false && m.name);
-    return [
-      { id: "about", label: "About", show: true },
-      { id: "services", label: "Services", show: hasServices(profile) },
-      {
-        id: "areas",
-        label: profile.branches?.length ? "Branches" : "Service areas",
-        show: !!profile.branches?.length || !!profile.serviceCities?.length || !!profile.primaryCity,
-      },
-      { id: "pricing", label: "Pricing", show: hasPricing(profile) },
-      { id: "materials", label: "Materials", show: materials.length > 0 },
-      { id: "portfolio", label: "Portfolio", show: true },
-      { id: "team", label: "Team", show: team.length > 0 },
-      {
-        id: "credentials",
-        label: "Credentials",
-        show: profile.isVerified || cred.docs.length + cred.awards.length + cred.certs.length > 0,
-      },
-      { id: "warranty", label: "Warranty", show: hasWarranty(profile) },
-      { id: "reviews", label: "Reviews", show: true },
-      { id: "contact", label: "Contact", show: true },
-    ].filter((s) => s.show);
-  }, [profile, materials]);
+function clip(text: string, max = 158) {
+  const clean = text.replace(/\s+/g, " ").trim();
+  return clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;
+}
 
-  if (isLoading || (!slug && !error)) {
-    return <DesignerProfileSkeleton />;
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { city, slug } = await params;
+  const profile = await fetchInteriorProfile(slug);
+  if (!profile) {
+    return {
+      title: "Interior designer not found",
+      robots: { index: false, follow: true },
+      alternates: { canonical: buildCanonical(`/interior-designers/${city}/${slug}`) },
+    };
   }
-
-  if (!profile || error) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Designer profile not found</h1>
-        <p className="mt-2 text-sm text-slate-500">
-          The interior designer or studio you are looking for is either unpublished or does not exist.
-        </p>
-        <Link
-          href="/interior-designers"
-          className="mt-6 inline-flex min-h-11 items-center rounded-xl bg-rose-600 px-5 text-sm font-bold text-white shadow-md hover:bg-rose-700"
-        >
-          Back to interior directory
-        </Link>
-      </div>
-    );
-  }
-
-  const show = (id: string) => sections.some((s) => s.id === id);
   const name = profileName(profile);
+  const cityName = profile.primaryCity || cityLabel(city);
+  const title = `${name} – Interior Designer in ${cityName}`;
+  const summary = (profile.tagline || profile.about || "").trim();
+  const description = clip(
+    `${summary ? `${summary.replace(/[.\s]+$/, "")}. ` : ""}${name} is an interior designer in ${cityName}. View portfolio, pricing and reviews on Awasio.`,
+  );
+  const url = buildCanonical(profilePath(profile, city));
+  const image = profile.coverBanner || profile.logo || undefined;
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "profile",
+      siteName: "Awasio",
+      ...(image ? { images: [{ url: image, alt: name }] } : {}),
+    },
+    twitter: { card: "summary_large_image", title, description, ...(image ? { images: [image] } : {}) },
+  };
+}
+
+function businessJsonLd(p: InteriorProfile, url: string) {
+  const rating = Number(p.rating);
+  return {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "@id": url,
+    name: profileName(p),
+    url,
+    description: p.tagline || p.about || undefined,
+    image: p.coverBanner || p.logo || undefined,
+    logo: p.logo || undefined,
+    telephone: p.isPhonePublic && p.primaryPhone ? p.primaryPhone : undefined,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: p.primaryAddress || undefined,
+      addressLocality: p.primaryLocality || p.primaryCity,
+      addressRegion: p.primaryCity,
+      addressCountry: "IN",
+    },
+    areaServed: (p.serviceCities?.length ? p.serviceCities : [p.primaryCity]).filter(Boolean),
+    ...(p.reviewCount > 0 && rating > 0
+      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: rating.toFixed(1), reviewCount: p.reviewCount } }
+      : {}),
+  };
+}
+
+export default async function InteriorProfileDetailPage({ params }: { params: Params }) {
+  const { city, slug } = await params;
+  const profile = await fetchInteriorProfile(slug);
+
+  const cityName = profile?.primaryCity || cityLabel(city);
+  const trail = [
+    { name: "Home", path: "/" },
+    { name: "Interior designers", path: "/interior-designers" },
+    { name: cityName, path: `/interior-designers?city=${encodeURIComponent(cityName)}` },
+    ...(profile ? [{ name: profileName(profile), path: profilePath(profile, city) }] : []),
+  ];
+  const jsonLd: object[] = [breadcrumbJsonLd(trail)];
+  if (profile) jsonLd.push(businessJsonLd(profile, buildCanonical(profilePath(profile, city))));
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-stone-50 pb-28 lg:pb-16 dark:bg-slate-950">
-      <ProfileHero profile={profile} onQuote={openQuote} />
-      <SectionNav items={sections} />
-
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-8 lg:py-10">
-        <main className="min-w-0 space-y-6">
-          <AboutSection profile={profile} />
-          {show("services") && <ServicesSection profile={profile} />}
-          {show("areas") && <AreasSection profile={profile} />}
-          {show("pricing") && <PricingSection profile={profile} onQuote={openQuote} />}
-          {show("materials") && <MaterialsSection groups={materials} />}
-
-          <Section
-            id="portfolio"
-            title="Portfolio"
-            subtitle={projects.length ? `Completed homes by ${name}` : undefined}
-            action={
-              projects.length > 0 ? (
-                <span className="rounded-full bg-stone-100 px-3 py-1 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                  {projects.length} {projects.length === 1 ? "project" : "projects"}
-                </span>
-              ) : undefined
-            }
-          >
-            {projects.length > 0 ? (
-              <PortfolioGrid projects={projects} />
-            ) : (
-              <div className="rounded-2xl border border-dashed border-stone-300 p-8 text-center dark:border-slate-700">
-                <ImageIcon className="mx-auto h-8 w-8 text-stone-300" aria-hidden />
-                <p className="mt-2 font-semibold text-slate-900 dark:text-white">Portfolio coming soon</p>
-                <p className="mt-1 text-sm text-slate-500">Ask {name} for photos of recent work.</p>
-              </div>
-            )}
-          </Section>
-
-          {show("team") && <TeamSection profile={profile} />}
-          {show("credentials") && <CredentialsSection profile={profile} />}
-          {show("warranty") && <WarrantySection profile={profile} />}
-          <ReviewsSection profile={profile} onQuote={openQuote} />
-          <ContactSection profile={profile} onQuote={openQuote} />
-        </main>
-
-        <aside className="hidden lg:block" aria-label="Enquiry">
-          <div className="sticky top-20">
-            <EnquiryCard profile={profile} onQuote={openQuote} />
-          </div>
-        </aside>
-      </div>
-
-      <MobileCtaBar profile={profile} onQuote={openQuote} />
-
-      <InteriorInquiryModal profile={profile} isOpen={isInquiryOpen} onClose={() => setIsInquiryOpen(false)} />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
+      <ProfilePageClient slug={slug} citySlug={city} initialProfile={profile} />
+    </>
   );
 }

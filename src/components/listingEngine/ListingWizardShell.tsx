@@ -41,6 +41,8 @@ export type ListingWizardShellProps<V extends FormValues> = {
   subheading?: string;
   /** "Save & exit" link target. */
   exitHref?: string;
+  /** Optional navigation (breadcrumb / back) rendered above the wizard. */
+  topNav?: React.ReactNode;
   onSubmitted?: (values: V) => void;
   onPublished?: (values: V) => void;
   /** custom uploader (tests / other storage); default presigns through the API. */
@@ -71,6 +73,7 @@ function ShellInner<V extends FormValues>({
   heading,
   subheading,
   exitHref,
+  topNav,
   onSubmitted,
   onPublished,
   syncUrl = true,
@@ -314,6 +317,17 @@ function ShellInner<V extends FormValues>({
       <ListingEngineProvider value={engineValue}>
         <div className={cn(pageBg, "overflow-x-clip")}>
           <div className="mx-auto w-full max-w-6xl px-4 pb-32 pt-0 sm:px-6 lg:pb-12 lg:pt-8">
+            {topNav && (
+              // Leaving through a breadcrumb/back link saves pending edits first, like the exit link.
+              <div
+                className="pt-3 lg:pt-0 lg:pb-4"
+                onClickCapture={(e) => {
+                  if ((e.target as HTMLElement).closest("a, button")) void autosave.flush();
+                }}
+              >
+                {topNav}
+              </div>
+            )}
             <MobileStepBar steps={visibleSteps} phases={vertical.phases} current={idx} maxVisited={maxVisited} score={score} onNavigate={goToIndex} right={statusPill} />
 
             <div className="mt-4 grid gap-6 lg:mt-0 lg:grid-cols-[230px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_320px]">

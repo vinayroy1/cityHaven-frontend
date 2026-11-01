@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { isOptimizableImage } from "../../lib/image";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Clock, ImageIcon, Images, Maximize2, Ruler, X } from "lucide-react";
 import {
@@ -38,16 +40,16 @@ export function PortfolioGrid({ projects }: { projects: InteriorProject[] }) {
                 type="button"
                 onClick={() => setOpenId(project.id)}
                 className="group block w-full overflow-hidden rounded-2xl border border-stone-200 bg-white text-left shadow-xs transition hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-slate-800 dark:bg-slate-900"
-                aria-label={`View project ${project.title}`}
               >
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100 dark:bg-slate-800">
                   {cover ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={cover}
                       alt={`${project.title} – cover photo`}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                      fill
+                      sizes="(min-width: 1024px) 340px, (min-width: 640px) 45vw, 92vw"
+                      unoptimized={!isOptimizableImage(cover)}
+                      className="object-cover transition duration-500 group-hover:scale-105"
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-stone-400">
@@ -210,12 +212,13 @@ function ProjectDetailDialog({ project, onClose }: { project: InteriorProject | 
                     i === 0 ? "col-span-2 aspect-[16/10] sm:row-span-2 sm:aspect-auto" : "aspect-[4/3]"
                   }`}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={src}
                     alt={`${project.title} – ${mode === "before" ? "before" : activeGroup?.label ?? ""} photo ${i + 1}`}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                    fill
+                    sizes={i === 0 ? "(min-width: 640px) 66vw, 100vw" : "(min-width: 640px) 33vw, 50vw"}
+                    unoptimized={!isOptimizableImage(src)}
+                    className="object-cover transition duration-300 group-hover:scale-105"
                   />
                   <Maximize2 className="absolute right-2 top-2 h-4 w-4 text-white opacity-0 drop-shadow transition group-hover:opacity-100" aria-hidden />
                 </button>

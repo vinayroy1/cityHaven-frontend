@@ -2,7 +2,9 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
+import { BackButton } from "@/components/common/BackButton";
 import { cn } from "@/components/ui/utils";
 import { InteriorListingStatus } from "@/types/interior.types";
 import { MANAGE_SECTIONS, manageHref, type ManageSectionId } from "./sections";
@@ -32,6 +34,18 @@ export function InteriorManageLayout({ children }: { children: ReactNode }) {
   const isLive = profile.status === InteriorListingStatus.PUBLISHED || (!profile.status && profile.isPublished);
   const visibleSections = MANAGE_SECTIONS.filter((s) => !s.stepId || stepHealth[s.stepId] !== "hidden");
 
+  const sectionLabel = MANAGE_SECTIONS.find((s) => s.id === current)?.label ?? "Overview";
+  const crumbs: BreadcrumbTrailItem[] = [
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "Interior listings", href: "/dashboard/interior-profile" },
+    current === "overview"
+      ? { label: name }
+      : { label: name, href: manageHref("overview", profile.id) },
+    ...(current === "overview" ? [] : [{ label: sectionLabel }]),
+  ];
+  // Back goes up one level: section → overview → all listings.
+  const backHref = current === "overview" ? "/dashboard/interior-profile" : manageHref("overview", profile.id);
+
   const dot = (id: ManageSectionId) => {
     const step = MANAGE_SECTIONS.find((s) => s.id === id)?.stepId;
     if (!step) return null;
@@ -48,12 +62,18 @@ export function InteriorManageLayout({ children }: { children: ReactNode }) {
     <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
       <header className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <Link href="/dashboard/interior-profile" className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">
-            <ArrowLeft className="h-3.5 w-3.5" /> All Interior Listings
-          </Link>
-          <div className="mt-1 flex flex-wrap items-center gap-2">
-            <h1 className="truncate text-xl font-bold text-slate-900 dark:text-white">{name}</h1>
-            <StatusBadge profile={profile} />
+          <PageBreadcrumbs items={crumbs} includeHome={false} renderJsonLd={false} />
+          <div className="mt-1 flex min-w-0 items-center gap-2">
+            <BackButton
+              variant="icon"
+              fallbackHref={backHref}
+              ariaLabel="Go back"
+              className="sm:hidden"
+            />
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <h1 className="truncate text-xl font-bold text-slate-900 dark:text-white">{name}</h1>
+              <StatusBadge profile={profile} />
+            </div>
           </div>
           <p className="text-xs text-slate-500">Interior business listing</p>
         </div>

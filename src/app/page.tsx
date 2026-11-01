@@ -8,7 +8,8 @@ import { CDN_ASSETS } from "@/config/cdn";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
-import { toResultCardProps } from "@/app/propertySearch/components/propertyCardAdapter";
+import type { ProjectListing } from "@/types/project.types";
+import { sizedImageUrl } from "./homePage/lib/homeImage";
 
 const SEED_FALLBACK_LISTINGS: PropertySearchItem[] = [
   {
@@ -58,6 +59,54 @@ async function getInitialFreshListings(): Promise<PropertySearchItem[]> {
   }
 }
 
+// Mirrors normalizeProject in features/projects/api (a "use client" module, not callable here).
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizeProject(raw: any): ProjectListing {
+  const cityName =
+    raw?.cityName || (typeof raw?.city === "object" && raw?.city ? raw.city.name : raw?.city) || "";
+  return {
+    ...raw,
+    city: cityName,
+    cityName,
+    configurations: Array.isArray(raw?.configurations) ? raw.configurations : [],
+    amenities: Array.isArray(raw?.amenities) ? raw.amenities : [],
+    highlights: Array.isArray(raw?.highlights) ? raw.highlights : [],
+    images: Array.isArray(raw?.images) ? raw.images : [],
+    priceMin: Number(raw?.priceMin) || 0,
+    priceMax: Number(raw?.priceMax) || 0,
+  };
+}
+
+let cachedProjects: ProjectListing[] = [];
+let cachedProjectsTime = 0;
+
+/** Default (Mumbai) projects for the above-the-fold carousel, fetched on the server so the LCP card is in the HTML. */
+async function getInitialProjects(): Promise<ProjectListing[]> {
+  const now = Date.now();
+  if (cachedProjects.length > 0 && now - cachedProjectsTime < 60_000) return cachedProjects;
+  try {
+    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.projects.search}?city=Mumbai&pageSize=6`);
+    const res = await fetch(endpoint, { next: { revalidate: 60 } });
+    if (!res.ok) return cachedProjects;
+    const json = (await res.json()) as { data?: { items?: unknown[] } };
+    const items = (json?.data?.items ?? []).map(normalizeProject);
+    if (items.length > 0) {
+      cachedProjects = items;
+      cachedProjectsTime = now;
+    }
+    return items.length > 0 ? items : cachedProjects;
+  } catch {
+    return cachedProjects;
+  }
+}
+
+const normalizeR2Url = (url?: string | null) =>
+  (url ?? "").replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+
+// Must match MUMBAI_FALLBACK_PROJECTS[0] in HomeExperience when the API returns nothing.
+const FALLBACK_LCP_IMAGE =
+  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=640&auto=format&fit=crop&q=70";
+
 export const revalidate = 60;
 
 export const metadata: Metadata = {
@@ -86,9 +135,15 @@ export const metadata: Metadata = {
 };
 
 export default async function RootPage() {
-  const initialFreshListings = await getInitialFreshListings();
-  const firstCard = initialFreshListings[0];
-  const lcpImage = firstCard ? toResultCardProps(firstCard).images?.[0] : null;
+  const [initialFreshListings, initialProjects] = await Promise.all([
+    getInitialFreshListings(),
+    getInitialProjects(),
+  ]);
+  // LCP on mobile and desktop is the first "New Projects" card image.
+  const firstProjectImage = initialProjects.length
+    ? normalizeR2Url((initialProjects[0].images ?? []).find(Boolean))
+    : FALLBACK_LCP_IMAGE;
+  const lcpImage = firstProjectImage ? sizedImageUrl(firstProjectImage, 640) : null;
 
   // Schema.org Structured Data: WebSite with Sitelinks SearchBox & RealEstateOrganization
   const websiteSchema = {
@@ -166,7 +221,7 @@ export default async function RootPage() {
       />
       <div className="min-h-screen overflow-x-clip bg-white text-slate-900 transition-colors duration-150 dark:bg-slate-950 dark:text-slate-100">
         <HeaderNav />
-        <HomeExperience initialFreshListings={initialFreshListings} />
+        <HomeExperience initialFreshListings={initialFreshListings} initialProjects={initialProjects} />
         <FooterLinks />
       </div>
     </>

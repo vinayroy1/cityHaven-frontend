@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { sizedImageUrl } from "../lib/homeImage";
 import { ArrowRight, BadgeCheck, MapPin, Palette, Star } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
 
@@ -56,7 +57,7 @@ export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorPro
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
         {hero ? (
           <img
-            src={hero}
+            src={sizedImageUrl(hero, 640)}
             alt=""
             loading="lazy"
             decoding="async"
@@ -104,7 +105,7 @@ export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorPro
       <div className="relative flex flex-1 flex-col px-4 pb-4 pt-8">
         <div className="absolute -top-7 left-4 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border-[3px] border-white bg-rose-50 shadow-md dark:border-slate-900 dark:bg-slate-800">
           {profile.logo ? (
-            <img src={profile.logo} alt="" loading="lazy" className="h-full w-full object-cover" />
+            <img src={sizedImageUrl(profile.logo, 112)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
           ) : (
             <span className="text-base font-black text-rose-600 dark:text-rose-400">{initialsOf(name)}</span>
           )}
@@ -140,7 +141,7 @@ export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorPro
             <div className="grid grid-cols-3 gap-1.5">
               {thumbs.map((src, i) => (
                 <div key={src} className="relative aspect-[4/3] overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800">
-                  <img src={src} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                  <img src={sizedImageUrl(src, 240)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                   {i === thumbs.length - 1 && extraCount > 0 && (
                     <span className="absolute inset-0 flex items-center justify-center bg-slate-950/55 text-xs font-bold text-white">
                       +{extraCount}

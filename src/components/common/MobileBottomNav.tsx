@@ -246,7 +246,7 @@ export function MobileBottomNav() {
             className={`flex flex-col items-center justify-center py-1 transition-colors group ${
               isHomeActive
                 ? "text-rose-600 dark:text-rose-400 font-bold"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 font-medium"
             }`}
           >
             <div className="relative">
@@ -259,7 +259,7 @@ export function MobileBottomNav() {
                 <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-rose-600 dark:bg-rose-400" />
               )}
             </div>
-            <span className="text-[10px] mt-1 tracking-tight">Home</span>
+            <span className="text-[11px] mt-1 tracking-tight">Home</span>
           </Link>
 
           {/* TAB 2: SEARCH */}
@@ -269,7 +269,7 @@ export function MobileBottomNav() {
             className={`flex flex-col items-center justify-center py-1 transition-colors group ${
               isSearchActive
                 ? "text-rose-600 dark:text-rose-400 font-bold"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 font-medium"
             }`}
           >
             <div className="relative">
@@ -282,7 +282,7 @@ export function MobileBottomNav() {
                 <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-rose-600 dark:bg-rose-400" />
               )}
             </div>
-            <span className="text-[10px] mt-1 tracking-tight">Search</span>
+            <span className="text-[11px] mt-1 tracking-tight">Search</span>
           </Link>
 
           {/* TAB 3: POST PROPERTY (Center Elevated Accent CTA) */}
@@ -307,7 +307,7 @@ export function MobileBottomNav() {
             className={`flex flex-col items-center justify-center py-1 transition-colors group ${
               isSavedActive
                 ? "text-rose-600 dark:text-rose-400 font-bold"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 font-medium"
             }`}
           >
             <div className="relative">
@@ -320,7 +320,7 @@ export function MobileBottomNav() {
                 <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-rose-600 dark:bg-rose-400" />
               )}
             </div>
-            <span className="text-[10px] mt-1 tracking-tight">Saved</span>
+            <span className="text-[11px] mt-1 tracking-tight">Saved</span>
           </Link>
 
           {/* TAB 5: MENU / MORE DRAWER TRIGGER */}
@@ -331,7 +331,7 @@ export function MobileBottomNav() {
             className={`flex flex-col items-center justify-center py-1 transition-colors group ${
               drawerOpen
                 ? "text-rose-600 dark:text-rose-400 font-bold"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-medium"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 font-medium"
             }`}
           >
             <div className="relative">
@@ -341,7 +341,7 @@ export function MobileBottomNav() {
                 }`}
               />
             </div>
-            <span className="text-[10px] mt-1 tracking-tight">Menu</span>
+            <span className="text-[11px] mt-1 tracking-tight">Menu</span>
           </button>
         </div>
       </nav>

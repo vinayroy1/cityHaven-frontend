@@ -14,7 +14,9 @@ import {
   Star,
   User,
 } from "lucide-react";
+import Image from "next/image";
 import type { InteriorProfile } from "@/types/interior.types";
+import { isOptimizableImage } from "../../lib/image";
 import { humanize, inr, priceRange, profileName, telHref, unitLabel, waHref } from "./utils";
 
 /* ---------------------------------- Shell --------------------------------- */
@@ -95,8 +97,16 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
       <div className="mx-auto max-w-6xl sm:px-6 sm:pt-4">
         <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-stone-800 via-rose-950 to-stone-900 sm:h-60 sm:rounded-3xl lg:h-72">
           {profile.coverBanner && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={profile.coverBanner} alt="" className="h-full w-full object-cover" fetchPriority="high" />
+            <Image
+              src={profile.coverBanner}
+              alt=""
+              fill
+              preload
+              fetchPriority="high"
+              sizes="(min-width: 1152px) 1104px, (min-width: 640px) calc(100vw - 48px), 100vw"
+              unoptimized={!isOptimizableImage(profile.coverBanner)}
+              className="object-cover"
+            />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
         </div>
@@ -107,8 +117,15 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
         <div className="relative z-10 -mt-12 sm:-mt-14 sm:ml-6">
           <div className="h-24 w-24 overflow-hidden rounded-2xl border-4 border-white bg-white shadow-lg ring-1 ring-black/5 sm:h-28 sm:w-28 dark:border-slate-900 dark:bg-slate-800">
               {profile.logo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={profile.logo} alt={`${name} logo`} className="h-full w-full object-cover" />
+                <Image
+                  src={profile.logo}
+                  alt={`${name} logo`}
+                  width={112}
+                  height={112}
+                  sizes="112px"
+                  unoptimized={!isOptimizableImage(profile.logo)}
+                  className="h-full w-full object-cover"
+                />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-stone-100 text-stone-400 dark:bg-slate-800">
                   {isCompany ? <Building2 className="h-10 w-10" aria-hidden /> : <User className="h-10 w-10" aria-hidden />}

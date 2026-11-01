@@ -22,6 +22,8 @@ import { InteriorListingsGridSkeleton, InteriorListingStatsSkeleton } from "@/co
 import { ListingCard, listingLeads } from "@/components/interiors/listings/ListingCard";
 import { InteriorListingStatus } from "@/types/interior.types";
 import { cn } from "@/components/ui/utils";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
+import { BackButton } from "@/components/common/BackButton";
 
 const IN_PROGRESS = new Set<InteriorListingStatus>([
   InteriorListingStatus.DRAFT,
@@ -90,6 +92,15 @@ export default function MyInteriorListingsPage() {
         {/* Header */}
         <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
+            <div className="mb-2 flex min-w-0 items-center gap-2">
+              <BackButton variant="icon" fallbackHref="/dashboard" ariaLabel="Back to dashboard" className="sm:hidden" />
+              <PageBreadcrumbs
+                items={[{ label: "Dashboard", href: "/dashboard" }, { label: "Interior listings" }]}
+                includeHome={false}
+                renderJsonLd={false}
+                className="min-w-0"
+              />
+            </div>
             <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400 sm:text-xs">
               <Paintbrush className="h-3.5 w-3.5" />
               <span>Interior business</span>
@@ -178,7 +189,7 @@ export default function MyInteriorListingsPage() {
                   <div className="min-w-0">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 sm:text-[11px]">{label}</div>
                     <div className={cn("text-lg font-black leading-tight sm:text-2xl", cls)}>{value}</div>
-                    <div className="hidden truncate text-[11px] text-slate-400 dark:text-slate-500 sm:block">{hint}</div>
+                    <div className="hidden truncate text-[11px] text-slate-500 dark:text-slate-400 sm:block">{hint}</div>
                   </div>
                 </div>
               ))}

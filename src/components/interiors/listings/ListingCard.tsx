@@ -74,9 +74,9 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
 
       <div className="flex flex-1 flex-col p-4 pt-8">
         <div className="flex min-w-0 items-start justify-between gap-2">
-          <h3 className="min-w-0 truncate text-base font-bold text-slate-900 dark:text-white">
+          <h2 className="min-w-0 truncate text-base font-bold text-slate-900 dark:text-white">
             <Link href={target} className="hover:text-rose-600 dark:hover:text-rose-400">{name}</Link>
-          </h3>
+          </h2>
           <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
             {isCompany ? <Building2 className="h-3 w-3" /> : <Briefcase className="h-3 w-3" />}
             {isCompany ? "Company" : "Individual"}

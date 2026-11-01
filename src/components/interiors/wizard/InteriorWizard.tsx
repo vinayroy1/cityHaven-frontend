@@ -9,6 +9,8 @@ import { InteriorListingStatus } from "@/types/interior.types";
 import { interiorCustomComponents } from "./index";
 import { renderInteriorPreview } from "./InteriorPreview";
 import { SubmissionStatus } from "./SubmissionStatus";
+import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
+import { BackButton } from "@/components/common/BackButton";
 
 const UNDER_REVIEW = new Set<InteriorListingStatus | undefined>([InteriorListingStatus.SUBMITTED, InteriorListingStatus.IN_REVIEW]);
 
@@ -50,8 +52,31 @@ export function InteriorWizard() {
     ? `/dashboard/interior-profile/manage?profileId=${profile.id}`
     : "/dashboard/interior-profile";
 
+  const listingName = profile?.displayName || profile?.businessName || "New listing";
+  const topNav = (
+    <div className="flex min-w-0 items-center gap-2">
+      <BackButton
+        variant="icon"
+        fallbackHref={exitHref}
+        ariaLabel="Exit setup"
+        className="sm:hidden"
+      />
+      <PageBreadcrumbs
+        items={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Interior listings", href: "/dashboard/interior-profile" },
+          { label: listingName },
+        ]}
+        includeHome={false}
+        renderJsonLd={false}
+        className="min-w-0"
+      />
+    </div>
+  );
+
   return (
     <ListingWizardShell
+      topNav={topNav}
       vertical={config}
       heading="List your interior studio"
       subheading="About 10 minutes. Saved as you go — come back any time."
