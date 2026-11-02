@@ -182,4 +182,18 @@ describe("mapApiToForm hydration & prefill tests", () => {
     expect(formValues.details.attachedBathroom).toBe(true);
     expect(formValues.pricing.price).toBe(4500);
   });
+
+  it("hydrates amenity slugs from amenitiesByCategory and constructionType from its record", () => {
+    const formValues = mapApiToForm({
+      id: 99,
+      listingType: "SELL",
+      resCom: "RESIDENTIAL",
+      constructionType: { RCC: true },
+      amenitiesByCategory: [
+        { categoryId: 3, amenities: [{ id: 19, slug: "fitness-centre-gym", value: true }, { id: 20, slug: "swimming-pool", value: true }] },
+      ],
+    });
+    expect(formValues.amenities.amenityIds).toEqual(["fitness-centre-gym", "swimming-pool"]);
+    expect(formValues.availability.constructionType).toBe("RCC");
+  });
 });

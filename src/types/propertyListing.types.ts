@@ -261,7 +261,8 @@ export interface AmenitiesLegalBlock {
   approvedBy?: Record<string, boolean>;
   boundaryWall?: boolean;
   fireNoc?: boolean;
-  amenityIds?: number[];
+  /** Amenity slugs from the seeded catalog (resolved to DB ids by the API). */
+  amenityIds?: string[];
   centralAirConditioning?: boolean;
   oxygenDuct?: boolean;
   ups?: boolean;

@@ -22,7 +22,13 @@ const money = (id: string, label: string, extra?: Partial<FieldConfig>): FieldCo
   };
 };
 
-const amenityChoices: Option[] = amenityOptions.map((a) => ({ value: a.id, label: a.label }));
+// Categories whose option names are only meaningful with the category
+// attached (e.g. "Pool" under Overlooking, "None" under Power Back up).
+const QUALIFIED_AMENITY_CATEGORIES = new Set(["Water Source", "Overlooking", "Power Back up", "Property Facing", "Type of Flooring"]);
+const amenityChoices: Option[] = amenityOptions.map((a) => ({
+  value: a.slug,
+  label: QUALIFIED_AMENITY_CATEGORIES.has(a.category) ? `${a.label} (${a.category})` : a.label,
+}));
 
 export const pricingAmenitiesStep: StepConfig = {
   id: "pricing",
@@ -85,7 +91,13 @@ export const pricingAmenitiesStep: StepConfig = {
       collapsible: true,
       defaultCollapsed: false,
       visibleWhen: {
-        or: [preset("showDeposit"), preset("showMaintenance"), preset("showSocietyCharges"), preset("showRentalYield")],
+        or: [
+          preset("showDeposit"),
+          preset("showMaintenance"),
+          preset("showBookingAmount"),
+          preset("showSocietyCharges"),
+          preset("showRentalYield"),
+        ],
       },
       fields: [
         money("pricing.deposit", "Security deposit (₹)", { visibleWhen: preset("showDeposit") }),

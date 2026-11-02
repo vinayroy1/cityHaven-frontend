@@ -143,6 +143,7 @@ export function PropertyListingFlow({
         resCom: mapped.context?.resCom,
         subType: mapped.context?.propertySubTypeSlug,
       };
+      pendingHydrationRef.current = prevClassificationRef.current;
       form.reset(mapped);
       dispatch(hydrateDraft(mapped));
     }
@@ -160,6 +161,13 @@ export function PropertyListingFlow({
         resCom: persisted.form.context?.resCom,
         subType: persisted.form.context?.propertySubTypeSlug,
       };
+      pendingHydrationRef.current = prevClassificationRef.current;
+      // A restored title/description that differs from the generated one was
+      // typed by the user; don't let the auto-generator overwrite it.
+      const restoredTitle = persisted.form.meta?.title;
+      if (restoredTitle && restoredTitle !== suggestTitle(persisted.form)) isTitleCustomRef.current = true;
+      const restoredDesc = persisted.form.meta?.description;
+      if (restoredDesc && restoredDesc !== suggestDescription(persisted.form)) isDescCustomRef.current = true;
       form.reset(persisted.form);
       dispatch(hydrateDraft(persisted.form));
       const s = persisted.step && persisted.step > 0 ? persisted.step : 0;
@@ -190,10 +198,28 @@ export function PropertyListingFlow({
   const resCom = values?.context?.resCom;
   const subType = values?.context?.propertySubTypeSlug;
   const prevClassificationRef = useRef<{ listingType?: string; resCom?: string; subType?: string } | null>(null);
+  // Set when form.reset() hydrates a draft/listing. Until the watched values
+  // reflect the hydrated classification, the reset effect below must not
+  // treat the stale defaults -> hydrated values transition as a user change
+  // (it would wipe propertySubTypeSlug for e.g. commercial listings).
+  const pendingHydrationRef = useRef<{ listingType?: string; resCom?: string; subType?: string } | null>(null);
 
   useEffect(() => {
     // Skip before form is hydrated
     if (!hydratedRef.current) return;
+
+    const pending = pendingHydrationRef.current;
+    if (pending) {
+      if (
+        (pending.listingType ?? "") === (listingType ?? "") &&
+        (pending.resCom ?? "") === (resCom ?? "") &&
+        (pending.subType ?? "") === (subType ?? "")
+      ) {
+        pendingHydrationRef.current = null;
+        prevClassificationRef.current = { listingType, resCom, subType };
+      }
+      return;
+    }
 
     // Skip on initial classification recording
     if (!prevClassificationRef.current) {
@@ -263,11 +289,13 @@ export function PropertyListingFlow({
   // Watch for manual user edits on title & description to freeze auto-generation
   useEffect(() => {
     const currentTitle = form.getValues("meta.title");
-    if (currentTitle && lastAutoTitleRef.current && currentTitle !== lastAutoTitleRef.current) {
+    // An empty value counts as a manual edit too (select-all + delete), otherwise
+    // the generator refills the field and the user's typing is appended to it.
+    if (lastAutoTitleRef.current && currentTitle !== lastAutoTitleRef.current) {
       isTitleCustomRef.current = true;
     }
     const currentDesc = form.getValues("meta.description");
-    if (currentDesc && lastAutoDescRef.current && currentDesc !== lastAutoDescRef.current) {
+    if (lastAutoDescRef.current && currentDesc !== lastAutoDescRef.current) {
       isDescCustomRef.current = true;
     }
   }, [values?.meta?.title, values?.meta?.description, form]);
@@ -347,9 +375,18 @@ export function PropertyListingFlow({
       return;
     }
     const paths = requiredPathsForStep(step, form.getValues()) as FieldPath<PropertyListingFormValues>[];
-    const ok = paths.length === 0 || (await form.trigger(paths, { shouldFocus: true }));
+    const triggered = paths.length === 0 || (await form.trigger(paths, { shouldFocus: true }));
+    // trigger() only validates fields with registered rules; custom steps
+    // (location) and some config fields have none, so check values directly.
+    const unfilled = paths.filter((p) => !isFieldFilled(form.getValues(), p));
+    const ok = triggered && unfilled.length === 0;
     if (!ok) {
       const currentValues = form.getValues();
+      if (step.kind === "custom" && unfilled.length > 0) {
+        const labels: Record<string, string> = { "location.cityName": "City", "location.locality": "Locality" };
+        toast.error(`Please complete mandatory fields: ${unfilled.map((p) => labels[p] ?? p).join(", ")}`);
+        return;
+      }
       const stillMissing = requiredFieldsMeta.filter((f) => !isFieldFilled(currentValues, f.id));
       if (stillMissing.length > 0) {
         scrollToField(stillMissing[0].id);
@@ -384,9 +421,13 @@ export function PropertyListingFlow({
     const paths = listingSteps
       .flatMap((s) => requiredPathsForStep(s, form.getValues()))
       .filter((p, i, a) => a.indexOf(p) === i) as FieldPath<PropertyListingFormValues>[];
-    const ok = await form.trigger(paths, { shouldFocus: true });
-    if (!ok) {
+    const triggered = await form.trigger(paths, { shouldFocus: true });
+    const unfilledStepIndex = listingSteps.findIndex((s) =>
+      requiredPathsForStep(s, form.getValues()).some((p) => !isFieldFilled(form.getValues(), p)),
+    );
+    if (!triggered || unfilledStepIndex !== -1) {
       toast.error("Some required details are missing.");
+      if (unfilledStepIndex !== -1 && unfilledStepIndex !== stepIndex) goToStep(unfilledStepIndex);
       return;
     }
     const payload = form.getValues();
@@ -444,6 +485,13 @@ export function PropertyListingFlow({
     try {
       if (propertyId) {
         await updateProperty({ id: propertyId, formValues: payload }).unwrap();
+        // Bust the ISR-cached public detail page (reachable by id or slug).
+        const slug = (existing as { slug?: string } | undefined)?.slug;
+        await fetch("/api/properties/revalidate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ keys: [String(propertyId), slug].filter(Boolean) }),
+        }).catch(() => undefined);
         toast.success("Listing updated.");
       } else {
         await submitProperty(payload).unwrap();

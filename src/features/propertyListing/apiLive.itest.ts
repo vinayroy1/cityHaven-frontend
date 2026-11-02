@@ -48,7 +48,7 @@ maybe("live propertyListing API", () => {
       ...initialPropertyListingFormValues.amenities,
       furnishing: "SEMI_FURNISHED",
       ownershipType: "FREEHOLD",
-      amenityIds: [1, 5, 10],
+      amenityIds: ["maintenance-staff", "visitor-parking", "false-ceiling-lighting"],
       parkingAvailable: true,
       noOfParkings: 1,
     },

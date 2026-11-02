@@ -58,8 +58,13 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
   const resolvedSubCategorySlug = context.propertySubCategorySlug || selectedSubCategory?.slug;
   const resolvedLocatedInsideSlug = context.locatedInsideSlug || selectedLocatedInside?.slug;
 
+  // The form select yields a single string (e.g. "RCC"); the API stores a record.
   const safeConstructionType =
-    availability.constructionType && typeof availability.constructionType === "object" ? availability.constructionType : undefined;
+    typeof availability.constructionType === "string" && availability.constructionType
+      ? { [availability.constructionType]: true }
+      : availability.constructionType && typeof availability.constructionType === "object"
+        ? availability.constructionType
+        : undefined;
   const safeApprovedBy = amenities.approvedBy && typeof amenities.approvedBy === "object" ? amenities.approvedBy : undefined;
   const safeFireSafety = amenities.fireSafety && typeof amenities.fireSafety === "object" ? amenities.fireSafety : undefined;
   const safeFacilities = amenities.facilities && typeof amenities.facilities === "object" ? amenities.facilities : undefined;
@@ -255,7 +260,7 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     boundaryWall: amenities.boundaryWall ?? undefined,
     fireNoc: amenities.fireNoc ?? undefined,
     authorityIds: amenities.authorityIds?.length ? amenities.authorityIds : undefined,
-    ageOfProperty: availability.ageOfProperty || undefined,
+    ageOfProperty: details.ageOfProperty || availability.ageOfProperty || undefined,
     pantryType: amenities.pantryType || undefined,
     pantrySize: amenities.pantrySize ?? undefined,
     pantryUnit: amenities.pantryUnit || undefined,
@@ -349,9 +354,13 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
   };
 
   // API expects amenity objects; convert if present
-  const amenityPayload = amenities.amenityIds?.length
+  // Chip values are amenity slugs; the backend resolves them to DB ids.
+  // Non-string values (legacy drafts that stored the old hardcoded ids, which
+  // never matched the DB) are dropped rather than saved as the wrong amenity.
+  const amenitySlugs = (amenities.amenityIds ?? []).filter((v): v is string => typeof v === "string" && v.length > 0);
+  const amenityPayload = amenitySlugs.length
     ? {
-        amenities: amenities.amenityIds.map((id) => ({ amenityId: id, value: true })),
+        amenities: amenitySlugs.map((slug) => ({ amenitySlug: slug, value: true })),
       }
     : {};
 

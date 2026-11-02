@@ -128,6 +128,7 @@ type PropertyDetails = {
 };
 
 import { CDN_ASSETS } from "@/config/cdn";
+import { propertyDetailCacheTag } from "@/lib/propertyListing/cacheTags";
 
 export const revalidate = 60;
 
@@ -143,7 +144,7 @@ const getProperty = cache(async (id: string): Promise<PropertyDetails | null> =>
     const rawEndpoint = API_ENDPOINTS.propertyListing.update(id);
     const endpoint = toInternalApiUrl(rawEndpoint);
     const response = await fetch(endpoint, {
-      next: { revalidate: 60 },
+      next: { revalidate: 60, tags: [propertyDetailCacheTag(id)] },
       headers: { Accept: "application/json" },
     });
     if (response.status === 404) return null;

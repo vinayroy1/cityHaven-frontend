@@ -27,6 +27,7 @@ import {
 
 import { PROPERTY_SUBTYPES } from "@/constants/backend-schema";
 import { getBrokerageDisplay } from "@/lib/propertyListing/formatBrokerage";
+import { amenityOptions } from "@/features/propertyListing/constants";
 
 interface ReviewSummaryProps {
   values: any;
@@ -88,7 +89,9 @@ export function ReviewSummary({ values, uploadedPhotos: explicitPhotos, onEditSt
 
   const formattedPrice = formatPrice(pricing.price, context.listingType);
   const pricePerSqft = pricing.price && area ? Math.round(pricing.price / area) : null;
-  const selectedAmenities = (amenities?.amenityIds || []).map((a: any) => String(a).replace(/_/g, " "));
+  const selectedAmenities = (amenities?.amenityIds || []).map(
+    (a: any) => amenityOptions.find((o) => o.slug === a)?.label ?? String(a).replace(/[_-]/g, " "),
+  );
 
   return (
     <div className="space-y-6 text-left">

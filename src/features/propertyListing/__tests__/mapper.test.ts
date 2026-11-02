@@ -51,4 +51,25 @@ describe("mapFormToApiPayload", () => {
     expect(payload.balconies).toBe(1);
     expect(payload.structure?.balconies).toBe(1);
   });
+
+  it("sends amenities as slugs, drops legacy numeric ids, and maps age/construction type", () => {
+    const form = {
+      ...initialPropertyListingFormValues,
+      details: { ...initialPropertyListingFormValues.details, ageOfProperty: "ONE_TO_FIVE_YEARS" },
+      availability: { ...initialPropertyListingFormValues.availability, constructionType: "RCC" },
+      amenities: {
+        ...initialPropertyListingFormValues.amenities,
+        amenityIds: ["fitness-centre-gym", "swimming-pool", 1 as unknown as string],
+      },
+    } as PropertyListingFormValues;
+
+    const payload = mapFormToApiPayload(form) as Record<string, any>;
+
+    expect(payload.amenities).toEqual([
+      { amenitySlug: "fitness-centre-gym", value: true },
+      { amenitySlug: "swimming-pool", value: true },
+    ]);
+    expect(payload.ageOfProperty).toBe("ONE_TO_FIVE_YEARS");
+    expect(payload.constructionType).toEqual({ RCC: true });
+  });
 });

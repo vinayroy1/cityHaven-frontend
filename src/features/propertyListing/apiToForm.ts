@@ -28,6 +28,28 @@ const prune = <T extends object>(obj: T): Partial<T> => {
   return out as Partial<T>;
 };
 
+// The detail endpoint returns amenities grouped by category
+// (`amenitiesByCategory[].amenities[].slug`); other endpoints expose the raw
+// relation (`amenitiesRelation[].amenity.slug`). The form stores slugs.
+function amenitySlugsFromApi(flat: Flat): string[] | undefined {
+  const slugs: string[] = [];
+  if (Array.isArray(flat.amenitiesByCategory)) {
+    for (const group of flat.amenitiesByCategory as Array<{ amenities?: Array<{ slug?: string; value?: unknown }> }>) {
+      for (const a of group.amenities ?? []) if (a.slug && a.value !== false) slugs.push(a.slug);
+    }
+  } else if (Array.isArray(flat.amenitiesRelation)) {
+    for (const r of flat.amenitiesRelation as Array<{ amenity?: { slug?: string }; value?: unknown }>) {
+      if (r.amenity?.slug && r.value !== false) slugs.push(r.amenity.slug);
+    }
+  } else if (Array.isArray(flat.amenities)) {
+    for (const a of flat.amenities as Array<{ amenitySlug?: string; slug?: string }>) {
+      const slug = a.amenitySlug || a.slug;
+      if (slug) slugs.push(slug);
+    }
+  }
+  return slugs.length ? slugs : undefined;
+}
+
 export function mapApiToForm(flat: Flat): PropertyListingFormValues {
   const structure = (flat.structure as Flat) ?? {};
   const g = (key: string) => flat[key] ?? structure[key];
@@ -231,7 +253,14 @@ export function mapApiToForm(flat: Flat): PropertyListingFormValues {
       availabilityStatus: s(flat.availabilityStatus) as PropertyListingFormValues["availability"]["availabilityStatus"],
       availableFrom: s(flat.availableFrom),
       possessionBy: s(flat.possessionBy),
-      constructionType: typeof flat.constructionType === "string" ? (flat.constructionType as string) : undefined,
+      constructionType:
+        typeof flat.constructionType === "string"
+          ? (flat.constructionType as string)
+          : flat.constructionType && typeof flat.constructionType === "object"
+            ? Object.keys(flat.constructionType as Record<string, unknown>).find(
+                (k) => (flat.constructionType as Record<string, unknown>)[k],
+              )
+            : undefined,
       ageOfProperty: s(flat.ageOfProperty),
     },
     amenities: {
@@ -244,9 +273,7 @@ export function mapApiToForm(flat: Flat): PropertyListingFormValues {
       approvedBy: (flat.approvedBy as Record<string, boolean>) ?? undefined,
       parkingAvailable: b(flat.parkingAvailable),
       noOfParkings: n(flat.noOfParkings),
-      amenityIds: Array.isArray(flat.amenities)
-        ? (flat.amenities as { amenityId: number }[]).map((a) => a.amenityId)
-        : undefined,
+      amenityIds: amenitySlugsFromApi(flat),
     },
     meta: {
       title: s(flat.title),
