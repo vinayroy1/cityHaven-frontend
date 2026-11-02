@@ -43,6 +43,7 @@ export type PropertySearchItem = {
   listingType?: string | null;
   resCom?: string | null;
   postedAs?: string | null;
+  saleType?: "RESALE" | "NEW_BOOKING" | null;
   furnishing?: string | null;
   possessionStatus?: string | null;
   availabilityStatus?: string | null;

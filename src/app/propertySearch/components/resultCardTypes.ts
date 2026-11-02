@@ -17,6 +17,7 @@ export type ResultCardProps = {
   isVerified?: boolean;
   isBoosted?: boolean;
   isSponsored?: boolean;
+  saleType?: string | null;
   boostTier?: "LOCALITY_SPOTLIGHT" | "CITY_FEATURED" | null;
   posterBadge?: string;
   images?: string[];

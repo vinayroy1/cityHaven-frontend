@@ -46,6 +46,12 @@ function summarise(state: SearchState, key: string): string | null {
       return state.refine.lifestyle?.length ? `Lifestyle · ${state.refine.lifestyle.length}` : null;
     case "bhkTypes":
       return state.refine.bhkTypes?.length ? `BHK · ${state.refine.bhkTypes.length}` : null;
+    case "saleType":
+      return state.refine.saleType?.length
+        ? state.refine.saleType.length === 1
+          ? state.refine.saleType[0] === "NEW_BOOKING" ? "New booking" : "Resale"
+          : "Resale + New"
+        : null;
     case "possessionStatus":
       return state.refine.possessionStatus?.length ? `Possession · ${state.refine.possessionStatus.length}` : null;
     case "amenities":
@@ -68,6 +74,7 @@ const DEFAULT_LABELS: Record<string, string> = {
   furnishing: "Furnishing",
   postedAs: "Posted by",
   possessionStatus: "Possession",
+  saleType: "Resale / New",
   amenities: "Amenities",
   gatedCommunity: "Gated Society",
   flatmateMode: "Mode",

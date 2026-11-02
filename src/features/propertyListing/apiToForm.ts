@@ -150,6 +150,7 @@ export function mapApiToForm(flat: Flat): PropertyListingFormValues {
       listingType: s(flat.listingType) as PropertyListingFormValues["context"]["listingType"],
       resCom: resolvedResCom,
       postedAs: s(flat.postedAs) || s(draftContext?.postedAs),
+      saleType: (s(flat.saleType) || s(draftContext?.saleType) || "") as "RESALE" | "NEW_BOOKING" | "",
       propertyTypeId: s(flat.propertyTypeId) || s(draftContext?.propertyTypeId),
       propertySubTypeId: s(flat.propertySubTypeId) || s(draftContext?.propertySubTypeId),
       propertySubCategoryId: s(flat.propertySubCategoryId) || s(draftContext?.propertySubCategoryId),

@@ -286,6 +286,15 @@ export function PropertyListingFlow({
   const isTitleCustomRef = useRef<boolean>(false);
   const isDescCustomRef = useRef<boolean>(false);
 
+  // Builders sell new inventory: preselect "New booking" (still editable) when nothing is chosen.
+  const postedAsValue = values?.context?.postedAs;
+  useEffect(() => {
+    if (!hydratedRef.current) return;
+    if (listingType === "SELL" && postedAsValue === "BUILDER" && !form.getValues("context.saleType")) {
+      form.setValue("context.saleType", "NEW_BOOKING", { shouldDirty: true });
+    }
+  }, [listingType, postedAsValue, form]);
+
   // Watch for manual user edits on title & description to freeze auto-generation
   useEffect(() => {
     const currentTitle = form.getValues("meta.title");

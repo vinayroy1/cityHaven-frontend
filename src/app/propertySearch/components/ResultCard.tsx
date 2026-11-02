@@ -61,6 +61,7 @@ export function ResultCard({
   isVerified,
   isBoosted,
   isSponsored,
+  saleType,
   boostTier,
   posterBadge,
   images = [],
@@ -588,6 +589,7 @@ export function ResultCard({
         bathrooms={bathrooms}
         type={type}
         listingType={listingType}
+        saleType={saleType}
         decisionDetails={decisionDetails}
         contextBadge={contextBadge}
         posterBadge={

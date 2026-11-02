@@ -28,6 +28,7 @@ export const initialPropertyListingFormValues: PropertyListingFormValues = {
     listingType: "RENT",
     resCom: "RESIDENTIAL",
     postedAs: "OWNER",
+    saleType: "",
     propertyTypeId: "",
     propertySubTypeId: "",
     propertySubCategoryId: "",

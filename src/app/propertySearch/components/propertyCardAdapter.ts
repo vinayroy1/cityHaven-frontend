@@ -118,6 +118,7 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     isVerified: item.qcStatus === "APPROVED",
     isBoosted: item.isBoosted,
     isSponsored: item.isSponsored,
+    saleType: item.saleType ?? null,
     boostTier: item.boostTier,
     posterBadge: postedAsLabel(item.postedAs),
     ownerId: item.ownerId ?? item.createdById ?? undefined,

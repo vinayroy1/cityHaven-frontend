@@ -28,6 +28,7 @@ export type RefineState = {
   furnishing: string[]; // UNFURNISHED | SEMI_FURNISHED | FURNISHED | Fully Furnished
   postedAs: string[]; // OWNER | AGENT | BUILDER
   possessionStatus?: string[]; // READY_TO_MOVE | UNDER_CONSTRUCTION
+  saleType?: string[]; // RESALE | NEW_BOOKING (buy only)
   gatedCommunity?: string[]; // YES
   amenities?: string[]; // SECURITY | POWER_BACKUP | etc.
   bhkTypes?: string[]; // 1 BHK, 1.5 BHK, 2 BHK, etc.
@@ -92,6 +93,7 @@ const emptyRefine = (): RefineState => ({
   furnishing: [],
   postedAs: [],
   possessionStatus: [],
+  saleType: [],
   gatedCommunity: [],
   amenities: [],
   bhkTypes: [],
@@ -186,6 +188,7 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
     furnishing: splitList(sp.get("r.furnishing")),
     postedAs: splitList(sp.get("r.postedAs")).map((s) => s.toUpperCase()),
     possessionStatus: splitList(sp.get("r.possession") ?? sp.get("r.possessionStatus")),
+    saleType: splitList(sp.get("r.saleType")).map((s) => s.toUpperCase()),
     gatedCommunity: splitList(sp.get("r.gatedCommunity")),
     amenities: splitList(sp.get("r.amenities")),
     bathroomsMin: toNum(sp.get("r.bath")),
@@ -233,6 +236,7 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   if (r.furnishing.length) sp.set("r.furnishing", r.furnishing.join(","));
   if (r.postedAs.length) sp.set("r.postedAs", r.postedAs.join(","));
   if (r.possessionStatus && r.possessionStatus.length) sp.set("r.possession", r.possessionStatus.join(","));
+  if (r.saleType && r.saleType.length) sp.set("r.saleType", r.saleType.join(","));
   if (r.gatedCommunity && r.gatedCommunity.length) sp.set("r.gatedCommunity", r.gatedCommunity.join(","));
   if (r.amenities && r.amenities.length) sp.set("r.amenities", r.amenities.join(","));
   if (r.bathroomsMin != null) sp.set("r.bath", String(r.bathroomsMin));
@@ -322,6 +326,7 @@ export type ApiSearchParams = {
   sort?: Exclude<SortKey, "relevance">;
   pageSize: number;
   postedAs?: string;
+  saleType?: string;
 };
 
 export function toApiParams(state: SearchState, pageSize: number): ApiSearchParams {
@@ -365,6 +370,8 @@ export function toApiParams(state: SearchState, pageSize: number): ApiSearchPara
   if (state.priceMax != null) out.priceMax = state.priceMax;
   if (state.sort !== "relevance") out.sort = state.sort;
   if (state.refine.postedAs.length === 1) out.postedAs = state.refine.postedAs[0];
+  // Resale / New booking is filtered on the server (both values allowed together).
+  if (state.refine.saleType?.length) out.saleType = state.refine.saleType.join(",");
   return out;
 }
 
@@ -377,6 +384,7 @@ export function hasClientRefinements(state: SearchState): boolean {
     r.postedAs.length > 0 ||
     (r.bhkTypes != null && r.bhkTypes.length > 0) ||
     (r.possessionStatus != null && r.possessionStatus.length > 0) ||
+    (r.saleType != null && r.saleType.length > 0) ||
     (r.amenities != null && r.amenities.length > 0) ||
     (r.gatedCommunity != null && r.gatedCommunity.length > 0) ||
     r.bathroomsMin != null ||
@@ -404,6 +412,7 @@ export type RefinableItem = {
   bathrooms?: number | null;
   bedrooms?: number | null;
   possessionStatus?: string | null;
+  saleType?: string | null;
   availabilityStatus?: string | null;
   amenities?: string[] | null;
   amenitiesRelation?: any;
@@ -508,6 +517,11 @@ export function applyClientRefinements<T extends RefinableItem>(
       const p = (item.postedAs ?? "").toUpperCase();
       const effectiveP = p || (item.ownerId ? "OWNER" : "");
       if (!refine.postedAs.includes(effectiveP)) return false;
+    }
+
+    if (refine.saleType?.length) {
+      const st = (item.saleType ?? "").toUpperCase();
+      if (!refine.saleType.includes(st)) return false;
     }
 
     if (refine.possessionStatus?.length) {
@@ -715,6 +729,7 @@ export function countActiveFilters(state: SearchState): number {
   n += r.furnishing.length;
   n += r.postedAs.length;
   if (r.possessionStatus?.length) n += r.possessionStatus.length;
+  if (r.saleType?.length) n += r.saleType.length;
   if (r.amenities?.length) n += r.amenities.length;
   if (r.gatedCommunity?.length) n += r.gatedCommunity.length;
   if (r.food?.length) n += r.food.length;
@@ -874,6 +889,13 @@ export function describeFilters(
       id: `food:${v}`,
       label: labels.food?.(v) ?? labelMap[v] ?? v.replace(/_/g, " "),
       remove: (s) => ({ ...s, refine: { ...s.refine, food: (s.refine.food || []).filter((x) => x !== v) } }),
+    });
+  });
+  (state.refine.saleType || []).forEach((v) => {
+    chips.push({
+      id: `saleType:${v}`,
+      label: v === "NEW_BOOKING" ? "New booking" : "Resale",
+      remove: (s) => ({ ...s, refine: { ...s.refine, saleType: (s.refine.saleType || []).filter((x) => x !== v) } }),
     });
   });
   (state.refine.possessionStatus || []).forEach((v) => {

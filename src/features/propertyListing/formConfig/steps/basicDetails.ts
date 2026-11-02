@@ -4,6 +4,7 @@ import {
   LOCATED_INSIDE_OPTIONS,
 } from "@/constants/backend-schema";
 import type { Option, StepConfig } from "../types";
+import { preset } from "../conditions";
 
 const subtypesFor = (typeSlug: "residential" | "commercial" | "pg"): Option[] =>
   PROPERTY_SUBTYPES.filter((s) => s.propertyTypeSlug === typeSlug).map((s) => ({
@@ -55,6 +56,20 @@ export const basicDetailsStep: StepConfig = {
             { value: "OWNER", label: "Property Owner" },
             { value: "AGENT", label: "Broker / Agent" },
             { value: "BUILDER", label: "Builder / Developer" },
+          ],
+        },
+        {
+          // Buyers filter on this first: it changes taxes (GST on new bookings) and
+          // charges (society transfer on resale), and what documents to check.
+          id: "context.saleType",
+          label: "Is this a resale or a new booking?",
+          type: "chip-radio",
+          visibleWhen: preset("isSell"),
+          requiredWhen: preset("isSell"),
+          helpText: "New booking = bought directly from the builder. Resale = owned before, sold by its current owner.",
+          options: [
+            { value: "RESALE", label: "Resale" },
+            { value: "NEW_BOOKING", label: "New booking" },
           ],
         },
       ],

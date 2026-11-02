@@ -29,6 +29,11 @@ export const POSTED_BY_OPTIONS = [
   { value: "BUILDER", label: "Builders" },
 ];
 
+export const SALE_TYPE_OPTIONS = [
+  { value: "RESALE", label: "Resale" },
+  { value: "NEW_BOOKING", label: "New booking" },
+];
+
 export const POSSESSION_STATUS_OPTIONS = [
   { value: "READY_TO_MOVE", label: "Ready To Move" },
   { value: "UNDER_CONSTRUCTION", label: "Under Construction" },
@@ -211,6 +216,7 @@ export type FilterSection =
         | "furnishing"
         | "postedAs"
         | "possessionStatus"
+        | "saleType"
         | "gatedCommunity"
         | "amenities"
         | "bhkTypes"
@@ -298,6 +304,17 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
       kind: "multi-chips",
       server: false,
       options: FURNISHING_OPTIONS,
+    });
+  }
+
+  // Resale / New booking — buyers' first cut on purchase searches
+  if (intent === "BUY") {
+    sections.push({
+      key: "saleType",
+      title: "Transaction Type",
+      kind: "multi-chips",
+      server: false,
+      options: SALE_TYPE_OPTIONS,
     });
   }
 

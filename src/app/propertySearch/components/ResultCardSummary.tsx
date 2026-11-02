@@ -13,6 +13,8 @@ type ResultCardSummaryProps = {
   bathrooms?: number | null;
   type?: string | null;
   listingType?: string | null;
+  /** SELL only: "RESALE" | "NEW_BOOKING". */
+  saleType?: string | null;
   decisionDetails?: string[];
   contextBadge: string | null;
   posterBadge?: string;
@@ -95,6 +97,7 @@ export function ResultCardSummary({
   bathrooms,
   type,
   listingType,
+  saleType,
   decisionDetails,
   contextBadge,
   posterBadge,
@@ -104,6 +107,8 @@ export function ResultCardSummary({
   isContactChecking = false,
 }: ResultCardSummaryProps) {
   const isPg = listingType?.toUpperCase() === "PG";
+  const saleLabel =
+    listingType?.toUpperCase() === "SELL" && saleType ? (saleType === "NEW_BOOKING" ? "New booking" : "Resale") : null;
   const displayTitle = compact
     ? (title || "Property listing")
         .replace(/\s+for\s+(?:sale|rent|lease)\s+in\s+.+$/i, "")
@@ -155,6 +160,11 @@ export function ResultCardSummary({
           {compactArea && (
             <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
               {compactArea}
+            </span>
+          )}
+          {saleLabel && (
+            <span className="shrink-0 rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+              {saleLabel}
             </span>
           )}
         </div>
@@ -230,6 +240,11 @@ export function ResultCardSummary({
           <span className="truncate">{area}</span>
         </span>
         <span className="truncate rounded-md bg-zinc-50 px-2 py-1.5 dark:bg-slate-800/80 sm:px-2.5">{owner}</span>
+        {saleLabel && (
+          <span className="truncate rounded-md bg-emerald-50 px-2 py-1.5 font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 sm:px-2.5">
+            {saleLabel}
+          </span>
+        )}
       </div>
 
       <div className="mt-auto flex items-center justify-end gap-2 border-t border-zinc-100 pt-2.5 dark:border-slate-800 sm:gap-2.5 sm:pt-3">

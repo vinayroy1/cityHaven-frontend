@@ -268,6 +268,12 @@ export function ReviewSummary({ values, uploadedPhotos: explicitPhotos, onEditSt
             />
             <DetailItem label="Sub-Category" value={context.propertySubCategorySlug ? context.propertySubCategorySlug.replace(/-/g, " ") : undefined} />
             <DetailItem label="Posted By" value={context.postedAs || "Owner"} />
+            {context.listingType === "SELL" && (
+              <DetailItem
+                label="Transaction"
+                value={context.saleType === "NEW_BOOKING" ? "New booking" : context.saleType === "RESALE" ? "Resale" : "—"}
+              />
+            )}
           </SectionCard>
 
           {/* Location Details */}

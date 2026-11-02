@@ -95,6 +95,8 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     listingType: context.listingType,
     resCom: context.resCom,
     postedAs: context.postedAs,
+    // Only meaningful for sales; cleared otherwise so a SELL→RENT switch doesn't leave it behind.
+    saleType: context.listingType === "SELL" && context.saleType ? context.saleType : null,
     propertyTypeSlug: resolvedTypeSlug,
     propertySubTypeSlug: resolvedSubTypeSlug,
     propertySubCategorySlug: resolvedSubCategorySlug,

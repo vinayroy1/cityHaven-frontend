@@ -57,6 +57,7 @@ type PropertyDetails = {
   listingType?: string | null;
   resCom?: string | null;
   postedAs?: string | null;
+  saleType?: "RESALE" | "NEW_BOOKING" | null;
   furnishing?: string | null;
   possessionStatus?: string | null;
   possessionType?: string | null;
@@ -286,7 +287,13 @@ function buildQuickFacts(property: PropertyDetails): QuickFact[] {
     });
   }
 
-  facts.push({ label: "Listed by", value: formatEnum(property.postedAs) || "Owner", hint: `Posted ${postedAgo(property.createdAt)}`, icon: BadgeCheck });
+  const saleLabel = property.saleType === "NEW_BOOKING" ? "New booking" : property.saleType === "RESALE" ? "Resale" : null;
+  facts.push({
+    label: "Listed by",
+    value: formatEnum(property.postedAs) || "Owner",
+    hint: `${saleLabel ? `${saleLabel} · ` : ""}Posted ${postedAgo(property.createdAt)}`,
+    icon: BadgeCheck,
+  });
   return facts.slice(0, 4);
 }
 
@@ -478,6 +485,7 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
         { label: "Property subtype", value: property.propertySubType?.name },
         { label: "Sub-category", value: property.propertySubCategory?.name },
         { label: "Located inside", value: property.locatedInside?.name },
+        { label: "Transaction", value: property.saleType === "NEW_BOOKING" ? "New booking" : property.saleType === "RESALE" ? "Resale" : undefined },
         { label: "Posted as", value: formatEnum(property.postedAs) },
         { label: "Status", value: formatEnum(property.availabilityStatus) },
       ],

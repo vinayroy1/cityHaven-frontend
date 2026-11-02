@@ -55,6 +55,8 @@ export interface PropertyContextBlock {
   listingType: ListingType;
   resCom: ResComType;
   postedAs?: string;
+  /** SELL only: RESALE (pre-owned) or NEW_BOOKING (from the builder). */
+  saleType?: "RESALE" | "NEW_BOOKING" | "";
   propertyTypeId?: string;
   propertySubTypeId?: string;
   propertySubCategoryId?: string;
