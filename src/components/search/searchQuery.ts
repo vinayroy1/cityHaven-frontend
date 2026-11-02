@@ -58,10 +58,11 @@ export type SearchState = {
 
 export const INTENT_CONFIG: Record<
   IntentKey,
-  { label: string; listingType: ApiListingType; resCom?: "COMMERCIAL"; plotOnly?: boolean }
+  { label: string; listingType: ApiListingType; resCom?: "RESIDENTIAL" | "COMMERCIAL"; plotOnly?: boolean }
 > = {
-  BUY: { label: "Buy", listingType: "SELL" },
-  RENT: { label: "Rent", listingType: "RENT" },
+  // Buy / Rent are residential; commercial sale & rent live under the Commercial tab.
+  BUY: { label: "Buy", listingType: "SELL", resCom: "RESIDENTIAL" },
+  RENT: { label: "Rent", listingType: "RENT", resCom: "RESIDENTIAL" },
   PG: { label: "PG / Co-living", listingType: "PG" },
   FLATMATE: { label: "Flatmate", listingType: "PG" },
   COMMERCIAL: { label: "Commercial", listingType: "SELL", resCom: "COMMERCIAL" },
@@ -334,7 +335,8 @@ export function toApiParams(state: SearchState, pageSize: number): ApiSearchPara
     listingType: state.intent === "COMMERCIAL" ? state.transaction ?? "SELL" : INTENT_CONFIG[state.intent].listingType,
     pageSize,
   };
-  if (state.intent === "COMMERCIAL") out.resCom = "COMMERCIAL";
+  const intentResCom = INTENT_CONFIG[state.intent].resCom;
+  if (intentResCom) out.resCom = intentResCom;
   // Picked location chips are always sent as structured filters (cityName + locality), never as
   // search text: text mode is only for a free keyword, and filter mode applies every refinement
   // (posted by, possession, furnishing, resale…) exactly. A chip whose label is the city itself
@@ -468,8 +470,10 @@ export function applyClientRefinements<T extends RefinableItem>(
     .map((label) => label.split(",")[0].trim());
 
   return items.filter((item) => {
-    if (intentCfg.resCom && (item.resCom ?? "").toUpperCase() !== intentCfg.resCom) {
-      return false;
+    if (intentCfg.resCom) {
+      // Listings without a category count as residential (older data).
+      const rc = (item.resCom ?? "").toUpperCase() || "RESIDENTIAL";
+      if (rc !== intentCfg.resCom) return false;
     }
 
     if (wantedSubTypeIds.size || wantedSubTypeSlugs.size) {

@@ -99,7 +99,7 @@ describe("toApiParams — backend allow-list only", () => {
     });
     const api = toApiParams(s, 12) as Record<string, unknown>;
     expect(Object.keys(api).sort()).toEqual(
-      ["bedrooms", "cityName", "listingType", "locality", "pageSize", "postedAs", "priceMin", "q", "sort"].sort(),
+      ["bedrooms", "cityName", "listingType", "locality", "pageSize", "postedAs", "priceMin", "q", "resCom", "sort"].sort(),
     );
     expect(api.listingType).toBe("SELL");
     expect(api.bedrooms).toBe(3);
@@ -165,7 +165,18 @@ describe("applyClientRefinements", () => {
     expect(run(state({ refine: { subType: ["apartment"], furnishing: [], postedAs: [] } }))).toEqual([1]);
   });
   it("filters by posted-by and bathrooms minimum", () => {
-    expect(run(state({ refine: { subType: [], furnishing: [], postedAs: ["OWNER"], bathroomsMin: 3 } }))).toEqual([3]);
+    expect(run(state({ intent: "COMMERCIAL", refine: { subType: [], furnishing: [], postedAs: ["OWNER"], bathroomsMin: 3 } }))).toEqual([3]);
+  });
+  it("Buy and Rent keep residential only (commercial has its own tab); uncategorised counts as residential", () => {
+    const withLegacy = [...items, { id: 4, resCom: null, locality: "Whitefield", cityName: "Bengaluru" }];
+    const ids = (intent: SearchState["intent"]) =>
+      applyClientRefinements(withLegacy, state({ intent }), subTypeSlugToId).map((i) => i.id);
+    expect(ids("BUY")).toEqual([1, 2, 4]);
+    expect(ids("RENT")).toEqual([1, 2, 4]);
+    expect(toApiParams(state({ intent: "BUY" }), 12).resCom).toBe("RESIDENTIAL");
+    expect(toApiParams(state({ intent: "RENT" }), 12).resCom).toBe("RESIDENTIAL");
+    expect(toApiParams(state({ intent: "COMMERCIAL" }), 12).resCom).toBe("COMMERCIAL");
+    expect(toApiParams(state({ intent: "PLOT" }), 12).resCom).toBeUndefined();
   });
   it("Commercial intent keeps only COMMERCIAL resCom", () => {
     expect(run(state({ intent: "COMMERCIAL" }))).toEqual([3]);

@@ -74,6 +74,8 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
         url.searchParams.set("resCom", "COMMERCIAL");
       } else if (copy.listingType) {
         url.searchParams.set("listingType", copy.listingType);
+        // Buy / Rent tabs are residential only; commercial has its own tab.
+        if (intent === "BUY" || intent === "RENT") url.searchParams.set("resCom", "RESIDENTIAL");
       }
       if (location.city) url.searchParams.set("cityName", location.city);
       if (location.state) url.searchParams.set("q", location.state);
@@ -225,6 +227,8 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
         url.searchParams.set("resCom", "COMMERCIAL");
       } else if (copy.listingType) {
         url.searchParams.set("listingType", copy.listingType);
+        // Buy / Rent tabs are residential only; commercial has its own tab.
+        if (intent === "BUY" || intent === "RENT") url.searchParams.set("resCom", "RESIDENTIAL");
       }
       if (location.city) url.searchParams.set("cityName", location.city);
       if (location.state) url.searchParams.set("q", location.state);
