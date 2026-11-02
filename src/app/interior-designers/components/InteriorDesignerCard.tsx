@@ -116,10 +116,10 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
               Verified Pro
             </span>
           )}
-          {(profile.isBoosted || profile.isFeatured) && (
+          {(profile.isSponsored || profile.isFeatured) && (
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/95 px-2.5 py-0.5 text-[11px] font-bold text-amber-950 shadow-xs backdrop-blur-md">
               <Sparkles className="h-3 w-3" />
-              Featured
+              {profile.isSponsored ? "Sponsored" : "Featured"}
             </span>
           )}
         </div>

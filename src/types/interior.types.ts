@@ -293,6 +293,8 @@ export interface InteriorProfile {
   featuredOrder: number;
   /** Paid boost currently running (public search/detail only). */
   isBoosted?: boolean;
+  /** Shown in a paid sponsored slot on this results page (must be labelled). */
+  isSponsored?: boolean;
   isPublished: boolean;
   publishedAt?: string | null;
 

@@ -60,6 +60,7 @@ export function ResultCard({
   isNew,
   isVerified,
   isBoosted,
+  isSponsored,
   boostTier,
   posterBadge,
   images = [],
@@ -537,7 +538,7 @@ export function ResultCard({
       onTouchEnd={handleCardTouchEnd}
       aria-busy={isNavigating}
       className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border ${
-        isBoosted
+        isSponsored
           ? boostTier === "LOCALITY_SPOTLIGHT"
             ? "border-amber-400 ring-2 ring-amber-300/50 dark:border-amber-500 dark:ring-amber-900/30"
             : "border-indigo-400 ring-2 ring-indigo-300/40 dark:border-indigo-500 dark:ring-indigo-900/30"
@@ -590,10 +591,12 @@ export function ResultCard({
         decisionDetails={decisionDetails}
         contextBadge={contextBadge}
         posterBadge={
-          isBoosted
+          // Paid placement is always disclosed. The same listing appearing in its organic
+          // position later is shown as a normal card.
+          isSponsored
             ? boostTier === "LOCALITY_SPOTLIGHT"
-              ? "★ SPOTLIGHT"
-              : "✦ FEATURED"
+              ? "★ SPONSORED · SPOTLIGHT"
+              : "✦ SPONSORED"
             : posterBadge
         }
         onContactClick={openContactFlow}

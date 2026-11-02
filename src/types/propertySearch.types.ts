@@ -86,6 +86,8 @@ export type PropertySearchItem = {
   media?: PropertySearchMedia[];
   createdAt?: string;
   isBoosted?: boolean;
+  /** Placed in a paid sponsored slot on this page (must be labelled). */
+  isSponsored?: boolean;
   boostTier?: "LOCALITY_SPOTLIGHT" | "CITY_FEATURED" | null;
   boostEndsAt?: string | null;
 };
