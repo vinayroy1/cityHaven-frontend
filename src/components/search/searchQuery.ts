@@ -335,20 +335,18 @@ export function toApiParams(state: SearchState, pageSize: number): ApiSearchPara
     pageSize,
   };
   if (state.intent === "COMMERCIAL") out.resCom = "COMMERCIAL";
-  if (state.localities.length > 1) {
-    // Full-text `q` ANDs its terms, so two localities in `q` match nothing.
-    // The backend ORs the `locality` list instead.
-    if (state.q) out.q = state.q;
-    out.locality = state.localities.map((l) => l.label.split(",")[0].trim()).join(",");
-    if (state.cityName) out.cityName = state.cityName;
-  } else {
-    const queryParts = [state.q, ...state.localities.map((l) => l.label)].filter(Boolean);
-    if (queryParts.length > 0) out.q = queryParts.join(", ");
-    const cityName = state.cityName ?? (state.localities.length === 1 ? state.localities[0]?.city : undefined);
-    if (cityName && (!state.localities.length || (state.localities.length === 1 && state.localities[0]?.city === state.localities[0]?.label))) {
-      out.cityName = cityName;
-    }
-  }
+  // Picked location chips are always sent as structured filters (cityName + locality), never as
+  // search text: text mode is only for a free keyword, and filter mode applies every refinement
+  // (posted by, possession, furnishing, resale…) exactly. A chip whose label is the city itself
+  // (e.g. "Mumbai") is a city pick, not a locality.
+  if (state.q) out.q = state.q;
+  const cityPicks = state.localities.filter((l) => l.city && l.label.trim().toLowerCase() === l.city.trim().toLowerCase());
+  const localityPicks = state.localities.filter((l) => !cityPicks.includes(l));
+  if (localityPicks.length) out.locality = localityPicks.map((l) => l.label.split(",")[0].trim()).join(",");
+  const tagCities = Array.from(new Set(state.localities.map((l) => l.city).filter(Boolean))) as string[];
+  // The city on the picked chip wins over the page default; otherwise use the selected city.
+  const cityName = tagCities.length === 1 ? tagCities[0] : state.cityName;
+  if (cityName) out.cityName = cityName;
   if (state.bedroomsMin != null) {
     out.bedrooms = state.bedroomsMin;
   } else if (state.refine.bhkTypes && state.refine.bhkTypes.length > 0) {

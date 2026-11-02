@@ -99,11 +99,13 @@ describe("toApiParams — backend allow-list only", () => {
     });
     const api = toApiParams(s, 12) as Record<string, unknown>;
     expect(Object.keys(api).sort()).toEqual(
-      ["bedrooms", "listingType", "pageSize", "postedAs", "priceMin", "q", "sort"].sort(),
+      ["bedrooms", "cityName", "listingType", "locality", "pageSize", "postedAs", "priceMin", "q", "sort"].sort(),
     );
     expect(api.listingType).toBe("SELL");
     expect(api.bedrooms).toBe(3);
-    expect(api.q).toBe("x, HSR Layout");
+    // Free keyword stays text; the picked locality is a structured filter.
+    expect(api.q).toBe("x");
+    expect(api.locality).toBe("HSR Layout");
     expect(Object.keys(api).some((k) => k.startsWith("r."))).toBe(false);
   });
 
@@ -121,7 +123,19 @@ describe("toApiParams — backend allow-list only", () => {
   it("sends cityName when a single selected locality is a city chip", () => {
     const api = toApiParams(state({ localities: [{ label: "Delhi", city: "Delhi" }] }), 12);
     expect(api.cityName).toBe("Delhi");
-    expect(api.q).toBe("Delhi");
+    expect(api.q).toBeUndefined();
+    expect(api.locality).toBeUndefined();
+  });
+
+  it("sends a single picked locality as a filter, not as search text (so all refinements apply)", () => {
+    const api = toApiParams(
+      state({ localities: [{ label: "Andheri West", city: "Mumbai" }], refine: { ...initialSearchState().refine, postedAs: ["AGENT"] } }),
+      12,
+    );
+    expect(api.q).toBeUndefined();
+    expect(api.locality).toBe("Andheri West");
+    expect(api.cityName).toBe("Mumbai");
+    expect(api.postedAs).toBe("AGENT");
   });
 });
 
