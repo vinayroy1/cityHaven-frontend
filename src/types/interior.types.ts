@@ -287,7 +287,7 @@ export interface InteriorProfile {
   isVerified: boolean;
   verifiedAt?: string | null;
 
-  rating: number | string;
+  rating: number | string | null;
   reviewCount: number;
   isFeatured: boolean;
   featuredOrder: number;
@@ -347,6 +347,8 @@ export interface InteriorSearchParams {
   propertyType?: string;
   designStyle?: string;
   budgetBracket?: "BUDGET" | "MID_RANGE" | "LUXURY" | "ULTRA_LUXE";
+  /** Matches the profile's `budgetSegments` (what the directory's Budget Tier filter means). */
+  budgetSegment?: InteriorBudgetSegment;
   rateMin?: number;
   rateMax?: number;
   boardMaterial?: string;
@@ -528,7 +530,9 @@ export type CredentialStatus = "PENDING" | "VERIFIED" | "REJECTED";
 export interface CredentialDocument {
   id: string;
   type: CredentialDocType;
+  /** Private object key (view via GET /me/documents/:id/url); legacy rows hold a public URL. */
   fileUrl: string;
+  isPrivate?: boolean;
   number?: string;
   status: CredentialStatus;
   rejectionReason?: string;

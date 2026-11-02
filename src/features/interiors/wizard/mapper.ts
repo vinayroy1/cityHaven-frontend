@@ -247,7 +247,7 @@ export function formToProfilePayload(section: InteriorWizardSection, values: Int
         workingDays: arr(c.workingDays),
         workingHours: { open: c.workingHours.open, close: c.workingHours.close },
         // null = not answered yet; kept as-is (no invented default)
-        acceptingNewProjects: c.acceptingNewProjects,
+        acceptingNewProjects: typeof c.acceptingNewProjects === "boolean" ? c.acceptingNewProjects : null,
         nextAvailableFrom: c.nextAvailableFrom || null,
         leadPreference: c.leadPreference,
       } as unknown as ContactAvailability;
@@ -261,7 +261,7 @@ export function formToProfilePayload(section: InteriorWizardSection, values: Int
         isEmailPublic: c.isEmailPublic,
       };
       if (c.leadPreference) out.preferredContactMethod = c.leadPreference;
-      if (c.acceptingNewProjects !== null) out.isAcceptingProjects = c.acceptingNewProjects;
+      if (typeof c.acceptingNewProjects === "boolean") out.isAcceptingProjects = c.acceptingNewProjects;
       return asPayload(out);
     }
   }

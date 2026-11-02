@@ -788,7 +788,7 @@ Auth: every `/interiors/me/**` route requires a logged-in user and acts **only**
 | `useListInteriorTeamQuery` | GET `/interiors/me/team` | — | `InteriorTeamMember[]` |
 | `useSaveInteriorTeamMemberMutation` | POST `/interiors/me/team` · PUT `/interiors/me/team/:id` | `Partial<InteriorTeamMember>` | `InteriorTeamMember` |
 | `useDeleteInteriorTeamMemberMutation` | DELETE `/interiors/me/team/:id` | — | `{ id }` |
-| `useUploadInteriorDocumentMutation` | POST `/interiors/me/documents` | `{ type: CredentialDocType, fileUrl: string, number?: string }` | `CredentialDocument` (status PENDING) |
+| `useUploadInteriorDocumentMutation` | POST `/interiors/me/documents` | `{ type: CredentialDocType, fileKey: string, number?: string }` (key from POST `/interiors/me/documents/presign-upload`; view via GET `/interiors/me/documents/:id/url`) | `CredentialDocument` (status PENDING) |
 | `useDeleteInteriorDocumentMutation` | DELETE `/interiors/me/documents/:id` | — | `{ id }` |
 | `useGetMyInteriorInquiriesQuery` | GET `/interiors/me/inquiries?status=&page=` | — | `{ items: InteriorInquiry[], pagination }` |
 | `useUnlockInteriorInquiryMutation` (existing) | POST `/interiors/me/inquiries/:id/unlock` | — | `InteriorInquiry` |

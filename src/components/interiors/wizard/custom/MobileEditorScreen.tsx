@@ -55,6 +55,33 @@ export function MobileEditorScreen({
   const box = useVisualViewportBox(open);
   const bodyRef = useRef<HTMLDivElement>(null);
 
+  // Browser / Android Back closes the screen instead of leaving the page: push a same-URL history entry
+  // while open; popping it closes. If closed from the UI, consume that entry so history stays balanced.
+  const onOpenChangeRef = useRef(onOpenChange);
+  useEffect(() => {
+    onOpenChangeRef.current = onOpenChange;
+  }, [onOpenChange]);
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+    let pushed = false;
+    let popped = false;
+    const onPop = () => {
+      popped = true;
+      onOpenChangeRef.current(false);
+    };
+    // Deferred so StrictMode's mount→unmount→mount doesn't push/pop a spurious entry.
+    const t = window.setTimeout(() => {
+      window.history.pushState(null, "", window.location.href);
+      pushed = true;
+      window.addEventListener("popstate", onPop);
+    }, 0);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("popstate", onPop);
+      if (pushed && !popped) window.history.back();
+    };
+  }, [open]);
+
   // Keep the focused field visible once the keyboard has finished animating in.
   useEffect(() => {
     if (!open) return;

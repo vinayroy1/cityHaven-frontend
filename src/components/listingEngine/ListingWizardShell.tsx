@@ -63,6 +63,34 @@ const readStepParam = () => {
   }
 };
 
+/** Furthest step reached in this browser, so a reload on `?step=` resumes even if that step was never edited
+ * (the server only records progress when a section saves). Scoped per listing via `?profileId=`. */
+const reachKey = (storageKey: string) => {
+  if (typeof window === "undefined") return null;
+  try {
+    return `${storageKey}:reach:${new URL(window.location.href).searchParams.get("profileId") ?? "default"}`;
+  } catch {
+    return null;
+  }
+};
+const readReach = (storageKey: string): number => {
+  try {
+    const k = reachKey(storageKey);
+    const n = k ? Number(window.sessionStorage.getItem(k)) : 0;
+    return Number.isInteger(n) && n > 0 ? n : 0;
+  } catch {
+    return 0;
+  }
+};
+const writeReach = (storageKey: string, n: number) => {
+  try {
+    const k = reachKey(storageKey);
+    if (k) window.sessionStorage.setItem(k, String(n));
+  } catch {
+    /* storage unavailable — server progress still applies */
+  }
+};
+
 export function ListingWizardShell<V extends FormValues>(props: ListingWizardShellProps<V>) {
   const inner = <ShellInner {...props} />;
   return props.upload ? <UploadProvider upload={props.upload}>{inner}</UploadProvider> : <PresignUploadProvider>{inner}</PresignUploadProvider>;
@@ -111,7 +139,7 @@ function ShellInner<V extends FormValues>({
     const serverStep = typeof loaded.wizardStep === "number" ? loaded.wizardStep : 0;
     const urlStep = readStepParam();
     const steps = vertical.steps.filter((s) => isStepVisible(s, base, { predicates }));
-    const reach = Math.min(Math.max(serverStep, 0), Math.max(steps.length - 1, 0));
+    const reach = Math.min(Math.max(serverStep, readReach(vertical.storageKey), 0), Math.max(steps.length - 1, 0));
     setMaxVisited(reach);
     const urlIdx = urlStep ? steps.findIndex((s) => s.id === urlStep) : -1;
     const startIdx = urlIdx >= 0 && urlIdx <= reach ? urlIdx : reach;
@@ -121,6 +149,10 @@ function ShellInner<V extends FormValues>({
     }
     setHydrated(true);
   }, [hydrated, loaded.isLoading, loaded.data, loaded.updatedAt, loaded.wizardStep, storage, form, vertical, predicates]);
+
+  useEffect(() => {
+    if (hydrated && maxVisited > 0) writeReach(vertical.storageKey, maxVisited);
+  }, [hydrated, maxVisited, vertical.storageKey]);
 
   // ---- local shadow (throttled) + autosave ----
   const shadowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);

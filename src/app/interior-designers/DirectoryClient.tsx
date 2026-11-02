@@ -91,7 +91,9 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
       city: selectedCity,
       providerType: providerType === "ALL" ? undefined : providerType,
       service: selectedService === "ALL" ? undefined : selectedService,
-      budgetBracket: selectedBracket === "ALL" ? undefined : (selectedBracket as InteriorSearchParams["budgetBracket"]),
+      // The API's `budgetBracket` takes other values (and is not applied);
+      // `budgetSegment` filters on the tiers designers pick in their profile.
+      budgetSegment: selectedBracket === "ALL" ? undefined : (selectedBracket as InteriorSearchParams["budgetSegment"]),
       isVerified: isVerifiedOnly ? true : undefined,
       limit: 30,
     },
@@ -428,7 +430,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
                 >
                   <option value="ALL">All Price Tiers</option>
                   <option value="ECONOMY">Economy (Under ₹1,400/sq.ft.)</option>
-                  <option value="STANDARD">Standard (₹1,400 - ₹2,200/sq.ft.)</option>
+                  <option value="MID_RANGE">Standard (₹1,400 - ₹2,200/sq.ft.)</option>
                   <option value="PREMIUM">Premium (₹2,200 - ₹3,500/sq.ft.)</option>
                   <option value="LUXURY">Ultra Luxury (₹3,500+/sq.ft.)</option>
                 </select>

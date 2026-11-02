@@ -5,10 +5,11 @@ import { BadgeCheck, FileText, Loader2, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import type { CustomStepProps } from "@/lib/listingEngine/types";
 import type { CredentialDocType, CredentialDocument, InteriorWizardValues } from "@/types/interior.types";
-import { useDeleteInteriorDocumentMutation, useUploadInteriorDocumentMutation } from "@/features/interiors/api";
+import { useDeleteInteriorDocumentMutation, useGetInteriorDocumentViewUrlMutation, useUploadInteriorDocumentMutation } from "@/features/interiors/api";
+import { usePrivateInteriorDocUpload } from "@/features/interiors/upload";
 import { CREDENTIAL_DOC_TYPES } from "@/features/interiors/wizard/options";
 import { cn } from "@/lib/utils";
-import { StatusBadge, apiErrorMessage, getAt, ghostIconBtn, inputCls, propPath, setPath, useUploader } from "./ui";
+import { StatusBadge, apiErrorMessage, getAt, ghostIconBtn, inputCls, propPath, setPath } from "./ui";
 
 const STATUS = {
   PENDING: { label: "Under review", tone: "amber" },
@@ -25,21 +26,46 @@ export default function DocumentUploader({ values, form, props }: CustomStepProp
   const [type, setType] = useState<CredentialDocType>(types[0]?.value ?? "OTHER");
   const [number, setNumber] = useState("");
   const ref = useRef<HTMLInputElement>(null);
-  const { upload, uploading } = useUploader("docs");
+  const uploadPrivate = usePrivateInteriorDocUpload();
+  const [uploading, setUploading] = useState(false);
+  const [getViewUrl] = useGetInteriorDocumentViewUrlMutation();
   const [saveDoc, { isLoading: saving }] = useUploadInteriorDocumentMutation();
   const [deleteDoc] = useDeleteInteriorDocumentMutation();
   const busy = uploading || saving;
 
   const onFile = async (f: File) => {
-    const url = await upload(f);
-    if (!url) return;
+    let key: string;
+    setUploading(true);
     try {
-      const doc = await saveDoc({ type, fileUrl: url, number: number.trim() || undefined }).unwrap();
+      key = await uploadPrivate(f);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Upload failed. Please try again.");
+      return;
+    } finally {
+      setUploading(false);
+    }
+    try {
+      const doc = await saveDoc({ type, fileKey: key, number: number.trim() || undefined }).unwrap();
       setPath(form, path, [...docs.filter((d) => d.id !== String(doc.id)), { ...doc, id: String(doc.id) }]);
       setNumber("");
       toast.success("Document uploaded — we'll verify it within 48 hours");
     } catch (e) {
       toast.error(apiErrorMessage(e, "Could not save the document"));
+    }
+  };
+
+  // Open via a short-lived signed URL; the tab is opened synchronously so popup blockers allow it.
+  const view = async (d: CredentialDocument) => {
+    const win = window.open("", "_blank");
+    try {
+      const { url } = await getViewUrl(d.id).unwrap();
+      if (win) {
+        win.opener = null;
+        win.location.href = url;
+      } else window.location.assign(url);
+    } catch (e) {
+      win?.close();
+      toast.error(apiErrorMessage(e, "Could not open the document"));
     }
   };
 
@@ -64,7 +90,7 @@ export default function DocumentUploader({ values, form, props }: CustomStepProp
               <li key={d.id} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
                 <FileText className="size-5 shrink-0 text-slate-500" />
                 <div className="min-w-0 flex-1">
-                  <a href={d.fileUrl} target="_blank" rel="noreferrer" className="block truncate text-sm font-medium underline-offset-4 hover:underline">{label(d.type)}</a>
+                  <button type="button" onClick={() => void view(d)} className="block max-w-full truncate text-left text-sm font-medium underline-offset-4 hover:underline">{label(d.type)}</button>
                   {d.number && <p className="text-xs text-slate-500">{d.number}</p>}
                   {d.status === "REJECTED" && d.rejectionReason && <p className="text-xs text-rose-600">{d.rejectionReason}</p>}
                 </div>

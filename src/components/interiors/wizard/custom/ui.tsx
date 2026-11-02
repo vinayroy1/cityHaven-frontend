@@ -635,6 +635,8 @@ export function Stepper({
   max = 50,
   label,
   suffix,
+  step = 1,
+  start,
 }: {
   value: number | null | undefined;
   onChange: (v: number | null) => void;
@@ -642,17 +644,22 @@ export function Stepper({
   max?: number;
   label: string;
   suffix?: string;
+  /** Increment per click (e.g. 5 for days). */
+  step?: number;
+  /** First value when going from empty (defaults to max(min, step)). */
+  start?: number;
 }) {
   const v = value ?? null;
+  const first = start ?? Math.max(min, step);
   return (
     <div className="inline-flex items-center rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950" role="group" aria-label={label}>
-      <button type="button" aria-label={`Decrease ${label}`} className={ghostIconBtn} disabled={v == null || v <= min} onClick={() => onChange(v == null || v - 1 < min ? null : v - 1)}>
+      <button type="button" aria-label={`Decrease ${label}`} className={ghostIconBtn} disabled={v == null || v <= min} onClick={() => onChange(v == null || v - step < min ? null : v - step)}>
         <Minus className="size-4" />
       </button>
       <span className="min-w-14 text-center text-sm font-semibold tabular-nums" aria-live="polite">
         {v == null ? "—" : `${v}${suffix ? ` ${suffix}` : ""}`}
       </span>
-      <button type="button" aria-label={`Increase ${label}`} className={ghostIconBtn} disabled={v != null && v >= max} onClick={() => onChange(v == null ? Math.max(min, 1) : Math.min(max, v + 1))}>
+      <button type="button" aria-label={`Increase ${label}`} className={ghostIconBtn} disabled={v != null && v >= max} onClick={() => onChange(v == null ? Math.min(max, first) : Math.min(max, v + step))}>
         <Plus className="size-4" />
       </button>
     </div>

@@ -72,11 +72,18 @@ export const INTENT_KEYS = Object.keys(INTENT_CONFIG) as IntentKey[];
 /** Sub-type slugs that count as "plot / land" for the PLOT intent. */
 export const PLOT_SUBTYPE_SLUGS = [
   "plot-land-res",
+  "plot-land-com",
   "agri-farm-land",
   "commercial-land-inst-land",
   "agricultural-farm-land",
   "industrial-lands-plots",
 ];
+
+/** Filter slugs (search UI, parsed queries) that name a backend sub-type differently. */
+const SUBTYPE_SLUG_ALIASES: Record<string, string[]> = {
+  villa: ["independent-house-villa"],
+  house: ["independent-house-villa"],
+};
 
 const SORT_KEYS: SortKey[] = ["relevance", "newest", "price_asc", "price_desc"];
 
@@ -323,17 +330,28 @@ export function toApiParams(state: SearchState, pageSize: number): ApiSearchPara
     pageSize,
   };
   if (state.intent === "COMMERCIAL") out.resCom = "COMMERCIAL";
-  const queryParts = [state.q, ...state.localities.map((l) => l.label)].filter(Boolean);
-  if (queryParts.length > 0) out.q = queryParts.join(", ");
-  const cityName = state.cityName ?? (state.localities.length === 1 ? state.localities[0]?.city : undefined);
-  if (cityName && (!state.localities.length || (state.localities.length === 1 && state.localities[0]?.city === state.localities[0]?.label))) {
-    out.cityName = cityName;
+  if (state.localities.length > 1) {
+    // Full-text `q` ANDs its terms, so two localities in `q` match nothing.
+    // The backend ORs the `locality` list instead.
+    if (state.q) out.q = state.q;
+    out.locality = state.localities.map((l) => l.label.split(",")[0].trim()).join(",");
+    if (state.cityName) out.cityName = state.cityName;
+  } else {
+    const queryParts = [state.q, ...state.localities.map((l) => l.label)].filter(Boolean);
+    if (queryParts.length > 0) out.q = queryParts.join(", ");
+    const cityName = state.cityName ?? (state.localities.length === 1 ? state.localities[0]?.city : undefined);
+    if (cityName && (!state.localities.length || (state.localities.length === 1 && state.localities[0]?.city === state.localities[0]?.label))) {
+      out.cityName = cityName;
+    }
   }
   if (state.bedroomsMin != null) {
     out.bedrooms = state.bedroomsMin;
   } else if (state.refine.bhkTypes && state.refine.bhkTypes.length > 0) {
     // If user clicked BHK chip(s) in filter sheet, calculate lowest selected bedroom count to pre-filter API
-    const bedNums = state.refine.bhkTypes
+    // "1 RK" / "Studio" listings often have no bedroom count, so a server
+    // minimum would drop them; leave those to the browser-side BHK filter.
+    const hasRoomKitchen = state.refine.bhkTypes.some((b) => /rk|studio/i.test(b));
+    const bedNums = (hasRoomKitchen ? [] : state.refine.bhkTypes)
       .map((b) => {
         const m = b.match(/\d+/);
         return m ? Number(m[0]) : null;
@@ -431,10 +449,12 @@ export function applyClientRefinements<T extends RefinableItem>(
       .map(subTypeSlugToId)
       .filter((v): v is number => v != null),
   );
-  const wantedSubTypeSlugs = new Set([
-    ...refine.subType,
-    ...(intent === "PLOT" && !refine.subType.length ? PLOT_SUBTYPE_SLUGS : []),
-  ]);
+  const wantedSubTypeSlugs = new Set(
+    [
+      ...refine.subType,
+      ...(intent === "PLOT" && !refine.subType.length ? PLOT_SUBTYPE_SLUGS : []),
+    ].flatMap((slug) => [slug, ...(SUBTYPE_SLUG_ALIASES[slug] ?? [])]),
+  );
 
   const localityNeedles = state.localities
     .map((l) => l.label.toLowerCase())
@@ -985,11 +1005,11 @@ export function applyFlatmateRefinements(
 
     // 7. Furnishing filter
     if (refine.furnishing?.length) {
-      const f = (item.furnishing || "").toLowerCase();
-      const match = refine.furnishing.some((wanted) => {
-        const w = wanted.toLowerCase();
-        return f.includes(w) || w.includes(f) || (w.includes("furn") && f.includes("furn"));
-      });
+      // Compare normalised values: "Semi-furnished" == "Semi-Furnished", but
+      // "Unfurnished" must not match "Fully Furnished".
+      const norm = (v: string) => v.toLowerCase().replace(/[^a-z]/g, "").replace(/^fully/, "");
+      const f = norm(item.furnishing || "");
+      const match = f !== "" && refine.furnishing.some((wanted) => norm(wanted) === f);
       if (!match) return false;
     }
 

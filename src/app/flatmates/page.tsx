@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Users,
   Search,
@@ -20,7 +20,14 @@ import { FlatmateGridSkeleton } from "@/components/flatmates/FlatmateCardSkeleto
 import { canonicalizeCity, CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
 import { FilterRail } from "@/components/search/FilterSheet";
-import { countActiveFilters, initialSearchState, toSearchSlug, type SearchState } from "@/components/search/searchQuery";
+import {
+  buildSearchParams,
+  countActiveFilters,
+  initialSearchState,
+  parseSearchParams,
+  toSearchSlug,
+  type SearchState,
+} from "@/components/search/searchQuery";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import type { FlatmateListing, FlatmateListingMode } from "@/types/flatmate.types";
@@ -51,6 +58,33 @@ const FLATMATE_MODE_TABS: Array<{
   { label: "Buddy Up", mode: "BUDDY_UP", icon: UserPlus },
 ];
 
+/** Filters live in the query string (`r.*` keys) so they survive reloads, sharing and back/forward. */
+const filtersFromQuery = (query: string): SearchState => {
+  const s = parseSearchParams(new URLSearchParams(query));
+  s.intent = "FLATMATE";
+  s.q = "";
+  s.cityName = undefined;
+  s.localities = [];
+  if (!s.refine.flatmateMode?.length) s.refine.flatmateMode = ["HAVE_ROOM"];
+  return s;
+};
+
+const filtersToQuery = (state: SearchState): string => {
+  const sp = buildSearchParams({ ...state, intent: "FLATMATE" });
+  for (const key of ["q", "city", "locality", "intent"]) sp.delete(key);
+  if (sp.get("r.mode") === "HAVE_ROOM") sp.delete("r.mode");
+  return sp.toString();
+};
+
+/** Isolated so `useSearchParams` only opts this null-rendering leaf out of prerendering. */
+function FlatmateQuerySync({ onQuery }: { onQuery: (query: string) => void }) {
+  const query = useSearchParams().toString();
+  React.useEffect(() => {
+    onQuery(query);
+  }, [query, onQuery]);
+  return null;
+}
+
 export default function FlatmatesDiscoveryPage({
   initialCity = "",
   initialLocality = "",
@@ -76,6 +110,23 @@ export default function FlatmatesDiscoveryPage({
     return s;
   });
   const [page, setPage] = useState(1);
+  const appliedQueryRef = React.useRef(filtersToQuery(appliedFilterState));
+
+  const handleQuery = React.useCallback((query: string) => {
+    const next = filtersFromQuery(query);
+    const normalized = filtersToQuery(next);
+    if (normalized === appliedQueryRef.current) return;
+    appliedQueryRef.current = normalized;
+    setFilterState(next);
+    setAppliedFilterState(next);
+    setPage(1);
+  }, []);
+
+  const pushFilters = (path: string, nextFilters: SearchState) => {
+    const query = filtersToQuery(nextFilters);
+    appliedQueryRef.current = query;
+    router.push(`${path}${query ? `?${query}` : ""}`, { scroll: false });
+  };
 
   const refine = appliedFilterState.refine;
   const mode = (refine.flatmateMode?.[0] as FlatmateListingMode | undefined) || "HAVE_ROOM";
@@ -91,8 +142,10 @@ export default function FlatmatesDiscoveryPage({
     setFilterState(nextFilters);
     setAppliedFilterState(nextFilters);
     setPage(1);
+    pushFilters(window.location.pathname, nextFilters);
   };
-  const gender = refine.gender?.[0]?.replace(" Only", "");
+  // "Any Gender" is no restriction; the API compares against a concrete gender.
+  const gender = refine.gender?.[0]?.includes("Any") ? undefined : refine.gender?.[0]?.replace(" Only", "");
   const preferredDiet = refine.diet?.[0] === "Any Diet" ? undefined : refine.diet?.[0];
   const lifestyle = refine.lifestyle || [];
   const bhkValue = refine.bhkTypes?.[0];
@@ -107,7 +160,7 @@ export default function FlatmatesDiscoveryPage({
       const normalized = canonicalizeCity({ id: 0, name: rawCity.trim(), slug: locationSlug(rawCity) }).name;
       setCity(normalized);
       setCityDraft(normalized);
-      router.replace(`/flatmate/${locationSlug(normalized)}`);
+      router.replace(`/flatmate/${locationSlug(normalized)}${window.location.search}`);
     };
 
     const preferredCity = getUserPreferredCity();
@@ -142,9 +195,9 @@ export default function FlatmatesDiscoveryPage({
     pageSize: 18,
   });
 
-  const navigateToLocation = (nextCity: string, nextLocalities: string[] = []) => {
+  const navigateToLocation = (nextCity: string, nextLocalities: string[], nextFilters: SearchState) => {
     const segments = [nextCity, nextLocalities[0]].map((value) => locationSlug(value || "")).filter(Boolean);
-    router.push(`/flatmate${segments.length ? `/${segments.join("/")}` : ""}`);
+    pushFilters(`/flatmate${segments.length ? `/${segments.join("/")}` : ""}`, nextFilters);
   };
 
   const runSearch = (nextFilters = filterState) => {
@@ -153,7 +206,7 @@ export default function FlatmatesDiscoveryPage({
     setFilterState(nextFilters);
     setAppliedFilterState(nextFilters);
     setPage(1);
-    navigateToLocation(cityDraft, localityDrafts);
+    navigateToLocation(cityDraft, localityDrafts, nextFilters);
     if (cityDraft && typeof window !== "undefined") window.localStorage.setItem("awasio.home.city", cityDraft);
   };
 
@@ -193,6 +246,9 @@ export default function FlatmatesDiscoveryPage({
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
       <HeaderNav />
+      <Suspense fallback={null}>
+        <FlatmateQuerySync onQuery={handleQuery} />
+      </Suspense>
 
       <main className="flex-1 min-w-0 overflow-x-hidden bg-gradient-to-b from-rose-50/60 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-28 sm:pb-12">
         {/* Hero Header Area */}

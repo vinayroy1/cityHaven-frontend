@@ -5,6 +5,7 @@ import { BadgeCheck, Calendar, CheckCircle2, Clock, MapPin, Phone, ShieldCheck, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Agent } from "@/data/agents";
 import { saveVisitBooking } from "@/lib/services/visitBookings";
+import { useContactAdvisorMutation } from "@/features/advisors/api";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 
 interface BookVisitModalProps {
@@ -27,12 +28,35 @@ export function BookVisitModal({ agent, isOpen, onClose, propertyTitle }: BookVi
   const [clientPhone, setClientPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [contactAdvisor, { isLoading: isSending }] = useContactAdvisorMutation();
 
   if (!agent) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientPhone.trim()) return;
+    setSubmitError(null);
+
+    // Backend advisors have numeric ids — deliver the request as a real lead.
+    if (/^\d+$/.test(String(agent.id))) {
+      try {
+        await contactAdvisor({
+          advisorId: agent.id,
+          name: clientName.trim() || "Prospective Buyer",
+          phone: clientPhone.trim(),
+          intent: "BUY",
+          preferredTime: `${tourDay}, ${tourSlot}`,
+          message: [propertyTitle ? `Site visit: ${propertyTitle}` : "Site visit request", notes.trim()]
+            .filter(Boolean)
+            .join(" — "),
+        }).unwrap();
+      } catch (err) {
+        const msg = (err as { data?: { message?: string } })?.data?.message;
+        setSubmitError(msg || "Could not send your request. Please check your details and try again.");
+        return;
+      }
+    }
 
     saveVisitBooking({
       agentId: agent.id,
@@ -195,11 +219,17 @@ export function BookVisitModal({ agent, isOpen, onClose, propertyTitle }: BookVi
               </div>
             </div>
 
+            {submitError && (
+              <p role="alert" className="text-xs font-medium text-red-600 dark:text-red-400">
+                {submitError}
+              </p>
+            )}
             <button
               type="submit"
-              className="mt-2 w-full rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-rose-700 active:scale-[0.98]"
+              disabled={isSending}
+              className="mt-2 w-full disabled:opacity-60 rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-rose-700 active:scale-[0.98]"
             >
-              Confirm Site Visit Request
+              {isSending ? "Sending..." : "Confirm Site Visit Request"}
             </button>
           </form>
         )}

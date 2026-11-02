@@ -29,6 +29,14 @@ describe("interior mapper", () => {
     expect(p.countertops).toEqual([]);
   });
 
+  it("never sends an empty string for acceptingNewProjects (deselected radio)", () => {
+    const v = completeValues("INDIVIDUAL");
+    (v.contact as { acceptingNewProjects: unknown }).acceptingNewProjects = "";
+    const c = formToProfilePayload("contact", v) as { contact: { acceptingNewProjects: unknown }; isAcceptingProjects?: unknown };
+    expect(c.contact.acceptingNewProjects).toBeNull();
+    expect("isAcceptingProjects" in c).toBe(false);
+  });
+
   it("derives legacy warranty + contact columns", () => {
     const v = completeValues("INDIVIDUAL");
     const w = formToProfilePayload("warranty", v);

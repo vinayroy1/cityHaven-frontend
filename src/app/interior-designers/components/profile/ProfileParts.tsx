@@ -17,7 +17,7 @@ import {
 import Image from "next/image";
 import type { InteriorProfile } from "@/types/interior.types";
 import { isOptimizableImage } from "../../lib/image";
-import { humanize, inr, priceRange, profileName, telHref, unitLabel, waHref } from "./utils";
+import { experienceYearsOf, humanize, inr, priceRange, profileName, telHref, unitLabel, waHref } from "./utils";
 
 /* ---------------------------------- Shell --------------------------------- */
 
@@ -161,10 +161,10 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
                     {location}
                   </li>
                 )}
-                {profile.experienceYears > 0 && (
+                {experienceYearsOf(profile) > 0 && (
                   <li className="inline-flex items-center gap-1">
                     <Calendar className="h-4 w-4" aria-hidden />
-                    {profile.experienceYears}+ yrs experience
+                    {experienceYearsOf(profile)}+ yrs experience
                   </li>
                 )}
                 <li className="inline-flex items-center gap-1">

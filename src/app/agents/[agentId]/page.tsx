@@ -1,4 +1,4 @@
-import React from "react";
+import React, { cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
@@ -9,7 +9,50 @@ import {
   getAllAgentIds,
   getSimilarAgents,
 } from "@/data/agents";
+import type { Agent } from "@/data/agents";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { AgentProfileClient } from "./AgentProfileClient";
+
+// Static demo agents first; otherwise resolve a published backend advisor by slug or id.
+const resolveAgent = cache(async (agentId: string): Promise<Agent | null> => {
+  const local = getAgentById(agentId);
+  if (local) return local;
+  try {
+    const res = await fetch(API_ENDPOINTS.advisors.detail(encodeURIComponent(agentId)), {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { data?: Partial<Agent> & Record<string, unknown> };
+    const raw = json?.data;
+    if (!raw) return null;
+    const str = (v: unknown, fallback = "") => (typeof v === "string" && v ? v : fallback);
+    return {
+      ...(raw as Agent),
+      id: String(raw.id),
+      name: str(raw.name, "Advisor"),
+      role: str(raw.role, "Real Estate Advisor"),
+      agency: str(raw.agency, "Independent Advisor"),
+      reraId: str(raw.reraId),
+      city: str(raw.city),
+      area: str(raw.area),
+      focus: str(raw.focus),
+      avatar: str(raw.avatar),
+      phone: str(raw.phone),
+      email: str(raw.email),
+      experience: str(raw.experience),
+      services: Array.isArray(raw.services) ? raw.services : [],
+      languages: Array.isArray(raw.languages) ? raw.languages : [],
+      tours: str(raw.tours, "0"),
+      rating: String(raw.rating ?? "5.0"),
+      bio: str(raw.bio),
+      responseTime: str(raw.responseTime, str(raw.responseTimeText, "Within a few hours")),
+      featuredListings: Array.isArray(raw.featuredListings) ? raw.featuredListings : [],
+      reviews: Array.isArray(raw.reviews) ? raw.reviews : [],
+    } as Agent;
+  } catch {
+    return null;
+  }
+});
 
 interface PageProps {
   params: Promise<{ agentId: string }>;
@@ -21,7 +64,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { agentId } = await params;
-  const agent = getAgentById(agentId);
+  const agent = await resolveAgent(agentId);
 
   if (!agent) {
     return {
@@ -74,7 +117,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function AgentPage({ params }: PageProps) {
   const { agentId } = await params;
-  const agent = getAgentById(agentId);
+  const agent = await resolveAgent(agentId);
 
   if (!agent) {
     notFound();

@@ -143,7 +143,16 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
   const canonicalCity = citySlug && CITY_ALIASES[citySlug];
   if (intentSlug !== canonicalIntent || canonicalCity) {
     const normalized = canonicalCity ? [canonicalCity, ...segments.slice(1)] : segments;
-    permanentRedirect(`/${canonicalIntent}${normalized.length ? `/${normalized.join("/")}` : ""}`);
+    // Keep the filters (`?priceMax=…&r.*=…`) when normalising the path.
+    const carried = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      if (Array.isArray(value)) value.forEach((entry) => carried.append(key, entry));
+      else if (value) carried.set(key, value);
+    }
+    const carriedQuery = carried.toString();
+    permanentRedirect(
+      `/${canonicalIntent}${normalized.length ? `/${normalized.join("/")}` : ""}${carriedQuery ? `?${carriedQuery}` : ""}`,
+    );
   }
 
   const hasLegacyLocationParams = ["city", "cityName", "locality", "localities", "loc", "intent"]

@@ -40,6 +40,15 @@ interface AgentsDirectoryClientProps {
   initialCity?: string;
 }
 
+// Static agents carry text ("12 yrs"); backend advisors send `experienceYears`
+// and numeric `tours`. A NaN here made the sort a no-op for backend advisors.
+const toCount = (value: unknown): number => {
+  const n = typeof value === "number" ? value : Number.parseInt(String(value ?? ""), 10);
+  return Number.isFinite(n) ? n : 0;
+};
+const experienceYears = (agent: Agent): number =>
+  toCount((agent as Agent & { experienceYears?: number }).experienceYears ?? agent.experience);
+
 export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClientProps) {
   const { data: serverAgents = [] } = useGetAdvisorsQuery({ city: initialCity || undefined, limit: 50 });
   // Draft state (user selections before pressing Search)
@@ -97,16 +106,16 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
 
       const matchSpecialty =
         appliedSpecialty === "All Specialties" ||
-        agent.focus.toLowerCase().includes(appliedSpecialty.toLowerCase());
+        (agent.focus ?? "").toLowerCase().includes(appliedSpecialty.toLowerCase());
 
       const query = appliedQuery.trim().toLowerCase();
       const matchQuery =
         !query ||
         agent.name.toLowerCase().includes(query) ||
-        agent.agency.toLowerCase().includes(query) ||
+        (agent.agency ?? "").toLowerCase().includes(query) ||
         agent.area.toLowerCase().includes(query) ||
         agent.city.toLowerCase().includes(query) ||
-        agent.focus.toLowerCase().includes(query);
+        (agent.focus ?? "").toLowerCase().includes(query);
 
       return matchCity && matchLocality && matchSpecialty && matchQuery;
     }).sort((a, b) => {
@@ -121,8 +130,8 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
       const rankDiff = (tierRank[b.subscriptionTier] ?? 0) - (tierRank[a.subscriptionTier] ?? 0);
       if (rankDiff !== 0) return rankDiff;
 
-      if (sortBy === "tours") return parseInt(b.tours) - parseInt(a.tours);
-      return parseInt(b.experience) - parseInt(a.experience);
+      if (sortBy === "tours") return toCount(b.tours) - toCount(a.tours);
+      return experienceYears(b) - experienceYears(a);
     });
   }, [agentsList, appliedCity, appliedLocalities, appliedSpecialty, appliedQuery, sortBy]);
 
@@ -402,7 +411,7 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                   {/* Stats Matrix */}
                   <div className="mt-2 sm:mt-3.5 grid grid-cols-3 gap-1 sm:gap-1.5 text-center">
                     <div className="rounded-lg sm:rounded-xl bg-slate-50 py-1 sm:py-2 px-1 dark:bg-slate-800/60">
-                      <p className="text-[11px] sm:text-xs font-bold text-slate-950 dark:text-white">{agent.experience}</p>
+                      <p className="text-[11px] sm:text-xs font-bold text-slate-950 dark:text-white">{agent.experience || `${experienceYears(agent)} yrs`}</p>
                       <p className="text-[9px] sm:text-[10px] text-slate-500">Experience</p>
                     </div>
                     <div className="rounded-lg sm:rounded-xl bg-slate-50 py-1 sm:py-2 px-1 dark:bg-slate-800/60">
@@ -427,6 +436,7 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                       <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       Book Site Visit
                     </button>
+                    {agent.phone && (
                     <a
                       href={`tel:${agent.phone.replace(/\s+/g, "")}`}
                       aria-label={`Call ${agent.name}`}
@@ -435,6 +445,7 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                     >
                       <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     </a>
+                    )}
                     {agent.email && (
                       <a
                         href={`mailto:${agent.email}`}

@@ -10,10 +10,10 @@ import { useManageListing } from "./useManageListing";
 import { OverviewSkeleton } from "@/components/interiors/skeletons";
 
 const stepLabel = (id: string) => interiorSteps.find((s) => s.id === id)?.label ?? id;
-const hrefFor = (item: ReadinessItem) =>
-  MANAGE_SECTIONS.some((s) => s.id === item.stepId) ? manageHref(item.stepId as ManageSectionId) : manageHref("overview");
+const hrefFor = (item: ReadinessItem, pid?: number | null) =>
+  MANAGE_SECTIONS.some((s) => s.id === item.stepId) ? manageHref(item.stepId as ManageSectionId, pid) : manageHref("overview", pid);
 
-function Checklist({ title, items }: { title: string; items: ReadinessItem[] }) {
+function Checklist({ title, items, pid }: { title: string; items: ReadinessItem[]; pid?: number | null }) {
   if (!items.length) return null;
   const done = items.filter((i) => i.done).length;
   return (
@@ -26,7 +26,7 @@ function Checklist({ title, items }: { title: string; items: ReadinessItem[] }) 
         {/* Outstanding first so the next action is on top. */}
         {[...items].sort((a, b) => Number(a.done) - Number(b.done)).map((i) => (
           <li key={i.id}>
-            <Link href={hrefFor(i)}
+            <Link href={hrefFor(i, pid)}
               className="flex items-start gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
               {i.done ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" /> : <Circle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />}
               <span className={i.done ? "text-slate-500 line-through decoration-slate-300" : "text-slate-800 dark:text-slate-200"}>{i.label}</span>
@@ -47,7 +47,8 @@ export function OverviewPanel() {
   const leadCount = profile._count?.inquiries ?? inquiries.length;
   const unlocked = inquiries.filter((i) => i.isUnlocked).length;
   const views = (profile as { viewCount?: number; views?: number }).viewCount ?? (profile as { views?: number }).views;
-  const pct = Math.max(0, Math.min(100, score.pct));
+  // Same number as the listings card (server-computed), falling back to the client score.
+  const pct = Math.max(0, Math.min(100, typeof profile.completenessPct === "number" ? Math.round(profile.completenessPct) : score.pct));
   const submitItems = readiness.items.filter((i) => i.level === "SUBMIT");
   const publishItems = readiness.items.filter((i) => i.level === "PUBLISH");
 
@@ -70,7 +71,7 @@ export function OverviewPanel() {
           <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
           <p>
             Not verified yet. Upload your business documents to get a verified badge.{" "}
-            <Link href={manageHref("team")} className="font-semibold underline underline-offset-2">Add documents</Link>
+            <Link href={manageHref("team", profile.id)} className="font-semibold underline underline-offset-2">Add documents</Link>
           </p>
         </div>
       )}
@@ -95,8 +96,8 @@ export function OverviewPanel() {
         </div>
         <p className="mt-1.5 text-xs text-slate-500">Complete profiles get more enquiries. Tap any item to jump to it.</p>
         <div className="mt-4 grid gap-5 md:grid-cols-2">
-          <Checklist title="Required to submit" items={submitItems} />
-          <Checklist title="Required to publish" items={publishItems} />
+          <Checklist title="Required to submit" items={submitItems} pid={profile.id} />
+          <Checklist title="Required to publish" items={publishItems} pid={profile.id} />
         </div>
         {!readiness.items.length && <p className="mt-3 text-xs text-slate-500">Checklist unavailable right now.</p>}
       </section>

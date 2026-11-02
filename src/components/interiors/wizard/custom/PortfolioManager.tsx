@@ -288,7 +288,7 @@ function ProjectEditor({
       open
       onOpenChange={(o) => !o && onClose()}
       title={project.title ? `Edit “${project.title}”` : "New project"}
-      description="One project at a time. Saved projects are reviewed before they show publicly."
+      description="One project at a time. Saved projects appear on your public profile once your listing is live."
       footer={
         <>
           <span className="mr-auto self-center text-xs text-slate-500">{missing.length ? `${missing.length} required left` : `${imgs} photos`}</span>

@@ -69,7 +69,13 @@ const FAQS = [
   },
 ];
 
-export default function AgentsDirectoryPage() {
+export default async function AgentsDirectoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { city } = await searchParams;
+  const initialCity = typeof city === "string" ? city.trim() : "";
   // Schema.org ItemList JSON-LD for Google Rich Results
   const itemListSchema = {
     "@context": "https://schema.org",
@@ -163,7 +169,7 @@ export default function AgentsDirectoryPage() {
         </section>
 
         {/* Interactive Directory Client Component */}
-        <AgentsDirectoryClient />
+        <AgentsDirectoryClient key={initialCity} initialCity={initialCity} />
 
         {/* Value Proposition Section */}
         <section className="border-t border-slate-200/80 bg-white py-12 dark:border-slate-800 dark:bg-slate-900/60 mt-12">

@@ -12,8 +12,9 @@ export function toInternalApiUrl(endpoint: string): string {
   if (typeof window !== "undefined") {
     const host = window.location.hostname;
     if (host === "localhost" || host === "127.0.0.1") {
+      const publicBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api").replace(/\/+$/, "");
       if (/^https?:\/\/[^\/]+\/api(\/.*)?$/i.test(endpoint)) {
-        return endpoint.replace(/^https?:\/\/[^\/]+\/api/i, "http://localhost:4000/api");
+        return endpoint.replace(/^https?:\/\/[^\/]+\/api/i, publicBase);
       }
     }
     return endpoint;
@@ -23,7 +24,7 @@ export function toInternalApiUrl(endpoint: string): string {
     process.env.INTERNAL_API_URL ||
     (process.env.NODE_ENV === "production"
       ? "http://awasio-backend:4000/api"
-      : "http://localhost:4000/api");
+      : process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api");
 
   const cleanBase = internalBase.replace(/\/+$/, "");
 

@@ -366,7 +366,7 @@ function PackageEditor({
           ))}
         </div>
         <Field label="Quote valid for" hint="Days your quoted price holds — avoids price-rise disputes.">
-          {() => <Stepper label="Quote validity days" value={t.validityDays} onChange={(v) => set("validityDays", v)} max={180} suffix="days" />}
+          {() => <Stepper label="Quote validity days" value={t.validityDays} onChange={(v) => set("validityDays", v)} max={180} step={5} start={30} suffix="days" />}
         </Field>
       </div>
 

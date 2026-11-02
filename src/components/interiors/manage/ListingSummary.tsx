@@ -15,13 +15,13 @@ const UNIT: Record<string, string> = {
   PER_PROJECT: "/project",
 };
 
-function Card({ title, edit, children }: { title: string; edit: ManageSectionId; children: ReactNode }) {
+function Card({ title, edit, pid, children }: { title: string; edit: ManageSectionId; pid?: number | null; children: ReactNode }) {
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h3 className="text-sm font-bold text-slate-900 dark:text-white">{title}</h3>
         <Link
-          href={manageHref(edit)}
+          href={manageHref(edit, pid)}
           className="inline-flex min-h-9 items-center gap-1 rounded-lg px-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
         >
           <Pencil className="h-3.5 w-3.5" /> Edit
@@ -103,7 +103,7 @@ export function ListingSummary({ profile: p }: { profile: InteriorProfile }) {
                 {p.tagline && <p className="truncate text-xs text-slate-500">{p.tagline}</p>}
               </div>
               <Link
-                href={manageHref("identity")}
+                href={manageHref("identity", p.id)}
                 className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-lg px-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
               >
                 <Pencil className="h-3.5 w-3.5" /> Edit
@@ -119,7 +119,7 @@ export function ListingSummary({ profile: p }: { profile: InteriorProfile }) {
       </section>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card title="Location & service area" edit="location">
+        <Card title="Location & service area" edit="location" pid={p.id}>
           <div className="space-y-3">
             <p className="flex items-start gap-1.5 text-sm text-slate-700 dark:text-slate-300">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
@@ -134,7 +134,7 @@ export function ListingSummary({ profile: p }: { profile: InteriorProfile }) {
           </div>
         </Card>
 
-        <Card title="Services" edit="services">
+        <Card title="Services" edit="services" pid={p.id}>
           <div className="space-y-3">
             <Row label="Services">
               <Chips items={[...(p.servicesOffered ?? []), ...(p.commercialServices ?? [])]} max={8} />
@@ -145,7 +145,7 @@ export function ListingSummary({ profile: p }: { profile: InteriorProfile }) {
           </div>
         </Card>
 
-        <Card title="Pricing & packages" edit="pricing">
+        <Card title="Pricing & packages" edit="pricing" pid={p.id}>
           <div className="space-y-3">
             <Row label="Starting price">
               {price ? <p className="text-lg font-bold text-slate-900 dark:text-white">{price}</p> : <Empty />}
@@ -170,12 +170,12 @@ export function ListingSummary({ profile: p }: { profile: InteriorProfile }) {
           </div>
         </Card>
 
-        <Card title="Materials & brands" edit="materials">
+        <Card title="Materials & brands" edit="materials" pid={p.id}>
           <Chips items={brands} max={12} />
         </Card>
       </div>
 
-      <Card title={`Portfolio (${projects.length})`} edit="portfolio">
+      <Card title={`Portfolio (${projects.length})`} edit="portfolio" pid={p.id}>
         {projects.length ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {projects.map((pr) => (
@@ -196,7 +196,7 @@ export function ListingSummary({ profile: p }: { profile: InteriorProfile }) {
         )}
       </Card>
 
-      <Card title="Contact" edit="contact">
+      <Card title="Contact" edit="contact" pid={p.id}>
         <div className="space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
           {p.contactPerson && <p className="font-semibold">{p.contactPerson}</p>}
           {p.primaryPhone && (

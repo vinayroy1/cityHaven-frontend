@@ -116,8 +116,6 @@ export function InteriorProfilePreview({ values: v, compact }: { values: Interio
 
 /** For VerticalConfig.renderPreview (pane ≥1280px, sheet below). */
 export const renderInteriorPreview = (values: InteriorWizardValues) => (
-  <div className="space-y-2">
-    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Live preview</p>
-    <InteriorProfilePreview values={values} compact />
-  </div>
+  // The shell's pane / sheet already titles this "Live preview" / "Preview".
+  <InteriorProfilePreview values={values} compact />
 );

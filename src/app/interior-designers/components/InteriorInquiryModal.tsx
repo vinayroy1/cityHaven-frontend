@@ -26,8 +26,18 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
   const [bhkType, setBhkType] = useState("3 BHK Apartment");
   const [carpetAreaSqft, setCarpetAreaSqft] = useState("1200");
   const [projectScope, setProjectScope] = useState("Full Home Interior (Turnkey)");
-  const [finishTier, setFinishTier] = useState<"ESSENTIAL" | "PREMIUM" | "LUXE">("PREMIUM");
-  const [possessionStatus, setPossessionStatus] = useState("Ready to Move");
+  // Tier choices come from the designer's own packages; generic tiers only when none are listed.
+  const tierOptions = useMemo(() => {
+    const pkgs = (profile?.packages ?? []).filter((p) => p.packageName);
+    return pkgs.length
+      ? pkgs.map((p) => ({ value: p.packageName, label: p.packageName }))
+      : [
+          { value: "ESSENTIAL", label: "Essential" },
+          { value: "PREMIUM", label: "Premium" },
+          { value: "LUXE", label: "Luxe" },
+        ];
+  }, [profile?.packages]);
+  const [finishTier, setFinishTier] = useState<string>("");
   const [siteVisitRequested, setSiteVisitRequested] = useState(true);
   const [notes, setNotes] = useState("");
 
@@ -50,7 +60,17 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
 
   // Approximate ballpark calculator
   const area = Number(carpetAreaSqft) || 1000;
-  const multiplier = finishTier === "ESSENTIAL" ? 1400 : finishTier === "PREMIUM" ? 1950 : 2800;
+  const tierKey = finishTier.toUpperCase();
+  // Prefer the designer's own per-sq.ft pricing (chosen package, then their starting range); generic rates otherwise.
+  const pkgRate = (profile.packages ?? []).find((p) => p.packageName === finishTier && p.pricingUnit === "PER_SQFT")?.priceMin;
+  const profileRate =
+    profile.pricingUnit === "PER_SQFT" && profile.startingRateMin
+      ? profile.startingRateMax && profile.startingRateMax > profile.startingRateMin
+        ? (profile.startingRateMin + profile.startingRateMax) / 2
+        : profile.startingRateMin
+      : 0;
+  const genericRate = tierKey.includes("ESSENTIAL") || tierKey.includes("BASIC") ? 1400 : tierKey.includes("LUX") ? 2800 : 1950;
+  const multiplier = pkgRate || profileRate || genericRate;
   const estimatedTotal = area * multiplier;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,10 +92,9 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
           bhkType,
           carpetAreaSqft: area,
           projectScope,
-          finishTier,
+          finishTier: finishTier || undefined,
           budgetMin: Math.round(estimatedTotal * 0.9),
           budgetMax: Math.round(estimatedTotal * 1.15),
-          possessionStatus,
           siteVisitRequested,
           notes: notes.trim() || undefined,
         },
@@ -88,7 +107,7 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
+    <div role="dialog" aria-modal="true" aria-label={`Enquire with ${profile.businessName || profile.displayName || "designer"}`} className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
       <div className="relative w-full max-w-lg rounded-3xl bg-white p-5 sm:p-7 shadow-2xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800 my-auto">
         <button
           type="button"
@@ -106,7 +125,7 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
             </div>
             <h3 className="mt-4 text-xl font-black text-slate-900 dark:text-white">Estimate Request Sent!</h3>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              <strong className="text-slate-900 dark:text-white">{profile.businessName}</strong> has received your project details. A dedicated interior architect will contact you within 24 hours to review your floor plan.
+              <strong className="text-slate-900 dark:text-white">{profile.businessName}</strong> has received your project details. They will contact you soon to discuss your project.
             </p>
             <div className="mt-6 rounded-2xl bg-slate-50 p-4 border border-slate-200 dark:border-slate-800 dark:bg-slate-800/60 text-left text-xs space-y-1">
               <div className="flex justify-between text-slate-500 dark:text-slate-400">
@@ -259,12 +278,15 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
                 </label>
                 <select
                   value={finishTier}
-                  onChange={(e) => setFinishTier(e.target.value as any)}
+                  onChange={(e) => setFinishTier(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 >
-                  <option value="ESSENTIAL">Essential (MR Ply, 1mm Laminate)</option>
-                  <option value="PREMIUM">Premium (BWP 710, Acrylic, Soft-close)</option>
-                  <option value="LUXE">Luxe (Italian Marble, PU, Veneer, Blum)</option>
+                  <option value="">No preference</option>
+                  {tierOptions.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

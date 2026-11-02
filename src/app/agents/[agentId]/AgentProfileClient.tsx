@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import type { Agent } from "@/data/agents";
 import { saveVisitBooking } from "@/lib/services/visitBookings";
+import { useContactAdvisorMutation } from "@/features/advisors/api";
 import { BookVisitModal } from "@/components/agents/BookVisitModal";
 import { getAgentProfile } from "@/lib/services/agentProfile";
 import { BackButton } from "@/components/common/BackButton";
@@ -39,6 +40,8 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
   const [agent, setAgent] = useState<Agent>(initialAgent);
 
   React.useEffect(() => {
+    // Backend advisors (numeric ids) are authoritative; local drafts only overlay static demo agents.
+    if (/^\d+$/.test(String(initialAgent.id))) return;
     try {
       const stored = getAgentProfile(initialAgent.id);
       if (stored) {
@@ -74,9 +77,33 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
   const [selectedPropertyModal, setSelectedPropertyModal] = useState<string | undefined>(undefined);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
+  const [bookingError, setBookingError] = useState<string | null>(null);
+  const [contactAdvisor, { isLoading: isSendingBooking }] = useContactAdvisorMutation();
+
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientPhone.trim()) return;
+    setBookingError(null);
+
+    // Backend advisors have numeric ids — deliver the request as a real lead.
+    if (/^\d+$/.test(String(agent.id))) {
+      try {
+        await contactAdvisor({
+          advisorId: agent.id,
+          name: clientName.trim() || "Prospective Buyer",
+          phone: clientPhone.trim(),
+          intent: "BUY",
+          preferredTime: `${tourDay}, ${tourSlot}`,
+          message: [selectedPropertyModal ? `Site visit: ${selectedPropertyModal}` : "Site visit request", notes.trim()]
+            .filter(Boolean)
+            .join(" — "),
+        }).unwrap();
+      } catch (err) {
+        const msg = (err as { data?: { message?: string } })?.data?.message;
+        setBookingError(msg || "Could not send your request. Please check your details and try again.");
+        return;
+      }
+    }
 
     saveVisitBooking({
       agentId: agent.id,
@@ -573,11 +600,17 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                       />
                     </div>
 
+                    {bookingError && (
+                      <p role="alert" className="text-xs font-medium text-red-600 dark:text-red-400">
+                        {bookingError}
+                      </p>
+                    )}
                     <button
                       type="submit"
-                      className="w-full rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-rose-700 active:scale-[0.98] transition"
+                      disabled={isSendingBooking}
+                      className="disabled:opacity-60 w-full rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-rose-700 active:scale-[0.98] transition"
                     >
-                      Request Walkthrough
+                      {isSendingBooking ? "Sending..." : "Request Walkthrough"}
                     </button>
                   </form>
                 )}

@@ -399,7 +399,18 @@ export const interiorsApi = createApi({
       },
     }),
 
-    uploadInteriorDocument: builder.mutation<CredentialDocument, { type: CredentialDocType; fileUrl: string; number?: string }>({
+    presignInteriorDocument: builder.mutation<{ uploadUrl: string; key: string }, { fileName: string; contentType: string }>({
+      query: (body) => ({ url: API_ENDPOINTS.interiors.documentPresign, method: "POST", body }),
+      transformResponse: (response: ApiEnvelope<{ uploadUrl: string; key: string }>) => response.data,
+    }),
+
+    /** Short-lived signed GET for the owner's private document (never cached). */
+    getInteriorDocumentViewUrl: builder.mutation<{ url: string; expiresIn: number }, string>({
+      query: (id) => ({ url: API_ENDPOINTS.interiors.documentViewUrl(id), method: "GET" }),
+      transformResponse: (response: ApiEnvelope<{ url: string; expiresIn: number }>) => response.data,
+    }),
+
+    uploadInteriorDocument: builder.mutation<CredentialDocument, { type: CredentialDocType; fileKey: string; number?: string }>({
       query: (body) => ({ url: API_ENDPOINTS.interiors.documents, method: "POST", body }),
       transformResponse: (response: ApiEnvelope<CredentialDocument>) => response.data,
       async onQueryStarted(_args, { dispatch, queryFulfilled }) {
@@ -473,6 +484,8 @@ export const {
   useSaveInteriorTeamMemberMutation,
   useDeleteInteriorTeamMemberMutation,
   useUploadInteriorDocumentMutation,
+  usePresignInteriorDocumentMutation,
+  useGetInteriorDocumentViewUrlMutation,
   useDeleteInteriorDocumentMutation,
   useGetMyInteriorInquiriesQuery,
 } = interiorsApi;

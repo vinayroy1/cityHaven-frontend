@@ -2,10 +2,10 @@
 
 import { useCallback } from "react";
 import { useGetPresignedUploadUrlMutation } from "@/features/propertyListing/api";
-import { useGetMyInteriorProfileQuery } from "./api";
+import { useGetMyInteriorProfileQuery, usePresignInteriorDocumentMutation } from "./api";
 
-/** `profile | cover | docs | projects/<id>` */
-export type InteriorUploadSubFolder = "profile" | "cover" | "docs" | `projects/${string}`;
+/** `profile | cover | projects/<id>` — public media only. ID documents use `usePrivateInteriorDocUpload`. */
+export type InteriorUploadSubFolder = "profile" | "cover" | `projects/${string}`;
 
 export const MAX_INTERIOR_UPLOAD_BYTES = 10 * 1024 * 1024;
 
@@ -43,5 +43,30 @@ export function useInteriorUpload(): (file: File, subFolder: InteriorUploadSubFo
       return presigned.publicUrl;
     },
     [getPresignedUploadUrl, profileId],
+  );
+}
+
+/**
+ * Private upload for ID / verification documents. Goes to the private bucket via the interiors
+ * documents presign endpoint and returns the object KEY (never a public URL).
+ */
+export function usePrivateInteriorDocUpload(): (file: File) => Promise<string> {
+  const [presign] = usePresignInteriorDocumentMutation();
+  return useCallback(
+    async (file: File) => {
+      if (file.size > MAX_INTERIOR_UPLOAD_BYTES) {
+        throw new Error("File is larger than 10 MB. Please choose a smaller file.");
+      }
+      const contentType = file.type || "application/octet-stream";
+      const presigned = await presign({ fileName: file.name, contentType })
+        .unwrap()
+        .catch(() => {
+          throw new Error("Couldn't start the upload. Use a PDF or photo and try again.");
+        });
+      const res = await fetch(presigned.uploadUrl, { method: "PUT", headers: { "Content-Type": contentType }, body: file }).catch(() => null);
+      if (!res || !res.ok) throw new Error("Upload failed. Please try again.");
+      return presigned.key;
+    },
+    [presign],
   );
 }

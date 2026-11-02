@@ -83,6 +83,8 @@ export default function ProcessTimeline({ values, form, props }: CustomStepProps
             label="Delivery days"
             value={days}
             max={365}
+            step={5}
+            start={45}
             suffix="days"
             onChange={(v) => {
               const d = v;

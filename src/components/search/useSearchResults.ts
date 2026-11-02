@@ -60,8 +60,13 @@ export function useSearchResults(
     if (state.priceMax != null) params.budgetMax = state.priceMax;
     if (state.refine.flatmateMode?.length === 1) params.mode = state.refine.flatmateMode[0];
     if (state.refine.roomType?.length === 1) params.roomType = state.refine.roomType[0];
-    if (state.refine.gender?.length === 1) params.gender = state.refine.gender[0].replace(/\s+Only$/i, "");
-    if (state.refine.diet?.length === 1) params.preferredDiet = state.refine.diet[0];
+    // "Any …" options mean no restriction; the API matches a concrete value.
+    if (state.refine.gender?.length === 1 && !/^any/i.test(state.refine.gender[0])) {
+      params.gender = state.refine.gender[0].replace(/\s+Only$/i, "");
+    }
+    if (state.refine.diet?.length === 1 && !/^any/i.test(state.refine.diet[0])) {
+      params.preferredDiet = state.refine.diet[0];
+    }
     if (state.refine.furnishing?.length === 1) params.furnishing = state.refine.furnishing[0];
     if (state.refine.bhkTypes?.length === 1) {
       const match = state.refine.bhkTypes[0].match(/\d+/);
@@ -84,16 +89,18 @@ export function useSearchResults(
 
   const visible = React.useMemo(() => {
     if (isFlatmate) {
+      // Server-rendered items only stand in until the first client response;
+      // an empty response is a real empty result, not a reason to show them.
       const items = (flatmateQuery.items || []) as FlatmateListing[];
-      const source = items.length > 0 ? items : (initialItems as FlatmateListing[] | undefined) ?? [];
+      const source = flatmateQuery.data ? items : (initialItems as FlatmateListing[] | undefined) ?? [];
       return refining ? applyFlatmateRefinements(source, state) : source;
     }
     const items = (propertyQuery.items || []) as PropertySearchItem[];
-    const source = items.length > 0 ? items : (initialItems as PropertySearchItem[] | undefined) ?? [];
+    const source = propertyQuery.data ? items : (initialItems as PropertySearchItem[] | undefined) ?? [];
     return refining
       ? applyClientRefinements(source, state, subTypeSlugToId)
       : source;
-  }, [isFlatmate, flatmateQuery.items, propertyQuery.items, initialItems, refining, state]);
+  }, [isFlatmate, flatmateQuery.data, flatmateQuery.items, propertyQuery.data, propertyQuery.items, initialItems, refining, state]);
 
   // When client refinement hides most of a page, pull more pages automatically
   // (bounded) so the user doesn't see a near-empty list.

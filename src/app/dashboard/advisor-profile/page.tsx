@@ -27,7 +27,9 @@ import { BackButton } from "@/components/common/BackButton";
 import {
   DEFAULT_PROFILE,
   getAgentProfile,
+  getCurrentAgentId,
   saveAgentProfile,
+  setCurrentAgentId,
   submitAgentForVerification,
   updateAgentSubscription,
   type AgentProfileData,
@@ -35,7 +37,12 @@ import {
 import type { AgentSubscriptionTier } from "@/data/agents";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { AdvisorLocalitySelector } from "./components/AdvisorLocalitySelector";
-import { useGetMyAdvisorProfileQuery } from "@/features/advisors/api";
+import {
+  useCreateAdvisorProfileMutation,
+  useGetMyAdvisorProfileQuery,
+  useUpdateMyAdvisorProfileMutation,
+  type CreateAdvisorInput,
+} from "@/features/advisors/api";
 import {
   useGetCreditPlatformConfigQuery,
   useGetMyCreditsQuery,
@@ -65,7 +72,12 @@ const SAMPLE_AVATARS = [
 ];
 
 export default function AdvisorProfilePage() {
-  const { data: serverAdvisor } = useGetMyAdvisorProfileQuery();
+  const { data: serverAdvisor, isSuccess: hasServerAdvisor } = useGetMyAdvisorProfileQuery();
+  const [createAdvisor, { isLoading: isCreating }] = useCreateAdvisorProfileMutation();
+  const [updateAdvisor, { isLoading: isUpdating }] = useUpdateMyAdvisorProfileMutation();
+  const isSavingRemote = isCreating || isUpdating;
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hydratedAdvisorIdRef = useRef<string | null>(null);
   const [profile, setProfile] = useState<AgentProfileData>(DEFAULT_PROFILE);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"profile" | "boost">("profile");
@@ -116,9 +128,43 @@ export default function AdvisorProfilePage() {
     return () => window.removeEventListener("awasio:agent-profile-updated", handleUpdate);
   }, []);
 
+  // Hydrate the form from the user's own backend advisor profile (source of truth).
+  useEffect(() => {
+    if (!hasServerAdvisor || !serverAdvisor?.id) return;
+    const sa = serverAdvisor as typeof serverAdvisor & Record<string, unknown>;
+    const id = String(sa.id);
+    // Hydrate once per advisor so refetches after a save never clobber in-progress edits.
+    if (hydratedAdvisorIdRef.current === id) return;
+    hydratedAdvisorIdRef.current = id;
+    const local = getAgentProfile(id);
+    const fromServer: Partial<AgentProfileData> = {
+      id,
+      name: sa.name || local.name,
+      role: (sa.title as string) || local.role,
+      agency: (sa.agency as string) ?? "",
+      reraId: (sa.reraId as string) ?? "",
+      // Locally-uploaded headshots (data URLs) are not sent to the API yet; keep them.
+      avatar: local.avatar?.startsWith("data:") ? local.avatar : (sa.avatar as string) || local.avatar,
+      city: sa.city || local.city,
+      area: sa.area || local.area,
+      experienceYears: Number(sa.experienceYears ?? local.experienceYears) || 0,
+      phone: (sa.phone as string) ?? "",
+      email: (sa.email as string) ?? "",
+      services: Array.isArray(sa.services) ? sa.services : local.services,
+      languages: Array.isArray(sa.languages) ? sa.languages : local.languages,
+      bio: (sa.bio as string) ?? "",
+      responseTime: (sa.responseTimeText as string) || local.responseTime,
+      status: sa.reraVerified ? "VERIFIED" : local.status === "VERIFIED" ? "DRAFT" : local.status,
+    };
+    if (getCurrentAgentId() !== id) setCurrentAgentId(id);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing external server data into the editable form
+    setProfile(saveAgentProfile({ ...fromServer, id }));
+  }, [hasServerAdvisor, serverAdvisor]);
+
   const showToast = (msg: string) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 3500);
   };
 
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,18 +232,60 @@ export default function AdvisorProfilePage() {
     setProfile((prev) => ({ ...prev, [field]: val }));
   };
 
-  const handleSave = () => {
-    saveAgentProfile(profile);
-    showToast("Profile details saved successfully.");
+  // Persist the profile to the backend (create on first save, update afterwards).
+  const persistRemote = async (): Promise<boolean> => {
+    const isHttpUrl = (v?: string) => !!v && /^https?:\/\//i.test(v);
+    const body: CreateAdvisorInput = {
+      name: profile.name.trim(),
+      title: profile.role?.trim() || undefined,
+      bio: profile.bio?.trim() || undefined,
+      agency: profile.agency?.trim() || undefined,
+      experienceYears: Math.max(0, Math.min(60, Math.round(Number(profile.experienceYears) || 0))),
+      responseTimeText: profile.responseTime?.trim() || undefined,
+      city: profile.city,
+      primaryArea: profile.area,
+      avatar: isHttpUrl(profile.avatar) ? profile.avatar : undefined,
+      phone: profile.phone?.trim() || undefined,
+      email: profile.email?.trim() || undefined,
+      reraId: profile.reraId?.trim() || undefined,
+      services: profile.services,
+      languages: profile.languages,
+    };
+    try {
+      if (serverAdvisor?.id) {
+        await updateAdvisor(body).unwrap();
+      } else {
+        const created = await createAdvisor(body).unwrap();
+        const createdId = (created as unknown as { data?: { id?: number | string } })?.data?.id ?? created?.id;
+        if (createdId != null) {
+          const id = String(createdId);
+          setCurrentAgentId(id);
+          setProfile(saveAgentProfile({ ...profile, id }));
+        }
+      }
+      return true;
+    } catch (err) {
+      const e = err as { data?: { message?: string; errors?: { message?: string }[] } };
+      showToast(e?.data?.errors?.[0]?.message || e?.data?.message || "Could not save your profile. Please try again.");
+      return false;
+    }
   };
 
-  const handleSubmitVerification = (e: React.FormEvent) => {
+  const handleSave = async () => {
+    saveAgentProfile(profile);
+    if (await persistRemote()) showToast("Profile details saved successfully.");
+  };
+
+  const handleSubmitVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile.name?.trim()) {
       showToast("Please enter your Full Name.");
       return;
     }
-    const updated = submitAgentForVerification(profile.id);
+    // Save pending edits first so they are not lost on submit.
+    saveAgentProfile(profile);
+    if (!(await persistRemote())) return;
+    const updated = submitAgentForVerification(getCurrentAgentId());
     setProfile(updated);
     showToast("Submitted advisor profile for verification!");
   };
@@ -315,7 +403,7 @@ export default function AdvisorProfilePage() {
 
               {/* View Live Profile Link */}
               <Link
-                href={`/agents/${profile.id}`}
+                href={`/agents/${serverAdvisor?.slug || serverAdvisor?.id || profile.id}`}
                 target="_blank"
                 className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >
@@ -327,6 +415,7 @@ export default function AdvisorProfilePage() {
               <button
                 type="button"
                 onClick={handleSave}
+                    disabled={isSavingRemote}
                 className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-3 py-1 text-[11px] font-bold text-white shadow-xs hover:bg-rose-700 active:scale-95 transition"
               >
                 <Save className="h-3 w-3" />
@@ -717,6 +806,7 @@ export default function AdvisorProfilePage() {
                   <button
                     type="button"
                     onClick={handleSave}
+                    disabled={isSavingRemote}
                     className="rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 text-center"
                   >
                     Save Draft

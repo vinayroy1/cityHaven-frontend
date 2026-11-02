@@ -26,8 +26,7 @@ export const pricingStep: StepConfig = {
           visibleWhen: preset("showsStartingPrice"),
           requiredWhen: preset("showsStartingPrice"),
           min: 0,
-          unitField: "pricing.pricingUnit",
-          unitOptions: PRICING_UNIT_OPTIONS,
+          // Unit is chosen once, in the "Price unit" select below (an inline unit select duplicated it and truncated).
           meta: { showWords: true },
         },
         {

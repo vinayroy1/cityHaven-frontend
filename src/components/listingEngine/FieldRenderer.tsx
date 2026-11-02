@@ -351,7 +351,7 @@ function ControlledField({
             onBlur={f.onBlur}
             onChange={(e) => {
               const opt = options.find((o) => String(o.value) === e.target.value);
-              f.onChange(opt ? opt.value : "");
+              f.onChange(opt ? opt.value : options.some((x) => typeof x.value === "boolean" || typeof x.value === "number") ? null : "");
             }}
             className={inputCls}
             {...aria}
@@ -412,7 +412,7 @@ function ControlledField({
                   aria-checked={active}
                   disabled={optDisabled}
                   title={o.description}
-                  onClick={() => f.onChange(active && !required ? emptyValueFor(field.type) : o.value)}
+                  onClick={() => f.onChange(active && !required ? (options.some((x) => typeof x.value === "boolean" || typeof x.value === "number") ? null : emptyValueFor(field.type)) : o.value)}
                   className={cn(chip.base, "min-h-10", active ? chip.active : chip.idle, optDisabled && chip.disabled)}
                 >
                   {o.label}

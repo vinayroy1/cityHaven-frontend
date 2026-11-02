@@ -25,7 +25,7 @@ export default function PublicPreview({ values }: CustomStepProps<InteriorWizard
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Preview as homeowner</DialogTitle>
-            <DialogDescription>Phone and email stay hidden until you accept an enquiry, based on your settings.</DialogDescription>
+            <DialogDescription>Phone and email are shown only if you turned on “Show phone on public profile” / “Show email on public profile”; otherwise homeowners reach you through the enquiry form.</DialogDescription>
           </DialogHeader>
           <InteriorProfilePreview values={values} />
         </DialogContent>

@@ -166,19 +166,22 @@ const RESIDENTIAL_SUBTYPES = subTypesByPropertySlug(["residential"]).filter(
   (s) => !PLOT_SUBTYPE_SLUGS.includes(s.slug) && s.slug !== "residential-other",
 );
 
-const COMMERCIAL_SUBTYPES = subTypesByPropertySlug(
-  commercialPropertyCategories.map((c) => c.slug),
-).filter((s) => !PLOT_SUBTYPE_SLUGS.includes(s.slug));
+// Commercial listings carry these backend sub-type slugs (office, retail, …).
+// The finer catalog entries (ready-to-move-office-space, …) are sub-categories
+// that search results do not expose, so they could never match.
+const COMMERCIAL_SUBTYPES: SubTypeOption[] = commercialPropertyCategories.map((c) => ({ slug: c.slug, label: c.name }));
 
-const SUBTYPE_ID_BY_SLUG: Record<string, number> = propertySubTypes.reduce(
-  (acc, s, i) => {
-    acc[s.slug] = i + 1;
-    return acc;
-  },
-  {} as Record<string, number>,
-);
+const PLOT_SUBTYPES: SubTypeOption[] = [
+  { slug: "plot-land-res", label: "Residential Plot" },
+  { slug: "plot-land-com", label: "Commercial / Inst. Land" },
+];
 
-export const subTypeSlugToId = (slug: string): number | undefined => SUBTYPE_ID_BY_SLUG[slug];
+/**
+ * Sub-type filters match on the slug every search result carries. The static
+ * catalog has no backend ids (its order differs from the database), so no id
+ * lookup is offered.
+ */
+export const subTypeSlugToId = (): number | undefined => undefined;
 
 export type FilterSection =
   | {
@@ -254,7 +257,7 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
 
   // Property Type / Accommodation Type
   const isSharedLiving = intent === "PG";
-  const opts = intent === "PLOT" ? propertySubTypes.filter((s) => PLOT_SUBTYPE_SLUGS.includes(s.slug)).map((s) => ({ slug: s.slug, label: s.name })) : isSharedLiving ? subTypesByPropertySlug(["pg"]) : intent === "COMMERCIAL" ? COMMERCIAL_SUBTYPES : RESIDENTIAL_SUBTYPES;
+  const opts = intent === "PLOT" ? PLOT_SUBTYPES : isSharedLiving ? subTypesByPropertySlug(["pg"]) : intent === "COMMERCIAL" ? COMMERCIAL_SUBTYPES : RESIDENTIAL_SUBTYPES;
   if (opts.length) {
     sections.push({
       key: "subType",

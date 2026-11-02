@@ -270,6 +270,8 @@ export const API_ENDPOINTS = {
     teamDetail: (id: string | number) => `${BASE}/interiors/me/team/${id}`,
     documents: `${BASE}/interiors/me/documents`,
     documentDetail: (id: string | number) => `${BASE}/interiors/me/documents/${id}`,
+    documentPresign: `${BASE}/interiors/me/documents/presign-upload`,
+    documentViewUrl: (id: string | number) => `${BASE}/interiors/me/documents/${id}/url`,
     myInquiries: `${BASE}/interiors/me/inquiries`,
   },
 };

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { isOptimizableImage } from "../lib/image";
+import { experienceYearsOf } from "./profile/utils";
 import React, { useState } from "react";
 import Link from "next/link";
 import {
@@ -104,7 +105,7 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
             }`}
           >
             {isCompany ? <Building2 className="h-3 w-3" /> : <User className="h-3 w-3" />}
-            {isCompany ? "Design Studio" : "Independent Architect"}
+            {isCompany ? "Design Studio" : "Independent designer"}
           </span>
 
           {profile.isVerified && (
@@ -152,11 +153,13 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
         </div>
 
         {/* Rating on bottom right of Image */}
-        <div className="absolute bottom-2.5 right-3 flex items-center gap-1 rounded-md bg-slate-950/80 px-2 py-0.5 text-xs font-bold text-amber-400 backdrop-blur-xs">
-          <Star className="h-3.5 w-3.5 fill-current" />
-          <span>{Number(profile.rating || 4.9).toFixed(1)}</span>
-          <span className="text-slate-400 text-[10px]">({profile.reviewCount || 12})</span>
-        </div>
+        {profile.reviewCount > 0 && Number(profile.rating) > 0 && (
+          <div className="absolute bottom-2.5 right-3 flex items-center gap-1 rounded-md bg-slate-950/80 px-2 py-0.5 text-xs font-bold text-amber-400 backdrop-blur-xs">
+            <Star className="h-3.5 w-3.5 fill-current" />
+            <span>{Number(profile.rating).toFixed(1)}</span>
+            <span className="text-slate-400 text-[10px]">({profile.reviewCount})</span>
+          </div>
+        )}
       </div>
 
       {/* Card Content Body */}
@@ -192,7 +195,7 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
         {/* Stats strip */}
         <div className="mt-3 flex items-center gap-3 border-y border-slate-100 py-2 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
           <div>
-            <span className="font-bold text-slate-900 dark:text-white">{profile.experienceYears}y</span> Exp
+            <span className="font-bold text-slate-900 dark:text-white">{experienceYearsOf(profile)}y</span> Exp
           </div>
           <div className="h-3 w-px bg-slate-200 dark:bg-slate-700" />
           <div>

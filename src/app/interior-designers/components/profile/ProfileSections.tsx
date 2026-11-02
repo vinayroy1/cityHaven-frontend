@@ -32,6 +32,7 @@ import {
   humanize,
   nonEmpty,
   priceRange,
+  experienceYearsOf,
   profileName,
   telHref,
   waHref,
@@ -41,7 +42,7 @@ import {
 
 export function AboutSection({ profile }: { profile: InteriorProfile }) {
   const stats = [
-    { label: "Experience", value: profile.experienceYears ? `${profile.experienceYears}+ yrs` : "" },
+    { label: "Experience", value: experienceYearsOf(profile) ? `${experienceYearsOf(profile)}+ yrs` : "" },
     { label: "Projects", value: profile.projects?.length ? String(profile.projects.length) : "" },
     { label: "Team size", value: profile.teamSizeRange || (profile.teamSize ? String(profile.teamSize) : "") },
     { label: "Established", value: profile.yearEstablished ? String(profile.yearEstablished) : "" },
@@ -668,10 +669,11 @@ export function ContactSection({ profile, onQuote }: { profile: InteriorProfile;
               {contactName}
             </li>
           )}
-          {profile.primaryAddress && (
+          {(profile.primaryLocality || profile.primaryCity) && (
             <li className="flex items-start gap-2">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" aria-hidden />
-              <span className="break-words">{profile.primaryAddress}</span>
+              {/* Area only — the street address is private (wizard: "Shown only as area on your public profile") */}
+              <span className="break-words">{[profile.primaryLocality, profile.primaryCity].filter(Boolean).join(", ")}</span>
             </li>
           )}
           {hours && (

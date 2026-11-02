@@ -67,7 +67,6 @@ function businessJsonLd(p: InteriorProfile, url: string) {
     telephone: p.isPhonePublic && p.primaryPhone ? p.primaryPhone : undefined,
     address: {
       "@type": "PostalAddress",
-      streetAddress: p.primaryAddress || undefined,
       addressLocality: p.primaryLocality || p.primaryCity,
       addressRegion: p.primaryCity,
       addressCountry: "IN",

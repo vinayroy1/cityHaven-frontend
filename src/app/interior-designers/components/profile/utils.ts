@@ -103,3 +103,12 @@ export const waHref = (phone?: string | null, text?: string) =>
   phone
     ? `https://wa.me/91${phone.replace(/\D/g, "").slice(-10)}${text ? `?text=${encodeURIComponent(text)}` : ""}`
     : "";
+
+/**
+ * Years in practice. Companies don't fill "Years of experience" in the wizard (the DB defaults it to 1),
+ * so for them it's derived from the founding year.
+ */
+export const experienceYearsOf = (p: Pick<InteriorProfile, "providerType" | "experienceYears" | "yearEstablished">): number => {
+  if (p.providerType === "COMPANY" && p.yearEstablished) return Math.max(0, new Date().getFullYear() - p.yearEstablished);
+  return p.experienceYears || 0;
+};
