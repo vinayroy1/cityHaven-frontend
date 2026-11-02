@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Clock3, Eye } from "lucide-react";
 import type { BlogPost } from "@/types/blog.types";
+import { categoryGradient, SHOW_VIEWS_FROM } from "./blogUtils";
 
 export function BlogCard({ post, featured = false }: { post: BlogPost; featured?: boolean }) {
   const date = post.publishedAt ? new Date(post.publishedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Recently";
@@ -10,7 +11,9 @@ export function BlogCard({ post, featured = false }: { post: BlogPost; featured?
         {post.coverImage ? (
           <img src={post.coverImage} alt={post.coverImageAlt || post.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
         ) : (
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(244,63,94,.32),transparent_35%),radial-gradient(circle_at_80%_70%,rgba(99,102,241,.25),transparent_38%),linear-gradient(135deg,#0f172a,#1e293b)]" />
+          <div className={`absolute inset-0 bg-gradient-to-br ${categoryGradient(post.category?.slug)}`}>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(255,255,255,.28),transparent_40%),radial-gradient(circle_at_10%_90%,rgba(0,0,0,.25),transparent_45%)]" />
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-transparent" />
         {post.category && <span className="absolute left-3 top-3 sm:left-4 sm:top-4 rounded-full border border-white/30 bg-white/90 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-[11px] font-bold text-slate-900 shadow-sm backdrop-blur dark:bg-slate-950/85 dark:text-white">{post.category.name}</span>}
@@ -18,7 +21,7 @@ export function BlogCard({ post, featured = false }: { post: BlogPost; featured?
       <div className={`flex flex-1 flex-col ${featured ? "justify-center p-3.5 sm:p-7" : "p-3.5 sm:p-5"}`}>
         <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400">
           <span>{date}</span><span className="h-1 w-1 rounded-full bg-rose-400" /><span className="inline-flex items-center gap-1"><Clock3 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />{post.readingMinutes} min</span>
-          <span className="inline-flex items-center gap-1"><Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />{post.viewCount}</span>
+          {post.viewCount >= SHOW_VIEWS_FROM && <span className="inline-flex items-center gap-1"><Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />{post.viewCount}</span>}
         </div>
         <h2 className={`mt-2 sm:mt-3 font-bold sm:font-black leading-snug sm:leading-tight tracking-tight text-slate-950 transition group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400 ${featured ? "text-base sm:text-2xl lg:text-3xl line-clamp-2 sm:line-clamp-none" : "line-clamp-2 text-sm sm:text-lg"}`}>
           <Link href={`/blog/${post.slug}`}>{post.title}</Link>

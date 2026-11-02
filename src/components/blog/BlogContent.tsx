@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { AlertTriangle, ArrowRight, Lightbulb, Info } from "lucide-react";
 import type { BlogContentBlock } from "@/types/blog.types";
+import { tableOfContents } from "./blogUtils";
 
 export function BlogContent({ blocks }: { blocks: BlogContentBlock[] }) {
+  // Same ids as the table of contents, so its links land on these headings.
+  const tocIds = tableOfContents(blocks).map((t) => t.id);
+  let h2Index = 0;
   return <div className="space-y-7">{blocks.map((block, index) => {
     const key = `${block.type}-${index}`;
     if (block.type === "heading") return block.level === 2
-      ? <h2 key={key} className="scroll-mt-24 pt-4 text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">{block.text}</h2>
+      ? <h2 key={key} id={tocIds[h2Index++]} className="scroll-mt-24 pt-4 text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">{block.text}</h2>
       : <h3 key={key} className="scroll-mt-24 pt-2 text-xl font-bold text-slate-900 dark:text-slate-100">{block.text}</h3>;
     if (block.type === "paragraph") return <p key={key} className="text-[17px] leading-8 text-slate-700 dark:text-slate-300">{block.text}</p>;
     if (block.type === "image") return <figure key={key} className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900"><img src={block.url} alt={block.alt} className="max-h-[620px] w-full object-cover" />{block.caption && <figcaption className="px-5 py-3 text-center text-xs text-slate-500 dark:text-slate-400">{block.caption}</figcaption>}</figure>;

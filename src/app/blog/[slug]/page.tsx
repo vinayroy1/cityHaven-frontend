@@ -7,12 +7,21 @@ import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { BlogContent } from "@/components/blog/BlogContent";
 import { ShareArticleButton } from "@/components/blog/ShareArticleButton";
+import { SHOW_VIEWS_FROM, tableOfContents } from "@/components/blog/blogUtils";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { buildCanonical } from "@/constants/seo";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 import type { BlogPost } from "@/types/blog.types";
+
+/** Words in the readable text of the content blocks (for Article schema). */
+function countWords(blocks: BlogPost["content"]): number {
+  const text = blocks
+    .map((b) => ("items" in b ? b.items.join(" ") : "") + " " + ("text" in b && b.text ? b.text : "") + " " + ("title" in b && b.title ? b.title : ""))
+    .join(" ");
+  return text.split(/\s+/).filter(Boolean).length;
+}
 
 type DetailData = { post: BlogPost; related: BlogPost[] };
 type Props = { params: Promise<{ slug: string }> };
@@ -49,7 +58,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogDetailPage({ params }: Props) {
   const { slug } = await params; const data = await getArticle(slug); if (!data) notFound(); const { post, related } = data;
   const date = post.publishedAt ? new Date(post.publishedAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) : "Recently";
-  const schema = { "@context": "https://schema.org", "@type": "Article", headline: post.title, description: post.excerpt, image: post.ogImage || post.coverImage, datePublished: post.publishedAt, dateModified: post.updatedAt, author: { "@type": "Person", name: post.author.name || "Awasio Editorial" }, publisher: { "@type": "Organization", name: "Awasio", url: buildCanonical("/") }, mainEntityOfPage: buildCanonical(`/blog/${post.slug}`) };
+  const toc = tableOfContents(post.content);
+  const image = post.ogImage || post.coverImage || undefined;
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.seoDescription || post.excerpt,
+    ...(image ? { image } : {}),
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt,
+    ...(post.category ? { articleSection: post.category.name } : {}),
+    ...(post.tags.length ? { keywords: post.tags.map(({ tag }) => tag.name).join(", ") } : {}),
+    wordCount: countWords(post.content),
+    inLanguage: "en-IN",
+    author: post.author.name ? { "@type": "Person", name: post.author.name } : { "@type": "Organization", name: "Awasio Editorial", url: buildCanonical("/blog") },
+    publisher: { "@type": "Organization", name: "Awasio", url: buildCanonical("/"), logo: { "@type": "ImageObject", url: buildCanonical("/icon-512.png") } },
+    mainEntityOfPage: { "@type": "WebPage", "@id": buildCanonical(`/blog/${post.slug}`) },
+  };
   return (
     <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <HeaderNav />
@@ -106,10 +132,12 @@ export default async function BlogDetailPage({ params }: Props) {
                   <Clock3 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                   {post.readingMinutes} min read
                 </span>
-                <span className="inline-flex items-center gap-1">
-                  <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                  {post.viewCount} reads
-                </span>
+                {post.viewCount >= SHOW_VIEWS_FROM && (
+                  <span className="inline-flex items-center gap-1">
+                    <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                    {post.viewCount} reads
+                  </span>
+                )}
                 <ShareArticleButton title={post.title} />
               </div>
             </div>
@@ -124,6 +152,21 @@ export default async function BlogDetailPage({ params }: Props) {
             </div>
           )}
           <div className="mx-auto max-w-3xl px-3.5 py-6 sm:px-6 sm:py-12">
+            {toc.length >= 3 && (
+              <nav aria-label="In this article" className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900/60">
+                <p className="text-[11px] font-bold uppercase tracking-[.18em] text-rose-600 dark:text-rose-400">In this article</p>
+                <ol className="mt-2.5 space-y-1.5 text-sm">
+                  {toc.map((item, i) => (
+                    <li key={item.id} className="flex gap-2.5">
+                      <span className="w-5 shrink-0 text-right font-bold tabular-nums text-slate-400">{i + 1}</span>
+                      <a href={`#${item.id}`} className="font-semibold text-slate-700 underline-offset-4 hover:text-rose-600 hover:underline dark:text-slate-200 dark:hover:text-rose-400">
+                        {item.text}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            )}
             <BlogContent blocks={post.content} />
           </div>
         </article>

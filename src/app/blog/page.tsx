@@ -14,7 +14,7 @@ import type { BlogListResponse } from "@/types/blog.types";
 export const metadata: Metadata = {
   title: "Real Estate Insights, Guides & Market Trends | Awasio",
   description: "Practical property buying, renting, flatmate, investment and neighborhood guides from Awasio's real estate editorial team.",
-  alternates: { canonical: buildCanonical("/blog") },
+  alternates: { canonical: buildCanonical("/blog"), types: { "application/rss+xml": buildCanonical("/blog/feed.xml") } },
   openGraph: { title: "Awasio Insights - Property Guides & Market Intelligence", description: "Better property decisions start with better information.", url: buildCanonical("/blog"), type: "website" },
 };
 
@@ -175,6 +175,28 @@ export default async function BlogPage({ searchParams }: PageProps) {
             </button>
           </form>
 
+          {data?.facets?.categories?.length ? (
+            <nav aria-label="Blog categories" className="mt-2.5 sm:mt-4 -mx-3 px-3 sm:mx-0 sm:px-0 flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {[{ id: 0, slug: "", name: "All" }, ...data.facets.categories].map((item) => {
+                const active = category === item.slug;
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.slug ? `/blog?category=${item.slug}` : "/blog"}
+                    aria-current={active ? "page" : undefined}
+                    className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs sm:text-sm font-bold transition ${
+                      active
+                        ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950"
+                        : "bg-white text-slate-700 ring-1 ring-slate-200 hover:ring-rose-300 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </nav>
+          ) : null}
+
           {data?.facets?.tags?.length ? (
             <div className="mt-2.5 sm:mt-4 -mx-3 px-3 sm:mx-0 sm:px-0 flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none">
               {data.facets.tags.slice(0, 12).map((item) => (
@@ -212,7 +234,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
                   Knowledge library
                 </p>
                 <h2 className="mt-0.5 sm:mt-1 text-lg sm:text-2xl font-black text-slate-950 dark:text-white">
-                  {q ? `Results for “${q}”` : category ? "Category articles" : "Latest stories"}
+                  {q ? `Results for “${q}”` : category ? (data?.facets?.categories.find((c) => c.slug === category)?.name ?? "Category articles") : "Latest stories"}
                 </h2>
               </div>
               {data && (
