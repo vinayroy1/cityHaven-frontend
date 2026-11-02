@@ -15,6 +15,13 @@ import {
 import { InteriorListingStatus as S, type InteriorProfile, type ReadinessReport } from "@/types/interior.types";
 import { StatusBadge, effectiveStatus } from "./StatusBadge";
 import { errorMessage, usePublishProfile, useSubmitProfile, useUpdateStatus, type StatusChange } from "./manageApi";
+import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { useGetMyInteriorBillingQuery } from "@/features/interiors/api";
+import { contactVerifyApi } from "@/features/contactVerify/api";
+
+/** 402 from publish/resume = not enough credits for the monthly listing fee. */
+const isPaymentRequired = (e: unknown) => (e as { status?: number })?.status === 402;
 
 type Pending = { kind: "PAUSED" | "TEMP_UNAVAILABLE" | "ARCHIVED" } | null;
 
@@ -41,15 +48,26 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
   const [until, setUntil] = useState("");
   const [reason, setReason] = useState("");
   const busy = updating || submitting || publishing;
+  const dispatch = useDispatch();
+  const { data: billing } = useGetMyInteriorBillingQuery();
+  const [needsCredits, setNeedsCredits] = useState(false);
+  // Going live charges the monthly fee unless a paid period is still running.
+  const goLiveCost = billing && !billing.isPaid && billing.monthlyCredits > 0 ? billing.monthlyCredits : 0;
+  const costSuffix = goLiveCost ? ` · ${goLiveCost} credits` : "";
+  const refreshCredits = () => dispatch(contactVerifyApi.util.invalidateTags(["Credits", "BillingSummary"]));
+  const paymentDue = profile.statusReason === "PAYMENT_DUE";
 
   const change = async (body: StatusChange, ok: string) => {
     try {
       await updateStatus(body).unwrap();
+      if (body.status === "PUBLISHED") refreshCredits();
+      setNeedsCredits(false);
       toast.success(ok);
       setPending(null);
       setUntil("");
       setReason("");
     } catch (e) {
+      if (isPaymentRequired(e)) setNeedsCredits(true);
       toast.error(errorMessage(e, "Could not update the listing status."));
     }
   };
@@ -66,8 +84,11 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
   const doPublish = async () => {
     try {
       await publish().unwrap();
+      refreshCredits();
+      setNeedsCredits(false);
       toast.success("Your listing is live.");
     } catch (e) {
+      if (isPaymentRequired(e)) setNeedsCredits(true);
       toast.error(errorMessage(e, "Could not publish yet. Check the checklist below."));
     }
   };
@@ -88,7 +109,19 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
         <h2 id="listing-status-title" className="text-sm font-bold text-slate-900 dark:text-white">Listing status</h2>
         <StatusBadge profile={profile} />
       </div>
-      <p className="mt-1.5 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{HELP[status]}</p>
+      <p className="mt-1.5 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+        {paymentDue && status === S.PAUSED
+          ? "Paused because the monthly listing fee couldn't be charged. Top up your credits, then resume."
+          : paymentDue
+            ? `Approved! Publish to go live${goLiveCost ? ` — ${goLiveCost} credits for ${billing?.periodDays ?? 30} days` : ""}.`
+            : HELP[status]}
+      </p>
+      {needsCredits && (
+        <p className="mt-2 rounded-xl border border-rose-200 bg-rose-50 p-2.5 text-xs text-rose-800 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">
+          You need {goLiveCost || billing?.monthlyCredits || 100} credits to go live (balance: {billing?.balance ?? 0}).{" "}
+          <Link href="/pricing" className="font-semibold underline">Top up credits</Link>
+        </p>
+      )}
 
       {status === S.TEMP_UNAVAILABLE && profile.pausedUntil && (
         <p className="mt-1 text-xs font-medium text-orange-700 dark:text-orange-300">
@@ -112,7 +145,7 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
         )}
         {publishReady && (
           <button type="button" className={primary} disabled={busy} onClick={doPublish}>
-            {publishing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Rocket className="h-3.5 w-3.5" />} Publish
+            {publishing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Rocket className="h-3.5 w-3.5" />} Publish{costSuffix}
           </button>
         )}
         {status === S.PUBLISHED && (
@@ -130,6 +163,7 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
             onClick={() => change({ status: "PUBLISHED" }, "Your listing is live again.")}>
             {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />}
             {status === S.ARCHIVED ? "Restore listing" : "Resume listing"}
+            {costSuffix}
           </button>
         )}
         {status !== S.ARCHIVED && status !== S.DRAFT && (

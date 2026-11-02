@@ -13,6 +13,7 @@ import {
   useGetMyInteriorProfileQuery,
   useGetMyInteriorReadinessQuery,
   usePatchMyInteriorSectionMutation,
+  setActiveInteriorProfileId,
   usePublishMyInteriorProfileMutation,
   useSubmitMyInteriorProfileMutation,
 } from "../api";
@@ -63,6 +64,9 @@ export type UseInteriorWizardResult = {
 
 export function useInteriorWizard(opts: UseInteriorWizardOptions = {}): UseInteriorWizardResult {
   const profileId = opts.profileId;
+  // Scope every /interiors/me call (saves, publish, status, billing) to this listing.
+  // Set during render so it is in place before any query or mutation fires.
+  setActiveInteriorProfileId(profileId);
   const { data: profile, isLoading, isError, refetch } = useGetMyInteriorProfileQuery(profileId);
   const { data: serverReadiness } = useGetMyInteriorReadinessQuery(undefined, { skip: !profile });
   const [patchSection, { isLoading: isSaving }] = usePatchMyInteriorSectionMutation();

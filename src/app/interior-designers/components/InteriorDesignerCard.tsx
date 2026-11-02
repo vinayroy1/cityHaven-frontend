@@ -47,7 +47,9 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
   );
 
   const safePhotos = photos;
-  const initials = profile.businessName
+  // Individuals have no businessName; their public name is displayName (or fullName).
+  const name = profile.displayName || profile.businessName || profile.fullName || "Interior designer";
+  const initials = name
     .split(/\s+/)
     .map((w) => w[0])
     .join("")
@@ -76,7 +78,7 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
           {safePhotos.length > 0 ? (
             <Image
               src={safePhotos[activeImageIndex]}
-              alt={profile.businessName}
+              alt={name}
               fill
               preload={priority && activeImageIndex === 0}
               sizes="(min-width: 1280px) 400px, (min-width: 1024px) 31vw, (min-width: 640px) 46vw, 92vw"
@@ -112,6 +114,12 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600/90 px-2.5 py-0.5 text-[11px] font-bold text-white shadow-xs backdrop-blur-md">
               <ShieldCheck className="h-3 w-3" />
               Verified Pro
+            </span>
+          )}
+          {(profile.isBoosted || profile.isFeatured) && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/95 px-2.5 py-0.5 text-[11px] font-bold text-amber-950 shadow-xs backdrop-blur-md">
+              <Sparkles className="h-3 w-3" />
+              Featured
             </span>
           )}
         </div>
@@ -168,7 +176,7 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
           <div>
             <Link href={profileUrl}>
               <h3 className="line-clamp-1 text-base font-bold text-slate-900 transition hover:text-rose-600 dark:text-white dark:hover:text-rose-400">
-                {profile.businessName}
+                {name}
               </h3>
             </Link>
             <p className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 mt-0.5">

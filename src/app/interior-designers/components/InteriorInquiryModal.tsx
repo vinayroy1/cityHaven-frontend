@@ -125,7 +125,7 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
             </div>
             <h3 className="mt-4 text-xl font-black text-slate-900 dark:text-white">Estimate Request Sent!</h3>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              <strong className="text-slate-900 dark:text-white">{profile.businessName}</strong> has received your project details. They will contact you soon to discuss your project.
+              <strong className="text-slate-900 dark:text-white">{profile.displayName || profile.businessName || profile.fullName}</strong> has received your project details. They will contact you soon to discuss your project.
             </p>
             <div className="mt-6 rounded-2xl bg-slate-50 p-4 border border-slate-200 dark:border-slate-800 dark:bg-slate-800/60 text-left text-xs space-y-1">
               <div className="flex justify-between text-slate-500 dark:text-slate-400">
@@ -163,7 +163,7 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
                 <span>Instant Consultation & Estimate</span>
               </div>
               <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-1">
-                {profile.businessName}
+                {profile.displayName || profile.businessName || profile.fullName}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Get an accurate price breakdown for your apartment or commercial space.

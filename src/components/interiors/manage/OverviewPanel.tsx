@@ -4,6 +4,7 @@ import { BadgeCheck, CheckCircle2, Circle, Eye, Inbox, ShieldAlert, Unlock } fro
 import { interiorSteps } from "@/features/interiors/wizard/steps";
 import type { ReadinessItem } from "@/types/interior.types";
 import { ListingStatusCard } from "./ListingStatusCard";
+import { InteriorPlanCard } from "./InteriorPlanCard";
 import { ListingSummary } from "./ListingSummary";
 import { manageHref, MANAGE_SECTIONS, type ManageSectionId } from "./sections";
 import { useManageListing } from "./useManageListing";
@@ -61,6 +62,7 @@ export function OverviewPanel() {
   return (
     <div className="space-y-4">
       <ListingStatusCard profile={profile} readiness={readiness} />
+      <InteriorPlanCard profile={profile} />
 
       {profile.isVerified ? (
         <div className="flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200">

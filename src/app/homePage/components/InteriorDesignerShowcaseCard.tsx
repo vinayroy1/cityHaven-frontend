@@ -75,7 +75,7 @@ export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorPro
               Verified
             </span>
           )}
-          {profile.isFeatured && (
+          {(profile.isFeatured || profile.isBoosted) && (
             <span className="inline-flex items-center rounded-full bg-rose-600/95 px-2 py-0.5 text-[11px] font-bold text-white shadow-sm">
               Featured
             </span>

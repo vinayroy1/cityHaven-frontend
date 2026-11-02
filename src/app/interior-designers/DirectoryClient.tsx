@@ -178,7 +178,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
     return filteredDesigners.flatMap((d) =>
       (d.projects || []).map((p) => ({
         ...p,
-        designerName: d.businessName,
+        designerName: d.displayName || d.businessName || d.fullName || "Interior designer",
         designerSlug: d.slug,
         designerCity: d.primaryCity,
         designerLogo: d.logo,

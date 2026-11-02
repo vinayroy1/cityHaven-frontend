@@ -1,7 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { useGetMyInteriorProfileQuery } from "@/features/interiors/api";
+import { setActiveInteriorProfileId, useGetMyInteriorProfileQuery } from "@/features/interiors/api";
 import { profileToForm } from "@/features/interiors/wizard/mapper";
 import { interiorReadinessRules } from "@/features/interiors/wizard/readiness";
 import { interiorPredicates } from "@/features/interiors/wizard/predicates";
@@ -18,6 +18,9 @@ export function useManageListing() {
   const profileIdParam = searchParams.get("profileId");
   const profileId = profileIdParam ? Number(profileIdParam) : undefined;
 
+  // Scope every /interiors/me call (saves, publish, status, billing) to this listing.
+  // Set during render so it is in place before any query or mutation fires.
+  setActiveInteriorProfileId(profileId);
   const query = useGetMyInteriorProfileQuery(profileId);
   const profile = query.data ?? null;
 

@@ -49,7 +49,7 @@ export default async function InteriorDesignersDirectoryPage({ searchParams }: {
             itemListElement: initialData.items.slice(0, 20).map((p, i) => ({
               "@type": "ListItem",
               position: i + 1,
-              name: p.businessName,
+              name: p.displayName || p.businessName || p.fullName || "Interior designer",
               url: buildCanonical(
                 `/interior-designers/${encodeURIComponent((p.primaryCity || city).toLowerCase())}/${p.slug}`,
               ),

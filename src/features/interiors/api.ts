@@ -17,6 +17,8 @@ import type {
   InteriorTeamMember,
   InteriorWizardSection,
   ReadinessReport,
+  InteriorBilling,
+  InteriorBoostOption,
 } from "@/types/interior.types";
 
 type ApiEnvelope<T> = { success: boolean; data: T; message?: string };
@@ -36,6 +38,28 @@ export type PatchSectionArgs = {
   data: Partial<InteriorProfile>;
   wizardStep?: number;
 };
+
+/**
+ * The listing the owner is currently editing/managing. A user can own several interior
+ * listings; every `/interiors/me/*` call is scoped to this one via `?profileId=` so actions
+ * (save, publish, pause, billing…) never land on a different listing.
+ * Set by the wizard and the manage area from the `profileId` in the URL.
+ */
+let activeInteriorProfileId: number | undefined;
+export function setActiveInteriorProfileId(id: number | null | undefined) {
+  activeInteriorProfileId = id && Number.isInteger(id) && id > 0 ? id : undefined;
+}
+
+type BaseQueryArgs = Parameters<typeof baseQueryWithReauth>[0];
+const scopeToActiveProfile = (args: BaseQueryArgs): BaseQueryArgs => {
+  if (!activeInteriorProfileId) return args;
+  const url = typeof args === "string" ? args : args.url;
+  // /me/listings lists or creates listings, so it is never scoped to one.
+  if (!/\/interiors\/me(\/|\?|$)/.test(url) || /\/interiors\/me\/listings/.test(url) || /[?&]profileId=/.test(url)) return args;
+  const scoped = `${url}${url.includes("?") ? "&" : "?"}profileId=${activeInteriorProfileId}`;
+  return typeof args === "string" ? scoped : { ...args, url: scoped };
+};
+const interiorBaseQuery: typeof baseQueryWithReauth = (args, api, extra) => baseQueryWithReauth(scopeToActiveProfile(args), api, extra);
 
 /** Set once PATCH /sections returns 404 — later saves go straight to the legacy endpoint. */
 let sectionPatchUnsupported = false;
@@ -76,7 +100,7 @@ const queryString = (params?: InteriorSearchParams) => {
 
 export const interiorsApi = createApi({
   reducerPath: "interiorsApi",
-  baseQuery: baseQueryWithReauth,
+  baseQuery: interiorBaseQuery,
   keepUnusedDataFor: 300, // 5 minutes cache retention
   tagTypes: [
     "InteriorProfile",
@@ -90,6 +114,7 @@ export const interiorsApi = createApi({
     "InteriorTeam",
     "InteriorDocs",
     "InteriorInquiry",
+    "InteriorBilling",
   ],
   endpoints: (builder) => ({
     searchInteriorDesigners: builder.query<InteriorSearchResponse, InteriorSearchParams | void>({
@@ -157,7 +182,7 @@ export const interiorsApi = createApi({
         method: "POST",
       }),
       transformResponse: (response: ApiEnvelope<InteriorProfile>) => response.data,
-      invalidatesTags: ["InteriorProfile", "InteriorList", "InteriorReadiness"],
+      invalidatesTags: ["InteriorProfile", "InteriorList", "InteriorReadiness", "InteriorBilling"],
     }),
 
     addCompanyBranch: builder.mutation<InteriorBranch, Partial<InteriorBranch>>({
@@ -268,13 +293,29 @@ export const interiorsApi = createApi({
       invalidatesTags: ["InteriorProfile", "InteriorReadiness"],
     }),
 
+    getMyInteriorBilling: builder.query<InteriorBilling, void>({
+      query: () => API_ENDPOINTS.interiors.billingMe,
+      transformResponse: (response: ApiEnvelope<InteriorBilling>) => response.data,
+      providesTags: ["InteriorBilling"],
+    }),
+
+    /** Buys a boost for one listing (credits from the owner's wallet). */
+    boostInteriorListing: builder.mutation<unknown, { profileId: number; actionKey: InteriorBoostOption["key"] }>({
+      query: ({ profileId, actionKey }) => ({
+        url: API_ENDPOINTS.billing.promotions,
+        method: "POST",
+        body: { actionKey, targetType: "INTERIOR", targetId: profileId },
+      }),
+      invalidatesTags: ["InteriorBilling", "InteriorProfile", "InteriorList"],
+    }),
+
     updateMyInteriorStatus: builder.mutation<
       InteriorProfile,
       { status: InteriorStatusAction; until?: string | null; reason?: string }
     >({
       query: (body) => ({ url: API_ENDPOINTS.interiors.statusMe, method: "POST", body }),
       transformResponse: (response: ApiEnvelope<InteriorProfile>) => response.data,
-      invalidatesTags: ["InteriorProfile", "InteriorList", "InteriorReadiness"],
+      invalidatesTags: ["InteriorProfile", "InteriorList", "InteriorReadiness", "InteriorBilling"],
     }),
 
     updateCompanyBranch: builder.mutation<InteriorBranch, { id: number; data: Partial<InteriorBranch> }>({
@@ -475,6 +516,8 @@ export const {
   useGetMyInteriorReadinessQuery,
   useSubmitMyInteriorProfileMutation,
   useUpdateMyInteriorStatusMutation,
+  useGetMyInteriorBillingQuery,
+  useBoostInteriorListingMutation,
   useUpdateCompanyBranchMutation,
   useDeleteCompanyBranchMutation,
   useDeleteInteriorPackageMutation,

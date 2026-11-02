@@ -291,6 +291,8 @@ export interface InteriorProfile {
   reviewCount: number;
   isFeatured: boolean;
   featuredOrder: number;
+  /** Paid boost currently running (public search/detail only). */
+  isBoosted?: boolean;
   isPublished: boolean;
   publishedAt?: string | null;
 
@@ -759,3 +761,24 @@ export type InteriorWizardSection =
   | "team"
   | "warranty"
   | "contact";
+
+/** GET /interiors/me/billing — monthly listing plan and boost options for the owner. */
+export interface InteriorBoostOption {
+  key: "INTERIOR_BOOST_7" | "INTERIOR_BOOST_15";
+  label: string;
+  credits: number;
+  days: number;
+}
+export interface InteriorBilling {
+  profileId: number;
+  monthlyCredits: number;
+  periodDays: number;
+  paidUntil: string | null;
+  isPaid: boolean;
+  inGrace: boolean;
+  graceEndsAt: string | null;
+  pausedForPayment: boolean;
+  boostedUntil: string | null;
+  boostOptions: InteriorBoostOption[];
+  balance: number;
+}

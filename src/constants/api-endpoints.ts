@@ -264,6 +264,7 @@ export const API_ENDPOINTS = {
     readiness: `${BASE}/interiors/me/readiness`,
     submitMe: `${BASE}/interiors/me/submit`,
     statusMe: `${BASE}/interiors/me/status`,
+    billingMe: `${BASE}/interiors/me/billing`,
     branchDetail: (id: string | number) => `${BASE}/interiors/me/branches/${id}`,
     packagesOrder: `${BASE}/interiors/me/packages/order`,
     team: `${BASE}/interiors/me/team`,
