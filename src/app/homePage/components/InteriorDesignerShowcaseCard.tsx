@@ -160,25 +160,3 @@ export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorPro
     </Link>
   );
 }
-
-export function InteriorDesignerShowcaseSkeleton() {
-  return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white animate-pulse dark:border-slate-800 dark:bg-slate-900" aria-hidden>
-      <div className="aspect-[4/3] w-full bg-slate-200 dark:bg-slate-800" />
-      <div className="relative px-4 pb-4 pt-8">
-        <div className="absolute -top-7 left-4 h-14 w-14 rounded-2xl border-[3px] border-white bg-slate-300 dark:border-slate-900 dark:bg-slate-700" />
-        <div className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-800" />
-        <div className="mt-2 h-3 w-1/2 rounded bg-slate-200 dark:bg-slate-800" />
-        <div className="mt-3 flex gap-1">
-          <div className="h-4 w-14 rounded-full bg-slate-100 dark:bg-slate-800" />
-          <div className="h-4 w-16 rounded-full bg-slate-100 dark:bg-slate-800" />
-        </div>
-        <div className="mt-3 grid grid-cols-3 gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="aspect-[4/3] rounded-lg bg-slate-100 dark:bg-slate-800" />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}

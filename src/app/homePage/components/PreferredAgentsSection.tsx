@@ -5,6 +5,7 @@
 // only downloads when this below-the-fold section is about to render.
 import React from "react";
 import Link from "next/link";
+import { ViewAllCard } from "./ViewAllCard";
 import { ArrowRight, BadgeCheck, MapPin, ShieldCheck, Sparkles } from "lucide-react";
 import { ALL_AGENTS, type Agent } from "@/data/agents";
 import { getMergedHomepageFeaturedAgents } from "@/lib/services/agentProfile";
@@ -188,6 +189,9 @@ export default function PreferredAgentsSection({ selectedCity }: { selectedCity:
               </Link>
             );
           })}
+          <div className="flex w-[285px] shrink-0 snap-start sm:w-[310px]">
+            <ViewAllCard href="/agents" title="View all agents" subtitle="Verified local advisors near you" />
+          </div>
         </div>
       )}
     </section>

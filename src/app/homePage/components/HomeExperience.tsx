@@ -17,6 +17,8 @@ import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import dynamic from "next/dynamic";
 import { useSearchInteriorDesignersQuery } from "@/features/interiors/api";
 import { RenderWhenNear, useNearViewport } from "./RenderWhenNear";
+import { InteriorDesignerShowcaseSkeleton } from "./InteriorDesignerShowcaseSkeleton";
+import { ViewAllCard } from "./ViewAllCard";
 import { sizedImageUrl } from "../lib/homeImage";
 import type { ProjectListing } from "@/types/project.types";
 
@@ -24,10 +26,8 @@ import type { ProjectListing } from "@/types/project.types";
 const PreferredAgentsSection = dynamic(() => import("./PreferredAgentsSection"));
 const FlatmateCard = dynamic(() => import("@/components/flatmates/FlatmateCard").then((m) => m.FlatmateCard));
 const InteriorDesignerShowcaseCard = dynamic(() =>
-  import("./InteriorDesignerShowcaseCard").then((m) => m.InteriorDesignerShowcaseCard)
-);
-const InteriorDesignerShowcaseSkeleton = dynamic(() =>
-  import("./InteriorDesignerShowcaseCard").then((m) => m.InteriorDesignerShowcaseSkeleton)
+  import("./InteriorDesignerShowcaseCard").then((m) => m.InteriorDesignerShowcaseCard),
+  { loading: () => <InteriorDesignerShowcaseSkeleton /> }
 );
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 
@@ -458,6 +458,9 @@ function ListingBlock({
               />
             </div>
           ))}
+          <div className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]">
+            <ViewAllCard href={href} title={`View all ${title.toLowerCase()}`} subtitle="Browse every matching listing" />
+          </div>
         </div>
       ) : null}
     </section>
@@ -781,6 +784,9 @@ function FeaturedProjectsSection({
     ? (typeof projects[0].city === "string" ? projects[0].city : (projects[0].cityName || effectiveCity))
     : effectiveCity;
 
+  // Like the other carousels: no projects for this city -> no section (not a lone "View all" tile).
+  if (!isLoading && projects.length === 0) return null;
+
   return (
     <section className="mt-2 sm:mt-4">
       <div className="mb-2.5 flex items-end justify-between gap-3 sm:mb-3.5 sm:gap-4">
@@ -820,6 +826,13 @@ function FeaturedProjectsSection({
               <FeaturedProjectCard project={project} priority={idx === 0} />
             </div>
           ))}
+          <div className="w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]">
+            <ViewAllCard
+              href={`/new-projects${displayCity ? `?city=${encodeURIComponent(displayCity)}` : ""}`}
+              title="View all new projects"
+              subtitle="Compare builders, floor plans and prices"
+            />
+          </div>
         </div>
       )}
     </section>
@@ -900,6 +913,9 @@ function FeaturedFlatAvailableSection({ selectedCity }: { selectedCity: string }
               <FlatmateCard listing={item} layout="vertical" />
             </div>
           ))}
+          <div className="flex w-[78vw] max-w-[310px] shrink-0 snap-start sm:w-[calc((100%-0.75rem)/2)] sm:max-w-none lg:w-[calc((100%-2.25rem)/4)]">
+            <ViewAllCard href="/flatmates?mode=HAVE_ROOM" title="View all rooms" subtitle="Flats with a room available to share" />
+          </div>
         </div>
       )}
     </section>
@@ -984,6 +1000,9 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
               <FlatmateCard listing={item} layout="horizontal" />
             </div>
           ))}
+          <div className="flex h-[174px] w-[88vw] max-w-[370px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] sm:max-w-none lg:w-[calc((100%-1.5rem)/3)]">
+            <ViewAllCard href="/flatmates?mode=NEED_ROOM" title="View all flatmate seekers" subtitle="People looking for a room or a buddy" compact />
+          </div>
         </div>
       )}
     </section>
@@ -1093,17 +1112,7 @@ function InteriorDesignersSection({ selectedCity }: { selectedCity: string }) {
                 </div>
               ))}
               <div className={itemClass}>
-                <Link
-                  href={viewAllHref}
-                  prefetch={false}
-                  className="group flex min-h-[320px] w-full flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-rose-200 bg-gradient-to-br from-rose-50 via-white to-rose-100/60 p-6 text-center transition hover:border-rose-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:border-rose-900/60 dark:from-rose-950/30 dark:via-slate-900 dark:to-rose-950/20"
-                >
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-rose-600 text-white shadow-lg shadow-rose-600/30 transition group-hover:scale-110">
-                    <ArrowRight className="h-5 w-5" />
-                  </span>
-                  <span className="text-base font-bold text-slate-950 dark:text-white">View all interior designers</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">Compare portfolios, rates and reviews</span>
-                </Link>
+                <ViewAllCard href={viewAllHref} title="View all interior designers" subtitle="Compare portfolios, rates and reviews" />
               </div>
             </>
           )}
