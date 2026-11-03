@@ -76,13 +76,7 @@ const yesNoOptions: Option[] = [
   { value: false, label: "No" },
 ];
 
-export const propertyProfileStep: StepConfig = {
-  id: "profile",
-  label: "Property Profile",
-  title: "Tell us about your property",
-  caption: "Structure, layout & legal",
-  kind: "config",
-  sections: [
+const allProfileSections: StepConfig["sections"] = [
     {
       id: "titleDesc",
       title: "Title & description",
@@ -583,5 +577,33 @@ export const propertyProfileStep: StepConfig = {
         },
       ],
     },
-  ],
+];
+
+const pick = (ids: string[]) =>
+  ids.map((id) => {
+    const sec = (allProfileSections ?? []).find((x) => x.id === id);
+    if (!sec) throw new Error(`profile section ${id} missing`);
+    return sec;
+  });
+
+/** Title & description are auto-generated, so they're shown on the final review step. */
+export const titleDescSection = pick(["titleDesc"])[0];
+
+// Split into two shorter steps so mobile users aren't faced with ~35 fields at once.
+export const propertyProfileStep: StepConfig = {
+  id: "profile",
+  label: "Property Details",
+  title: "Tell us about your property",
+  caption: "Rooms, area & floor",
+  kind: "config",
+  sections: pick(["config", "area", "layout", "otherRooms", "pg", "commercial"]),
+};
+
+export const propertyFeaturesStep: StepConfig = {
+  id: "features",
+  label: "Features",
+  title: "Furnishing, building & parking",
+  caption: "Furnishing, legal & society",
+  kind: "config",
+  sections: pick(["furnishing", "legal", "society", "liftsParking"]),
 };

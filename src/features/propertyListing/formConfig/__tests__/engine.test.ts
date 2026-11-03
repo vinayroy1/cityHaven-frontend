@@ -2,7 +2,7 @@ import { evaluateCondition, predicates } from "../conditions";
 import { computeListingScore } from "../scoring";
 import { requiredPathsForStep } from "../validation";
 import { listingSteps } from "../steps";
-import { propertyProfileStep } from "../steps/propertyProfile";
+import { propertyProfileStep, propertyFeaturesStep } from "../steps/propertyProfile";
 import { pricingAmenitiesStep } from "../steps/pricingAmenities";
 import { basicDetailsStep } from "../steps/basicDetails";
 import { initialPropertyListingFormValues } from "../../slice";
@@ -59,7 +59,7 @@ describe("listing-type gates las Basic Details", () => {
 
   test("rent hides ownership/authority/construction-type; shows available-from", () => {
     const v = ctx({ ...apt, listingType: "RENT" });
-    const legal = propertyProfileStep.sections!.find((s) => s.id === "legal")!;
+    const legal = propertyFeaturesStep.sections!.find((s) => s.id === "legal")!;
     const ids = legal.fields.filter((f) => evalC(v, f.visibleWhen)).map((f) => f.id);
     expect(ids).toContain("availability.availableFrom");
     expect(ids).not.toContain("amenities.ownershipType");
@@ -69,7 +69,7 @@ describe("listing-type gates las Basic Details", () => {
 
   test("sell shows ownership + availability status, not available-from", () => {
     const v = ctx({ ...apt, listingType: "SELL" });
-    const legal = propertyProfileStep.sections!.find((s) => s.id === "legal")!;
+    const legal = propertyFeaturesStep.sections!.find((s) => s.id === "legal")!;
     const ids = legal.fields.filter((f) => evalC(v, f.visibleWhen)).map((f) => f.id);
     expect(ids).toContain("amenities.ownershipType");
     expect(ids).toContain("availability.availabilityStatus");

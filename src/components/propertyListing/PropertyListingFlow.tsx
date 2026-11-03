@@ -44,6 +44,7 @@ import { LocationStep } from "./LocationStep";
 import { ReviewSummary } from "./ReviewSummary";
 import { WorkspacePicker } from "./WorkspacePicker";
 import { MandatoryFieldsTracker } from "./MandatoryFieldsTracker";
+import { PublishSuccess, type PublishedListing } from "./PublishSuccess";
 import { useMyOrganizationsQuery } from "@/features/organizations/api";
 import { panel } from "./theme";
 import { registerBackHandler } from "@/lib/navigation/backNavigation";
@@ -80,8 +81,10 @@ export function PropertyListingFlow({
           router.replace(`/admin/login?redirect=/admin/properties/create`);
         }
       } else {
+        // New listings can be filled in logged out (draft is saved locally); login is asked
+        // before photos/publish. Editing an existing listing still needs a session.
         const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
-        if (!token) {
+        if (!token && propertyId) {
           const redirectUrl = propertyId ? `/propertyListing?id=${propertyId}` : "/propertyListing";
           router.replace(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
         }
@@ -102,6 +105,7 @@ export function PropertyListingFlow({
 
   const [stepIndex, setStepIndex] = useState(0);
   const [maxVisited, setMaxVisited] = useState(adminMode ? listingSteps.length - 1 : 0);
+  const [published, setPublished] = useState<PublishedListing | null>(null);
   const [resume, setResume] = useState<{ form: PropertyListingFormValues; step?: number } | null>(null);
   const hydratedRef = useRef(false);
 
@@ -361,7 +365,17 @@ export function PropertyListingFlow({
     }
   };
 
+  /** Photos upload and publishing need an account: save the draft, then send the user to log in. */
+  const redirectToLoginIfNeeded = (resumeStep: number) => {
+    if (adminMode || typeof window === "undefined" || localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)) return false;
+    persistDraft({ form: form.getValues(), step: resumeStep }, storageKey);
+    toast.info("Log in or sign up to add photos and publish. Your details are saved.");
+    router.push(`/login?redirect=${encodeURIComponent("/propertyListing")}`);
+    return true;
+  };
+
   const goToStep = (i: number) => {
+    if (i === listingSteps.length - 1 && redirectToLoginIfNeeded(i)) return;
     dispatch(saveDraft(form.getValues()));
     setStepIndex(i);
     setMaxVisited((m) => Math.max(m, i));
@@ -412,6 +426,7 @@ export function PropertyListingFlow({
   };
 
   const handlePublish = async () => {
+    if (redirectToLoginIfNeeded(stepIndex)) return;
     if (isViewerInSelectedOrg) {
       toast.error("Viewer role cannot publish listings under this organization. Please switch to My Account or update your role.");
       return;
@@ -471,23 +486,8 @@ export function PropertyListingFlow({
       } catch {
         /* no stored user */
       }
-      let shouldAutoPublish = true;
-      try {
-        const storedGov = localStorage.getItem("awasio_admin_governance_settings");
-        if (storedGov) {
-          const parsedGov = JSON.parse(storedGov);
-          if (parsedGov.propertyReviewPolicy === "MANDATORY_REVIEW") {
-            shouldAutoPublish = false;
-          }
-        }
-      } catch {
-        /* fallback to autopublish */
-      }
-
-      payload.publishOptions = {
-        status: shouldAutoPublish ? "ACTIVE" : "DRAFT",
-        qcRequired: !shouldAutoPublish,
-      };
+      // Live vs. review is decided by the backend from the admin review policy.
+      payload.publishOptions = { status: "ACTIVE", qcRequired: true };
     }
 
     dispatch(saveDraft(payload));
@@ -503,19 +503,34 @@ export function PropertyListingFlow({
         }).catch(() => undefined);
         toast.success("Listing updated.");
       } else {
-        await submitProperty(payload).unwrap();
+        const res = (await submitProperty(payload).unwrap()) as unknown as Record<string, unknown>;
+        const created = ((res?.data as Record<string, unknown>) ?? res) as Record<string, unknown>;
         if (adminMode) {
           toast.success(
             `Property successfully listed on behalf of owner ${payload.context?.ownerContact ? `(+91 ${payload.context.ownerContact})` : ""}!`
           );
         } else {
-          toast.success(payload.publishOptions.status === "ACTIVE" ? "Listing published successfully." : "Listing submitted for review.");
+          clearPersistedDraft(storageKey);
+          if (!Number.isFinite(Number(created?.id))) {
+            toast.success("Listing submitted.");
+            router.push("/dashboard/properties");
+            return;
+          }
+          setPublished({
+            id: Number(created?.id),
+            slug: (created?.slug as string) ?? null,
+            status: (created?.status as string) ?? null,
+            title: (created?.title as string) ?? payload.meta?.title ?? null,
+          });
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
         }
         clearPersistedDraft(storageKey);
       }
       router.push(adminMode ? (onSuccessRedirect || "/admin/properties") : "/dashboard/properties");
-    } catch {
-      toast.error("Could not save the listing. Please try again.");
+    } catch (err) {
+      const msg = (err as { data?: { message?: string } })?.data?.message;
+      toast.error(msg || "Could not save the listing. Please try again.");
     }
   };
 
@@ -561,6 +576,18 @@ export function PropertyListingFlow({
     setMaxVisited(adminMode ? listingSteps.length - 1 : 0);
     setResume(null);
   };
+
+  if (published && Number.isFinite(published.id)) {
+    return (
+      <PublishSuccess
+        listing={published}
+        onPostAnother={() => {
+          startFresh();
+          setPublished(null);
+        }}
+      />
+    );
+  }
 
   return (
     <FormProvider {...form}>

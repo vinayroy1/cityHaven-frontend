@@ -1,4 +1,5 @@
 import type { StepConfig } from "../types";
+import { titleDescSection } from "./propertyProfile";
 
 export const mediaReviewStep: StepConfig = {
   id: "media",
@@ -19,5 +20,6 @@ export const mediaReviewStep: StepConfig = {
         },
       ],
     },
+    titleDescSection,
   ],
 };

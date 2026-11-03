@@ -1,6 +1,6 @@
 import type { StepConfig } from "../types";
 import { basicDetailsStep } from "./basicDetails";
-import { propertyProfileStep } from "./propertyProfile";
+import { propertyProfileStep, propertyFeaturesStep } from "./propertyProfile";
 import { pricingAmenitiesStep } from "./pricingAmenities";
 import { mediaReviewStep } from "./mediaReview";
 
@@ -17,6 +17,7 @@ export const listingSteps: StepConfig[] = [
   basicDetailsStep,
   locationStep,
   propertyProfileStep,
+  propertyFeaturesStep,
   pricingAmenitiesStep,
   mediaReviewStep,
 ];
@@ -24,6 +25,7 @@ export const listingSteps: StepConfig[] = [
 export {
   basicDetailsStep,
   propertyProfileStep,
+  propertyFeaturesStep,
   pricingAmenitiesStep,
   mediaReviewStep,
 };

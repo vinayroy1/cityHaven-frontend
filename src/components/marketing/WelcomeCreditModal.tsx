@@ -101,7 +101,11 @@ export function WelcomeCreditModal() {
     pathname.startsWith("/login") ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/admin");
+    pathname.startsWith("/admin") ||
+    // Don't interrupt someone filling in a listing form.
+    pathname.startsWith("/propertyListing") ||
+    pathname.startsWith("/post-project") ||
+    pathname.startsWith("/flatmates/post");
 
   // NEVER render popup or pill if:
   // 1. Not mounted
