@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Phone, Mail, Linkedin, Youtube } from "lucide-react";
+import { Phone, Mail, Linkedin, Youtube, Instagram, Facebook } from "lucide-react";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { SOCIAL_LINKS } from "@/constants/seo";
 
@@ -94,6 +94,28 @@ export function FooterLinks() {
               >
                 <Youtube className="h-3.5 w-3.5" />
               </a>
+              <a
+                href={SOCIAL_LINKS.instagram.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Awasio on Instagram"
+                title="Instagram: @awas_io"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/90 bg-slate-50 text-slate-600 transition hover:border-[#E1306C] hover:bg-[#E1306C]/10 hover:text-[#E1306C] dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:text-[#E1306C]"
+              >
+                <Instagram className="h-3.5 w-3.5" />
+              </a>
+              {SOCIAL_LINKS.facebook.url && (
+                <a
+                  href={SOCIAL_LINKS.facebook.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Awasio on Facebook"
+                  title="Facebook: @theawasio"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/90 bg-slate-50 text-slate-600 transition hover:border-[#1877F2] hover:bg-[#1877F2]/10 hover:text-[#1877F2] dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:text-[#1877F2]"
+                >
+                  <Facebook className="h-3.5 w-3.5" />
+                </a>
+              )}
             </div>
           </div>
 
@@ -158,6 +180,28 @@ export function FooterLinks() {
             >
               <Youtube className="h-3.5 w-3.5" />
             </a>
+            <a
+              href={SOCIAL_LINKS.instagram.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              title="Instagram: @awas_io"
+              className="text-slate-500 hover:text-[#E1306C] transition"
+            >
+              <Instagram className="h-3.5 w-3.5" />
+            </a>
+            {SOCIAL_LINKS.facebook.url && (
+              <a
+                href={SOCIAL_LINKS.facebook.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                title="Facebook: @theawasio"
+                className="text-slate-500 hover:text-[#1877F2] transition"
+              >
+                <Facebook className="h-3.5 w-3.5" />
+              </a>
+            )}
           </div>
         </div>
       </div>

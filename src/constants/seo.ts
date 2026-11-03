@@ -16,13 +16,25 @@ export const SOCIAL_LINKS = {
     url: "https://www.youtube.com/@awasio-official",
     label: "YouTube",
   },
+  instagram: {
+    handle: "awas_io",
+    url: "https://www.instagram.com/awas_io/",
+    label: "Instagram",
+  },
+  facebook: {
+    handle: "theawasio",
+    url: "https://www.facebook.com/theawasio",
+    label: "Facebook",
+  },
 } as const;
 
 export const SOCIAL_SAME_AS = [
   SOCIAL_LINKS.linkedin.url,
   SOCIAL_LINKS.x.url,
   SOCIAL_LINKS.youtube.url,
-];
+  SOCIAL_LINKS.instagram.url,
+  SOCIAL_LINKS.facebook.url,
+].filter(Boolean);
 
 export const seoDefaults = {
   title: "Awasio - Find homes & commercial spaces",

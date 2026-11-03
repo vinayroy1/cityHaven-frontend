@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { isOptimizableImage } from "../lib/image";
 import { experienceYearsOf } from "./profile/utils";
-import React, { useState } from "react";
+import React from "react";
+import { InteriorPhotoCarousel, interiorCardPhotos } from "@/components/interiors/InteriorPhotoCarousel";
 import Link from "next/link";
 import {
   ShieldCheck,
@@ -11,8 +12,6 @@ import {
   User,
   Star,
   MapPin,
-  ChevronLeft,
-  ChevronRight,
   Sparkles,
 } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
@@ -25,28 +24,7 @@ interface InteriorCardProps {
 }
 
 export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false }: InteriorCardProps) {
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-
-  // Hero priority: featured project cover -> first approved cover -> first cover -> cover banner.
-  const projects = profile.projects ?? [];
-  const heroCover =
-    projects.find((p) => p.isFeatured && p.coverImage)?.coverImage ||
-    projects.find((p) => p.isApproved && p.coverImage)?.coverImage ||
-    projects.find((p) => p.coverImage)?.coverImage ||
-    profile.coverBanner ||
-    null;
-
-  const photos = Array.from(
-    new Set(
-      [
-        heroCover,
-        ...projects.flatMap((p) => [p.coverImage, ...(p.images || [])]),
-        profile.coverBanner,
-      ].filter(Boolean) as string[]
-    )
-  );
-
-  const safePhotos = photos;
+  const safePhotos = interiorCardPhotos(profile);
   // Individuals have no businessName; their public name is displayName (or fullName).
   const name = profile.displayName || profile.businessName || profile.fullName || "Interior designer";
   const initials = name
@@ -58,42 +36,36 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
   const isCompany = profile.providerType === "COMPANY";
   const profileUrl = `/interior-designers/${encodeURIComponent(profile.primaryCity.toLowerCase())}/${profile.slug}`;
 
-  const nextPhoto = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setActiveImageIndex((prev) => (prev + 1) % safePhotos.length);
-  };
-
-  const prevPhoto = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setActiveImageIndex((prev) => (prev - 1 + safePhotos.length) % safePhotos.length);
-  };
-
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition duration-200 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
       {/* Photo Carousel Container */}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
         <Link href={profileUrl} className="block h-full w-full">
-          {safePhotos.length > 0 ? (
-            <Image
-              src={safePhotos[activeImageIndex]}
-              alt={name}
-              fill
-              preload={priority && activeImageIndex === 0}
-              sizes="(min-width: 1280px) 400px, (min-width: 1024px) 31vw, (min-width: 640px) 46vw, 92vw"
-              unoptimized={!isOptimizableImage(safePhotos[activeImageIndex])}
-              className="object-cover transition duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-rose-500 via-rose-600 to-rose-800">
-              {profile.logo ? (
-                <Image src={profile.logo} alt="" width={64} height={64} sizes="64px" unoptimized={!isOptimizableImage(profile.logo)} className="h-16 w-16 rounded-2xl bg-white object-cover shadow-lg" />
-              ) : (
-                <span className="text-3xl font-black tracking-tight text-white/90">{initials}</span>
-              )}
-            </div>
-          )}
+          <InteriorPhotoCarousel
+            photos={safePhotos}
+            alt={name}
+            renderImage={(src, i) => (
+              <Image
+                src={src}
+                alt={name}
+                fill
+                draggable={false}
+                preload={priority && i === 0}
+                sizes="(min-width: 1280px) 400px, (min-width: 1024px) 31vw, (min-width: 640px) 46vw, 92vw"
+                unoptimized={!isOptimizableImage(src)}
+                className="pointer-events-none object-cover transition duration-300 group-hover:scale-105"
+              />
+            )}
+            fallback={
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-rose-500 via-rose-600 to-rose-800">
+                {profile.logo ? (
+                  <Image src={profile.logo} alt="" width={64} height={64} sizes="64px" unoptimized={!isOptimizableImage(profile.logo)} className="h-16 w-16 rounded-2xl bg-white object-cover shadow-lg" />
+                ) : (
+                  <span className="text-3xl font-black tracking-tight text-white/90">{initials}</span>
+                )}
+              </div>
+            }
+          />
         </Link>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/20" />
 
@@ -123,28 +95,6 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
             </span>
           )}
         </div>
-
-        {/* Carousel Controls */}
-        {safePhotos.length > 1 && (
-          <>
-            <button
-              type="button"
-              onClick={prevPhoto}
-              className="absolute left-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-slate-800 opacity-0 shadow-md transition group-hover:opacity-100 hover:bg-white"
-              aria-label="Previous image"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={nextPhoto}
-              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-slate-800 opacity-0 shadow-md transition group-hover:opacity-100 hover:bg-white"
-              aria-label="Next image"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </>
-        )}
 
         {/* Pricing Badge on bottom left of Image */}
         <div className="absolute bottom-2.5 left-3 pointer-events-none">

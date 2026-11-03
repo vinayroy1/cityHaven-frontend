@@ -1,21 +1,12 @@
+"use client";
 import Link from "next/link";
 import { sizedImageUrl } from "../lib/homeImage";
 import { ArrowRight, BadgeCheck, MapPin, Palette, Star } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
+import { InteriorPhotoCarousel, interiorCardPhotos, MAX_CARD_PHOTOS } from "@/components/interiors/InteriorPhotoCarousel";
 
 export function interiorProfileHref(profile: InteriorProfile) {
   return `/interior-designers/${encodeURIComponent((profile.primaryCity || "india").toLowerCase())}/${profile.slug}`;
-}
-
-function pickHero(profile: InteriorProfile) {
-  const projects = profile.projects ?? [];
-  return (
-    projects.find((p) => p.isFeatured && p.coverImage)?.coverImage ||
-    projects.find((p) => p.isApproved && p.coverImage)?.coverImage ||
-    projects.find((p) => p.coverImage)?.coverImage ||
-    profile.coverBanner ||
-    null
-  );
 }
 
 function initialsOf(name: string) {
@@ -29,16 +20,11 @@ function initialsOf(name: string) {
 }
 
 export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorProfile }) {
-  const hero = pickHero(profile);
   const name = profile.businessName || (profile as { displayName?: string | null }).displayName || "Interior studio";
   const href = interiorProfileHref(profile);
-  const thumbs = Array.from(
-    new Set(
-      (profile.projects ?? [])
-        .flatMap((p) => [p.coverImage, ...(p.images || [])])
-        .filter((src): src is string => Boolean(src) && src !== hero)
-    )
-  ).slice(0, 3);
+  const photos = interiorCardPhotos(profile);
+  // Thumbnails show what comes after the swipeable photos, so nothing is repeated.
+  const thumbs = photos.slice(MAX_CARD_PHOTOS, MAX_CARD_PHOTOS + 3);
   const extraCount = Math.max(0, (profile._count?.projects ?? 0) - 1 - thumbs.length);
   const rating = Number(profile.rating || 0);
   const styles = (profile.designStyles?.length ? profile.designStyles : profile.servicesOffered || []).slice(0, 3);
@@ -55,17 +41,21 @@ export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorPro
       className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm ring-rose-500/0 transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 md:hover:-translate-y-1 md:hover:shadow-xl md:hover:shadow-rose-900/10 dark:border-slate-800 dark:bg-slate-900 dark:md:hover:shadow-black/40"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
-        {hero ? (
-          <img
-            src={sizedImageUrl(hero, 640)}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover transition duration-500 ease-out md:group-hover:scale-105"
-          />
-        ) : (
-          <div className="h-full w-full bg-gradient-to-br from-rose-400 via-rose-600 to-rose-900" />
-        )}
+        <InteriorPhotoCarousel
+          photos={photos}
+          alt={name}
+          renderImage={(src) => (
+            <img
+              src={sizedImageUrl(src, 640)}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              draggable={false}
+              className="pointer-events-none h-full w-full object-cover transition duration-500 ease-out md:group-hover:scale-105"
+            />
+          )}
+          fallback={<div className="h-full w-full bg-gradient-to-br from-rose-400 via-rose-600 to-rose-900" />}
+        />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/0 to-slate-950/10" />
 
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
