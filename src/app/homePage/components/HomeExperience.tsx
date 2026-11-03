@@ -399,6 +399,9 @@ export function HomeExperience({
 }
 
 
+/** A carousel with only one or two cards looks empty, so homepage sections need at least this many items to show. */
+const MIN_SECTION_ITEMS = 3;
+
 function ListingBlock({
   title,
   href,
@@ -416,7 +419,7 @@ function ListingBlock({
   onRetry?: () => void;
   isFirstBlock?: boolean;
 }) {
-  if (!loading && (!listings || listings.length === 0)) {
+  if (!loading && (!listings || listings.length < MIN_SECTION_ITEMS)) {
     return null;
   }
 
@@ -469,8 +472,8 @@ function ListingBlock({
 
 function formatProjectPrice(value?: number) {
   if (!value) return "Price on request";
-  if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)} Cr`;
-  if (value >= 100000) return `₹${(value / 100000).toFixed(2)} L`;
+  if (value >= 10000000) return `₹${(value / 10000000).toFixed(2).replace(/\.?0+$/, "")} Cr`;
+  if (value >= 100000) return `₹${(value / 100000).toFixed(2).replace(/\.?0+$/, "")} L`;
   return `₹${value.toLocaleString("en-IN")}`;
 }
 
@@ -785,7 +788,7 @@ function FeaturedProjectsSection({
     : effectiveCity;
 
   // Like the other carousels: no projects for this city -> no section (not a lone "View all" tile).
-  if (!isLoading && projects.length === 0) return null;
+  if (!isLoading && projects.length < MIN_SECTION_ITEMS) return null;
 
   return (
     <section className="mt-2 sm:mt-4">
@@ -870,7 +873,7 @@ function FeaturedFlatAvailableSection({ selectedCity }: { selectedCity: string }
 
   const isLoading = normalizedCity ? isCityLoading : isFallbackLoading;
 
-  if (!isLoading && listings.length === 0) return null;
+  if (!isLoading && listings.length < MIN_SECTION_ITEMS) return null;
 
   return (
     <section className="mt-6 sm:mt-10">
@@ -957,7 +960,7 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
 
   const isLoading = normalizedCity ? isCityLoading : isFallbackLoading;
 
-  if (!isLoading && listings.length === 0) return null;
+  if (!isLoading && listings.length < MIN_SECTION_ITEMS) return null;
 
   return (
     <section className="mt-6 sm:mt-10">
@@ -1039,7 +1042,7 @@ function InteriorDesignersSection({ selectedCity }: { selectedCity: string }) {
   // Directory has no /interior-designers/[city] index route (only [city]/[slug]), so link the directory.
   const viewAllHref = "/interior-designers";
 
-  if (!isLoading && items.length === 0) return null;
+  if (!isLoading && items.length < MIN_SECTION_ITEMS) return null;
 
   const scrollBy = (dir: 1 | -1) => {
     const el = scrollerRef.current;

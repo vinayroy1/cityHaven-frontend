@@ -137,12 +137,16 @@ export function FlatmateCard({
   const preferredAreas = listing.preferredLocalities?.filter(Boolean).slice(0, 3) || [];
   const formatMoney = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
 
+  // Short form (₹10k, ₹1.2L) so a budget range fits on one line in narrow cards.
+  const compactMoney = (n: number) =>
+    n >= 100_000 ? `₹${(n / 100_000).toFixed(1).replace(/\.0$/, "")}L` : n >= 1000 ? `₹${(n / 1000).toFixed(1).replace(/\.0$/, "")}k` : `₹${n}`;
+
   const formattedRent = () => {
     if (listing.mode === "HAVE_ROOM") {
       return listing.rent != null ? `₹${listing.rent.toLocaleString("en-IN")}` : "Rent on Request";
     }
     if (listing.budgetMin != null && listing.budgetMax != null) {
-      return `₹${listing.budgetMin.toLocaleString("en-IN")} - ₹${listing.budgetMax.toLocaleString("en-IN")}`;
+      return `${compactMoney(listing.budgetMin)} – ${compactMoney(listing.budgetMax)}`;
     }
     return listing.budgetMax != null ? `Up to ₹${listing.budgetMax.toLocaleString("en-IN")}` : "Flexible";
   };
@@ -313,7 +317,7 @@ export function FlatmateCard({
 
                 {/* Financial & Occupancy Decision Row: Horizontal scrolling chips */}
                 <div className="rounded-lg bg-slate-50/90 px-2 py-1 text-[11px] text-slate-600 dark:bg-slate-800/60 dark:text-slate-300 overflow-hidden">
-                  <div className="flex items-center gap-x-2 overflow-x-auto no-scrollbar whitespace-nowrap text-[11px]">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px]">
                     {listing.deposit != null ? (
                       <>
                         <span className="shrink-0">
@@ -340,7 +344,7 @@ export function FlatmateCard({
                         )}
                         {listing.spotsAvailable > 0 && (
                           <span className="shrink-0 font-semibold text-emerald-700 dark:text-emerald-400">
-                            {listing.spotsAvailable} spot open
+                            {listing.spotsAvailable} spot{listing.spotsAvailable === 1 ? "" : "s"} open
                           </span>
                         )}
                         {listing.minimumStayMonths != null && (

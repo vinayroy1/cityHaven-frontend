@@ -1,10 +1,11 @@
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { ResultCardProps } from "./resultCardTypes";
 
+/** Sale prices in lakh/crore (₹28.2 L, ₹3.8 Cr) like project cards; rents in full (₹20,000/month). */
 const money = (value?: number | null, listingType?: string | null) => {
   if (value == null) return "Price on request";
-  const suffix = listingType === "RENT" || listingType === "PG" ? "/month" : "";
-  return `Rs ${value.toLocaleString("en-IN")}${suffix}`;
+  if (listingType === "RENT" || listingType === "PG") return `₹${value.toLocaleString("en-IN")}/month`;
+  return shortMoney(value) || `₹${value.toLocaleString("en-IN")}`;
 };
 
 const area = (item: PropertySearchItem) => {
@@ -36,12 +37,13 @@ const readable = (value?: string | null) =>
         .replace(/\b\w/g, (letter) => letter.toUpperCase())
     : "";
 
-const shortMoney = (value?: number | null) => {
+function shortMoney(value?: number | null) {
   if (value == null || value <= 0) return "";
-  if (value >= 10_000_000) return `Rs ${(value / 10_000_000).toFixed(value % 10_000_000 ? 1 : 0)} Cr`;
-  if (value >= 100_000) return `Rs ${(value / 100_000).toFixed(value % 100_000 ? 1 : 0)} L`;
-  return `Rs ${value.toLocaleString("en-IN")}`;
-};
+  const trim = (n: number) => n.toFixed(2).replace(/\.?0+$/, "");
+  if (value >= 10_000_000) return `₹${trim(value / 10_000_000)} Cr`;
+  if (value >= 100_000) return `₹${trim(value / 100_000)} L`;
+  return `₹${value.toLocaleString("en-IN")}`;
+}
 
 const decisionDetails = (item: PropertySearchItem): string[] => {
   const listingType = item.listingType?.toUpperCase();

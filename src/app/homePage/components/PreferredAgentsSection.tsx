@@ -63,7 +63,7 @@ export default function PreferredAgentsSection({ selectedCity }: { selectedCity:
   // Use dynamic API advisors if available, fallback gracefully to static/local
   const agents = (apiAdvisors && apiAdvisors.length > 0) ? apiAdvisors : staticAgents;
 
-  if (!isLoading && (!agents || agents.length === 0)) return null;
+  if (!isLoading && (!agents || agents.length < 3)) return null;
 
   return (
     <section className="mt-4 sm:mt-6">

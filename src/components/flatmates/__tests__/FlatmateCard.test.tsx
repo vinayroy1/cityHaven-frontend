@@ -86,7 +86,7 @@ describe("FlatmateCard", () => {
   it("opens details from the card while keeping Connect independent", () => {
     render(<FlatmateCard listing={mockListing} />);
 
-    fireEvent.click(screen.getByRole("link", { name: /view details/i }));
+    fireEvent.click(screen.getByRole("article", { name: new RegExp(`view details for ${mockListing.title}`, "i") }));
     expect(pushMock).toHaveBeenCalledWith(`/flatmates/${mockListing.slug}`);
 
     pushMock.mockClear();
@@ -147,7 +147,7 @@ describe("FlatmateCard", () => {
 
     expect(screen.getByText("Looking for Room")).toBeInTheDocument();
     expect(screen.getByText("Max Budget")).toBeInTheDocument();
-    expect(screen.getByText("₹12,000 - ₹18,000")).toBeInTheDocument();
+    expect(screen.getByText("₹12k – ₹18k")).toBeInTheDocument();
     expect(screen.getByText("Priya S.")).toBeInTheDocument();
     expect(screen.getByText("Verified")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /connect/i })).toBeInTheDocument();
