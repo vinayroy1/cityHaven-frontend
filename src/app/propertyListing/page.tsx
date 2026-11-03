@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Home, Building2, ShieldCheck, Users, Sparkles, Gift } from "lucide-react";
+import { ArrowLeft, Home, Building2, ShieldCheck, Users } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PropertyListingFlow } from "@/components/propertyListing/PropertyListingFlow";
 import { buildCanonical } from "@/constants/seo";
@@ -66,35 +66,6 @@ export default function PropertyListingPage() {
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span className="hidden sm:inline">Direct Verified Inquiries • Zero Brokerage</span>
               <span className="sm:hidden">Direct Verified</span>
-            </div>
-          </div>
-
-          {/* 1,000 Free Credits Signup Highlight */}
-          <div className="mb-4 sm:mb-6 rounded-2xl border border-amber-200/90 bg-gradient-to-r from-amber-50/90 via-rose-50/40 to-emerald-50/50 p-3 sm:p-4 shadow-2xs dark:border-amber-900/40 dark:from-amber-950/20 dark:via-slate-900 dark:to-slate-900">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400">
-                  <Sparkles className="h-5 w-5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                    <span className="inline-flex items-center rounded-md bg-amber-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-2xs">
-                      1,000 Free Credits
-                    </span>
-                    <span className="text-xs font-bold text-slate-900 dark:text-white">
-                      Instant Signup Bonus for All Users
-                    </span>
-                  </div>
-                  <p className="mt-0.5 text-[11px] text-slate-600 dark:text-slate-400">
-                    Use your 1,000 credits to list properties, unlock verified direct tenant &amp; buyer contacts, and boost your listing to the top of search results.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 shrink-0 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
-                <span className="rounded-full bg-white dark:bg-slate-800 px-3 py-1 border border-amber-200 dark:border-amber-800/60 shadow-2xs">
-                  Zero Brokerage • Instant Activation
-                </span>
-              </div>
             </div>
           </div>
 

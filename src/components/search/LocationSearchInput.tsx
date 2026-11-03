@@ -13,8 +13,9 @@ type Suggestion = { type: "awasio"; suggestion: AwasioSuggestion };
 const LOCALITY_PAGE_SIZE = 30;
 
 // In-memory caches to make locality suggestions instant (0ms delay) on subsequent clicks and searches
-const cityLocalityCache = new Map<string, { suggestions: Suggestion[]; hasMore: boolean }>();
-const querySuggestionCache = new Map<string, { suggestions: Suggestion[]; hasMore: boolean }>();
+type CachedPage = { suggestions: Suggestion[]; hasMore: boolean; nextPage?: number };
+const cityLocalityCache = new Map<string, CachedPage>();
+const querySuggestionCache = new Map<string, CachedPage>();
 
 type Props = {
   localities: LocalityTag[];
@@ -94,6 +95,7 @@ export function LocationSearchInput({
       if (text.trim().length < 2) {
         setSuggestions(cached.suggestions);
         setHasMore(cached.hasMore);
+        setNextPage(cached.nextPage ?? 2);
       }
       setLoading(false);
       return;
@@ -152,7 +154,7 @@ export function LocationSearchInput({
       const baseHasMore = cached ? cached.hasMore : prefetchedHasMore;
       setSuggestions(baseSuggestions);
       setHasMore(baseHasMore);
-      setNextPage(2);
+      setNextPage(cached?.nextPage ?? 2);
       setLoading(false);
       setError(null);
       return;
@@ -164,7 +166,7 @@ export function LocationSearchInput({
     if (cachedQuery) {
       setSuggestions(cachedQuery.suggestions);
       setHasMore(cachedQuery.hasMore);
-      setNextPage(2);
+      setNextPage(cachedQuery.nextPage ?? 2);
       setLoading(false);
       setError(null);
       return;
@@ -239,8 +241,15 @@ export function LocationSearchInput({
       }
       const next = Array.from(merged.values());
       const canLoadMore = response.pagination?.hasNextPage ?? (response.data || []).length >= LOCALITY_PAGE_SIZE;
+      // Keep the caches in step, otherwise the effects above restore page 1 and we re-request page 2 forever.
+      const entry = { suggestions: next, hasMore: canLoadMore, nextPage: nextPage + 1 };
+      if (trimmed.length < 2) {
+        if (selectedCity) cityLocalityCache.set(selectedCity.toLowerCase(), entry);
+      } else {
+        querySuggestionCache.set(`${selectedCity?.toLowerCase() || ""}:${trimmed.toLowerCase()}`, entry);
+      }
       setSuggestions(next);
-      setNextPage((page) => page + 1);
+      setNextPage(nextPage + 1);
       setHasMore(canLoadMore);
       if (trimmed.length < 2) {
         setPrefetchedSuggestions(next);
@@ -284,6 +293,7 @@ export function LocationSearchInput({
       const baseHasMore = cached ? cached.hasMore : prefetchedHasMore;
       setSuggestions(baseSuggestions);
       setHasMore(baseHasMore);
+      setNextPage(cached?.nextPage ?? 2);
       setTimeout(() => {
         inputRef.current?.focus();
       }, 50);

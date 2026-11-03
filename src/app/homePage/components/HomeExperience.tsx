@@ -19,6 +19,7 @@ import { useSearchInteriorDesignersQuery } from "@/features/interiors/api";
 import { RenderWhenNear, useNearViewport } from "./RenderWhenNear";
 import { InteriorDesignerShowcaseSkeleton } from "./InteriorDesignerShowcaseSkeleton";
 import { ViewAllCard } from "./ViewAllCard";
+import { PromoStrip } from "./PromoStrip";
 import { sizedImageUrl } from "../lib/homeImage";
 import type { ProjectListing } from "@/types/project.types";
 
@@ -302,6 +303,7 @@ export function HomeExperience({
               onSubmit={submit}
             />
           </div>
+            <PromoStrip />
 
           
         </div>

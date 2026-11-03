@@ -509,8 +509,8 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
           >
             <PlusCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-200 group-hover:rotate-90 shrink-0" />
             <span className="whitespace-nowrap">
-              <span className="hidden xs:inline">Post Property</span>
-              <span className="xs:hidden">Post</span>
+              <span className="hidden xs:inline">Post Property Free</span>
+              <span className="xs:hidden">Post Free</span>
             </span>
           </Link>
 

@@ -215,7 +215,7 @@ export function LocationStep() {
 
       const timer = setTimeout(async () => {
         try {
-          const res = await fetch(`/api/google/nearby-landmarks?lat=${latNum}&lng=${lngNum}`, {
+          const res = await fetch(`/api/google/nearby-landmarks?lat=${latNum}&lng=${lngNum}&locality=${encodeURIComponent(localityClean)}&city=${encodeURIComponent(watchedCity?.trim() || "")}`, {
             cache: "no-store",
           });
           if (reqSeq !== landmarkReqSeqRef.current) return;
@@ -271,7 +271,7 @@ export function LocationStep() {
     const timer = setTimeout(async () => {
       try {
         const res = await fetch(
-          `/api/google/nearby-landmarks?address=${encodeURIComponent(targetAddress)}`,
+          `/api/google/nearby-landmarks?address=${encodeURIComponent(targetAddress)}&locality=${encodeURIComponent(localityClean)}&city=${encodeURIComponent(watchedCity?.trim() || "")}`,
           { cache: "no-store" }
         );
         if (reqSeq !== landmarkReqSeqRef.current) return;

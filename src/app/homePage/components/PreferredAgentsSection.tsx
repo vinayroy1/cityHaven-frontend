@@ -126,15 +126,24 @@ export default function PreferredAgentsSection({ selectedCity }: { selectedCity:
                   {/* Agent Headshot & Identification */}
                   <div className="flex items-start gap-3.5">
                     <div className="relative shrink-0">
-                      <img
-                        src={sizedImageUrl(agent.avatar, 128)}
-                        alt={agent.name}
-                        width={56}
-                        height={56}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-14 w-14 rounded-full object-cover ring-2 ring-slate-100 shadow-xs dark:ring-slate-800 group-hover:ring-rose-200 transition"
-                      />
+                      {agent.avatar ? (
+                        <img
+                          src={sizedImageUrl(agent.avatar, 128)}
+                          alt={agent.name}
+                          width={56}
+                          height={56}
+                          loading="lazy"
+                          decoding="async"
+                          className="h-14 w-14 rounded-full object-cover ring-2 ring-slate-100 shadow-xs dark:ring-slate-800 group-hover:ring-rose-200 transition"
+                        />
+                      ) : (
+                        <span
+                          aria-hidden
+                          className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-lg font-bold text-rose-700 ring-2 ring-slate-100 dark:bg-rose-950/50 dark:text-rose-300 dark:ring-slate-800"
+                        >
+                          {(agent.name || "A").trim().charAt(0).toUpperCase()}
+                        </span>
+                      )}
                       {/* Active / In-Person tour availability indicator */}
                       <span
                         title="Available for in-person tours"

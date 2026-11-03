@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { toInternalApiUrl } from "@/lib/api/internalApi";
 
 export interface NearbyLandmarkItem {
   key: string;
@@ -71,16 +72,48 @@ async function geocodeAddressFree(address: string): Promise<{ lat?: number; lng?
   }
 }
 
+/** Precomputed landmarks for a locality from our backend (OSM/Overture data, no per-request cost). */
+async function fetchDbLandmarks(params: URLSearchParams): Promise<Partial<NearbyLandmarksResponse> & { localityId?: number | null } | null> {
+  try {
+    const url = toInternalApiUrl(`/v1/locations/nearby-landmarks?${params.toString()}`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 3600 } });
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   let lat = parseFloat(searchParams.get("lat") || "");
   let lng = parseFloat(searchParams.get("lng") || "");
   const addressParam = (searchParams.get("address") || searchParams.get("q") || "").trim();
+  const locality = (searchParams.get("locality") || "").trim();
+  const city = (searchParams.get("city") || "").trim();
 
   let pincode: string | undefined = undefined;
   let formattedAddress: string | undefined = undefined;
 
-  // Free Geocoding: If lat/lng missing, geocode from address using OpenStreetMap (Free, 0 cost)
+  // 1. Our DB: locality name (+city) or nearest locality to lat/lng.
+  const dbParams = new URLSearchParams();
+  if (locality) dbParams.set("locality", locality);
+  if (city) dbParams.set("city", city);
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    dbParams.set("lat", String(lat));
+    dbParams.set("lng", String(lng));
+  }
+  const db = dbParams.toString() ? await fetchDbLandmarks(dbParams) : null;
+  if (db?.localityId && (!Number.isFinite(lat) || !Number.isFinite(lng)) && db.coordinates) {
+    lat = db.coordinates.lat;
+    lng = db.coordinates.lng;
+    pincode = db.pincode;
+  }
+
+  // 2. Free geocoding (OpenStreetMap) only when we still have no coordinates.
   if ((!Number.isFinite(lat) || !Number.isFinite(lng)) && addressParam) {
     const geo = await geocodeAddressFree(addressParam);
     if (geo) {
@@ -93,21 +126,19 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Safe fallback coordinates for default view if geocoding yields nothing
   const coordinates = Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : undefined;
 
-  // Google Places API (New) has been disabled to eliminate high recurring API costs.
-  // Returns zero-cost empty landmark lists, keeping the frontend form 100% stable.
+  // Google Places stays disabled (cost); landmarks come from our DB.
   const response: NearbyLandmarksResponse = {
     success: true,
     coordinates,
     pincode,
     formattedAddress,
-    transit: [],
-    healthcare: [],
-    education: [],
-    lifestyle: [],
-    all: [],
+    transit: db?.transit ?? [],
+    healthcare: db?.healthcare ?? [],
+    education: db?.education ?? [],
+    lifestyle: db?.lifestyle ?? [],
+    all: db?.all ?? [],
   };
 
   return NextResponse.json(response);
