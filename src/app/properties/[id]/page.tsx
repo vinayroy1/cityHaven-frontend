@@ -10,7 +10,7 @@ import { buildCanonical, SITE_URL } from "@/constants/seo";
 import { AboutHighlights } from "./components/AboutHighlights";
 import { GalleryStrip } from "./components/GalleryStrip";
 import { HeroHeader } from "./components/HeroHeader";
-import { NearbyPlaces } from "./components/NearbyPlaces";
+import { NearbyPlaces } from "@/components/nearby/NearbyPlaces";
 import { LocationCard } from "./components/LocationCard";
 import { OwnerContactCard } from "./components/OwnerContactCard";
 import { PropertyDetailsGrid, type DetailGroup } from "./components/PropertyDetailsGrid";

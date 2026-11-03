@@ -23,6 +23,7 @@ export default function robots(): MetadataRoute.Robots {
           "/price-trends",
           "/home-loans",
           "/emi-calculator",
+          "/nearby",
           "/about",
           "/contact",
           "/pricing",
@@ -45,6 +46,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: [`${SITE_URL}/sitemap.xml`, `${SITE_URL}/nearby/sitemap.xml`],
   };
 }

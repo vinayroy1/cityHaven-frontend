@@ -18,6 +18,7 @@ const columns = [
   {
     title: "Tools & Portals",
     links: [
+      { label: "Locality guide: metro, hospitals & schools", href: "/nearby" },
       { label: "EMI Calculator", href: "/emi-calculator" },
       { label: "Home Loans", href: "/home-loans" },
       { label: "Price Trends", href: "/price-trends" },

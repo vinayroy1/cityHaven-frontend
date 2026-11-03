@@ -18,6 +18,7 @@ import {
   MapPin,
   Users,
   TrendingUp,
+  MapPinned,
   Coins,
   Calculator,
   User,
@@ -75,6 +76,7 @@ const categoryLinks = [
 ];
 
 const resourceLinks = [
+  { label: "Locality Guide", href: "/nearby", icon: MapPinned },
   { label: "Price Trends", href: "/price-trends", icon: TrendingUp },
   { label: "Home Loans", href: "/home-loans", icon: Coins },
   { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator },
@@ -117,6 +119,7 @@ export function MobileBottomNav() {
 
   const activeResourceLinks = React.useMemo(() => {
     return [
+      { label: "Locality Guide", href: "/nearby", icon: MapPinned, onClick: undefined },
       { label: "Price Trends", href: "/price-trends", icon: TrendingUp, onClick: undefined },
       { label: "Home Loans", href: "/home-loans", icon: Coins, onClick: undefined },
       { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator, onClick: undefined },

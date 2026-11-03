@@ -7,7 +7,7 @@ import { Bus, GraduationCap, HeartPulse, Navigation, ShoppingBag, TrainFront } f
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 
 type Item = { key?: string; name: string; distanceKm: number; type?: string; lat?: number | null; lng?: number | null };
-type Groups = { transit: Item[]; healthcare: Item[]; education: Item[]; lifestyle: Item[] };
+export type Groups = { transit: Item[]; healthcare: Item[]; education: Item[]; lifestyle: Item[] };
 
 const GROUPS: Array<{ key: keyof Groups; label: string; icon: typeof Bus; tone: string }> = [
   { key: "transit", label: "Transit", icon: TrainFront, tone: "bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300" },
@@ -38,14 +38,27 @@ function normalize(raw: unknown): Groups | null {
   return Object.values(g).some((l) => l.length) ? g : null;
 }
 
-async function fetchLocalityLandmarks(p: {
+export type NearbyLocality = { id: number; name: string | null; slug: string | null; cityName: string | null };
+
+/** Landmarks + resolved locality from the backend (by slug, id, name+city or lat/lng). */
+export async function fetchNearbyData(p: {
+  expanded?: boolean;
+  slug?: string | null;
   localityId?: number | string | null;
   locality?: string | null;
   cityName?: string | null;
   latitude?: number | null;
   longitude?: number | null;
-}): Promise<Groups | null> {
+}): Promise<{
+  groups: Groups | null;
+  locality: NearbyLocality | null;
+  coordinates?: { lat: number; lng: number };
+  indexable?: boolean;
+  pincode?: string;
+} | null> {
   const qs = new URLSearchParams();
+  if (p.expanded) qs.set("expanded", "1");
+  if (p.slug) qs.set("slug", p.slug);
   if (p.localityId) qs.set("localityId", String(p.localityId));
   if (p.locality) qs.set("locality", p.locality);
   if (p.cityName) qs.set("city", p.cityName);
@@ -57,7 +70,8 @@ async function fetchLocalityLandmarks(p: {
   try {
     const res = await fetch(toInternalApiUrl(`/v1/locations/nearby-landmarks?${qs}`), { next: { revalidate: 86400 } });
     if (!res.ok) return null;
-    return normalize(await res.json());
+    const d = await res.json();
+    return { groups: normalize(d), locality: d.locality ?? null, coordinates: d.coordinates, indexable: d.indexable, pincode: d.pincode };
   } catch {
     return null;
   }
@@ -65,30 +79,18 @@ async function fetchLocalityLandmarks(p: {
 
 const fmtKm = (km: number) => (km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`);
 
-export async function NearbyPlaces(props: {
-  stored?: unknown;
-  localityId?: number | string | null;
-  locality?: string | null;
-  cityName?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
-}) {
-  const groups = normalize(props.stored) ?? (await fetchLocalityLandmarks(props));
-  if (!groups) return null;
-
+export function NearbyGrid({ groups, limit = 4, title = "What's nearby" }: { groups: Groups; limit?: number; title?: string | null }) {
   const closest = (["transit", "healthcare", "education"] as const)
     .map((k) => [...groups[k]].sort((a, b) => a.distanceKm - b.distanceKm)[0])
     .filter(Boolean);
-
   return (
-    <section id="nearby" className="scroll-mt-24 border-t border-zinc-200 py-6 dark:border-slate-800">
-      <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">What&apos;s nearby</h2>
+    <>
+      {title && <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">{title}</h2>}
       {closest.length > 0 && (
         <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
           {closest.map((c) => `${c.name} ${fmtKm(c.distanceKm)}`).join(" · ")}
         </p>
       )}
-
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         {GROUPS.filter((g) => groups[g.key].length).map(({ key, label, icon: Icon, tone }) => (
           <div key={key} className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
@@ -101,7 +103,7 @@ export async function NearbyPlaces(props: {
             <ul className="space-y-1.5">
               {[...groups[key]]
                 .sort((a, b) => a.distanceKm - b.distanceKm)
-                .slice(0, 4)
+                .slice(0, limit)
                 .map((it) => (
                   <li key={it.key ?? `${it.name}-${it.distanceKm}`} className="flex items-center justify-between gap-2 text-xs">
                     <span className="min-w-0 truncate text-slate-700 dark:text-slate-300">
@@ -131,8 +133,25 @@ export async function NearbyPlaces(props: {
         ))}
       </div>
       <p className="mt-3 text-[10px] text-slate-400">
-        Approximate straight-line distances from the locality. Map data © OpenStreetMap contributors, Overture Maps.
+        Approximate straight-line distances from the locality centre. Map data © OpenStreetMap contributors, Overture Maps.
       </p>
+    </>
+  );
+}
+
+export async function NearbyPlaces(props: {
+  stored?: unknown;
+  localityId?: number | string | null;
+  locality?: string | null;
+  cityName?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+}) {
+  const groups = normalize(props.stored) ?? (await fetchNearbyData(props))?.groups ?? null;
+  if (!groups) return null;
+  return (
+    <section id="nearby" className="scroll-mt-24 border-t border-zinc-200 py-6 dark:border-slate-800">
+      <NearbyGrid groups={groups} />
     </section>
   );
 }

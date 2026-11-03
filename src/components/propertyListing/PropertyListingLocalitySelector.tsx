@@ -17,6 +17,8 @@ export interface LocalitySelection {
   lat?: number | null;
   lng?: number | null;
   isCustom?: boolean;
+  /** Locality slug (suggestion id) when picked from the list. */
+  slug?: string;
 }
 
 interface Props {
@@ -279,6 +281,7 @@ export function PropertyListingLocalitySelector({
       lat: s.location.lat ?? null,
       lng: s.location.lng ?? null,
       isCustom: false,
+      slug: s.id,
     });
   };
 
