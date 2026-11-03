@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { cache } from "react";
-import { ChevronRight, MapPin } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { getGuideCities, getGuideCityPage, guideCityKey } from "@/components/nearby/guideData";
 import { fetchNearbyData } from "@/components/nearby/NearbyPlaces";
@@ -54,19 +54,13 @@ export default async function GuideCityPage({ params }: Props) {
   const cityKey = d.city.key;
   const cities = await getGuideCities();
 
-  const sorted = [...d.localities].sort((a, b) => a.name.localeCompare(b.name));
-  const letters = new Map<string, typeof sorted>();
-  for (const l of sorted) {
-    const k = /[a-z]/i.test(l.name[0]) ? l.name[0].toUpperCase() : "#";
-    letters.set(k, [...(letters.get(k) ?? []), l]);
-  }
-  const best = [...d.localities].sort((a, b) => b.landmarks - a.landmarks).slice(0, 8);
+  const best = [...d.localities].sort((a, b) => b.landmarks - a.landmarks).slice(0, 12);
 
   return (
     <main className="min-h-screen bg-[#f7f8f6] pb-24 dark:bg-slate-950">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(cityJsonLd(d.city.name, `/nearby/${cityKey}`, sorted.map((l) => ({ name: l.name, slug: `${cityKey}/${l.key}` })))) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(cityJsonLd(d.city.name, `/nearby/${cityKey}`, best.map((l) => ({ name: l.name, slug: `${cityKey}/${l.key}` })))) }}
       />
       <HeaderNav />
 
@@ -113,38 +107,6 @@ export default async function GuideCityPage({ params }: Props) {
             </div>
           </section>
         )}
-
-        <section className="pt-8">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">All localities A–Z</h2>
-          <div className="mt-3 flex flex-wrap gap-1">
-            {[...letters.keys()].map((k) => (
-              <a
-                key={k}
-                href={`#l-${k}`}
-                className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-xs font-bold text-slate-700 ring-1 ring-slate-200 hover:bg-emerald-50 hover:text-emerald-700 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800"
-              >
-                {k}
-              </a>
-            ))}
-          </div>
-          <div className="mt-4 space-y-5">
-            {[...letters.entries()].map(([k, list]) => (
-              <div key={k} id={`l-${k}`} className="scroll-mt-24 rounded-2xl border border-slate-200/80 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-                <p className="mb-2 text-sm font-black text-emerald-600">{k}</p>
-                <ul className="grid grid-cols-1 gap-x-4 gap-y-1.5 sm:grid-cols-3 lg:grid-cols-4">
-                  {list.map((l) => (
-                    <li key={l.id} className="min-w-0">
-                      <Link href={`/nearby/${cityKey}/${l.key}`} className="flex items-center gap-1.5 truncate text-sm text-slate-700 hover:text-emerald-700 dark:text-slate-300">
-                        <MapPin className="h-3 w-3 shrink-0 text-slate-300" />
-                        <span className="truncate">{l.name}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {cities.length > 0 && (
           <section className="pt-8">

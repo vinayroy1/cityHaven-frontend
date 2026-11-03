@@ -1,6 +1,15 @@
 /** Server-side fetchers for the locality guide SEO scope (top 100 cities + indexable localities). */
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 
+/**
+ * Server-only header that identifies our Next.js server to the backend, which then returns full
+ * locality lists (public callers get a capped list). INTERNAL_API_KEY must never be NEXT_PUBLIC_.
+ */
+export function internalHeaders(): Record<string, string> {
+  const key = process.env.INTERNAL_API_KEY;
+  return key ? { "x-internal-key": key } : {};
+}
+
 export type GuideCity = { id: number; name: string; slug: string | null; state: string | null; key?: string };
 export type GuideLocality = { id: number; name: string; slug: string; landmarks: number; key: string };
 
@@ -16,7 +25,7 @@ export const guideCityKey = (c: GuideCity) =>
 
 export async function getGuideCities(): Promise<GuideCity[]> {
   try {
-    const res = await fetch(toInternalApiUrl("/v1/locations/locality-guide/cities"), { next: { revalidate: 86400 } });
+    const res = await fetch(toInternalApiUrl("/v1/locations/locality-guide/cities"), { next: { revalidate: 86400 }, headers: internalHeaders() });
     if (!res.ok) return [];
     return (await res.json()).data ?? [];
   } catch {
@@ -28,6 +37,7 @@ export async function getGuideLocalities(cityKey: string): Promise<{ city: Guide
   try {
     const res = await fetch(toInternalApiUrl(`/v1/locations/locality-guide/cities/${encodeURIComponent(cityKey)}`), {
       next: { revalidate: 86400 },
+      headers: internalHeaders(),
     });
     if (!res.ok) return null;
     const d = await res.json();
@@ -44,6 +54,7 @@ export async function getGuideCityPage(cityKey: string): Promise<GuideCityPage |
   try {
     const res = await fetch(toInternalApiUrl(`/v1/locations/locality-guide/city/${encodeURIComponent(cityKey)}`), {
       next: { revalidate: 86400 },
+      headers: internalHeaders(),
     });
     if (!res.ok) return null;
     const d = await res.json();

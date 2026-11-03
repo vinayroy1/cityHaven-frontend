@@ -5,6 +5,7 @@
  */
 import { Bus, GraduationCap, HeartPulse, Navigation, ShoppingBag, TrainFront } from "lucide-react";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
+import { internalHeaders } from "./guideData";
 
 type Item = { key?: string; name: string; distanceKm: number; type?: string; lat?: number | null; lng?: number | null };
 export type Groups = { transit: Item[]; healthcare: Item[]; education: Item[]; lifestyle: Item[] };
@@ -81,7 +82,10 @@ export async function fetchNearbyData(p: {
   }
   if (!qs.toString()) return null;
   try {
-    const res = await fetch(toInternalApiUrl(`/v1/locations/nearby-landmarks?${qs}`), { next: { revalidate: 86400 } });
+    const res = await fetch(toInternalApiUrl(`/v1/locations/nearby-landmarks?${qs}`), {
+      next: { revalidate: 86400 },
+      headers: internalHeaders(),
+    });
     if (!res.ok) return null;
     const d = await res.json();
     return { groups: normalize(d), locality: d.locality ?? null, coordinates: d.coordinates, indexable: d.indexable, pincode: d.pincode };

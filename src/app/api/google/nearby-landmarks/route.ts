@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
+import { internalHeaders } from "@/components/nearby/guideData";
 
 export interface NearbyLandmarkItem {
   key: string;
@@ -78,7 +79,7 @@ async function fetchDbLandmarks(params: URLSearchParams): Promise<Partial<Nearby
     const url = toInternalApiUrl(`/v1/locations/nearby-landmarks?${params.toString()}`);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 4000);
-    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 3600 } });
+    const res = await fetch(url, { signal: controller.signal, next: { revalidate: 3600 }, headers: internalHeaders() });
     clearTimeout(timeout);
     if (!res.ok) return null;
     return await res.json();
