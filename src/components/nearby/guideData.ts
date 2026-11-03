@@ -1,10 +1,18 @@
 /** Server-side fetchers for the locality guide SEO scope (top 100 cities + indexable localities). */
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 
-export type GuideCity = { id: number; name: string; slug: string | null; state: string | null };
-export type GuideLocality = { id: number; name: string; slug: string; landmarks: number };
+export type GuideCity = { id: number; name: string; slug: string | null; state: string | null; key?: string };
+export type GuideLocality = { id: number; name: string; slug: string; landmarks: number; key: string };
 
-export const guideCityKey = (c: GuideCity) => c.slug || String(c.id);
+/** URL key for a city: the backend's key, else the slugified name (same rule as the backend). */
+export const guideCityKey = (c: GuideCity) =>
+  c.key ||
+  c.name
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 export async function getGuideCities(): Promise<GuideCity[]> {
   try {
@@ -24,6 +32,22 @@ export async function getGuideLocalities(cityKey: string): Promise<{ city: Guide
     if (!res.ok) return null;
     const d = await res.json();
     return { city: d.city, localities: d.data ?? [] };
+  } catch {
+    return null;
+  }
+}
+
+export type GuideCityPage = { city: GuideCity & { key: string }; indexable: boolean; localities: GuideLocality[] };
+
+/** Any city by URL key (top-100 → indexable; others → noindex but still browsable). */
+export async function getGuideCityPage(cityKey: string): Promise<GuideCityPage | null> {
+  try {
+    const res = await fetch(toInternalApiUrl(`/v1/locations/locality-guide/city/${encodeURIComponent(cityKey)}`), {
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) return null;
+    const d = await res.json();
+    return { city: d.city, indexable: Boolean(d.indexable), localities: d.localities ?? [] };
   } catch {
     return null;
   }

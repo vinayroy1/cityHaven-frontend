@@ -47,6 +47,8 @@ interface UserProfile {
   profileImage?: string | null;
 }
 
+const noopSubscribe = () => () => {};
+
 const primaryNavLinks = [
   { label: "Buy", href: "/buy", icon: Home },
   { label: "Rent", href: "/rent", icon: Key },
@@ -126,7 +128,16 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
 
   const { data: creditsData } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
   const { data: platformData } = useGetCreditPlatformConfigQuery();
-  const purchaseEnabled = platformData?.data?.flags?.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
+  // The flag comes from a client-side query; it can already be cached on the first client render
+  // (after a client navigation) while the server rendered without it. Gate it on hydration so the
+  // first client render always matches the server HTML (avoids a hydration mismatch in the nav).
+  const hydrated = React.useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
+  const purchaseEnabled =
+    hydrated && (platformData?.data?.flags?.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false);
   const creditBalance = creditsData?.data?.credits ?? (userProfile as any)?.credits ?? 0;
 
   useModalBackHandler({

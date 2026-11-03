@@ -28,7 +28,7 @@ function Page({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** /nearby/[slug] */
+/** /nearby/[city]/[locality] */
 export function LocalityGuideSkeleton() {
   return (
     <Page>
@@ -101,7 +101,7 @@ export function LocalityGuideSkeleton() {
   );
 }
 
-/** /nearby/city/[city] */
+/** /nearby/[city] */
 export function CityGuideSkeleton() {
   return (
     <Page>

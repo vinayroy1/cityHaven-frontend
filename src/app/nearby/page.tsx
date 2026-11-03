@@ -39,11 +39,11 @@ async function loadPopular(): Promise<Card[]> {
   const res = await Promise.all(
     POPULAR.map(async ([locality, cityName]) => {
       const d = await fetchNearbyData({ locality, cityName });
-      if (!d?.locality?.slug || !d.groups) return null;
+      if (!d?.locality?.path || !d.groups) return null;
       return {
         name: d.locality.name || locality,
         city: d.locality.cityName || cityName,
-        slug: d.locality.slug,
+        slug: d.locality.path,
         items: flattenGroups(d.groups),
       };
     }),
@@ -153,7 +153,7 @@ export default async function NearbyIndexPage() {
             {guideCities.map((c) => (
               <Link
                 key={c.id}
-                href={`/nearby/city/${guideCityKey(c)}`}
+                href={`/nearby/${guideCityKey(c)}`}
                 className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-emerald-50 hover:text-emerald-700 hover:ring-emerald-200 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-800"
               >
                 {c.name}

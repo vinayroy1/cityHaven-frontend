@@ -4,7 +4,7 @@
  */
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/constants/seo";
-import { getGuideCities, getGuideLocalities, guideCityKey } from "@/components/nearby/guideData";
+import { getGuideCities, getGuideCityPage, guideCityKey } from "@/components/nearby/guideData";
 
 // Generated per request (data fetches below are cached for 24h). A build-time prerender would
 // bake in an empty list whenever the backend is unreachable during `next build`.
@@ -18,14 +18,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const out: MetadataRoute.Sitemap = [{ url: `${SITE_URL}/nearby`, lastModified: now, changeFrequency: "monthly", priority: 0.7 }];
 
   // Small batches: 100 parallel requests overload the backend and silently drop cities.
-  const perCity: Awaited<ReturnType<typeof getGuideLocalities>>[] = [];
+  const perCity: Awaited<ReturnType<typeof getGuideCityPage>>[] = [];
   for (let i = 0; i < cities.length; i += 6) {
-    perCity.push(...(await Promise.all(cities.slice(i, i + 6).map((c) => getGuideLocalities(guideCityKey(c))))));
+    perCity.push(...(await Promise.all(cities.slice(i, i + 6).map((c) => getGuideCityPage(guideCityKey(c))))));
   }
   cities.forEach((c, i) => {
-    out.push({ url: `${SITE_URL}/nearby/city/${guideCityKey(c)}`, lastModified: now, changeFrequency: "monthly", priority: 0.6 });
+    const key = guideCityKey(c);
+    out.push({ url: `${SITE_URL}/nearby/${key}`, lastModified: now, changeFrequency: "monthly", priority: 0.6 });
     for (const l of perCity[i]?.localities ?? []) {
-      out.push({ url: `${SITE_URL}/nearby/${l.slug}`, lastModified: now, changeFrequency: "monthly", priority: 0.5 });
+      out.push({ url: `${SITE_URL}/nearby/${key}/${l.key}`, lastModified: now, changeFrequency: "monthly", priority: 0.5 });
     }
   });
   return out;

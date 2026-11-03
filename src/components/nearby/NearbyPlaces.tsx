@@ -38,11 +38,20 @@ function normalize(raw: unknown): Groups | null {
   return Object.values(g).some((l) => l.length) ? g : null;
 }
 
-export type NearbyLocality = { id: number; name: string | null; slug: string | null; cityName: string | null };
+export type NearbyLocality = {
+  id: number;
+  name: string | null;
+  slug: string | null;
+  cityName: string | null;
+  /** Guide path "{cityKey}/{localityKey}" → /nearby/{path}. */
+  path?: string | null;
+};
 
 /** Landmarks + resolved locality from the backend (by slug, id, name+city or lat/lng). */
 export async function fetchNearbyData(p: {
   expanded?: boolean;
+  cityKey?: string;
+  localityKey?: string;
   slug?: string | null;
   localityId?: number | string | null;
   locality?: string | null;
@@ -59,6 +68,10 @@ export async function fetchNearbyData(p: {
   const qs = new URLSearchParams();
   if (p.expanded) qs.set("expanded", "1");
   if (p.slug) qs.set("slug", p.slug);
+  if (p.cityKey && p.localityKey) {
+    qs.set("cityKey", p.cityKey);
+    qs.set("localityKey", p.localityKey);
+  }
   if (p.localityId) qs.set("localityId", String(p.localityId));
   if (p.locality) qs.set("locality", p.locality);
   if (p.cityName) qs.set("city", p.cityName);

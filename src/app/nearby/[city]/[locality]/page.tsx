@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { cache } from "react";
 import { ArrowRight, Building2, ChevronRight, Home, MapPin, Users } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
@@ -10,13 +10,15 @@ import { LocalityExplorer } from "@/components/nearby/LocalityExplorer";
 import { LocalityFaq } from "@/components/nearby/LocalityFaq";
 import { NearbyFinder } from "@/components/nearby/NearbyFinder";
 import { toSearchSlug } from "@/components/search/searchQuery";
-import { getGuideCities, guideCityKey } from "@/components/nearby/guideData";
 import { localityFaqs, localityJsonLd, localityMetadata, type LocalitySeoInput } from "@/components/nearby/seo";
 
-const getData = cache(async (slug: string) => fetchNearbyData({ slug, expanded: true }));
+const getData = cache(async (cityKey: string, localityKey: string) =>
+  fetchNearbyData({ cityKey: cityKey.toLowerCase(), localityKey: localityKey.toLowerCase(), expanded: true }),
+);
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ city: string; locality: string }> };
 
+/** `slug` here is the guide path "{city}/{locality}" used for canonical/JSON-LD URLs. */
 function seoInput(slug: string, d: NonNullable<Awaited<ReturnType<typeof getData>>>): LocalitySeoInput {
   return {
     name: d.locality?.name || "",
@@ -30,26 +32,29 @@ function seoInput(slug: string, d: NonNullable<Awaited<ReturnType<typeof getData
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const d = await getData(decodeURIComponent(slug));
+  const { city: ck, locality: lk } = await params;
+  const d = await getData(decodeURIComponent(ck), decodeURIComponent(lk));
   if (!d?.locality?.name || !d.groups) return { title: "Locality not found", robots: { index: false } };
-  return localityMetadata(seoInput(slug, d));
+  return localityMetadata(seoInput(d.locality.path || `${ck}/${lk}`, d));
 }
 
 export default async function NearbyLocalityPage({ params }: Props) {
-  const { slug } = await params;
-  const d = await getData(decodeURIComponent(slug));
+  const { city: ck, locality: lk } = await params;
+  const d = await getData(decodeURIComponent(ck), decodeURIComponent(lk));
   if (!d?.locality?.name) notFound();
+  // Normalise case/variants to the canonical path.
+  if (d.locality.path && d.locality.path !== `${ck}/${lk}`) permanentRedirect(`/nearby/${d.locality.path}`);
+  const slug = d.locality.path || `${ck}/${lk}`;
+  const cityKey = slug.split("/")[0];
 
   const name = d.locality.name;
   const city = d.locality.cityName || "";
   const citySlug = city ? toSearchSlug(city) : "";
   const locSlug = toSearchSlug(name);
   const items = d.groups ? flattenGroups(d.groups) : [];
-  const guideCity = (await getGuideCities()).find((c) => c.name.toLowerCase() === city.toLowerCase());
   const seo = seoInput(slug, d);
   const faqs = localityFaqs(seo);
-  const jsonLd = localityJsonLd(seo, faqs, guideCity ? `/nearby/city/${guideCityKey(guideCity)}` : undefined);
+  const jsonLd = localityJsonLd(seo, faqs, `/nearby/${cityKey}`);
   const score = items.length ? connectivityScore(items) : null;
 
   const homeLinks = citySlug
@@ -82,8 +87,8 @@ export default async function NearbyLocalityPage({ params }: Props) {
             {city && (
               <>
                 <ChevronRight className="h-3 w-3" />
-                {guideCity ? (
-                  <Link href={`/nearby/city/${guideCityKey(guideCity)}`} className="hover:text-slate-800">
+                {cityKey ? (
+                  <Link href={`/nearby/${cityKey}`} className="hover:text-slate-800">
                     {city}
                   </Link>
                 ) : (

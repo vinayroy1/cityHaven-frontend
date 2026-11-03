@@ -1,23 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { cache } from "react";
 import { ChevronRight, MapPin } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
-import { getGuideCities, getGuideLocalities, guideCityKey } from "@/components/nearby/guideData";
+import { getGuideCities, getGuideCityPage, guideCityKey } from "@/components/nearby/guideData";
+import { fetchNearbyData } from "@/components/nearby/NearbyPlaces";
 import { NearbyFinder } from "@/components/nearby/NearbyFinder";
 import { cityJsonLd } from "@/components/nearby/seo";
 
 export const revalidate = 86400;
 
-const load = cache((key: string) => getGuideLocalities(key));
+const load = cache((key: string) => getGuideCityPage(key.toLowerCase()));
 
 type Props = { params: Promise<{ city: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { city } = await params;
   const d = await load(decodeURIComponent(city));
-  if (!d) return { title: "City not found", robots: { index: false } };
+  if (!d) return { title: "Locality guide", robots: { index: false } };
   const n = d.localities.length.toLocaleString("en-IN");
   const title = `Best Areas to Live in ${d.city.name}: ${n} Localities with Metro, Hospitals & Schools`;
   const description = `${d.city.name} locality guide — compare ${n} areas by nearest metro station, hospitals, schools, colleges and malls, with distances and travel time.`;
@@ -33,8 +34,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       `${d.city.name} area wise hospitals`,
       `${d.city.name} area wise schools`,
     ],
-    alternates: { canonical: `/nearby/city/${city}` },
-    openGraph: { type: "website", title, description, url: `/nearby/city/${city}`, siteName: "Awasio", locale: "en_IN" },
+    alternates: { canonical: `/nearby/${d.city.key}` },
+    robots: d.indexable ? undefined : { index: false, follow: true },
+    openGraph: { type: "website", title, description, url: `/nearby/${d.city.key}`, siteName: "Awasio", locale: "en_IN" },
     twitter: { card: "summary_large_image", title, description },
   };
 }
@@ -42,7 +44,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function GuideCityPage({ params }: Props) {
   const { city } = await params;
   const d = await load(decodeURIComponent(city));
-  if (!d) notFound();
+  if (!d) {
+    // Legacy single-segment locality URL (/nearby/{oldSlug}) → /nearby/{city}/{locality}.
+    const legacy = await fetchNearbyData({ slug: decodeURIComponent(city) });
+    if (legacy?.locality?.path) permanentRedirect(`/nearby/${legacy.locality.path}`);
+    notFound();
+  }
+  if (d.city.key !== city.toLowerCase()) permanentRedirect(`/nearby/${d.city.key}`);
+  const cityKey = d.city.key;
   const cities = await getGuideCities();
 
   const sorted = [...d.localities].sort((a, b) => a.name.localeCompare(b.name));
@@ -57,7 +66,7 @@ export default async function GuideCityPage({ params }: Props) {
     <main className="min-h-screen bg-[#f7f8f6] pb-24 dark:bg-slate-950">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(cityJsonLd(d.city.name, `/nearby/city/${city}`, sorted)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(cityJsonLd(d.city.name, `/nearby/${cityKey}`, sorted.map((l) => ({ name: l.name, slug: `${cityKey}/${l.key}` })))) }}
       />
       <HeaderNav />
 
@@ -94,7 +103,7 @@ export default async function GuideCityPage({ params }: Props) {
               {best.map((l) => (
                 <Link
                   key={l.id}
-                  href={`/nearby/${l.slug}`}
+                  href={`/nearby/${cityKey}/${l.key}`}
                   className="min-w-0 rounded-2xl border border-slate-200/80 bg-white p-3.5 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
                 >
                   <p className="truncate text-sm font-bold text-slate-900 dark:text-white">{l.name}</p>
@@ -125,7 +134,7 @@ export default async function GuideCityPage({ params }: Props) {
                 <ul className="grid grid-cols-1 gap-x-4 gap-y-1.5 sm:grid-cols-3 lg:grid-cols-4">
                   {list.map((l) => (
                     <li key={l.id} className="min-w-0">
-                      <Link href={`/nearby/${l.slug}`} className="flex items-center gap-1.5 truncate text-sm text-slate-700 hover:text-emerald-700 dark:text-slate-300">
+                      <Link href={`/nearby/${cityKey}/${l.key}`} className="flex items-center gap-1.5 truncate text-sm text-slate-700 hover:text-emerald-700 dark:text-slate-300">
                         <MapPin className="h-3 w-3 shrink-0 text-slate-300" />
                         <span className="truncate">{l.name}</span>
                       </Link>
@@ -146,7 +155,7 @@ export default async function GuideCityPage({ params }: Props) {
                 .map((c) => (
                   <Link
                     key={c.id}
-                    href={`/nearby/city/${guideCityKey(c)}`}
+                    href={`/nearby/${guideCityKey(c)}`}
                     className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-emerald-50 hover:text-emerald-700 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-800"
                   >
                     {c.name}

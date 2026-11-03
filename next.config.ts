@@ -36,6 +36,12 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        // Locality guide city pages moved from /nearby/city/{city} to /nearby/{city}.
+        source: "/nearby/city/:city",
+        destination: "/nearby/:city",
+        permanent: true,
+      },
+      {
         source: "/homePage",
         destination: "/",
         permanent: true,
