@@ -259,12 +259,13 @@ export function WelcomeCreditModal() {
                 setReturnUrl(window.location.pathname + window.location.search);
                 setIsOpen(true);
               }}
-              className="flex items-center gap-2.5 rounded-full bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600 p-1 pr-4 text-xs font-black text-white shadow-[0_4px_25px_rgba(244,63,94,0.45)] hover:scale-105 active:scale-95 transition-all"
+              aria-label="Claim 1,000 free credits"
+              className="flex items-center gap-2.5 rounded-full bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600 p-1 sm:pr-4 text-xs font-black text-white shadow-[0_4px_25px_rgba(244,63,94,0.45)] hover:scale-105 active:scale-95 transition-all"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/30 backdrop-blur-md shadow-inner text-amber-300 animate-pulse">
                 <Gift className="h-4 w-4" />
               </span>
-              <span className="tracking-wide">
+              <span className="hidden tracking-wide sm:inline">
                 1,000 Free Credits <span className="text-amber-200 uppercase text-[10px] ml-1 font-bold">Claim</span>
               </span>
             </button>

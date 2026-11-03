@@ -18,6 +18,7 @@ type OwnerContactCardProps = {
   locality?: string | null;
   cityName?: string | null;
   price?: string | null;
+  postedAs?: string | null;
 };
 
 export function OwnerContactCard({
@@ -28,7 +29,11 @@ export function OwnerContactCard({
   locality,
   cityName,
   price,
+  postedAs,
 }: OwnerContactCardProps) {
+  const role = (postedAs || "OWNER").toUpperCase();
+  const isOwner = role === "OWNER";
+  const roleLabel = isOwner ? "Direct Owner Contact" : role === "BUILDER" ? "Builder Contact" : "Agent Contact";
   const initial = name.trim().slice(0, 2).toUpperCase() || "CH";
   const [phone, setPhone] = React.useState<string | null>(null);
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
@@ -76,9 +81,9 @@ export function OwnerContactCard({
 
           <div className="flex items-center justify-between border-t border-zinc-100 dark:border-slate-800 pt-4">
             <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-slate-400">
-              Direct Owner Contact
+              {roleLabel}
             </h2>
-            <span className="text-[11px] text-zinc-400">0% Brokerage</span>
+            {isOwner && <span className="text-[11px] text-zinc-400">0% Brokerage</span>}
           </div>
 
           <div className="mt-3.5 flex items-center gap-3">

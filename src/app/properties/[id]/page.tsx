@@ -10,6 +10,7 @@ import { buildCanonical, SITE_URL } from "@/constants/seo";
 import { AboutHighlights } from "./components/AboutHighlights";
 import { GalleryStrip } from "./components/GalleryStrip";
 import { HeroHeader } from "./components/HeroHeader";
+import { NearbyPlaces } from "./components/NearbyPlaces";
 import { LocationCard } from "./components/LocationCard";
 import { OwnerContactCard } from "./components/OwnerContactCard";
 import { PropertyDetailsGrid, type DetailGroup } from "./components/PropertyDetailsGrid";
@@ -114,6 +115,10 @@ type PropertyDetails = {
   locatedInside?: { name?: string | null } | null;
   cityName?: string | null;
   locality?: string | null;
+  localityId?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  nearbyLandmarks?: unknown;
   subLocality?: string | null;
   address?: string | null;
   createdAt?: string | null;
@@ -259,7 +264,7 @@ function buildQuickFacts(property: PropertyDetails): QuickFact[] {
       value: [property.bedrooms ? `${property.bedrooms} BHK` : null, property.bathrooms ? `${property.bathrooms} Bath` : null]
         .filter(Boolean)
         .join(" · "),
-      hint: property.balconies ? `${property.balconies} balconies` : "Room details",
+      hint: property.balconies ? `${property.balconies} ${property.balconies === 1 ? "balcony" : "balconies"}` : "Room details",
       icon: BedDouble,
     });
   } else if (property.propertySubType?.name || property.propertyType?.name) {
@@ -337,7 +342,7 @@ function buildHighlights(property: PropertyDetails) {
   return [
     ...(property.furnishing ? [{ title: formatEnum(property.furnishing), detail: "Furnishing", icon: Home }] : []),
     { title: formatEnum(property.transactionType) || "Transparent transaction", detail: formatEnum(property.ownershipType) || "Ownership details available on enquiry.", icon: Landmark },
-    { title: property.bathrooms ? `${property.bathrooms} bathrooms` : "Usable layout", detail: property.balconies ? `${property.balconies} balconies included` : "Review room and area details before visit.", icon: Bath },
+    { title: property.bathrooms ? `${property.bathrooms} ${property.bathrooms === 1 ? "bathroom" : "bathrooms"}` : "Usable layout", detail: property.balconies ? `${property.balconies} ${property.balconies === 1 ? "balcony" : "balconies"} included` : "Review room and area details before visit.", icon: Bath },
     { title: "Visit friendly", detail: "Share your contact details to schedule a callback or site visit.", icon: CalendarClock },
   ];
 }
@@ -475,13 +480,18 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
     ];
   }
 
-  return [
+  const isCommercial = property.resCom?.toUpperCase() === "COMMERCIAL";
+  const groups: DetailGroup[] = [
     {
       title: "Basic details",
       items: [
         { label: "Listing type", value: formatEnum(property.listingType) },
         { label: "Category", value: formatEnum(property.resCom) },
-        { label: "Property type", value: property.propertyType?.name },
+        {
+          label: "Property type",
+          value:
+            property.propertyType?.name?.toLowerCase() === property.resCom?.toLowerCase() ? null : property.propertyType?.name,
+        },
         { label: "Property subtype", value: property.propertySubType?.name },
         { label: "Sub-category", value: property.propertySubCategory?.name },
         { label: "Located inside", value: property.locatedInside?.name },
@@ -549,7 +559,7 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
     {
       title: "Facilities",
       items: [
-        { label: "Parking available", value: property.parkingAvailable },
+        { label: "Parking available", value: property.parkingAvailable || Number(property.noOfParkings) > 0 },
         { label: "No. of parkings", value: property.noOfParkings },
         { label: "Lift", value: property.lift },
         { label: "AC available", value: property.acAvailable },
@@ -574,6 +584,11 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
       ],
     },
   ];
+
+  // Only show features that are present: "No" rows are noise, and commercial fields don't apply to homes.
+  return groups
+    .filter((g) => isCommercial || g.title !== "Commercial details")
+    .map((g) => ({ ...g, items: g.items.filter((it) => it.value !== false) }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -679,7 +694,9 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         property.project?.name,
       ].filter(Boolean) as string[];
 
-  const amenities = property.amenitiesByCategory?.flatMap((group) => group.amenities?.map((item) => item.name).filter(Boolean) ?? []) as string[] | undefined;
+  const amenities = property.amenitiesByCategory
+    ?.flatMap((group) => group.amenities?.map((item) => item.name).filter(Boolean) ?? [])
+    .filter((name) => !/^others?$/i.test(String(name).trim())) as string[] | undefined;
 
   const schemaType = property.resCom?.toLowerCase() === "commercial"
     ? "CommercialRealEstate"
@@ -797,6 +814,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           <div className="mt-5">
             <QuickFactsGrid items={buildQuickFacts(property)} />
           </div>
+
         </section>
 
         <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
@@ -829,31 +847,32 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             )}
 
             <nav aria-label="Property sections" className="flex gap-6 overflow-x-auto border-b border-zinc-200 dark:border-slate-800 text-sm font-semibold">
-              {[['overview', 'Overview'], ['details', 'Property details'], ['location', 'Location']].map(([anchor, label]) => <a key={anchor} href={`#${anchor}`} className="shrink-0 border-b-2 border-transparent pb-3 text-zinc-600 dark:text-slate-400 transition hover:border-emerald-600 hover:text-emerald-700 dark:hover:text-emerald-400">{label}</a>)}
+              {[['overview', 'Overview'], ['details', 'Property details'], ['location', 'Location'], ['nearby', 'Nearby']].map(([anchor, label]) => <a key={anchor} href={`#${anchor}`} className="shrink-0 border-b-2 border-transparent pb-3 text-zinc-600 dark:text-slate-400 transition hover:border-emerald-600 hover:text-emerald-700 dark:hover:text-emerald-400">{label}</a>)}
             </nav>
             <AboutHighlights aboutCopy={property.description || "This property is listed on Awasio with key pricing, location, media, and owner information. Contact the owner to confirm visit slots, documents, and negotiation details."} highlights={buildHighlights(property)} amenities={amenities} />
             <PropertyDetailsGrid groups={buildDetailGroups(property)} />
             <LocationCard
               headline={location || property.address || "Location details"}
               description={property.address || "Exact address can be confirmed with the owner after enquiry."}
-              nearby={[property.project?.name ? `Project: ${property.project.name}` : "Locality details available", property.cityName ? `City: ${property.cityName}` : "City information available on request"]}
-              infra={
-                isPg
-                  ? [
-                      area.value !== "Ask owner" ? area.value : (property.sharingCapacity ? `${property.sharingCapacity} Sharing Room` : "PG / Lodge"),
-                      property.furnishing ? formatEnum(property.furnishing) : "Furnishing on request",
-                      property.availableFrom ? `Available from ${formatDate(property.availableFrom)}` : "Immediate Move-in Available",
-                    ]
-                  : [
-                      area.value,
-                      property.furnishing ? formatEnum(property.furnishing) : "Furnishing details on request",
-                      property.possessionStatus ? formatEnum(property.possessionStatus) : "Possession details on request",
-                    ]
-              }
+              nearby={([
+                property.project?.name ? `Project: ${property.project.name}` : null,
+                property.subLocality ? `Area: ${property.subLocality}` : null,
+                property.localityRef?.name ?? property.locality ? `Locality: ${property.localityRef?.name ?? property.locality}` : null,
+                property.city?.name ?? property.cityName ? `City: ${property.city?.name ?? property.cityName}` : null,
+              ]).filter((x): x is string => Boolean(x))}
+              infra={[]}
+            />
+            <NearbyPlaces
+              stored={property.nearbyLandmarks}
+              localityId={property.localityId}
+              locality={property.localityRef?.name ?? property.locality}
+              cityName={property.city?.name ?? property.cityName}
+              latitude={property.latitude}
+              longitude={property.longitude}
             />
           </div>
 
-          <aside className="space-y-4 lg:sticky lg:top-24">
+          <aside id="contact" className="scroll-mt-24 space-y-4 lg:sticky lg:top-24">
             <OwnerContactCard
               propertyId={property.id}
               name={property.owner?.name || "Property owner"}
@@ -862,6 +881,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               locality={property.locality ?? property.cityName}
               cityName={property.cityName}
               price={price}
+              postedAs={property.postedAs}
             />
             <TransactionCard transactionType={property.transactionType} ownershipType={property.ownershipType} listingType={property.listingType} deposit={property.deposit} />
           </aside>
