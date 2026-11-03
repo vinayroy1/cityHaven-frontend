@@ -58,6 +58,15 @@ export function PropertyListingLocalitySelector({
   const [loadingMore, setLoadingMore] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // On small screens the list can open under the bottom nav: scroll the field up so it fits.
+  useEffect(() => {
+    if (!isOpen || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const needed = rect.bottom + 320;
+    const limit = window.innerHeight - (window.innerWidth < 1024 ? 90 : 16);
+    if (needed > limit) window.scrollBy({ top: needed - limit, behavior: "smooth" });
+  }, [isOpen]);
   const inputRef = useRef<HTMLInputElement>(null);
   const activeReqRef = useRef(0);
 

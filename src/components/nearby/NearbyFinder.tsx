@@ -12,11 +12,14 @@ export function NearbyFinder({
   defaultCity = "",
   variant = "light",
   stacked = false,
+  bare = false,
 }: {
   defaultCity?: string;
   variant?: "light" | "hero";
   /** Single column, no card chrome (for sidebars). */
   stacked?: boolean;
+  /** Two columns on sm+, no card chrome (when the parent provides the card). */
+  bare?: boolean;
 }) {
   const router = useRouter();
   const [city, setCity] = useState(defaultCity);
@@ -26,7 +29,9 @@ export function NearbyFinder({
   return (
     <div
       className={
-        stacked
+        bare
+          ? "grid gap-2.5 p-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:p-2"
+          : stacked
           ? "grid gap-2.5"
           : `grid gap-2.5 rounded-2xl p-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:p-4 ${
               hero

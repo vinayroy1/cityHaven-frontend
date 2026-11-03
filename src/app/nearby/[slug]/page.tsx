@@ -7,6 +7,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { fetchNearbyData } from "@/components/nearby/NearbyPlaces";
 import { HighlightTiles, ScoreRing, connectivityScore, flattenGroups } from "@/components/nearby/LocalityGuide";
 import { LocalityExplorer } from "@/components/nearby/LocalityExplorer";
+import { LocalityFaq } from "@/components/nearby/LocalityFaq";
 import { NearbyFinder } from "@/components/nearby/NearbyFinder";
 import { toSearchSlug } from "@/components/search/searchQuery";
 import { getGuideCities, guideCityKey } from "@/components/nearby/guideData";
@@ -65,12 +66,14 @@ export default async function NearbyLocalityPage({ params }: Props) {
       <HeaderNav />
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-slate-200/70 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.35] [background-image:radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:18px_18px] dark:opacity-10"
-        />
-        <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-emerald-200/40 blur-3xl dark:bg-emerald-900/30" />
+      <section className="relative z-10 border-b border-slate-200/70 bg-white dark:border-slate-800 dark:bg-slate-900">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.35] [background-image:radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:18px_18px] dark:opacity-10"
+          />
+          <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-emerald-200/40 blur-3xl dark:bg-emerald-900/30" />
+        </div>
         <div className="relative mx-auto max-w-6xl px-4 pb-7 pt-5 sm:px-6 sm:pb-10 sm:pt-8">
           <nav className="flex items-center gap-1 text-xs text-slate-500">
             <Link href="/nearby" className="hover:text-slate-800">
@@ -141,22 +144,7 @@ export default async function NearbyLocalityPage({ params }: Props) {
               We don&apos;t have landmark data for {name} yet.
             </p>
           )}
-          {faqs.length > 0 && (
-            <section className="mt-8">
-              <h2 className="mb-3 text-lg font-bold text-slate-900 dark:text-white">{name}: frequently asked questions</h2>
-              <div className="divide-y divide-slate-100 overflow-hidden rounded-3xl border border-slate-200/80 bg-white dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-900">
-                {faqs.map((f, i) => (
-                  <details key={f.q} open={i < 2} className="group px-4 py-3">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-900 dark:text-white">
-                      <h3>{f.q}</h3>
-                      <span className="text-slate-400 transition group-open:rotate-45">+</span>
-                    </summary>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{f.a}</p>
-                  </details>
-                ))}
-              </div>
-            </section>
-          )}
+          <LocalityFaq name={name} faqs={faqs} />
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24">

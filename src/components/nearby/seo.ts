@@ -29,7 +29,7 @@ function byCat(items: ExplorerItem[]) {
 }
 
 const names = (l: ExplorerItem[] | undefined, n: number) =>
-  (l ?? []).slice(0, n).map((i) => `${i.name} (${fmtKm(i.distanceKm)})`).join(", ");
+  (l ?? []).slice(0, n).map((i) => `${i.name} ${fmtKm(i.distanceKm)}`).join(", ");
 
 export function localityFaqs(p: LocalitySeoInput): Faq[] {
   const m = byCat(p.items);

@@ -61,9 +61,11 @@ export default async function GuideCityPage({ params }: Props) {
       />
       <HeaderNav />
 
-      <section className="relative overflow-hidden border-b border-slate-200/70 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.35] [background-image:radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:18px_18px] dark:opacity-10" />
-        <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-emerald-200/40 blur-3xl dark:bg-emerald-900/30" />
+      <section className="relative z-10 border-b border-slate-200/70 bg-white dark:border-slate-800 dark:bg-slate-900">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.35] [background-image:radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:18px_18px] dark:opacity-10" />
+          <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-emerald-200/40 blur-3xl dark:bg-emerald-900/30" />
+        </div>
         <div className="relative mx-auto max-w-6xl px-4 pb-8 pt-5 sm:px-6 sm:pt-8">
           <nav className="flex items-center gap-1 text-xs text-slate-500">
             <Link href="/nearby" className="hover:text-slate-800">
