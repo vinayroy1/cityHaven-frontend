@@ -6,10 +6,14 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/constants/seo";
 import { getGuideCities, getGuideLocalities, guideCityKey } from "@/components/nearby/guideData";
 
-export const revalidate = 86400;
+// Generated per request (data fetches below are cached for 24h). A build-time prerender would
+// bake in an empty list whenever the backend is unreachable during `next build`.
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const cities = await getGuideCities();
+  // Never serve (or cache) an empty guide sitemap because the API was briefly unavailable.
+  if (!cities.length) throw new Error("locality guide cities unavailable");
   const now = new Date();
   const out: MetadataRoute.Sitemap = [{ url: `${SITE_URL}/nearby`, lastModified: now, changeFrequency: "monthly", priority: 0.7 }];
 

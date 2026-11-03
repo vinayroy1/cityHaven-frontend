@@ -8,7 +8,8 @@ import { categoryOf, fmtKm, type CategoryKey, type ExplorerItem } from "@/compon
 import { flattenGroups } from "@/components/nearby/LocalityGuide";
 import { getGuideCities, guideCityKey } from "@/components/nearby/guideData";
 
-export const revalidate = 86400;
+// Rendered per request (API data is cached 24h); a build-time prerender would bake in empty data.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Find Metro, Hospitals, Schools & Malls Near Any Locality",
