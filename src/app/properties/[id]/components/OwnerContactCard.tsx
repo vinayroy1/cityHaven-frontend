@@ -37,12 +37,16 @@ export function OwnerContactCard({
   const roleLabel = isOwner ? "Direct Owner Contact" : role === "BUILDER" ? "Builder Contact" : "Agent Contact";
   const initial = name.trim().slice(0, 2).toUpperCase() || "CH";
   const [phone, setPhone] = React.useState<string | null>(null);
+  const [exactAddress, setExactAddress] = React.useState<string | null>(null);
+  const [mapsLink, setMapsLink] = React.useState<string | null>(null);
   const [scheduleOpen, setScheduleOpen] = React.useState(false);
 
   React.useEffect(() => {
     const handleUnlocked = (e: any) => {
       if (String(e.detail?.propertyId) === String(propertyId) && e.detail?.phone) {
         setPhone(e.detail.phone);
+        setExactAddress(e.detail.exactAddress ?? null);
+        setMapsLink(e.detail.mapsLink ?? null);
       }
     };
     window.addEventListener("awasio:contact-unlocked", handleUnlocked);
@@ -111,6 +115,17 @@ export function OwnerContactCard({
               <p className="mt-1.5 break-all text-xl font-bold text-zinc-900 dark:text-white">
                 +{contactNumber}
               </p>
+              {exactAddress && (
+                <div className="mt-3 rounded-xl bg-emerald-50 p-3 text-xs text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200">
+                  <p className="font-semibold">Exact address</p>
+                  <p className="mt-0.5 break-words">{exactAddress}</p>
+                  {mapsLink && (
+                    <a href={mapsLink} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-block font-semibold underline">
+                      Open in Google Maps
+                    </a>
+                  )}
+                </div>
+              )}
               <a href={`tel:+${contactNumber}`} className={`${buttonClass} mt-4`}>
                 <Phone className="h-4 w-4" /> Call owner
               </a>
@@ -124,7 +139,7 @@ export function OwnerContactCard({
                     Owner contact is private
                   </p>
                   <p className="mt-0.5 text-[11px] leading-relaxed text-zinc-500 dark:text-slate-400">
-                    Use your free credit or verify phone to call owner directly.
+                    Unlock to get the owner&apos;s number and the exact address (flat / house no.).
                   </p>
                 </div>
               </div>

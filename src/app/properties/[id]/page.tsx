@@ -853,7 +853,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             <PropertyDetailsGrid groups={buildDetailGroups(property)} />
             <LocationCard
               headline={location || property.address || "Location details"}
-              description={property.address || "Exact address can be confirmed with the owner after enquiry."}
+              description="Exact address (flat / house no.) is shared after you unlock the owner's contact."
               nearby={([
                 property.project?.name ? `Project: ${property.project.name}` : null,
                 property.subLocality ? `Area: ${property.subLocality}` : null,

@@ -8,6 +8,7 @@ import {
   RefreshCw,
   Trash2,
   Edit3,
+  CopyPlus,
   Eye,
   Plus,
   Search,
@@ -746,12 +747,13 @@ function PropertiesContent() {
                       )}
 
                       {/* Footer Actions */}
-                      <div className="mt-2 flex items-center justify-between gap-2 border-t border-slate-100 pt-2 text-xs dark:border-slate-800">
-                        <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                      <div className="mt-2 flex min-w-0 flex-col gap-1.5 border-t border-slate-100 pt-2 text-xs dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
+                        <span className="shrink-0 text-[11px] text-slate-400 dark:text-slate-500">
                           {item.updatedAt ? `Updated ${new Date(item.updatedAt).toLocaleDateString()}` : `ID: #${item.id}`}
                         </span>
 
-                        <div className="flex items-center gap-1.5">
+                        {/* Scrolls sideways on narrow screens instead of overflowing the card */}
+                        <div className="-mx-1 flex min-w-0 items-center gap-1.5 overflow-x-auto px-1 py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>*]:shrink-0">
                           {isItemActive && (
                             <CreditBoostButton
                               targetType="PROPERTY"
@@ -782,6 +784,14 @@ function PropertiesContent() {
                           >
                             <Edit3 className="h-3.5 w-3.5" />
                             <span>Edit</span>
+                          </Link>
+                          <Link
+                            href={`/propertyListing?duplicateOf=${item.id}${scope === "org" && effectiveOrgId ? `&orgId=${effectiveOrgId}` : ""}`}
+                            title="Duplicate: copy this listing to add another unit"
+                            className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-rose-400"
+                          >
+                            <CopyPlus className="h-3.5 w-3.5" />
+                            <span>Duplicate</span>
                           </Link>
 
                           {/* Pause / Deactivate Button for Active Properties */}
@@ -915,6 +925,14 @@ function PropertiesContent() {
                               >
                                 <Edit3 className="h-3.5 w-3.5" />
                                 <span>Edit</span>
+                              </Link>
+                              <Link
+                                href={`/propertyListing?duplicateOf=${item.id}${scope === "org" && effectiveOrgId ? `&orgId=${effectiveOrgId}` : ""}`}
+                                title="Duplicate: copy this listing to add another unit"
+                                className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-rose-400"
+                              >
+                                <CopyPlus className="h-3.5 w-3.5" />
+                                <span>Duplicate</span>
                               </Link>
                               {scope !== "org" && (
                                 <button

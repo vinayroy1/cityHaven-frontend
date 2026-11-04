@@ -458,6 +458,7 @@ function LeadCard({
         </div>
       )}
 
+      {l.activity && <p className="mt-2 text-xs font-semibold text-slate-600 dark:text-slate-300">{l.activity}</p>}
       {l.message && <p className="mt-2 line-clamp-3 text-sm text-slate-700 dark:text-slate-300">&ldquo;{l.message}&rdquo;</p>}
 
       {/* Contact line */}
@@ -529,31 +530,41 @@ function LeadCard({
                 </a>
               </>
             )}
-            {l.next && (
-              <GhostButton disabled={busy} onClick={() => onStatus(l.next!.value, l.next!.label.toLowerCase())}>
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} {l.next.label}
-              </GhostButton>
-            )}
-            {l.statusOptions.length > 0 && (
-              <label className="relative ml-auto">
-                <span className="sr-only">Change status</span>
-                <select
-                  value={l.status}
-                  disabled={busy}
-                  onChange={(e) => {
-                    const o = l.statusOptions.find((x) => x.value === e.target.value);
-                    if (o) onStatus(o.value, o.label.toLowerCase());
-                  }}
-                  className="h-10 appearance-none rounded-full border border-slate-200 bg-white pl-3 pr-8 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-                >
-                  {l.statusOptions.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              </label>
+            {(l.next || l.statusOptions.length > 0) && (
+              <div className="flex w-full items-center gap-2">
+                {l.next && (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => onStatus(l.next!.value, l.next!.label.toLowerCase())}
+                    className="inline-flex h-9 min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                  >
+                    {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+                    <span className="truncate">Mark {l.next.label.toLowerCase()}</span>
+                  </button>
+                )}
+                {l.statusOptions.length > 0 && (
+                  <label className="relative min-w-0 flex-1">
+                    <span className="sr-only">Change status</span>
+                    <select
+                      value={l.status}
+                      disabled={busy}
+                      onChange={(e) => {
+                        const o = l.statusOptions.find((x) => x.value === e.target.value);
+                        if (o) onStatus(o.value, o.label.toLowerCase());
+                      }}
+                      className="h-9 w-full appearance-none truncate rounded-full border border-slate-200 bg-slate-50 pl-3 pr-8 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                    >
+                      {l.statusOptions.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  </label>
+                )}
+              </div>
             )}
           </>
         )}

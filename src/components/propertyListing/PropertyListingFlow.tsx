@@ -66,6 +66,8 @@ export function PropertyListingFlow({
   const router = useRouter();
   const searchParams = useSearchParams();
   const propertyId = propIdOverride ?? searchParams.get("id") ?? undefined;
+  // "Duplicate listing": prefill a NEW draft from an existing listing (never publishes on its own).
+  const duplicateOf = propertyId ? undefined : (searchParams.get("duplicateOf") ?? undefined);
   const organizationIdFromQuery = searchParams.get("orgId") ?? undefined;
   const dispatch = useAppDispatch();
   const { draft } = useAppSelector(selectPropertyListing);
@@ -84,17 +86,19 @@ export function PropertyListingFlow({
         // New listings can be filled in logged out (draft is saved locally); login is asked
         // before photos/publish. Editing an existing listing still needs a session.
         const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
-        if (!token && propertyId) {
-          const redirectUrl = propertyId ? `/propertyListing?id=${propertyId}` : "/propertyListing";
+        if (!token && (propertyId || duplicateOf)) {
+          const redirectUrl = propertyId ? `/propertyListing?id=${propertyId}` : `/propertyListing?duplicateOf=${duplicateOf}`;
           router.replace(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
         }
       }
     }
-  }, [router, propertyId, adminMode]);
+  }, [router, propertyId, duplicateOf, adminMode]);
 
   const [submitProperty, submitState] = useSubmitPropertyMutation();
   const [updateProperty, updateState] = useUpdatePropertyMutation();
   const { data: existing } = useGetPropertyQuery(propertyId as string, { skip: !propertyId });
+  const { data: duplicateSource } = useGetPropertyQuery(duplicateOf as string, { skip: !duplicateOf });
+  const [duplicateFrom, setDuplicateFrom] = useState<{ id: string; title: string; flatNumber?: string; houseNumber?: string; price?: number } | null>(null);
   const [hasToken, setHasToken] = useState(false);
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -153,9 +157,56 @@ export function PropertyListingFlow({
     }
   }, [existing, form, dispatch]);
 
+  // Duplicate: copy everything shared (location, society, amenities, rules, photos), clear what
+  // differs per unit (flat/house/plot no., floor, price, available-from) and start a fresh draft.
+  useEffect(() => {
+    if (!duplicateOf || !duplicateSource || hydratedRef.current) return;
+    hydratedRef.current = true;
+    const src = mapApiToForm(duplicateSource as Record<string, unknown>);
+    const uploads = (src.meta?.draftState as { mediaUploads?: Array<Record<string, unknown>> } | undefined)?.mediaUploads;
+    const copy: PropertyListingFormValues = {
+      ...src,
+      location: { ...src.location, flatNumber: undefined, houseNumber: undefined, plotNumber: undefined, address: undefined },
+      details: { ...src.details, floorNumber: undefined },
+      pricing: { ...src.pricing, price: undefined, pricePerSqFt: undefined, priceInWords: undefined },
+      availability: { ...src.availability, availableFrom: undefined },
+      meta: {
+        ...src.meta,
+        title: undefined,
+        draftState: uploads
+          ? {
+              ...(src.meta?.draftState as object),
+              // Same photo files, new media rows: drop the original's media ids.
+              mediaUploads: uploads.map((m) => ({ ...m, id: undefined, localId: `dup-${String(m.localId)}` })),
+            }
+          : src.meta?.draftState,
+      },
+      media: { mediaIds: undefined },
+      publishOptions: { status: "DRAFT", qcRequired: !adminMode },
+    } as PropertyListingFormValues;
+    prevClassificationRef.current = {
+      listingType: copy.context?.listingType,
+      resCom: copy.context?.resCom,
+      subType: copy.context?.propertySubTypeSlug,
+    };
+    pendingHydrationRef.current = prevClassificationRef.current;
+    isTitleCustomRef.current = false;
+    isDescCustomRef.current = true; // keep the owner's description
+    form.reset(copy);
+    dispatch(hydrateDraft(copy));
+    setMaxVisited(listingSteps.length - 1);
+    setDuplicateFrom({
+      id: duplicateOf,
+      title: String((duplicateSource as { title?: string }).title || "your listing"),
+      flatNumber: src.location?.flatNumber || undefined,
+      houseNumber: src.location?.houseNumber || undefined,
+      price: src.pricing?.price ?? undefined,
+    });
+  }, [duplicateOf, duplicateSource, form, dispatch, adminMode]);
+
   // Immediately hydrate saved draft on mount (for a fresh "create" session).
   useEffect(() => {
-    if (propertyId) return;
+    if (propertyId || duplicateOf) return;
     if (hydratedRef.current) return;
     hydratedRef.current = true;
     const persisted = loadPersistedDraft(storageKey);
@@ -179,7 +230,7 @@ export function PropertyListingFlow({
       setMaxVisited(adminMode ? listingSteps.length - 1 : s);
       setResume(persisted);
     }
-  }, [propertyId, form, dispatch, storageKey, adminMode]);
+  }, [propertyId, duplicateOf, form, dispatch, storageKey, adminMode]);
 
   useEffect(() => {
     if (propertyId) return;
@@ -456,6 +507,22 @@ export function PropertyListingFlow({
     }
     const payload = form.getValues();
 
+    // Duplicate guard: same unit number and price as the original looks like a repost.
+    if (duplicateFrom) {
+      const sameUnit =
+        (payload.location?.flatNumber || "") === (duplicateFrom.flatNumber || "") &&
+        (payload.location?.houseNumber || "") === (duplicateFrom.houseNumber || "");
+      const samePrice = Number(payload.pricing?.price) === Number(duplicateFrom.price);
+      if (
+        sameUnit &&
+        samePrice &&
+        !window.confirm(`This looks identical to "${duplicateFrom.title}" (same unit no. and price). Post it anyway?`)
+      ) {
+        goToStep(listingSteps.findIndex((s) => s.id === "location") >= 0 ? listingSteps.findIndex((s) => s.id === "location") : 0);
+        return;
+      }
+    }
+
     if (adminMode) {
       try {
         const rawStaff = localStorage.getItem("awasio_admin_staff");
@@ -613,6 +680,16 @@ export function PropertyListingFlow({
         </aside>
 
         <div className="space-y-5">
+          {duplicateFrom && (
+            <div className="rounded-2xl border border-sky-200 bg-sky-50/80 p-3.5 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-200">
+              <p className="font-semibold">Copied from &ldquo;{duplicateFrom.title}&rdquo;</p>
+              <p className="mt-0.5 text-xs">
+                Location, amenities, details and photos are filled in. Add what&apos;s different for this unit:{" "}
+                <b>flat / house no., floor, price</b> and <b>available from</b>. Replace photos if this unit looks different.
+              </p>
+            </div>
+          )}
+
           {resume && (
             <div className="flex flex-col gap-2 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3.5 text-sm text-emerald-900 sm:flex-row sm:items-center sm:justify-between dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
               <span>Restored your saved draft from your previous session.</span>

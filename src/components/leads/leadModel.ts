@@ -24,6 +24,8 @@ export interface InboxLead {
   listingHref?: string;
   place?: string;
   message?: string | null;
+  /** What the person did, for system-created leads ("Booked a site visit"). */
+  activity?: string;
   details: string[];
   createdAt: string;
   /** Visible phone (undefined when hidden or locked). */
@@ -55,6 +57,51 @@ const inr = (n?: number | string | null) => {
 const place = (locality?: string | null, city?: string | null) => [locality, city].filter(Boolean).join(", ") || undefined;
 const opt = (value: string, label: string): StatusOption => ({ value, label });
 
+// ---------- system-generated messages ----------
+const SLOT: Record<string, string> = { MORNING: "Morning slot", AFTERNOON: "Afternoon slot", EVENING: "Evening slot" };
+
+/**
+ * Visit bookings and phone unlocks store a machine-formatted message, e.g.
+ * "[In-Person Physical Visit] | Slot: AFTERNOON | Note: … | Tour: This Weekend (…) | Locality: …".
+ * Split it into readable chips plus the human note (if any), so cards never show the raw string.
+ */
+export function parseLeadMessage(raw?: string | null): { text: string | null; chips: string[]; activity?: string } {
+  const msg = (raw || "").trim();
+  if (!msg) return { text: null, chips: [] };
+  if (/^Contact viewed & phone number unlocked/i.test(msg)) return { text: null, chips: [], activity: "Viewed your phone number" };
+  if (/^Inquiry registered for property/i.test(msg)) return { text: null, chips: [], activity: "Sent an enquiry" };
+  if (!msg.startsWith("[") && !msg.includes(" | ")) return { text: msg, chips: [] };
+
+  const chips: string[] = [];
+  const notes: string[] = [];
+  let activity: string | undefined;
+  for (const part of msg.split("|").map((x) => x.trim()).filter(Boolean)) {
+    const tag = part.match(/^\[(.+)\]$/);
+    if (tag) {
+      activity = /video/i.test(tag[1]) ? "Booked a video tour" : "Booked a site visit";
+      continue;
+    }
+    const kv = part.match(/^([A-Za-z -]+):\s*(.+)$/);
+    if (!kv) {
+      notes.push(part);
+      continue;
+    }
+    const [, key, value] = kv;
+    const k = key.trim().toLowerCase();
+    if (k === "slot") chips.push(SLOT[value.toUpperCase()] ?? value);
+    else if (k === "tour") chips.push(value.replace(/\s*\((.*)\)\s*$/, " · $1").replace(/\(|\)/g, ""));
+    else if (k === "date") chips.push(`Visit on ${value}`);
+    else if (k === "move-in") chips.push(`Move-in: ${value}`);
+    else if (k === "locality") continue; // already shown under the listing
+    else if (k === "note") {
+      const advisor = value.match(/^Assigned Advisor:\s*(.+)$/i);
+      if (advisor) chips.push(`Advisor: ${advisor[1]}`);
+      else notes.push(value);
+    } else notes.push(`${key}: ${value}`);
+  }
+  return { text: notes.join(" ") || null, chips, activity };
+}
+
 // ---------- property leads ----------
 const PROPERTY_STATUS: Record<string, { label: string; bucket: LeadBucket }> = {
   NEW: { label: "New", bucket: "new" },
@@ -74,6 +121,7 @@ const PROPERTY_NEXT: Record<string, string> = {
 
 export function fromPropertyLead(l: ApiLead): InboxLead {
   const status = String(l.status || "NEW");
+  const parsed = parseLeadMessage(l.message);
   const s = PROPERTY_STATUS[status] ?? PROPERTY_STATUS.NEW;
   const nextKey = PROPERTY_NEXT[status];
   return {
@@ -87,10 +135,13 @@ export function fromPropertyLead(l: ApiLead): InboxLead {
     listing: l.property?.title || "Your property",
     listingHref: l.property?.id ? `/properties/${l.property.id}` : undefined,
     place: place(l.property?.locality, l.property?.cityName),
-    message: l.message,
-    details: [l.property?.listingType === "RENT" ? "Rent" : l.property?.listingType ? "Sale" : null, inr(l.property?.price)].filter(
-      Boolean,
-    ) as string[],
+    message: parsed.text,
+    activity: parsed.activity,
+    details: [
+      ...parsed.chips,
+      l.property?.listingType === "RENT" ? "Rent" : l.property?.listingType ? "Sale" : null,
+      inr(l.property?.price),
+    ].filter(Boolean) as string[],
     createdAt: l.createdAt || l.updatedAt || new Date(0).toISOString(),
     phone: l.buyer?.mobileNumber || l.guestContact || undefined,
     email: l.buyer?.email,
@@ -126,7 +177,7 @@ export function fromVisit(v: ApiPropertyVisit): InboxLead {
     listing: v.property?.title || "Your property",
     listingHref: v.property?.id ? `/properties/${v.property.id}` : undefined,
     place: place(v.property?.locality, v.property?.cityName),
-    message: v.notes,
+    message: parseLeadMessage(v.notes).text,
     details: [inr(v.property?.price)].filter(Boolean) as string[],
     createdAt: v.createdAt || v.scheduledAt,
     scheduledAt: v.scheduledAt,

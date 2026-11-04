@@ -39,6 +39,9 @@ export interface VerifyContactOtpResponse {
 export interface UnlockContactResponse {
   ownerName: string | null;
   ownerPhone: string | null;
+  /** Flat/house-level address, only returned after an unlock. */
+  exactAddress?: string | null;
+  mapsLink?: string | null;
 }
 
 export interface CheckUnlockedContactResponse {
@@ -48,6 +51,8 @@ export interface CheckUnlockedContactResponse {
   isOwner?: boolean;
   ownerName?: string | null;
   ownerPhone?: string | null;
+  exactAddress?: string | null;
+  mapsLink?: string | null;
 }
 
 export interface PurchaseCreditsPayload {
@@ -391,6 +396,8 @@ export const contactVerifyApi = createApi({
             isOwner: Boolean(res?.isOwner || res?.data?.isOwner),
             ownerName: res?.data?.ownerName ?? res?.ownerName ?? null,
             ownerPhone: res?.data?.ownerPhone ?? res?.ownerPhone ?? null,
+            exactAddress: res?.data?.exactAddress ?? null,
+            mapsLink: res?.data?.mapsLink ?? null,
           },
         };
       },
