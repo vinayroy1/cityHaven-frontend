@@ -1,542 +1,371 @@
 "use client";
-
+/**
+ * Final review for the listing wizard.
+ *  1. "How buyers will see it": a preview card shaped like the real search result.
+ *  2. "Before you post": live completeness score plus actionable fixes (each jumps to its step).
+ *  3. Compact summary rows per section with a working Edit link.
+ */
 import React, { useState } from "react";
 import {
   AlertCircle,
   Bath,
-  Bed,
+  BedDouble,
   Building2,
-  Calendar,
+  Camera,
   CheckCircle2,
   ChevronDown,
-  ChevronUp,
-  Compass,
-  Edit3,
   FileText,
   Home,
-  Image as ImageIcon,
+  IndianRupee,
   Layers,
+  Lock,
   MapPin,
   Maximize2,
-  ShieldCheck,
+  Pencil,
+  Sofa,
   Sparkles,
-  Tag,
 } from "lucide-react";
-
-
-
+import { cn } from "@/components/ui/utils";
 import { PROPERTY_SUBTYPES } from "@/constants/backend-schema";
 import { getBrokerageDisplay } from "@/lib/propertyListing/formatBrokerage";
 import { amenityOptions } from "@/features/propertyListing/constants";
 
-interface ReviewSummaryProps {
+/** Wizard step ids (see formConfig/steps). */
+export type ReviewStepId = "basic" | "location" | "profile" | "features" | "pricing" | "media";
+
+type Photo = { localId?: string; preview?: string; uploadedUrl?: string; url?: string; type?: string; uploading?: boolean };
+
+const inr = (n?: number | null) => {
+  if (!n) return null;
+  if (n >= 1e7) return `₹${Number((n / 1e7).toFixed(2))} Cr`;
+  if (n >= 1e5) return `₹${Number((n / 1e5).toFixed(2))} L`;
+  return `₹${n.toLocaleString("en-IN")}`;
+};
+const pretty = (s?: string | null) =>
+  s ? s.replace(/[_-]/g, " ").toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase()) : undefined;
+
+export function ReviewSummary({
+  values,
+  score,
+  onEditStep,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   values: any;
-  uploadedPhotos?: Array<{ localId?: string; preview?: string; uploadedUrl?: string }>;
-  onEditStep: (stepIndex: number) => void;
-}
+  score?: number;
+  onEditStep: (step: ReviewStepId) => void;
+}) {
+  const { context = {}, location = {}, details = {}, pricing = {}, amenities = {}, meta = {}, availability = {} } = values ?? {};
+  const photos: Photo[] = ((meta?.draftState?.mediaUploads as Photo[] | undefined) ?? [])
+    .map((p) => ({ ...p, preview: p.preview || p.uploadedUrl || p.url }))
+    .filter((p) => p.preview);
+  const imageCount = photos.filter((p) => !p.type?.startsWith("video")).length;
 
-const formatPrice = (price?: number | null, listingType?: string): string | null => {
-  if (!price) return null;
-  if (price >= 10000000) return `₹ ${(price / 10000000).toFixed(2)} Cr`;
-  if (price >= 100000) return `₹ ${(price / 100000).toFixed(2)} Lakh`;
-  return `₹ ${price.toLocaleString("en-IN")}${listingType === "RENT" ? "/mo" : ""}`;
-};
-
-const deriveConfiguration = (values: any): string => {
-  const isPg = values.context?.listingType === "PG" || values.context?.propertyTypeSlug === "pg";
-  if (isPg) {
-    const parts: string[] = [];
-    if (values.details?.pricingBasis === "PER_ROOM") {
-      parts.push(values.details?.maxPersonsInRoom ? `${values.details.maxPersonsInRoom} Person Room` : "Private Room");
-    } else if (values.details?.sharingType) {
-      parts.push(values.details.sharingType.replace(/_/g, " "));
-    } else if (values.details?.sharingCapacity) {
-      parts.push(`${values.details.sharingCapacity} Sharing`);
-    } else {
-      parts.push("Shared Room");
-    }
-    if (values.details?.carpetArea) parts.push(`${values.details.carpetArea} sq.ft`);
-    return parts.length > 0 ? parts.join(" • ") : "PG Accommodation";
-  }
-  const parts: string[] = [];
-  if (values.details?.bedrooms) parts.push(`${values.details.bedrooms} BHK`);
-  if (values.details?.bathrooms) parts.push(`${values.details.bathrooms} Bath`);
-  if (values.details?.carpetArea) parts.push(`${values.details.carpetArea} sq.ft`);
-  return parts.length > 0 ? parts.join(" • ") : "Standard Configuration";
-};
-
-export function ReviewSummary({ values, uploadedPhotos: explicitPhotos, onEditStep }: { values: any; uploadedPhotos?: any[]; onEditStep: (stepIndex: number) => void }) {
-  const rawList = explicitPhotos?.length
-    ? explicitPhotos
-    : (
-        values?.meta?.draftState?.mediaUploads ||
-        (Array.isArray(values?.media) ? values.media : null) ||
-        (Array.isArray(values?.mediaUploads) ? values.mediaUploads : null) ||
-        []
-      );
-  const uploadedPhotos = rawList.filter((p: any) => p.preview || p.uploadedUrl || p.url).map((p: any) => ({
-    ...p,
-    preview: p.preview || p.uploadedUrl || p.url,
-  }));
-  const [showFullPreview, setShowFullPreview] = useState(true);
-
-  const { context, location, details, pricing, amenities, meta, availability } = values;
-  const scoreResult = { score: 92, tier: "Excellence", tips: ["Comprehensive property details & specs added"] };
-
+  const isRent = context.listingType === "RENT";
+  const isPg = context.listingType === "PG";
   const area = details.carpetArea || details.builtUpArea || details.plotArea;
-  const areaUnit = details.carpetAreaUnit || details.builtUpAreaUnit || details.plotAreaUnit || "SQ_FT";
-  const formattedAreaUnit = areaUnit.replace("_", ".").toLowerCase();
-
-  const formattedPrice = formatPrice(pricing.price, context.listingType);
-  const pricePerSqft = pricing.price && area ? Math.round(pricing.price / area) : null;
-  const selectedAmenities = (amenities?.amenityIds || []).map(
-    (a: any) => amenityOptions.find((o) => o.slug === a)?.label ?? String(a).replace(/[_-]/g, " "),
+  const areaUnit = (details.carpetAreaUnit || details.builtUpAreaUnit || details.plotAreaUnit || "SQ_FT").replace("_", ".").toLowerCase();
+  const price = inr(pricing.price);
+  const perSqft = pricing.price && area && !isRent && !isPg ? Math.round(pricing.price / area) : null;
+  const subType = context.propertySubTypeSlug
+    ? (PROPERTY_SUBTYPES.find((s) => s.slug === context.propertySubTypeSlug)?.name ?? pretty(context.propertySubTypeSlug))
+    : undefined;
+  const amenityLabels: string[] = (amenities?.amenityIds || []).map(
+    (a: string) => amenityOptions.find((o) => o.slug === a)?.label ?? pretty(String(a)) ?? String(a),
   );
+  const publicPlace = [location.societyOrProjectName, location.locality, location.cityName].filter(Boolean).join(", ");
+  const unitBits = [location.flatNumber, location.houseNumber, location.towerNumber, location.plotNumber].filter(Boolean);
+  const floor = details.floorNumber
+    ? `${pretty(String(details.floorNumber))}${details.totalFloors ? ` of ${details.totalFloors}` : ""}`
+    : undefined;
+  const pgRoom = isPg
+    ? details.pricingBasis === "PER_ROOM"
+      ? `${details.maxPersonsInRoom ?? 1}-person room`
+      : pretty(details.sharingType) || (details.sharingCapacity ? `${details.sharingCapacity} sharing` : "Shared bed")
+    : undefined;
+
+  const quickFacts = [
+    isPg ? pgRoom : details.bedrooms ? `${details.bedrooms} BHK` : null,
+    area ? `${area} ${areaUnit}` : null,
+    pretty(amenities.furnishing),
+    floor ? `Floor ${floor}` : null,
+  ].filter(Boolean) as string[];
+
+  // Actionable fixes, most valuable first.
+  const tips: { text: string; step: ReviewStepId }[] = [];
+  if (imageCount === 0) tips.push({ text: "Add photos: listings with photos get up to 5× more enquiries", step: "media" });
+  else if (imageCount < 4) tips.push({ text: `Add ${4 - imageCount} more photo${4 - imageCount === 1 ? "" : "s"} (living room, kitchen, bedroom, view)`, step: "media" });
+  if (!meta.description || String(meta.description).length < 80) tips.push({ text: "Write a short description (what's nearby, who it suits)", step: "media" });
+  if (amenityLabels.length < 3) tips.push({ text: "Select amenities like parking, lift, power backup", step: "pricing" });
+  if (!amenities.furnishing && !isPg) tips.push({ text: "Add furnishing status", step: "features" });
+  if (isRent && !pricing.deposit) tips.push({ text: "Add the security deposit", step: "pricing" });
+  const pct = typeof score === "number" ? score : null;
+  const tier = pct === null ? null : pct >= 85 ? "Excellent" : pct >= 65 ? "Good" : "Needs work";
 
   return (
-    <div className="space-y-6 text-left">
-      {/* 1. HERO PREVIEW CARD */}
-      <div className="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-xl shadow-slate-900/5 transition dark:border-slate-800 dark:bg-slate-900">
-        {/* Top Cover Banner */}
-        <div className="relative h-48 sm:h-56 w-full bg-slate-950">
-          {uploadedPhotos.length > 0 ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={uploadedPhotos[0].preview || uploadedPhotos[0].uploadedUrl}
-              alt="Cover preview"
-              className="h-full w-full object-cover opacity-90"
-            />
-          ) : (
-            <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 p-4 text-center">
-              <ImageIcon className="h-8 w-8 text-rose-400/80" />
-              <p className="text-xs font-semibold text-slate-300">No cover image uploaded</p>
+    <div className="space-y-4 text-left">
+      <div className="flex items-center gap-2 pt-2">
+        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Final check</span>
+        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+      </div>
+
+      {/* 1. Buyer preview */}
+      <section>
+        <p className="mb-2 text-sm font-bold text-slate-900 dark:text-white">How buyers will see your listing</p>
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <button type="button" onClick={() => onEditStep("media")} className="relative block aspect-[16/10] w-full bg-slate-100 dark:bg-slate-800">
+            {photos[0] ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={photos[0].preview} alt="Cover photo" className="h-full w-full object-cover" />
+            ) : (
+              <span className="flex h-full w-full flex-col items-center justify-center gap-1.5 text-slate-500">
+                <Camera className="h-8 w-8" />
+                <span className="text-sm font-semibold">Add a cover photo</span>
+                <span className="text-xs">Tap to add photos</span>
+              </span>
+            )}
+            <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold text-slate-900 shadow-sm">
+              {isRent ? "For rent" : isPg ? "PG / Co-living" : "For sale"}
+            </span>
+            {photos.length > 0 && (
+              <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-black/65 px-2.5 py-1 text-[11px] font-semibold text-white">
+                <Camera className="h-3 w-3" /> {photos.length}
+              </span>
+            )}
+          </button>
+          {photos.length > 1 && (
+            <div className="flex gap-1.5 overflow-x-auto px-3 pt-3 [scrollbar-width:none]">
+              {photos.slice(1, 7).map((p, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={p.localId || i} src={p.preview} alt="" className="h-12 w-16 shrink-0 rounded-lg object-cover" />
+              ))}
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-
-          {/* Badges on cover */}
-          <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-rose-600 px-3 py-1 text-xs font-bold text-white shadow-md">
-              {context.listingType === "RENT" ? "For Rent" : context.listingType === "PG" ? "PG / Co-Living" : "For Sale"}
-            </span>
-            <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-slate-900 backdrop-blur-md">
-              {context.resCom === "COMMERCIAL" ? "Commercial" : "Residential"}
-            </span>
-          </div>
-
-          <div className="absolute right-4 top-4 rounded-full bg-slate-900/80 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md border border-white/10">
-            {uploadedPhotos.length} {uploadedPhotos.length === 1 ? "Photo" : "Photos"}
-          </div>
-
-          {/* Title & Location over banner */}
-          <div className="absolute bottom-4 left-4 right-4 text-white">
-            <h2 className="text-lg font-extrabold sm:text-2xl line-clamp-2 leading-tight">
-              {meta.title || "Untitled Property Listing"}
-            </h2>
-            <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-slate-200">
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-400" />
-              <span>{[location.locality, location.cityName].filter(Boolean).join(", ") || "Locality not set"}</span>
-            </p>
-          </div>
-        </div>
-
-        {/* Highlight Stats Bar */}
-        <div className="grid grid-cols-2 divide-x divide-slate-100 border-b border-slate-100 bg-slate-50/70 py-3 sm:grid-cols-4 dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-950/40">
-          <div className="px-4 text-center sm:text-left">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Price</p>
-            <p className="text-base font-extrabold text-rose-600 dark:text-rose-400">{formattedPrice || "Not Set"}</p>
-          </div>
-          <div className="px-4 text-center sm:text-left">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              {context.listingType === "PG" ? "Room / Bed" : "Layout"}
-            </p>
-            <p className="text-base font-bold text-slate-900 dark:text-white">
-              {context.listingType === "PG"
-                ? details.pricingBasis === "PER_ROOM"
-                  ? `${details.maxPersonsInRoom ?? 1} Person Room`
-                  : (details.sharingType ? details.sharingType.replace(/_/g, " ") : (details.sharingCapacity ? `${details.sharingCapacity} Sharing` : "Shared Bed"))
-                : details.bedrooms
-                ? `${details.bedrooms} BHK`
-                : "N/A"}
-            </p>
-          </div>
-          <div className="px-4 text-center sm:text-left mt-2 sm:mt-0">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Carpet Area</p>
-            <p className="text-base font-bold text-slate-900 dark:text-white">
-              {area ? `${area} ${formattedAreaUnit}` : "N/A"}
-            </p>
-          </div>
-          <div className="px-4 text-center sm:text-left mt-2 sm:mt-0">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Furnishing</p>
-            <p className="text-base font-bold text-slate-900 dark:text-white">
-              {amenities.furnishing ? amenities.furnishing.replace(/_/g, " ") : "N/A"}
-            </p>
-          </div>
-        </div>
-
-        {/* Quality Score Banner */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 bg-rose-50/60 dark:bg-rose-950/30">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-600 text-white font-black text-sm shadow-md">
-              {scoreResult.score}%
+          <div className="p-4">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-2xl font-black text-slate-950 dark:text-white">{price ?? "Price not set"}</span>
+              {price && (isRent || isPg) && <span className="text-sm text-slate-500">/month</span>}
+              {perSqft && <span className="text-xs text-slate-500">· ₹{perSqft.toLocaleString("en-IN")}/sq.ft</span>}
             </div>
-            <div>
-              <p className="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                Property Quality Rating: <span className="text-rose-600 dark:text-rose-400">{scoreResult.tier}</span>
-              </p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                {scoreResult.tips[0] || "Your listing details are comprehensive and ready to attract buyers!"}
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowFullPreview(!showFullPreview)}
-            className="flex items-center gap-1 text-xs font-bold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-          >
-            {showFullPreview ? "Collapse Sections" : "Expand All Details"}
-            {showFullPreview ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </button>
-        </div>
-      </div>
-
-      {/* 2. PHOTO GALLERY SECTION */}
-      <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <ImageIcon className="h-4 w-4 text-rose-500" />
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Uploaded Photos ({uploadedPhotos.length})</h3>
-          </div>
-          <button
-            type="button"
-            onClick={() => onEditStep(4)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-          >
-            <Edit3 className="h-3.5 w-3.5 text-slate-500" />
-            Edit Media
-          </button>
-        </div>
-
-        {uploadedPhotos.length > 0 ? (
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-            {uploadedPhotos.map((photo: any, i: number) => (
-              <div key={photo.localId || i} className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-xs dark:border-slate-800 dark:bg-slate-800">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={photo.preview || photo.uploadedUrl} alt={`Photo ${i + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
-                {i === 0 ? (
-                  <span className="absolute left-1.5 top-1.5 rounded-md bg-rose-600/95 px-2 py-0.5 text-[9px] font-bold text-white uppercase tracking-wider shadow-sm">
-                    Cover
-                  </span>
-                ) : (
-                  <span className="absolute bottom-1.5 right-1.5 rounded-md bg-slate-950/70 px-1.5 py-0.5 text-[9px] font-medium text-white backdrop-blur-xs">
-                    #{i + 1}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-4 flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-6 text-center text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-950/40">
-            <AlertCircle className="h-6 w-6 text-amber-500" />
-            <p className="font-semibold text-slate-700 dark:text-slate-300">No photos uploaded yet</p>
-            <p className="text-[11px] text-slate-400">High-resolution photos increase buyer interest and lead conversions by over 400%.</p>
-          </div>
-        )}
-      </div>
-
-      {/* 3. STRUCTURED DETAILS CARDS */}
-      {showFullPreview && (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {/* Basic Details */}
-          <SectionCard
-            title="Basic Details &amp; Category"
-            icon={Home}
-            stepNumber={0}
-            onEdit={onEditStep}
-          >
-            <DetailItem label="Listing Type" value={context.listingType === "RENT" ? "For Rent" : context.listingType === "PG" ? "PG / Co-Living" : "For Sale"} />
-            <DetailItem label="Category" value={context.resCom === "COMMERCIAL" ? "Commercial" : "Residential"} />
-            <DetailItem
-              label="Sub-Type"
-              value={
-                context.propertySubTypeSlug
-                  ? PROPERTY_SUBTYPES.find((s) => s.slug === context.propertySubTypeSlug)?.name ??
-                    context.propertySubTypeSlug.replace(/-/g, " ").toUpperCase()
-                  : undefined
-              }
-            />
-            <DetailItem label="Sub-Category" value={context.propertySubCategorySlug ? context.propertySubCategorySlug.replace(/-/g, " ") : undefined} />
-            <DetailItem label="Posted By" value={context.postedAs || "Owner"} />
-            {context.listingType === "SELL" && (
-              <DetailItem
-                label="Transaction"
-                value={context.saleType === "NEW_BOOKING" ? "New booking" : context.saleType === "RESALE" ? "Resale" : "—"}
-              />
-            )}
-          </SectionCard>
-
-          {/* Location Details */}
-          <SectionCard
-            title="Location &amp; Address"
-            icon={MapPin}
-            stepNumber={1}
-            onEdit={onEditStep}
-          >
-            <DetailItem label="City" value={location.cityName} icon={Building2} />
-            <DetailItem label="Locality" value={location.locality} icon={MapPin} />
-            <DetailItem label="Sector" value={location.sectorNumber ? (location.sectorNumber.toLowerCase().startsWith("sector") ? location.sectorNumber : `Sector ${location.sectorNumber}`) : undefined} />
-            <DetailItem label="Sub-locality / Pocket" value={location.subLocality} />
-            <DetailItem label="Project / Society" value={location.societyOrProjectName} />
-            <DetailItem label="Building / Landmark" value={location.buildingName} />
-            <DetailItem label="Flat / Unit No." value={location.flatNumber} />
-            <DetailItem label="House / Villa No." value={location.houseNumber} />
-            <DetailItem label="Tower / Block No." value={location.towerNumber} />
-            <DetailItem label="Plot No." value={location.plotNumber} />
-            <DetailItem label="Complete Address" value={location.address} />
-            <DetailItem label="Pincode" value={location.pincode} />
-          </SectionCard>
-
-          {/* Property Profile */}
-          <SectionCard
-            title="Specifications &amp; Layout"
-            icon={Layers}
-            stepNumber={2}
-            onEdit={onEditStep}
-          >
-            {context.listingType === "PG" ? (
-              <>
-                <DetailItem
-                  label="Accommodation"
-                  value={
-                    details.accommodationType === "LODGE"
-                      ? "Student Lodge"
-                      : details.accommodationType === "HOSTEL"
-                      ? "Hostel"
-                      : details.accommodationType === "STUDENT_ROOM"
-                      ? "Student Room"
-                      : "PG"
-                  }
-                />
-                <DetailItem label="Occupants" value={details.pgFor} />
-                <DetailItem
-                  label="Pricing Model"
-                  value={details.pricingBasis === "PER_ROOM" ? "Entire Room Wise" : "Per Bed Wise"}
-                />
-                {details.pricingBasis === "PER_ROOM" ? (
-                  <>
-                    <DetailItem label="Max Occupancy" value={details.maxPersonsInRoom ? `${details.maxPersonsInRoom} Persons/Room` : undefined} />
-                    <DetailItem label="Rooms Available" value={details.totalRoomsAvailable} />
-                  </>
-                ) : (
-                  <>
-                    <DetailItem label="Sharing Type" value={details.sharingType} />
-                    <DetailItem label="Available Beds" value={details.availableBeds} />
-                  </>
-                )}
-                <DetailItem
-                  label="Food &amp; Mess"
-                  value={
-                    details.foodOption === "INCLUDED"
-                      ? `Included (${details.mealType || "Meals"})`
-                      : details.foodOption === "OPTIONAL_MESS"
-                      ? `Optional Mess (₹${details.messCharges || 0}/mo)`
-                      : details.foodOption === "SELF_COOKING"
-                      ? "Self Cooking Allowed"
-                      : "No Food"
-                  }
-                />
-                <DetailItem
-                  label="Electricity"
-                  value={
-                    details.electricityType === "INCLUDED"
-                      ? "Included in Rent"
-                      : details.electricityType === "SUB_METER"
-                      ? `Sub-Meter (${details.electricityRatePerUnit ? `₹${details.electricityRatePerUnit}/unit` : "As per meter"})`
-                      : details.electricityType === "FIXED_MONTHLY"
-                      ? `Fixed (₹${details.electricityMonthlyCharge || 0}/mo)`
-                      : undefined
-                  }
-                />
-                <DetailItem
-                  label="Washroom"
-                  value={details.attachedBathroom ? "Attached (Private)" : "Common / Floor Shared"}
-                />
-                <DetailItem label="Study Table" value={details.hasStudyTable ? "Provided" : "Not Provided"} />
-                <DetailItem label="RO Water" value={details.hasRoWater ? "Available" : "Not Available"} />
-                <DetailItem label="Power Backup" value={details.hasPowerBackup ? "Available" : "Not Available"} />
-                <DetailItem label="AC / Cooler" value={details.acAvailable ? "Available" : "Not Available"} />
-                <DetailItem
-                  label="Gate Closing"
-                  value={details.gateClosingTime && details.gateClosingTime !== "NO_RESTRICTION" ? details.gateClosingTime.replace(/_/g, " ") : "24x7 Entry / No Curfew"}
-                />
-              </>
-            ) : (
-              <>
-                <DetailItem label="Bedrooms" value={details.bedrooms ? `${details.bedrooms} BHK` : undefined} icon={Bed} />
-                <DetailItem label="Bathrooms" value={details.bathrooms ? `${details.bathrooms} Baths` : undefined} icon={Bath} />
-                <DetailItem label="Balconies" value={details.balconies} />
-                <DetailItem label="Floor" value={details.totalFloors ? `${details.floorNumber ?? 0} of ${details.totalFloors}` : undefined} />
-                <DetailItem label="Facing" value={details.propertyFacing} icon={Compass} />
-                <DetailItem label="Property Age" value={details.ageOfProperty ? details.ageOfProperty.replace(/_/g, " ") : undefined} />
-                <DetailItem label="Availability" value={availability.availabilityStatus ? availability.availabilityStatus.replace(/_/g, " ") : undefined} icon={Calendar} />
-              </>
-            )}
-          </SectionCard>
-
-          {/* Financials & Pricing */}
-          <SectionCard
-            title="Financials &amp; Commercials"
-            icon={Tag}
-            stepNumber={3}
-            onEdit={onEditStep}
-          >
-            <DetailItem label="Expected Price" value={formattedPrice} highlight />
-            {pricePerSqft && <DetailItem label="Rate / sq.ft" value={`₹ ${pricePerSqft.toLocaleString("en-IN")} / sq.ft`} />}
-            <DetailItem label="Price Negotiable" value={pricing.priceNegotiable ? "Yes" : "No"} />
-            <DetailItem label="Security Deposit" value={pricing.deposit ? formatPrice(pricing.deposit, "SELL") : undefined} />
-            <DetailItem label="Maintenance" value={pricing.maintenance ? `₹ ${pricing.maintenance.toLocaleString("en-IN")} ${pricing.maintenancePaymentPeriod || ""}` : undefined} />
-            {context.postedAs === "AGENT" && (
-              <DetailItem
-                label="Brokerage"
-                value={
-                  getBrokerageDisplay(
-                    pricing.brokerage,
-                    pricing.brokerageType,
-                    pricing.brokerageNegotiable
-                  ).fullText
-                }
-                highlight={pricing.brokerageType === "ZERO"}
-              />
-            )}
-          </SectionCard>
-        </div>
-      )}
-
-      {/* 4. AMENITIES & DESCRIPTION CARD */}
-      {showFullPreview && (
-        <div className="space-y-5">
-          {/* Amenities Chips */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Amenities &amp; Features ({selectedAmenities.length})
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => onEditStep(3)}
-                className="text-xs font-semibold text-rose-600 hover:underline"
-              >
-                Edit Amenities
-              </button>
-            </div>
-
-            {selectedAmenities.length > 0 ? (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {selectedAmenities.map((amenity: string, idx: number) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 border border-emerald-200/70 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                    {amenity}
+            <h3 className="mt-1 line-clamp-2 text-base font-bold text-slate-900 dark:text-white">{meta.title || "Your listing title"}</h3>
+            <p className="mt-1 flex items-center gap-1 text-sm text-slate-500">
+              <MapPin className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">{publicPlace || "Location not set"}</span>
+            </p>
+            {quickFacts.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {quickFacts.map((f) => (
+                  <span key={f} className="rounded-lg bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                    {f}
                   </span>
                 ))}
               </div>
-            ) : (
-              <p className="mt-3 text-xs text-slate-400 italic">No amenities selected</p>
             )}
           </div>
+        </div>
+      </section>
 
-          {/* Description Block */}
-          {meta.description && (
-            <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-indigo-600" />
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Property Description</h3>
-                </div>
+      {/* 2. Readiness */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center gap-3">
+          {pct !== null && <ScoreRing pct={pct} />}
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-slate-900 dark:text-white">
+              {tips.length === 0 ? "Your listing looks great 🎉" : "Before you post"}
+            </p>
+            <p className="text-xs text-slate-500">
+              {tier ? `Listing quality: ${tier}. ` : ""}
+              {tips.length === 0 ? "Everything buyers look for is filled in." : "Quick fixes that bring more enquiries:"}
+            </p>
+          </div>
+        </div>
+        {tips.length > 0 && (
+          <ul className="mt-3 space-y-1.5">
+            {tips.slice(0, 4).map((t) => (
+              <li key={t.text}>
                 <button
                   type="button"
-                  onClick={() => onEditStep(2)}
-                  className="text-xs font-semibold text-rose-600 hover:underline"
+                  onClick={() => onEditStep(t.step)}
+                  className="flex w-full items-center gap-2 rounded-xl bg-amber-50 px-3 py-2.5 text-left text-sm text-amber-900 transition hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-200"
                 >
-                  Edit Text
+                  <Sparkles className="h-4 w-4 shrink-0 text-amber-500" />
+                  <span className="flex-1">{t.text}</span>
+                  <span className="shrink-0 text-xs font-bold">Fix →</span>
                 </button>
-              </div>
-              <p className="mt-4 whitespace-pre-line rounded-xl bg-slate-50/80 p-4 text-xs font-medium leading-relaxed text-slate-700 border border-slate-100 dark:bg-slate-950/50 dark:text-slate-300 dark:border-slate-800/60">
-                {meta.description}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* 3. Details */}
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+        <p className="border-b border-slate-100 px-4 py-3 text-sm font-bold text-slate-900 dark:border-slate-800 dark:text-white">Your details</p>
+
+        <Row icon={Home} title="Property type" step="basic" onEdit={onEditStep}
+          summary={[isRent ? "For rent" : isPg ? "PG" : "For sale", context.resCom === "COMMERCIAL" ? "Commercial" : "Residential", subType].filter(Boolean).join(" · ")}>
+          <Item label="Posted as" value={pretty(context.postedAs) || "Owner"} />
+          {context.listingType === "SELL" && (
+            <Item label="Transaction" value={context.saleType === "NEW_BOOKING" ? "New booking" : context.saleType === "RESALE" ? "Resale" : undefined} />
+          )}
+          <Item label="Category" value={pretty(context.propertySubCategorySlug)} />
+        </Row>
+
+        <Row icon={MapPin} title="Location" step="location" onEdit={onEditStep} summary={publicPlace || "Not set"}>
+          <Item label="Sub-locality" value={location.subLocality} />
+          <Item label="Sector" value={location.sectorNumber} />
+          <Item label="Building / landmark" value={location.buildingName} />
+          <Item label="Pincode" value={location.pincode} />
+          {(unitBits.length > 0 || location.address) && (
+            <div className="mt-2 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/60">
+              <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                <Lock className="h-3.5 w-3.5" /> Private: shown only after a buyer unlocks your contact
               </p>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{location.address || unitBits.join(", ")}</p>
             </div>
           )}
-        </div>
-      )}
+        </Row>
+
+        <Row icon={Layers} title={isPg ? "Room & rules" : "Size & layout"} step="profile" onEdit={onEditStep}
+          summary={quickFacts.slice(0, 3).join(" · ") || "Not set"}>
+          {isPg ? (
+            <>
+              <Item label="For" value={pretty(details.pgFor)} />
+              <Item label="Room" value={pgRoom} />
+              <Item label="Beds / rooms free" value={details.availableBeds ?? details.totalRoomsAvailable} />
+              <Item label="Food" value={pretty(details.foodOption)} />
+              <Item label="Electricity" value={pretty(details.electricityType)} />
+              <Item label="Gate closing" value={pretty(details.gateClosingTime)} />
+            </>
+          ) : (
+            <>
+              <Item icon={BedDouble} label="Bedrooms" value={details.bedrooms ? `${details.bedrooms} BHK` : undefined} />
+              <Item icon={Bath} label="Bathrooms" value={details.bathrooms} />
+              <Item label="Balconies" value={details.balconies} />
+              <Item icon={Maximize2} label="Area" value={area ? `${area} ${areaUnit}` : undefined} />
+              <Item icon={Building2} label="Floor" value={floor} />
+            </>
+          )}
+        </Row>
+
+        <Row icon={Sofa} title="Features" step="features" onEdit={onEditStep}
+          summary={[pretty(amenities.furnishing), pretty(availability.availabilityStatus)].filter(Boolean).join(" · ") || "Not set"}>
+          <Item label="Availability" value={pretty(availability.availabilityStatus)} />
+          <Item label="Available from" value={availability.availableFrom} />
+          <Item label="Property age" value={pretty(availability.ageOfProperty)} />
+          <Item label="Parking" value={amenities.parkingAvailable ? `Yes${amenities.noOfParkings ? ` (${amenities.noOfParkings})` : ""}` : undefined} />
+        </Row>
+
+        <Row icon={IndianRupee} title="Price & amenities" step="pricing" onEdit={onEditStep}
+          summary={[price ? `${price}${isRent || isPg ? "/mo" : ""}` : "Price not set", amenityLabels.length ? `${amenityLabels.length} amenities` : null].filter(Boolean).join(" · ")}>
+          <Item label="Negotiable" value={pricing.priceNegotiable ? "Yes" : undefined} />
+          <Item label="Deposit" value={inr(pricing.deposit)} />
+          <Item label="Maintenance" value={pricing.maintenance ? `${inr(pricing.maintenance)} ${pretty(pricing.maintenancePaymentPeriod) ?? ""}`.trim() : undefined} />
+          {context.postedAs === "AGENT" && (
+            <Item label="Brokerage" value={getBrokerageDisplay(pricing.brokerage, pricing.brokerageType, pricing.brokerageNegotiable).fullText} />
+          )}
+          {amenityLabels.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {amenityLabels.map((a) => (
+                <span key={a} className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+                  <CheckCircle2 className="h-3 w-3" /> {a}
+                </span>
+              ))}
+            </div>
+          )}
+        </Row>
+
+        <Row icon={FileText} title="Photos & description" step="media" onEdit={onEditStep}
+          summary={`${imageCount} photo${imageCount === 1 ? "" : "s"}${meta.description ? " · description added" : " · no description"}`}>
+          {meta.description ? (
+            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600 dark:text-slate-300">{meta.description}</p>
+          ) : (
+            <p className="flex items-center gap-1.5 text-sm text-slate-500">
+              <AlertCircle className="h-4 w-4 text-amber-500" /> No description yet
+            </p>
+          )}
+        </Row>
+      </section>
+
+      {/* 4. What happens next */}
+      <section className="rounded-2xl bg-slate-900 p-4 text-white dark:bg-slate-800">
+        <p className="text-sm font-bold">What happens after you post</p>
+        <ol className="mt-2 space-y-1.5 text-xs text-slate-300">
+          <li>1. We quickly check your listing (usually within a few hours).</li>
+          <li>2. It goes live in search. Your phone number and exact address stay private.</li>
+          <li>3. Enquiries arrive in your <b className="text-white">Leads</b> inbox. Reply fast to earn a reply-speed badge.</li>
+        </ol>
+      </section>
     </div>
   );
 }
 
-function SectionCard({
-  title,
+function ScoreRing({ pct }: { pct: number }) {
+  const r = 20;
+  const c = 2 * Math.PI * r;
+  const color = pct >= 85 ? "#059669" : pct >= 65 ? "#d97706" : "#e11d48";
+  return (
+    <div className="relative h-14 w-14 shrink-0">
+      <svg viewBox="0 0 48 48" className="h-14 w-14 -rotate-90">
+        <circle cx="24" cy="24" r={r} fill="none" stroke="currentColor" strokeWidth="5" className="text-slate-100 dark:text-slate-800" />
+        <circle cx="24" cy="24" r={r} fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - pct / 100)} />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-sm font-black text-slate-900 dark:text-white">{pct}%</span>
+    </div>
+  );
+}
+
+function Row({
   icon: Icon,
-  stepNumber,
+  title,
+  summary,
+  step,
   onEdit,
   children,
 }: {
-  title: string;
   icon: React.ElementType;
-  stepNumber: number;
-  onEdit: (stepIndex: number) => void;
-  children: React.ReactNode;
+  title: string;
+  summary: string;
+  step: ReviewStepId;
+  onEdit: (step: ReviewStepId) => void;
+  children?: React.ReactNode;
 }) {
+  const [open, setOpen] = useState(false);
   return (
-    <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
-            <Icon className="h-4 w-4" />
-          </div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white">{title}</h3>
-        </div>
+    <div className="border-b border-slate-100 last:border-0 dark:border-slate-800">
+      <div className="flex items-center gap-3 px-4 py-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
+          <Icon className="h-4 w-4" />
+        </span>
+        <button type="button" onClick={() => setOpen((o) => !o)} className="min-w-0 flex-1 text-left" aria-expanded={open}>
+          <span className="block text-sm font-semibold text-slate-900 dark:text-white">{title}</span>
+          <span className="block truncate text-xs text-slate-500">{summary}</span>
+        </button>
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-label={open ? "Hide details" : "Show details"} className="p-1 text-slate-400">
+          <ChevronDown className={cn("h-4 w-4 transition", open && "rotate-180")} />
+        </button>
         <button
           type="button"
-          onClick={() => onEdit(stepNumber)}
-          className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+          onClick={() => onEdit(step)}
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200"
         >
-          <Edit3 className="h-3.5 w-3.5" />
-          Edit
+          <Pencil className="h-3 w-3" /> Edit
         </button>
       </div>
-      <div className="mt-3 space-y-2.5 divide-y divide-slate-50 dark:divide-slate-800/50">
-        {children}
-      </div>
+      {open && <div className="space-y-1.5 px-4 pb-4 pl-16">{children}</div>}
     </div>
   );
 }
 
-function DetailItem({
-  label,
-  value,
-  icon: Icon,
-  highlight = false,
-}: {
-  label: string;
-  value?: string | number | null;
-  icon?: React.ElementType;
-  highlight?: boolean;
-}) {
+function Item({ label, value, icon: Icon }: { label: string; value?: string | number | null; icon?: React.ElementType }) {
   if (value == null || value === "") return null;
   return (
-    <div className="flex items-center justify-between pt-2 text-xs">
-      <span className="flex items-center gap-1.5 font-medium text-slate-500 dark:text-slate-400">
-        {Icon && <Icon className="h-3.5 w-3.5 text-slate-400" />}
+    <div className="flex items-center justify-between gap-3 text-sm">
+      <span className="flex items-center gap-1.5 text-slate-500">
+        {Icon && <Icon className="h-3.5 w-3.5" />}
         {label}
       </span>
-      <span className={`font-semibold text-right ${highlight ? "text-sm font-extrabold text-rose-600 dark:text-rose-400" : "text-slate-900 dark:text-white"}`}>
-        {value}
-      </span>
+      <span className="text-right font-semibold text-slate-900 dark:text-white">{value}</span>
     </div>
   );
 }

@@ -679,7 +679,7 @@ export function PropertyListingFlow({
           <PropertyScore pct={score.pct} />
         </aside>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           {duplicateFrom && (
             <div className="rounded-2xl border border-sky-200 bg-sky-50/80 p-3.5 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-200">
               <p className="font-semibold">Copied from &ldquo;{duplicateFrom.title}&rdquo;</p>
@@ -775,7 +775,22 @@ export function PropertyListingFlow({
                   <SectionRenderer key={section.id} section={section} values={values ?? {}} index={i + 1} />
                 ))}
 
-              {isLast && <ReviewSummary values={form.getValues()} onEditStep={(i) => goToStep(i)} />}
+              {isLast && (
+                <ReviewSummary
+                  values={values ?? form.getValues()}
+                  score={score.pct}
+                  onEditStep={(id) => {
+                    // Photos/description live on this same step: scroll instead of navigating.
+                    if (id === step.id) {
+                      const target = document.getElementById("field-container-media.mediaIds") ?? document.querySelector("form");
+                      target?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      return;
+                    }
+                    const i = listingSteps.findIndex((s) => s.id === id);
+                    goToStep(i >= 0 ? i : 0);
+                  }}
+                />
+              )}
             </form>
           </div>
         </div>

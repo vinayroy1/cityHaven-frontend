@@ -5,13 +5,11 @@ import {
   UploadCloud,
   Trash2,
   Star,
-  ImageIcon,
-  Video,
   Sparkles,
   Loader2,
-  CheckCircle2,
-  CloudCheck,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { cn } from "@/components/ui/utils";
@@ -35,25 +33,17 @@ export type PendingMedia = {
   error?: string;
 };
 
-const formatSize = (bytes: number) => {
-  const kb = bytes / 1024;
-  return kb < 1024 ? `${kb.toFixed(0)} KB` : `${(kb / 1024).toFixed(1)} MB`;
-};
-
 export function MediaField({ field }: { field: FieldConfig }) {
   const form = useFormContext();
-  const [items, setItems] = useState<PendingMedia[]>([]);
+  // Start from photos already on the form (edit / duplicate), so nothing is overwritten on mount.
+  const [items, setItems] = useState<PendingMedia[]>(() => {
+    const stored = (form.getValues("meta.draftState") as { mediaUploads?: PendingMedia[] } | null)?.mediaUploads;
+    return Array.isArray(stored) ? stored : [];
+  });
   const [isCompressing, setIsCompressing] = useState(false);
   const [compressProgress, setCompressProgress] = useState<{ current: number; total: number } | null>(null);
 
   const [getPresignedUploadUrl] = useGetPresignedUploadUrlMutation();
-
-  useEffect(() => {
-    const stored = (form.getValues("meta.draftState") as { mediaUploads?: PendingMedia[] } | null)
-      ?.mediaUploads;
-    if (Array.isArray(stored) && stored.length) setItems(stored);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     form.setValue("meta.draftState", {
@@ -197,6 +187,16 @@ export function MediaField({ field }: { field: FieldConfig }) {
 
   const removeItem = (id: string) => setItems((prev) => prev.filter((i) => i.localId !== id));
 
+  const move = (id: string, dir: -1 | 1) =>
+    setItems((prev) => {
+      const i = prev.findIndex((x) => x.localId === id);
+      const j = i + dir;
+      if (i < 0 || j < 0 || j >= prev.length) return prev;
+      const next = [...prev];
+      [next[i], next[j]] = [next[j], next[i]];
+      return next;
+    });
+
   const makeCover = (id: string) =>
     setItems((prev) => {
       const t = prev.find((i) => i.localId === id);
@@ -224,7 +224,7 @@ export function MediaField({ field }: { field: FieldConfig }) {
             </span>
             <span className="text-xs text-rose-600 font-medium flex items-center gap-1">
               <Sparkles className="h-3 w-3" />
-              Compressing with Lanczos + WebP for high performance
+              Making them load fast for buyers
             </span>
           </>
         ) : (
@@ -232,7 +232,7 @@ export function MediaField({ field }: { field: FieldConfig }) {
             <UploadCloud className="h-7 w-7 text-rose-500" />
             <span className="text-sm font-semibold text-slate-800">Tap to add photos or video</span>
             <span className="text-xs text-slate-500">
-              PNG, JPG, WEBP, MP4 · Auto-compressed · Directly synced to Cloudflare R2
+              JPG, PNG, WEBP or MP4 · We optimise them automatically
             </span>
           </>
         )}
@@ -247,12 +247,12 @@ export function MediaField({ field }: { field: FieldConfig }) {
       </label>
 
       {items.length > 0 && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 [&>*]:min-w-0">
           {items.map((item, idx) => (
             <div
               key={item.localId}
               className={cn(
-                "group relative overflow-hidden rounded-xl border bg-white shadow-sm transition",
+                "group relative min-w-0 overflow-hidden rounded-xl border bg-white shadow-sm transition",
                 idx === 0 ? "border-slate-900 ring-2 ring-slate-300" : "border-slate-200"
               )}
             >
@@ -280,12 +280,6 @@ export function MediaField({ field }: { field: FieldConfig }) {
                       Uploading
                     </span>
                   )}
-                  {item.uploaded && (
-                    <span className="rounded-full bg-slate-950/80 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300 flex items-center gap-1 shadow-sm">
-                      <CheckCircle2 className="h-2.5 w-2.5 text-emerald-400" />
-                      R2
-                    </span>
-                  )}
                   {item.error && (
                     <span className="rounded-full bg-rose-600/90 px-1.5 py-0.5 text-[10px] font-semibold text-white flex items-center gap-1 shadow-sm">
                       <AlertCircle className="h-2.5 w-2.5" />
@@ -294,46 +288,64 @@ export function MediaField({ field }: { field: FieldConfig }) {
                   )}
                 </div>
 
-                <div className="absolute right-2 top-2 flex gap-1.5 opacity-0 transition group-hover:opacity-100">
-                  <button
-                    type="button"
-                    onClick={() => makeCover(item.localId)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full border border-white/70 bg-white/90 text-amber-500 shadow-sm transition hover:scale-105"
-                    title="Make cover"
-                  >
-                    <Star className="h-3.5 w-3.5" />
-                  </button>
+                {/* Controls: always visible on touch screens, on hover with a mouse. */}
+                <div className="absolute right-2 top-2 flex gap-1.5 transition [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
                   <button
                     type="button"
                     onClick={() => removeItem(item.localId)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full border border-white/70 bg-white/90 text-rose-500 shadow-sm transition hover:scale-105"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-rose-600 shadow-md transition hover:scale-105"
+                    aria-label="Remove photo"
                     title="Remove"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
 
-                <div className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-gradient-to-t from-black/70 via-black/40 to-transparent px-2 py-1 text-[11px] text-white">
-                  {item.type.startsWith("video") ? (
-                    <Video className="h-3 w-3 shrink-0" />
-                  ) : (
-                    <ImageIcon className="h-3 w-3 shrink-0" />
-                  )}
-                  <span className="truncate">{item.name}</span>
-                  <span className="ml-auto shrink-0 text-white/75">{formatSize(item.size)}</span>
-                </div>
+              </div>
+              <div className="flex items-center gap-1 border-t border-slate-100 px-1.5 py-1.5 dark:border-slate-800">
+                {idx === 0 ? (
+                  <span className="flex flex-1 items-center gap-1 px-1 text-[11px] font-semibold text-amber-600">
+                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" /> Cover
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => makeCover(item.localId)}
+                    title="Set as cover photo"
+                    className="flex flex-1 items-center gap-1 rounded-lg px-1.5 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  >
+                    <Star className="h-3.5 w-3.5" /> Cover
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => move(item.localId, -1)}
+                  disabled={idx === 0}
+                  aria-label="Move left"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => move(item.localId, 1)}
+                  disabled={idx === items.length - 1}
+                  aria-label="Move right"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      <div className="flex items-center gap-2 rounded-lg bg-emerald-50/70 border border-emerald-200/80 px-3 py-2 text-xs text-emerald-800">
-        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-        <span>
-          Images are automatically optimized to WebP and saved in <strong>Cloudflare R2</strong> with zero egress fees and global CDN distribution.
-        </span>
-      </div>
+      {items.length > 0 && (
+        <p className="text-xs text-slate-500">
+          Tip: the cover photo is what buyers see first. Use a bright living-room or front view.
+        </p>
+      )}
     </div>
   );
 }
