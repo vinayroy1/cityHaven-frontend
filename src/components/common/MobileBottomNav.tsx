@@ -41,6 +41,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 import { useGetMyCreditsQuery, useGetCreditPlatformConfigQuery } from "@/features/contactVerify/api";
 import { useMeQuery } from "@/features/auth/api";
+import { useGetLeadInboxSummaryQuery } from "@/features/leads/api";
 import dynamic from "next/dynamic";
 
 const CreditWalletModal = dynamic(
@@ -114,6 +115,8 @@ export function MobileBottomNav() {
   }, [activeProfileImage]);
 
   const { data: creditsData, refetch: refetchCredits } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
+  const { data: leadSummary } = useGetLeadInboxSummaryQuery(undefined, { skip: !isAuthed });
+  const newLeads = leadSummary?.total ?? 0;
   const { data: platformData } = useGetCreditPlatformConfigQuery();
   const purchaseEnabled = platformData?.data?.flags?.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
   const creditBalance = creditsData?.data?.credits ?? (userProfile as any)?.credits ?? 0;
@@ -439,6 +442,18 @@ export function MobileBottomNav() {
                           <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                           <span>{creditBalance} Credits</span>
                         </button>
+                        <Link
+                          href="/dashboard/leads"
+                          onNavigate={closeAfterNavigation}
+                          className="relative rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-850 dark:text-white"
+                        >
+                          Leads
+                          {newLeads > 0 && (
+                            <span className="absolute -right-1.5 -top-1.5 min-w-4 rounded-full bg-rose-600 px-1 text-center text-[10px] font-bold leading-4 text-white">
+                              {newLeads > 99 ? "99+" : newLeads}
+                            </span>
+                          )}
+                        </Link>
                         <Link
                           href="/dashboard"
                           onNavigate={closeAfterNavigation}

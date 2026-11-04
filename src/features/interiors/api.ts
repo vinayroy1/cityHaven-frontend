@@ -223,6 +223,12 @@ export const interiorsApi = createApi({
       }),
     }),
 
+    updateInteriorInquiryStatus: builder.mutation<InteriorInquiry, { id: number; status: InteriorInquiry["status"] }>({
+      query: ({ id, status }) => ({ url: API_ENDPOINTS.interiors.inquiryStatus(id), method: "PATCH", body: { status } }),
+      transformResponse: (response: ApiEnvelope<InteriorInquiry>) => response.data,
+      invalidatesTags: ["InteriorInquiries"],
+    }),
+
     unlockInteriorInquiry: builder.mutation<InteriorInquiry, number | string>({
       query: (inquiryId) => ({
         url: API_ENDPOINTS.interiors.unlockInquiry(inquiryId),
@@ -484,9 +490,10 @@ export const interiorsApi = createApi({
       invalidatesTags: ["InteriorDocs", "InteriorReadiness"],
     }),
 
-    getMyInteriorInquiries: builder.query<InteriorInquiriesResponse, { status?: string; page?: number; limit?: number } | void>({
+    getMyInteriorInquiries: builder.query<InteriorInquiriesResponse, { status?: string; page?: number; limit?: number; scope?: "all" } | void>({
       query: (params) => {
         const q = new URLSearchParams();
+        if (params?.scope) q.set("scope", params.scope);
         if (params?.status) q.set("status", params.status);
         if (params?.page) q.set("page", String(params.page));
         if (params?.limit) q.set("limit", String(params.limit));
@@ -518,6 +525,7 @@ export const {
   useUpdateMyInteriorStatusMutation,
   useGetMyInteriorBillingQuery,
   useBoostInteriorListingMutation,
+  useUpdateInteriorInquiryStatusMutation,
   useUpdateCompanyBranchMutation,
   useDeleteCompanyBranchMutation,
   useDeleteInteriorPackageMutation,

@@ -6,7 +6,6 @@ import {
   Building2,
   Users,
   FileText,
-  Mail,
   MessageSquare,
   Bell,
   BadgeCheck,
@@ -18,21 +17,27 @@ import {
   Coins,
   ShieldCheck,
   Sparkles,
+  Inbox,
+  Send,
 } from "lucide-react";
 import { PageHeader } from "./PageHeader";
 import { SectionCard } from "./SectionCard";
 import { StatPill } from "./StatPill";
-import { useMyPropertiesQuery, useMyEnquiriesQuery } from "@/features/propertyListing/api";
+import { useMyPropertiesQuery } from "@/features/propertyListing/api";
 import { useGetMyFlatmateListingsQuery } from "@/features/flatmates/api";
 import { useGetDocumentStatsQuery } from "@/features/documents/api";
 import { useGetBillingSummaryQuery } from "@/features/contactVerify/api";
+import { useGetLeadInboxSummaryQuery } from "@/features/leads/api";
 
 export function DashboardClient() {
   const { data: propertiesData, isLoading: isPropsLoading } = useMyPropertiesQuery();
   const { data: flatmatesData, isLoading: isFlatmatesLoading } = useGetMyFlatmateListingsQuery();
   const { data: docStats, isLoading: isDocLoading } = useGetDocumentStatsQuery();
-  const { data: enquiriesData, isLoading: isEnquiriesLoading } = useMyEnquiriesQuery({});
   const { data: billingData } = useGetBillingSummaryQuery();
+  const { data: leadSummary, isLoading: isLeadsLoading } = useGetLeadInboxSummaryQuery();
+  const newLeads = leadSummary?.total ?? 0;
+  const upcomingVisits = leadSummary?.upcomingVisits ?? 0;
+  const followUpsDue = leadSummary?.followUpsDue ?? 0;
 
   const propertiesList = useMemo(() => {
     if (Array.isArray(propertiesData)) return propertiesData;
@@ -51,15 +56,21 @@ export function DashboardClient() {
   const totalDocsCount = docStats?.totalDocuments ?? 0;
   const verifiedDocsCount = docStats?.verifiedProofs ?? 0;
 
-  const enquiriesCount = useMemo(() => {
-    if (Array.isArray(enquiriesData?.items)) return enquiriesData.items.length;
-    return 0;
-  }, [enquiriesData]);
 
   const balanceCredits = billingData?.data?.credits ?? (billingData as any)?.credits ?? null;
 
   // Primary hubs (Top 4 workspaces)
   const primaryHubs = [
+    {
+      href: "/dashboard/leads",
+      title: "Leads",
+      subtitle: "People contacting you",
+      description: "Enquiries, site visits, room requests and interior leads on your listings, in one inbox.",
+      badge: isLeadsLoading ? "Loading…" : newLeads > 0 ? `${newLeads} new` : "All caught up",
+      badgeTone: newLeads > 0 ? "alert" : "sky",
+      icon: Inbox,
+      iconClass: "bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300",
+    },
     {
       href: "/dashboard/properties",
       title: "My Properties",
@@ -81,16 +92,6 @@ export function DashboardClient() {
       iconClass: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300",
     },
     {
-      href: "/dashboard/enquiries",
-      title: "Leads & Enquiries",
-      subtitle: "Buyer & tenant workspace",
-      description: "Track incoming inquiries, contact unlock requests, scheduled site visits, and chats.",
-      badge: `${enquiriesCount} ${enquiriesCount === 1 ? "Lead" : "Leads"}`,
-      badgeTone: "sky",
-      icon: Mail,
-      iconClass: "bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300",
-    },
-    {
       href: "/dashboard/documents",
       title: "Documents & Proofs",
       subtitle: "Title deeds, NOCs & templates",
@@ -104,6 +105,13 @@ export function DashboardClient() {
 
   // Secondary tools (Appears exactly once without duplicates)
   const secondaryTools = [
+    {
+      href: "/dashboard/enquiries",
+      title: "My enquiries",
+      description: "Homes you contacted, visits you booked and properties you saved.",
+      icon: Send,
+      iconClass: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
+    },
     {
       href: "/dashboard/messages",
       title: "Messages",
@@ -214,11 +222,21 @@ export function DashboardClient() {
             href="/dashboard/documents"
           />
           <StatPill
-            label="Leads & Enquiries"
-            value={isEnquiriesLoading ? "—" : enquiriesCount}
-            hint={isEnquiriesLoading ? "Loading..." : "Buyer & tenant requests"}
-            tone="slate"
-            href="/dashboard/enquiries"
+            label="New leads"
+            value={isLeadsLoading ? "—" : newLeads}
+            hint={
+              isLeadsLoading
+                ? "Loading..."
+                : followUpsDue > 0
+                  ? `${followUpsDue} follow-up${followUpsDue === 1 ? "" : "s"} due`
+                  : upcomingVisits > 0
+                  ? `${upcomingVisits} upcoming visit${upcomingVisits === 1 ? "" : "s"}`
+                  : newLeads > 0
+                    ? "Waiting for your reply"
+                    : "All caught up"
+            }
+            tone={newLeads > 0 ? "rose" : "slate"}
+            href="/dashboard/leads"
           />
         </div>
       </SectionCard>
@@ -260,7 +278,13 @@ export function DashboardClient() {
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                  <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                  <span
+                    className={
+                      hub.badgeTone === "alert"
+                        ? "inline-flex items-center rounded-full bg-rose-600 px-2.5 py-0.5 text-[11px] font-bold text-white"
+                        : "inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                    }
+                  >
                     {hub.badge}
                   </span>
                   <span className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 group-hover:underline">

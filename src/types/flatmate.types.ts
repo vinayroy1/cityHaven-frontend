@@ -131,6 +131,9 @@ export interface FlatmateInterest {
   status: FlatmateInterestStatus;
   createdAt: string;
   updatedAt: string;
+  ownerNote?: string | null;
+  followUpAt?: string | null;
+  firstRespondedAt?: string | null;
   listing?: FlatmateListing;
   sender?: {
     id: number;

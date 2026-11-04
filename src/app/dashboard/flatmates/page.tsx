@@ -586,6 +586,9 @@ export default function DashboardFlatmatesPage() {
           {/* TAB 2: Received Inquiries */}
           {activeTab === "received" && (
             <div className="space-y-4">
+              <Link href="/dashboard/leads?type=flatmate" className="inline-block text-xs font-semibold text-rose-600 hover:underline">
+                Manage all your leads in one inbox →
+              </Link>
               {isLoadingInterests ? (
                 <div className="p-8 text-center text-slate-500 flex flex-col items-center gap-2">
                   <Loader2 className="w-6 h-6 animate-spin text-rose-500" />

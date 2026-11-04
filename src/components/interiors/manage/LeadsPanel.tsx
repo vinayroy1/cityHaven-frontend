@@ -58,6 +58,9 @@ export function LeadsPanel() {
         <div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Leads</h2>
           <p className="text-xs text-slate-500">Homeowners asking for estimates and consultations.</p>
+          <Link href="/dashboard/leads?type=interior" className="mt-1 inline-block text-xs font-semibold text-rose-600 hover:underline">
+            Manage all your leads in one inbox →
+          </Link>
         </div>
         <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs dark:border-slate-800 dark:bg-slate-900">
           <Coins className="h-4 w-4 text-amber-500" aria-hidden />

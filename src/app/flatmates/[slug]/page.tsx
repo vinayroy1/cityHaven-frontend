@@ -46,6 +46,7 @@ import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { SeekerAvatarPlaceholder } from "@/components/flatmates/SeekerAvatarPlaceholder";
 import { isRealUserPhoto } from "@/components/flatmates/FlatmateCard";
 import { NearbyLandmarksCompact } from "@/components/nearby/NearbyLandmarksCompact";
+import { ResponseBadge } from "@/components/leads/ResponseBadge";
 
 const FlatmateContactModal = dynamic(
   () => import("@/components/flatmates/FlatmateContactModal").then((mod) => mod.FlatmateContactModal),
@@ -290,6 +291,7 @@ export default function FlatmateDetailPage() {
                           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                             {displayName}
                           </h1>
+                          {listing.mode === "HAVE_ROOM" && <ResponseBadge kind="flatmate" id={listing.id} className="mt-1" />}
                           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400 font-medium">
                             {age && <span>{age} years old</span>}
                             {profile?.gender && (

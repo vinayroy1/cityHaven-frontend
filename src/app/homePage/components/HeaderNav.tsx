@@ -16,6 +16,7 @@ import { Ruler,
   Info,
   Key,
   LayoutDashboard,
+  Inbox,
   LogOut,
   MapPin,
   MessageSquare,
@@ -38,6 +39,7 @@ import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 import { useGetMyCreditsQuery, useGetCreditPlatformConfigQuery } from "@/features/contactVerify/api";
 import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
 import { useMeQuery } from "@/features/auth/api";
+import { useGetLeadInboxSummaryQuery } from "@/features/leads/api";
 
 interface UserProfile {
   name?: string;
@@ -128,6 +130,8 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
   }, [activeProfileImage]);
 
   const { data: creditsData } = useGetMyCreditsQuery(undefined, { skip: !isAuthed });
+  const { data: leadSummary } = useGetLeadInboxSummaryQuery(undefined, { skip: !isAuthed });
+  const newLeads = leadSummary?.total ?? 0;
   const { data: platformData } = useGetCreditPlatformConfigQuery();
   // The flag comes from a client-side query; it can already be cached on the first client render
   // (after a client navigation) while the server rendered without it. Gate it on hydration so the
@@ -248,6 +252,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
 
   const accountMenuItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, badge: null, onClick: undefined },
+    { label: "Leads", href: "/dashboard/leads", icon: Inbox, badge: newLeads > 0 ? `${newLeads} new` : null, onClick: undefined },
     { label: "My Profile", href: "/dashboard/profile", icon: User, badge: null, onClick: undefined },
     { label: "Interior Designer Profile", href: "/dashboard/interior-profile", icon: Paintbrush, badge: "New", onClick: undefined },
     { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null, onClick: undefined },

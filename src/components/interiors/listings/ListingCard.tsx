@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Briefcase, Building2, Clock, ExternalLink, MapPin, MessageSquare, Pencil } from "lucide-react";
+import { ArrowRight, Briefcase, Building2, Clock, ExternalLink, MapPin, MessageSquare, Pencil, Sparkles } from "lucide-react";
 import { StatusBadge, effectiveStatus } from "@/components/interiors/manage/StatusBadge";
 import { InteriorListingStatus, type InteriorProfile } from "@/types/interior.types";
 import { cn } from "@/components/ui/utils";
+import { ListingBoostButton } from "./ListingBoostButton";
 
 const TOTAL_STEPS = 9;
 
@@ -48,6 +49,8 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
     ? `/dashboard/interior-profile/setup?profileId=${item.id}`
     : `/dashboard/interior-profile/manage?profileId=${item.id}`;
   const publicUrl = `/interior-designers/${item.primaryCity?.toLowerCase() || "india"}/${item.slug}`;
+  const boostedUntil = item.boostedUntil && new Date(item.boostedUntil) > new Date() ? new Date(item.boostedUntil) : null;
+  const canBoost = item.status === InteriorListingStatus.PUBLISHED;
 
   return (
     <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition hover:border-rose-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-rose-900/60">
@@ -82,6 +85,11 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
             {isCompany ? "Company" : "Individual"}
           </span>
         </div>
+        {boostedUntil && (
+          <p className="mt-1.5 inline-flex w-fit items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
+            <Sparkles className="h-3 w-3" /> Boosted till {boostedUntil.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+          </p>
+        )}
         <p className="mt-1 flex min-w-0 items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
           <MapPin className="h-3.5 w-3.5 shrink-0" />
           <span className="truncate">
@@ -135,6 +143,7 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
             {isDraft ? "Continue setup" : "Manage"}
             {!isDraft && <ArrowRight className="h-4 w-4" />}
           </Link>
+          {canBoost && <ListingBoostButton profileId={item.id} boosted={!!boostedUntil} />}
           {isLive && (
             <Link
               href={publicUrl}

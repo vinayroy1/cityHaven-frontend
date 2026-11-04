@@ -1,5 +1,6 @@
 "use client";
 
+import { ResponseBadge } from "@/components/leads/ResponseBadge";
 import React from "react";
 import dynamic from "next/dynamic";
 import { Calendar as CalendarIcon, LockKeyhole, Phone, Sparkles } from "lucide-react";
@@ -96,6 +97,7 @@ export function OwnerContactCard({
             <div className="min-w-0">
               <p className="break-words text-sm font-bold text-zinc-900 dark:text-white">{name}</p>
               <p className="mt-0.5 text-xs text-zinc-500 dark:text-slate-400">Posted {postedAgo}</p>
+              <ResponseBadge kind="property" id={propertyId} className="mt-1" />
             </div>
           </div>
 

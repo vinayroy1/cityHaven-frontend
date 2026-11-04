@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { ResponseBadge } from "@/components/leads/ResponseBadge";
 import {
   BadgeCheck,
   Building2,
@@ -146,6 +147,7 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
                     Verified
                   </span>
                 )}
+                <ResponseBadge kind="interior" id={profile.id} className="py-1 text-xs" />
               </div>
               {profile.tagline && (
                 <p className="mt-1.5 max-w-2xl text-[15px] leading-relaxed text-slate-600 dark:text-slate-300">{profile.tagline}</p>

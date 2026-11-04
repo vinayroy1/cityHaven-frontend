@@ -193,6 +193,11 @@ export interface InteriorInquiry {
   unlockedAt?: string | null;
   status: InteriorInquiryStatus;
   createdAt: string;
+  ownerNote?: string | null;
+  followUpAt?: string | null;
+  firstRespondedAt?: string | null;
+  /** Listing the lead came from (scope=all responses). */
+  profile?: { id: number; businessName?: string | null; displayName?: string | null } | null;
 }
 
 export interface InteriorProfile {
@@ -293,6 +298,8 @@ export interface InteriorProfile {
   featuredOrder: number;
   /** Paid boost currently running (public search/detail only). */
   isBoosted?: boolean;
+  /** End of the active boost (owner endpoints). */
+  boostedUntil?: string | null;
   /** Shown in a paid sponsored slot on this results page (must be labelled). */
   isSponsored?: boolean;
   isPublished: boolean;
