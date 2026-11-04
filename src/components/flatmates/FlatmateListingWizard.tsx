@@ -46,6 +46,7 @@ import { useGetPresignedUploadUrlMutation } from "@/features/propertyListing/api
 import { useMeQuery } from "@/features/auth/api";
 import { getStoredUserContact } from "@/lib/auth/storedUser";
 import type { FlatmateListingMode, FlatmateListingInput } from "@/types/flatmate.types";
+import { NearbyLandmarksCompact, useLocalityLandmarks } from "@/components/nearby/NearbyLandmarksCompact";
 import { registerBackHandler } from "@/lib/navigation/backNavigation";
 import { SeekerAvatarPlaceholder } from "./SeekerAvatarPlaceholder";
 
@@ -98,6 +99,8 @@ export function FlatmateListingWizard() {
   const [stateName, setStateName] = useState("Karnataka");
   const [locality, setLocality] = useState("");
   const [preferredLocalities, setPreferredLocalities] = useState<string[]>([]);
+  // Owners offering a room get nearby landmarks for their flat's locality (saved server-side on submit).
+  const landmarks = useLocalityLandmarks(preferredLocalities[0] || locality, cityName, mode === "HAVE_ROOM");
 
   // Room details
   const [bhk, setBhk] = useState<number>(2);
@@ -594,6 +597,8 @@ export function FlatmateListingWizard() {
               />
             </div>
           </div>
+
+          {mode === "HAVE_ROOM" && <NearbyLandmarksCompact data={landmarks.data} loading={landmarks.loading} />}
 
           {/* Pricing fields */}
           <div className="border-t border-slate-100 dark:border-slate-800 pt-5 space-y-4">

@@ -45,6 +45,7 @@ import { FlatmateDetailSkeleton } from "@/components/flatmates/FlatmateDetailSke
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { SeekerAvatarPlaceholder } from "@/components/flatmates/SeekerAvatarPlaceholder";
 import { isRealUserPhoto } from "@/components/flatmates/FlatmateCard";
+import { NearbyLandmarksCompact } from "@/components/nearby/NearbyLandmarksCompact";
 
 const FlatmateContactModal = dynamic(
   () => import("@/components/flatmates/FlatmateContactModal").then((mod) => mod.FlatmateContactModal),
@@ -732,6 +733,10 @@ export default function FlatmateDetailPage() {
                       </div>
                     )}
                   </div>
+
+                  {listing.mode === "HAVE_ROOM" && listing.nearbyLandmarks && (
+                    <NearbyLandmarksCompact data={listing.nearbyLandmarks} />
+                  )}
 
                   {/* Amenities */}
                   {listing.amenities?.length > 0 && (

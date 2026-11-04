@@ -51,6 +51,7 @@ export interface FlatmateListing {
   preferredLocalities: string[];
   latitude?: number | null;
   longitude?: number | null;
+  nearbyLandmarks?: import("@/components/nearby/NearbyLandmarksCompact").CompactLandmarks;
   propertyId?: number | null;
   propertyType?: string | null;
   bhk?: number | null;

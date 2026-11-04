@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { Building2, ChevronDown, Sparkles, Navigation, Train, Hospital, GraduationCap, ShoppingBag, Loader2 } from "lucide-react";
+import { Building2, Sparkles, Navigation } from "lucide-react";
+import { NearbyLandmarksCompact, type CompactLandmarks } from "@/components/nearby/NearbyLandmarksCompact";
 import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
@@ -151,7 +152,6 @@ export function LocationStep() {
     lifestyle?: Array<{ name: string; distanceKm: number; duration?: string; key: string }>;
   } | null>((form.getValues("location.nearbyLandmarks") as any) ?? null);
   const [loadingLandmarks, setLoadingLandmarks] = useState(false);
-  const [showAllLandmarks, setShowAllLandmarks] = useState(false);
 
   // Auto-fetch nearby landmarks when valid latitude & longitude are assigned OR from manual address
   const watchedLat = form.watch("location.latitude");
@@ -787,118 +787,8 @@ export function LocationStep() {
           </div>
         )}
 
-        {/* Nearby Amenities (Connectivity & Landmarks) */}
-        {(loadingLandmarks || (nearbyLandmarks && ((nearbyLandmarks.transit?.length ?? 0) > 0 || (nearbyLandmarks.healthcare?.length ?? 0) > 0 || (nearbyLandmarks.education?.length ?? 0) > 0 || (nearbyLandmarks.lifestyle?.length ?? 0) > 0))) && (
-          <div className="min-w-0 max-w-full overflow-hidden rounded-xl border border-indigo-100 bg-indigo-50/40 p-2.5 sm:p-3.5 space-y-2.5 sm:space-y-3">
-            <div className="flex min-w-0 items-center justify-between gap-2">
-              <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
-                <Sparkles className="h-4 w-4 shrink-0 text-indigo-600" />
-                <h4 className="min-w-0 text-[10px] font-bold text-slate-900 uppercase tracking-wide sm:text-xs">
-                  <span className="sm:hidden">Nearby places</span>
-                  <span className="hidden sm:inline">Nearby Landmarks & Connectivity (Auto-Detected)</span>
-                </h4>
-              </div>
-              {loadingLandmarks ? (
-                <span className="flex items-center gap-1.5 text-xs text-indigo-600 font-medium">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" /> Detecting…
-                </span>
-              ) : (
-                <span className="shrink-0 whitespace-nowrap text-[9px] font-semibold text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded-md sm:px-2 sm:text-[11px]">
-                  <span className="sm:hidden">Saved</span>
-                  <span className="hidden sm:inline">Saved with Listing</span>
-                </span>
-              )}
-            </div>
-
-            {nearbyLandmarks && (
-              <div className="grid min-w-0 grid-cols-2 gap-1.5 sm:gap-2.5 lg:grid-cols-4">
-                {/* 1. Transit */}
-                {nearbyLandmarks.transit && nearbyLandmarks.transit.length > 0 && (
-                  <div className="min-w-0 rounded-lg bg-white p-2 sm:p-2.5 border border-slate-200/80 shadow-2xs">
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
-                      <Train className="h-3.5 w-3.5 text-blue-600" />
-                      <span>Transit & Metro</span>
-                    </div>
-                    <ul className="space-y-1">
-                      {nearbyLandmarks.transit.map((t, idx) => (
-                        <li key={idx} className={`${idx >= 2 && !showAllLandmarks ? "hidden sm:flex" : "flex"} min-w-0 justify-between gap-1 text-[10px] text-slate-600 sm:text-xs`}>
-                          <span className="min-w-0 flex-1 truncate" title={t.name}>{t.name}</span>
-                          <span className="shrink-0 font-semibold text-slate-900">{t.distanceKm} km</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* 2. Healthcare */}
-                {nearbyLandmarks.healthcare && nearbyLandmarks.healthcare.length > 0 && (
-                  <div className="min-w-0 rounded-lg bg-white p-2 sm:p-2.5 border border-slate-200/80 shadow-2xs">
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
-                      <Hospital className="h-3.5 w-3.5 text-rose-600" />
-                      <span>Healthcare</span>
-                    </div>
-                    <ul className="space-y-1">
-                      {nearbyLandmarks.healthcare.map((h, idx) => (
-                        <li key={idx} className={`${idx >= 2 && !showAllLandmarks ? "hidden sm:flex" : "flex"} min-w-0 justify-between gap-1 text-[10px] text-slate-600 sm:text-xs`}>
-                          <span className="min-w-0 flex-1 truncate" title={h.name}>{h.name}</span>
-                          <span className="shrink-0 font-semibold text-slate-900">{h.distanceKm} km</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* 3. Education */}
-                {nearbyLandmarks.education && nearbyLandmarks.education.length > 0 && (
-                  <div className="min-w-0 rounded-lg bg-white p-2 sm:p-2.5 border border-slate-200/80 shadow-2xs">
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
-                      <GraduationCap className="h-3.5 w-3.5 text-amber-600" />
-                      <span>Schools & Colleges</span>
-                    </div>
-                    <ul className="space-y-1">
-                      {nearbyLandmarks.education.map((e, idx) => (
-                        <li key={idx} className={`${idx >= 2 && !showAllLandmarks ? "hidden sm:flex" : "flex"} min-w-0 justify-between gap-1 text-[10px] text-slate-600 sm:text-xs`}>
-                          <span className="min-w-0 flex-1 truncate" title={e.name}>{e.name}</span>
-                          <span className="shrink-0 font-semibold text-slate-900">{e.distanceKm} km</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* 4. Lifestyle */}
-                {nearbyLandmarks.lifestyle && nearbyLandmarks.lifestyle.length > 0 && (
-                  <div className="min-w-0 rounded-lg bg-white p-2 sm:p-2.5 border border-slate-200/80 shadow-2xs">
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
-                      <ShoppingBag className="h-3.5 w-3.5 text-emerald-600" />
-                      <span>Shopping & Parks</span>
-                    </div>
-                    <ul className="space-y-1">
-                      {nearbyLandmarks.lifestyle.map((l, idx) => (
-                        <li key={idx} className={`${idx >= 2 && !showAllLandmarks ? "hidden sm:flex" : "flex"} min-w-0 justify-between gap-1 text-[10px] text-slate-600 sm:text-xs`}>
-                          <span className="min-w-0 flex-1 truncate" title={l.name}>{l.name}</span>
-                          <span className="shrink-0 font-semibold text-slate-900">{l.distanceKm} km</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-            {nearbyLandmarks &&
-              [nearbyLandmarks.transit, nearbyLandmarks.healthcare, nearbyLandmarks.education, nearbyLandmarks.lifestyle]
-                .some((items) => (items?.length ?? 0) > 2) && (
-                <button
-                  type="button"
-                  onClick={() => setShowAllLandmarks((current) => !current)}
-                  className="mx-auto flex items-center gap-1 rounded-full border border-indigo-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-indigo-700 sm:hidden"
-                >
-                  {showAllLandmarks ? "Show fewer places" : "Show all nearby places"}
-                  <ChevronDown className={`h-3 w-3 transition ${showAllLandmarks ? "rotate-180" : ""}`} />
-                </button>
-              )}
-          </div>
-        )}
+        {/* Nearby places (auto-detected, saved with listing) */}
+        <NearbyLandmarksCompact data={nearbyLandmarks as CompactLandmarks} loading={loadingLandmarks} />
       </div>
 
       {/* Detail Location Fields */}
