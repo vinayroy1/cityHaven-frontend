@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     const endpoint = toInternalApiUrl(`${backendUrl}/v1/detect-city?lat=${lat}&lng=${lng}`);
     const res = await fetch(endpoint, {
       cache: "no-store",
-      signal: AbortSignal.timeout(2000),
+      signal: AbortSignal.timeout(4000),
     });
 
     if (res.ok) {
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       if (data?.data?.name) {
         return NextResponse.json({
           city: data.data.name,
-          locality: data.data.name,
+          locality: data.data.locality || data.data.name,
           state: data.data.state || "",
           pincode: "",
           source: "backend_db",

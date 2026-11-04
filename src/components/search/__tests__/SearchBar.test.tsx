@@ -32,7 +32,7 @@ describe("listing search context", () => {
     window.scrollTo = jest.fn();
     render(<SearchBar variant="hero" value={initialSearchState()} onChange={jest.fn()} onSubmit={jest.fn()} />);
 
-    fireEvent.click(screen.getByText("Search by locality, project or landmark").closest("button")!);
+    fireEvent.click(screen.getByText(/^(City|Area), /).closest("button")!);
 
     expect(screen.getByRole("dialog", { name: "Search and filter properties" })).toBeTruthy();
     expect(screen.getByText("Choose location and filters")).toBeTruthy();
@@ -44,7 +44,7 @@ describe("listing search context", () => {
     window.scrollTo = jest.fn();
     render(<SearchBar variant="hero" value={initialSearchState()} onChange={jest.fn()} onSubmit={jest.fn()} />);
 
-    fireEvent.click(screen.getByText("Search by locality, project or landmark").closest("button")!);
+    fireEvent.click(screen.getByText(/^(City|Area), /).closest("button")!);
     const dialog = screen.getByRole("dialog", { name: "Search and filter properties" });
     fireEvent.click(within(dialog).getByRole("button", { name: /^Rent$/ }));
     const submitLink = within(dialog).getByRole("link", { name: "Search properties" });

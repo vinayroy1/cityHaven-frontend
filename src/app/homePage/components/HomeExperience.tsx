@@ -20,6 +20,7 @@ import { RenderWhenNear, useNearViewport } from "./RenderWhenNear";
 import { InteriorDesignerShowcaseSkeleton } from "./InteriorDesignerShowcaseSkeleton";
 import { ViewAllCard } from "./ViewAllCard";
 import { PromoStrip } from "./PromoStrip";
+import { CitySparseCard } from "./CitySparseCard";
 import { sizedImageUrl } from "../lib/homeImage";
 import type { ProjectListing } from "@/types/project.types";
 
@@ -150,7 +151,7 @@ export function HomeExperience({
       sort: "newest",
       pageSize: 8,
     },
-    { enabled: Boolean(isExplicitCity && normalizedCity) }
+    { enabled: Boolean(normalizedCity) }
   );
 
   // 2. Nationwide trending query fallback (only needed if SSR items were empty)
@@ -269,6 +270,10 @@ export function HomeExperience({
       : rawBudgetFallbackListings.filter((item) => item.listingType === budgetListingType && isHomeListing(item))
   ).slice(0, 4);
 
+  // Small city: fewer than MIN_SECTION_ITEMS local listings, so sections below fall back to all-India data.
+  const citySparse =
+    Boolean(selectedCity) && !freshQuery.isLoading && !freshQuery.isError && freshQuery.isFetched && rawFresh.length < MIN_SECTION_ITEMS;
+
   return (
     <>
       <section className="relative z-20 border-b border-slate-200/80 bg-gradient-to-b from-rose-50/60 via-white to-slate-50/70 pt-3 pb-4 sm:py-10 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950">
@@ -311,6 +316,13 @@ export function HomeExperience({
 
       <div className="bg-gradient-to-b from-slate-50/80 via-white to-white dark:from-slate-900/45 dark:via-slate-950 dark:to-slate-950">
       <main className="mx-auto max-w-6xl overflow-x-clip px-4 pt-2 pb-5 sm:pt-3 sm:pb-6 sm:px-6">
+        {citySparse && (
+          <CitySparseCard
+            city={selectedCity}
+            searchHref={buildSearchHref({ ...initialSearchState(), cityName: selectedCity })}
+          />
+        )}
+
         <FeaturedProjectsSection
           selectedCity={isGeoCity && !isExplicitCity ? "" : selectedCity}
           initialProjects={initialProjects}
@@ -341,11 +353,11 @@ export function HomeExperience({
 
         <ListingBlock
           title={
-            filteredOwnerListings.length > 0
-              ? "Owner-listed homes"
-              : rawOwnerListings.length > 0
-              ? (selectedCity ? `Verified homes in ${selectedCity}` : "Verified Direct-Connect Homes")
-              : "Direct-Connect Verified Homes"
+            selectedCity && rawOwnerListings.filter(isHomeListing).length < MIN_SECTION_ITEMS
+              ? "Popular homes across India"
+              : filteredOwnerListings.length > 0
+              ? (selectedCity ? `Owner-listed homes in ${selectedCity}` : "Owner-listed homes")
+              : selectedCity ? `Verified homes in ${selectedCity}` : "Verified Direct-Connect Homes"
           }
           href={buildSearchHref({
             ...initialSearchState(),
@@ -363,9 +375,11 @@ export function HomeExperience({
 
         <ListingBlock
           title={
-            searchState.intent === "RENT"
-              ? "Rentals under ₹50,000/month"
-              : "Homes under ₹1 crore"
+            `${searchState.intent === "RENT" ? "Rentals under ₹50,000/month" : "Homes under ₹1 crore"}${
+              selectedCity
+                ? rawBudgetListings.filter(isHomeListing).length > 0 ? ` in ${selectedCity}` : " across India"
+                : ""
+            }`
           }
           href={buildSearchHref({
             ...initialSearchState(),
@@ -886,7 +900,9 @@ function FeaturedFlatAvailableSection({ selectedCity }: { selectedCity: string }
             <span>Zero Brokerage Shared Flats</span>
           </div>
           <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
-            {cityItems.length > 0 && selectedCity
+            {selectedCity && cityItems.length < MIN_SECTION_ITEMS
+              ? "Available rooms across India"
+              : cityItems.length > 0 && selectedCity
               ? `Available Rooms in ${selectedCity}`
               : "Available Rooms in Shared Flats"}
           </h2>
@@ -973,7 +989,9 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
             <span>Room Seekers & Co-Living</span>
           </div>
           <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
-            {cityItems.length > 0 && selectedCity
+            {selectedCity && cityItems.length < MIN_SECTION_ITEMS
+              ? "Room seekers & buddy-up across India"
+              : cityItems.length > 0 && selectedCity
               ? `Room Seekers & Buddy Up in ${selectedCity}`
               : "Room Seekers & Buddy-Up Groups"}
           </h2>
@@ -1064,7 +1082,11 @@ function InteriorDesignersSection({ selectedCity }: { selectedCity: string }) {
             <span>Design your dream home</span>
           </div>
           <h2 id="home-interior-designers-heading" className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
-            {isCityScoped ? `Top interior designers in ${selectedCity}` : "Top interior designers near you"}
+            {isCityScoped && cityItems.length >= MIN_SECTION_ITEMS
+              ? `Top interior designers in ${selectedCity}`
+              : selectedCity
+              ? "Top interior designers across India"
+              : "Top interior designers near you"}
           </h2>
           <p className="mt-0.5 hidden text-sm text-slate-500 sm:block dark:text-slate-400">
             Verified studios and architects with real, approved project portfolios.

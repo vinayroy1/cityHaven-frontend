@@ -61,7 +61,12 @@ export default function PreferredAgentsSection({ selectedCity }: { selectedCity:
   }, [selectedCity]);
 
   // Use dynamic API advisors if available, fallback gracefully to static/local
-  const agents = (apiAdvisors && apiAdvisors.length > 0) ? apiAdvisors : staticAgents;
+  const allAgents = (apiAdvisors && apiAdvisors.length > 0) ? apiAdvisors : staticAgents;
+  // "Local agents" must be local: with a city chosen, never show agents from other cities.
+  const cityKey = selectedCity.trim().toLowerCase().replace(/^new\s+/, "");
+  const agents = cityKey
+    ? allAgents.filter((a: any) => String(a.city ?? "").toLowerCase().replace(/^new\s+/, "") === cityKey)
+    : allAgents;
 
   if (!isLoading && (!agents || agents.length < 3)) return null;
 

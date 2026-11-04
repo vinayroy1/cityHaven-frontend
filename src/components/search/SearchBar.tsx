@@ -5,6 +5,16 @@ import { LocationSearchInput } from "./LocationSearchInput";
 import { CitySelectorDropdown } from "./CitySelectorDropdown";
 import { MobileSearchFlow } from "./MobileSearchFlow";
 import { buildSearchHref, INTENT_CONFIG, INTENT_KEYS, clearAllFilters, type SearchState } from "./searchQuery";
+
+/** Short, tab-aware hints that fit a phone-width search bar without truncation. */
+const MOBILE_PLACEHOLDER: Record<string, string> = {
+  BUY: "City, locality or project",
+  RENT: "City, locality or landmark",
+  PG: "Area, college or office",
+  FLATMATE: "Area, college or office",
+  COMMERCIAL: "City, locality or market",
+  PLOT: "City, locality or highway",
+};
 import { primaryButton } from "./theme";
 
 import { resolveSearchQueryToState } from "@/lib/search/intentParser";
@@ -215,7 +225,7 @@ export function SearchBar({
             >
               <Search size={18} className="shrink-0 text-slate-500" />
               <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-600 dark:text-slate-300">
-                Search by locality, project or landmark
+                {MOBILE_PLACEHOLDER[value.intent] ?? "City, locality or project"}
               </span>
             </button>
             <button
