@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
-import {
+import { Ruler,
   Home,
   Search,
   Plus,
@@ -80,6 +80,7 @@ const resourceLinks = [
   { label: "Price Trends", href: "/price-trends", icon: TrendingUp },
   { label: "Home Loans", href: "/home-loans", icon: Coins },
   { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator },
+  { label: "Area Converter", href: "/area-converter", icon: Ruler },
   { label: "Pricing & Plans", href: "/pricing", icon: Sparkles },
   { label: "Blog & Guides", href: "/blog", icon: BookOpenText },
 ];
@@ -123,6 +124,7 @@ export function MobileBottomNav() {
       { label: "Price Trends", href: "/price-trends", icon: TrendingUp, onClick: undefined },
       { label: "Home Loans", href: "/home-loans", icon: Coins, onClick: undefined },
       { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator, onClick: undefined },
+      { label: "Area Converter", href: "/area-converter", icon: Ruler, onClick: undefined },
       purchaseEnabled
         ? { label: "Pricing & Plans", href: "/pricing", icon: Sparkles, onClick: undefined }
         : {

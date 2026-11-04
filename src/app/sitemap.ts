@@ -9,6 +9,7 @@ import {
 } from "@/constants/seo";
 import { toSearchSlug } from "@/components/search/searchQuery";
 import { getAllAgentIds } from "@/data/agents";
+import { ALL_PAIRS, pairSlug } from "@/components/area/units";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
@@ -172,6 +173,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    { url: `${SITE_URL}/area-converter`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    ...ALL_PAIRS.map(([a, b]) => ({
+      url: `${SITE_URL}/area-converter/${pairSlug(a, b)}`,
+      lastModified: now,
+      changeFrequency: "yearly" as const,
+      priority: 0.5,
+    })),
     {
       url: `${SITE_URL}/pricing`,
       lastModified: now,

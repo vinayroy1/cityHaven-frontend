@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
+import { Ruler,
   Building2,
   Calculator,
   ChevronDown,
@@ -79,6 +79,7 @@ const emiCalculatorLinks = [
 
 const categoryExploreLinks = [
   { label: "Locality Guide", href: "/nearby", icon: MapPin, desc: "Metro, hospitals & schools near any locality" },
+  { label: "Area Converter", href: "/area-converter", icon: Ruler, desc: "Sq ft, sq m, sq yd, acre & hectare" },
   { label: "Interior Designers", href: "/interior-designers", icon: Paintbrush, desc: "Architects, modular experts & decor firms" },
   { label: "PG & Co-living", href: "/pg", icon: BedDouble, desc: "Verified hostels & coliving spaces" },
   { label: "Commercial", href: "/commercial", icon: Building2, desc: "Offices, shops & commercial spaces" },

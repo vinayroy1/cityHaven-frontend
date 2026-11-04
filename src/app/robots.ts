@@ -23,6 +23,7 @@ export default function robots(): MetadataRoute.Robots {
           "/price-trends",
           "/home-loans",
           "/emi-calculator",
+          "/area-converter",
           "/nearby",
           "/about",
           "/contact",
