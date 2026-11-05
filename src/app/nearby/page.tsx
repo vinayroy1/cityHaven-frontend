@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { ArrowUpRight, HeartPulse, Search, TramFront } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
@@ -18,6 +19,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "/nearby" },
 };
 
+/** Example localities per country for the cards (missing ones are simply skipped). */
+const POPULAR_BY_COUNTRY: Record<string, Array<[string, string]>> = {
+  NP: [["Thamel", "Kathmandu"], ["Lakeside", "Pokhara"], ["Baneshwor", "Kathmandu"], ["Jhamsikhel", "Lalitpur"], ["Maharajgunj", "Kathmandu"], ["Bhaktapur Durbar Square", "Bhaktapur"]],
+  BD: [["Gulshan 2", "Dhaka"], ["Dhanmondi", "Dhaka"], ["Banani", "Dhaka"], ["Uttara", "Dhaka"], ["Agrabad", "Chattogram"], ["Zindabazar", "Sylhet"]],
+  LK: [["Kollupitiya", "Colombo"], ["Bambalapitiya", "Colombo"], ["Wellawatte", "Colombo"], ["Nugegoda", "Colombo"], ["Peradeniya", "Kandy"], ["Fort", "Galle"]],
+};
+
 const POPULAR: Array<[string, string]> = [
   ["Koramangala", "Bengaluru"],
   ["Andheri West", "Mumbai"],
@@ -35,11 +43,14 @@ function nearest(items: ExplorerItem[], cat: CategoryKey) {
   return [...items].filter((i) => categoryOf(i) === cat).sort((a, b) => a.distanceKm - b.distanceKm)[0];
 }
 
-async function loadPopular(): Promise<Card[]> {
+async function loadPopular(countryCode: string): Promise<Card[]> {
   const res = await Promise.all(
-    POPULAR.map(async ([locality, cityName]) => {
+    (POPULAR_BY_COUNTRY[countryCode] ?? POPULAR).map(async ([locality, cityName]) => {
       const d = await fetchNearbyData({ locality, cityName });
       if (!d?.locality?.path || !d.groups) return null;
+      // The lookup falls back to a same-named place elsewhere ("Fort" -> Mumbai); only keep the city we asked for.
+      const resolvedCity = (d.locality.cityName || "").trim().toLowerCase();
+      if (resolvedCity && resolvedCity !== cityName.toLowerCase()) return null;
       return {
         name: d.locality.name || locality,
         city: d.locality.cityName || cityName,
@@ -52,7 +63,10 @@ async function loadPopular(): Promise<Card[]> {
 }
 
 export default async function NearbyIndexPage() {
-  const [cards, guideCities] = await Promise.all([loadPopular(), getGuideCities()]);
+  // Portal country from the header switcher cookie (page is rendered per request).
+  const cc = (await cookies()).get("awasio_country")?.value?.toUpperCase();
+  const country = cc && /^[A-Z]{2}$/.test(cc) ? cc : "IN";
+  const [cards, guideCities] = await Promise.all([loadPopular(country), getGuideCities(country)]);
   const sample = cards[0];
 
   return (

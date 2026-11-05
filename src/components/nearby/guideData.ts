@@ -23,9 +23,10 @@ export const guideCityKey = (c: GuideCity) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-export async function getGuideCities(): Promise<GuideCity[]> {
+export async function getGuideCities(countryCode = "IN"): Promise<GuideCity[]> {
   try {
-    const res = await fetch(toInternalApiUrl("/v1/locations/locality-guide/cities"), { next: { revalidate: 86400 }, headers: internalHeaders() });
+    const qs = countryCode && countryCode !== "IN" ? `?country=${encodeURIComponent(countryCode)}` : "";
+    const res = await fetch(toInternalApiUrl(`/v1/locations/locality-guide/cities${qs}`), { next: { revalidate: 86400 }, headers: internalHeaders() });
     if (!res.ok) return [];
     return (await res.json()).data ?? [];
   } catch {
