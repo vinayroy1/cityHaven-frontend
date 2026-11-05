@@ -6,8 +6,62 @@ import {
   fetchAwasioSuggestions,
   type AwasioSuggestion,
 } from "@/lib/awasioSuggestions";
+import { APP_CONFIG } from "@/constants/app-config";
 
 const PAGE_SIZE = 30;
+
+// Curated top popular cities for India shown by default when no search query is entered
+const DEFAULT_TOP_INDIAN_CITIES: Array<{ id: string; name: string; state: string }> = [
+  { id: "CT1", name: "Mumbai", state: "Maharashtra" },
+  { id: "CT19", name: "Bengaluru", state: "Karnataka" },
+  { id: "CT12", name: "New Delhi", state: "Delhi" },
+  { id: "CT16", name: "Gurugram", state: "Haryana" },
+  { id: "CT13", name: "Noida", state: "Uttar Pradesh" },
+  { id: "CT2", name: "Pune", state: "Maharashtra" },
+  { id: "CT25", name: "Hyderabad", state: "Telangana" },
+  { id: "CT29", name: "Chennai", state: "Tamil Nadu" },
+  { id: "CT46", name: "Kolkata", state: "West Bengal" },
+  { id: "CT35", name: "Ahmedabad", state: "Gujarat" },
+  { id: "CT40", name: "Jaipur", state: "Rajasthan" },
+  { id: "CT14", name: "Greater Noida", state: "Uttar Pradesh" },
+  { id: "CT15", name: "Ghaziabad", state: "Uttar Pradesh" },
+  { id: "CT17", name: "Faridabad", state: "Haryana" },
+  { id: "CT5", name: "Thane", state: "Maharashtra" },
+  { id: "CT3519", name: "Navi Mumbai", state: "Maharashtra" },
+  { id: "CT51", name: "Lucknow", state: "Uttar Pradesh" },
+  { id: "CT14313", name: "Chandigarh", state: "Chandigarh" },
+  { id: "CT4217", name: "Mohali", state: "Punjab" },
+  { id: "CT66", name: "Indore", state: "Madhya Pradesh" },
+];
+
+function buildSuggestionFromCity(
+  id: string,
+  name: string,
+  state: string,
+  countryCode = "IN"
+): AwasioSuggestion {
+  const subtitle = state ? `${state}, ${countryCode}` : countryCode;
+  return {
+    id,
+    type: "CITY",
+    title: name,
+    subtitle,
+    displayText: `${name}, ${countryCode}`,
+    badge: "City",
+    badgeColor: "#1565C0",
+    location: {
+      city: name,
+      state: state || "",
+      countryCode,
+    },
+    filterPayload: {
+      cityName: name,
+      stateName: state || undefined,
+      type: "CITY",
+    },
+    score: 200,
+  };
+}
 
 export interface CitySelection {
   name: string;
@@ -48,8 +102,7 @@ export function PropertyListingCitySelector({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const isIndia = countryCode === "IN";
-  // Outside India the region list is short, so browse every city of the country instead.
-  const defaultQuery = isIndia ? "Delhi" : "all";
+  const defaultQuery = isIndia ? "all" : "all";
 
   // On small screens the list can open under the bottom nav: scroll the field up so it fits.
   useEffect(() => {
@@ -72,28 +125,61 @@ export function PropertyListingCitySelector({
 
     const fetchInitial = async () => {
       try {
-        const res = await fetchAwasioSuggestions(query || defaultQuery, {
-          state: selectedState?.trim() || undefined,
-          country: countryCode,
-          types: ["CITY"],
-          page: 1,
-          pageSize: PAGE_SIZE,
-        });
+        let results: AwasioSuggestion[] = [];
+        let canLoadMore = false;
+
+        // If no search and no selectedState, load curated top popular cities for India or active country
+        if (!query) {
+          try {
+            const qs = countryCode && countryCode !== "IN" ? `?country=${encodeURIComponent(countryCode)}` : "";
+            const guideRes = await fetch(`${APP_CONFIG.API.BASE_URL}/v1/locations/locality-guide/cities${qs}`);
+            if (guideRes.ok) {
+              const guideData = await guideRes.json();
+              if (Array.isArray(guideData?.data) && guideData.data.length > 0) {
+                results = guideData.data.slice(0, PAGE_SIZE).map((c: { id: number | string; name: string; state: string | null }) =>
+                  buildSuggestionFromCity(String(c.id), c.name, c.state || "", countryCode)
+                );
+                canLoadMore = guideData.data.length > PAGE_SIZE;
+              }
+            }
+          } catch {
+            // fallback handled below
+          }
+
+          // In case API fails or returns empty, fallback to local curated list
+          if (results.length === 0 && isIndia) {
+            results = DEFAULT_TOP_INDIAN_CITIES.map((c) =>
+              buildSuggestionFromCity(c.id, c.name, c.state, "IN")
+            );
+          }
+        }
+
+        // If query or state is specified, query suggestion engine
+        if (results.length === 0) {
+          const res = await fetchAwasioSuggestions(query || defaultQuery, {
+            state: selectedState?.trim() || undefined,
+            country: countryCode,
+            types: ["CITY"],
+            page: 1,
+            pageSize: PAGE_SIZE,
+          });
+
+          if (cancelled || reqId !== activeReqRef.current) return;
+
+          results = (res.data || []).filter((s) => s.type === "CITY");
+          if (selectedState?.trim()) {
+            const sLower = selectedState.trim().toLowerCase();
+            results = results.sort((a, b) => {
+              const aMatch = a.location.state?.toLowerCase() === sLower ? 1 : 0;
+              const bMatch = b.location.state?.toLowerCase() === sLower ? 1 : 0;
+              return bMatch - aMatch;
+            });
+          }
+          canLoadMore = res.pagination?.hasNextPage ?? results.length >= PAGE_SIZE;
+        }
 
         if (cancelled || reqId !== activeReqRef.current) return;
 
-        let results = (res.data || []).filter((s) => s.type === "CITY");
-        // If state was selected, ensure results from that state are prioritized
-        if (selectedState?.trim()) {
-          const sLower = selectedState.trim().toLowerCase();
-          results = results.sort((a, b) => {
-            const aMatch = a.location.state?.toLowerCase() === sLower ? 1 : 0;
-            const bMatch = b.location.state?.toLowerCase() === sLower ? 1 : 0;
-            return bMatch - aMatch;
-          });
-        }
-
-        const canLoadMore = res.pagination?.hasNextPage ?? results.length >= PAGE_SIZE;
         setPrefetchedCities(results);
         setPrefetchedHasMore(canLoadMore);
         setPrefetchedPage(2);
@@ -105,10 +191,13 @@ export function PropertyListingCitySelector({
         }
       } catch (err) {
         if (!cancelled && reqId === activeReqRef.current) {
-          setPrefetchedCities([]);
+          const fallback = isIndia
+            ? DEFAULT_TOP_INDIAN_CITIES.map((c) => buildSuggestionFromCity(c.id, c.name, c.state, "IN"))
+            : [];
+          setPrefetchedCities(fallback);
           setPrefetchedHasMore(false);
           setPrefetchedPage(2);
-          if (!search.trim()) setCities([]);
+          if (!search.trim()) setCities(fallback);
         }
       } finally {
         if (!cancelled && reqId === activeReqRef.current) {
@@ -122,7 +211,7 @@ export function PropertyListingCitySelector({
     return () => {
       cancelled = true;
     };
-  }, [selectedState, countryCode, defaultQuery]);
+  }, [selectedState, countryCode, defaultQuery, isIndia]);
 
   // 2. Search cities with debounce
   useEffect(() => {
