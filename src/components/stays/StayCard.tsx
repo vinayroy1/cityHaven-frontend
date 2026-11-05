@@ -53,6 +53,7 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
           </span>
         )}
         <div className="absolute bottom-3 left-3 text-white">
+          {price.sub === "/ night" && <p className="text-[10px] font-semibold uppercase tracking-wider opacity-90 drop-shadow">Starting from</p>}
           <p className="text-lg font-black leading-none drop-shadow">{price.main}</p>
           {price.sub && <p className="mt-0.5 text-[11px] font-medium opacity-90">{price.sub}</p>}
         </div>

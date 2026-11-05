@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
+import { NearbyLandmarksCompact, hasLandmarks, useLocalityLandmarks, type CompactLandmarks } from "@/components/nearby/NearbyLandmarksCompact";
 import { stayPriceLabel } from "@/components/stays/StayCard";
 import { stayErrorMessage, trackBookingClick, useStay, useStayEnquiry } from "@/features/stays/api";
 import { bedLabel, facilityLabel, platformInfo, stayTypeLabel } from "@/features/stays/options";
@@ -191,6 +192,22 @@ function BookingButtons({ stay, compact = false }: { stay: Stay; compact?: boole
         );
       })}
     </div>
+  );
+}
+
+/** Metro/rail, hospitals, schools & markets near the stay: saved at listing time, else looked up live. */
+function NearbySection({ stay }: { stay: Stay }) {
+  const stored = (stay.nearbyLandmarks ?? null) as CompactLandmarks;
+  const needLive = !hasLandmarks(stored);
+  const live = useLocalityLandmarks(stay.locality ?? undefined, stay.cityName, needLive);
+  const data = needLive ? live.data : stored;
+  if (needLive && !live.loading && !hasLandmarks(data)) return null;
+  return (
+    <section className="rounded-3xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+      <h2 className="text-lg font-bold text-slate-900 dark:text-white">What&apos;s nearby</h2>
+      <p className="mb-3 text-xs text-slate-500">Approximate distance from {stay.locality || stay.cityName}.</p>
+      <NearbyLandmarksCompact data={data} loading={needLive && live.loading} />
+    </section>
   );
 }
 
@@ -379,6 +396,8 @@ export default function StayDetail() {
                 </ul>
               </section>
             )}
+
+            <NearbySection stay={stay} />
 
             <section className="rounded-3xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">House rules</h2>
