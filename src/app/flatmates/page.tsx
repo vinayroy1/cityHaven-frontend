@@ -33,6 +33,7 @@ import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import type { FlatmateListing, FlatmateListingMode } from "@/types/flatmate.types";
 import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
 import { useCountry } from "@/lib/country/countryStore";
+import { CountryContextChip } from "@/components/country/CountryContextChip";
 
 const FilterSheet = dynamic(
   () => import("@/components/search/FilterSheet").then((mod) => mod.FilterSheet),
@@ -271,6 +272,7 @@ export default function FlatmatesDiscoveryPage({
                   <Users className="w-3.5 h-3.5" />
                   <span>Verified Roommate & Flat Sharing Network</span>
                 </div>
+                <CountryContextChip what="Flatmates" className="w-fit" />
                 <h1 className="text-base font-extrabold leading-snug tracking-tight text-slate-900 dark:text-white sm:text-3xl md:text-4xl">
                   Find Roommates Who Share Your Vibes & Lifestyle
                 </h1>

@@ -317,7 +317,7 @@ export function HomeExperience({
 
         <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center">
           {/* Heading */}
-          <h1 className="mt-0 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl dark:text-white">
+          <h1 className="mt-0 text-base font-extrabold leading-snug tracking-tight text-slate-950 min-[380px]:text-lg sm:text-4xl md:text-5xl dark:text-white">
             Find your perfect space with{" "}
             <span className="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 bg-clip-text text-transparent">
               Awasio

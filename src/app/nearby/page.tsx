@@ -8,6 +8,7 @@ import { fetchNearbyData } from "@/components/nearby/NearbyPlaces";
 import { categoryOf, fmtKm, type CategoryKey, type ExplorerItem } from "@/components/nearby/nearbyCategories";
 import { flattenGroups } from "@/components/nearby/LocalityGuide";
 import { getGuideCities, guideCityKey } from "@/components/nearby/guideData";
+import { CountryContextChip } from "@/components/country/CountryContextChip";
 
 // Rendered per request (API data is cached 24h); a build-time prerender would bake in empty data.
 export const dynamic = "force-dynamic";
@@ -84,6 +85,9 @@ export default async function NearbyIndexPage() {
           <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900">
             Free locality guide · 2.5 lakh+ localities
           </span>
+          <div className="mt-3">
+            <CountryContextChip what="Locality guides" />
+          </div>
           <h1 className="mt-4 text-[34px] font-black leading-[1.08] tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
             Know the neighbourhood <span className="text-emerald-600">before you move.</span>
           </h1>

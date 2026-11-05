@@ -35,6 +35,7 @@ import {
   type LocalitySelection,
 } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { useCountry } from "@/lib/country/countryStore";
+import { CountryContextChip } from "@/components/country/CountryContextChip";
 
 // The enquiry form only loads once someone asks for a quote.
 const InteriorInquiryModal = dynamic(
@@ -208,6 +209,9 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
               <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/90 px-3 py-1 text-xs font-bold text-rose-700 shadow-2xs backdrop-blur-xs dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
                 <Sparkles className="h-3.5 w-3.5 fill-rose-500 text-rose-500" />
                 <span>Vetted Interior Directory & Material Guarantee</span>
+              </div>
+              <div className="mt-2">
+                <CountryContextChip what="Interior designers" />
               </div>
               <h1 className="mt-3 text-2xl font-black tracking-tight text-slate-900 sm:text-4xl dark:text-white">
                 Best Interior Designers & Studios in{" "}

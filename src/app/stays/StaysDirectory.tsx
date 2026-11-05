@@ -12,6 +12,7 @@ import { STAY_TYPES } from "@/features/stays/options";
 import type { StaySearchParams, StayType } from "@/features/stays/types";
 import { useCountry } from "@/lib/country/countryStore";
 import { formatMoney } from "@/lib/money";
+import { CountryContextChip } from "@/components/country/CountryContextChip";
 
 /** Popular stay destinations per country (India: pilgrimage + leisure hubs). */
 const STAY_HOTSPOTS: Record<string, string[]> = {
@@ -93,6 +94,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
           <p className="hidden items-center gap-1.5 rounded-full border border-rose-200 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-rose-600 shadow-2xs backdrop-blur sm:inline-flex dark:border-rose-900 dark:bg-slate-900/70 dark:text-rose-300">
             <Sparkles className="h-3.5 w-3.5" /> New on Awasio
           </p>
+          <CountryContextChip what="Stays" className="ml-2 hidden align-middle sm:inline-flex" />
           {/* Phones: one short line so results show on the first screen. */}
           <h1 className="text-xl font-black leading-snug tracking-tight sm:mt-3 sm:max-w-3xl sm:text-5xl sm:leading-[1.1]">
             <span className="sm:hidden">
@@ -189,7 +191,8 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
             )}
           </button>
         </div>
-        <div className="-mx-4 mt-2.5 flex gap-1.5 overflow-x-auto px-4 pb-0.5 no-scrollbar">
+        <CountryContextChip what="Stays" className="mt-2" />
+        <div className="-mx-4 mt-2 flex gap-1.5 overflow-x-auto px-4 pb-0.5 no-scrollbar">
           {[{ value: undefined as StayType | undefined, plural: "All", icon: BedDouble }, ...STAY_TYPES].map((t) => {
             const on = type === t.value;
             return (

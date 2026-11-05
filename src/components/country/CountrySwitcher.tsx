@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import { COUNTRY_LIST } from "@/config/countries";
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils";
  */
 export function CountrySwitcher({ className, compact = false }: { className?: string; compact?: boolean }) {
   const country = useCountry();
+  const router = useRouter();
 
   const options = useMemo(
     () =>
@@ -29,6 +31,8 @@ export function CountrySwitcher({ className, compact = false }: { className?: st
   const change = (code: string) => {
     if (!code || code === country.code) return;
     setSelectedCountry(code, "manual");
+    // Server-rendered pages (e.g. /nearby) read the country cookie: re-render them with the new one.
+    router.refresh();
     try {
       // Background save to the profile: silent — the cookie already switched the site.
       const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
