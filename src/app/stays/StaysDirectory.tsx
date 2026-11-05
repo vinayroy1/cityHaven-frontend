@@ -37,6 +37,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
   const [free, setFree] = useState(false);
   const [sort, setSort] = useState<StaySearchParams["sort"]>("recommended");
   const [showFilters, setShowFilters] = useState(false);
+  const [sheet, setSheet] = useState<null | "search" | "filters">(null);
 
   const params: StaySearchParams = {
     countryCode: country.code,
@@ -84,7 +85,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
 
       {/* Hero */}
       {/* Soft, light hero: tinted mesh + dark text (the old saturated gradient felt heavy). */}
-      <section className="relative overflow-hidden border-b border-slate-200/70 bg-gradient-to-b from-rose-50/80 via-white to-slate-50 px-4 pb-12 pt-5 text-slate-900 sm:pb-16 sm:pt-12 dark:border-slate-800 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950 dark:text-white">
+      <section className="relative hidden overflow-hidden border-b border-slate-200/70 bg-gradient-to-b sm:block from-rose-50/80 via-white to-slate-50 px-4 pb-12 pt-5 text-slate-900 sm:pb-16 sm:pt-12 dark:border-slate-800 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950 dark:text-white">
         <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-rose-200/40 blur-3xl dark:bg-rose-900/20" />
         <div className="pointer-events-none absolute -left-20 top-10 h-64 w-64 rounded-full bg-amber-200/40 blur-3xl dark:bg-amber-900/10" />
         <div className="pointer-events-none absolute bottom-0 right-1/3 h-48 w-48 rounded-full bg-sky-200/30 blur-3xl dark:bg-sky-900/10" />
@@ -159,9 +160,57 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
         </div>
       </section>
 
-      <main className="relative mx-auto -mt-6 max-w-6xl px-4 sm:-mt-8">
+      {/* ---------- Phones: compact search pill + filters button + one row of type chips ---------- */}
+      <div className="border-b border-slate-200/70 bg-gradient-to-b from-rose-50/70 to-slate-50 px-4 pb-2 pt-3 sm:hidden dark:border-slate-800 dark:from-slate-900 dark:to-slate-950">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setSheet("search")}
+            className="flex min-w-0 flex-1 items-center gap-2.5 rounded-full border border-slate-200 bg-white py-2 pl-3 pr-4 text-left shadow-sm dark:border-slate-700 dark:bg-slate-900"
+            aria-label="Change city or area"
+          >
+            <Search className="h-4 w-4 shrink-0 text-rose-600" />
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-bold text-slate-900 dark:text-white">{city || `Anywhere in ${country.name}`}</span>
+              <span className="block truncate text-[11px] text-slate-500">{locality || (city ? "Any area · tap to change" : "Hotels · guest houses · dharamshalas")}</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setSheet("filters")}
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+            aria-label="Filters and sort"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {activeFilters + (sort !== "recommended" ? 1 : 0) > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-bold text-white">
+                {activeFilters + (sort !== "recommended" ? 1 : 0)}
+              </span>
+            )}
+          </button>
+        </div>
+        <div className="-mx-4 mt-2.5 flex gap-1.5 overflow-x-auto px-4 pb-0.5 no-scrollbar">
+          {[{ value: undefined as StayType | undefined, plural: "All", icon: BedDouble }, ...STAY_TYPES].map((t) => {
+            const on = type === t.value;
+            return (
+              <button
+                key={t.plural}
+                type="button"
+                onClick={() => setType(on && t.value ? undefined : t.value)}
+                className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
+                  on ? "border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-900" : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                }`}
+              >
+                <t.icon className="h-3.5 w-3.5" /> {t.plural}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <main className="relative mx-auto max-w-6xl px-4 sm:-mt-8">
         {/* Type tiles */}
-        <div className="flex gap-2 overflow-x-auto rounded-3xl border border-slate-200/80 bg-white p-2 shadow-md shadow-slate-900/5 no-scrollbar dark:border-slate-800 dark:bg-slate-900">
+        <div className="hidden gap-2 overflow-x-auto rounded-3xl border border-slate-200/80 bg-white p-2 shadow-md shadow-slate-900/5 no-scrollbar sm:flex dark:border-slate-800 dark:bg-slate-900">
           <button
             type="button"
             onClick={() => setType(undefined)}
@@ -187,7 +236,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
         </div>
 
         {/* Filters row */}
-        <div className="-mx-4 mt-3 flex items-center gap-2 overflow-x-auto px-4 pb-1 no-scrollbar sm:mx-0 sm:mt-4 sm:px-0">
+        <div className="mt-4 hidden items-center gap-2 overflow-x-auto pb-1 no-scrollbar sm:flex">
           <button
             type="button"
             onClick={() => setShowFilters((v) => !v)}
@@ -206,7 +255,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
           )}
         </div>
         {showFilters && (
-          <div className="mt-2 flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+          <div className="mt-2 hidden flex-wrap gap-2 rounded-2xl sm:flex border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
             <span className="w-full text-[11px] font-bold uppercase tracking-wider text-slate-500">Max price per night</span>
             {BUDGETS[country.bigNumbers].map((b) => (
               <button
@@ -224,7 +273,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
         )}
 
         {/* Results header */}
-        <div id="stay-results" className="mt-4 flex scroll-mt-20 items-center justify-between gap-3 sm:mt-5 sm:items-end">
+        <div id="stay-results" className="mt-3 flex scroll-mt-20 items-center justify-between gap-3 sm:mt-5 sm:items-end">
           <div className="min-w-0">
             <h2 className="truncate text-base font-bold text-slate-900 sm:text-lg dark:text-white">
               {q.isLoading
@@ -236,7 +285,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as StaySearchParams["sort"])}
-            className="h-9 w-28 shrink-0 rounded-xl border border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 sm:w-auto dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            className="hidden h-9 w-28 shrink-0 rounded-xl border border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 sm:block sm:w-auto dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
             aria-label="Sort stays"
           >
             <option value="recommended">Top picks</option>
@@ -246,7 +295,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
           </select>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-3 grid grid-cols-1 gap-4 sm:mt-4 sm:grid-cols-2 lg:grid-cols-3">
           {q.isLoading && Array.from({ length: 6 }).map((_, i) => <StayCardSkeleton key={i} />)}
           {items.map((s, i) => (
             <StayCard key={s.id} stay={s} priority={i < 3} />
@@ -291,6 +340,135 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
           </Link>
         </section>
       </main>
+
+      {/* ---------- Phone bottom sheets ---------- */}
+      {sheet && (
+        <div className="fixed inset-0 z-[70] flex items-end bg-black/40 sm:hidden" onClick={() => setSheet(null)} role="dialog" aria-modal="true">
+          <div
+            className="max-h-[88vh] w-full overflow-y-auto rounded-t-3xl bg-white pb-[max(1rem,env(safe-area-inset-bottom))] dark:bg-slate-900"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+              <span className="mx-auto absolute left-1/2 top-1.5 h-1 w-10 -translate-x-1/2 rounded-full bg-slate-200" aria-hidden />
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">{sheet === "search" ? "Where to?" : "Filters & sort"}</h2>
+              <button type="button" onClick={() => setSheet(null)} aria-label="Close" className="rounded-full bg-slate-100 p-1.5 dark:bg-slate-800">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {sheet === "search" ? (
+              <div className="space-y-3 px-4 pt-4">
+                <div className="text-slate-900 dark:text-white">
+                  <PropertyListingCitySelector value={city} countryCode={country.code} onChange={(c) => pickCity(c.name)} placeholder="Search city" />
+                </div>
+                <div className={`text-slate-900 dark:text-white ${city ? "" : "opacity-60"}`}>
+                  <PropertyListingLocalitySelector
+                    value={locality}
+                    cityName={city}
+                    countryCode={country.code}
+                    onChange={(l) => setLocality(l.name)}
+                    placeholder={city ? `Area in ${city} (optional)` : "Pick a city first"}
+                  />
+                </div>
+                {hotspots.length > 0 && (
+                  <div>
+                    <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">Popular</p>
+                    <div className="flex flex-wrap gap-2">
+                      {hotspots.map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => pickCity(c === city ? "" : c)}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                            c === city ? "border-rose-600 bg-rose-600 text-white" : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-200"
+                          }`}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-5 px-4 pt-4">
+                <div>
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">Sort by</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([
+                      ["recommended", "Top picks"],
+                      ["price_low", "Price: low → high"],
+                      ["price_high", "Price: high → low"],
+                      ["newest", "Newest"],
+                    ] as const).map(([v, l]) => (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => setSort(v)}
+                        className={`rounded-xl border px-3 py-2 text-xs font-semibold ${
+                          sort === v ? "border-rose-600 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300" : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-200"
+                        }`}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">Max price per night</p>
+                  <div className="flex flex-wrap gap-2">
+                    {BUDGETS[country.bigNumbers].map((b) => (
+                      <button
+                        key={b}
+                        type="button"
+                        onClick={() => setPriceMax(priceMax === b ? undefined : b)}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                          priceMax === b ? "border-rose-600 bg-rose-600 text-white" : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-200"
+                        }`}
+                      >
+                        Under {formatMoney(b, country.code)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">Good to have</p>
+                  <div className="flex flex-wrap gap-2">
+                    {toggle(ac, setAc, "AC rooms", Snowflake)}
+                    {toggle(coupleFriendly, setCoupleFriendly, "Couple friendly", Heart)}
+                    {toggle(familyFriendly, setFamilyFriendly, "Family friendly", Users)}
+                    {toggle(free, setFree, "Free / donation", Landmark)}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="sticky bottom-0 mt-5 flex gap-2 border-t border-slate-100 bg-white px-4 pt-3 dark:border-slate-800 dark:bg-slate-900">
+              <button
+                type="button"
+                onClick={() => {
+                  if (sheet === "search") {
+                    pickCity("");
+                  } else {
+                    clearAll();
+                    setSort("recommended");
+                  }
+                }}
+                className="h-12 rounded-2xl px-4 text-sm font-semibold text-slate-600 underline dark:text-slate-300"
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                onClick={() => setSheet(null)}
+                className="h-12 flex-1 rounded-2xl bg-rose-600 text-sm font-bold text-white"
+              >
+                {q.isFetching && !q.isFetchingNextPage ? "Searching…" : `Show ${total} stay${total === 1 ? "" : "s"}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
