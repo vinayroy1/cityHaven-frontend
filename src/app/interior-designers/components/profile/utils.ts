@@ -4,6 +4,7 @@ import type {
   InteriorProject,
   MaterialCategory,
 } from "@/types/interior.types";
+import { formatMoney, intlMobile, whatsappNumber } from "@/lib/money";
 
 export const humanize = (value?: string | null) =>
   (value ?? "")
@@ -12,8 +13,9 @@ export const humanize = (value?: string | null) =>
     .replace(/\b\w/g, (c) => c.toUpperCase())
     .trim();
 
-export const inr = (n?: number | null) =>
-  n == null || Number.isNaN(Number(n)) ? "" : `₹${Number(n).toLocaleString("en-IN")}`;
+/** Amount in the designer's currency (country of the profile); India output unchanged. */
+export const inr = (n?: number | null, countryCode?: string | null) =>
+  n == null || Number.isNaN(Number(n)) ? "" : formatMoney(Number(n), countryCode || "IN");
 
 export const unitLabel = (unit?: InteriorPricingUnit | string | null) => {
   switch (unit) {
@@ -34,9 +36,10 @@ export const unitLabel = (unit?: InteriorPricingUnit | string | null) => {
   }
 };
 
-export const priceRange = (min?: number | null, max?: number | null, unit?: string | null) => {
+export const priceRange = (min?: number | null, max?: number | null, unit?: string | null, countryCode?: string | null) => {
   if (min == null && max == null) return "";
-  const base = min != null && max != null && max > min ? `${inr(min)} – ${inr(max)}` : inr(min ?? max);
+  const base =
+    min != null && max != null && max > min ? `${inr(min, countryCode)} – ${inr(max, countryCode)}` : inr(min ?? max, countryCode);
   return `${base}${unitLabel(unit)}`;
 };
 
@@ -98,10 +101,10 @@ export const projectMeta = (p: InteriorProject) =>
 export const projectBudget = (p: InteriorProject) =>
   p.budgetRange || (p.projectBudget ? `₹${(p.projectBudget / 100000).toFixed(1)}L` : "");
 
-export const telHref = (phone?: string | null) => (phone ? `tel:+91${phone.replace(/\D/g, "").slice(-10)}` : "");
+export const telHref = (phone?: string | null) => (phone ? `tel:${intlMobile(phone)}` : "");
 export const waHref = (phone?: string | null, text?: string) =>
   phone
-    ? `https://wa.me/91${phone.replace(/\D/g, "").slice(-10)}${text ? `?text=${encodeURIComponent(text)}` : ""}`
+    ? `https://wa.me/${whatsappNumber(phone)}${text ? `?text=${encodeURIComponent(text)}` : ""}`
     : "";
 
 /**

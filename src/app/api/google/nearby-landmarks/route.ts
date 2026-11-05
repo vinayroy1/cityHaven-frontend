@@ -32,14 +32,14 @@ export interface NearbyLandmarksResponse {
  * Free Nominatim Geocoder (OpenStreetMap)
  * Replaces paid Google Geocoding API with 100% free open-source geocoder.
  */
-async function geocodeAddressFree(address: string): Promise<{ lat?: number; lng?: number; pincode?: string; formattedAddress?: string } | null> {
+async function geocodeAddressFree(address: string, country = "in"): Promise<{ lat?: number; lng?: number; pincode?: string; formattedAddress?: string } | null> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3500);
 
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
       address
-    )}&format=json&addressdetails=1&countrycodes=in&limit=1`;
+    )}&format=json&addressdetails=1&countrycodes=${country}&limit=1`;
 
     const res = await fetch(url, {
       signal: controller.signal,
@@ -95,6 +95,9 @@ export async function GET(req: NextRequest) {
   const addressParam = (searchParams.get("address") || searchParams.get("q") || "").trim();
   const locality = (searchParams.get("locality") || "").trim();
   const city = (searchParams.get("city") || "").trim();
+  // Two-letter country (in/np/bd/lk) for the geocoder; anything else falls back to India.
+  const countryParam = (searchParams.get("country") || "in").trim().toLowerCase();
+  const country = /^(in|np|bd|lk)$/.test(countryParam) ? countryParam : "in";
 
   let pincode: string | undefined = undefined;
   let formattedAddress: string | undefined = undefined;
@@ -116,7 +119,7 @@ export async function GET(req: NextRequest) {
 
   // 2. Free geocoding (OpenStreetMap) only when we still have no coordinates.
   if ((!Number.isFinite(lat) || !Number.isFinite(lng)) && addressParam) {
-    const geo = await geocodeAddressFree(addressParam);
+    const geo = await geocodeAddressFree(addressParam, country);
     if (geo) {
       if (geo.lat && geo.lng) {
         lat = geo.lat;

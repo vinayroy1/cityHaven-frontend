@@ -149,7 +149,7 @@ export async function requestGpsLocation(): Promise<UserLocationProfile | null> 
             const profile: UserLocationProfile = {
               city: result.city,
               region: result.locality || undefined,
-              country: DEFAULT_COUNTRY,
+              country: result.countryCode || DEFAULT_COUNTRY,
               latitude,
               longitude,
               source: "gps",

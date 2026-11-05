@@ -25,6 +25,9 @@ import { APP_CONFIG } from "@/constants/app-config";
 import { toast } from "sonner";
 import { ProfileAvatarUploader } from "@/components/profile/ProfileAvatarUploader";
 import { ProfileUpdateOtpDialog } from "@/components/profile/ProfileUpdateOtpDialog";
+import { PhoneInput } from "@/components/common/PhoneInput";
+import { splitStoredMobile, toStoredMobile } from "@/lib/money";
+import { getSelectedCountry } from "@/lib/country/countryStore";
 
 export function ProfileClient() {
   const [mounted, setMounted] = useState(false);
@@ -56,7 +59,8 @@ export function ProfileClient() {
   // Form State
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
+  const [mobileNumber, setMobileNumber] = useState(""); // local digits
+  const [mobileCountry, setMobileCountry] = useState("IN");
   const [address, setAddress] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
@@ -87,13 +91,16 @@ export function ProfileClient() {
     const initial = {
       name: me.name || "",
       email: me.email || "",
-      mobileNumber: me.mobileNumber?.replace(/\D/g, "").slice(-10) || "",
+      // Stored form: 10 digits (India) or "+977…" etc.
+      mobileNumber: me.mobileNumber && !me.mobileNumber.startsWith("g_") ? me.mobileNumber : "",
       address: me.address || "",
       profileImage: me.profileImage || null,
     };
     setName(initial.name);
     setEmail(initial.email);
-    setMobileNumber(initial.mobileNumber);
+    const split = splitStoredMobile(initial.mobileNumber);
+    setMobileNumber(split.local);
+    setMobileCountry(initial.mobileNumber ? split.countryCode : getSelectedCountry());
     setAddress(initial.address);
     setProfileImage(initial.profileImage);
     setInitialState(initial);
@@ -101,12 +108,13 @@ export function ProfileClient() {
 
   // Clean values for diffing
   const cleanEmail = email.trim().toLowerCase();
-  const cleanMobile = mobileNumber.replace(/\D/g, "").slice(0, 10);
+  const cleanMobile = toStoredMobile(mobileNumber, mobileCountry); // "" when invalid
   const initialEmail = initialState.email.trim().toLowerCase();
-  const initialMobile = initialState.mobileNumber.replace(/\D/g, "").slice(0, 10);
+  const initialMobile = initialState.mobileNumber;
 
   const isEmailChanging = Boolean(cleanEmail && cleanEmail !== initialEmail);
-  const isMobileChanging = Boolean(cleanMobile && cleanMobile !== initialMobile);
+  // Invalid input counts as a change (so validation shows); valid input compares in stored form.
+  const isMobileChanging = Boolean(mobileNumber) && (cleanMobile || `${mobileCountry}:${mobileNumber}`) !== initialMobile;
   const isGeneralChanging = Boolean(
     name.trim() !== initialState.name.trim() ||
     (address || "").trim() !== (initialState.address || "").trim() ||
@@ -119,12 +127,13 @@ export function ProfileClient() {
   // Validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const isEmailValid = !email.trim() || emailRegex.test(cleanEmail);
-  const isMobileValid = cleanMobile.length === 10;
+  const isMobileValid = Boolean(cleanMobile);
 
   const handleDiscard = () => {
     setName(initialState.name);
     setEmail(initialState.email);
-    setMobileNumber(initialState.mobileNumber);
+    setMobileNumber(splitStoredMobile(initialState.mobileNumber).local);
+    setMobileCountry(splitStoredMobile(initialState.mobileNumber).countryCode);
     setAddress(initialState.address);
     setProfileImage(initialState.profileImage);
     toast.info("Changes reverted");
@@ -220,7 +229,7 @@ export function ProfileClient() {
         setInitialState({
           name: user.name || name.trim(),
           email: user.email || email,
-          mobileNumber: user.mobileNumber?.replace(/\D/g, "").slice(-10) || mobileNumber,
+          mobileNumber: user.mobileNumber || cleanMobile,
           address: user.address || address.trim(),
           profileImage: user.profileImage !== undefined ? user.profileImage : profileImage,
         });
@@ -252,7 +261,7 @@ export function ProfileClient() {
         setInitialState({
           name: user.name || name.trim(),
           email: user.email || email,
-          mobileNumber: user.mobileNumber?.replace(/\D/g, "").slice(-10) || mobileNumber,
+          mobileNumber: user.mobileNumber || cleanMobile,
           address: user.address || address.trim(),
           profileImage: user.profileImage !== undefined ? user.profileImage : profileImage,
         });
@@ -367,20 +376,14 @@ export function ProfileClient() {
                   </span>
                 )}
               </div>
-              <div className="relative">
-                <span className="absolute left-3.5 top-2.5 text-sm font-bold text-slate-400 select-none">
-                  +91
-                </span>
-                <input
-                  type="tel"
-                  maxLength={10}
-                  value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder="10-digit mobile number"
-                  required
-                  className="w-full rounded-xl border border-slate-200 bg-white pl-12 pr-3.5 py-2.5 text-sm font-semibold font-mono text-slate-900 placeholder-slate-400 focus:border-rose-600 focus:ring-1 focus:ring-rose-600 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
+              <PhoneInput
+                value={mobileNumber}
+                onChange={setMobileNumber}
+                countryCode={mobileCountry}
+                onCountryChange={setMobileCountry}
+                required
+                className="h-11 rounded-xl"
+              />
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 Updating contact number requires OTP verification sent to your registered email.
               </p>

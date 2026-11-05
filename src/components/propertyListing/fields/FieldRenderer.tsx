@@ -23,6 +23,8 @@ import { suggestDescription, suggestTitle } from "@/features/propertyListing/for
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import { chip as chipCls, errorText, fieldLabel, helpText as helpCls } from "../theme";
 import { amountToWords } from "./numberToWords";
+import { getCountry } from "@/config/countries";
+import { formatMoney } from "@/lib/money";
 import { MediaField } from "./MediaField";
 import { BrokerageField } from "./BrokerageField";
 
@@ -100,8 +102,14 @@ const Chip = ({
   </button>
 );
 
-export function FieldRenderer({ field, values }: Props) {
+export function FieldRenderer({ field: rawField, values }: Props) {
   const form = useFormContext();
+  // Labels in the form config say "(₹)"; outside India show the listing country's currency.
+  const country = getCountry((values as any)?.location?.countryCode);
+  const field =
+    country.code === "IN" || !rawField.label?.includes("₹")
+      ? rawField
+      : { ...rawField, label: rawField.label.replace(/₹/g, country.currencySymbol) };
 
   if (!evaluateCondition(values, field.visibleWhen)) return null;
 
@@ -619,7 +627,15 @@ export function FieldRenderer({ field, values }: Props) {
       );
 
     case "price":
-      return <PriceField field={field} disabled={disabled} required={required} error={error} />;
+      return (
+        <PriceField
+          field={field}
+          disabled={disabled}
+          required={required}
+          error={error}
+          countryCode={country.code}
+        />
+      );
 
     case "media":
       return <MediaField field={field} />;
@@ -637,15 +653,25 @@ function PriceField({
   disabled,
   required,
   error,
+  countryCode = "IN",
 }: {
   field: FieldConfig;
   disabled: boolean;
   required: boolean;
   error?: string;
+  countryCode?: string;
 }) {
   const form = useFormContext();
   const amount = useWatch({ control: form.control, name: field.id });
-  const words = amountToWords(typeof amount === "number" ? amount : Number(amount));
+  const country = getCountry(countryCode);
+  const amountNum = typeof amount === "number" ? amount : Number(amount);
+  // Words use lakh/crore, so only lakh countries get them; others see the grouped figure.
+  const words =
+    country.bigNumbers === "lakh"
+      ? amountToWords(amountNum)
+      : amountNum > 0
+        ? formatMoney(amountNum, country.code)
+        : "";
 
   return (
     <div className="space-y-2">
@@ -657,7 +683,7 @@ function PriceField({
           render={({ field: rhf }) => (
             <Labelled label={field.label} required={required} error={error}>
               <div className="flex h-11 items-center rounded-xl border border-slate-200 px-3 transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200">
-                <span className="text-sm text-slate-500">₹</span>
+                <span className="text-sm text-slate-500">{country.currencySymbol}</span>
                 <input
                   type="number"
                   inputMode="numeric"
@@ -681,7 +707,7 @@ function PriceField({
             render={({ field: rhf }) => (
               <Labelled label="Price per sq.ft.">
                 <div className="flex h-11 items-center rounded-xl border border-slate-200 px-3">
-                  <span className="text-sm text-slate-500">₹</span>
+                  <span className="text-sm text-slate-500">{country.currencySymbol}</span>
                   <input
                     type="number"
                     disabled={disabled}
@@ -695,7 +721,11 @@ function PriceField({
           />
         )}
       </div>
-      {words && <p className="text-xs font-medium text-slate-500">₹ {words}</p>}
+      {words && (
+        <p className="text-xs font-medium text-slate-500">
+          {country.bigNumbers === "lakh" ? `${country.currencySymbol} ${words}` : words}
+        </p>
+      )}
     </div>
   );
 }

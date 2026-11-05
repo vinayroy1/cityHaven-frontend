@@ -5,7 +5,8 @@ import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { Check, Info, ShieldCheck, Sparkles, X } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 import { amountToWords } from "./numberToWords";
-import { formatIndianCurrency } from "@/lib/propertyListing/formatBrokerage";
+import { formatMoney } from "@/lib/money";
+import { getCountry } from "@/config/countries";
 import type { FieldConfig } from "@/features/propertyListing/formConfig/types";
 
 interface BrokerageFieldProps {
@@ -82,6 +83,9 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
   const priceRaw = useWatch({ control: form.control, name: "pricing.price" });
   const brokerageType = useWatch({ control: form.control, name: "pricing.brokerageType" });
   const brokerageVal = useWatch({ control: form.control, name: "pricing.brokerage" });
+  const countryCode = useWatch({ control: form.control, name: "location.countryCode" }) as string | undefined;
+  const country = getCountry(countryCode);
+  const money = (v: number) => formatMoney(v, country.code);
 
   const [activeInfo, setActiveInfo] = useState<{ title: string; text: string } | null>(null);
   const [showPlatformInfo, setShowPlatformInfo] = useState(false);
@@ -219,7 +223,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
                   "text-xs font-bold leading-normal whitespace-normal break-words",
                   isSelected ? "text-slate-950 dark:text-white" : "text-slate-800 dark:text-slate-200"
                 )}>
-                  {opt.label}
+                  {opt.label.replace("₹", country.currencySymbol)}
                 </span>
               </div>
 
@@ -270,9 +274,9 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
             </div>
             {currentPrice > 0 ? (
               <p className="text-slate-700 dark:text-slate-300">
-                Based on monthly rent of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>:{" "}
+                Based on monthly rent of <span className="font-bold">{money(currentPrice)}</span>:{" "}
                 <span className="font-extrabold text-slate-950 dark:text-white">
-                  ₹{formatIndianCurrency(Math.round(currentPrice / 2))}
+                  {money(Math.round(currentPrice / 2))}
                 </span>{" "}
                 <span className="text-[11px] text-slate-500">(15 Days Rent)</span>
               </p>
@@ -292,9 +296,9 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
             </div>
             {currentPrice > 0 ? (
               <p className="text-slate-700 dark:text-slate-300">
-                Based on monthly rent of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>:{" "}
+                Based on monthly rent of <span className="font-bold">{money(currentPrice)}</span>:{" "}
                 <span className="font-extrabold text-slate-950 dark:text-white">
-                  ₹{formatIndianCurrency(currentPrice)}
+                  {money(currentPrice)}
                 </span>{" "}
                 <span className="text-[11px] text-slate-500">(1 Month Rent)</span>
               </p>
@@ -314,9 +318,9 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
             </div>
             {currentPrice > 0 ? (
               <p className="text-slate-700 dark:text-slate-300">
-                Based on property price of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>:{" "}
+                Based on property price of <span className="font-bold">{money(currentPrice)}</span>:{" "}
                 <span className="font-extrabold text-slate-950 dark:text-white">
-                  ₹{formatIndianCurrency(Math.round(currentPrice * 0.01))}
+                  {money(Math.round(currentPrice * 0.01))}
                 </span>{" "}
                 <span className="text-[11px] text-slate-500">(1% of sale value)</span>
               </p>
@@ -336,9 +340,9 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
             </div>
             {currentPrice > 0 ? (
               <p className="text-slate-700 dark:text-slate-300">
-                Based on property price of <span className="font-bold">₹{formatIndianCurrency(currentPrice)}</span>:{" "}
+                Based on property price of <span className="font-bold">{money(currentPrice)}</span>:{" "}
                 <span className="font-extrabold text-slate-950 dark:text-white">
-                  ₹{formatIndianCurrency(Math.round(currentPrice * 0.02))}
+                  {money(Math.round(currentPrice * 0.02))}
                 </span>{" "}
                 <span className="text-[11px] text-slate-500">(2% of sale value)</span>
               </p>
@@ -362,14 +366,14 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
         {activeType === "FIXED" && (
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Enter Fixed Brokerage Amount (₹)
+              Enter Fixed Brokerage Amount ({country.currencySymbol})
             </label>
             <Controller
               name="pricing.brokerage"
               control={form.control}
               render={({ field: rhf }) => (
                 <div className="flex h-10 w-full max-w-sm items-center rounded-xl border border-slate-200 bg-white px-3 transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-800 dark:bg-slate-900">
-                  <span className="text-sm font-bold text-slate-500">₹</span>
+                  <span className="text-sm font-bold text-slate-500">{country.currencySymbol}</span>
                   <input
                     type="number"
                     inputMode="numeric"
@@ -386,7 +390,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
             />
             {words && (
               <p className="text-[11px] font-medium text-slate-500">
-                ₹ {words}
+                {country.currencySymbol} {words}
               </p>
             )}
           </div>
@@ -422,7 +426,7 @@ export function BrokerageField({ disabled }: BrokerageFieldProps) {
               <p className="text-[11px] text-slate-600 dark:text-slate-400">
                 Equivalent to approx:{" "}
                 <strong className="text-slate-900 dark:text-white">
-                  ₹{formatIndianCurrency(Math.round((currentPrice * Number(brokerageVal)) / 100))}
+                  {money(Math.round((currentPrice * Number(brokerageVal)) / 100))}
                 </strong>
               </p>
             )}

@@ -3,6 +3,8 @@
 
 import { PROPERTY_SUBTYPES } from "@/constants/backend-schema";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
+import { getCountry } from "@/config/countries";
+import { formatMoney, formatMoneyShort } from "@/lib/money";
 
 const subTypeName = (slug?: string) =>
   PROPERTY_SUBTYPES.find((s) => s.slug === slug)?.name ?? "Property";
@@ -64,6 +66,11 @@ export function suggestTitle(v: PropertyListingFormValues): string {
 
 /** Generates a comprehensive, professional AI property description based on selected details. */
 export function suggestDescription(v: PropertyListingFormValues): string {
+  const country = getCountry(v.location?.countryCode);
+  const isIndia = country.code === "IN";
+  // India keeps its exact historical wording; other countries use the shared formatter.
+  const money = (n: number) => (isIndia ? `₹${n.toLocaleString("en-IN")}` : formatMoney(n, country.code));
+  const sym = isIndia ? "₹" : `${country.currencySymbol} `;
   const slug = v.context.propertySubTypeSlug ?? "";
   const typeName = subTypeName(slug);
   const verb = listingVerb[v.context.listingType] ?? "for Sale";
@@ -122,7 +129,7 @@ export function suggestDescription(v: PropertyListingFormValues): string {
       const meal = v.details?.mealType ? ` (${v.details.mealType.replace(/_/g, " ").toLowerCase()})` : "";
       parts.push(`Fresh hygienic meals included in monthly rent${meal}.`);
     } else if (v.details?.foodOption === "OPTIONAL_MESS") {
-      const fee = v.details?.messCharges ? ` at ₹${v.details.messCharges.toLocaleString("en-IN")}/month` : "";
+      const fee = v.details?.messCharges ? ` at ${money(v.details.messCharges)}/month` : "";
       parts.push(`Optional mess / tiffin service available${fee}.`);
     } else if (v.details?.foodOption === "SELF_COOKING") {
       parts.push("Self-cooking kitchen space and gas provision available.");
@@ -131,10 +138,10 @@ export function suggestDescription(v: PropertyListingFormValues): string {
     if (v.details?.electricityType === "INCLUDED") {
       parts.push("Electricity charges are included in the rent.");
     } else if (v.details?.electricityType === "SUB_METER") {
-      const rate = v.details?.electricityRatePerUnit ? ` (₹${v.details.electricityRatePerUnit}/unit)` : "";
+      const rate = v.details?.electricityRatePerUnit ? ` (${sym}${v.details.electricityRatePerUnit}/unit)` : "";
       parts.push(`Electricity billed as per sub-meter reading${rate}.`);
     } else if (v.details?.electricityType === "FIXED_MONTHLY") {
-      const fee = v.details?.electricityMonthlyCharge ? ` (₹${v.details.electricityMonthlyCharge}/mo)` : "";
+      const fee = v.details?.electricityMonthlyCharge ? ` (${sym}${v.details.electricityMonthlyCharge}/mo)` : "";
       parts.push(`Fixed monthly electricity surcharge applies${fee}.`);
     }
 
@@ -154,7 +161,7 @@ export function suggestDescription(v: PropertyListingFormValues): string {
 
     if (v.pricing?.price) {
       const basis = v.details?.pricingBasis === "PER_ROOM" ? "room / month" : "bed / month";
-      parts.push(`Rent: ₹${v.pricing.price.toLocaleString("en-IN")} per ${basis}.`);
+      parts.push(`Rent: ${money(v.pricing.price)} per ${basis}.`);
     }
 
     parts.push("Peaceful environment with close proximity to coaching institutes, colleges, and daily markets.");
@@ -224,8 +231,9 @@ export function suggestDescription(v: PropertyListingFormValues): string {
 
   // 4. Financials & Pricing
   if (v.pricing?.price) {
-    const formattedP =
-      v.pricing.price >= 10000000
+    const formattedP = !isIndia
+      ? formatMoneyShort(v.pricing.price, country.code, { units: "long" })
+      : v.pricing.price >= 10000000
         ? `₹ ${(v.pricing.price / 10000000).toFixed(2)} Cr`
         : v.pricing.price >= 100000
         ? `₹ ${(v.pricing.price / 100000).toFixed(2)} Lakh`

@@ -1,11 +1,13 @@
 import React from "react";
 import { CalendarClock, Sparkles } from "lucide-react";
+import { formatMoneyShort } from "@/lib/money";
 
 type TransactionCardProps = {
   transactionType?: string | null;
   ownershipType?: string | null;
   listingType?: string | null;
   deposit?: number | null;
+  currencyCode?: string | null;
 };
 
 function formatEnum(value?: string | null) {
@@ -17,19 +19,17 @@ function formatEnum(value?: string | null) {
     .join(" ");
 }
 
-function formatMoney(value?: number | null) {
+function formatMoney(value?: number | null, currency?: string | null) {
   if (!value && value !== 0) return null;
-  if (value >= 10000000) return `₹${(value / 10000000).toFixed(value % 10000000 ? 2 : 0)} Cr`;
-  if (value >= 100000) return `₹${(value / 100000).toFixed(value % 100000 ? 2 : 0)} L`;
-  return `₹${value.toLocaleString("en-IN")}`;
+  return formatMoneyShort(value, currency || "INR");
 }
 
-export function TransactionCard({ transactionType, ownershipType, listingType, deposit }: TransactionCardProps) {
+export function TransactionCard({ transactionType, ownershipType, listingType, deposit, currencyCode }: TransactionCardProps) {
   const isPg = listingType === "PG";
   const heading = isPg
     ? "Monthly Stay / Rental"
     : [formatEnum(transactionType), formatEnum(ownershipType)].filter(Boolean).join(" · ") || "Transaction details";
-  const depositText = formatMoney(deposit);
+  const depositText = formatMoney(deposit, currencyCode);
 
   return (
     <div className="border-t border-zinc-200 py-5 dark:border-slate-800">

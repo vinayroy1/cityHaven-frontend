@@ -51,6 +51,7 @@ import { registerBackHandler } from "@/lib/navigation/backNavigation";
 
 import { AdminOwnerSourcingCard } from "./AdminOwnerSourcingCard";
 import { AdminDeduplicationAlert } from "./AdminDeduplicationAlert";
+import { getSelectedCountry } from "@/lib/country/countryStore";
 
 const PG_SUBTYPES = ["pg-private-room", "pg-shared-room", "pg-bed"];
 
@@ -130,6 +131,15 @@ export function PropertyListingFlow({
       },
     },
   });
+
+  // New listing: start in the portal country the visitor picked (still changeable on the Location step).
+  useEffect(() => {
+    if (propertyId || duplicateOf || draft) return;
+    if (form.getValues("location.cityName")) return;
+    const portal = getSelectedCountry();
+    if (portal !== (form.getValues("location.countryCode") || "IN")) form.setValue("location.countryCode", portal);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const values = useWatch({ control: form.control }) as PropertyListingFormValues;
   const score = useMemo(() => computeListingScore(listingSteps, values ?? {}), [values]);

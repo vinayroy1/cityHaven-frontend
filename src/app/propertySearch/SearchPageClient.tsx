@@ -38,6 +38,8 @@ import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
 
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { FlatmateListing } from "@/types/flatmate.types";
+import { setSelectedCountry, useCountry } from "@/lib/country/countryStore";
+import { getCountry } from "@/config/countries";
 
 type SearchPageClientProps = {
   routeCity?: string;
@@ -175,6 +177,12 @@ export function SearchPageClient({
   );
 
   const results = useSearchResults(state, initialItems, initialTotal);
+  const portalCountry = useCountry();
+  const resultsCountry = React.useMemo(() => {
+    if (!state.cityName) return null;
+    const first = (results.visible as Array<{ countryCode?: string | null }> | undefined)?.find((i) => i?.countryCode);
+    return first?.countryCode ? getCountry(first.countryCode) : null;
+  }, [state.cityName, results.visible]);
   const resultCount = results.refining
     ? results.visible.length
     : results.total ?? results.visible.length;
@@ -351,8 +359,8 @@ export function SearchPageClient({
               {state.cityName || state.localities?.[0]?.label
                 ? `${state.intent === "FLATMATE" ? "Flatmates & Shared Homes in" : "Properties in"} ${[state.localities?.[0]?.label, state.cityName].filter(Boolean).join(", ")}`
                 : state.intent === "FLATMATE"
-                  ? "Flatmates & Shared Homes in India"
-                  : "Verified Properties in India"}
+                  ? `Flatmates & Shared Homes in ${portalCountry.name}`
+                  : `Verified Properties in ${portalCountry.name}`}
               <span className="ml-1.5 font-normal text-slate-500 text-xs sm:text-sm dark:text-slate-400 capitalize">
                 • {state.intent === "RENT" ? "Rent" : state.intent === "PG" ? "PG & Co-Living" : state.intent === "FLATMATE" ? "Flatmate" : state.intent === "COMMERCIAL" ? "Commercial" : "Buy & Rent"}
               </span>
@@ -369,6 +377,22 @@ export function SearchPageClient({
             <SortMenu value={state.sort} onChange={(sort) => commit({ ...state, sort })} />
           </div>
         </div>
+
+        {/* City belongs to another country than the portal one: offer to switch the whole site. */}
+        {resultsCountry && resultsCountry.code !== portalCountry.code && (
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-900 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-200">
+            <span>
+              {resultsCountry.flag} These listings are in {resultsCountry.name}. Prices are in {resultsCountry.currency}.
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedCountry(resultsCountry.code, "manual")}
+              className="rounded-full bg-sky-600 px-3 py-1 font-semibold text-white hover:bg-sky-700"
+            >
+              Switch site to {resultsCountry.name}
+            </button>
+          </div>
+        )}
 
         <div className="mt-3 hidden empty:hidden sm:block">
           <AppliedChips state={state} onChange={commit} />

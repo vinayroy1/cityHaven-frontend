@@ -6,6 +6,8 @@
  *  3. Compact summary rows per section with a working Edit link.
  */
 import React, { useState } from "react";
+import { getCountry } from "@/config/countries";
+import { formatMoney, formatMoneyShort } from "@/lib/money";
 import {
   AlertCircle,
   Bath,
@@ -35,11 +37,10 @@ export type ReviewStepId = "basic" | "location" | "profile" | "features" | "pric
 
 type Photo = { localId?: string; preview?: string; uploadedUrl?: string; url?: string; type?: string; uploading?: boolean };
 
-const inr = (n?: number | null) => {
+/** ₹1.2 Cr / ₹45 L / ₹25,000 for India; the listing country's currency otherwise. */
+const inr = (n?: number | null, countryCode?: string) => {
   if (!n) return null;
-  if (n >= 1e7) return `₹${Number((n / 1e7).toFixed(2))} Cr`;
-  if (n >= 1e5) return `₹${Number((n / 1e5).toFixed(2))} L`;
-  return `₹${n.toLocaleString("en-IN")}`;
+  return formatMoneyShort(n, countryCode || "IN", { decimals: "trim" });
 };
 const pretty = (s?: string | null) =>
   s ? s.replace(/[_-]/g, " ").toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase()) : undefined;
@@ -64,7 +65,8 @@ export function ReviewSummary({
   const isPg = context.listingType === "PG";
   const area = details.carpetArea || details.builtUpArea || details.plotArea;
   const areaUnit = (details.carpetAreaUnit || details.builtUpAreaUnit || details.plotAreaUnit || "SQ_FT").replace("_", ".").toLowerCase();
-  const price = inr(pricing.price);
+  const cc = getCountry(location.countryCode).code;
+  const price = inr(pricing.price, cc);
   const perSqft = pricing.price && area && !isRent && !isPg ? Math.round(pricing.price / area) : null;
   const subType = context.propertySubTypeSlug
     ? (PROPERTY_SUBTYPES.find((s) => s.slug === context.propertySubTypeSlug)?.name ?? pretty(context.propertySubTypeSlug))
@@ -145,7 +147,7 @@ export function ReviewSummary({
             <div className="flex items-baseline gap-1.5">
               <span className="text-2xl font-black text-slate-950 dark:text-white">{price ?? "Price not set"}</span>
               {price && (isRent || isPg) && <span className="text-sm text-slate-500">/month</span>}
-              {perSqft && <span className="text-xs text-slate-500">· ₹{perSqft.toLocaleString("en-IN")}/sq.ft</span>}
+              {perSqft && <span className="text-xs text-slate-500">· {formatMoney(perSqft, cc)}/sq.ft</span>}
             </div>
             <h3 className="mt-1 line-clamp-2 text-base font-bold text-slate-900 dark:text-white">{meta.title || "Your listing title"}</h3>
             <p className="mt-1 flex items-center gap-1 text-sm text-slate-500">
@@ -215,7 +217,7 @@ export function ReviewSummary({
           <Item label="Sub-locality" value={location.subLocality} />
           <Item label="Sector" value={location.sectorNumber} />
           <Item label="Building / landmark" value={location.buildingName} />
-          <Item label="Pincode" value={location.pincode} />
+          <Item label={getCountry(cc).postalLabel} value={location.pincode} />
           {(unitBits.length > 0 || location.address) && (
             <div className="mt-2 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/60">
               <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
@@ -259,8 +261,8 @@ export function ReviewSummary({
         <Row icon={IndianRupee} title="Price & amenities" step="pricing" onEdit={onEditStep}
           summary={[price ? `${price}${isRent || isPg ? "/mo" : ""}` : "Price not set", amenityLabels.length ? `${amenityLabels.length} amenities` : null].filter(Boolean).join(" · ")}>
           <Item label="Negotiable" value={pricing.priceNegotiable ? "Yes" : undefined} />
-          <Item label="Deposit" value={inr(pricing.deposit)} />
-          <Item label="Maintenance" value={pricing.maintenance ? `${inr(pricing.maintenance)} ${pretty(pricing.maintenancePaymentPeriod) ?? ""}`.trim() : undefined} />
+          <Item label="Deposit" value={inr(pricing.deposit, cc)} />
+          <Item label="Maintenance" value={pricing.maintenance ? `${inr(pricing.maintenance, cc)} ${pretty(pricing.maintenancePaymentPeriod) ?? ""}`.trim() : undefined} />
           {context.postedAs === "AGENT" && (
             <Item label="Brokerage" value={getBrokerageDisplay(pricing.brokerage, pricing.brokerageType, pricing.brokerageNegotiable).fullText} />
           )}

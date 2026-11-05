@@ -80,6 +80,8 @@ export interface PropertyContextBlock {
 }
 
 export interface PropertyLocationBlock {
+  /** ISO country (IN, NP, BD, LK). Decides currency, phone and address format. */
+  countryCode?: string;
   cityId?: string;
   cityName?: string;
   localityId?: string;

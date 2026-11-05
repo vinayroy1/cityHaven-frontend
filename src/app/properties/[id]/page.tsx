@@ -28,6 +28,8 @@ type AmenityGroup = {
 };
 type PropertyDetails = {
   id: number;
+  countryCode?: string | null;
+  currencyCode?: string | null;
   slug?: string | null;
   status?: string | null;
   title?: string | null;
@@ -135,6 +137,7 @@ type PropertyDetails = {
 
 import { CDN_ASSETS } from "@/config/cdn";
 import { propertyDetailCacheTag } from "@/lib/propertyListing/cacheTags";
+import { formatMoney as fullMoney, formatMoneyShort, currencySymbol } from "@/lib/money";
 
 export const revalidate = 60;
 
@@ -172,11 +175,10 @@ function formatEnum(value?: string | null) {
     .join(" ");
 }
 
-function formatMoney(value?: number | null) {
+/** ₹1.25 Cr / ₹45 L / ₹25,000 in India; the listing's own currency elsewhere. */
+function formatMoney(value?: number | null, currency?: string | null) {
   if (!value && value !== 0) return "Price on request";
-  if (value >= 10000000) return `₹${(value / 10000000).toFixed(value % 10000000 ? 2 : 0)} Cr`;
-  if (value >= 100000) return `₹${(value / 100000).toFixed(value % 100000 ? 2 : 0)} L`;
-  return `₹${value.toLocaleString("en-IN")}`;
+  return formatMoneyShort(value, currency || "INR");
 }
 
 function compact(items: Array<string | null | undefined>) {
@@ -312,7 +314,7 @@ function buildHighlights(property: PropertyDetails) {
           property.foodOption === "INCLUDED" || property.foodIncluded
             ? "Meals Included"
             : property.foodOption === "OPTIONAL_MESS"
-            ? (property.messCharges ? `Optional Mess (₹${property.messCharges.toLocaleString("en-IN")}/mo)` : "Optional Mess Available")
+            ? (property.messCharges ? `Optional Mess (${fullMoney(property.messCharges, property.currencyCode)}/mo)` : "Optional Mess Available")
             : property.foodOption === "SELF_COOKING"
             ? "Self Cooking Kitchen"
             : "Outside Food Allowed",
@@ -356,7 +358,7 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
       property.foodOption === "INCLUDED" || property.foodIncluded
         ? (property.mealType ? `Included (${formatEnum(property.mealType)})` : "Included in Rent")
         : property.foodOption === "OPTIONAL_MESS"
-        ? (property.messCharges ? `Optional Mess (₹${property.messCharges.toLocaleString("en-IN")}/mo)` : "Optional Mess Available")
+        ? (property.messCharges ? `Optional Mess (${fullMoney(property.messCharges, property.currencyCode)}/mo)` : "Optional Mess Available")
         : property.foodOption === "SELF_COOKING"
         ? "Self Cooking Allowed (Kitchen provided)"
         : "No Food / Outside Tiffin Allowed";
@@ -365,9 +367,9 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
       property.electricityType === "INCLUDED"
         ? "Electricity Included in Rent"
         : property.electricityType === "SUB_METER"
-        ? (property.electricityRatePerUnit ? `Sub-Meter (₹${property.electricityRatePerUnit}/unit)` : "Billed as per Sub-Meter Reading")
+        ? (property.electricityRatePerUnit ? `Sub-Meter (${currencySymbol(property.currencyCode || "INR")}${property.electricityRatePerUnit}/unit)` : "Billed as per Sub-Meter Reading")
         : property.electricityType === "FIXED_MONTHLY"
-        ? (property.electricityMonthlyCharge ? `Fixed Monthly Surcharge (₹${property.electricityMonthlyCharge}/mo)` : "Fixed Monthly Surcharge")
+        ? (property.electricityMonthlyCharge ? `Fixed Monthly Surcharge (${fullMoney(property.electricityMonthlyCharge, property.currencyCode)}/mo)` : "Fixed Monthly Surcharge")
         : (() => {
             const desc = property.description?.toLowerCase() ?? "";
             if (desc.includes("electricity charges are included") || desc.includes("electricity included")) {
@@ -463,10 +465,10 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
         items: [
           {
             label: roomWise ? "Monthly room rent" : "Rent per bed / month",
-            value: property.price ? formatMoney(property.price) : null,
+            value: property.price ? formatMoney(property.price, property.currencyCode) : null,
           },
-          { label: "Security deposit", value: property.deposit ? formatMoney(property.deposit) : null },
-          { label: "Maintenance", value: property.maintenance ? formatMoney(property.maintenance) : null },
+          { label: "Security deposit", value: property.deposit ? formatMoney(property.deposit, property.currencyCode) : null },
+          { label: "Maintenance", value: property.maintenance ? formatMoney(property.maintenance, property.currencyCode) : null },
           {
             label: "Brokerage",
             value:
@@ -529,10 +531,10 @@ function buildDetailGroups(property: PropertyDetails): DetailGroup[] {
     {
       title: "Pricing",
       items: [
-        { label: "Price", value: property.price ? formatMoney(property.price) : null },
-        { label: "Deposit", value: property.deposit ? formatMoney(property.deposit) : null },
-        { label: "Price per sq.ft", value: property.pricePerSqFt ? formatMoney(property.pricePerSqFt) : null },
-        { label: "Maintenance", value: property.maintenance ? formatMoney(property.maintenance) : null },
+        { label: "Price", value: property.price ? formatMoney(property.price, property.currencyCode) : null },
+        { label: "Deposit", value: property.deposit ? formatMoney(property.deposit, property.currencyCode) : null },
+        { label: "Price per sq.ft", value: property.pricePerSqFt ? formatMoney(property.pricePerSqFt, property.currencyCode) : null },
+        { label: "Maintenance", value: property.maintenance ? formatMoney(property.maintenance, property.currencyCode) : null },
         { label: "Maintenance period", value: formatEnum(property.maintenancePaymentPeriod) },
         {
           label: "Brokerage",
@@ -620,7 +622,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const rawTitle = property.title || fallbackTitle;
   const title = isPg ? rawTitle.replace(/^1\s*BHK\s*[-–·,]?\s*/i, "") : rawTitle;
   const location = compact([property.subLocality, property.localityRef?.name ?? property.locality, property.city?.name ?? property.cityName]);
-  const price = formatMoney(property.price);
+  const price = formatMoney(property.price, property.currencyCode);
   const area = getArea(property);
   const description = property.description
     ? (property.description.length > 155 ? `${property.description.slice(0, 152)}...` : property.description)
@@ -677,7 +679,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const rawTitle = property.title || fallbackTitle;
   const title = isPg ? rawTitle.replace(/^1\s*BHK\s*[-–·,]?\s*/i, "") : rawTitle;
 
-  const price = formatMoney(property.price);
+  const price = formatMoney(property.price, property.currencyCode);
   const area = getArea(property);
   const tags = isPg
     ? [
@@ -883,7 +885,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               price={price}
               postedAs={property.postedAs}
             />
-            <TransactionCard transactionType={property.transactionType} ownershipType={property.ownershipType} listingType={property.listingType} deposit={property.deposit} />
+            <TransactionCard transactionType={property.transactionType} ownershipType={property.ownershipType} listingType={property.listingType} deposit={property.deposit} currencyCode={property.currencyCode} />
           </aside>
         </section>
       </div>

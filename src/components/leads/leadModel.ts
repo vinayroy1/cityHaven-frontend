@@ -6,6 +6,7 @@
 import type { ApiLead, ApiPropertyVisit } from "@/features/leads/api";
 import type { FlatmateInterest } from "@/types/flatmate.types";
 import type { InteriorInquiry } from "@/types/interior.types";
+import { intlMobile } from "@/lib/money";
 
 export type LeadKind = "property" | "visit" | "flatmate" | "interior";
 export type LeadBucket = "new" | "active" | "closed";
@@ -291,12 +292,12 @@ export function ago(iso?: string) {
   return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
 
-/** 10-digit Indian mobile → wa.me / tel friendly number. */
+/** Stored mobile (10-digit Indian or "+977…") → tel / wa.me friendly number. */
 export function dialable(phone?: string) {
   const digits = (phone || "").replace(/\D/g, "");
-  if (digits.length < 10) return null;
-  const ten = digits.slice(-10);
-  return { tel: `+91${ten}`, wa: `91${ten}` };
+  if (digits.length < 9) return null;
+  const intl = intlMobile(phone);
+  return { tel: intl, wa: intl.replace(/^\+/, "") };
 }
 
 /** "Usually replies in ~2h" style summary of the owner's median reply time. */

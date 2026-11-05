@@ -97,6 +97,8 @@ export interface FlatmateListing {
 
 export interface FlatmateSearchParams {
   mode?: FlatmateListingMode;
+  /** Portal country; the backend ignores it when a city/locality is given. */
+  countryCode?: string;
   city?: string;
   locality?: string;
   budgetMin?: number;
@@ -146,6 +148,7 @@ export interface FlatmateInterest {
 
 export interface FlatmateListingInput {
   mode: FlatmateListingMode;
+  countryCode?: string;
   status?: FlatmateListingStatus;
   title: string;
   description?: string | null;

@@ -324,6 +324,7 @@ export interface InteriorProfile {
   fullName?: string | null;
   teamSizeRange?: string | null;
   primaryState?: string | null;
+  countryCode?: string | null;
   primaryLat?: number | null;
   primaryLng?: number | null;
   siteVisitRadiusKm?: number | null;
@@ -352,6 +353,8 @@ export interface InteriorProfile {
 
 export interface InteriorSearchParams {
   city?: string;
+  /** Portal country; the backend ignores it when a city is given. */
+  countryCode?: string;
   locality?: string;
   providerType?: InteriorProviderType;
   service?: string;
@@ -680,6 +683,7 @@ export interface InteriorWizardValues {
   };
   location: {
     primaryCity: string;
+    countryCode: string;
     primaryState: string;
     primaryLocality: string;
     primaryAddress: string;

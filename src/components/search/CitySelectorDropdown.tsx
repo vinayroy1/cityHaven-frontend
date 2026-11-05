@@ -6,6 +6,7 @@ import { ChevronDown, MapPin, Search, Check, Sparkles } from "lucide-react";
 import { useGetCitiesQuery } from "@/features/locations/api";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchPopularCities } from "@/features/locations/slice";
+import { useCountry } from "@/lib/country/countryStore";
 
 export interface CityItem {
   id: number;
@@ -110,7 +111,22 @@ export function CitySelectorDropdown({ selectedCityName, onSelectCity, className
   }, []);
 
   const dispatch = useAppDispatch();
-  const popularCities = useAppSelector((state) => state.locations?.popularCities || DEFAULT_POPULAR_CITIES);
+  const country = useCountry();
+  const indiaPopular = useAppSelector((state) => state.locations?.popularCities || DEFAULT_POPULAR_CITIES);
+  // India keeps its live API list; other countries use their curated list from config/countries.ts.
+  const popularCities = React.useMemo<CityItem[]>(
+    () =>
+      country.code === "IN"
+        ? indiaPopular
+        : country.popularCities.map((name, i) => ({
+            id: -(i + 1),
+            name,
+            slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+            state: country.name,
+            isPopular: true,
+          })),
+    [country, indiaPopular],
+  );
 
   // 1. Fetch live popular cities via Redux Toolkit (non-paginated API call with deduplication)
   React.useEffect(() => {
@@ -127,7 +143,7 @@ export function CitySelectorDropdown({ selectedCityName, onSelectCity, className
 
   // 3. Search cities via RTK Query (skipped when search query is empty)
   const { data: rawSearchResults } = useGetCitiesQuery(
-    { search: debouncedSearch, limit: 20 },
+    { search: debouncedSearch, limit: 20, country: country.code },
     { skip: !debouncedSearch }
   );
 
@@ -292,7 +308,7 @@ export function CitySelectorDropdown({ selectedCityName, onSelectCity, className
                 <div>
                   <p className="mb-1.5 flex items-center gap-1 px-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                     <Sparkles className="h-3 w-3 text-amber-500" />
-                    Popular Indian Cities
+                    Popular cities in {country.name}
                   </p>
                   <div className="grid grid-cols-2 gap-1.5">
                     {popularCities.map((c) => {

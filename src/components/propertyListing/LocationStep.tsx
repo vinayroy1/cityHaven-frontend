@@ -10,6 +10,7 @@ import {
   type AwasioSuggestion,
 } from "@/lib/awasioSuggestions";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
+import { COUNTRY_LIST, getCountry } from "@/config/countries";
 import { errorText, fieldLabel } from "./theme";
 import { SearchableSelect } from "./SearchableSelect";
 import { PropertyListingCitySelector, type CitySelection } from "./PropertyListingCitySelector";
@@ -138,6 +139,10 @@ export function LocationStep() {
   const form = useFormContext<PropertyListingFormValues>();
   const errors = form.formState.errors.location ?? {};
 
+  const countryCode = (form.watch("location.countryCode") || "IN").toUpperCase();
+  const country = getCountry(countryCode);
+  const isIndia = country.code === "IN";
+  const geoCountry = `&country=${country.code.toLowerCase()}`;
   const [selectedState, setSelectedState] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>(form.getValues("location.cityName") ?? "");
   const [selectedLocality, setSelectedLocality] = useState<string>(form.getValues("location.locality") ?? "");
@@ -215,7 +220,7 @@ export function LocationStep() {
 
       const timer = setTimeout(async () => {
         try {
-          const res = await fetch(`/api/google/nearby-landmarks?lat=${latNum}&lng=${lngNum}&locality=${encodeURIComponent(localityClean)}&city=${encodeURIComponent(watchedCity?.trim() || "")}`, {
+          const res = await fetch(`/api/google/nearby-landmarks?lat=${latNum}&lng=${lngNum}&locality=${encodeURIComponent(localityClean)}&city=${encodeURIComponent(watchedCity?.trim() || "")}${geoCountry}`, {
             cache: "no-store",
           });
           if (reqSeq !== landmarkReqSeqRef.current) return;
@@ -271,7 +276,7 @@ export function LocationStep() {
     const timer = setTimeout(async () => {
       try {
         const res = await fetch(
-          `/api/google/nearby-landmarks?address=${encodeURIComponent(targetAddress)}&locality=${encodeURIComponent(localityClean)}&city=${encodeURIComponent(watchedCity?.trim() || "")}`,
+          `/api/google/nearby-landmarks?address=${encodeURIComponent(targetAddress)}&locality=${encodeURIComponent(localityClean)}&city=${encodeURIComponent(watchedCity?.trim() || "")}${geoCountry}`,
           { cache: "no-store" }
         );
         if (reqSeq !== landmarkReqSeqRef.current) return;
@@ -335,13 +340,17 @@ export function LocationStep() {
   ]);
 
   // States list from standard 36 Indian states and UTs
-  const statesList = useMemo(() => INDIAN_STATES_AND_UTS, []);
+  const countryOptions = useMemo(
+    () => COUNTRY_LIST.map((c) => ({ value: c.code, label: `${c.flag} ${c.name}`, badge: c.currency })),
+    [],
+  );
+  const statesList = useMemo(() => (isIndia ? INDIAN_STATES_AND_UTS : country.regions ?? []), [isIndia, country]);
 
   // Sync state if city is pre-filled on initial edit
   useEffect(() => {
     if (selectedCity && !selectedState) {
       let isMounted = true;
-      void fetchAwasioSuggestions(selectedCity, { types: ["CITY"], limit: 1 }).then((res) => {
+      void fetchAwasioSuggestions(selectedCity, { types: ["CITY"], limit: 1, country: countryCode }).then((res) => {
         if (!isMounted) return;
         const matched = res.data?.[0]?.location?.state;
         if (matched) setSelectedState(matched);
@@ -350,7 +359,7 @@ export function LocationStep() {
         isMounted = false;
       };
     }
-  }, [selectedCity, selectedState]);
+  }, [selectedCity, selectedState, countryCode]);
 
   // MULTI-TIER AUTO-PINCODE & GEOLOCATION (LAT/LNG) ENGINE
   const fallbackToCityDefaults = async (cityName: string) => {
@@ -377,7 +386,7 @@ export function LocationStep() {
     if (!cityTarget) return;
 
     try {
-      const gRes = await fetch(`/api/google/nearby-landmarks?address=${encodeURIComponent(cityTarget)}`);
+      const gRes = await fetch(`/api/google/nearby-landmarks?address=${encodeURIComponent(cityTarget)}${geoCountry}`);
       if (currentSeq !== localityReqSeqRef.current) return;
       if (gRes.ok) {
         const gData = await gRes.json();
@@ -424,7 +433,7 @@ export function LocationStep() {
     const searchTarget = [localityName, cityName, selectedState].filter(Boolean).join(", ").trim();
     if (searchTarget) {
       try {
-        const gRes = await fetch(`/api/google/nearby-landmarks?address=${encodeURIComponent(searchTarget)}`);
+        const gRes = await fetch(`/api/google/nearby-landmarks?address=${encodeURIComponent(searchTarget)}${geoCountry}`);
         if (currentSeq !== localityReqSeqRef.current) return;
         if (gRes.ok) {
           const gData = await gRes.json();
@@ -450,7 +459,7 @@ export function LocationStep() {
 
       // Tier 3: Dynamic Geocode Lookup via Awasio suggestions engine
       try {
-        const res = await fetchAwasioSuggestions(searchTarget, { limit: 1 });
+        const res = await fetchAwasioSuggestions(searchTarget, { limit: 1, country: countryCode });
         if (currentSeq !== localityReqSeqRef.current) return;
         const first = res.data?.[0];
         if (first?.location?.lat != null && first?.location?.lng != null) {
@@ -640,6 +649,31 @@ export function LocationStep() {
     updateFormattedAddress(newCityName, "", cityData.state || selectedState);
   };
 
+  /** Switching country clears everything address-related: cities, regions and pincodes differ. */
+  const handleCountryChange = (code: string) => {
+    if (code === countryCode) return;
+    localityReqSeqRef.current++;
+    landmarkReqSeqRef.current++;
+    form.setValue("location.countryCode", code, { shouldDirty: true });
+    setSelectedState("");
+    setSelectedCity("");
+    setSelectedLocality("");
+    setIsCustomLocalityMode(false);
+    setCustomLocalityInput("");
+    form.setValue("location.cityName", "");
+    form.setValue("location.locality", "");
+    form.setValue("location.pincode", "");
+    form.setValue("location.latitude", null);
+    form.setValue("location.longitude", null);
+    form.setValue("location.nearbyLandmarks", null, { shouldDirty: false });
+    setGeoStatus(null);
+    setNearbyLandmarks(null);
+    setLoadingLandmarks(false);
+    lastFetchedCoordsRef.current = "";
+    lastGeocodedAddressRef.current = "";
+    updateFormattedAddress("", "", "");
+  };
+
   const handleLocalitySelect = (locData: LocalitySelection) => {
     localityReqSeqRef.current++;
     const locName = locData.name || "";
@@ -701,16 +735,28 @@ export function LocationStep() {
           </span>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* 0. Country — same dropdown as State; India by default, changing it resets the address */}
+          <Field label="Country" required>
+            <SearchableSelect
+              value={country.code}
+              onChange={(val) => handleCountryChange(val || "IN")}
+              options={countryOptions}
+              placeholder="Select Country"
+              searchPlaceholder="Search Country..."
+              emptyMessage="No matching country found"
+            />
+          </Field>
+
           {/* 1. State Dropdown */}
-          <Field label="State / Union Territory">
+          <Field label={isIndia ? "State / Union Territory" : country.regionLabel}>
             <SearchableSelect
               value={selectedState}
               onChange={handleStateChange}
               options={statesList}
-              placeholder="Select State / UT"
-              searchPlaceholder="Search State / Union Territory..."
-              emptyMessage="No matching state found"
+              placeholder={isIndia ? "Select State / UT" : `Select ${country.regionLabel}`}
+              searchPlaceholder={isIndia ? "Search State / Union Territory..." : `Search ${country.regionLabel}...`}
+              emptyMessage={isIndia ? "No matching state found" : `No matching ${country.regionLabel.toLowerCase()} found`}
             />
           </Field>
 
@@ -719,6 +765,7 @@ export function LocationStep() {
             <PropertyListingCitySelector
               value={selectedCity}
               selectedState={selectedState}
+              countryCode={country.code}
               onChange={handleCitySelect}
               hasError={Boolean(errors.cityName)}
             />
@@ -730,11 +777,18 @@ export function LocationStep() {
               value={selectedLocality}
               cityName={selectedCity}
               selectedState={selectedState}
+              countryCode={country.code}
               onChange={handleLocalitySelect}
               hasError={Boolean(errors.locality)}
             />
           </Field>
         </div>
+
+        {!isIndia && (
+          <p className="text-[11px] text-slate-500">
+            Prices will be in {country.currency} ({country.currencySymbol}). Owner phone uses {country.phoneCode}.
+          </p>
+        )}
 
         {/* Custom Locality Fallback if custom mode selected or typed */}
         {isCustomLocalityMode && (
@@ -817,10 +871,10 @@ export function LocationStep() {
         <Field label="Sub-locality / Pocket">
           <Input {...form.register("location.subLocality")} placeholder="e.g. Pocket B, Phase 2" />
         </Field>
-        <Field label="Pincode">
+        <Field label={country.postalLabel}>
           <Input
             {...form.register("location.pincode")}
-            placeholder="110001"
+            placeholder={isIndia ? "110001" : ""}
             inputMode="numeric"
           />
         </Field>

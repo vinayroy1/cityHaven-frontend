@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Check, Home, MapPin, Video, X } from "lucide-react";
 import type { CustomStepProps } from "@/lib/listingEngine/types";
 import type { ConsultationOption, InteriorWizardValues } from "@/types/interior.types";
-import { getAt, inputCls, newId, propPath, setPath, toNum, Toggle } from "./ui";
+import { getAt, inputCls, newId, propPath, setPath, toNum, Toggle, wizardSymbol } from "./ui";
 import { cn } from "@/lib/utils";
 
 type Mode = Exclude<ConsultationOption["type"], "">;
@@ -138,7 +138,7 @@ export default function ConsultationPicker({ values, form, props }: CustomStepPr
                 <div className="grid gap-3 sm:grid-cols-2">
                   {!r.isFree && (
                     <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">
-                      Fee (₹)
+                      Fee ({wizardSymbol(values)})
                       <input
                         inputMode="numeric"
                         className={cn(inputCls, "mt-1")}

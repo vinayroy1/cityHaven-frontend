@@ -78,7 +78,7 @@ export function Chips({ items, tone = "stone" }: { items: string[]; tone?: "ston
 
 export function startingPriceLabel(p: InteriorProfile) {
   if (p.isCustomQuotationOnly || (p.startingRateMin == null && p.startingRateMax == null)) return "";
-  return `${inr(p.startingRateMin ?? p.startingRateMax)}${unitLabel(p.pricingUnit)}`;
+  return `${inr(p.startingRateMin ?? p.startingRateMax, p.countryCode)}${unitLabel(p.pricingUnit)}`;
 }
 
 export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; onQuote: () => void }) {
@@ -301,7 +301,7 @@ export function consultationSummary(p: InteriorProfile) {
   const opt = p.consultationOptions?.find((o) => o.type);
   if (opt) {
     const mode = humanize(opt.type).replace("In Person", "In-person");
-    return opt.isFree || !opt.fee ? `Free ${mode.toLowerCase()} consultation` : `${mode} consultation · ${inr(opt.fee)}`;
+    return opt.isFree || !opt.fee ? `Free ${mode.toLowerCase()} consultation` : `${mode} consultation · ${inr(opt.fee, p.countryCode)}`;
   }
   return p.consultationType ? humanize(p.consultationType) : "";
 }
@@ -320,7 +320,7 @@ export function EnquiryCard({ profile, onQuote }: { profile: InteriorProfile; on
       <p className="text-2xl font-extrabold text-slate-900 dark:text-white">{price || "Custom quote"}</p>
       {price && profile.startingRateMax && profile.startingRateMin && profile.startingRateMax > profile.startingRateMin && (
         <p className="text-xs text-slate-500">
-          Range {priceRange(profile.startingRateMin, profile.startingRateMax, profile.pricingUnit)}
+          Range {priceRange(profile.startingRateMin, profile.startingRateMax, profile.pricingUnit, profile.countryCode)}
         </p>
       )}
 

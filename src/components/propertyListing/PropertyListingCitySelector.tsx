@@ -20,6 +20,8 @@ export interface CitySelection {
 interface Props {
   value: string;
   selectedState?: string;
+  /** ISO country; cities are limited to it. India keeps the old "Delhi" default list. */
+  countryCode?: string;
   onChange: (city: CitySelection) => void;
   hasError?: boolean;
   placeholder?: string;
@@ -28,6 +30,7 @@ interface Props {
 export function PropertyListingCitySelector({
   value,
   selectedState,
+  countryCode = "IN",
   onChange,
   hasError = false,
   placeholder,
@@ -44,6 +47,9 @@ export function PropertyListingCitySelector({
   const [loadingMore, setLoadingMore] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const isIndia = countryCode === "IN";
+  // Outside India the region list is short, so browse every city of the country instead.
+  const defaultQuery = isIndia ? "Delhi" : "all";
 
   // On small screens the list can open under the bottom nav: scroll the field up so it fits.
   useEffect(() => {
@@ -66,8 +72,9 @@ export function PropertyListingCitySelector({
 
     const fetchInitial = async () => {
       try {
-        const res = await fetchAwasioSuggestions(query || "Delhi", {
+        const res = await fetchAwasioSuggestions(query || defaultQuery, {
           state: selectedState?.trim() || undefined,
+          country: countryCode,
           types: ["CITY"],
           page: 1,
           pageSize: PAGE_SIZE,
@@ -115,7 +122,7 @@ export function PropertyListingCitySelector({
     return () => {
       cancelled = true;
     };
-  }, [selectedState]);
+  }, [selectedState, countryCode, defaultQuery]);
 
   // 2. Search cities with debounce
   useEffect(() => {
@@ -138,6 +145,7 @@ export function PropertyListingCitySelector({
       try {
         const res = await fetchAwasioSuggestions(trimmed, {
           state: selectedState?.trim() || undefined,
+          country: countryCode,
           types: ["CITY"],
           page: 1,
           pageSize: PAGE_SIZE,
@@ -166,7 +174,7 @@ export function PropertyListingCitySelector({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [search, isOpen, prefetchedCities, prefetchedHasMore, prefetchedPage, selectedState]);
+  }, [search, isOpen, prefetchedCities, prefetchedHasMore, prefetchedPage, selectedState, countryCode]);
 
   // 3. Load more cities on scroll (Pagination)
   const loadMoreCities = async () => {
@@ -174,12 +182,13 @@ export function PropertyListingCitySelector({
 
     setLoadingMore(true);
     const trimmed = search.trim();
-    const query = trimmed || selectedState?.trim() || "Delhi";
+    const query = trimmed || (isIndia ? selectedState?.trim() : "") || defaultQuery;
     const currentPage = page;
 
     try {
       const res = await fetchAwasioSuggestions(query, {
         state: selectedState?.trim() || undefined,
+        country: countryCode,
         types: ["CITY"],
         page: currentPage,
         pageSize: PAGE_SIZE,

@@ -47,6 +47,7 @@ import { SeekerAvatarPlaceholder } from "@/components/flatmates/SeekerAvatarPlac
 import { isRealUserPhoto } from "@/components/flatmates/FlatmateCard";
 import { NearbyLandmarksCompact } from "@/components/nearby/NearbyLandmarksCompact";
 import { ResponseBadge } from "@/components/leads/ResponseBadge";
+import { formatMoney as fm } from "@/lib/money";
 
 const FlatmateContactModal = dynamic(
   () => import("@/components/flatmates/FlatmateContactModal").then((mod) => mod.FlatmateContactModal),
@@ -128,12 +129,12 @@ export default function FlatmateDetailPage() {
 
   const formattedRent = () => {
     if (listing.mode === "HAVE_ROOM") {
-      return listing.rent != null ? `₹${listing.rent.toLocaleString("en-IN")}` : "Rent on Request";
+      return listing.rent != null ? `${fm(listing.rent, listing.countryCode)}` : "Rent on Request";
     }
     if (listing.budgetMin != null && listing.budgetMax != null) {
-      return `₹${listing.budgetMin.toLocaleString("en-IN")} - ₹${listing.budgetMax.toLocaleString("en-IN")}`;
+      return `${fm(listing.budgetMin, listing.countryCode)} - ${fm(listing.budgetMax, listing.countryCode)}`;
     }
-    return listing.budgetMax != null ? `Up to ₹${listing.budgetMax.toLocaleString("en-IN")}` : "Flexible";
+    return listing.budgetMax != null ? `Up to ${fm(listing.budgetMax, listing.countryCode)}` : "Flexible";
   };
 
   const isSeekerOrBuddy = listing.mode === "NEED_ROOM" || listing.mode === "BUDDY_UP";
@@ -709,7 +710,7 @@ export default function FlatmateDetailPage() {
                         <div className="space-y-0.5">
                           <span className="text-[11px] text-slate-500 dark:text-slate-400">Security Deposit</span>
                           <p className="text-sm font-bold text-slate-900 dark:text-white">
-                            ₹{listing.deposit.toLocaleString("en-IN")}
+                            {fm(listing.deposit, listing.countryCode)}
                           </p>
                         </div>
                       )}
@@ -780,7 +781,7 @@ export default function FlatmateDetailPage() {
                   </div>
                   {listing.mode === "HAVE_ROOM" && listing.maintenance != null && (
                     <span className="text-[11px] text-slate-400 block">
-                      + ₹{listing.maintenance.toLocaleString("en-IN")}/mo maintenance
+                      + {fm(listing.maintenance, listing.countryCode)}/mo maintenance
                     </span>
                   )}
                 </div>

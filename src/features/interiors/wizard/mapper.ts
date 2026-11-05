@@ -145,6 +145,7 @@ export function formToProfilePayload(section: InteriorWizardSection, values: Int
     case "location": {
       const l = values.location;
       return asPayload({
+        countryCode: l.countryCode || "IN",
         primaryCity: l.primaryCity,
         primaryState: l.primaryState,
         primaryLocality: l.primaryLocality,
@@ -539,6 +540,7 @@ export function profileToForm(profile: Partial<InteriorProfile> | null | undefin
   };
 
   v.location = {
+    countryCode: str(p.countryCode) || "IN",
     primaryCity: str(p.primaryCity),
     primaryState: str(p.primaryState),
     primaryLocality: str(p.primaryLocality),

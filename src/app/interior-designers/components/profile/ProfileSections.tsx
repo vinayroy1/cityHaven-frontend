@@ -223,7 +223,7 @@ export function AreasSection({ profile }: { profile: InteriorProfile }) {
 
 /* ---------------------------- Pricing & packages -------------------------- */
 
-const pkgPrice = (p: InteriorPackage) => priceRange(p.priceMin, p.priceMax, p.pricingUnit) || "On request";
+const pkgPrice = (p: InteriorPackage, cc?: string | null) => priceRange(p.priceMin, p.priceMax, p.pricingUnit, cc) || "On request";
 
 const pkgSpec = (p: InteriorPackage, cat: MaterialCategory, legacy?: string | null) => {
   const rows = (p.materialSpecs ?? []).filter((s) => s.category === cat);
@@ -260,7 +260,7 @@ export function PricingSection({ profile, onQuote }: { profile: InteriorProfile;
   ].filter(Boolean) as string[];
 
   const allRows: { label: string; get: (p: InteriorPackage) => string }[] = [
-    { label: "Price", get: pkgPrice },
+    { label: "Price", get: (pk: InteriorPackage) => pkgPrice(pk, profile.countryCode) },
     { label: "Best for", get: (p) => nonEmpty(p.applicableBhk?.length ? p.applicableBhk : p.applicablePropertyTypes).join(", ") },
     { label: "Board / ply", get: (p) => pkgSpec(p, "BOARD", p.boardMaterialAndBrand) },
     { label: "Finish", get: (p) => pkgSpec(p, "SURFACE_FINISH", p.finishAndBrand) },
@@ -283,7 +283,7 @@ export function PricingSection({ profile, onQuote }: { profile: InteriorProfile;
           <p className="text-2xl font-extrabold text-slate-900 dark:text-white">
             {profile.isCustomQuotationOnly || profile.startingRateMin == null
               ? "Custom quote"
-              : priceRange(profile.startingRateMin, profile.startingRateMax, profile.pricingUnit)}
+              : priceRange(profile.startingRateMin, profile.startingRateMax, profile.pricingUnit, profile.countryCode)}
           </p>
           {included.length > 0 && !profile.isCustomQuotationOnly && (
             <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
@@ -364,7 +364,7 @@ export function PricingSection({ profile, onQuote }: { profile: InteriorProfile;
             {rooms.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">
                 <span className="font-medium text-slate-800 dark:text-slate-200">{r.customLabel || humanize(r.room)}</span>
-                <span className="font-semibold text-slate-900 dark:text-white">{priceRange(r.priceMin, r.priceMax, r.unit)}</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{priceRange(r.priceMin, r.priceMax, r.unit, profile.countryCode)}</span>
               </li>
             ))}
           </ul>

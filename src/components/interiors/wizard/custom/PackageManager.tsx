@@ -40,6 +40,7 @@ import {
   setPath,
   toNum,
 } from "./ui";
+import { getCountry } from "@/config/countries";
 
 const TIER_ICON = { Essential: Sparkles, Premium: Gem, Luxury: Crown } as Record<string, typeof Sparkles>;
 const TIER_BLURB: Record<string, string> = {
@@ -48,10 +49,10 @@ const TIER_BLURB: Record<string, string> = {
   Luxury: "Top-end: BWP board, PU finish, premium imported hardware.",
 };
 
-function priceSummary(t: TableModel) {
-  if (t.perSqft != null) return `${formatINR(t.perSqft)}/sq.ft`;
+function priceSummary(t: TableModel, cc?: string | null) {
+  if (t.perSqft != null) return `${formatINR(t.perSqft, cc)}/sq.ft`;
   const b = BHKS.find((x) => t.fromBhk[x] != null);
-  return b ? `${b} from ${formatINR(t.fromBhk[b])}` : "On request";
+  return b ? `${b} from ${formatINR(t.fromBhk[b], cc)}` : "On request";
 }
 
 export default function PackageManager({ values, form, props, mode }: CustomStepProps<InteriorWizardValues>) {
@@ -135,7 +136,7 @@ export default function PackageManager({ values, form, props, mode }: CustomStep
               </div>
               <div>
                 <p className="font-semibold text-slate-900 dark:text-white">{name}</p>
-                <p className="text-xs text-slate-500">{pkg && t ? `${t.board || "—"} · ${t.finish || "—"} · ${priceSummary(t)}` : TIER_BLURB[name]}</p>
+                <p className="text-xs text-slate-500">{pkg && t ? `${t.board || "—"} · ${t.finish || "—"} · ${priceSummary(t, values.location?.countryCode)}` : TIER_BLURB[name]}</p>
               </div>
               <div className="mt-auto flex flex-wrap gap-2">
                 {pkg ? (
@@ -178,7 +179,7 @@ export default function PackageManager({ values, form, props, mode }: CustomStep
               <li key={p.id} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">{p.packageName || "Untitled package"}</p>
-                  <p className="text-xs text-slate-500">{p.packageCategory} · {priceSummary(t)}</p>
+                  <p className="text-xs text-slate-500">{p.packageCategory} · {priceSummary(t, values.location?.countryCode)}</p>
                 </div>
                 {!p.isActive && <StatusBadge tone="slate">Off</StatusBadge>}
                 <button type="button" aria-label={`Edit ${p.packageName}`} className={ghostIconBtn} onClick={() => setEditing(p)}><Pencil className="size-4" /></button>
@@ -190,7 +191,7 @@ export default function PackageManager({ values, form, props, mode }: CustomStep
         </ul>
       )}
 
-      {active.length > 0 && <ComparisonTable packages={active} updatedAt={updatedAt} />}
+      {active.length > 0 && <ComparisonTable packages={active} updatedAt={updatedAt} countryCode={values.location?.countryCode} />}
       {mode === "wizard" && packages.length === 0 && (
         <p className="text-sm text-slate-500">Tip: turning on one tier is enough to go live. You can add the others later.</p>
       )}
@@ -198,6 +199,7 @@ export default function PackageManager({ values, form, props, mode }: CustomStep
       {editing && (
         <PackageEditor
           key={editing.id}
+          countryCode={values.location?.countryCode}
           pkg={editing}
           quoteOnly={quoteOnly}
           saving={saving}
@@ -214,7 +216,8 @@ export default function PackageManager({ values, form, props, mode }: CustomStep
   );
 }
 
-function ComparisonTable({ packages, updatedAt }: { packages: InteriorPackageDraft[]; updatedAt: (p: InteriorPackageDraft) => Date | null }) {
+function ComparisonTable({ packages, updatedAt, countryCode }: { packages: InteriorPackageDraft[]; updatedAt: (p: InteriorPackageDraft) => Date | null; countryCode?: string | null }) {
+  const sym = getCountry(countryCode).currencySymbol;
   const cols = packages.map((p) => ({ p, t: toTable(p) }));
   const rows: [string, (t: TableModel) => string][] = [
     ["Core board", (t) => t.board],
@@ -223,8 +226,8 @@ function ComparisonTable({ packages, updatedAt }: { packages: InteriorPackageDra
     ["Paint", (t) => t.paint],
     ["Furnishings", (t) => t.furnishing],
     ["Warranty", (t) => (t.warrantyYears != null ? `${t.warrantyYears} yrs woodwork` : "")],
-    ["₹ per sq.ft", (t) => (t.perSqft != null ? formatINR(t.perSqft) : "")],
-    ...BHKS.map((b) => [`${b} from`, (t: TableModel) => (t.fromBhk[b] != null ? formatINR(t.fromBhk[b]) : "")] as [string, (t: TableModel) => string]),
+    [`${sym} per sq.ft`, (t) => (t.perSqft != null ? formatINR(t.perSqft, countryCode) : "")],
+    ...BHKS.map((b) => [`${b} from`, (t: TableModel) => (t.fromBhk[b] != null ? formatINR(t.fromBhk[b], countryCode) : "")] as [string, (t: TableModel) => string]),
     ["Quote valid", (t) => (t.validityDays ? `${t.validityDays} days` : "")],
   ];
   const latest = cols.map((c) => updatedAt(c.p)).filter((d): d is Date => !!d).sort((a, b) => b.getTime() - a.getTime())[0];
@@ -268,7 +271,9 @@ function PackageEditor({
   onClose,
   onSave,
   onDelete,
+  countryCode,
 }: {
+  countryCode?: string | null;
   pkg: InteriorPackageDraft;
   quoteOnly: boolean;
   saving: boolean;
@@ -277,6 +282,7 @@ function PackageEditor({
   onSave: (p: InteriorPackageDraft) => void;
   onDelete?: () => void;
 }) {
+  const sym = getCountry(countryCode).currencySymbol;
   const locked = isPresetTier(pkg.packageName);
   const [name, setName] = useState(pkg.packageName);
   const [category, setCategory] = useState(pkg.packageCategory || "Full Home");
@@ -353,12 +359,12 @@ function PackageEditor({
 
       <div className="space-y-3 rounded-2xl bg-slate-50 p-4 dark:bg-slate-900">
         <p className="text-sm font-semibold">Price {quoteOnly && <span className="font-normal text-slate-500">(optional — you show quotes only)</span>}</p>
-        <Field label="₹ per sq.ft">
+        <Field label={`${sym} per sq.ft`}>
           {(id) => <input id={id} inputMode="numeric" className={inputCls} placeholder="e.g. 1450" value={t.perSqft ?? ""} onChange={(e) => set("perSqft", toNum(e.target.value))} />}
         </Field>
         <div className="grid grid-cols-3 gap-2">
           {BHKS.map((b) => (
-            <Field key={b} label={`${b} from ₹`}>
+            <Field key={b} label={`${b} from ${sym}`}>
               {(id) => (
                 <input id={id} inputMode="numeric" className={inputCls} placeholder="e.g. 450000" value={t.fromBhk[b] ?? ""} onChange={(e) => set("fromBhk", { ...t.fromBhk, [b]: toNum(e.target.value) })} />
               )}

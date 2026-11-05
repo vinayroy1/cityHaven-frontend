@@ -43,7 +43,7 @@ async function getInitialFreshListings(): Promise<PropertySearchItem[]> {
   }
   try {
     const endpoint = toInternalApiUrl(
-      `${API_ENDPOINTS.propertyListing.search}?listingType=SELL&pageSize=8&sort=newest`
+      `${API_ENDPOINTS.propertyListing.search}?listingType=SELL&pageSize=8&sort=newest&countryCode=IN`
     );
     const res = await fetch(endpoint, { next: { revalidate: 60 } });
     if (!res.ok) return cachedFreshListings ?? [];

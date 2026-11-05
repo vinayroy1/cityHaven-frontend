@@ -51,6 +51,7 @@ import { CreditBoostButton } from "@/components/billing/CreditBoostButton";
 import { BackButton } from "@/components/common/BackButton";
 
 import { APP_CONFIG } from "@/constants/app-config";
+import { formatMoneyShort } from "@/lib/money";
 
 type ListingStatus = "ACTIVE" | "INACTIVE" | "DRAFT" | "UNDER_REVIEW" | "REJECTED" | string;
 
@@ -95,10 +96,12 @@ const statusConfig: Record<
   },
 };
 
-function formatPrice(val?: number | string | null): string {
+function formatPrice(val?: number | string | null, currency?: string | null): string {
   if (!val) return "Price on request";
   const num = typeof val === "string" ? parseFloat(val) : val;
   if (isNaN(num)) return "Price on request";
+  // India keeps this page's historical "Lac" wording; other currencies use the shared formatter.
+  if (currency && currency !== "INR") return formatMoneyShort(num, currency, { decimals: "trim" });
   if (num >= 10000000) return `₹${(num / 10000000).toFixed(2).replace(/\.00$/, "")} Cr`;
   if (num >= 100000) return `₹${(num / 100000).toFixed(2).replace(/\.00$/, "")} Lac`;
   return `₹${num.toLocaleString("en-IN")}`;
@@ -701,7 +704,7 @@ function PropertiesContent() {
                         </p>
                       )}
 
-                      <p className="mt-1.5 text-base font-extrabold text-slate-900 dark:text-white">{formatPrice(item.price)}</p>
+                      <p className="mt-1.5 text-base font-extrabold text-slate-900 dark:text-white">{formatPrice(item.price, (item as { currencyCode?: string | null }).currencyCode)}</p>
 
                       {/* Key Specs */}
                       <div className="mt-2 flex items-center gap-2 overflow-hidden rounded-lg bg-slate-50 px-2 py-1.5 text-[11px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
@@ -876,7 +879,7 @@ function PropertiesContent() {
                           <td className="px-4 py-3.5 text-xs text-slate-600 dark:text-slate-400">
                             {[item.locality, item.cityName].filter(Boolean).join(", ") || "—"}
                           </td>
-                          <td className="px-4 py-3.5 font-bold text-slate-900 dark:text-white">{formatPrice(item.price)}</td>
+                          <td className="px-4 py-3.5 font-bold text-slate-900 dark:text-white">{formatPrice(item.price, (item as { currencyCode?: string | null }).currencyCode)}</td>
                           <td className="px-4 py-3.5">
                             <span
                               className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold ${cfg.bg} ${cfg.text} ${cfg.border}`}

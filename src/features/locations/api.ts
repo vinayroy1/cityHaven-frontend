@@ -9,6 +9,8 @@ export interface GetCitiesParams {
   popular?: boolean;
   search?: string;
   limit?: number;
+  /** ISO country filter (portal country). */
+  country?: string;
 }
 
 export interface CitiesApiResponse {
@@ -29,6 +31,7 @@ export const locationsApi = createApi({
         if (params?.popular !== undefined) queryParams.set("popular", String(params.popular));
         if (params?.search) queryParams.set("search", params.search);
         if (params?.limit) queryParams.set("limit", String(params.limit));
+        if (params?.country) queryParams.set("country", params.country);
         const qs = queryParams.toString();
         return `${API_ENDPOINTS.locations.cities}${qs ? `?${qs}` : ""}`;
       },

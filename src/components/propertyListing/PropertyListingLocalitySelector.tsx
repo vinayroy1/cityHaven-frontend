@@ -25,6 +25,8 @@ interface Props {
   value?: string;
   cityName: string;
   selectedState?: string;
+  /** ISO country so same-named cities (Lalitpur IN vs NP) don't mix. */
+  countryCode?: string;
   onChange?: (loc: LocalitySelection) => void;
   hasError?: boolean;
   placeholder?: string;
@@ -38,6 +40,7 @@ export function PropertyListingLocalitySelector({
   value = "",
   cityName,
   selectedState,
+  countryCode = "IN",
   onChange = () => {},
   hasError = false,
   placeholder,
@@ -94,6 +97,7 @@ export function PropertyListingLocalitySelector({
         const res = await fetchAwasioSuggestions(cleanCity, {
           city: cleanCity,
           state: selectedState?.trim() || undefined,
+          country: countryCode,
           types: ["LOCALITY"],
           page: 1,
           pageSize: LOCALITY_PAGE_SIZE,
@@ -133,7 +137,7 @@ export function PropertyListingLocalitySelector({
     return () => {
       cancelled = true;
     };
-  }, [cityName, selectedState]);
+  }, [cityName, selectedState, countryCode]);
 
   // 2. Debounced search when user types in locality field
   useEffect(() => {
@@ -157,6 +161,7 @@ export function PropertyListingLocalitySelector({
         const res = await fetchAwasioSuggestions(trimmed, {
           city: cityName.trim(),
           state: selectedState?.trim() || undefined,
+          country: countryCode,
           types: ["LOCALITY"],
           page: 1,
           pageSize: LOCALITY_PAGE_SIZE,
@@ -186,7 +191,7 @@ export function PropertyListingLocalitySelector({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [search, isOpen, isCitySelected, cityName, selectedState, prefetchedLocalities, prefetchedHasMore, prefetchedPage]);
+  }, [search, isOpen, isCitySelected, cityName, selectedState, countryCode, prefetchedLocalities, prefetchedHasMore, prefetchedPage]);
 
   // 3. Infinite scroll pagination for localities
   const loadMoreLocalities = async () => {
@@ -201,6 +206,7 @@ export function PropertyListingLocalitySelector({
       const res = await fetchAwasioSuggestions(query, {
         city: cityName.trim(),
         state: selectedState?.trim() || undefined,
+          country: countryCode,
         types: ["LOCALITY"],
         page: currentPage,
         pageSize: LOCALITY_PAGE_SIZE,

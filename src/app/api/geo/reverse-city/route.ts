@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
           city: data.data.name,
           locality: data.data.locality || data.data.name,
           state: data.data.state || "",
+          countryCode: data.data.countryCode || "IN",
           pincode: "",
           source: "backend_db",
           distanceKm: data.data.distance_km ?? 0,

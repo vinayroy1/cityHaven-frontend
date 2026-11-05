@@ -13,6 +13,8 @@ import { useIsMobile } from "@/components/ui/use-mobile";
 import { useInteriorUpload, type InteriorUploadSubFolder } from "@/features/interiors/upload";
 import { cn } from "@/lib/utils";
 import type { InteriorWizardValues } from "@/types/interior.types";
+import { formatMoney } from "@/lib/money";
+import { getCountry } from "@/config/countries";
 
 export const inputCls =
   "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:focus:ring-slate-800";
@@ -52,8 +54,13 @@ export const toNum = (raw: string): number | null => {
   return Number.isFinite(n) ? n : null;
 };
 
-export const formatINR = (n: number | null | undefined) =>
-  n == null ? "" : `₹${Math.round(n).toLocaleString("en-IN")}`;
+/** Amount in the listing country's currency (India output unchanged). */
+export const formatINR = (n: number | null | undefined, countryCode?: string | null) =>
+  n == null ? "" : formatMoney(Math.round(n), countryCode || "IN");
+
+/** Currency symbol of the wizard's business country. */
+export const wizardSymbol = (values: { location?: { countryCode?: string } } | null | undefined) =>
+  getCountry(values?.location?.countryCode).currencySymbol;
 
 export function Field({
   label,
@@ -592,8 +599,8 @@ export function moveItem<T>(arr: T[], from: number, to: number): T[] {
   return next;
 }
 
-export const formatRange = (min: number | null | undefined, max: number | null | undefined) =>
-  min == null ? "" : max != null && max > min ? `${formatINR(min)} – ${formatINR(max)}` : formatINR(min);
+export const formatRange = (min: number | null | undefined, max: number | null | undefined, countryCode?: string | null) =>
+  min == null ? "" : max != null && max > min ? `${formatINR(min, countryCode)} – ${formatINR(max, countryCode)}` : formatINR(min, countryCode);
 
 export function TextInput({
   label,

@@ -4,6 +4,7 @@
 import type { ReadinessRule } from "@/lib/listingEngine/types";
 import type { InteriorWizardValues } from "@/types/interior.types";
 import { INDIAN_PHONE_REGEX } from "./options";
+import { isValidPhone } from "@/lib/money";
 import { projectImageCount } from "./mapper";
 
 type V = InteriorWizardValues;
@@ -165,6 +166,6 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     label: "Add a valid contact phone",
     levels: ["SUBMIT", "PUBLISH"],
     fieldPath: "contact.phone",
-    check: (v) => INDIAN_PHONE_REGEX.test(normPhone(v.contact.phone)),
+    check: (v) => INDIAN_PHONE_REGEX.test(normPhone(v.contact.phone)) || isValidPhone(v.contact.phone, v.location?.countryCode),
   },
 ];

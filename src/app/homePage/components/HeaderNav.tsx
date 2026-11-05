@@ -38,6 +38,7 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 import { useGetMyCreditsQuery, useGetCreditPlatformConfigQuery } from "@/features/contactVerify/api";
 import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
+import { CountrySwitcher } from "@/components/country/CountrySwitcher";
 import { useMeQuery } from "@/features/auth/api";
 import { useGetLeadInboxSummaryQuery } from "@/features/leads/api";
 
@@ -510,6 +511,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
 
         {/* Right Side CTAs & Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2.5" ref={accountRef}>
+          <CountrySwitcher compact className="hidden lg:block" />
           <Link
             href={isAuthed ? "/propertyListing" : "/login?redirect=/propertyListing"}
             prefetch={false}

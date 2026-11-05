@@ -32,6 +32,7 @@ import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/P
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import type { FlatmateListing, FlatmateListingMode } from "@/types/flatmate.types";
 import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
+import { useCountry } from "@/lib/country/countryStore";
 
 const FilterSheet = dynamic(
   () => import("@/components/search/FilterSheet").then((mod) => mod.FilterSheet),
@@ -151,6 +152,7 @@ export default function FlatmatesDiscoveryPage({
   const bhkValue = refine.bhkTypes?.[0];
   const activeFilterCount = countActiveFilters(filterState);
 
+  const portalCountry = useCountry();
   React.useEffect(() => {
     if (initialCity) return;
     let cancelled = false;
@@ -168,13 +170,19 @@ export default function FlatmatesDiscoveryPage({
       applyDetectedCity(preferredCity);
       return () => { cancelled = true; };
     }
+    // Outside India: open the portal country's main city instead of a geo-detected Indian one.
+    if (portalCountry.code !== "IN") {
+      applyDetectedCity(portalCountry.defaultCity);
+      return () => { cancelled = true; };
+    }
 
     void detectUserLocation().then((profile) => applyDetectedCity(profile.city));
     return () => { cancelled = true; };
-  }, [initialCity, router]);
+  }, [initialCity, router, portalCountry]);
 
   const { data, isLoading, isFetching } = useSearchFlatmatesQuery({
     mode,
+    countryCode: portalCountry.code,
     city: city || undefined,
     locality: localities.length ? localities.join(",") : undefined,
     budgetMin: appliedFilterState.priceMin,

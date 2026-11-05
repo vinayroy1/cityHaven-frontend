@@ -36,6 +36,7 @@ export const createInteriorInitialValues = (): InteriorWizardValues => ({
     youtube: "",
   },
   location: {
+    countryCode: "IN",
     primaryCity: "",
     primaryState: "",
     primaryLocality: "",

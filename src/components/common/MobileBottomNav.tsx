@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
+import { CountrySwitcher } from "@/components/country/CountrySwitcher";
 import { Ruler,
   Home,
   Search,
@@ -403,8 +404,9 @@ export function MobileBottomNav() {
                 {/* Auth / Account Quick Header Card */}
                 {isAuthed ? (
                   <div className="rounded-2xl border border-slate-200/90 bg-gradient-to-br from-slate-50 to-slate-100/60 p-3.5 dark:border-slate-800 dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-900/60">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
+                    {/* Name on top, actions on their own row: three pills never fit beside the name on a phone. */}
+                    <div className="flex flex-col gap-3">
+                      <div className="flex min-w-0 items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full overflow-hidden bg-gradient-to-tr from-rose-600 to-pink-500 text-sm font-bold text-white shadow-sm">
                           {activeProfileImage && !avatarFailed ? (
                             <img
@@ -430,14 +432,14 @@ export function MobileBottomNav() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="grid grid-cols-3 gap-2">
                         <button
                           type="button"
                           onClick={() => {
                             setDrawerOpen(false);
                             setCreditModalOpen(true);
                           }}
-                          className="inline-flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-1 text-xs font-black text-amber-900 shadow-2xs dark:border-amber-700/60 dark:bg-amber-950/40 dark:text-amber-200"
+                          className="inline-flex items-center justify-center gap-1 whitespace-nowrap rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-1 text-xs font-black text-amber-900 shadow-2xs dark:border-amber-700/60 dark:bg-amber-950/40 dark:text-amber-200"
                         >
                           <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                           <span>{creditBalance} Credits</span>
@@ -445,7 +447,7 @@ export function MobileBottomNav() {
                         <Link
                           href="/dashboard/leads"
                           onNavigate={closeAfterNavigation}
-                          className="relative rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-850 dark:text-white"
+                          className="relative rounded-full border border-slate-300 bg-white px-3 py-1 text-center text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-850 dark:text-white"
                         >
                           Leads
                           {newLeads > 0 && (
@@ -457,7 +459,7 @@ export function MobileBottomNav() {
                         <Link
                           href="/dashboard"
                           onNavigate={closeAfterNavigation}
-                          className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-850 dark:text-white"
+                          className="rounded-full border border-slate-300 bg-white px-3 py-1 text-center text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-850 dark:text-white"
                         >
                           Dashboard
                         </Link>
@@ -497,6 +499,14 @@ export function MobileBottomNav() {
                     </div>
                   </div>
                 )}
+
+                {/* Portal country — whole site follows it */}
+                <div>
+                  <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Country
+                  </p>
+                  <CountrySwitcher className="mt-2" />
+                </div>
 
                 {/* Explore Categories */}
                 <div>

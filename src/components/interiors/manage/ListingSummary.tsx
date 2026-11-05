@@ -5,8 +5,9 @@ import type { ReactNode } from "react";
 import { MapPin, Pencil, Phone, Mail, ImageIcon } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
 import { manageHref, type ManageSectionId } from "./sections";
+import { formatMoney } from "@/lib/money";
 
-const inr = (n?: number | null) => (n == null ? "" : `₹${Number(n).toLocaleString("en-IN")}`);
+const fmt = (n: number | null | undefined, cc?: string | null) => (n == null ? "" : formatMoney(Number(n), cc || "IN"));
 const UNIT: Record<string, string> = {
   PER_SQFT: "/sq.ft",
   PER_ROOM: "/room",
@@ -76,7 +77,7 @@ export function ListingSummary({ profile: p }: { profile: InteriorProfile }) {
   const price = p.isCustomQuotationOnly
     ? "Custom quote"
     : p.startingRateMin != null
-      ? `${inr(p.startingRateMin)}${p.startingRateMax ? ` – ${inr(p.startingRateMax)}` : ""}${UNIT[p.pricingUnit] ?? ""}`
+      ? `${fmt(p.startingRateMin, p.countryCode)}${p.startingRateMax ? ` – ${fmt(p.startingRateMax, p.countryCode)}` : ""}${UNIT[p.pricingUnit] ?? ""}`
       : "";
 
   return (
@@ -157,7 +158,7 @@ export function ListingSummary({ profile: p }: { profile: InteriorProfile }) {
                     <li key={pk.id} className="flex justify-between gap-2 text-sm text-slate-700 dark:text-slate-300">
                       <span className="truncate">{pk.packageName}</span>
                       <span className="shrink-0 font-semibold">
-                        {inr(pk.priceMin)}
+                        {fmt(pk.priceMin, p.countryCode)}
                         {UNIT[pk.pricingUnit] ?? ""}
                       </span>
                     </li>

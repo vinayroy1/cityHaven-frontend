@@ -2,7 +2,7 @@
 
 import type { CustomStepProps } from "@/lib/listingEngine/types";
 import type { BranchPricingOverride, InteriorBranchDraft, InteriorWizardValues } from "@/types/interior.types";
-import { Field, getAt, inputCls, propPath, setPath, toNum } from "./ui";
+import { Field, getAt, inputCls, propPath, setPath, toNum, wizardSymbol } from "./ui";
 
 /** Per-branch starting rates for branches flagged "overrides company pricing". */
 export default function BranchPricingOverrides({ values, form, props }: CustomStepProps<InteriorWizardValues>) {
@@ -23,10 +23,10 @@ export default function BranchPricingOverrides({ values, form, props }: CustomSt
         return (
           <li key={b.id} className="grid gap-3 rounded-2xl border border-slate-200 p-4 sm:grid-cols-3 dark:border-slate-700">
             <p className="font-semibold sm:col-span-3">{b.branchName || b.city}</p>
-            <Field label="Starting from ₹">
+            <Field label={`Starting from ${wizardSymbol(values)}`}>
               {(id) => <input id={id} inputMode="numeric" className={inputCls} value={r.startingRateMin ?? ""} onChange={(e) => update(b.serverId!, { startingRateMin: toNum(e.target.value) })} />}
             </Field>
-            <Field label="Up to ₹">
+            <Field label={`Up to ${wizardSymbol(values)}`}>
               {(id) => <input id={id} inputMode="numeric" className={inputCls} value={r.startingRateMax ?? ""} onChange={(e) => update(b.serverId!, { startingRateMax: toNum(e.target.value) })} />}
             </Field>
             <Field label="Unit">

@@ -162,6 +162,7 @@ export function mapApiToForm(flat: Flat): PropertyListingFormValues {
       organizationId: s(flat.organizationId) || s(draftContext?.organizationId),
     },
     location: {
+      countryCode: s(flat.countryCode) || "IN",
       cityId: s(flat.cityId),
       cityName: s(flat.cityName),
       localityId: s(flat.localityId),

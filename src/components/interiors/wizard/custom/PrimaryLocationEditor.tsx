@@ -6,6 +6,8 @@ import type { InteriorWizardValues } from "@/types/interior.types";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { useState } from "react";
+import { getCountry, COUNTRY_LIST } from "@/config/countries";
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import { Chip, Field, Toggle, getAt, inputCls, propPath, setPath } from "./ui";
 
 export default function PrimaryLocationEditor({ values, form, props }: CustomStepProps<InteriorWizardValues>) {
@@ -19,6 +21,16 @@ export default function PrimaryLocationEditor({ values, form, props }: CustomSte
     lng: propPath(props, "lngField", "location.primaryLng"),
     serviceCities: propPath(props, "serviceCitiesField", "location.serviceCities"),
     serviceLocalities: propPath(props, "serviceLocalitiesField", "location.serviceLocalities"),
+  };
+  const country = getCountry(getAt<string>(values, "location.countryCode"));
+  const changeCountry = (code: string) => {
+    if (!code || code === country.code) return;
+    setPath(form, "location.countryCode", code);
+    for (const path of [p.city, p.state, p.locality, p.pincode]) setPath(form, path, "");
+    setPath(form, p.lat, null);
+    setPath(form, p.lng, null);
+    setPath(form, p.serviceCities, []);
+    setPath(form, p.serviceLocalities, []);
   };
   const city = getAt<string>(values, p.city) ?? "";
   const state = getAt<string>(values, p.state) ?? "";
@@ -39,10 +51,23 @@ export default function PrimaryLocationEditor({ values, form, props }: CustomSte
 
   return (
     <div className="space-y-5">
+      <Field label="Country" required hint={country.code !== "IN" ? `Prices on your profile will be in ${country.currency} (${country.currencySymbol}).` : undefined}>
+        {() => (
+          <SearchableSelect
+            value={country.code}
+            onChange={changeCountry}
+            options={COUNTRY_LIST.map((c) => ({ value: c.code, label: `${c.flag} ${c.name}` }))}
+            placeholder="Select Country"
+            searchPlaceholder="Search Country..."
+            emptyMessage="No matching country found"
+          />
+        )}
+      </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={isCompany ? "Head office city" : "City you work from"} required error={errAt(p.city)}>
           {() => (
             <PropertyListingCitySelector
+              countryCode={country.code}
               value={city}
               selectedState={state}
               hasError={!!errAt(p.city)}
@@ -61,6 +86,7 @@ export default function PrimaryLocationEditor({ values, form, props }: CustomSte
         <Field label="Locality" required error={errAt(p.locality)} hint={!city ? "Pick a city first" : undefined}>
           {() => (
             <PropertyListingLocalitySelector
+              countryCode={country.code}
               value={locality}
               cityName={city}
               selectedState={state}
@@ -144,6 +170,7 @@ export default function PrimaryLocationEditor({ values, form, props }: CustomSte
         </div>
         <div className="max-w-sm">
           <PropertyListingCitySelector
+              countryCode={country.code}
             value=""
             placeholder="+ Add another city"
             onChange={(c) => c.name && !serviceCities.includes(c.name) && setPath(form, p.serviceCities, [...serviceCities, c.name])}
@@ -177,6 +204,7 @@ export default function PrimaryLocationEditor({ values, form, props }: CustomSte
                       </div>
                     )}
                     <PropertyListingLocalitySelector
+              countryCode={country.code}
                       cityName={city}
                       selectedState={state}
                       multiple

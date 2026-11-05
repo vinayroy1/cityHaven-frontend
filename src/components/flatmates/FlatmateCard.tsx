@@ -30,6 +30,8 @@ import { Button } from "@/components/ui/button";
 import type { FlatmateListing } from "@/types/flatmate.types";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { SeekerAvatarPlaceholder } from "./SeekerAvatarPlaceholder";
+import { formatMoney as fm } from "@/lib/money";
+import { getCountry } from "@/config/countries";
 
 export const isRealUserPhoto = (url?: string | null): boolean => {
   if (!url) return false;
@@ -135,20 +137,26 @@ export function FlatmateCard({
   const avatarPhoto = hostPhoto || (!isPlaceListing ? roomPhoto : undefined);
   const age = profile?.birthYear ? new Date().getFullYear() - profile.birthYear : undefined;
   const preferredAreas = listing.preferredLocalities?.filter(Boolean).slice(0, 3) || [];
-  const formatMoney = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
+  // Listing's own currency (₹ for India, unchanged output).
+  const formatMoney = (amount: number) => fm(amount, listing.countryCode);
+  const csym = getCountry(listing.countryCode).currencySymbol;
 
   // Short form (₹10k, ₹1.2L) so a budget range fits on one line in narrow cards.
   const compactMoney = (n: number) =>
-    n >= 100_000 ? `₹${(n / 100_000).toFixed(1).replace(/\.0$/, "")}L` : n >= 1000 ? `₹${(n / 1000).toFixed(1).replace(/\.0$/, "")}k` : `₹${n}`;
+    n >= 100_000 && getCountry(listing.countryCode).bigNumbers === "lakh"
+      ? `${csym}${(n / 100_000).toFixed(1).replace(/\.0$/, "")}L`
+      : n >= 1000
+        ? `${csym}${(n / 1000).toFixed(1).replace(/\.0$/, "")}k`
+        : `${csym}${n}`;
 
   const formattedRent = () => {
     if (listing.mode === "HAVE_ROOM") {
-      return listing.rent != null ? `₹${listing.rent.toLocaleString("en-IN")}` : "Rent on Request";
+      return listing.rent != null ? `${fm(listing.rent, listing.countryCode)}` : "Rent on Request";
     }
     if (listing.budgetMin != null && listing.budgetMax != null) {
       return `${compactMoney(listing.budgetMin)} – ${compactMoney(listing.budgetMax)}`;
     }
-    return listing.budgetMax != null ? `Up to ₹${listing.budgetMax.toLocaleString("en-IN")}` : "Flexible";
+    return listing.budgetMax != null ? `Up to ${fm(listing.budgetMax, listing.countryCode)}` : "Flexible";
   };
 
   if (isPlaceListing) {

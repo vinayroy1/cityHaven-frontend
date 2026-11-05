@@ -15,6 +15,7 @@ import {
   type SearchState,
 } from "./searchQuery";
 import { subTypeSlugToId } from "./searchConfig";
+import { useCountryCode } from "@/lib/country/countryStore";
 
 const BASE_PAGE_SIZE = 12;
 const REFINE_PAGE_SIZE = 30;
@@ -44,10 +45,14 @@ export function useSearchResults(
   const isFlatmate = state.intent === "FLATMATE";
   const refining = hasClientRefinements(state);
 
-  const propertyApiParams = React.useMemo(
-    () => toApiParams(state, refining ? REFINE_PAGE_SIZE : BASE_PAGE_SIZE),
-    [state, refining],
-  );
+  const portalCountry = useCountryCode();
+  const propertyApiParams = React.useMemo(() => {
+    const params = toApiParams(state, refining ? REFINE_PAGE_SIZE : BASE_PAGE_SIZE) as Record<string, any>;
+    // No city/locality chosen: stay inside the portal country. A named city decides on its own
+    // (so /buy/kathmandu still works while India is selected).
+    if (!state.cityName && state.localities.length === 0) params.countryCode = portalCountry;
+    return params;
+  }, [state, refining, portalCountry]);
 
   const flatmateApiParams = React.useMemo(() => {
     if (!isFlatmate) return undefined;
@@ -79,8 +84,9 @@ export function useSearchResults(
       if (rule === "SMOKING_ALLOWED") params.smokingAllowed = true;
       if (rule === "DRINKING_ALLOWED") params.drinkingAllowed = true;
     }
+    if (!state.cityName && state.localities.length === 0) params.countryCode = portalCountry;
     return params;
-  }, [isFlatmate, state]);
+  }, [isFlatmate, state, portalCountry]);
 
   const propertyQuery = usePropertySearchInfinite(propertyApiParams, { enabled: !isFlatmate });
   const flatmateQuery = useFlatmatesSearchInfinite(flatmateApiParams, { enabled: isFlatmate });

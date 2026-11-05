@@ -13,9 +13,9 @@ export const displayName = (v: InteriorWizardValues) =>
 
 export function startingPriceText(v: InteriorWizardValues) {
   if (v.pricing.priceMode === "QUOTE_ONLY") return "Price on request";
-  if (v.pricing.startingRateMin != null) return `From ${formatINR(v.pricing.startingRateMin)}${unitLabel[v.pricing.pricingUnit] ?? ""}`;
+  if (v.pricing.startingRateMin != null) return `From ${formatINR(v.pricing.startingRateMin, v.location?.countryCode)}${unitLabel[v.pricing.pricingUnit] ?? ""}`;
   const p = v.pricing.packages.filter((x) => x.isActive && x.priceMin != null).sort((a, b) => (a.priceMin ?? 0) - (b.priceMin ?? 0))[0];
-  return p ? `From ${formatINR(p.priceMin)}${unitLabel[p.pricingUnit] ?? ""}` : "Add a starting price";
+  return p ? `From ${formatINR(p.priceMin, v.location?.countryCode)}${unitLabel[p.pricingUnit] ?? ""}` : "Add a starting price";
 }
 
 /** Directory card exactly as homeowners see it in search results. */

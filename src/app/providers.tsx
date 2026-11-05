@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { Toaster } from "@/components/ui/sonner";
 import { NavigationBridgeProvider } from "@/components/navigation/NavigationBridgeProvider";
+import { CountryBootstrap } from "@/components/country/CountryBootstrap";
 
 const WelcomeCreditModal = dynamic(
   () => import("@/components/marketing/WelcomeCreditModal").then((m) => m.WelcomeCreditModal),
@@ -28,6 +29,7 @@ export function Providers({ children }: PropsWithChildren) {
       <QueryClientProvider client={queryClient}>
         <StoreProvider>
           <NavigationBridgeProvider>
+            <CountryBootstrap />
             {children}
             <Toaster position="top-center" richColors closeButton duration={4000} />
             <WelcomeCreditModal />

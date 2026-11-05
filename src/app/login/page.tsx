@@ -41,6 +41,10 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { BackButton } from "@/components/common/BackButton";
 import { registerBackHandler } from "@/lib/navigation/backNavigation";
+import { PhoneInput } from "@/components/common/PhoneInput";
+import { displayMobile, isValidPhone, toStoredMobile } from "@/lib/money";
+import { getCountry } from "@/config/countries";
+import { getSelectedCountry } from "@/lib/country/countryStore";
 
 // 6-digit split OTP input component with auto-focus & paste support
 function SplitOtpInput({
@@ -155,6 +159,11 @@ function LoginContent() {
 
   // Form states
   const [mobile, setMobile] = useState("");
+  // Country code for the mobile field; starts at the portal country (header switcher).
+  const [mobileCountry, setMobileCountry] = useState("IN");
+  useEffect(() => {
+    setMobileCountry(getSelectedCountry());
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -173,6 +182,8 @@ function LoginContent() {
   // Mobile OTP login disabled due to carrier SMS costs; password sign-in is standard
   const [authMode] = useState<"password">("password");
   const [loginId, setLoginId] = useState("");
+  // Only digits typed so far -> it's a mobile number (an email always has letters/@).
+  const isMobileLoginId = /^\d+$/.test(loginId);
 
   // Profile completion states
   const [needsProfile, setNeedsProfile] = useState(false);
@@ -367,7 +378,9 @@ function LoginContent() {
     }
   }
 
-  const validMobile = useMemo(() => /^\d{10}$/.test(mobile.replace(/\D/g, "")), [mobile]);
+  const validMobile = useMemo(() => isValidPhone(mobile, mobileCountry), [mobile, mobileCountry]);
+  /** Value saved in User.mobileNumber: 10 digits for India, "+<code><number>" elsewhere. */
+  const storedMobile = useMemo(() => toStoredMobile(mobile, mobileCountry), [mobile, mobileCountry]);
 
   // Step indicator state
   const currentStep = needsProfile ? 3 : otpRequested ? 2 : 1;
@@ -378,18 +391,18 @@ function LoginContent() {
     setSuccessMessage(null);
 
     if (!validMobile) {
-      setErrorMessage("Please enter a valid 10-digit mobile number.");
+      setErrorMessage(`Please enter a valid ${getCountry(mobileCountry).name} mobile number.`);
       return;
     }
 
-    const cleanMobile = mobile.replace(/\D/g, "");
+    const cleanMobile = storedMobile;
     try {
       await requestOtp({ mobileNumber: cleanMobile }).unwrap();
       setOtpRequested(true);
       setAttemptsLeft(3);
       setOtpInput("");
       setResendCountdown(30);
-      setSuccessMessage("OTP sent successfully to +91 " + cleanMobile);
+      setSuccessMessage("OTP sent successfully to " + displayMobile(cleanMobile));
     } catch (err: any) {
       setErrorMessage(err?.data?.message || err?.message || "Unable to send OTP right now. Please try again.");
     }
@@ -400,7 +413,7 @@ function LoginContent() {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    const cleanMobile = mobile.replace(/\D/g, "");
+    const cleanMobile = storedMobile;
     const cleanOtp = (customOtp || otpInput).trim();
 
     if (!/^\d{6}$/.test(cleanOtp)) {
@@ -451,9 +464,9 @@ function LoginContent() {
       toast.error("Please enter a valid email address.");
       return;
     }
-    const cleanMobile = mobile.replace(/\D/g, "");
-    if (!mobileRegex.test(cleanMobile)) {
-      toast.error("Please enter a valid 10-digit mobile number.");
+    const cleanMobile = storedMobile;
+    if (!cleanMobile) {
+      toast.error(`Please enter a valid ${getCountry(mobileCountry).name} mobile number.`);
       return;
     }
     if (password.length < 6) {
@@ -487,7 +500,7 @@ function LoginContent() {
       return;
     }
 
-    const cleanMobile = mobile.replace(/\D/g, "");
+    const cleanMobile = storedMobile;
     const storedRef = typeof window !== "undefined" ? localStorage.getItem("awasio_referral_code") : null;
     const activeRef = referralCode || searchParams.get("ref") || storedRef || undefined;
     try {
@@ -518,14 +531,15 @@ function LoginContent() {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const mobileRegex = /^[0-9]{10}$/;
+    // Mobile: 10 digits (India), a local number of another supported country, or "+<code>…".
+    const mobileRegex = /^\+?[0-9]{9,15}$/;
 
     const cleanLoginId = loginId.trim();
       const isEmail = emailRegex.test(cleanLoginId);
-      const isMobile = mobileRegex.test(cleanLoginId.replace(/\D/g, ""));
+      const isMobile = mobileRegex.test(cleanLoginId.replace(/[^\d+]/g, ""));
 
       if (!isEmail && !isMobile) {
-        toast.error("Please enter a valid email address or 10-digit mobile number.");
+        toast.error("Please enter a valid email address or mobile number.");
         return;
       }
       if (password.length < 6) {
@@ -535,7 +549,9 @@ function LoginContent() {
 
       try {
         const tokens = await loginWithPassword({
-          loginId: isEmail ? cleanLoginId : cleanLoginId.replace(/\D/g, ""),
+          loginId: isEmail
+            ? cleanLoginId
+            : toStoredMobile(cleanLoginId, mobileCountry) || cleanLoginId.replace(/[^\d+]/g, ""),
           password,
         }).unwrap();
         handleAuthSuccess(tokens);
@@ -894,7 +910,7 @@ function LoginContent() {
                   <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-4">
                     {isSignup
                       ? "Join Awasio to discover verified properties, connect with owners, and list properties."
-                      : "Enter your registered email address or 10-digit mobile number and password to securely sign in."}
+                      : "Enter your registered email address or mobile number and password to securely sign in."}
                   </p>
 
                   {isSignup && referralCode && (
@@ -955,22 +971,14 @@ function LoginContent() {
                             <label htmlFor="mobile_pwd" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
                               Mobile Number <span className="text-rose-500">*</span>
                             </label>
-                            <div className="relative flex items-center">
-                              <span className="absolute left-3.5 flex items-center gap-1 text-xs font-black text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-800 pr-2.5">
-                                🇮🇳 +91
-                              </span>
-                              <input
-                                id="mobile_pwd"
-                                type="tel"
-                                inputMode="numeric"
-                                maxLength={10}
-                                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-20 pr-4 text-sm font-bold tracking-wider text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-white outline-none transition focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400"
-                                placeholder="98765 43210"
-                                value={mobile}
-                                onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
-                                required
-                              />
-                            </div>
+                            <PhoneInput
+                              id="mobile_pwd"
+                              value={mobile}
+                              onChange={setMobile}
+                              countryCode={mobileCountry}
+                              onCountryChange={setMobileCountry}
+                              required
+                            />
                           </div>
                         </>
                       ) : (
@@ -978,6 +986,20 @@ function LoginContent() {
                           <label htmlFor="loginId" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
                             Email or Mobile
                           </label>
+                          {/* Typing digits turns the field into a mobile number with a country code picker. */}
+                          {isMobileLoginId ? (
+                            <PhoneInput
+                              id="loginId"
+                              value={loginId}
+                              onChange={(v) => setLoginId(v)}
+                              allowText
+                              countryCode={mobileCountry}
+                              onCountryChange={setMobileCountry}
+                              placeholder="Email or Mobile"
+                              required
+                              autoFocus
+                            />
+                          ) : (
                           <div className="relative">
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
                               <Users className="h-4 w-4" />
@@ -993,6 +1015,7 @@ function LoginContent() {
                               autoFocus
                             />
                           </div>
+                          )}
                         </div>
                       )}
 
@@ -1103,7 +1126,7 @@ function LoginContent() {
                   </div>
 
                   <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                    Enter the 6-digit code sent to <strong className="text-slate-900 dark:text-white">+91 {mobile}</strong>
+                    Enter the 6-digit code sent to <strong className="text-slate-900 dark:text-white">{displayMobile(storedMobile || mobile)}</strong>
                   </p>
 
                   <form onSubmit={(e) => handleVerifyOtp(e)} className="mt-5 space-y-4">

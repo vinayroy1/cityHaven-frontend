@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import type { CustomStepProps } from "@/lib/listingEngine/types";
 import type { InteriorBranch, InteriorBranchDraft, InteriorWizardValues } from "@/types/interior.types";
 import { BRANCH_TYPES } from "@/features/interiors/wizard/options";
-import { INDIAN_PHONE_REGEX } from "@/features/interiors/wizard/options";
+import { isValidIndianPhone } from "@/features/interiors/wizard/schema";
 import { branchDraftToPayload } from "@/features/interiors/wizard/mapper";
 import {
   useAddCompanyBranchMutation,
@@ -96,7 +96,7 @@ export default function BranchManager({ values, form, props }: CustomStepProps<I
     if (!b.branchType) e.branchType = "Choose a type";
     if (b.branchType === "HEAD_OFFICE" && otherHeadOffice(b.id)) e.branchType = "You already have a head office";
     if (!b.city) e.city = "Choose a city";
-    if (b.phone && !INDIAN_PHONE_REGEX.test(b.phone)) e.phone = "Enter a valid 10-digit mobile number";
+    if (b.phone && !isValidIndianPhone(b.phone)) e.phone = "Enter a valid mobile number";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -248,7 +248,7 @@ export default function BranchManager({ values, form, props }: CustomStepProps<I
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="City" required error={errors.city}>
                 {() => (
-                  <PropertyListingCitySelector
+                  <PropertyListingCitySelector countryCode={(values as { location?: { countryCode?: string } })?.location?.countryCode || "IN"}
                     value={editing.city}
                     selectedState={editing.state}
                     hasError={!!errors.city}
@@ -258,7 +258,7 @@ export default function BranchManager({ values, form, props }: CustomStepProps<I
               </Field>
               <Field label="Locality">
                 {() => (
-                  <PropertyListingLocalitySelector
+                  <PropertyListingLocalitySelector countryCode={(values as { location?: { countryCode?: string } })?.location?.countryCode || "IN"}
                     value={editing.locality}
                     cityName={editing.city}
                     selectedState={editing.state}

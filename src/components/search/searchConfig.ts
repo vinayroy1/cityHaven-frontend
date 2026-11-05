@@ -7,6 +7,9 @@ import {
 } from "@/app/propertySearch/data";
 import type { IntentKey, SearchState } from "./searchQuery";
 import { PLOT_SUBTYPE_SLUGS } from "./searchQuery";
+import { getCountry } from "@/config/countries";
+import { getSelectedCountry } from "@/lib/country/countryStore";
+import { formatMoney as fullMoney, formatMoneyShort } from "@/lib/money";
 
 export type SortOption = { value: "relevance" | "newest" | "price_asc" | "price_desc"; label: string };
 
@@ -143,7 +146,16 @@ export const BUDGET_PRESETS: Record<IntentKey, number[]> = {
 
 export const AREA_PRESETS = [200, 500, 1_000, 1_500, 2_000, 3_000, 5_000, 10_000, 20_000];
 
+/** Budget chips/labels in the portal country's currency (India output unchanged). */
+function portalCountry() {
+  return getCountry(typeof document !== "undefined" ? getSelectedCountry() : "IN");
+}
+
 export function formatMoney(v: number): string {
+  const c = portalCountry();
+  if (c.code !== "IN") return v >= 1_000 && v < (c.bigNumbers === "lakh" ? L : 1_000_000)
+    ? `${c.currencySymbol} ${Number((v / 1_000).toFixed(1))}k`
+    : formatMoneyShort(v, c.code, { decimals: "trim" });
   if (v >= CR) return `₹${Number((v / CR).toFixed(2))} Cr`;
   if (v >= L) return `₹${Number((v / L).toFixed(2))} L`;
   if (v >= 1_000) return `₹${Number((v / 1_000).toFixed(1))}k`;
@@ -156,7 +168,9 @@ export function budgetConfig(state: Pick<SearchState, "intent" | "transaction">)
     ? [5_000, 10_000, 20_000, 30_000, 50_000, 75_000, 100_000, 150_000, 200_000, 300_000, 500_000, 1_000_000]
     : BUDGET_PRESETS[state.intent];
   const label = state.intent === "PG" ? "PG budget / month" : state.intent === "FLATMATE" ? "Flatmate budget / month" : monthly ? "Monthly rent" : state.intent === "COMMERCIAL" ? "Commercial purchase budget" : state.intent === "PLOT" ? "Plot purchase budget" : "Purchase budget";
-  const format = (value: number) => monthly ? `₹${value.toLocaleString("en-IN")}` : formatMoney(value);
+  const c = portalCountry();
+  const format = (value: number) =>
+    monthly ? (c.code === "IN" ? `₹${value.toLocaleString("en-IN")}` : fullMoney(value, c.code)) : formatMoney(value);
   return { monthly, presets, label, format };
 }
 

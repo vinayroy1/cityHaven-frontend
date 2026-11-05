@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
@@ -34,6 +34,7 @@ import {
   PropertyListingLocalitySelector,
   type LocalitySelection,
 } from "@/components/propertyListing/PropertyListingLocalitySelector";
+import { useCountry } from "@/lib/country/countryStore";
 
 // The enquiry form only loads once someone asks for a quote.
 const InteriorInquiryModal = dynamic(
@@ -78,7 +79,16 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
   }, []);
 
   // The server already rendered the default view; only fetch once filters change.
+  const portalCountry = useCountry();
+  const sym = portalCountry.currencySymbol;
+  // Outside India, a default (non-URL) Indian city makes no sense: open the country's main city.
+  useEffect(() => {
+    if (!cityFromUrl && portalCountry.code !== "IN" && selectedCity === initialCity) setSelectedCity(portalCountry.defaultCity);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [portalCountry.code]);
+  // The server render is India's; other countries always fetch their own list.
   const isInitialQuery =
+    portalCountry.code === "IN" &&
     !!initialData &&
     selectedCity === initialCity &&
     providerType === "ALL" &&
@@ -89,6 +99,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
   const query = useSearchInteriorDesignersQuery(
     {
       city: selectedCity,
+      countryCode: portalCountry.code,
       providerType: providerType === "ALL" ? undefined : providerType,
       service: selectedService === "ALL" ? undefined : selectedService,
       // The API's `budgetBracket` takes other values (and is not applied);
@@ -429,10 +440,10 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
                   className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                 >
                   <option value="ALL">All Price Tiers</option>
-                  <option value="ECONOMY">Economy (Under ₹1,400/sq.ft.)</option>
-                  <option value="MID_RANGE">Standard (₹1,400 - ₹2,200/sq.ft.)</option>
-                  <option value="PREMIUM">Premium (₹2,200 - ₹3,500/sq.ft.)</option>
-                  <option value="LUXURY">Ultra Luxury (₹3,500+/sq.ft.)</option>
+                  <option value="ECONOMY">Economy (Under {sym}1,400/sq.ft.)</option>
+                  <option value="MID_RANGE">Standard ({sym}1,400 - {sym}2,200/sq.ft.)</option>
+                  <option value="PREMIUM">Premium ({sym}2,200 - {sym}3,500/sq.ft.)</option>
+                  <option value="LUXURY">Ultra Luxury ({sym}3,500+/sq.ft.)</option>
                 </select>
               </div>
 

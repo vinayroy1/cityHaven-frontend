@@ -8,13 +8,18 @@
 import { z } from "zod";
 import type { InteriorWizardSection, InteriorWizardValues } from "@/types/interior.types";
 import { GSTIN_REGEX, INDIAN_PHONE_REGEX, MAX_DESIGN_STYLES, PAN_REGEX } from "./options";
+import { COUNTRY_LIST } from "@/config/countries";
+import { isValidPhone } from "@/lib/money";
 
 export const CIN_REGEX = /^[LU][0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/;
-export const PINCODE_REGEX = /^[1-9][0-9]{5}$/;
+// India 6 digits; Nepal / Sri Lanka 5, Bangladesh 4.
+export const PINCODE_REGEX = /^(?:[1-9][0-9]{5}|[0-9]{4,5})$/;
 export const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const normPhone = (p: string) => p.replace(/[\s()-]/g, "");
-export const isValidIndianPhone = (p: string) => INDIAN_PHONE_REGEX.test(normPhone(p));
+/** Indian mobile, or a mobile from any other supported country (Nepal, Bangladesh, Sri Lanka). */
+export const isValidIndianPhone = (p: string) =>
+  INDIAN_PHONE_REGEX.test(normPhone(p)) || COUNTRY_LIST.some((c) => c.code !== "IN" && isValidPhone(p, c.code));
 export const isValidUrl = (s: string) => {
   try {
     const u = new URL(/^https?:\/\//i.test(s) ? s : `https://${s}`);
@@ -30,7 +35,7 @@ const optUrl = (label: string) =>
   z.string().refine((s) => !s.trim() || isValidUrl(s.trim()), { message: `Enter a valid ${label} link` });
 const optPattern = (re: RegExp, message: string, upper = false) =>
   z.string().refine((s) => !s.trim() || re.test(upper ? s.trim().toUpperCase() : s.trim()), { message });
-const optPhone = (message = "Enter a valid 10-digit Indian mobile number") =>
+const optPhone = (message = "Enter a valid mobile number") =>
   z.string().refine((s) => !s.trim() || isValidIndianPhone(s), { message });
 const optNum = (min: number, max: number, label: string) =>
   z
@@ -72,13 +77,13 @@ export const identitySchema = z.object({
 
 const branchSchema = z.object({
   branchName: optText(120, "Branch name"),
-  pincode: optPattern(PINCODE_REGEX, "Enter a valid 6-digit pincode"),
+  pincode: optPattern(PINCODE_REGEX, "Enter a valid postal code"),
   phone: optPhone(),
 });
 
 export const locationSchema = z
   .object({
-    primaryPincode: optPattern(PINCODE_REGEX, "Enter a valid 6-digit pincode"),
+    primaryPincode: optPattern(PINCODE_REGEX, "Enter a valid postal code"),
     primaryAddress: optText(300, "Address"),
     siteVisitRadiusKm: optNum(0, 1000, "Site visit radius"),
     branches: z.array(z.looseObject(branchSchema.shape)),
@@ -196,7 +201,7 @@ export const contactSchema = z
     contactName: optText(80, "Contact name"),
     phone: optPhone(),
     whatsappSameAsPhone: z.boolean(),
-    whatsapp: optPhone("Enter a valid 10-digit WhatsApp number"),
+    whatsapp: optPhone("Enter a valid WhatsApp number"),
     email: z.string().refine((s) => !s.trim() || z.email().safeParse(s.trim()).success, { message: "Enter a valid email address" }),
     workingHours: z.object({ open: z.string(), close: z.string() }),
   })

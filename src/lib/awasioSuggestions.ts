@@ -4,6 +4,7 @@
  */
 
 import { APP_CONFIG } from "@/constants/app-config";
+import { getSelectedCountry } from "@/lib/country/countryStore";
 const BASE = `${APP_CONFIG.API.BASE_URL}/v1`;
 
 export type AwasioSuggestionType = "CITY" | "LOCALITY" | "PROJECT" | "DEVELOPER";
@@ -30,6 +31,7 @@ export interface AwasioSuggestionMetrics {
 export interface AwasioSuggestionLocation {
   city: string;
   state: string;
+  countryCode?: string;
   locality?: string;
   pincode?: number;
   zone?: string;
@@ -86,6 +88,8 @@ export async function fetchAwasioSuggestions(
   options?: {
     city?: string;
     state?: string;
+    /** ISO country filter (IN, NP, BD, LK). Omit for the legacy unfiltered search. */
+    country?: string;
     types?: AwasioSuggestionType[];
     limit?: number;
     maxPerGroup?: number;
@@ -108,6 +112,9 @@ export async function fetchAwasioSuggestions(
   const params = new URLSearchParams({ q: effectiveQuery });
   if (options?.city) params.set("city", options.city);
   if (options?.state) params.set("state", options.state);
+  // Explicit country wins (listing form); otherwise the portal country the visitor selected.
+  const country = options?.country ?? (typeof document !== "undefined" ? getSelectedCountry() : undefined);
+  if (country) params.set("country", country);
   if (options?.types?.length) params.set("types", options.types.join(","));
   if (options?.limit) params.set("limit", String(options.limit));
   if (options?.maxPerGroup) params.set("maxPerGroup", String(options.maxPerGroup));
@@ -126,12 +133,12 @@ export async function fetchAllSuggestions(
 
 export async function reverseGeocodeAwasio(
   lat: number, lng: number
-): Promise<{ city: string; locality: string; state: string; pincode?: string } | null> {
+): Promise<{ city: string; locality: string; state: string; pincode?: string; countryCode?: string } | null> {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   try {
     const res = await fetch(`/api/geo/reverse-city?lat=${lat}&lng=${lng}`, { cache: "no-store" });
     if (!res.ok) return null;
-    const data = (await res.json()) as { city?: string; locality?: string; state?: string; pincode?: string };
-    return { city: data.city || "", locality: data.locality || "", state: data.state || "", pincode: data.pincode };
+    const data = (await res.json()) as { city?: string; locality?: string; state?: string; pincode?: string; countryCode?: string };
+    return { city: data.city || "", locality: data.locality || "", state: data.state || "", pincode: data.pincode, countryCode: data.countryCode };
   } catch { return null; }
 }

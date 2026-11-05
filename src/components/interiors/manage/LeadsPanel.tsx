@@ -18,6 +18,8 @@ import { useGetMyCreditsQuery } from "@/features/contactVerify/api";
 import { cn } from "@/components/ui/utils";
 import type { InteriorInquiry, InteriorInquiryStatus } from "@/types/interior.types";
 import { errorMessage, useMyInquiries, useUnlockInquiry } from "./manageApi";
+import { formatMoney } from "@/lib/money";
+import { getSelectedCountry } from "@/lib/country/countryStore";
 
 const UNLOCK_COST = 20;
 const FILTERS: { value: InteriorInquiryStatus | ""; label: string }[] = [
@@ -30,7 +32,8 @@ const FILTERS: { value: InteriorInquiryStatus | ""; label: string }[] = [
   { value: "LOST", label: "Lost" },
 ];
 
-const inr = (n?: number | null) => (n ? `₹${n.toLocaleString("en-IN")}` : null);
+/** Budget in the portal country's currency (owners normally browse in their own country). */
+const inr = (n?: number | null) => (n ? formatMoney(n, getSelectedCountry()) : null);
 
 export function LeadsPanel() {
   const [status, setStatus] = useState<InteriorInquiryStatus | "">("");

@@ -27,6 +27,7 @@ import { useGetPresignedUploadUrlMutation } from "@/features/propertyListing/api
 import type { FlatmateListing, FlatmateListingInput } from "@/types/flatmate.types";
 import { isRealUserPhoto } from "./FlatmateCard";
 import { SeekerAvatarPlaceholder } from "./SeekerAvatarPlaceholder";
+import { getCountry } from "@/config/countries";
 
 export interface FlatmateEditModalProps {
   listing: FlatmateListing | null;
@@ -230,7 +231,7 @@ export function FlatmateEditModal({ listing, isOpen, onClose, onSuccess }: Flatm
           {isPlaceListing ? (
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Monthly Rent (₹) *
+                Monthly Rent ({getCountry(listing?.countryCode).currencySymbol}) *
               </label>
               <div className="relative">
                 <IndianRupee className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
@@ -247,7 +248,7 @@ export function FlatmateEditModal({ listing, isOpen, onClose, onSuccess }: Flatm
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Min Budget (₹)
+                  Min Budget ({getCountry(listing?.countryCode).currencySymbol})
                 </label>
                 <div className="relative">
                   <IndianRupee className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
@@ -262,7 +263,7 @@ export function FlatmateEditModal({ listing, isOpen, onClose, onSuccess }: Flatm
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Max Budget (₹) *
+                  Max Budget ({getCountry(listing?.countryCode).currencySymbol}) *
                 </label>
                 <div className="relative">
                   <IndianRupee className="w-4 h-4 absolute left-3 top-3 text-slate-400" />

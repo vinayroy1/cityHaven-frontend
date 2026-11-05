@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
+import { formatMoney } from "@/lib/money";
 
 interface InteriorCardProps {
   profile: InteriorProfile;
@@ -105,7 +106,7 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
             {profile.isCustomQuotationOnly
               ? "Custom Quotation"
               : profile.startingRateMin
-              ? `₹${profile.startingRateMin.toLocaleString("en-IN")}/${profile.pricingUnit === "PER_SQFT" ? "sq.ft." : "unit"}`
+              ? `${formatMoney(profile.startingRateMin, profile.countryCode)}/${profile.pricingUnit === "PER_SQFT" ? "sq.ft." : "unit"}`
               : "Price on request"}
           </p>
         </div>

@@ -11,7 +11,7 @@ import { ResultCard } from "@/app/propertySearch/components/ResultCard";
 import { toResultCardProps } from "@/app/propertySearch/components/propertyCardAdapter";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 
-import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
+import { detectUserLocation, getCachedLocation, getUserPreferredCity } from "@/lib/geo/geoService";
 import { useSearchProjectsQuery } from "@/features/projects/api";
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import dynamic from "next/dynamic";
@@ -32,6 +32,11 @@ const InteriorDesignerShowcaseCard = dynamic(() =>
   { loading: () => <InteriorDesignerShowcaseSkeleton /> }
 );
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
+import { getSelectedCountry, useCountry } from "@/lib/country/countryStore";
+import { getCountry } from "@/config/countries";
+
+const portalCountryName = () => getCountry(typeof document !== "undefined" ? getSelectedCountry() : "IN").name;
+import { formatMoney, formatMoneyShort } from "@/lib/money";
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
@@ -74,9 +79,28 @@ export function HomeExperience({
   const [isGeoCity, setIsGeoCity] = React.useState(false);
   const [belowFoldRef, isBelowFoldNear] = useNearViewport<HTMLDivElement>();
   const [searchState, setSearchState] = React.useState<SearchState>(() => initialSearchState(""));
+  // Portal country (header switcher / auto-detected). India keeps the original behaviour.
+  const country = useCountry();
+  const isIndia = country.code === "IN";
 
   React.useEffect(() => {
     let cancelled = false;
+
+    // 0. Outside India: saved city, else a detected city in that country, else the capital.
+    if (!isIndia) {
+      let saved = "";
+      try {
+        saved = window.localStorage.getItem(STORAGE_KEY)?.trim() || "";
+      } catch {
+        // ignore
+      }
+      const geo = getCachedLocation();
+      const city = saved || (geo?.country === country.code ? geo.city : "") || country.defaultCity;
+      setSelectedCity(city);
+      setIsExplicitCity(true);
+      setSearchState((prev) => ({ ...prev, cityName: city }));
+      return;
+    }
 
     // 1. Restore the saved home city or cached geo city after hydration.
     const preferredCity = getUserPreferredCity()?.trim();
@@ -86,11 +110,16 @@ export function HomeExperience({
       return;
     }
 
+    // Back in India with no saved city: clear a city left over from another country.
+    setSelectedCity("");
+    setIsExplicitCity(false);
+    setSearchState((prev) => ({ ...prev, cityName: undefined }));
+
     // 2. Otherwise detect current location dynamically (GPS first, then IP API) only once idle
     if (!isIdle) return;
 
     void detectUserLocation().then((profile) => {
-      if (!cancelled && profile?.city && profile.city.trim()) {
+      if (!cancelled && profile?.city && profile.city.trim() && (profile.country || "IN") === "IN") {
         const matched = profile.city.trim();
         setIsGeoCity(true);
         setSelectedCity(matched);
@@ -106,7 +135,7 @@ export function HomeExperience({
     return () => {
       cancelled = true;
     };
-  }, [isIdle]);
+  }, [isIdle, isIndia, country]);
 
   const updateCity = (city: string) => {
     setIsExplicitCity(true);
@@ -148,6 +177,7 @@ export function HomeExperience({
     {
       listingType: queryListingType,
       cityName: normalizedCity,
+      countryCode: country.code,
       sort: "newest",
       pageSize: 8,
     },
@@ -157,10 +187,11 @@ export function HomeExperience({
   // 2. Nationwide trending query fallback (only needed if SSR items were empty)
   const trendingFallbackQuery = usePropertySearchInfinite(
     {
+      countryCode: country.code,
       sort: "newest",
       pageSize: 12,
     },
-    { enabled: initialFreshListings.length === 0 }
+    { enabled: initialFreshListings.length === 0 || !isIndia }
   );
 
   // 3. Dedicated query for budget homes / rentals (strictly separated)
@@ -201,6 +232,7 @@ export function HomeExperience({
     {
       listingType: budgetListingType,
       cityName: normalizedCity,
+      countryCode: country.code,
       priceMax: budgetMax,
       sort: "newest",
       pageSize: 16,
@@ -212,6 +244,7 @@ export function HomeExperience({
   const budgetFallbackQuery = usePropertySearchInfinite(
     {
       listingType: budgetListingType,
+      countryCode: country.code,
       priceMax: budgetMax,
       sort: "newest",
       pageSize: 16,
@@ -224,6 +257,7 @@ export function HomeExperience({
     {
       listingType: queryListingType,
       cityName: normalizedCity,
+      countryCode: country.code,
       sort: "newest",
       pageSize: 16,
     },
@@ -238,7 +272,7 @@ export function HomeExperience({
   const freshListings = (
     isExplicitCity && selectedCity && rawFresh.length > 0
       ? rawFresh
-      : initialFreshListings.length > 0
+      : isIndia && initialFreshListings.length > 0
       ? initialFreshListings
       : rawFresh.length > 0
       ? rawFresh
@@ -291,7 +325,7 @@ export function HomeExperience({
 
           {/* Short concise subtitle - visible on desktop/tablet, hidden on mobile */}
           <p className="hidden sm:block mx-auto mt-1 sm:mt-2 max-w-xl text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Verified rental homes, apartments, and commercial spaces across India.
+            Verified rental homes, apartments, and commercial spaces across {country.name}.
           </p>
 
           {/* Centered Elevated Search Bar */}
@@ -354,7 +388,7 @@ export function HomeExperience({
         <ListingBlock
           title={
             selectedCity && rawOwnerListings.filter(isHomeListing).length < MIN_SECTION_ITEMS
-              ? "Popular homes across India"
+              ? `Popular homes across ${portalCountryName()}`
               : filteredOwnerListings.length > 0
               ? (selectedCity ? `Owner-listed homes in ${selectedCity}` : "Owner-listed homes")
               : selectedCity ? `Verified homes in ${selectedCity}` : "Verified Direct-Connect Homes"
@@ -375,9 +409,15 @@ export function HomeExperience({
 
         <ListingBlock
           title={
-            `${searchState.intent === "RENT" ? "Rentals under ₹50,000/month" : "Homes under ₹1 crore"}${
+            `${
+              isIndia
+                ? searchState.intent === "RENT" ? "Rentals under ₹50,000/month" : "Homes under ₹1 crore"
+                : searchState.intent === "RENT"
+                  ? `Rentals under ${formatMoney(budgetMax, country.code)}/month`
+                  : `Homes under ${formatMoneyShort(budgetMax, country.code, { units: "long" })}`
+            }${
               selectedCity
-                ? rawBudgetListings.filter(isHomeListing).length > 0 ? ` in ${selectedCity}` : " across India"
+                ? rawBudgetListings.filter(isHomeListing).length > 0 ? ` in ${selectedCity}` : ` across ${country.name}`
                 : ""
             }`
           }
@@ -870,7 +910,7 @@ function FeaturedFlatAvailableSection({ selectedCity }: { selectedCity: string }
     { skip: !isIdle || !normalizedCity }
   );
   const { data: fallbackData, isLoading: isFallbackLoading } = useSearchFlatmatesQuery(
-    { pageSize: 24 },
+    { pageSize: 24, countryCode: getSelectedCountry() },
     { skip: !isIdle }
   );
 
@@ -901,7 +941,7 @@ function FeaturedFlatAvailableSection({ selectedCity }: { selectedCity: string }
           </div>
           <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
             {selectedCity && cityItems.length < MIN_SECTION_ITEMS
-              ? "Available rooms across India"
+              ? `Available rooms across ${portalCountryName()}`
               : cityItems.length > 0 && selectedCity
               ? `Available Rooms in ${selectedCity}`
               : "Available Rooms in Shared Flats"}
@@ -955,7 +995,7 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
     { skip: !isIdle || !normalizedCity }
   );
   const { data: fallbackData, isLoading: isFallbackLoading } = useSearchFlatmatesQuery(
-    { pageSize: 24 },
+    { pageSize: 24, countryCode: getSelectedCountry() },
     { skip: !isIdle }
   );
 
@@ -990,7 +1030,7 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
           </div>
           <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
             {selectedCity && cityItems.length < MIN_SECTION_ITEMS
-              ? "Room seekers & buddy-up across India"
+              ? `Room seekers & buddy-up across ${portalCountryName()}`
               : cityItems.length > 0 && selectedCity
               ? `Room Seekers & Buddy Up in ${selectedCity}`
               : "Room Seekers & Buddy-Up Groups"}
@@ -1042,7 +1082,7 @@ function InteriorDesignersSection({ selectedCity }: { selectedCity: string }) {
     { skip: !isIdle || !normalizedCity }
   );
   const { data: fallbackData, isLoading: isFallbackLoading } = useSearchInteriorDesignersQuery(
-    { sort: "recommended", limit: 8 },
+    { sort: "recommended", limit: 8, countryCode: getSelectedCountry() },
     { skip: !isIdle }
   );
 
@@ -1085,7 +1125,7 @@ function InteriorDesignersSection({ selectedCity }: { selectedCity: string }) {
             {isCityScoped && cityItems.length >= MIN_SECTION_ITEMS
               ? `Top interior designers in ${selectedCity}`
               : selectedCity
-              ? "Top interior designers across India"
+              ? `Top interior designers across ${portalCountryName()}`
               : "Top interior designers near you"}
           </h2>
           <p className="mt-0.5 hidden text-sm text-slate-500 sm:block dark:text-slate-400">

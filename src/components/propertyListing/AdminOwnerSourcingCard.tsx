@@ -4,6 +4,8 @@ import React, { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useAdmin } from "@/features/admin/adminStore";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
+import { getCountry } from "@/config/countries";
+import { isValidPhone } from "@/lib/money";
 import {
   UserCheck,
   UserPlus,
@@ -47,17 +49,18 @@ export function AdminOwnerSourcingCard() {
   const qcRequired = watch("publishOptions.qcRequired") ?? false;
 
   // Clean the phone number for 10-digit matching
+  const country = getCountry(watch("location.countryCode"));
   const cleanPhone = useMemo(() => {
-    return ownerContact.replace(/\D/g, "").slice(-10);
-  }, [ownerContact]);
+    return ownerContact.replace(/\D/g, "").slice(-country.phoneDigits);
+  }, [ownerContact, country.phoneDigits]);
 
   const matchedUser = useMemo(() => {
-    if (cleanPhone.length !== 10) return null;
+    if (cleanPhone.length !== country.phoneDigits) return null;
     return userList.find((u) => {
-      const uPhone = (u.mobileNumber || "").replace(/\D/g, "").slice(-10);
+      const uPhone = (u.mobileNumber || "").replace(/\D/g, "").slice(-country.phoneDigits);
       return uPhone === cleanPhone;
     }) || null;
-  }, [cleanPhone, userList]);
+  }, [cleanPhone, userList, country.phoneDigits]);
 
   // When a matched user is found, auto-fill or offer their details
   const handleUseMatchedUser = () => {
@@ -126,7 +129,7 @@ export function AdminOwnerSourcingCard() {
               <Phone className="h-3.5 w-3.5 text-indigo-500" />
               Owner Contact Number (10 Digits) *
             </span>
-            {cleanPhone.length === 10 && (
+            {cleanPhone.length === country.phoneDigits && (
               <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                 10 Digits Valid
               </span>
@@ -134,25 +137,27 @@ export function AdminOwnerSourcingCard() {
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 dark:text-slate-500">
-              +91
+              {country.phoneCode}
             </span>
             <input
               type="tel"
-              maxLength={10}
-              placeholder="e.g. 9876543210"
+              maxLength={country.code === "IN" ? 10 : country.phoneDigits + 1}
+              placeholder={`e.g. ${country.code === "IN" ? "9876543210" : country.phoneExample.replace(/\s/g, "")}`}
               {...register("context.ownerContact", {
                 required: "Owner mobile number is required in Admin Sourcing mode",
-                pattern: {
-                  value: /^[6-9]\d{9}$/,
-                  message: "Please enter a valid 10-digit Indian mobile number",
-                },
+                validate: (v) =>
+                  !v ||
+                  (country.code === "IN" ? /^[6-9]\d{9}$/.test(v) : isValidPhone(v, country.code)) ||
+                  (country.code === "IN"
+                    ? "Please enter a valid 10-digit Indian mobile number"
+                    : `Please enter a valid ${country.name} mobile number`),
               })}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 text-sm font-medium text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+              className={`h-10 w-full rounded-xl border border-slate-200 bg-white ${country.code === "IN" ? "pl-12" : "pl-14"} pr-4 text-sm font-medium text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-white`}
             />
           </div>
 
           {/* Real-time Phone Lookup Status Banner */}
-          {cleanPhone.length === 10 && (
+          {cleanPhone.length === country.phoneDigits && (
             <div className="mt-1.5">
               {matchedUser ? (
                 <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/80 px-3 py-2 text-xs text-emerald-900 dark:border-emerald-800/80 dark:bg-emerald-950/40 dark:text-emerald-300">

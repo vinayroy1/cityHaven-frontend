@@ -9,6 +9,8 @@ import {
   PropertyListingLocalitySelector,
   type LocalitySelection,
 } from "@/components/propertyListing/PropertyListingLocalitySelector";
+import { formatMoneyShort } from "@/lib/money";
+import { getCountry } from "@/config/countries";
 
 interface InquiryModalProps {
   profile: InteriorProfile | null;
@@ -17,6 +19,11 @@ interface InquiryModalProps {
 }
 
 export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalProps) {
+  // India keeps "₹12.50 Lakhs"; other countries use their own currency/units.
+  const budgetText = (amount: number) =>
+    !profile?.countryCode || profile.countryCode === "IN"
+      ? `₹${(amount / 100000).toFixed(2)} Lakhs`
+      : formatMoneyShort(amount, profile.countryCode, { units: "long" });
   const [step, setStep] = useState<"form" | "success">("form");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
@@ -131,7 +138,7 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
               <div className="flex justify-between text-slate-500 dark:text-slate-400">
                 <span>Estimated Budget:</span>
                 <span className="font-bold text-slate-900 dark:text-white">
-                  ₹{(estimatedTotal / 100000).toFixed(2)} Lakhs
+                  {budgetText(estimatedTotal)}
                 </span>
               </div>
               <div className="flex justify-between text-slate-500 dark:text-slate-400">
@@ -183,10 +190,10 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
               </div>
               <div className="mt-1 flex items-baseline justify-between">
                 <p className="text-2xl font-black text-slate-950 dark:text-white tracking-tight">
-                  ₹{(estimatedTotal / 100000).toFixed(2)} Lakhs
+                  {budgetText(estimatedTotal)}
                 </p>
                 <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                  ₹{multiplier}/sq.ft. (All Inclusive)
+                  {getCountry(profile?.countryCode).currencySymbol}{multiplier}/sq.ft. (All Inclusive)
                 </span>
               </div>
             </div>

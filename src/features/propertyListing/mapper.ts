@@ -123,7 +123,8 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
       adminNotes: context.adminNotes || undefined,
     },
 
-    // location
+    // location (backend derives currencyCode from countryCode)
+    countryCode: location.countryCode || undefined,
     cityId: toNumber(location.cityId),
     cityName: location.cityName || undefined,
     localityId: toNumber(location.localityId),

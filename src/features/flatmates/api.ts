@@ -28,6 +28,7 @@ export const flatmatesApi = createApi({
         const queryParams = new URLSearchParams();
         if (params?.mode) queryParams.set("mode", params.mode);
         if (params?.city) queryParams.set("city", params.city);
+        if (params?.countryCode) queryParams.set("countryCode", params.countryCode);
         if (params?.locality) queryParams.set("locality", params.locality);
         if (params?.budgetMin !== undefined) queryParams.set("budgetMin", String(params.budgetMin));
         if (params?.budgetMax !== undefined) queryParams.set("budgetMax", String(params.budgetMax));

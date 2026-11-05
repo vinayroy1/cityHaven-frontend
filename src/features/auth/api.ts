@@ -14,6 +14,8 @@ export type UpdateProfilePayload = {
   mobileNumber?: string;
   profileImage?: string | null;
   address?: string | null;
+  /** Portal country (IN, NP, BD, LK). */
+  countryCode?: string;
   otp?: string;
 };
 
@@ -31,6 +33,8 @@ export const authApi = createApi({
       name?: string;
       credits?: number;
       mobileNumber?: string;
+      /** Account country (IN, NP, BD, LK). */
+      countryCode?: string | null;
       profileImage?: string | null;
       address?: string | null;
       isVerified?: boolean;

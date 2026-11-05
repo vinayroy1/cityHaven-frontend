@@ -178,6 +178,7 @@ export default function PortfolioManager({ values, form, props }: CustomStepProp
       {editing && (
         <ProjectEditor
           key={editing.id}
+          countryCode={values.location?.countryCode || "IN"}
           project={editing}
           minImages={minImages}
           specs={getAt<MaterialSpecRow[]>(values, specsPath) ?? []}
@@ -266,7 +267,9 @@ function ProjectEditor({
   saving,
   onClose,
   onSave,
+  countryCode = "IN",
 }: {
+  countryCode?: string;
   project: InteriorProjectDraft;
   minImages: number;
   specs: MaterialSpecRow[];
@@ -321,7 +324,7 @@ function ProjectEditor({
           )}
         </Field>
         <Field label="City" required>
-          {() => <PropertyListingCitySelector value={p.city} placeholder="Search city" onChange={(c) => set("city", c.name)} />}
+          {() => <PropertyListingCitySelector countryCode={countryCode} value={p.city} placeholder="Search city" onChange={(c) => set("city", c.name)} />}
         </Field>
         <Field label="Area (sq.ft)">
           {(id) => <input id={id} inputMode="numeric" className={inputCls} value={p.areaSqft ?? ""} onChange={(e) => set("areaSqft", toNum(e.target.value))} />}

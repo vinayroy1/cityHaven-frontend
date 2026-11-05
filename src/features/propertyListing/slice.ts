@@ -49,6 +49,7 @@ export const initialPropertyListingFormValues: PropertyListingFormValues = {
     adminNotes: "",
   },
   location: {
+    countryCode: "IN",
     cityId: "",
     cityName: "",
     localityId: "",

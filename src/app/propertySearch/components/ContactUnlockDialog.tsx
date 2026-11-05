@@ -4,6 +4,7 @@ import { CheckCircle2, PhoneCall, ShieldCheck, UserCheck, Zap, Building2, User, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { ContactPlan, ContactStep } from "./resultCardTypes";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
+import { displayMobile, intlMobile } from "@/lib/money";
 
 type OwnerContact = { name: string | null; phone: string | null } | null;
 
@@ -566,7 +567,7 @@ export function UnlockedContactStep({
               {ownerContact?.name ?? owner ?? "Property Owner"}
             </p>
             <p className="mt-1 text-2xl font-black tracking-tight text-emerald-950 dark:text-emerald-200">
-              {ownerContact?.phone ? `+91 ${ownerContact.phone}` : "+91 ..... ....."}
+              {ownerContact?.phone ? displayMobile(ownerContact.phone) : "+91 ..... ....."}
             </p>
             <p className="mt-1 text-[11px] text-zinc-500 dark:text-slate-400">
               Direct connection &bull; Zero brokerage &bull; Lifetime unlocked
@@ -575,7 +576,7 @@ export function UnlockedContactStep({
         </div>
       </div>
       <a
-        href={ownerContact?.phone ? `tel:+91${ownerContact.phone}` : undefined}
+        href={ownerContact?.phone ? `tel:${intlMobile(ownerContact.phone)}` : undefined}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-center text-sm font-bold text-white shadow-md hover:bg-emerald-700 active:scale-98 transition"
       >
         <PhoneCall className="h-4 w-4" />

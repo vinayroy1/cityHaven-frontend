@@ -49,6 +49,9 @@ import type { FlatmateListingMode, FlatmateListingInput } from "@/types/flatmate
 import { NearbyLandmarksCompact, useLocalityLandmarks } from "@/components/nearby/NearbyLandmarksCompact";
 import { registerBackHandler } from "@/lib/navigation/backNavigation";
 import { SeekerAvatarPlaceholder } from "./SeekerAvatarPlaceholder";
+import { COUNTRY_LIST, getCountry } from "@/config/countries";
+import { getSelectedCountry } from "@/lib/country/countryStore";
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 
 const ROOM_TYPES = ["Private Room", "Shared Room (Twin)", "Shared Room (3+)", "Whole Flat"];
 const BHK_OPTIONS = [1, 2, 3, 4, 5];
@@ -97,6 +100,24 @@ export function FlatmateListingWizard() {
   const [mode, setMode] = useState<FlatmateListingMode>("HAVE_ROOM");
   const [cityName, setCityName] = useState("Bengaluru");
   const [stateName, setStateName] = useState("Karnataka");
+  // Country of the room; starts at the portal country (header switcher), changeable below.
+  const [countryCode, setCountryCode] = useState("IN");
+  const country = getCountry(countryCode);
+  const sym = country.currencySymbol;
+  const changeCountry = (code: string) => {
+    const next = getCountry(code || "IN");
+    if (next.code === countryCode) return;
+    setCountryCode(next.code);
+    setCityName(next.code === "IN" ? "Bengaluru" : next.defaultCity);
+    setStateName(next.code === "IN" ? "Karnataka" : "");
+    setLocality("");
+    setPreferredLocalities([]);
+  };
+  React.useEffect(() => {
+    const portal = getSelectedCountry();
+    if (portal !== "IN") changeCountry(portal);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [locality, setLocality] = useState("");
   const [preferredLocalities, setPreferredLocalities] = useState<string[]>([]);
   // Owners offering a room get nearby landmarks for their flat's locality (saved server-side on submit).
@@ -264,7 +285,7 @@ export function FlatmateListingWizard() {
       return `${roomType} in ${bhk} BHK at ${loc} for rent`;
     }
     if (mode === "NEED_ROOM") {
-      return `Looking for ${roomType || "Room"} near ${loc} (Budget: ₹${budgetMax || "20k"})`;
+      return `Looking for ${roomType || "Room"} near ${loc} (Budget: ${sym}${budgetMax || "20k"})`;
     }
     return `Buddy Up: Looking to team up for a flat in ${loc}`;
   };
@@ -316,6 +337,7 @@ export function FlatmateListingWizard() {
         mode,
         title: finalTitle,
         description: description.trim() || undefined,
+        countryCode: country.code,
         cityName,
         stateName: stateName || undefined,
         locality: primaryLoc || undefined,
@@ -550,6 +572,23 @@ export function FlatmateListingWizard() {
             </p>
           </div>
 
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+              Country <span className="text-rose-500">*</span>
+            </label>
+            <SearchableSelect
+              value={country.code}
+              onChange={changeCountry}
+              options={COUNTRY_LIST.map((c) => ({ value: c.code, label: `${c.flag} ${c.name}` }))}
+              placeholder="Select Country"
+              searchPlaceholder="Search Country..."
+              emptyMessage="No matching country found"
+            />
+            {country.code !== "IN" && (
+              <p className="text-[11px] text-slate-500">Rent and budget will be in {country.currency} ({sym}).</p>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -558,13 +597,14 @@ export function FlatmateListingWizard() {
               <PropertyListingCitySelector
                 value={cityName}
                 selectedState={stateName}
+                countryCode={country.code}
                 onChange={(city: CitySelection) => {
                   setCityName(city.name);
                   if (city.state) setStateName(city.state);
                   setLocality("");
                   setPreferredLocalities([]);
                 }}
-                placeholder="Select city (e.g. Bengaluru, Mumbai, Delhi)"
+                placeholder={country.code === "IN" ? "Select city (e.g. Bengaluru, Mumbai, Delhi)" : `Select city (e.g. ${country.popularCities.slice(0, 3).join(", ")})`}
               />
             </div>
 
@@ -580,6 +620,7 @@ export function FlatmateListingWizard() {
               <PropertyListingLocalitySelector
                 cityName={cityName}
                 selectedState={stateName}
+                countryCode={country.code}
                 multiple={true}
                 values={preferredLocalities}
                 maxSelections={5}
@@ -610,7 +651,7 @@ export function FlatmateListingWizard() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    Monthly Rent (₹) <span className="text-rose-500">*</span>
+                    Monthly Rent ({sym}) <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <IndianRupee className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
@@ -626,7 +667,7 @@ export function FlatmateListingWizard() {
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    Security Deposit (₹)
+                    Security Deposit ({sym})
                   </label>
                   <div className="relative">
                     <IndianRupee className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
@@ -642,7 +683,7 @@ export function FlatmateListingWizard() {
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    Maintenance / Bills (₹/mo)
+                    Maintenance / Bills ({sym}/mo)
                   </label>
                   <div className="relative">
                     <IndianRupee className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
@@ -660,7 +701,7 @@ export function FlatmateListingWizard() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    Min Budget (₹)
+                    Min Budget ({sym})
                   </label>
                   <div className="relative">
                     <IndianRupee className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
@@ -676,7 +717,7 @@ export function FlatmateListingWizard() {
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    Max Budget (₹) <span className="text-rose-500">*</span>
+                    Max Budget ({sym}) <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <IndianRupee className="w-4 h-4 absolute left-3 top-3 text-slate-400" />

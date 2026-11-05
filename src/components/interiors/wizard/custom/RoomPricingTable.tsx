@@ -4,7 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import type { CustomStepProps } from "@/lib/listingEngine/types";
 import type { InteriorPricingUnit, InteriorWizardValues, RoomPricingRow, RoomType } from "@/types/interior.types";
 import { ROOM_TYPES } from "@/features/interiors/wizard/options";
-import { Chip, getAt, ghostIconBtn, inputCls, newId, propPath, setPath, toNum } from "./ui";
+import { Chip, getAt, ghostIconBtn, inputCls, newId, propPath, setPath, toNum, wizardSymbol } from "./ui";
 
 const UNITS: { value: InteriorPricingUnit; label: string }[] = [
   { value: "PER_ROOM", label: "per room" },
@@ -34,8 +34,8 @@ export default function RoomPricingTable({ values, form, props }: CustomStepProp
             <thead className="bg-slate-50 text-xs text-slate-500 dark:bg-slate-900">
               <tr>
                 <th className="px-3 py-2 text-left font-medium" scope="col">Room</th>
-                <th className="px-3 py-2 text-left font-medium" scope="col">From ₹</th>
-                <th className="px-3 py-2 text-left font-medium" scope="col">Up to ₹</th>
+                <th className="px-3 py-2 text-left font-medium" scope="col">From {wizardSymbol(values)}</th>
+                <th className="px-3 py-2 text-left font-medium" scope="col">Up to {wizardSymbol(values)}</th>
                 <th className="px-3 py-2 text-left font-medium" scope="col">Unit</th>
                 <th className="px-3 py-2" scope="col"><span className="sr-only">Remove</span></th>
               </tr>

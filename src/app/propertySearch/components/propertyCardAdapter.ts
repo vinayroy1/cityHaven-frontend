@@ -1,11 +1,12 @@
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { ResultCardProps } from "./resultCardTypes";
+import { formatMoney, formatMoneyShort } from "@/lib/money";
 
 /** Sale prices in lakh/crore (₹28.2 L, ₹3.8 Cr) like project cards; rents in full (₹20,000/month). */
-const money = (value?: number | null, listingType?: string | null) => {
+const money = (value?: number | null, listingType?: string | null, currency?: string | null) => {
   if (value == null) return "Price on request";
-  if (listingType === "RENT" || listingType === "PG") return `₹${value.toLocaleString("en-IN")}/month`;
-  return shortMoney(value) || `₹${value.toLocaleString("en-IN")}`;
+  if (listingType === "RENT" || listingType === "PG") return `${formatMoney(value, currency || "INR")}/month`;
+  return shortMoney(value, currency) || formatMoney(value, currency || "INR");
 };
 
 const area = (item: PropertySearchItem) => {
@@ -37,12 +38,9 @@ const readable = (value?: string | null) =>
         .replace(/\b\w/g, (letter) => letter.toUpperCase())
     : "";
 
-function shortMoney(value?: number | null) {
+function shortMoney(value?: number | null, currency?: string | null) {
   if (value == null || value <= 0) return "";
-  const trim = (n: number) => n.toFixed(2).replace(/\.?0+$/, "");
-  if (value >= 10_000_000) return `₹${trim(value / 10_000_000)} Cr`;
-  if (value >= 100_000) return `₹${trim(value / 100_000)} L`;
-  return `₹${value.toLocaleString("en-IN")}`;
+  return formatMoneyShort(value, currency || "INR", { decimals: "trim" });
 }
 
 const decisionDetails = (item: PropertySearchItem): string[] => {
@@ -72,7 +70,7 @@ const decisionDetails = (item: PropertySearchItem): string[] => {
         ? `${item.minNoOfSeats ? `${item.minNoOfSeats}–` : "Up to "}${item.maxNoOfSeats} seats`
         : null,
       item.shopFacadeSize ? `${item.shopFacadeSize} ${readable(item.shopFacadeSizeUnit || "ft")} frontage` : null,
-      listingType === "RENT" && item.deposit ? `${shortMoney(item.deposit)} deposit` : null,
+      listingType === "RENT" && item.deposit ? `${shortMoney(item.deposit, item.currencyCode)} deposit` : null,
       item.officeType && readable(item.officeType),
       item.furnishing && readable(item.furnishing),
     );
@@ -80,7 +78,7 @@ const decisionDetails = (item: PropertySearchItem): string[] => {
     details.push(
       item.bedrooms ? `${item.bedrooms} BHK` : null,
       area(item),
-      listingType === "RENT" && item.deposit ? `${shortMoney(item.deposit)} deposit` : null,
+      listingType === "RENT" && item.deposit ? `${shortMoney(item.deposit, item.currencyCode)} deposit` : null,
       item.furnishing && readable(item.furnishing),
       item.floorNumber != null && item.floorNumber !== "" ? `Floor ${item.floorNumber}${item.totalFloors ? `/${item.totalFloors}` : ""}` : null,
     );
@@ -107,7 +105,7 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     slug: item.slug,
     title: item.title,
     subtitle: [item.locality, item.subLocality, item.cityName].filter(Boolean).join(" · "),
-    price: money(item.price, item.listingType),
+    price: money(item.price, item.listingType, item.currencyCode),
     area: area(item),
     owner: postedAsLabel(item.postedAs),
     bedrooms: item.bedrooms,

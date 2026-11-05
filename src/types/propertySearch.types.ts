@@ -70,6 +70,8 @@ export type PropertySearchItem = {
   propertySubTypeId?: number | null;
   status?: string | null;
   qcStatus?: string | null;
+  countryCode?: string | null;
+  currencyCode?: string | null;
   cityName?: string | null;
   locality?: string | null;
   subLocality?: string | null;
