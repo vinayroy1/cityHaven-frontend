@@ -35,6 +35,7 @@ import { Ruler,
   Zap,
   Linkedin,
   Youtube,
+  Hotel,
 } from "lucide-react";
 import { SOCIAL_LINKS } from "@/constants/seo";
 import { APP_CONFIG } from "@/constants/app-config";
@@ -70,6 +71,7 @@ const categoryLinks = [
   { label: "Rent Properties", href: "/rent", icon: Key },
   { label: "PG & Co-living", href: "/pg", icon: BedDouble },
   { label: "Find Flatmates", href: "/flatmate", icon: Users },
+  { label: "Hotels & Stays", href: "/stays", icon: Hotel, badge: "New" },
   { label: "Commercial", href: "/commercial", icon: Building2 },
   { label: "Plots & Land", href: "/plot", icon: MapPin },
   { label: "New Projects", href: "/new-projects", icon: Sparkles, badge: "New" },

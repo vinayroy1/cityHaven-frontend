@@ -289,7 +289,12 @@ export function SearchPageClient({
             <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-700 dark:text-slate-200">
               {[state.cityName, ...state.localities.map((locality) => locality.label), state.q]
                 .filter(Boolean)
-                .join(" • ") || "Search by locality, project or landmark"}
+                .join(" • ") || (
+                <>
+                  <span className="sm:hidden">Search locality or project</span>
+                  <span className="hidden sm:inline">Search by locality, project or landmark</span>
+                </>
+              )}
             </span>
           </button>
           <button

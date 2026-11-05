@@ -37,6 +37,7 @@ import { getCountry } from "@/config/countries";
 
 const portalCountryName = () => getCountry(typeof document !== "undefined" ? getSelectedCountry() : "IN").name;
 import { formatMoney, formatMoneyShort } from "@/lib/money";
+import { HomeStaysSection } from "@/components/stays/HomeStaysSection";
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
@@ -446,6 +447,10 @@ export function HomeExperience({
 
         <RenderWhenNear minHeight={420}>
           <InteriorDesignersSection selectedCity={selectedCity} />
+        </RenderWhenNear>
+
+        <RenderWhenNear minHeight={420}>
+          <HomeStaysSection selectedCity={selectedCity} />
         </RenderWhenNear>
 
       </main>

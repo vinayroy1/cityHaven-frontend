@@ -21,6 +21,7 @@ import { Ruler,
   MapPin,
   MessageSquare,
   Paintbrush,
+  Hotel,
   PlusCircle,
   Settings,
   Shield,
@@ -84,6 +85,7 @@ const categoryExploreLinks = [
   { label: "Locality Guide", href: "/nearby", icon: MapPin, desc: "Metro, hospitals & schools near any locality" },
   { label: "Area Converter", href: "/area-converter", icon: Ruler, desc: "Sq ft, sq m, sq yd, acre & hectare" },
   { label: "Interior Designers", href: "/interior-designers", icon: Paintbrush, desc: "Architects, modular experts & decor firms" },
+  { label: "Hotels & Stays", href: "/stays", icon: Hotel, desc: "Hotels, guest houses, homestays & dharamshalas" },
   { label: "PG & Co-living", href: "/pg", icon: BedDouble, desc: "Verified hostels & coliving spaces" },
   { label: "Commercial", href: "/commercial", icon: Building2, desc: "Offices, shops & commercial spaces" },
   { label: "Plots & Land", href: "/plot", icon: MapPin, desc: "Residential & commercial plots" },
@@ -256,6 +258,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     { label: "Leads", href: "/dashboard/leads", icon: Inbox, badge: newLeads > 0 ? `${newLeads} new` : null, onClick: undefined },
     { label: "My Profile", href: "/dashboard/profile", icon: User, badge: null, onClick: undefined },
     { label: "Interior Designer Profile", href: "/dashboard/interior-profile", icon: Paintbrush, badge: "New", onClick: undefined },
+    { label: "My Hotels & Stays", href: "/dashboard/stays", icon: Hotel, badge: "New", onClick: undefined },
     { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null, onClick: undefined },
     { label: "My Flatmates", href: "/dashboard/flatmates", icon: Users, badge: null, onClick: undefined },
     { label: "Organization", href: "/dashboard/organization", icon: ShieldCheck, badge: null, onClick: undefined },
@@ -511,7 +514,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
 
         {/* Right Side CTAs & Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2.5" ref={accountRef}>
-          <CountrySwitcher compact className="hidden lg:block" />
+          <CountrySwitcher compact className="hidden lg:inline-flex" />
           <Link
             href={isAuthed ? "/propertyListing" : "/login?redirect=/propertyListing"}
             prefetch={false}
@@ -562,7 +565,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
             >
               <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500 animate-pulse shrink-0" />
               <span>{creditBalance}</span>
-              <span className="hidden sm:inline font-bold text-amber-800 dark:text-amber-300 text-[11px]">
+              <span className="hidden sm:inline lg:hidden 2xl:inline font-bold text-amber-800 dark:text-amber-300 text-[11px]">
                 Credits
               </span>
             </button>
@@ -576,7 +579,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                   })
                 );
               }}
-              className="hidden md:inline-flex items-center gap-1.5 rounded-full border border-amber-300/80 bg-amber-50/90 px-2.5 py-1 text-[11px] font-bold text-amber-800 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200 transition"
+              className="hidden md:inline-flex lg:hidden min-[1700px]:inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-full border border-amber-300/80 bg-amber-50/90 px-2.5 py-1 text-[11px] font-bold text-amber-800 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200 transition"
               title="Sign up and claim 1,000 free credits"
             >
               <Zap className="h-3 w-3 fill-amber-500 text-amber-500" />
@@ -610,7 +613,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                     <span>{userInitials}</span>
                   )}
                 </div>
-                <span className="hidden max-w-[80px] truncate text-xs font-semibold text-slate-800 sm:inline-block dark:text-slate-200">
+                <span className="hidden max-w-[80px] truncate text-xs font-semibold text-slate-800 sm:inline-block lg:hidden 2xl:inline-block dark:text-slate-200">
                   {userDisplayName}
                 </span>
                 <ChevronDown

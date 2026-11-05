@@ -18,6 +18,7 @@ const MOBILE_PLACEHOLDER: Record<string, string> = {
 import { primaryButton } from "./theme";
 
 import { resolveSearchQueryToState } from "@/lib/search/intentParser";
+import { HotelHeroSearch } from "@/components/stays/HotelHeroSearch";
 
 type Props = {
   variant: "hero" | "results";
@@ -31,7 +32,10 @@ type Props = {
   onBack?: () => void;
 };
 
-export function SearchEditor({ variant, value, onSubmit, onContextChange, showSubmit = true, liveChanges = false }: { variant?: "hero" | "results"; value: SearchState; onSubmit: (next: SearchState) => void; onContextChange?: (next: SearchState) => void; showSubmit?: boolean; liveChanges?: boolean }) {
+/** Extra tab outside the property intents (home "Hotels" tab) that swaps in its own search form. */
+type ExtraTab = { label: string; active: boolean; onSelect: () => void; onLeave: () => void; content: React.ReactNode };
+
+export function SearchEditor({ variant, value, onSubmit, onContextChange, showSubmit = true, liveChanges = false, extraTab }: { variant?: "hero" | "results"; value: SearchState; onSubmit: (next: SearchState) => void; onContextChange?: (next: SearchState) => void; showSubmit?: boolean; liveChanges?: boolean; extraTab?: ExtraTab }) {
   const [draft, setDraft] = React.useState(value);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const draftRef = React.useRef(draft);
@@ -66,10 +70,14 @@ export function SearchEditor({ variant, value, onSubmit, onContextChange, showSu
           <button
             key={intent}
             type="button"
-            aria-pressed={draft.intent === intent}
-            onClick={() => changeContext(intent === draft.intent ? draft : clearAllFilters({ ...draft, intent, transaction: "SELL" }))}
+            aria-pressed={!extraTab?.active && draft.intent === intent}
+            onClick={() => {
+              extraTab?.onLeave();
+              changeContext(intent === draft.intent ? draft : clearAllFilters({ ...draft, intent, transaction: "SELL" }));
+            }}
+            style={{ order: INTENT_KEYS.indexOf(intent) < 4 ? INTENT_KEYS.indexOf(intent) : INTENT_KEYS.indexOf(intent) + 1 }}
             className={`shrink-0 border-b-2 pb-3 text-sm font-bold transition ${
-              draft.intent === intent
+              !extraTab?.active && draft.intent === intent
                 ? "border-rose-600 text-rose-600 dark:text-rose-400 dark:border-rose-400"
                 : "border-transparent text-zinc-500 hover:text-zinc-900 dark:text-slate-400 dark:hover:text-white"
             }`}
@@ -77,8 +85,28 @@ export function SearchEditor({ variant, value, onSubmit, onContextChange, showSu
             {INTENT_CONFIG[intent].label}
           </button>
         ))}
+        {extraTab && (
+          <button
+            type="button"
+            aria-pressed={extraTab.active}
+            onClick={extraTab.onSelect}
+            style={{ order: 4 }}
+            className={`inline-flex shrink-0 items-center gap-1.5 border-b-2 pb-3 text-sm font-bold transition ${
+              extraTab.active
+                ? "border-rose-600 text-rose-600 dark:border-rose-400 dark:text-rose-400"
+                : "border-transparent text-zinc-500 hover:text-zinc-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            {extraTab.label}
+            <span className="rounded-full bg-rose-600 px-1.5 py-px text-[9px] font-black text-white">NEW</span>
+          </button>
+        )}
       </div>
 
+      {extraTab?.active ? (
+        extraTab.content
+      ) : (
+      <>
       {draft.intent === "COMMERCIAL" && (
         <div className="flex gap-2" aria-label="Commercial transaction">
           {(["SELL", "RENT"] as const).map((transaction) => (
@@ -166,6 +194,8 @@ export function SearchEditor({ variant, value, onSubmit, onContextChange, showSu
           </button>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }
@@ -178,6 +208,8 @@ export function SearchBar({
 }: Props) {
   const [mobileSearchOpen, setMobileSearchOpen] = React.useState(false);
   const [isMobileSubmitting, setIsMobileSubmitting] = React.useState(false);
+  // Home "Hotels" tab: its own search that opens /stays (not a property intent).
+  const [hotelMode, setHotelMode] = React.useState(false);
 
   const handleMobileSubmit = async () => {
     if (isMobileSubmitting) return;
@@ -194,28 +226,66 @@ export function SearchBar({
       <>
         {/* Desktop Hero Search: Inline */}
         <div className="hidden sm:block">
-          <SearchEditor variant="hero" value={value} onSubmit={onSubmit} onContextChange={onChange} />
+          <SearchEditor
+            variant="hero"
+            value={value}
+            onSubmit={onSubmit}
+            onContextChange={onChange}
+            extraTab={{
+              label: "Hotels",
+              active: hotelMode,
+              onSelect: () => setHotelMode(true),
+              onLeave: () => setHotelMode(false),
+              content: <HotelHeroSearch />,
+            }}
+          />
         </div>
 
         {/* Mobile Hero Search: High-end compact search card (NoBroker style) that launches the full search drawer */}
         <div className="sm:hidden">
-          <div className="no-scrollbar mb-2 flex gap-5 overflow-x-auto border-b border-slate-200 px-1 dark:border-slate-800" aria-label="Property category">
+          <div className="no-scrollbar mb-2 flex gap-3 overflow-x-auto border-b border-slate-200 px-0.5 min-[400px]:gap-4 dark:border-slate-800" aria-label="Property category">
             {INTENT_KEYS.map((intent) => (
               <button
                 key={intent}
                 type="button"
-                aria-pressed={value.intent === intent}
-                onClick={() => onChange(intent === value.intent ? value : clearAllFilters({ ...value, intent, transaction: "SELL" }))}
+                aria-pressed={!hotelMode && value.intent === intent}
+                onClick={() => {
+                  setHotelMode(false);
+                  onChange(intent === value.intent ? value : clearAllFilters({ ...value, intent, transaction: "SELL" }));
+                }}
+                style={{ order: INTENT_KEYS.indexOf(intent) < 4 ? INTENT_KEYS.indexOf(intent) : INTENT_KEYS.indexOf(intent) + 1 }}
                 className={`shrink-0 border-b-2 px-1 pb-2 text-xs font-bold transition ${
-                  value.intent === intent
+                  !hotelMode && value.intent === intent
                     ? "border-rose-600 text-rose-600 dark:border-rose-400 dark:text-rose-400"
                     : "border-transparent text-slate-400 dark:text-slate-500"
                 }`}
               >
-                {INTENT_CONFIG[intent].label}
+                {intent === "PG" ? (
+                  <>
+                    <span className="min-[400px]:hidden">PG</span>
+                    <span className="hidden min-[400px]:inline">{INTENT_CONFIG[intent].label}</span>
+                  </>
+                ) : (
+                  INTENT_CONFIG[intent].label
+                )}
               </button>
             ))}
+            <button
+              type="button"
+              aria-pressed={hotelMode}
+              onClick={() => setHotelMode(true)}
+              style={{ order: 4 }}
+              className={`inline-flex shrink-0 items-center gap-1 border-b-2 px-1 pb-2 text-xs font-bold transition ${
+                hotelMode ? "border-rose-600 text-rose-600 dark:border-rose-400 dark:text-rose-400" : "border-transparent text-slate-400 dark:text-slate-500"
+              }`}
+            >
+              Hotels
+              <span className="rounded-full bg-rose-600 px-1 py-px text-[8px] font-black leading-none text-white">NEW</span>
+            </button>
           </div>
+          {hotelMode ? (
+            <HotelHeroSearch compact />
+          ) : (
           <div className="flex h-12 w-full items-center gap-2 rounded-xl border border-slate-200 bg-white pl-3 pr-1.5 text-left shadow-xs transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900">
             <button
               type="button"
@@ -247,6 +317,7 @@ export function SearchBar({
               )}
             </button>
           </div>
+          )}
         </div>
 
         <MobileSearchFlow
