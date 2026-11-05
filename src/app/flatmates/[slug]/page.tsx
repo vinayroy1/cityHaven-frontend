@@ -43,6 +43,7 @@ import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/P
 import { toSearchSlug } from "@/components/search/searchQuery";
 import { FlatmateDetailSkeleton } from "@/components/flatmates/FlatmateDetailSkeleton";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
+import { WhatsAppShareButton } from "@/components/common/WhatsAppShareButton";
 import { SeekerAvatarPlaceholder } from "@/components/flatmates/SeekerAvatarPlaceholder";
 import { isRealUserPhoto } from "@/components/flatmates/FlatmateCard";
 import { NearbyLandmarksCompact } from "@/components/nearby/NearbyLandmarksCompact";
@@ -177,10 +178,31 @@ export default function FlatmateDetailPage() {
             </div>
 
             <div className="flex items-center gap-2">
+              <WhatsAppShareButton
+                type="flatmate"
+                flatmateData={{
+                  title: listing.title,
+                  mode: listing.mode,
+                  roomType: listing.roomType,
+                  bhk: listing.bhk,
+                  locality: localityName,
+                  cityName: listing.cityName,
+                  rent: listing.rent ?? listing.budgetMax,
+                  deposit: listing.deposit,
+                  habitsSummary: profile?.bio?.slice(0, 80) || (listing.preferredGenders?.length ? `Looking for ${listing.preferredGenders.join("/")}` : null),
+                  genderPreference: listing.preferredGenders?.join("/"),
+                  nearbyLandmarks: listing.nearbyLandmarks,
+                  url: typeof window !== "undefined" ? window.location.href : `https://awasio.com/flatmates/${slug}`,
+                }}
+                label="Share on WhatsApp"
+                showPreviewModal={true}
+                size="sm"
+                variant="solid"
+              />
               <button
                 type="button"
                 onClick={handleShare}
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
               >
                 <Share2 className="h-3.5 w-3.5" />
                 <span>Share</span>

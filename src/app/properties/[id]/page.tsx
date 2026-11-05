@@ -812,6 +812,12 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             ownerName={property.owner?.name || "Property owner"}
             locality={property.locality ?? property.cityName}
             cityName={property.cityName}
+            bedrooms={property.bedrooms}
+            propertySubType={property.propertySubType?.name}
+            propertyType={property.propertyType?.name}
+            listingType={property.listingType}
+            postedAs={property.postedAs}
+            nearbyLandmarks={property.nearbyLandmarks}
           />
           <div className="mt-5">
             <QuickFactsGrid items={buildQuickFacts(property)} />

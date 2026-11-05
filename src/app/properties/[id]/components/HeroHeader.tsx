@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Calendar as CalendarIcon, MapPin, Phone, Share2, Sparkles } from "lucide-react";
 import { ContactAccessFlow } from "./ContactAccessFlow";
+import { WhatsAppShareButton } from "@/components/common/WhatsAppShareButton";
 
 const ScheduleVisitDialog = dynamic(
   () => import("@/components/property/ScheduleVisitDialog").then((m) => m.ScheduleVisitDialog),
@@ -20,6 +21,12 @@ type HeroHeaderProps = {
   ownerName?: string | null;
   locality?: string | null;
   cityName?: string | null;
+  bedrooms?: number | null;
+  propertySubType?: string | null;
+  propertyType?: string | null;
+  listingType?: string | null;
+  postedAs?: string | null;
+  nearbyLandmarks?: any;
 };
 
 export function HeroHeader({
@@ -33,6 +40,12 @@ export function HeroHeader({
   ownerName,
   locality,
   cityName,
+  bedrooms,
+  propertySubType,
+  propertyType,
+  listingType,
+  postedAs,
+  nearbyLandmarks,
 }: HeroHeaderProps) {
   const [shareStatus, setShareStatus] = useState("");
   const [phone, setPhone] = useState<string | null>(null);
@@ -75,8 +88,28 @@ export function HeroHeader({
             <p className="mt-3 flex items-start gap-2 text-sm text-zinc-600 dark:text-slate-400"><MapPin className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />{subtitle}</p>
           </div>
           <div className="flex items-center gap-2">
+            <WhatsAppShareButton
+              type="property"
+              propertyData={{
+                title,
+                bedrooms,
+                propertySubType,
+                propertyType,
+                listingType,
+                locality,
+                cityName,
+                price,
+                postedAs,
+                nearbyLandmarks,
+                url: typeof window !== "undefined" ? window.location.href : `https://awasio.com/properties/${propertyId}`,
+              }}
+              label="Share on WhatsApp"
+              showPreviewModal={true}
+              size="md"
+              variant="solid"
+            />
             <span role="status" className="text-xs text-zinc-600 dark:text-slate-400">{shareStatus}</span>
-            <button type="button" onClick={share} title="Share property" aria-label="Share property" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 transition hover:bg-zinc-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800">
+            <button type="button" onClick={share} title="Share property" aria-label="Share property" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 transition hover:bg-zinc-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800">
               <Share2 className="h-4 w-4" />
             </button>
           </div>
