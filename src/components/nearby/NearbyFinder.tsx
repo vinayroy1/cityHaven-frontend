@@ -8,12 +8,14 @@ import { useState, useTransition } from "react";
 import { Loader2, Search } from "lucide-react";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
+import { useCountryCode } from "@/lib/country/useCountry";
 
 export function NearbyFinder({
   defaultCity = "",
   variant = "light",
   stacked = false,
   bare = false,
+  countryCode: propCountryCode,
 }: {
   defaultCity?: string;
   variant?: "light" | "hero";
@@ -21,8 +23,12 @@ export function NearbyFinder({
   stacked?: boolean;
   /** Two columns on sm+, no card chrome (when the parent provides the card). */
   bare?: boolean;
+  /** Optional override; defaults to active portal country. */
+  countryCode?: string;
 }) {
   const router = useRouter();
+  const activeCountry = useCountryCode();
+  const countryCode = propCountryCode || activeCountry || "IN";
   const [city, setCity] = useState(defaultCity);
   const [state, setState] = useState<string | undefined>(undefined);
   const [loc, setLoc] = useState<{ name: string; slug?: string } | null>(null);
@@ -70,6 +76,7 @@ export function NearbyFinder({
         <PropertyListingCitySelector
           value={city}
           selectedState={state}
+          countryCode={countryCode}
           placeholder="Select city"
           onChange={(c) => {
             setCity(c.name);
@@ -83,10 +90,11 @@ export function NearbyFinder({
           Locality <span className="font-medium normal-case tracking-normal text-slate-400">(optional)</span>
         </p>
         <PropertyListingLocalitySelector
-          key={city}
+          key={`${countryCode}-${city}`}
           value={loc?.name ?? ""}
           cityName={city}
           selectedState={state}
+          countryCode={countryCode}
           placeholder={city ? `Search localities in ${city}` : undefined}
           onChange={(l) => setLoc(l.name ? { name: l.name, slug: l.slug } : null)}
         />

@@ -95,7 +95,7 @@ export default async function NearbyIndexPage() {
             <div className="flex items-center gap-2 px-3 pb-1 pt-2 text-xs font-semibold text-slate-500">
               <Search className="h-3.5 w-3.5 text-emerald-600" /> Pick a city, then your locality
             </div>
-            <NearbyFinder bare />
+            <NearbyFinder bare countryCode={country} />
           </div>
 
           {sample && (
