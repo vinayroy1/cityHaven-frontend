@@ -135,7 +135,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
               type="button"
               aria-label="Find stays"
               onClick={() => document.getElementById("stay-results")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-              className="col-start-2 row-start-1 inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-slate-900 px-3.5 text-sm font-bold text-white transition hover:bg-slate-800 sm:rounded-2xl sm:px-6"
+              className="col-start-2 row-start-1 inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-rose-600 px-3.5 text-sm font-bold text-white shadow-xs transition hover:bg-rose-700 sm:px-6"
             >
               <Search className="h-4 w-4" /> <span className="hidden sm:inline">Find stays</span>
             </button>

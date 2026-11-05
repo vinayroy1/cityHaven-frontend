@@ -77,7 +77,7 @@ export default async function NearbyLocalityPage({ params }: Props) {
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.35] [background-image:radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:18px_18px] dark:opacity-10"
           />
-          <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-emerald-200/40 blur-3xl dark:bg-emerald-900/30" />
+          <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-rose-100/60 blur-3xl dark:bg-rose-950/20" />
         </div>
         <div className="relative mx-auto max-w-6xl px-4 pb-7 pt-5 sm:px-6 sm:pb-10 sm:pt-8">
           <nav className="flex items-center gap-1 text-xs text-slate-500">
@@ -100,8 +100,8 @@ export default async function NearbyLocalityPage({ params }: Props) {
 
           <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div className="min-w-0">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900">
-                <MapPin className="h-3.5 w-3.5" /> {city || "India"}
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 ring-1 ring-rose-200/70 dark:bg-rose-950/40 dark:text-rose-300 dark:ring-rose-900">
+                <MapPin className="h-3.5 w-3.5 text-rose-600" /> {city || "India"}
               </span>
               <h1 className="mt-2 text-4xl font-black tracking-tight text-slate-900 dark:text-white sm:text-5xl">
                 {name}
@@ -114,7 +114,7 @@ export default async function NearbyLocalityPage({ params }: Props) {
             </div>
 
             {score && (
-              <div className="flex items-center gap-4 rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 sm:min-w-[300px]">
+              <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 sm:min-w-[300px]">
                 <ScoreRing score={score.score} verdict={score.verdict} />
                 <div>
                   <p className="text-sm font-bold text-slate-900 dark:text-white">Connectivity score</p>
@@ -154,19 +154,19 @@ export default async function NearbyLocalityPage({ params }: Props) {
 
         <aside className="space-y-4 lg:sticky lg:top-24">
           {homeLinks.length > 0 && (
-            <div className="rounded-3xl bg-slate-900 p-5 text-white shadow-lg dark:bg-slate-800">
-              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-300">Like it here?</p>
-              <h2 className="mt-1 text-xl font-black leading-snug">Find a home in {name}</h2>
+            <div className="rounded-2xl bg-slate-900 p-5 text-white shadow-lg dark:bg-slate-800">
+              <p className="text-xs font-semibold uppercase tracking-wider text-rose-400">Like it here?</p>
+              <h2 className="mt-1 text-xl font-bold leading-snug">Find a home in {name}</h2>
               <p className="mt-1 text-sm text-slate-300">Direct from owners · zero brokerage</p>
               <div className="mt-4 space-y-2">
                 {homeLinks.map(({ href, label, icon: Icon }) => (
                   <Link
                     key={href}
                     href={href}
-                    className="group flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold transition hover:bg-white/20"
+                    className="group flex items-center justify-between rounded-xl bg-white/10 px-4 py-3 text-sm font-semibold transition hover:bg-white/20"
                   >
                     <span className="flex items-center gap-2.5">
-                      <Icon className="h-4 w-4 text-emerald-300" /> {label}
+                      <Icon className="h-4 w-4 text-rose-400" /> {label}
                     </span>
                     <ArrowRight className="h-4 w-4 opacity-60 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
                   </Link>
@@ -175,7 +175,7 @@ export default async function NearbyLocalityPage({ params }: Props) {
             </div>
           )}
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <h2 className="mb-3 text-sm font-bold text-slate-900 dark:text-white">Compare another locality</h2>
             <NearbyFinder defaultCity={city} stacked />
           </div>

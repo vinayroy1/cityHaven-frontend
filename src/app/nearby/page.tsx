@@ -77,27 +77,30 @@ export default async function NearbyIndexPage() {
       <section className="relative z-10 border-b border-slate-200/70 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 opacity-[0.35] [background-image:radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:18px_18px] dark:opacity-10" />
-          <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-emerald-200/50 blur-3xl dark:bg-emerald-900/30" />
-          <div className="absolute -bottom-40 -left-24 h-80 w-80 rounded-full bg-sky-100/70 blur-3xl dark:bg-sky-900/20" />
+          <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-rose-100/60 blur-3xl dark:bg-rose-950/20" />
+          <div className="absolute -bottom-40 -left-24 h-80 w-80 rounded-full bg-amber-50/70 blur-3xl dark:bg-amber-950/10" />
         </div>
 
         <div className="relative mx-auto max-w-3xl px-4 pb-12 pt-8 text-center sm:px-6 lg:pb-16 lg:pt-16">
-          <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-900">
+          <span className="inline-flex items-center rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 ring-1 ring-rose-200/70 dark:bg-rose-950/40 dark:text-rose-300 dark:ring-rose-900">
             Free locality guide · 2.5 lakh+ localities
           </span>
           <div className="mt-3">
             <CountryContextChip what="Locality guides" />
           </div>
           <h1 className="mt-4 text-[34px] font-black leading-[1.08] tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
-            Know the neighbourhood <span className="text-emerald-600">before you move.</span>
+            Know the neighbourhood{" "}
+            <span className="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 bg-clip-text text-transparent">
+              before you move.
+            </span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm text-slate-600 dark:text-slate-400 sm:text-base">
             Nearest metro, hospitals, schools, colleges, malls and airport for any locality — with walking and driving time.
           </p>
 
-          <div className="mx-auto mt-8 max-w-2xl rounded-3xl border border-slate-200 bg-white p-2 text-left shadow-xl shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-900">
+          <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-slate-200 bg-white p-2 text-left shadow-xl shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center gap-2 px-3 pb-1 pt-2 text-xs font-semibold text-slate-500">
-              <Search className="h-3.5 w-3.5 text-emerald-600" /> Pick a city, then your locality
+              <Search className="h-3.5 w-3.5 text-rose-600" /> Pick a city, then your locality
             </div>
             <NearbyFinder bare countryCode={country} />
           </div>
@@ -108,7 +111,7 @@ export default async function NearbyIndexPage() {
               {cards.slice(0, 4).map((c, i) => (
                 <span key={c.slug}>
                   {i > 0 && " · "}
-                  <Link href={`/nearby/${c.slug}`} className="font-semibold text-emerald-700 hover:underline dark:text-emerald-400">
+                  <Link href={`/nearby/${c.slug}`} className="font-semibold text-rose-600 hover:underline dark:text-rose-400">
                     {c.name}
                   </Link>
                 </span>
@@ -132,14 +135,14 @@ export default async function NearbyIndexPage() {
                 <Link
                   key={c.slug}
                   href={`/nearby/${c.slug}`}
-                  className="group min-w-0 rounded-2xl border border-slate-200/80 bg-white p-4 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+                  className="group min-w-0 rounded-2xl border border-slate-200/80 bg-white p-4 transition hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="truncate text-base font-bold text-slate-900 dark:text-white">{c.name}</p>
                       <p className="text-xs text-slate-500">{c.city}</p>
                     </div>
-                    <ArrowUpRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:text-emerald-600" />
+                    <ArrowUpRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:text-rose-600" />
                   </div>
                   <div className="mt-3 space-y-1.5 text-xs">
                     {metro && (
@@ -172,7 +175,7 @@ export default async function NearbyIndexPage() {
               <Link
                 key={c.id}
                 href={`/nearby/${guideCityKey(c)}`}
-                className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-emerald-50 hover:text-emerald-700 hover:ring-emerald-200 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-800"
+                className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-rose-50 hover:text-rose-600 hover:ring-rose-200 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-800"
               >
                 {c.name}
               </Link>

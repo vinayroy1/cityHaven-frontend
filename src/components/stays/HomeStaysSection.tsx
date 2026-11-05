@@ -35,7 +35,6 @@ export function HomeStaysSection({ selectedCity }: { selectedCity?: string }) {
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
             <BedDouble className="h-3.5 w-3.5" />
             <span>Hotels & stays</span>
-            <span className="rounded-full bg-rose-600 px-1.5 py-px text-[9px] font-black text-white">NEW</span>
           </div>
           <h2 id="home-stays-heading" className="mt-1 text-xl font-bold tracking-tight text-slate-950 sm:text-2xl dark:text-white">
             {useCity ? `Places to stay in ${city}` : `Places to stay across ${country.name}`}

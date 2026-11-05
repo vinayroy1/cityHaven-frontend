@@ -509,13 +509,13 @@ export function FlatmateListingWizard() {
             <button
               type="button"
               onClick={() => setMode("NEED_ROOM")}
-              className={`group relative flex flex-col items-start p-6 rounded-3xl border-2 text-left transition-all ${
+              className={`group relative flex flex-col items-start p-6 rounded-2xl border-2 text-left transition-all ${
                 mode === "NEED_ROOM"
-                  ? "border-indigo-500 bg-indigo-50/40 dark:bg-indigo-950/20 shadow-lg shadow-indigo-500/10 scale-[1.02]"
+                  ? "border-rose-500 bg-rose-50/40 dark:bg-rose-950/20 shadow-lg shadow-rose-500/10 scale-[1.02]"
                   : "border-slate-200 dark:border-slate-800 hover:border-slate-300 bg-white dark:bg-slate-900"
               }`}
             >
-              <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-4 shadow-sm">
+              <div className="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-900/60 flex items-center justify-center text-rose-600 dark:text-rose-400 mb-4 shadow-sm">
                 <Search className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
@@ -525,8 +525,8 @@ export function FlatmateListingWizard() {
                 Looking for an available private or shared room to move into with like-minded flatmates.
               </p>
               {mode === "NEED_ROOM" && (
-                <div className="absolute top-4 right-4 text-indigo-600">
-                  <CheckCircle2 className="w-5 h-5 fill-indigo-600 text-white" />
+                <div className="absolute top-4 right-4 text-rose-600">
+                  <CheckCircle2 className="w-5 h-5 fill-rose-600 text-white" />
                 </div>
               )}
             </button>
@@ -933,7 +933,7 @@ export function FlatmateListingWizard() {
               {OCCUPATION_OPTIONS.map((option) => {
                 const selected = preferredOccupations.includes(option);
                 return (
-                  <button key={option} type="button" onClick={() => setPreferredOccupations((current) => selected ? current.filter((item) => item !== option) : [...current, option])} className={`rounded-2xl border p-2.5 text-xs font-semibold transition ${selected ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300" : "border-slate-200 text-slate-600 dark:border-slate-800 dark:text-slate-400"}`}>
+                  <button key={option} type="button" onClick={() => setPreferredOccupations((current) => selected ? current.filter((item) => item !== option) : [...current, option])} className={`rounded-xl border p-2.5 text-xs font-semibold transition ${selected ? "border-rose-600 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 font-bold" : "border-slate-200 text-slate-600 dark:border-slate-800 dark:text-slate-400"}`}>
                     {option}
                   </button>
                 );
@@ -976,9 +976,9 @@ export function FlatmateListingWizard() {
                     key={opt}
                     type="button"
                     onClick={() => setWorkMode(opt)}
-                    className={`p-2 rounded-2xl border text-xs font-medium transition-all ${
+                    className={`p-2 rounded-xl border text-xs font-medium transition-all ${
                       workMode === opt
-                        ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300 font-bold"
+                        ? "border-rose-600 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 font-bold"
                         : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
                     }`}
                   >
@@ -1367,8 +1367,8 @@ export function FlatmateListingWizard() {
                   ) : (
                     /* User has no photo yet */
                     <div className="space-y-3">
-                      <div className="flex items-start gap-2.5 rounded-2xl bg-indigo-50/70 p-3 text-xs text-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/40">
-                        <Info className="w-4 h-4 mt-0.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                      <div className="flex items-start gap-2.5 rounded-xl bg-sky-50/80 p-3 text-xs text-sky-900 dark:bg-sky-950/40 dark:text-sky-300 border border-sky-200 dark:border-sky-900/40">
+                        <Info className="w-4 h-4 mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" />
                         <span>
                           <strong>Searching for a room?</strong> Flat photos are not required. You can optionally upload your profile photo, or skip and we&apos;ll automatically assign an illustrated character avatar.
                         </span>

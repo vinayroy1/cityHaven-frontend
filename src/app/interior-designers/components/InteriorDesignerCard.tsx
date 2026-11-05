@@ -73,11 +73,7 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
         {/* Badges on Top */}
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 pointer-events-none">
           <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold shadow-xs backdrop-blur-md ${
-              isCompany
-                ? "bg-indigo-600/90 text-white"
-                : "bg-rose-600/90 text-white"
-            }`}
+            className="inline-flex items-center gap-1 rounded-full bg-slate-900/90 px-2.5 py-0.5 text-[11px] font-bold text-white shadow-xs backdrop-blur-md dark:bg-white/90 dark:text-slate-950"
           >
             {isCompany ? <Building2 className="h-3 w-3" /> : <User className="h-3 w-3" />}
             {isCompany ? "Design Studio" : "Independent designer"}

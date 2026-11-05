@@ -90,16 +90,16 @@ export default function PropertyListingPage() {
 
             <Link
               href="/flatmates/post"
-              className="flex items-center gap-2 rounded-xl border border-indigo-200/90 bg-gradient-to-r from-indigo-50/90 via-white to-purple-50/60 p-2 shadow-2xs active:scale-[0.98] transition dark:border-indigo-900/40 dark:bg-slate-900/90 dark:from-slate-900 dark:to-slate-900"
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-2xs active:scale-[0.98] transition hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900"
             >
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-2xs">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-600 text-white shadow-2xs">
                 <Users className="h-3.5 w-3.5" />
               </div>
               <div className="min-w-0 flex-1">
                 <span className="block text-[11px] font-bold text-slate-900 dark:text-white truncate leading-tight">
                   Post Flatmate
                 </span>
-                <span className="block text-[9px] font-semibold text-indigo-600 dark:text-indigo-400 truncate mt-0.5">
+                <span className="block text-[9px] font-semibold text-rose-600 dark:text-rose-400 truncate mt-0.5">
                   Find Roommate →
                 </span>
               </div>
@@ -125,7 +125,7 @@ export default function PropertyListingPage() {
               </div>
               <Link
                 href="/post-project"
-                className="inline-flex items-center justify-center gap-1 rounded-full bg-slate-950 px-3 py-1.5 text-xs font-bold text-white shadow-2xs transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 shrink-0"
+                className="inline-flex items-center justify-center gap-1 rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 shrink-0"
               >
                 <span>Project Portal</span>
                 <span aria-hidden="true">&rarr;</span>
@@ -133,9 +133,9 @@ export default function PropertyListingPage() {
             </div>
 
             {/* Flatmate / Roommate Card */}
-            <div className="flex items-center justify-between gap-3 rounded-2xl border border-indigo-200/90 bg-gradient-to-r from-indigo-50/80 via-white to-purple-50/50 p-3.5 shadow-2xs dark:border-indigo-900/40 dark:bg-slate-900 dark:from-slate-900 dark:to-slate-900">
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400">
                   <Users className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
@@ -149,7 +149,7 @@ export default function PropertyListingPage() {
               </div>
               <Link
                 href="/flatmates/post"
-                className="inline-flex items-center justify-center gap-1 rounded-full bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 text-xs font-bold text-white shadow-2xs transition shrink-0"
+                className="inline-flex items-center justify-center gap-1 rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 shrink-0"
               >
                 <span>Post Flatmate</span>
                 <span aria-hidden="true">&rarr;</span>

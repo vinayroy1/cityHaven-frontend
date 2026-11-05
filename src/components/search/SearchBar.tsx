@@ -98,7 +98,6 @@ export function SearchEditor({ variant, value, onSubmit, onContextChange, showSu
             }`}
           >
             {extraTab.label}
-            <span className="rounded-full bg-rose-600 px-1.5 py-px text-[9px] font-black text-white">NEW</span>
           </button>
         )}
       </div>
@@ -280,7 +279,6 @@ export function SearchBar({
               }`}
             >
               Hotels
-              <span className="rounded-full bg-rose-600 px-1 py-px text-[8px] font-black leading-none text-white">NEW</span>
             </button>
           </div>
           {hotelMode ? (

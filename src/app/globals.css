@@ -3,16 +3,20 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --brand-blue: #2563eb; /* Tailwind blue-600 */
-  --brand-from: #ef4444; /* red-500 */
-  --brand-to: #f97316; /* orange-500 */
+  --brand-primary: #e11d48; /* rose-600 */
+  --brand-primary-hover: #be123c; /* rose-700 */
+  --brand-accent: #f59e0b; /* amber-500 */
+  --brand-from: #e11d48; /* rose-600 */
+  --brand-to: #f59e0b; /* amber-500 */
   --brand-soft-from: #fff1f2;
-  --brand-soft-to: #fff7ed;
+  --brand-soft-to: #fffbeb;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-accent: var(--brand-accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

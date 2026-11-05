@@ -9,7 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, MapPin, PlusCircle, Rocket, Users, X } from "lucide-react";
 import authService from "@/lib/services/api/auth";
 
-type Promo = { id: string; text: string; short: string; cta: string; href: string; icon: typeof PlusCircle; tone: string; authOnly?: boolean };
+type Promo = { id: string; text: string; short: string; cta: string; href: string; icon: typeof PlusCircle; authOnly?: boolean };
 
 const PROMOS: Promo[] = [
   {
@@ -19,7 +19,6 @@ const PROMOS: Promo[] = [
     cta: "Post Free",
     href: "/propertyListing",
     icon: PlusCircle,
-    tone: "from-rose-600 to-pink-600",
   },
   {
     id: "landmarks",
@@ -28,7 +27,6 @@ const PROMOS: Promo[] = [
     cta: "Explore",
     href: "/propertySearch",
     icon: MapPin,
-    tone: "from-emerald-600 to-teal-600",
   },
   {
     id: "flatmate",
@@ -37,7 +35,6 @@ const PROMOS: Promo[] = [
     cta: "Post room",
     href: "/flatmates/post",
     icon: Users,
-    tone: "from-indigo-600 to-violet-600",
   },
   {
     id: "boost",
@@ -46,7 +43,6 @@ const PROMOS: Promo[] = [
     cta: "Boost",
     href: "/dashboard/properties",
     icon: Rocket,
-    tone: "from-amber-500 to-orange-600",
     authOnly: true,
   },
 ];
@@ -96,9 +92,9 @@ export function PromoStrip() {
   return (
     <div className="mx-auto mt-3 w-full max-w-3xl" data-testid="promo-strip">
       <div
-        className={`relative flex h-11 items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r ${p.tone} pl-3 pr-1.5 text-white shadow-sm transition-colors duration-500`}
+        className="relative flex h-11 items-center gap-2 overflow-hidden rounded-xl border border-rose-200/80 bg-rose-50/90 pl-3 pr-1.5 text-slate-800 shadow-2xs transition-colors duration-500 dark:border-rose-900/40 dark:bg-slate-900 dark:text-slate-100"
       >
-        <Icon className="h-4 w-4 shrink-0" aria-hidden />
+        <Icon className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" aria-hidden />
         <Link
           key={p.id}
           href={p.href}
@@ -109,7 +105,7 @@ export function PromoStrip() {
             <span className="sm:hidden">{p.short}</span>
             <span className="hidden sm:inline">{p.text}</span>
           </span>
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold text-slate-900">
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-rose-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-xs transition hover:bg-rose-700">
             {p.cta} <ArrowRight className="h-3 w-3" />
           </span>
         </Link>
@@ -125,7 +121,7 @@ export function PromoStrip() {
               /* ignore */
             }
           }}
-          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white/90 hover:bg-white/15"
+          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-500 hover:bg-rose-100 dark:text-slate-400 dark:hover:bg-slate-800"
         >
           <X className="h-3.5 w-3.5" />
         </button>

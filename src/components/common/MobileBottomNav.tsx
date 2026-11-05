@@ -66,15 +66,22 @@ const HIDDEN_ROUTES = [
   "/auth",
 ];
 
-const categoryLinks = [
+interface CategoryLink {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+}
+
+const categoryLinks: CategoryLink[] = [
   { label: "Buy Homes", href: "/buy", icon: Home },
   { label: "Rent Properties", href: "/rent", icon: Key },
   { label: "PG & Co-living", href: "/pg", icon: BedDouble },
   { label: "Find Flatmates", href: "/flatmate", icon: Users },
-  { label: "Hotels & Stays", href: "/stays", icon: Hotel, badge: "New" },
+  { label: "Hotels & Stays", href: "/stays", icon: Hotel },
   { label: "Commercial", href: "/commercial", icon: Building2 },
   { label: "Plots & Land", href: "/plot", icon: MapPin },
-  { label: "New Projects", href: "/new-projects", icon: Sparkles, badge: "New" },
+  { label: "New Projects", href: "/new-projects", icon: Sparkles },
   { label: "Find Verified Agents", href: "/agents", icon: Users },
   { label: "Post Project (Builder)", href: "/post-project", icon: Building2 },
 ];

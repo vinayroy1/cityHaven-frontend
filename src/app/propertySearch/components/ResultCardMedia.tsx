@@ -268,7 +268,7 @@ export function ResultCardMedia({
       {compact ? (
         <div className="absolute left-2.5 top-2.5 z-10 flex items-center gap-1">
           {isMyProperty ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-indigo-400/50 bg-indigo-600 px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
+            <span className="inline-flex items-center gap-1 rounded-full border border-rose-300 bg-rose-600 px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
               <ShieldCheck className="h-3 w-3" />
               Your Listing
             </span>
@@ -297,7 +297,7 @@ export function ResultCardMedia({
           )}
           <div className="absolute bottom-3 left-3 flex flex-wrap gap-1.5">
             {isMyProperty && (
-              <span className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-2 py-1 text-[11px] font-bold text-white shadow-md">
+              <span className="inline-flex items-center gap-1 rounded-md bg-rose-600 px-2 py-1 text-[11px] font-bold text-white shadow-md">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Your Listing
               </span>

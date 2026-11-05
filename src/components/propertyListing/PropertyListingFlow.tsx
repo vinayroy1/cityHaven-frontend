@@ -844,7 +844,7 @@ export function PropertyListingFlow({
               <Button
                 type="button"
                 size="sm"
-                className="bg-slate-900 px-3.5 sm:px-6 hover:bg-slate-800 text-xs sm:text-sm dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                className="bg-rose-600 px-3.5 sm:px-6 hover:bg-rose-700 text-xs sm:text-sm font-bold text-white shadow-xs dark:bg-rose-600 dark:hover:bg-rose-700 dark:text-white"
                 onClick={handlePublish}
                 disabled={busy || isViewerInSelectedOrg}
               >
@@ -854,7 +854,7 @@ export function PropertyListingFlow({
               <Button
                 type="button"
                 size="sm"
-                className="bg-slate-900 px-3.5 sm:px-6 hover:bg-slate-800 text-xs sm:text-sm dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                className="bg-rose-600 px-3.5 sm:px-6 hover:bg-rose-700 text-xs sm:text-sm font-bold text-white shadow-xs dark:bg-rose-600 dark:hover:bg-rose-700 dark:text-white"
                 onClick={handleNext}
                 disabled={isViewerInSelectedOrg}
               >

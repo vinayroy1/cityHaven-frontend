@@ -27,7 +27,7 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
     <Link
       href={`/stays/${stay.slug}`}
       prefetch={false}
-      className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-900/5 dark:border-slate-800 dark:bg-slate-900"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-900/5 dark:border-slate-800 dark:bg-slate-900"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-rose-100 via-amber-50 to-sky-100 dark:from-slate-800 dark:to-slate-900">
         {cover ? (
@@ -102,7 +102,7 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
 
 export function StayCardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
       <div className="aspect-[4/3] animate-pulse bg-slate-100 dark:bg-slate-800" />
       <div className="space-y-2 p-4">
         <div className="h-4 w-3/4 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />

@@ -56,8 +56,8 @@ const noopSubscribe = () => () => {};
 const primaryNavLinks = [
   { label: "Buy", href: "/buy", icon: Home },
   { label: "Rent", href: "/rent", icon: Key },
-  { label: "New Projects", href: "/new-projects", icon: Sparkles, isNew: true },
-  { label: "Interiors", href: "/interior-designers", icon: Paintbrush, isNew: true },
+  { label: "New Projects", href: "/new-projects", icon: Sparkles },
+  { label: "Interiors", href: "/interior-designers", icon: Paintbrush },
   // Lower-priority links collapse into "More" on narrower desktops so the bar never overflows.
   { label: "PG / Coliving", href: "/pg", icon: BedDouble, xlOnly: true },
   { label: "Commercial", href: "/commercial", icon: Building2, xxlOnly: true },
@@ -257,8 +257,8 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, badge: null, onClick: undefined },
     { label: "Leads", href: "/dashboard/leads", icon: Inbox, badge: newLeads > 0 ? `${newLeads} new` : null, onClick: undefined },
     { label: "My Profile", href: "/dashboard/profile", icon: User, badge: null, onClick: undefined },
-    { label: "Interior Designer Profile", href: "/dashboard/interior-profile", icon: Paintbrush, badge: "New", onClick: undefined },
-    { label: "My Hotels & Stays", href: "/dashboard/stays", icon: Hotel, badge: "New", onClick: undefined },
+    { label: "Interior Designer Profile", href: "/dashboard/interior-profile", icon: Paintbrush, badge: null, onClick: undefined },
+    { label: "My Hotels & Stays", href: "/dashboard/stays", icon: Hotel, badge: null, onClick: undefined },
     { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null, onClick: undefined },
     { label: "My Flatmates", href: "/dashboard/flatmates", icon: Users, badge: null, onClick: undefined },
     { label: "Organization", href: "/dashboard/organization", icon: ShieldCheck, badge: null, onClick: undefined },
@@ -333,12 +333,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
                 }`}
               >
                 <span>{link.label}</span>
-                {"isNew" in link && link.isNew && (
-                  <span className="hidden rounded-full bg-rose-500/10 px-1 py-0.2 text-[9px] font-black uppercase tracking-wider text-rose-600 dark:bg-rose-400/15 dark:text-rose-300 xl:inline">
-                    New
-                  </span>
-                )}
-                {"badge" in link && link.badge && (
+                {"badge" in link && Boolean(link.badge) && (
                   <span className="rounded-full bg-rose-500/10 px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">
                     {link.badge}
                   </span>

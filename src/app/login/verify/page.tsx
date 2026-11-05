@@ -81,7 +81,7 @@ export default function VerifyOtpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-indigo-50/40 text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-150">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100/70 text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-150">
       {/* Top Bar with Back Link & Theme Switcher */}
       <header className="flex items-center justify-between px-6 py-4">
         <BackButton fallbackHref="/login" label="Back to Login" variant="ghost" size="sm" />

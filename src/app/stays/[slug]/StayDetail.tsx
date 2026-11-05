@@ -356,7 +356,7 @@ export default function StayDetail() {
                                   target="_blank"
                                   rel="nofollow noopener noreferrer sponsored"
                                   onClick={() => trackBookingClick(stay.id, "ROOM", r.id)}
-                                  className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-slate-900 px-4 text-xs font-bold text-white"
+                                  className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-rose-600 px-4 text-xs font-bold text-white shadow-xs transition hover:bg-rose-700"
                                 >
                                   Book room <ExternalLink className="h-3.5 w-3.5" />
                                 </a>

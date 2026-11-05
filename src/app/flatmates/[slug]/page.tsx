@@ -280,8 +280,8 @@ export default function FlatmateDetailPage() {
                           )}
 
                           {listing.compatibilityScore != null && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-extrabold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                              <Sparkles className="h-3 w-3 text-indigo-600" />
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-extrabold text-amber-800 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                              <Sparkles className="h-3 w-3 text-amber-600" />
                               <span>{listing.compatibilityScore}% Compatibility</span>
                             </span>
                           )}
@@ -598,7 +598,7 @@ export default function FlatmateDetailPage() {
                       {profile?.workMode && (
                         <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
                           <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                            <Laptop className="w-3.5 h-3.5 text-purple-500" /> Work Mode
+                            <Laptop className="w-3.5 h-3.5 text-rose-500" /> Work Mode
                           </div>
                           <p className="text-xs font-bold text-slate-900 dark:text-white">{profile.workMode}</p>
                         </div>
@@ -607,7 +607,7 @@ export default function FlatmateDetailPage() {
                       {profile?.sleepSchedule && (
                         <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
                           <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                            <Clock3 className="w-3.5 h-3.5 text-indigo-500" /> Sleep Schedule
+                            <Clock3 className="w-3.5 h-3.5 text-rose-500" /> Sleep Schedule
                           </div>
                           <p className="text-xs font-bold text-slate-900 dark:text-white">{profile.sleepSchedule}</p>
                         </div>
@@ -616,7 +616,7 @@ export default function FlatmateDetailPage() {
                       {profile?.cleanlinessLevel != null && (
                         <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-1">
                           <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                            <Sparkles className="w-3.5 h-3.5 text-indigo-500" /> Cleanliness
+                            <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Cleanliness
                           </div>
                           <p className="text-xs font-bold text-slate-900 dark:text-white">
                             {profile.cleanlinessLevel} / 5 Clean

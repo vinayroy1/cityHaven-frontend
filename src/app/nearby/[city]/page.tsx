@@ -67,7 +67,7 @@ export default async function GuideCityPage({ params }: Props) {
       <section className="relative z-10 border-b border-slate-200/70 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.35] [background-image:radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:18px_18px] dark:opacity-10" />
-          <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-emerald-200/40 blur-3xl dark:bg-emerald-900/30" />
+          <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-rose-100/60 blur-3xl dark:bg-rose-950/20" />
         </div>
         <div className="relative mx-auto max-w-6xl px-4 pb-8 pt-5 sm:px-6 sm:pt-8">
           <nav className="flex items-center gap-1 text-xs text-slate-500">
@@ -98,10 +98,10 @@ export default async function GuideCityPage({ params }: Props) {
                 <Link
                   key={l.id}
                   href={`/nearby/${cityKey}/${l.key}`}
-                  className="min-w-0 rounded-2xl border border-slate-200/80 bg-white p-3.5 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+                  className="min-w-0 rounded-2xl border border-slate-200/80 bg-white p-3.5 transition hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
                 >
                   <p className="truncate text-sm font-bold text-slate-900 dark:text-white">{l.name}</p>
-                  <p className="mt-0.5 text-xs text-emerald-700 dark:text-emerald-400">{l.landmarks} places within 3 km</p>
+                  <p className="mt-0.5 text-xs text-rose-600 dark:text-rose-400">{l.landmarks} places within 3 km</p>
                 </Link>
               ))}
             </div>
@@ -118,7 +118,7 @@ export default async function GuideCityPage({ params }: Props) {
                   <Link
                     key={c.id}
                     href={`/nearby/${guideCityKey(c)}`}
-                    className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-emerald-50 hover:text-emerald-700 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-800"
+                    className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-rose-50 hover:text-rose-600 hover:ring-rose-200 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-800"
                   >
                     {c.name}
                   </Link>

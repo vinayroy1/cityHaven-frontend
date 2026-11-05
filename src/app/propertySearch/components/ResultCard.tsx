@@ -542,7 +542,7 @@ export function ResultCard({
         isSponsored
           ? boostTier === "LOCALITY_SPOTLIGHT"
             ? "border-amber-400 ring-2 ring-amber-300/50 dark:border-amber-500 dark:ring-amber-900/30"
-            : "border-indigo-400 ring-2 ring-indigo-300/40 dark:border-indigo-500 dark:ring-indigo-900/30"
+            : "border-rose-400 ring-2 ring-rose-300/40 dark:border-rose-500 dark:ring-rose-900/30"
           : "border-zinc-200 hover:border-zinc-300 dark:border-slate-800 dark:hover:border-slate-700"
       } bg-white shadow-sm transition hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-200 dark:bg-slate-900 ${isNavigating ? "pointer-events-none scale-[0.995] opacity-80" : ""}`}
     >

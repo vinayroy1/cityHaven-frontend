@@ -576,8 +576,8 @@ export function ProjectMediaUpload({
               <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
                 Project Digital Brochure (PDF / Document)
               </label>
-              <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-400 border border-indigo-200/60">
-                <CloudCheck className="h-3 w-3 text-indigo-600" />
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                <CloudCheck className="h-3 w-3 text-slate-600 dark:text-slate-400" />
                 <span>Cloudflare R2 Stored</span>
               </span>
             </div>

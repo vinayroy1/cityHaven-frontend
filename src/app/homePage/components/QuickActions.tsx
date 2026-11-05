@@ -9,11 +9,11 @@ import { loadPersistedDraft, clearPersistedDraft } from "@/features/propertyList
 import { Button } from "@/components/ui/button";
 
 const actions = [
-  { icon: <Home className="h-5 w-5 text-red-500" />, title: "Buy / Rent", description: "Browse flats, villas, plots, and commercial spaces.", href: "/propertySearch" },
-  { icon: <Megaphone className="h-5 w-5 text-amber-500" />, title: "List Property", description: "Post your property and reach verified buyers.", href: "/propertyListing", type: "list" as const },
-  { icon: <Banknote className="h-5 w-5 text-emerald-500" />, title: "Home Loans", description: "Compare offers and get instant eligibility checks.", href: "/home-loans" },
-  { icon: <ShieldCheck className="h-5 w-5 text-sky-500" />, title: "Price Trends", description: "Check city-wise rates and transaction insights.", href: "/price-trends" },
-  { icon: <Building2 className="h-5 w-5 text-indigo-500" />, title: "New Projects", description: "Discover RERA approved projects and builders.", href: "/new-projects" },
+  { icon: <Home className="h-5 w-5 text-rose-600" />, title: "Buy / Rent", description: "Browse flats, villas, plots, and commercial spaces.", href: "/propertySearch" },
+  { icon: <Megaphone className="h-5 w-5 text-rose-600" />, title: "List Property", description: "Post your property and reach verified buyers.", href: "/propertyListing", type: "list" as const },
+  { icon: <Banknote className="h-5 w-5 text-rose-600" />, title: "Home Loans", description: "Compare offers and get instant eligibility checks.", href: "/home-loans" },
+  { icon: <ShieldCheck className="h-5 w-5 text-rose-600" />, title: "Price Trends", description: "Check city-wise rates and transaction insights.", href: "/price-trends" },
+  { icon: <Building2 className="h-5 w-5 text-rose-600" />, title: "New Projects", description: "Discover RERA approved projects and builders.", href: "/new-projects" },
 ];
 
 export function QuickActions() {
@@ -52,7 +52,7 @@ export function QuickActions() {
       {showPrompt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowPrompt(false)} />
-          <div className="relative w-full max-w-md rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+          <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-base font-semibold text-slate-900 dark:text-white">Resume your listing?</p>

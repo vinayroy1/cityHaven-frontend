@@ -21,9 +21,9 @@ export const linkButton = "text-[13px] font-semibold text-rose-600 transition ho
 
 // chips (see Chip.tsx for the component)
 export const chipShell =
-  "inline-flex shrink-0 select-none items-center gap-1.5 rounded-xl border text-sm font-medium transition";
-export const chipIdle = "border-slate-200 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:border-slate-600";
-export const chipSelected = "border-slate-900 bg-slate-900 text-white dark:border-rose-500 dark:bg-rose-600 dark:text-white";
+  "inline-flex shrink-0 select-none items-center gap-1.5 rounded-full border text-sm font-medium transition";
+export const chipIdle = "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:border-slate-600";
+export const chipSelected = "border-rose-600 bg-rose-600 text-white shadow-xs dark:border-rose-500 dark:bg-rose-600 dark:text-white";
 export const chipSize = { sm: "px-3 py-1.5 text-[13px]", md: "px-3.5 py-2 text-sm" };
 
 // form controls
