@@ -292,8 +292,18 @@ export function SearchBar({
               aria-label="Search by locality, project or landmark"
             >
               <Search size={18} className="shrink-0 text-slate-500" />
-              <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-600 dark:text-slate-300">
-                {MOBILE_PLACEHOLDER[value.intent] ?? "City, locality or project"}
+              <span className={`min-w-0 flex-1 truncate text-sm font-medium ${
+                value.cityName || value.localities?.length || value.q
+                  ? "text-slate-900 font-semibold dark:text-white"
+                  : "text-slate-600 dark:text-slate-300"
+              }`}>
+                {value.localities && value.localities.length > 0
+                  ? value.localities.map((l) => l.label).join(", ")
+                  : value.cityName
+                  ? `${value.cityName} · ${MOBILE_PLACEHOLDER[value.intent] ?? "Locality or project"}`
+                  : value.q
+                  ? value.q
+                  : (MOBILE_PLACEHOLDER[value.intent] ?? "City, locality or project")}
               </span>
             </button>
             <button
