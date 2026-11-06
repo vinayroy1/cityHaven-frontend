@@ -818,6 +818,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             listingType={property.listingType}
             postedAs={property.postedAs}
             nearbyLandmarks={property.nearbyLandmarks}
+            coverImage={images?.[0]}
           />
           <div className="mt-5">
             <QuickFactsGrid items={buildQuickFacts(property)} />

@@ -1,18 +1,30 @@
 "use client";
 /** Shown after an owner publishes a new listing: view it, share it on WhatsApp, boost it. */
 import Link from "next/link";
-import { CheckCircle2, Clock, Eye, LayoutDashboard, Share2 } from "lucide-react";
+import { useState } from "react";
+import { CheckCircle2, Clock, Eye, LayoutDashboard, QrCode, Share2 } from "lucide-react";
 import { CreditBoostButton } from "@/components/billing/CreditBoostButton";
 import { cn } from "@/components/ui/utils";
 import { panel } from "./theme";
+import { PropertyShareCardModal } from "@/components/property/PropertyShareCardModal";
 
-export type PublishedListing = { id: number; slug?: string | null; status?: string | null; title?: string | null };
+export type PublishedListing = {
+  id: number;
+  slug?: string | null;
+  status?: string | null;
+  title?: string | null;
+  price?: string | number | null;
+  location?: string | null;
+  propertyType?: string | null;
+  imageUrl?: string | null;
+};
 
 export function PublishSuccess({ listing, onPostAnother }: { listing: PublishedListing; onPostAnother: () => void }) {
+  const [showShareModal, setShowShareModal] = useState(false);
   const live = listing.status === "ACTIVE";
   const path = `/properties/${listing.slug || listing.id}`;
-  const url = typeof window !== "undefined" ? `${window.location.origin}${path}` : path;
-  const shareText = `${listing.title || "Check out my property"} on Awasio – zero brokerage: ${url}`;
+  const url = typeof window !== "undefined" ? `${window.location.origin}${path}` : `https://awasio.com${path}`;
+  const shareText = `🏠 *${listing.title || "Check out this property"}* on Awasio – zero brokerage direct owner:\n🔗 ${url}`;
 
   return (
     <div className={cn(panel, "mx-auto max-w-xl p-6 text-center sm:p-8")} data-testid="publish-success">
@@ -34,6 +46,15 @@ export function PublishSuccess({ listing, onPostAnother }: { listing: PublishedL
       </p>
 
       <div className="mt-6 grid gap-2.5">
+        {live && (
+          <button
+            type="button"
+            onClick={() => setShowShareModal(true)}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:from-rose-700 hover:to-rose-800"
+          >
+            <QrCode className="h-4 w-4" /> Download & Share QR Photo Card
+          </button>
+        )}
         {live && (
           <a
             href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
@@ -68,6 +89,20 @@ export function PublishSuccess({ listing, onPostAnother }: { listing: PublishedL
           Post another property
         </button>
       </div>
+
+      <PropertyShareCardModal
+        open={showShareModal}
+        onOpenChange={setShowShareModal}
+        data={{
+          title: listing.title || "Newly Listed Property",
+          price: listing.price ? String(listing.price) : "Price on Request",
+          location: listing.location || "Prime Location",
+          propertyType: listing.propertyType || "Residential",
+          tag: "Zero Brokerage · Direct Owner",
+          imageUrl: listing.imageUrl || undefined,
+          propertyUrl: url,
+        }}
+      />
     </div>
   );
 }
