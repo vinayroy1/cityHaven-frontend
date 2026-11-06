@@ -20,6 +20,7 @@ const PROMOS: Promo[] = [
     href: "/propertyListing",
     icon: PlusCircle,
   },
+  /* Temporarily disabled:
   {
     id: "landmarks",
     text: "Now see nearby metro, hospitals & schools for every locality",
@@ -28,6 +29,7 @@ const PROMOS: Promo[] = [
     href: "/propertySearch",
     icon: MapPin,
   },
+  */
   {
     id: "flatmate",
     text: "Find a flatmate free · Post your room in minutes",

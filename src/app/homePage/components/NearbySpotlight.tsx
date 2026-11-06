@@ -49,7 +49,7 @@ export function NearbySpotlight({ byCountry }: { byCountry: Record<string, Spotl
                   <Sparkles className="h-3 w-3" /> Only on Awasio
                 </span>
                 <h2 id="nearby-spotlight-title" className="mt-1.5 text-lg font-bold leading-snug tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                  Know the neighbourhood{" "}
+                  Know the neighbourhood and connectivity{" "}
                   <span className="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 bg-clip-text text-transparent">before you move</span>
                 </h2>
                 <p className="mt-0.5 hidden text-sm text-slate-600 sm:block dark:text-slate-400">
@@ -117,10 +117,10 @@ export function NearbySpotlight({ byCountry }: { byCountry: Record<string, Spotl
             </div>
 
             <Link
-              href={`/nearby/${loc.slug}`}
+              href="/nearby"
               className="group mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400"
             >
-              Explore {loc.name}, {loc.city} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              Explore any locality <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
             </Link>
           </div>
 

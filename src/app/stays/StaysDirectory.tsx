@@ -90,13 +90,15 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
         <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-rose-200/40 blur-3xl dark:bg-rose-900/20" />
         <div className="pointer-events-none absolute -left-20 top-10 h-64 w-64 rounded-full bg-amber-200/40 blur-3xl dark:bg-amber-900/10" />
         <div className="pointer-events-none absolute bottom-0 right-1/3 h-48 w-48 rounded-full bg-sky-200/30 blur-3xl dark:bg-sky-900/10" />
-        <div className="relative mx-auto max-w-6xl">
-          <p className="hidden items-center gap-1.5 rounded-full border border-rose-200 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-rose-600 shadow-2xs backdrop-blur sm:inline-flex dark:border-rose-900 dark:bg-slate-900/70 dark:text-rose-300">
-            <Sparkles className="h-3.5 w-3.5" /> New on Awasio
-          </p>
-          <CountryContextChip what="Stays" className="ml-2 hidden align-middle sm:inline-flex" />
+        <div className="relative mx-auto max-w-4xl sm:text-center">
+          <div className="flex items-center gap-2 sm:justify-center">
+            <p className="hidden items-center gap-1.5 rounded-full border border-rose-200 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-rose-600 shadow-2xs backdrop-blur sm:inline-flex dark:border-rose-900 dark:bg-slate-900/70 dark:text-rose-300">
+              <Sparkles className="h-3.5 w-3.5" /> New on Awasio
+            </p>
+            <CountryContextChip what="Stays" className="hidden align-middle sm:inline-flex" />
+          </div>
           {/* Phones: one short line so results show on the first screen. */}
-          <h1 className="text-xl font-black leading-snug tracking-tight sm:mt-3 sm:max-w-3xl sm:text-5xl sm:leading-[1.1]">
+          <h1 className="text-xl font-black leading-snug tracking-tight sm:mx-auto sm:mt-3 sm:max-w-3xl sm:text-5xl sm:leading-[1.1]">
             <span className="sm:hidden">
               Stays in <span className="text-rose-600 dark:text-rose-400">{city || country.name}</span>
             </span>
@@ -108,12 +110,12 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
             </span>
           </h1>
           <p className="mt-0.5 text-xs text-slate-500 sm:hidden dark:text-slate-400">Hotels · guest houses · homestays · dharamshalas</p>
-          <p className="mt-2 hidden max-w-xl text-sm text-slate-600 sm:block sm:text-base dark:text-slate-300">
+          <p className="mt-2 hidden max-w-xl text-sm text-slate-600 sm:mx-auto sm:block sm:text-base dark:text-slate-300">
             Compare rooms and nightly prices, call the owner directly or book on their preferred site. No middleman fees.
           </p>
 
           {/* City + area: side by side on desktop, stacked on phones (area only after a city is chosen). */}
-          <div className="mt-3 grid grid-cols-[1fr_auto] items-center gap-2 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-900/5 sm:mt-6 sm:flex sm:max-w-3xl sm:rounded-3xl sm:p-2 dark:border-slate-800 dark:bg-slate-900">
+          <div className="mt-3 grid grid-cols-[1fr_auto] items-center gap-2 rounded-2xl border border-slate-200 bg-white p-1.5 text-left shadow-xl shadow-slate-900/5 sm:mx-auto sm:mt-6 sm:flex sm:max-w-3xl sm:rounded-3xl sm:p-2 dark:border-slate-800 dark:bg-slate-900">
             <div className="min-w-0 text-slate-900 sm:flex-1 dark:text-white">
               <PropertyListingCitySelector
                 value={city}
@@ -142,7 +144,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
           </div>
 
           {hotspots.length > 0 && (
-            <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar sm:mx-0 sm:mt-4 sm:px-0">
+            <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar sm:mx-0 sm:mt-4 sm:justify-center sm:px-0">
               {hotspots.map((c) => (
                 <button
                   key={c}
@@ -213,7 +215,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
 
       <main className="relative mx-auto max-w-6xl px-4 sm:-mt-8">
         {/* Type tiles */}
-        <div className="hidden gap-2 overflow-x-auto rounded-3xl border border-slate-200/80 bg-white p-2 shadow-md shadow-slate-900/5 no-scrollbar sm:flex dark:border-slate-800 dark:bg-slate-900">
+        <div className="hidden gap-2 overflow-x-auto rounded-3xl border border-slate-200/80 bg-white p-2 shadow-md shadow-slate-900/5 no-scrollbar sm:flex sm:justify-center dark:border-slate-800 dark:bg-slate-900">
           <button
             type="button"
             onClick={() => setType(undefined)}
@@ -239,7 +241,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
         </div>
 
         {/* Filters row */}
-        <div className="mt-4 hidden items-center gap-2 overflow-x-auto pb-1 no-scrollbar sm:flex">
+        <div className="mt-4 hidden items-center gap-2 overflow-x-auto pb-1 no-scrollbar sm:flex sm:justify-center">
           <button
             type="button"
             onClick={() => setShowFilters((v) => !v)}

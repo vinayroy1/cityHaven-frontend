@@ -202,28 +202,30 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
     <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950">
       {/* Top Hero Banner */}
       <section className="relative overflow-hidden border-b border-slate-200/80 bg-gradient-to-b from-rose-50/80 via-white to-slate-50/60 pt-7 pb-8 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900/40 dark:to-slate-950">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <PageBreadcrumbs items={crumbs} renderJsonLd={false} className="-mt-3 mb-3" />
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/90 px-3 py-1 text-xs font-bold text-rose-700 shadow-2xs backdrop-blur-xs dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
-                <Sparkles className="h-3.5 w-3.5 fill-rose-500 text-rose-500" />
-                <span>Vetted Interior Directory & Material Guarantee</span>
-              </div>
-              <div className="mt-2">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center sm:justify-center">
+            <PageBreadcrumbs items={crumbs} renderJsonLd={false} className="-mt-3 mb-3" />
+          </div>
+          <div className="flex flex-col items-center text-center gap-5">
+            <div className="max-w-3xl">
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/90 px-3 py-1 text-xs font-bold text-rose-700 shadow-2xs backdrop-blur-xs dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
+                  <Sparkles className="h-3.5 w-3.5 fill-rose-500 text-rose-500" />
+                  <span>Vetted Interior Directory & Material Guarantee</span>
+                </div>
                 <CountryContextChip what="Interior designers" />
               </div>
-              <h1 className="mt-3 text-2xl font-black tracking-tight text-slate-900 sm:text-4xl dark:text-white">
+              <h1 className="mt-3 text-2xl font-black tracking-tight text-slate-900 sm:text-4xl lg:text-5xl dark:text-white">
                 Best Interior Designers & Studios in{" "}
                 <span className="text-rose-600 dark:text-rose-400">{selectedCity}</span>
               </h1>
-              <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="mx-auto mt-2 max-w-2xl text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                 Connect with verified architects, modular factories & turnkey contractors. Compare verified material specifications (CenturyPly, Hafele, Blum) and transparent square-foot pricing.
               </p>
             </div>
 
             {/* Quick Action: List Your Studio */}
-            <div className="shrink-0 flex items-center gap-3">
+            <div className="shrink-0 flex items-center justify-center gap-3">
               <Link
                 href="/dashboard/interior-profile"
                 prefetch={false}
@@ -235,8 +237,8 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
             </div>
           </div>
 
-          {/* City Chips Selector Row (Scrollable on mobile) */}
-          <div className="mt-6 -mx-4 px-4 sm:mx-0 sm:px-0 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          {/* City Chips Selector Row (Centered on desktop, scrollable on mobile) */}
+          <div className="mt-6 -mx-4 px-4 sm:mx-0 sm:px-0 flex items-center sm:justify-center gap-2 overflow-x-auto no-scrollbar pb-1">
             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 shrink-0 mr-1 flex items-center gap-1">
               <MapPin className="h-3.5 w-3.5 text-rose-500" /> Popular Cities:
             </span>
