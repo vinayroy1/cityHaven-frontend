@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, BedDouble, Copy, ExternalLink, ImagePlus, Link2, Loader2, Plus, Snowflake, Star, Trash2, X } from "lucide-react";
+import { ArrowLeft, Bath, BedDouble, Copy, ExternalLink, HeartHandshake, ImagePlus, Link2, Loader2, Plus, ShieldCheck, Snowflake, Sparkles, Star, Trash2, Wind, X } from "lucide-react";
 import { toast } from "sonner";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
@@ -237,40 +237,125 @@ function RoomEditor({ room, index, cc, onChange, onRemove, onDuplicate }: { room
             <input type="number" min={1} max={500} className={`${input} mt-1`} value={room.roomCount} onChange={(e) => set("roomCount", Math.max(1, Number(e.target.value) || 1))} />
           </label>
         </div>
-        <div className="flex flex-wrap gap-2 sm:col-span-2">
-          <Toggle on={room.isFree} onChange={(v) => onChange({ ...room, isFree: v, pricePerNight: v ? null : room.pricePerNight })}>
-            Free stay
-          </Toggle>
-          <Toggle on={room.donationBased} onChange={(v) => set("donationBased", v)}>
-            Donation based
-          </Toggle>
-          <Toggle on={room.ac} onChange={(v) => set("ac", v)}>
-            <Snowflake className="mr-1 inline h-3 w-3" />
-            AC
-          </Toggle>
-          <Toggle on={room.attachedBath} onChange={(v) => set("attachedBath", v)}>
-            Attached bath
-          </Toggle>
-          <Toggle on={room.isAvailable} onChange={(v) => set("isAvailable", v)}>
-            {room.isAvailable ? "Available" : "Full"}
-          </Toggle>
-        </div>
-        {!room.isFree && (
-          <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-3 sm:col-span-2">
-            <label className={label}>
-              Per night ({sym}){room.donationBased ? "" : " *"}
-              <input type="number" min={0} inputMode="numeric" className={`${input} mt-1`} value={room.pricePerNight ?? ""} onChange={(e) => set("pricePerNight", num(e.target.value))} placeholder="1200" />
-            </label>
-            <label className={label}>
-              Weekend ({sym})
-              <input type="number" min={0} inputMode="numeric" className={`${input} mt-1`} value={room.weekendPrice ?? ""} onChange={(e) => set("weekendPrice", num(e.target.value))} placeholder="—" />
-            </label>
-            <label className={label}>
-              Monthly ({sym})
-              <input type="number" min={0} inputMode="numeric" className={`${input} mt-1`} value={room.monthlyPrice ?? ""} onChange={(e) => set("monthlyPrice", num(e.target.value))} placeholder="—" />
-            </label>
+        {/* Comfort & Climate */}
+        <div className="space-y-1 sm:col-span-2">
+          <p className={label}>Room climate & bathroom</p>
+          <div className="flex flex-wrap gap-2 pt-0.5">
+            <Toggle on={room.ac} onChange={(v) => set("ac", v)}>
+              <Snowflake className="mr-1.5 inline h-3.5 w-3.5 text-sky-500" />
+              {room.ac ? "AC Room" : "Non-AC (Fan / Cooler)"}
+            </Toggle>
+            <Toggle on={room.attachedBath} onChange={(v) => set("attachedBath", v)}>
+              <Bath className="mr-1.5 inline h-3.5 w-3.5 text-rose-500" />
+              {room.attachedBath ? "Attached Bathroom" : "Shared / Common Bath"}
+            </Toggle>
+            <Toggle on={room.isAvailable} onChange={(v) => set("isAvailable", v)}>
+              {room.isAvailable ? "✓ Active (Accepting Guests)" : "✕ Full / Inactive"}
+            </Toggle>
           </div>
-        )}
+        </div>
+
+        {/* Pricing Model Selection */}
+        <div className="space-y-2 rounded-2xl border border-slate-200/80 bg-white/80 p-3 sm:col-span-2 dark:border-slate-750 dark:bg-slate-900/60">
+          <div>
+            <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Room Tariff & Pricing Model</p>
+            <p className="text-[11px] text-slate-500">Choose how guests pay for this room type</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {/* Option 1: Standard Nightly Tariff */}
+            <button
+              type="button"
+              onClick={() => onChange({ ...room, isFree: false, donationBased: false })}
+              className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition ${
+                !room.isFree && !room.donationBased
+                  ? "border-rose-500 bg-rose-50/60 ring-2 ring-rose-500/20 dark:border-rose-500 dark:bg-rose-950/30"
+                  : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950"
+              }`}
+            >
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-900 dark:text-white">Fixed Nightly Rate</span>
+              </div>
+              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">Regular hotel / room tariff (e.g. ₹1,200/night)</p>
+            </button>
+
+            {/* Option 2: Donation Based */}
+            <button
+              type="button"
+              onClick={() => onChange({ ...room, isFree: false, donationBased: true })}
+              className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition ${
+                room.donationBased && !room.isFree
+                  ? "border-rose-500 bg-rose-50/60 ring-2 ring-rose-500/20 dark:border-rose-500 dark:bg-rose-950/30"
+                  : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950"
+              }`}
+            >
+              <div className="flex items-center gap-1.5">
+                <HeartHandshake className="h-3.5 w-3.5 text-amber-600" />
+                <span className="text-xs font-bold text-slate-900 dark:text-white">Donation Based</span>
+              </div>
+              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">No fixed fee; voluntary contribution / dakshina</p>
+            </button>
+
+            {/* Option 3: Completely Free Stay */}
+            <button
+              type="button"
+              onClick={() => onChange({ ...room, isFree: true, donationBased: false, pricePerNight: null })}
+              className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition ${
+                room.isFree
+                  ? "border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/20 dark:border-emerald-500 dark:bg-emerald-950/30"
+                  : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950"
+              }`}
+            >
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
+                <span className="text-xs font-bold text-slate-900 dark:text-white">100% Free Stay</span>
+              </div>
+              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">Charitable / pilgrim rest house (₹0/night)</p>
+            </button>
+          </div>
+
+          {/* Pricing input fields if not 100% free */}
+          {!room.isFree && (
+            <div className="mt-2 grid grid-cols-1 gap-2 pt-1 min-[400px]:grid-cols-3">
+              <label className={label}>
+                {room.donationBased ? `Suggested donation (${sym})` : `Per night rate (${sym}) *`}
+                <input
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  className={`${input} mt-1`}
+                  value={room.pricePerNight ?? ""}
+                  onChange={(e) => set("pricePerNight", num(e.target.value))}
+                  placeholder={room.donationBased ? "Optional (e.g. 500)" : "1200"}
+                />
+              </label>
+              <label className={label}>
+                Weekend rate ({sym})
+                <input
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  className={`${input} mt-1`}
+                  value={room.weekendPrice ?? ""}
+                  onChange={(e) => set("weekendPrice", num(e.target.value))}
+                  placeholder="Optional"
+                />
+              </label>
+              <label className={label}>
+                Monthly rate ({sym})
+                <input
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  className={`${input} mt-1`}
+                  value={room.monthlyPrice ?? ""}
+                  onChange={(e) => set("monthlyPrice", num(e.target.value))}
+                  placeholder="Optional"
+                />
+              </label>
+            </div>
+          )}
+        </div>
         <div className="sm:col-span-2">
           <p className={label}>Room features</p>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
