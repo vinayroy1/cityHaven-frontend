@@ -1,12 +1,10 @@
 "use client";
 /** Shown after an owner publishes a new listing: view it, share it on WhatsApp, boost it. */
 import Link from "next/link";
-import { useState } from "react";
-import { CheckCircle2, Clock, Eye, LayoutDashboard, QrCode, Share2 } from "lucide-react";
+import { CheckCircle2, Clock, Eye, LayoutDashboard, Share2 } from "lucide-react";
 import { CreditBoostButton } from "@/components/billing/CreditBoostButton";
 import { cn } from "@/components/ui/utils";
 import { panel } from "./theme";
-import { PropertyShareCardModal } from "@/components/property/PropertyShareCardModal";
 
 export type PublishedListing = {
   id: number;
@@ -20,7 +18,6 @@ export type PublishedListing = {
 };
 
 export function PublishSuccess({ listing, onPostAnother }: { listing: PublishedListing; onPostAnother: () => void }) {
-  const [showShareModal, setShowShareModal] = useState(false);
   const live = listing.status === "ACTIVE";
   const path = `/properties/${listing.slug || listing.id}`;
   const url = typeof window !== "undefined" ? `${window.location.origin}${path}` : `https://awasio.com${path}`;
@@ -47,20 +44,11 @@ export function PublishSuccess({ listing, onPostAnother }: { listing: PublishedL
 
       <div className="mt-6 grid gap-2.5">
         {live && (
-          <button
-            type="button"
-            onClick={() => setShowShareModal(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:from-rose-700 hover:to-rose-800"
-          >
-            <QrCode className="h-4 w-4" /> Download & Share QR Photo Card
-          </button>
-        )}
-        {live && (
           <a
-            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:brightness-95"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700 active:scale-[0.98]"
           >
             <Share2 className="h-4 w-4" /> Share on WhatsApp
           </a>
@@ -89,20 +77,6 @@ export function PublishSuccess({ listing, onPostAnother }: { listing: PublishedL
           Post another property
         </button>
       </div>
-
-      <PropertyShareCardModal
-        open={showShareModal}
-        onOpenChange={setShowShareModal}
-        data={{
-          title: listing.title || "Newly Listed Property",
-          price: listing.price ? String(listing.price) : "Price on Request",
-          location: listing.location || "Prime Location",
-          propertyType: listing.propertyType || "Residential",
-          tag: "Zero Brokerage · Direct Owner",
-          imageUrl: listing.imageUrl || undefined,
-          propertyUrl: url,
-        }}
-      />
     </div>
   );
 }

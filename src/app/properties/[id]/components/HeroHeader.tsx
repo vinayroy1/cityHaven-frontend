@@ -1,10 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { Calendar as CalendarIcon, Image as ImageIcon, MapPin, Phone, QrCode, Share2, Sparkles } from "lucide-react";
+import { Calendar as CalendarIcon, MapPin, Phone, Share2, Sparkles } from "lucide-react";
 import { ContactAccessFlow } from "./ContactAccessFlow";
 import { WhatsAppShareButton } from "@/components/common/WhatsAppShareButton";
-import { PropertyShareCardModal } from "@/components/property/PropertyShareCardModal";
 
 const ScheduleVisitDialog = dynamic(
   () => import("@/components/property/ScheduleVisitDialog").then((m) => m.ScheduleVisitDialog),
@@ -48,12 +47,10 @@ export function HeroHeader({
   listingType,
   postedAs,
   nearbyLandmarks,
-  coverImage,
 }: HeroHeaderProps) {
   const [shareStatus, setShareStatus] = useState("");
   const [phone, setPhone] = useState<string | null>(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
-  const [cardModalOpen, setCardModalOpen] = useState(false);
 
   useEffect(() => {
     const handleUnlocked = (e: any) => {
@@ -100,17 +97,6 @@ export function HeroHeader({
 
           {/* Action buttons toolbar: Never shrinks or crushes title on mobile */}
           <div className="flex flex-wrap items-center gap-2 pt-1 sm:pt-0 shrink-0">
-            <button
-              type="button"
-              onClick={() => setCardModalOpen(true)}
-              title="Generate QR Property Card"
-              aria-label="Generate QR Property Card"
-              className="inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50/70 px-2.5 sm:px-3 text-xs font-bold text-rose-700 transition hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/50"
-            >
-              <QrCode className="h-4 w-4" />
-              <span>Photo Card</span>
-            </button>
-
             <WhatsAppShareButton
               type="property"
               propertyData={{
@@ -126,7 +112,7 @@ export function HeroHeader({
                 nearbyLandmarks,
                 url: typeof window !== "undefined" ? window.location.href : `https://awasio.com/properties/${propertyId}`,
               }}
-              label="WhatsApp"
+              label="Share on WhatsApp"
               showPreviewModal={true}
               size="md"
               variant="solid"
@@ -215,20 +201,6 @@ export function HeroHeader({
           cityName,
           price,
           ownerName: ownerName || "Property Owner",
-        }}
-      />
-
-      <PropertyShareCardModal
-        open={cardModalOpen}
-        onOpenChange={setCardModalOpen}
-        data={{
-          title,
-          price,
-          location: locality ? `${locality}, ${cityName || ""}` : subtitle,
-          propertyType: category || "Residential",
-          tag: postedAs === "OWNER" ? "Zero Brokerage · Direct Owner" : "Verified Listing",
-          imageUrl: coverImage || undefined,
-          propertyUrl: typeof window !== "undefined" ? window.location.href : `https://awasio.com/properties/${propertyId}`,
         }}
       />
     </>
