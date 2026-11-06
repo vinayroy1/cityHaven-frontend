@@ -324,7 +324,7 @@ function PropertiesContent() {
         </div>
       )}
 
-      <main className="flex-1 w-full max-w-full overflow-x-hidden">
+      <main className="flex-1">
         <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 py-3 sm:py-8">
           {/* Back Navigation */}
           <div className="mb-2 sm:mb-4">

@@ -261,7 +261,7 @@ export function SearchPageClient({
   }, [state.intent, state.cityName, state.localities]);
 
   return (
-    <main className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
+    <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-150">
       <HeaderNav isMobileHidden={isScrolledDown} hideOnPhone />
 
       <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 px-2 pb-2 shadow-xs backdrop-blur-xl sm:hidden dark:border-slate-800 dark:bg-slate-950/95">
