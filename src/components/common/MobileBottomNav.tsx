@@ -254,6 +254,12 @@ export function MobileBottomNav() {
           ========================================================================= */}
       <nav
         aria-label="Mobile Navigation Bar"
+        style={{
+          transform: "translate3d(0, 0, 0)",
+          WebkitTransform: "translate3d(0, 0, 0)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+        }}
         className="fixed bottom-0 inset-x-0 z-40 block lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-xl shadow-[0_-8px_24px_rgba(0,0,0,0.06)] dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] pb-[env(safe-area-inset-bottom,0px)]"
       >
         <div className="grid grid-cols-5 items-center justify-around h-16 max-w-md mx-auto px-2">
