@@ -19,7 +19,6 @@ import { useSearchInteriorDesignersQuery } from "@/features/interiors/api";
 import { RenderWhenNear, useNearViewport } from "./RenderWhenNear";
 import { InteriorDesignerShowcaseSkeleton } from "./InteriorDesignerShowcaseSkeleton";
 import { ViewAllCard } from "./ViewAllCard";
-import { PromoStrip } from "./PromoStrip";
 import { CitySparseCard } from "./CitySparseCard";
 import { HomeBannerCarousel } from "./HomeBannerCarousel";
 import { NearbySpotlight } from "./NearbySpotlight";
@@ -348,9 +347,6 @@ export function HomeExperience({
               onSubmit={submit}
             />
           </div>
-            <PromoStrip />
-
-          
         </div>
       </section>
 
