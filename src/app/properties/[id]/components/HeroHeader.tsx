@@ -83,24 +83,32 @@ export function HeroHeader({
   return (
     <>
       <div className="space-y-4">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        {/* Top Header: Title, Category & Share Actions */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">{category}</p>
             </div>
-            <h1 className="mt-2 break-words text-2xl font-semibold text-zinc-950 dark:text-white sm:text-3xl">{title}</h1>
-            <p className="mt-3 flex items-start gap-2 text-sm text-zinc-600 dark:text-slate-400"><MapPin className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />{subtitle}</p>
+            <h1 className="mt-1 text-xl font-bold leading-snug text-zinc-950 dark:text-white sm:text-2xl lg:text-3xl">
+              {title}
+            </h1>
+            <p className="mt-2 flex items-start gap-1.5 text-xs text-zinc-600 dark:text-slate-400 sm:text-sm">
+              <MapPin className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span>{subtitle}</span>
+            </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+
+          {/* Action buttons toolbar: Never shrinks or crushes title on mobile */}
+          <div className="flex flex-wrap items-center gap-2 pt-1 sm:pt-0 shrink-0">
             <button
               type="button"
               onClick={() => setCardModalOpen(true)}
               title="Generate QR Property Card"
               aria-label="Generate QR Property Card"
-              className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50/70 px-3 text-xs font-bold text-rose-700 transition hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/50"
+              className="inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50/70 px-2.5 sm:px-3 text-xs font-bold text-rose-700 transition hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/50"
             >
               <QrCode className="h-4 w-4" />
-              <span className="hidden sm:inline">Photo Card</span>
+              <span>Photo Card</span>
             </button>
 
             <WhatsAppShareButton
@@ -118,13 +126,13 @@ export function HeroHeader({
                 nearbyLandmarks,
                 url: typeof window !== "undefined" ? window.location.href : `https://awasio.com/properties/${propertyId}`,
               }}
-              label="Share on WhatsApp"
+              label="WhatsApp"
               showPreviewModal={true}
               size="md"
               variant="solid"
             />
-            <span role="status" className="text-xs text-zinc-600 dark:text-slate-400">{shareStatus}</span>
-            <button type="button" onClick={share} title="Share property" aria-label="Share property" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 transition hover:bg-zinc-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800">
+            {shareStatus && <span role="status" className="text-xs text-zinc-600 dark:text-slate-400">{shareStatus}</span>}
+            <button type="button" onClick={share} title="Share property" aria-label="Share property" className="inline-flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 transition hover:bg-zinc-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800">
               <Share2 className="h-4 w-4" />
             </button>
           </div>
