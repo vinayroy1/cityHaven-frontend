@@ -10,6 +10,7 @@ import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { ProjectListing } from "@/types/project.types";
 import { sizedImageUrl } from "./homePage/lib/homeImage";
+import { getNearbySpotlightByCountry } from "./homePage/lib/nearbySpotlight";
 
 const SEED_FALLBACK_LISTINGS: PropertySearchItem[] = [
   {
@@ -135,9 +136,10 @@ export const metadata: Metadata = {
 };
 
 export default async function RootPage() {
-  const [initialFreshListings, initialProjects] = await Promise.all([
+  const [initialFreshListings, initialProjects, nearbySpotlight] = await Promise.all([
     getInitialFreshListings(),
     getInitialProjects(),
+    getNearbySpotlightByCountry().catch(() => ({})),
   ]);
   // LCP on mobile and desktop is the first "New Projects" card image.
   const firstProjectImage = initialProjects.length
@@ -221,7 +223,7 @@ export default async function RootPage() {
       />
       <div className="min-h-screen overflow-x-clip bg-white text-slate-900 transition-colors duration-150 dark:bg-slate-950 dark:text-slate-100">
         <HeaderNav />
-        <HomeExperience initialFreshListings={initialFreshListings} initialProjects={initialProjects} />
+        <HomeExperience initialFreshListings={initialFreshListings} initialProjects={initialProjects} nearbySpotlight={nearbySpotlight} />
         <FooterLinks />
       </div>
     </>

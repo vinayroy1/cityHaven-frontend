@@ -21,6 +21,9 @@ import { InteriorDesignerShowcaseSkeleton } from "./InteriorDesignerShowcaseSkel
 import { ViewAllCard } from "./ViewAllCard";
 import { PromoStrip } from "./PromoStrip";
 import { CitySparseCard } from "./CitySparseCard";
+import { HomeBannerCarousel } from "./HomeBannerCarousel";
+import { NearbySpotlight } from "./NearbySpotlight";
+import type { SpotlightLocality } from "../lib/nearbySpotlight";
 import { sizedImageUrl } from "../lib/homeImage";
 import type { ProjectListing } from "@/types/project.types";
 
@@ -65,9 +68,11 @@ function useIdleState(timeoutMs = 1200) {
 export function HomeExperience({
   initialFreshListings = [],
   initialProjects = [],
+  nearbySpotlight = {},
 }: {
   initialFreshListings?: PropertySearchItem[];
   initialProjects?: ProjectListing[];
+  nearbySpotlight?: Record<string, SpotlightLocality[]>;
 } = {}) {
   const router = useRouter();
   const isIdle = useIdleState(1000);
@@ -357,6 +362,10 @@ export function HomeExperience({
             searchHref={buildSearchHref({ ...initialSearchState(), cityName: selectedCity })}
           />
         )}
+
+        <HomeBannerCarousel />
+
+        <NearbySpotlight byCountry={nearbySpotlight} />
 
         <FeaturedProjectsSection
           selectedCity={isGeoCity && !isExplicitCity ? "" : selectedCity}
