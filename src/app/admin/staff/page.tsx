@@ -7,11 +7,9 @@ import { useIsMounted, formatDateSafe } from "@/features/admin/dateUtils";
 import {
   UserCog,
   UserPlus,
-  ShieldAlert,
   CheckCircle2,
   Copy,
   Check,
-  ShieldCheck,
 } from "lucide-react";
 
 const ALL_ROLES: { role: StaffRole; label: string; desc: string }[] = [
@@ -44,7 +42,7 @@ export default function AdminStaffPage() {
 
   const [editingStaff, setEditingStaff] = useState<StaffUser | null>(null);
 
-  const handleCreateInvite = (e: React.FormEvent) => {
+  const handleCreateInvite = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
@@ -64,11 +62,16 @@ export default function AdminStaffPage() {
       return;
     }
 
-    inviteStaff(emailClean, inviteName.trim(), selectedRoles);
-
-    const token = `inv_awasio_${Math.random().toString(36).substring(2, 12)}_${Date.now()}`;
-    setInviteToken(`${window.location.origin}/admin/login?inviteToken=${token}&email=${encodeURIComponent(emailClean)}`);
-    setSuccessMsg(`Staff invitation issued for ${inviteName} (${emailClean})`);
+    try {
+      await inviteStaff(emailClean, inviteName.trim(), selectedRoles);
+    } catch (err) {
+      const e = err as { response?: { data?: { message?: string } }; message?: string };
+      setErrorMsg(e?.response?.data?.message || e?.message || "Could not create the staff account. Please try again.");
+      return;
+    }
+    // The new member sets their own password via the reset flow (no password is shared).
+    setInviteToken(`${window.location.origin}/admin/forgot-password`);
+    setSuccessMsg(`Staff account created for ${inviteName} (${emailClean})`);
   };
 
   const copyInviteLink = () => {
@@ -106,7 +109,7 @@ export default function AdminStaffPage() {
             Staff Roster & Access Control
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Manage authorized staff members, enforce multi-role privileges, configure MFA requirements, and issue single-use onboarding invitations.
+            Add staff members, assign their roles, and deactivate access.
           </p>
         </div>
 
@@ -116,7 +119,7 @@ export default function AdminStaffPage() {
             setInviteToken(null);
             setErrorMsg(null);
           }}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-rose-950/20 transition cursor-pointer"
+          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-600 hover:from-rose-500 hover:to-rose-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-rose-950/20 transition cursor-pointer"
         >
           <UserPlus className="w-4 h-4" />
           <span>Invite Staff Member</span>
@@ -139,7 +142,6 @@ export default function AdminStaffPage() {
                 <th className="py-3.5 px-4">Staff Member</th>
                 <th className="py-3.5 px-4">Company Email</th>
                 <th className="py-3.5 px-4">Assigned Roles</th>
-                <th className="py-3.5 px-4">Security & MFA</th>
                 <th className="py-3.5 px-4">Status</th>
                 <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
@@ -149,7 +151,7 @@ export default function AdminStaffPage() {
                 <tr key={staff.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition group">
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-600 to-indigo-600 flex items-center justify-center font-bold text-white text-xs">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-600 to-rose-600 flex items-center justify-center font-bold text-white text-xs">
                         {staff.name.charAt(0)}
                       </div>
                       <div>
@@ -180,11 +182,6 @@ export default function AdminStaffPage() {
                     </div>
                   </td>
 
-                  <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
-                      <ShieldCheck className="w-3.5 h-3.5" /> TOTP MFA
-                    </span>
-                  </td>
 
                   <td className="py-3.5 px-4">
                     {staff.status === "ACTIVE" ? (
@@ -253,7 +250,7 @@ export default function AdminStaffPage() {
               Invite New Staff Member
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-              Issues an expiring single-use invite token. Requires verified @awasio.in domain.
+              Creates the staff account. They then set their own password.
             </p>
 
             {errorMsg && (
@@ -326,16 +323,16 @@ export default function AdminStaffPage() {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-gradient-to-r from-rose-600 to-indigo-600 text-white font-semibold rounded-xl text-xs shadow-md"
+                    className="px-4 py-2 bg-gradient-to-r from-rose-600 to-rose-600 text-white font-semibold rounded-xl text-xs shadow-md"
                   >
-                    Generate Single-Use Invite
+                    Create staff account
                   </button>
                 </div>
               </form>
             ) : (
               <div className="space-y-4 animate-in fade-in">
                 <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-700/60 text-xs text-emerald-700 dark:text-emerald-300">
-                  Staff account pre-provisioned! Share this single-use invitation link with the employee:
+                  Account created. Send them this link: they enter their email, get a code, and set their password.
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono break-all text-slate-800 dark:text-slate-300 flex items-center justify-between gap-2">
@@ -349,7 +346,7 @@ export default function AdminStaffPage() {
                 </div>
 
                 <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Link expires in 48 hours and requires the recipient to configure MFA upon first login.
+                  After setting a password they can sign in at /admin/login.
                 </div>
 
                 <div className="pt-2 flex justify-end">

@@ -21,19 +21,7 @@ import type {
   DisputeStatus,
   AdminGovernanceSettings,
 } from "./types";
-import {
-  INITIAL_STAFF_MEMBERS,
-  INITIAL_PROPERTY_QC_QUEUE,
-  INITIAL_ORG_VERIFICATIONS,
-  INITIAL_USER_ACCOUNTS,
-  INITIAL_BILLING_ORDERS,
-  INITIAL_AUDIT_LOGS,
-  INITIAL_REFUND_CASES,
-  INITIAL_DISPUTE_CASES,
-  INITIAL_CONTACT_UNLOCKS,
-  INITIAL_FRAUD_ALERTS,
-  DEFAULT_GOVERNANCE_SETTINGS,
-} from "./mockData";
+import { DEFAULT_GOVERNANCE_SETTINGS } from "./defaults";
 
 interface AdminContextType {
   isHydrated: boolean;
@@ -60,7 +48,7 @@ interface AdminContextType {
   canApproveRefund: (caseItem: AdminRefundCase) => boolean;
   
   // Staff management
-  inviteStaff: (email: string, name: string, roles: StaffRole[]) => void;
+  inviteStaff: (email: string, name: string, roles: StaffRole[]) => Promise<void>;
   toggleStaffStatus: (staffId: number, status: "ACTIVE" | "INACTIVE" | "SUSPENDED") => void;
   updateStaffRoles: (staffId: number, roles: StaffRole[]) => void;
   
@@ -93,7 +81,7 @@ interface AdminContextType {
   // Governance & Workload Distribution
   governanceSettings: AdminGovernanceSettings;
   updateGovernanceSettings: (settings: Partial<AdminGovernanceSettings>, reason?: string) => void;
-  autoDistributeWorkload: (targetPool?: "PROPERTY" | "ORGANIZATION" | "DISPUTE" | "ALL") => { assignedCount: number; message: string };
+  autoDistributeWorkload: (targetPool?: "PROPERTY" | "ORGANIZATION" | "DISPUTE" | "ALL") => Promise<{ assignedCount: number; message: string }>;
   assignTicketToStaff: (targetType: "PROPERTY" | "ORGANIZATION" | "DISPUTE", targetId: number | string, staffId: number) => void;
 
   // Audit
@@ -136,6 +124,7 @@ function staffHasPermission(staff: StaffUser | null, permission: AdminPermission
   return staff.roles.some((role) => PERMISSION_ROLES[permission].includes(role));
 }
 
+/** Only the session (token + own staff profile) is stored. Other keys are legacy caches we now purge. */
 const STORAGE_KEYS = {
   CURRENT_STAFF: "awasio_admin_current_staff",
   STAFF_LIST: "awasio_admin_staff_roster",
@@ -155,196 +144,97 @@ const STORAGE_KEYS = {
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false);
   const [currentStaff, setCurrentStaffState] = useState<StaffUser | null>(null);
-  const [staffList, setStaffList] = useState<StaffUser[]>(INITIAL_STAFF_MEMBERS);
-  const [propertyQcList, setPropertyQcList] = useState<PropertyQcItem[]>(INITIAL_PROPERTY_QC_QUEUE);
+  const [staffList, setStaffList] = useState<StaffUser[]>([]);
+  const [propertyQcList, setPropertyQcList] = useState<PropertyQcItem[]>([]);
   const [documentQcList, setDocumentQcList] = useState<AdminDocumentQcItem[]>([]);
-  const [orgVerificationList, setOrgVerificationList] = useState<OrgVerificationItem[]>(INITIAL_ORG_VERIFICATIONS);
-  const [userList, setUserList] = useState<UserAccountItem[]>(INITIAL_USER_ACCOUNTS);
-  const [billingOrders, setBillingOrders] = useState<AdminBillingOrder[]>(INITIAL_BILLING_ORDERS);
-  const [refundCases, setRefundCases] = useState<AdminRefundCase[]>(INITIAL_REFUND_CASES);
-  const [disputeCases, setDisputeCases] = useState<AdminDisputeCase[]>(INITIAL_DISPUTE_CASES);
-  const [contactUnlocks, setContactUnlocks] = useState<AdminContactUnlockTrace[]>(INITIAL_CONTACT_UNLOCKS);
-  const [fraudAlerts, setFraudAlerts] = useState<AdminFraudAlert[]>(INITIAL_FRAUD_ALERTS);
-  const [auditLogs, setAuditLogs] = useState<AdminAuditLog[]>(INITIAL_AUDIT_LOGS);
+  const [orgVerificationList, setOrgVerificationList] = useState<OrgVerificationItem[]>([]);
+  const [userList, setUserList] = useState<UserAccountItem[]>([]);
+  const [billingOrders, setBillingOrders] = useState<AdminBillingOrder[]>([]);
+  const [refundCases, setRefundCases] = useState<AdminRefundCase[]>([]);
+  const [disputeCases, setDisputeCases] = useState<AdminDisputeCase[]>([]);
+  const [contactUnlocks, setContactUnlocks] = useState<AdminContactUnlockTrace[]>([]);
+  const [fraudAlerts, setFraudAlerts] = useState<AdminFraudAlert[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AdminAuditLog[]>([]);
   const [governanceSettings, setGovernanceSettings] = useState<AdminGovernanceSettings>(DEFAULT_GOVERNANCE_SETTINGS);
 
-  // Initialize from LocalStorage
+  /** Loads every admin collection from the API. A failed call leaves that list empty (never mock data). */
+  const loadAdminData = async () => {
+    const [staffRoster, properties, documents, organizations, users, billing, refunds, disputes, fraud, unlocks, audit, governance] =
+      await Promise.allSettled([
+        adminApi.listStaff(),
+        adminApi.listPropertyQueue(),
+        adminApi.listDocumentQueue(),
+        adminApi.listOrganizations(),
+        adminApi.listUsers(),
+        adminApi.listBillingOrders(),
+        adminApi.listRefunds(),
+        adminApi.listDisputes(),
+        adminApi.listFraudAlerts(),
+        adminApi.listContactUnlocks(),
+        adminApi.listAuditLogs(),
+        adminApi.getGovernance(),
+      ]);
+    const list = <T,>(r: PromiseSettledResult<T[] | undefined>): T[] => (r.status === "fulfilled" && Array.isArray(r.value) ? r.value : []);
+    setStaffList(list(staffRoster));
+    setPropertyQcList(list(properties));
+    if (documents.status === "fulfilled" && documents.value) {
+      const docs = documents.value as unknown;
+      setDocumentQcList(Array.isArray(docs) ? docs : ((docs as { data?: AdminDocumentQcItem[] }).data ?? []));
+    } else {
+      setDocumentQcList([]);
+    }
+    setOrgVerificationList(list(organizations));
+    setUserList(list(users));
+    setBillingOrders(list(billing));
+    setRefundCases(list(refunds));
+    setDisputeCases(list(disputes));
+    setFraudAlerts(list(fraud));
+    setContactUnlocks(list(unlocks));
+    setAuditLogs(list(audit));
+    if (governance.status === "fulfilled" && governance.value) setGovernanceSettings(governance.value);
+  };
+
+  /** Removes the admin session and any data older builds cached in the browser. */
+  const clearAdminStorage = () => {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
+    Object.values(STORAGE_KEYS).forEach((k) => localStorage.removeItem(k));
+  };
+
+  // Restore the session from the stored token, then load live data.
   useEffect(() => {
     if (typeof window === "undefined") return;
     let alive = true;
+    // Purge list caches written by older builds (they held user/staff data).
+    Object.entries(STORAGE_KEYS).forEach(([k, v]) => {
+      if (k !== "CURRENT_STAFF") localStorage.removeItem(v);
+    });
 
-    const hydrateFromApi = async () => {
-      const adminToken = typeof window !== "undefined"
-        ? (localStorage.getItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY) || localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY))
-        : null;
-
-      if (!adminToken) {
-        if (process.env.NODE_ENV !== "production") {
-          const devStaff = INITIAL_STAFF_MEMBERS[0];
-          if (alive) {
-            setCurrentStaffState(devStaff);
-            setIsHydrated(true);
-          }
-          return;
-        }
+    const hydrate = async () => {
+      const token = localStorage.getItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
+      if (!token || token === "dev_admin_token") {
+        clearAdminStorage();
         if (alive) {
           setCurrentStaffState(null);
           setIsHydrated(true);
         }
         return;
       }
-
       try {
         const staff = await adminApi.me();
         if (!alive) return;
         setCurrentStaffState(staff);
-        if (typeof window !== "undefined") {
-          localStorage.setItem(STORAGE_KEYS.CURRENT_STAFF, JSON.stringify(staff));
-        }
-
-        const [
-          staffRoster,
-          properties,
-          documents,
-          organizations,
-          users,
-          billing,
-          refunds,
-          disputes,
-          fraudAlerts,
-          unlocks,
-          audit,
-          governance,
-        ] = await Promise.allSettled([
-          adminApi.listStaff(),
-          adminApi.listPropertyQueue(),
-          adminApi.listDocumentQueue(),
-          adminApi.listOrganizations(),
-          adminApi.listUsers(),
-          adminApi.listBillingOrders(),
-          adminApi.listRefunds(),
-          adminApi.listDisputes(),
-          adminApi.listFraudAlerts(),
-          adminApi.listContactUnlocks(),
-          adminApi.listAuditLogs(),
-          adminApi.getGovernance(),
-        ]);
-
-        if (!alive) return;
-        if (staffRoster.status === "fulfilled" && staffRoster.value?.length) {
-          setStaffList(staffRoster.value);
-          if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.STAFF_LIST, JSON.stringify(staffRoster.value));
-        }
-        if (properties.status === "fulfilled" && properties.value?.length) {
-          setPropertyQcList(properties.value);
-          if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.QC_QUEUE, JSON.stringify(properties.value));
-        }
-        if (documents.status === "fulfilled" && documents.value) {
-          const docsList = Array.isArray(documents.value) ? documents.value : (documents.value as any).data || [];
-          setDocumentQcList(docsList);
-          if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DOCUMENT_QC, JSON.stringify(docsList));
-        }
-        if (organizations.status === "fulfilled" && organizations.value?.length) {
-          setOrgVerificationList(organizations.value);
-          if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.ORG_VERIF, JSON.stringify(organizations.value));
-        }
-        if (users.status === "fulfilled" && users.value?.length) {
-          setUserList(users.value);
-          if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users.value));
-        }
-        if (billing.status === "fulfilled" && billing.value?.length) setBillingOrders(billing.value);
-        if (refunds.status === "fulfilled" && refunds.value?.length) setRefundCases(refunds.value);
-        if (disputes.status === "fulfilled" && disputes.value?.length) setDisputeCases(disputes.value);
-        if (fraudAlerts.status === "fulfilled" && fraudAlerts.value?.length) setFraudAlerts(fraudAlerts.value);
-        if (unlocks.status === "fulfilled" && unlocks.value?.length) setContactUnlocks(unlocks.value);
-        if (audit.status === "fulfilled" && audit.value?.length) setAuditLogs(audit.value);
-        if (governance.status === "fulfilled" && governance.value) setGovernanceSettings(governance.value);
+        localStorage.setItem(STORAGE_KEYS.CURRENT_STAFF, JSON.stringify(staff));
+        await loadAdminData();
       } catch (err) {
-        console.warn("Could not hydrate staff session from backend:", err);
-        const stored = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEYS.CURRENT_STAFF) : null;
-        if (stored) {
-          try {
-            const parsedStaff = JSON.parse(stored);
-            if (alive) setCurrentStaffState(parsedStaff);
-          } catch {
-            if (typeof window !== "undefined") {
-              localStorage.removeItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
-              localStorage.removeItem(STORAGE_KEYS.CURRENT_STAFF);
-            }
-            if (alive) setCurrentStaffState(null);
-          }
-        } else {
-          if (process.env.NODE_ENV !== "production") {
-            if (alive) setCurrentStaffState(INITIAL_STAFF_MEMBERS[0]);
-          } else {
-            if (typeof window !== "undefined") {
-              localStorage.removeItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
-              localStorage.removeItem(STORAGE_KEYS.CURRENT_STAFF);
-            }
-            if (alive) setCurrentStaffState(null);
-          }
-        }
+        console.warn("Admin session is no longer valid:", err);
+        clearAdminStorage();
+        if (alive) setCurrentStaffState(null);
       } finally {
         if (alive) setIsHydrated(true);
       }
     };
-
-    try {
-      const storedRoster = localStorage.getItem(STORAGE_KEYS.STAFF_LIST);
-      const roster: StaffUser[] = storedRoster ? JSON.parse(storedRoster) : INITIAL_STAFF_MEMBERS;
-      setStaffList(roster);
-
-      const storedStaff = localStorage.getItem(STORAGE_KEYS.CURRENT_STAFF);
-      if (storedStaff) {
-        const parsedStaff = JSON.parse(storedStaff) as StaffUser;
-        setCurrentStaffState(parsedStaff);
-      } else {
-        setCurrentStaffState(null);
-      }
-
-      const storedQc = localStorage.getItem(STORAGE_KEYS.QC_QUEUE);
-      if (storedQc) setPropertyQcList(JSON.parse(storedQc));
-
-      const storedDocs = localStorage.getItem(STORAGE_KEYS.DOCUMENT_QC);
-      if (storedDocs) {
-        try {
-          const parsed = JSON.parse(storedDocs);
-          if (Array.isArray(parsed)) setDocumentQcList(parsed);
-        } catch {
-          // ignore
-        }
-      }
-
-      const storedOrgs = localStorage.getItem(STORAGE_KEYS.ORG_VERIF);
-      if (storedOrgs) setOrgVerificationList(JSON.parse(storedOrgs));
-
-      const storedUsers = localStorage.getItem(STORAGE_KEYS.USERS);
-      if (storedUsers) setUserList(JSON.parse(storedUsers));
-
-      const storedBilling = localStorage.getItem(STORAGE_KEYS.BILLING);
-      if (storedBilling) setBillingOrders(JSON.parse(storedBilling));
-
-      const storedRefunds = localStorage.getItem(STORAGE_KEYS.REFUNDS);
-      if (storedRefunds) setRefundCases(JSON.parse(storedRefunds));
-
-      const storedDisputes = localStorage.getItem(STORAGE_KEYS.DISPUTES);
-      if (storedDisputes) setDisputeCases(JSON.parse(storedDisputes));
-
-      const storedUnlocks = localStorage.getItem(STORAGE_KEYS.UNLOCKS);
-      if (storedUnlocks) setContactUnlocks(JSON.parse(storedUnlocks));
-
-      const storedFraud = localStorage.getItem(STORAGE_KEYS.FRAUD);
-      if (storedFraud) setFraudAlerts(JSON.parse(storedFraud));
-
-      const storedAudit = localStorage.getItem(STORAGE_KEYS.AUDIT);
-      if (storedAudit) setAuditLogs(JSON.parse(storedAudit));
-
-      const storedGov = localStorage.getItem(STORAGE_KEYS.GOVERNANCE);
-      if (storedGov) setGovernanceSettings(JSON.parse(storedGov));
-    } catch {
-      // fallback
-    }
-    void hydrateFromApi();
+    void hydrate();
 
     return () => {
       alive = false;
@@ -380,11 +270,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       details,
       createdAt: new Date().toISOString(),
     };
-    setAuditLogs((prev) => {
-      const updated = [newEntry, ...prev];
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.AUDIT, JSON.stringify(updated));
-      return updated;
-    });
+    setAuditLogs((prev) => [newEntry, ...prev]);
   };
 
   const requestOtp = async (email: string) => {
@@ -408,76 +294,29 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         setCurrentStaff((loginRes as any).staff);
       }
 
-      // Fetch live database collections
-      const [
-        staffRoster,
-        properties,
-        documents,
-        organizations,
-        users,
-        billing,
-        refunds,
-        disputes,
-        fraudAlerts,
-        unlocks,
-        audit,
-        governance,
-      ] = await Promise.allSettled([
-        adminApi.listStaff(),
-        adminApi.listPropertyQueue(),
-        adminApi.listDocumentQueue(),
-        adminApi.listOrganizations(),
-        adminApi.listUsers(),
-        adminApi.listBillingOrders(),
-        adminApi.listRefunds(),
-        adminApi.listDisputes(),
-        adminApi.listFraudAlerts(),
-        adminApi.listContactUnlocks(),
-        adminApi.listAuditLogs(),
-        adminApi.getGovernance(),
-      ]);
-
-      if (staffRoster.status === "fulfilled" && staffRoster.value?.length) setStaffList(staffRoster.value);
-      if (properties.status === "fulfilled" && properties.value?.length) setPropertyQcList(properties.value);
-      if (documents.status === "fulfilled" && documents.value) {
-        const docsList = Array.isArray(documents.value) ? documents.value : (documents.value as any).data || [];
-        setDocumentQcList(docsList);
-        if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DOCUMENT_QC, JSON.stringify(docsList));
-      }
-      if (organizations.status === "fulfilled" && organizations.value?.length) setOrgVerificationList(organizations.value);
-      if (users.status === "fulfilled" && users.value?.length) setUserList(users.value);
-      if (billing.status === "fulfilled" && billing.value?.length) setBillingOrders(billing.value);
-      if (refunds.status === "fulfilled" && refunds.value?.length) setRefundCases(refunds.value);
-      if (disputes.status === "fulfilled" && disputes.value?.length) setDisputeCases(disputes.value);
-      if (fraudAlerts.status === "fulfilled" && fraudAlerts.value?.length) setFraudAlerts(fraudAlerts.value);
-      if (unlocks.status === "fulfilled" && unlocks.value?.length) setContactUnlocks(unlocks.value);
-      if (audit.status === "fulfilled" && audit.value?.length) setAuditLogs(audit.value);
-      if (governance.status === "fulfilled" && governance.value) setGovernanceSettings(governance.value);
+      await loadAdminData();
 
       return { success: true };
     } catch (err: any) {
-      console.warn("Backend admin login failed, checking local staff roster:", err);
-      const matching = INITIAL_STAFF_MEMBERS.find(
-        (s) => s.email.toLowerCase() === cleanLoginId.toLowerCase()
-      );
-      if (matching) {
-        if (typeof window !== "undefined") {
-          localStorage.setItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY, "dev_admin_token");
-        }
-        setCurrentStaff(matching);
-        return { success: true };
-      }
       const msg = err?.response?.data?.message || err?.message || "Invalid credentials or unauthorized staff account.";
       return { success: false, message: msg };
     }
   };
 
   const logoutStaff = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(APP_CONFIG.AUTH.ADMIN_TOKEN_KEY);
-      localStorage.removeItem(STORAGE_KEYS.CURRENT_STAFF);
-    }
+    clearAdminStorage();
     setCurrentStaff(null);
+    setStaffList([]);
+    setPropertyQcList([]);
+    setDocumentQcList([]);
+    setOrgVerificationList([]);
+    setUserList([]);
+    setBillingOrders([]);
+    setRefundCases([]);
+    setDisputeCases([]);
+    setFraudAlerts([]);
+    setContactUnlocks([]);
+    setAuditLogs([]);
   };
 
   const switchStaffRole = (role: StaffRole) => {
@@ -504,7 +343,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     const newMember = await adminApi.inviteStaff({ email, name, roles });
     setStaffList((prev) => {
       const updated = [...prev, newMember];
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.STAFF_LIST, JSON.stringify(updated));
       return updated;
     });
     logAuditAction("STAFF_INVITED", "STAFF", newMember.id, `Invited with roles: ${roles.join(", ")}`);
@@ -515,7 +353,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     if (status !== "ACTIVE") await adminApi.deactivateStaff(staffId);
     setStaffList((prev) => {
       const updated = prev.map((s) => (s.id === staffId ? { ...s, status } : s));
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.STAFF_LIST, JSON.stringify(updated));
       return updated;
     });
     if (currentStaff?.id === staffId && status !== "ACTIVE") setCurrentStaff(null);
@@ -527,7 +364,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     await adminApi.updateStaffRoles(staffId, roles);
     setStaffList((prev) => {
       const updated = prev.map((s) => (s.id === staffId ? { ...s, roles } : s));
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.STAFF_LIST, JSON.stringify(updated));
       return updated;
     });
     if (currentStaff?.id === staffId) {
@@ -540,11 +376,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const reviewPropertyQc = async (propertyId: number, status: PropertyQcStatus, notes?: string) => {
     if (!assertPermission(status === "SUSPENDED" ? "PROPERTY_QC_SUSPEND" : "PROPERTY_QC_REVIEW")) {
-      if (!currentStaff) {
-        setCurrentStaff(INITIAL_STAFF_MEMBERS[0]);
-      } else {
-        throw new Error(`Insufficient staff permissions for QC review status: ${status}`);
-      }
+      throw new Error(`Insufficient staff permissions for QC review status: ${status}`);
     }
     if (status === "SUSPENDED") await adminApi.suspendProperty(propertyId, notes || "Suspended by admin review");
     else await adminApi.reviewProperty(propertyId, status, notes);
@@ -561,7 +393,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             }
           : p
       );
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.QC_QUEUE, JSON.stringify(updated));
       return updated;
     });
     logAuditAction(`PROPERTY_QC_${status}`, "PROPERTY", propertyId, notes || `QC status set to ${status}`);
@@ -576,7 +407,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       const docs = await adminApi.listDocumentQueue();
       const docsList = Array.isArray(docs) ? docs : (docs as any)?.data || [];
       setDocumentQcList(docsList);
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DOCUMENT_QC, JSON.stringify(docsList));
     } catch (e) {
       console.warn("Failed fetching document queue:", e);
     }
@@ -623,11 +453,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const reviewOrgVerification = async (orgId: number, status: OrgVerificationStatus, notes?: string) => {
     if (!assertPermission("ORG_VERIFY")) {
-      if (!currentStaff) {
-        setCurrentStaff(INITIAL_STAFF_MEMBERS[0]);
-      } else {
-        throw new Error("Insufficient staff permissions for organization verification");
-      }
+      throw new Error("Insufficient staff permissions for organization verification");
     }
     await adminApi.reviewOrganization(orgId, status, notes);
     setOrgVerificationList((prev) => {
@@ -642,7 +468,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             }
           : o
       );
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.ORG_VERIF, JSON.stringify(updated));
       return updated;
     });
     logAuditAction(`ORGANIZATION_VERIFICATION_${status}`, "ORGANIZATION", orgId, notes || `Status changed to ${status}`);
@@ -661,7 +486,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             }
           : o
       );
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.ORG_VERIF, JSON.stringify(updated));
       return updated;
     });
     logAuditAction("ORGANIZATION_ALLOWANCE_MODIFIED", "ORGANIZATION", orgId, `Updated: ${JSON.stringify(updates)}`);
@@ -672,7 +496,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     await adminApi.updateUserStatus(userId, status, reason);
     setUserList((prev) => {
       const updated = prev.map((u) => (u.id === userId ? { ...u, status, suspensionReason: reason } : u));
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(updated));
       return updated;
     });
     logAuditAction(`USER_ACCOUNT_${status}`, "USER", userId, reason || `User status changed to ${status}`);
@@ -683,7 +506,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     const newCase = await adminApi.requestRefund({ orderNumber, targetName, amount, reason });
     setRefundCases((prev) => {
       const updated = [newCase, ...prev];
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.REFUNDS, JSON.stringify(updated));
       return updated;
     });
     logAuditAction("REFUND_REQUESTED", "BILLING", orderNumber, reason, { amount });
@@ -700,7 +522,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       const updated = prev.map((c) =>
         c.id === caseId ? { ...c, ...updatedCase } : c
       );
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.REFUNDS, JSON.stringify(updated));
       return updated;
     });
     logAuditAction(`REFUND_${status}`, "BILLING", caseId, `Refund case ${status.toLowerCase()} by ${currentStaff?.name}`);
@@ -708,14 +529,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const updateDisputeStatus = async (caseId: string, status: DisputeStatus, notes?: string) => {
     if (!assertPermission("DISPUTE_MANAGE")) return;
-    try {
-      await adminApi.updateDisputeStatus(caseId, status, notes);
-    } catch (err) {
-      console.warn("Backend updateDisputeStatus failed:", err);
-    }
+    await adminApi.updateDisputeStatus(caseId, status, notes);
     setDisputeCases((prev) => {
       const updated = prev.map((d) => (d.id === caseId ? { ...d, status, notes: notes || d.notes, updatedAt: new Date().toISOString() } : d));
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DISPUTES, JSON.stringify(updated));
       return updated;
     });
     logAuditAction(`DISPUTE_${status}`, "DISPUTE", caseId, notes || `Dispute status updated to ${status}`);
@@ -723,11 +539,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const assignDispute = async (caseId: string, staffName: string) => {
     if (!assertPermission("DISPUTE_MANAGE")) return;
-    try {
-      await adminApi.assignDispute(caseId, staffName);
-    } catch (err) {
-      console.warn("Backend assignDispute failed:", err);
-    }
+    await adminApi.assignDispute(caseId, staffName);
     setDisputeCases((prev) => {
       const updated = prev.map((d) =>
         d.id === caseId
@@ -739,7 +551,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             }
           : d
       );
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DISPUTES, JSON.stringify(updated));
       return updated;
     });
     logAuditAction("DISPUTE_ASSIGNED", "DISPUTE", caseId, `Assigned to ${staffName}`);
@@ -747,14 +558,9 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const resolveFraudAlert = async (alertId: string, status: "RESOLVED" | "DISMISSED") => {
     if (!assertPermission("FRAUD_RESOLVE")) return;
-    try {
-      await adminApi.resolveFraudAlert(alertId, status);
-    } catch (err) {
-      console.warn("Backend resolveFraudAlert failed:", err);
-    }
+    await adminApi.resolveFraudAlert(alertId, status);
     setFraudAlerts((prev) => {
       const updated = prev.map((f) => (f.id === alertId ? { ...f, status } : f));
-      if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.FRAUD, JSON.stringify(updated));
       return updated;
     });
     logAuditAction(`FRAUD_ALERT_${status}`, "PROPERTY", alertId, `Fraud alert marked as ${status}`);
@@ -764,13 +570,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     if (!assertPermission("GOVERNANCE_UPDATE")) return;
     const updated = await adminApi.updateGovernance(settings, reason || "Governance policies updated by Super Admin");
     setGovernanceSettings(updated);
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(STORAGE_KEYS.GOVERNANCE, JSON.stringify(updated));
-      } catch {
-        /* storage full or unavailable */
-      }
-    }
     logAuditAction("PLATFORM_GOVERNANCE_UPDATED", "SETTING", "SYSTEM_POLICIES", reason || `Policy changed: ${Object.keys(settings).join(", ")}`);
   };
 
@@ -779,11 +578,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     const staff = staffList.find((s) => s.id === staffId);
     if (!staff || staff.status !== "ACTIVE") return;
 
-    try {
-      await adminApi.assignTicket(targetType, targetId, staffId);
-    } catch (err) {
-      console.warn("Backend assignTicket failed:", err);
-    }
+    await adminApi.assignTicket(targetType, targetId, staffId);
 
     if (targetType === "PROPERTY") {
       setPropertyQcList((prev) => {
@@ -792,7 +587,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             ? { ...p, qcReviewerId: staff.id, qcReviewerName: staff.name, qcStatus: p.qcStatus === "SUBMITTED" ? "UNDER_REVIEW" : p.qcStatus }
             : p
         );
-        if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.QC_QUEUE, JSON.stringify(updated));
         return updated;
       });
       logAuditAction("PROPERTY_QC_REASSIGNED", "PROPERTY", targetId, `Assigned to reviewer ${staff.name}`);
@@ -803,7 +597,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             ? { ...o, assignedSpecialistName: staff.name, verificationStatus: o.verificationStatus === "UNVERIFIED" ? "PENDING_REVIEW" : o.verificationStatus }
             : o
         );
-        if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.ORG_VERIF, JSON.stringify(updated));
         return updated;
       });
       logAuditAction("ORGANIZATION_KYC_REASSIGNED", "ORGANIZATION", targetId, `Assigned to KYC specialist ${staff.name}`);
@@ -814,14 +607,13 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             ? { ...d, assignedTo: staff.name, status: d.status === "OPEN" ? "ASSIGNED" : d.status }
             : d
         );
-        if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DISPUTES, JSON.stringify(updated));
         return updated;
       });
       logAuditAction("DISPUTE_REASSIGNED", "DISPUTE", targetId, `Assigned to dispute executive ${staff.name}`);
     }
   };
 
-  const autoDistributeWorkload = (targetPool: "PROPERTY" | "ORGANIZATION" | "DISPUTE" | "ALL" = "ALL") => {
+  const autoDistributeWorkload = async (targetPool: "PROPERTY" | "ORGANIZATION" | "DISPUTE" | "ALL" = "ALL") => {
     if (!assertPermission("WORKLOAD_ASSIGN")) {
       return { assignedCount: 0, message: "You do not have permission to auto-distribute workload." };
     }
@@ -850,105 +642,77 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       return available[roundRobinIndex % available.length];
     };
 
-    // 1. Property QC Distribution across active QC reviewers or Ops Managers
+    // Build the plan first, then persist each assignment through the API.
+    type Planned = { type: "PROPERTY" | "ORGANIZATION" | "DISPUTE"; id: number | string; staff: StaffUser };
+    const plan: Planned[] = [];
+    const planPool = <T,>(
+      type: Planned["type"],
+      items: T[],
+      isOpen: (item: T) => boolean,
+      idOf: (item: T) => number | string,
+      pool: StaffUser[],
+    ) => {
+      if (!pool.length) return;
+      const assignedInRun: Record<number, number> = {};
+      let index = 0;
+      for (const item of items) {
+        if (!isOpen(item)) continue;
+        const staff = pickStaff(pool, assignedInRun, index);
+        if (!staff) break;
+        index++;
+        assignedInRun[staff.id] = (assignedInRun[staff.id] || 0) + 1;
+        plan.push({ type, id: idOf(item), staff });
+      }
+    };
+    const active = (roles: StaffRole[]) => staffList.filter((s) => s.status === "ACTIVE" && roles.some((r) => s.roles.includes(r)));
+
     if (targetPool === "PROPERTY" || targetPool === "ALL") {
-      const qcStaff = staffList.filter((s) => s.status === "ACTIVE" && (s.roles.includes("QC_REVIEWER") || s.roles.includes("OPERATIONS_MANAGER")));
-      if (qcStaff.length > 0) {
-        const assignedInRun: Record<number, number> = {};
-        let assignedHere = 0;
-        setPropertyQcList((prev) => {
-          let staffIndex = 0;
-          const updated = prev.map((item) => {
-            const isUnassigned = (!item.qcReviewerId || item.qcReviewerName === "Unassigned") && (item.qcStatus === "SUBMITTED" || item.qcStatus === "UNDER_REVIEW");
-            if (isUnassigned) {
-              const assignedStaff = pickStaff(qcStaff, assignedInRun, staffIndex);
-              if (!assignedStaff) return item;
-              staffIndex++;
-              assignedInRun[assignedStaff.id] = (assignedInRun[assignedStaff.id] || 0) + 1;
-              assignedHere++;
-              return {
-                ...item,
-                qcReviewerId: assignedStaff.id,
-                qcReviewerName: assignedStaff.name,
-                qcStatus: item.qcStatus === "SUBMITTED" ? "UNDER_REVIEW" : item.qcStatus,
-              };
-            }
-            return item;
-          });
-          if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.QC_QUEUE, JSON.stringify(updated));
-          return updated;
-        });
-        totalAssigned += assignedHere;
-      }
+      planPool(
+        "PROPERTY",
+        propertyQcList,
+        (p) => (!p.qcReviewerId || p.qcReviewerName === "Unassigned") && (p.qcStatus === "SUBMITTED" || p.qcStatus === "UNDER_REVIEW"),
+        (p) => p.id,
+        active(["QC_REVIEWER", "OPERATIONS_MANAGER"]),
+      );
     }
-
-    // 2. Org KYC Distribution
     if (targetPool === "ORGANIZATION" || targetPool === "ALL") {
-      const kycStaff = staffList.filter((s) => s.status === "ACTIVE" && (s.roles.includes("VERIFICATION_SPECIALIST") || s.roles.includes("OPERATIONS_MANAGER")));
-      if (kycStaff.length > 0) {
-        const assignedInRun: Record<number, number> = {};
-        let assignedHere = 0;
-        setOrgVerificationList((prev) => {
-          let staffIndex = 0;
-          const updated = prev.map((org) => {
-            const isUnassigned = (!org.assignedSpecialistName || org.assignedSpecialistName === "Unassigned") && (org.verificationStatus === "UNVERIFIED" || org.verificationStatus === "PENDING_REVIEW");
-            if (isUnassigned) {
-              const assignedStaff = pickStaff(kycStaff, assignedInRun, staffIndex);
-              if (!assignedStaff) return org;
-              staffIndex++;
-              assignedInRun[assignedStaff.id] = (assignedInRun[assignedStaff.id] || 0) + 1;
-              assignedHere++;
-              return {
-                ...org,
-                assignedSpecialistName: assignedStaff.name,
-                verificationStatus: org.verificationStatus === "UNVERIFIED" ? "PENDING_REVIEW" : org.verificationStatus,
-              };
-            }
-            return org;
-          });
-          if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.ORG_VERIF, JSON.stringify(updated));
-          return updated;
-        });
-        totalAssigned += assignedHere;
-      }
+      planPool(
+        "ORGANIZATION",
+        orgVerificationList,
+        (o) => (!o.assignedSpecialistName || o.assignedSpecialistName === "Unassigned") && (o.verificationStatus === "UNVERIFIED" || o.verificationStatus === "PENDING_REVIEW"),
+        (o) => o.id,
+        active(["VERIFICATION_SPECIALIST", "OPERATIONS_MANAGER"]),
+      );
     }
-
-    // 3. Disputes Distribution
     if (targetPool === "DISPUTE" || targetPool === "ALL") {
-      const disputeStaff = staffList.filter((s) => s.status === "ACTIVE" && (s.roles.includes("SUPPORT_EXECUTIVE") || s.roles.includes("OPERATIONS_MANAGER")));
-      if (disputeStaff.length > 0) {
-        const assignedInRun: Record<number, number> = {};
-        let assignedHere = 0;
-        setDisputeCases((prev) => {
-          let staffIndex = 0;
-          const updated = prev.map((disp) => {
-            const isUnassigned = (!disp.assignedTo || disp.assignedTo === "Unassigned") && (disp.status === "OPEN" || disp.status === "ASSIGNED");
-            if (isUnassigned) {
-              const assignedStaff = pickStaff(disputeStaff, assignedInRun, staffIndex);
-              if (!assignedStaff) return disp;
-              staffIndex++;
-              assignedInRun[assignedStaff.id] = (assignedInRun[assignedStaff.id] || 0) + 1;
-              assignedHere++;
-              return {
-                ...disp,
-                assignedTo: assignedStaff.name,
-                status: disp.status === "OPEN" ? "ASSIGNED" : disp.status,
-              };
-            }
-            return disp;
-          });
-          if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEYS.DISPUTES, JSON.stringify(updated));
-          return updated;
-        });
-        totalAssigned += assignedHere;
+      planPool(
+        "DISPUTE",
+        disputeCases,
+        (d) => (!d.assignedTo || d.assignedTo === "Unassigned") && (d.status === "OPEN" || d.status === "ASSIGNED"),
+        (d) => d.id,
+        active(["SUPPORT_EXECUTIVE", "OPERATIONS_MANAGER"]),
+      );
+    }
+
+    if (!plan.length) {
+      return { assignedCount: 0, message: "All pending queue items are already assigned to active team members." };
+    }
+
+    let failed = 0;
+    for (const step of plan) {
+      try {
+        await assignTicketToStaff(step.type, step.id, step.staff.id);
+        totalAssigned++;
+      } catch (err) {
+        failed++;
+        console.warn(`Auto-assign failed for ${step.type} ${step.id}:`, err);
       }
     }
 
-    const message = totalAssigned > 0
-      ? `Successfully auto-distributed ${totalAssigned} unassigned items across active team members using ${strategy} routing.`
-      : "All pending queue items are already assigned to active team members.";
-
-    logAuditAction("WORKLOAD_AUTO_DISTRIBUTED", "STAFF", currentStaff?.id || 1, message, { totalAssigned, strategy, targetPool });
+    const message =
+      `Assigned ${totalAssigned} of ${plan.length} unassigned item(s) using ${strategy} routing.` +
+      (failed ? ` ${failed} could not be saved; try again.` : "");
+    logAuditAction("WORKLOAD_AUTO_DISTRIBUTED", "STAFF", currentStaff?.id ?? "UNKNOWN", message, { totalAssigned, failed, strategy, targetPool });
     return { assignedCount: totalAssigned, message };
   };
 

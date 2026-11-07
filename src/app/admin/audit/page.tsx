@@ -11,7 +11,6 @@ import {
   CreditCard,
   Building2,
   FileCheck2,
-  Lock,
 } from "lucide-react";
 
 export default function AdminAuditTrailPage() {
@@ -41,7 +40,7 @@ export default function AdminAuditTrailPage() {
       case "PROPERTY":
         return <Building2 className="w-3.5 h-3.5 text-rose-500" />;
       case "ORGANIZATION":
-        return <FileCheck2 className="w-3.5 h-3.5 text-indigo-500" />;
+        return <FileCheck2 className="w-3.5 h-3.5 text-sky-500" />;
       case "USER":
         return <User className="w-3.5 h-3.5 text-emerald-500" />;
       case "BILLING":
@@ -68,10 +67,7 @@ export default function AdminAuditTrailPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-1.5">
-            <Lock className="w-3.5 h-3.5" />
-            <span>Integrity: Append-Only Immutable</span>
-          </div>
+
         </div>
       </div>
 
@@ -91,7 +87,7 @@ export default function AdminAuditTrailPage() {
               onClick={() => setTargetTypeFilter(tab.value)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
                 targetTypeFilter === tab.value
-                  ? "bg-gradient-to-r from-rose-600 to-indigo-600 text-white shadow-md font-semibold"
+                  ? "bg-gradient-to-r from-rose-600 to-rose-600 text-white shadow-md font-semibold"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >

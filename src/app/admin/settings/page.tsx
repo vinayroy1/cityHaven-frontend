@@ -10,12 +10,10 @@ import {
   Zap,
   Users2,
   Building2,
-  FileCheck2,
   CheckCircle2,
   AlertTriangle,
   RotateCw,
   Scale,
-  DollarSign,
   Sparkles,
   Lock,
 } from "lucide-react";
@@ -85,8 +83,8 @@ export default function AdminSettingsPage() {
     setTimeout(() => setSuccessToast(null), 4000);
   };
 
-  const handleRunAutoDistribution = () => {
-    const res = autoDistributeWorkload("ALL");
+  const handleRunAutoDistribution = async () => {
+    const res = await autoDistributeWorkload("ALL");
     setDistributeMsg(res.message);
     setTimeout(() => setDistributeMsg(null), 5000);
   };
@@ -134,8 +132,8 @@ export default function AdminSettingsPage() {
       )}
 
       {distributeMsg && (
-        <div className="p-3.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-700/60 text-xs text-indigo-700 dark:text-indigo-300 flex items-center gap-2 animate-in fade-in duration-200">
-          <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+        <div className="p-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-700/60 text-xs text-sky-700 dark:text-sky-300 flex items-center gap-2 animate-in fade-in duration-200">
+          <Sparkles className="w-4 h-4 text-sky-600 dark:text-sky-400" />
           <span>{distributeMsg}</span>
         </div>
       )}
@@ -198,14 +196,14 @@ export default function AdminSettingsPage() {
             <label
               className={`p-4 rounded-xl border cursor-pointer transition flex flex-col justify-between ${
                 propertyPolicy === "AI_SMART_TRIAGE"
-                  ? "border-indigo-500 bg-indigo-50/40 dark:bg-indigo-950/20 ring-1 ring-indigo-500"
+                  ? "border-sky-500 bg-sky-50/40 dark:bg-sky-950/20 ring-1 ring-sky-500"
                   : "border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850"
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-indigo-500" /> AI Smart Risk Triage
+                    <Sparkles className="w-4 h-4 text-sky-500" /> AI Smart Risk Triage
                   </span>
                   <input
                     type="radio"
@@ -214,14 +212,14 @@ export default function AdminSettingsPage() {
                     checked={propertyPolicy === "AI_SMART_TRIAGE"}
                     onChange={() => setPropertyPolicy("AI_SMART_TRIAGE")}
                     disabled={!isSuperAdmin}
-                    className="accent-indigo-600"
+                    className="accent-sky-600"
                   />
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                   Low-risk listings (&lt;20 score from verified accounts) are <strong>auto-published live instantly</strong>. High-risk listings (rate anomalies, duplicate alerts) are queued for team review.
                 </p>
               </div>
-              <div className="mt-3 text-[10px] font-mono text-indigo-600 dark:text-indigo-400 font-semibold">
+              <div className="mt-3 text-[10px] font-mono text-sky-600 dark:text-sky-400 font-semibold">
                 Recommended for Millions of Listings
               </div>
             </label>
@@ -264,7 +262,7 @@ export default function AdminSettingsPage() {
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2.5">
-              <Users2 className="w-5 h-5 text-indigo-500" />
+              <Users2 className="w-5 h-5 text-sky-500" />
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">Automated Team Workload Routing</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Auto-split review tasks evenly among team members so work does not pile on a single staff member.</p>
@@ -274,7 +272,7 @@ export default function AdminSettingsPage() {
             <button
               type="button"
               onClick={handleRunAutoDistribution}
-              className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition cursor-pointer self-start sm:self-auto"
+              className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition cursor-pointer self-start sm:self-auto"
             >
               <RotateCw className="w-3.5 h-3.5" />
               <span>⚡ Auto-Distribute Backlog Now</span>
@@ -289,7 +287,7 @@ export default function AdminSettingsPage() {
             </div>
             <div>
               <div className="text-slate-500 dark:text-slate-400 text-[11px]">Unassigned Org KYC:</div>
-              <div className="text-sm font-bold text-indigo-600 dark:text-indigo-400 font-mono">{unassignedOrgCount} dossiers</div>
+              <div className="text-sm font-bold text-sky-600 dark:text-sky-400 font-mono">{unassignedOrgCount} dossiers</div>
             </div>
             <div>
               <div className="text-slate-500 dark:text-slate-400 text-[11px]">Unassigned Disputes:</div>
@@ -310,7 +308,7 @@ export default function AdminSettingsPage() {
                   checked={autoAssign}
                   onChange={(e) => setAutoAssign(e.target.checked)}
                   disabled={!isSuperAdmin}
-                  className="w-4 h-4 accent-indigo-600 rounded cursor-pointer"
+                  className="w-4 h-4 accent-sky-600 rounded cursor-pointer"
                 />
               </div>
             </div>
@@ -322,7 +320,7 @@ export default function AdminSettingsPage() {
                 value={routingStrategy}
                 onChange={(e) => setRoutingStrategy(e.target.value as WorkloadRoutingStrategy)}
                 disabled={!isSuperAdmin}
-                className="w-full p-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white outline-none focus:border-indigo-500"
+                className="w-full p-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white outline-none focus:border-sky-500"
               >
                 <option value="LEAST_LOADED">Least Loaded (Assign to agent with lowest active count)</option>
                 <option value="ROUND_ROBIN">Round-Robin (Rotate sequentially among active agents)</option>
@@ -334,7 +332,7 @@ export default function AdminSettingsPage() {
             <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1.5">
               <div className="flex justify-between text-xs">
                 <span className="font-bold text-slate-900 dark:text-white">Max Active Queue per Reviewer</span>
-                <span className="font-mono text-indigo-600 dark:text-indigo-400 font-bold">{maxTickets} tickets</span>
+                <span className="font-mono text-sky-600 dark:text-sky-400 font-bold">{maxTickets} tickets</span>
               </div>
               <input
                 type="range"
@@ -344,7 +342,7 @@ export default function AdminSettingsPage() {
                 value={maxTickets}
                 onChange={(e) => setMaxTickets(Number(e.target.value))}
                 disabled={!isSuperAdmin}
-                className="w-full accent-indigo-600 cursor-pointer"
+                className="w-full accent-sky-600 cursor-pointer"
               />
               <div className="text-[10px] text-slate-400">Prevents overloading any single team member beyond their capacity.</div>
             </div>
@@ -356,7 +354,7 @@ export default function AdminSettingsPage() {
                 value={orgPolicy}
                 onChange={(e) => setOrgPolicy(e.target.value as OrgReviewPolicy)}
                 disabled={!isSuperAdmin}
-                className="w-full p-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white outline-none focus:border-indigo-500"
+                className="w-full p-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white outline-none focus:border-sky-500"
               >
                 <option value="MANDATORY_KYC">Mandatory KYC (GSTIN/RERA approval required before publishing)</option>
                 <option value="INSTANT_PROVISIONAL">Provisional Allowed (Post up to 3 listings during review)</option>
@@ -455,7 +453,7 @@ export default function AdminSettingsPage() {
               </div>
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-md transition cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-600 hover:from-rose-500 hover:to-rose-500 text-white text-xs font-semibold shadow-md transition cursor-pointer"
               >
                 Save & Apply Platform Policies
               </button>

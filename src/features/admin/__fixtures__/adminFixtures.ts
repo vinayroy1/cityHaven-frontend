@@ -11,7 +11,7 @@ import type {
   AdminContactUnlockTrace,
   AdminFraudAlert,
   AdminGovernanceSettings,
-} from "./types";
+} from "../types";
 
 export const DEFAULT_GOVERNANCE_SETTINGS: AdminGovernanceSettings = {
   propertyReviewPolicy: "INSTANT_PUBLISH_BYPASS",

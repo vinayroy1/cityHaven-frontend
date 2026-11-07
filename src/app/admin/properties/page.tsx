@@ -27,9 +27,6 @@ import {
   ExternalLink,
   BadgeCheck,
   FileSpreadsheet,
-  FileImage,
-  Sparkles,
-  ArrowRight,
   Layers,
 } from "lucide-react";
 
@@ -339,7 +336,7 @@ export default function AdminPropertyQcPage() {
       case "OWNERSHIP_PROOF":
         return <ShieldCheck className="w-4 h-4 text-rose-500" />;
       case "RENTAL_AGREEMENT":
-        return <FileSpreadsheet className="w-4 h-4 text-indigo-500" />;
+        return <FileSpreadsheet className="w-4 h-4 text-sky-500" />;
       case "ID_PROOF":
         return <BadgeCheck className="w-4 h-4 text-emerald-500" />;
       case "ADDRESS_PROOF":
@@ -374,12 +371,12 @@ export default function AdminPropertyQcPage() {
 
           {isOpsOrSuperAdmin && (
             <button
-              onClick={() => {
-                const res = autoDistributeWorkload("PROPERTY");
+              onClick={async () => {
+                const res = await autoDistributeWorkload("PROPERTY");
                 setActionSuccessMessage(res.message);
                 setTimeout(() => setActionSuccessMessage(null), 4000);
               }}
-              className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm flex items-center gap-1.5 transition cursor-pointer"
+              className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-sm flex items-center gap-1.5 transition cursor-pointer"
             >
               <RotateCw className="w-3.5 h-3.5" />
               <span>⚡ Auto-Distribute Work</span>
@@ -413,10 +410,10 @@ export default function AdminPropertyQcPage() {
               : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
-          <FileCheck2 className="w-4 h-4 text-indigo-500" />
+          <FileCheck2 className="w-4 h-4 text-sky-500" />
           <span>Pending Document QC</span>
           {pendingDocsCount > 0 ? (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-indigo-600 text-white font-bold animate-pulse">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-rose-600 text-white font-bold animate-pulse">
               {pendingDocsCount} Pending
             </span>
           ) : (
@@ -495,7 +492,7 @@ export default function AdminPropertyQcPage() {
                   onClick={() => setActiveFilter(tab.value)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
                     activeFilter === tab.value
-                      ? "bg-gradient-to-r from-rose-600 to-indigo-600 text-white shadow-md font-semibold"
+                      ? "bg-gradient-to-r from-rose-600 to-rose-600 text-white shadow-md font-semibold"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`}
                 >
@@ -579,7 +576,7 @@ export default function AdminPropertyQcPage() {
                           <div className="font-medium text-slate-800 dark:text-slate-200">
                             {item.ownerType === "ORGANIZATION" ? item.organizationName : item.creatorName || "Personal Owner"}
                           </div>
-                          <div className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">
+                          <div className="text-[10px] font-mono text-sky-600 dark:text-sky-400">
                             {item.ownerType} {item.creatorPhone ? `• ${item.creatorPhone}` : ""}
                           </div>
                           <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
@@ -670,7 +667,7 @@ export default function AdminPropertyQcPage() {
                     onClick={() => setDocStatusFilter(tab.value)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
                       docStatusFilter === tab.value
-                        ? "bg-gradient-to-r from-indigo-600 to-rose-600 text-white shadow-md font-semibold"
+                        ? "bg-gradient-to-r from-rose-600 to-rose-600 text-white shadow-md font-semibold"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
@@ -717,7 +714,7 @@ export default function AdminPropertyQcPage() {
                 value={docSearchQuery}
                 onChange={(e) => setDocSearchQuery(e.target.value)}
                 placeholder="Search documents by document name, property title, owner name, phone, locality..."
-                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none transition shadow-sm"
+                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-sky-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none transition shadow-sm"
               />
             </div>
           </div>
@@ -748,7 +745,7 @@ export default function AdminPropertyQcPage() {
                     filteredDocuments.map((doc) => (
                       <tr key={doc.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition group">
                         <td className="py-3.5 px-4">
-                          <div className="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition flex items-center gap-2">
+                          <div className="font-semibold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-300 transition flex items-center gap-2">
                             {getDocTypeIcon(doc.type)}
                             <span>{doc.title}</span>
                           </div>
@@ -817,9 +814,9 @@ export default function AdminPropertyQcPage() {
                                 setDocReviewReason(doc.rejectionReason || doc.notes || "");
                                 setGrantPropertyBadge(true);
                               }}
-                              className="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/50 text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer shadow-sm"
+                              className="px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/50 text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer shadow-sm"
                             >
-                              <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
+                              <ShieldCheck className="w-3.5 h-3.5 text-sky-500" />
                               Inspect & Verify
                             </button>
                           </div>
@@ -1078,7 +1075,7 @@ export default function AdminPropertyQcPage() {
             {/* Modal Header */}
             <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-sky-500/20 text-sky-500 flex items-center justify-center">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
@@ -1106,12 +1103,12 @@ export default function AdminPropertyQcPage() {
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-indigo-500" />
+                    <FileText className="w-4 h-4 text-sky-500" />
                     <span>Document File & Storage Inspection</span>
                   </div>
                   <button
                     onClick={() => handleDownloadDoc(selectedDoc)}
-                    className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+                    className="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Download / Open Original</span>
@@ -1129,7 +1126,7 @@ export default function AdminPropertyQcPage() {
                   </div>
                 ) : (
                   <div className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 text-center space-y-2">
-                    <FileText className="w-10 h-10 mx-auto text-indigo-500" />
+                    <FileText className="w-10 h-10 mx-auto text-sky-500" />
                     <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                       {selectedDoc.title} ({selectedDoc.mimeType || "PDF / Document"})
                     </div>
@@ -1139,7 +1136,7 @@ export default function AdminPropertyQcPage() {
                     <div>
                       <button
                         onClick={() => handleDownloadDoc(selectedDoc)}
-                        className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1 mt-1 cursor-pointer"
+                        className="text-xs text-sky-600 dark:text-sky-400 font-semibold hover:underline inline-flex items-center gap-1 mt-1 cursor-pointer"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                         Preview full document in new tab
@@ -1151,16 +1148,16 @@ export default function AdminPropertyQcPage() {
 
               {/* Linked Property Details */}
               {selectedDoc.propertyId ? (
-                <div className="p-4 rounded-xl bg-indigo-50/40 dark:bg-indigo-950/20 border border-indigo-200/60 dark:border-indigo-800/40 space-y-2 text-xs">
+                <div className="p-4 rounded-xl bg-sky-50/40 dark:bg-sky-950/20 border border-sky-200/60 dark:border-sky-800/40 space-y-2 text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-indigo-900 dark:text-indigo-300 flex items-center gap-1.5">
-                      <Building2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    <span className="font-semibold text-sky-900 dark:text-sky-300 flex items-center gap-1.5">
+                      <Building2 className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                       Associated Property Listing
                     </span>
                     <Link
                       href={`/properties/${selectedDoc.propertyId}`}
                       target="_blank"
-                      className="text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1 font-medium"
+                      className="text-sky-600 dark:text-sky-400 hover:underline inline-flex items-center gap-1 font-medium"
                     >
                       <span>View live listing</span>
                       <ExternalLink className="w-3 h-3" />
@@ -1263,7 +1260,7 @@ export default function AdminPropertyQcPage() {
                   disabled={isDocProcessing}
                   onChange={(e) => setDocReviewReason(e.target.value)}
                   placeholder="Record verification notes or reason for rejection (e.g. 'Khata certificate verified with local municipal registry', or 'Name on electric bill does not match registered owner')..."
-                  className="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition disabled:opacity-50"
+                  className="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-sky-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition disabled:opacity-50"
                 />
               </div>
             </div>
@@ -1271,7 +1268,7 @@ export default function AdminPropertyQcPage() {
             {/* Modal Actions Footer */}
             <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80 flex flex-wrap items-center justify-between gap-3">
               <div className="text-[11px] text-slate-500 font-mono">
-                Reviewer: <span className="text-indigo-600 dark:text-indigo-400 font-semibold">{currentStaff?.name || "QC Specialist"}</span>
+                Reviewer: <span className="text-sky-600 dark:text-sky-400 font-semibold">{currentStaff?.name || "QC Specialist"}</span>
               </div>
 
               <div className="flex items-center gap-2">

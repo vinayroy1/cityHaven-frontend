@@ -7,19 +7,11 @@ import { useIsMounted, formatDateSafe } from "@/features/admin/dateUtils";
 import {
   ShieldAlert,
   CheckCircle2,
-  XCircle,
   AlertCircle,
   Clock,
   Search,
-  Filter,
-  Users2,
   KeyRound,
   RotateCcw,
-  Building,
-  User,
-  ArrowRight,
-  Sparkles,
-  Phone,
 } from "lucide-react";
 
 const STATUS_FILTERS: { label: string; value: DisputeStatus | "ALL" }[] = [
@@ -152,7 +144,7 @@ export default function AdminDisputesPage() {
           onClick={() => setActiveTab("DISPUTES")}
           className={`px-4 py-2 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-2 ${
             activeTab === "DISPUTES"
-              ? "bg-gradient-to-r from-rose-600 to-indigo-600 text-white shadow-md"
+              ? "bg-gradient-to-r from-rose-600 to-rose-600 text-white shadow-md"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
@@ -166,7 +158,7 @@ export default function AdminDisputesPage() {
           onClick={() => setActiveTab("CONTACT_TRACES")}
           className={`px-4 py-2 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-2 ${
             activeTab === "CONTACT_TRACES"
-              ? "bg-gradient-to-r from-indigo-600 to-rose-600 text-white shadow-md"
+              ? "bg-gradient-to-r from-rose-600 to-rose-600 text-white shadow-md"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
@@ -258,7 +250,7 @@ export default function AdminDisputesPage() {
                         <td className="py-3.5 px-4">
                           <div className="font-semibold text-slate-900 dark:text-white">{caseItem.complainantName}</div>
                           <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                            {caseItem.complainantPhone} • <span className="text-indigo-600 dark:text-indigo-400">{caseItem.chargedAccount}</span>
+                            {caseItem.complainantPhone} • <span className="text-sky-600 dark:text-sky-400">{caseItem.chargedAccount}</span>
                           </div>
                         </td>
 
@@ -297,7 +289,7 @@ export default function AdminDisputesPage() {
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
           <div className="p-4 bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-xs flex items-center justify-between">
             <div className="text-slate-700 dark:text-slate-300 font-semibold flex items-center gap-2">
-              <KeyRound className="w-4 h-4 text-indigo-500" />
+              <KeyRound className="w-4 h-4 text-sky-500" />
               Contact Unlock & Deduction Audit Trail (Prevents duplicate charges for re-viewing contacts)
             </div>
           </div>
@@ -317,7 +309,7 @@ export default function AdminDisputesPage() {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
                 {contactUnlocks.map((trace) => (
                   <tr key={trace.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition">
-                    <td className="py-3.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">
+                    <td className="py-3.5 px-4 font-mono font-semibold text-sky-600 dark:text-sky-400">
                       {trace.id}
                       <div className="text-[10px] text-slate-400 font-normal">
                         {mounted ? formatDateSafe(trace.unlockedAt) : "Recently"}
@@ -338,7 +330,7 @@ export default function AdminDisputesPage() {
 
                     <td className="py-3.5 px-4">
                       <div className="font-semibold text-slate-800 dark:text-slate-200">{trace.chargedEntityName}</div>
-                      <div className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">{trace.chargedScope}</div>
+                      <div className="text-[10px] font-mono text-sky-600 dark:text-sky-400">{trace.chargedScope}</div>
                     </td>
 
                     <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">
@@ -395,7 +387,7 @@ export default function AdminDisputesPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Charged Wallet Scope:</span>
-                  <span className="font-mono text-indigo-600 dark:text-indigo-400">{selectedCase.chargedAccount}</span>
+                  <span className="font-mono text-sky-600 dark:text-sky-400">{selectedCase.chargedAccount}</span>
                 </div>
               </div>
 

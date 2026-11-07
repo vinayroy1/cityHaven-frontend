@@ -129,7 +129,7 @@ export default function AdminOrgVerificationPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <FileCheck2 className="w-6 h-6 text-indigo-500" />
+            <FileCheck2 className="w-6 h-6 text-sky-500" />
             Organization KYC Verification Studio
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -139,7 +139,7 @@ export default function AdminOrgVerificationPage() {
 
         <div className="flex items-center gap-2">
           <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 font-mono shadow-sm">
-            Total Organizations: <span className="text-indigo-600 dark:text-indigo-400 font-bold">{orgVerificationList.length}</span>
+            Total Organizations: <span className="text-sky-600 dark:text-sky-400 font-bold">{orgVerificationList.length}</span>
           </div>
         </div>
       </div>
@@ -167,7 +167,7 @@ export default function AdminOrgVerificationPage() {
               onClick={() => setActiveFilter(tab.value as any)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
                 activeFilter === tab.value
-                  ? "bg-gradient-to-r from-indigo-600 to-rose-600 text-white shadow-md font-semibold"
+                  ? "bg-gradient-to-r from-rose-600 to-rose-600 text-white shadow-md font-semibold"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
@@ -190,7 +190,7 @@ export default function AdminOrgVerificationPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search organizations by business name, owner name, mobile or email..."
-            className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none transition shadow-sm"
+            className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-sky-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none transition shadow-sm"
           />
         </div>
       </div>
@@ -220,7 +220,7 @@ export default function AdminOrgVerificationPage() {
                 filteredOrgs.map((org) => (
                   <tr key={org.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/60 transition group">
                     <td className="py-3.5 px-4">
-                      <div className="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition flex items-center gap-2">
+                      <div className="font-semibold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-300 transition flex items-center gap-2">
                         <span>{org.name}</span>
                         {org.verificationStatus === "VERIFIED" && (
                           <ShieldCheck className="w-4 h-4 text-emerald-500" />
@@ -249,7 +249,7 @@ export default function AdminOrgVerificationPage() {
 
                     <td className="py-3.5 px-4">
                       <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-mono text-slate-700 dark:text-slate-300">
-                        <FileText className="w-3.5 h-3.5 text-indigo-500" />
+                        <FileText className="w-3.5 h-3.5 text-sky-500" />
                         {org.documents.length} Docs Attached
                       </div>
                     </td>
@@ -267,7 +267,7 @@ export default function AdminOrgVerificationPage() {
                         }}
                         className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer shadow-sm"
                       >
-                        <Eye className="w-3.5 h-3.5 text-indigo-500" />
+                        <Eye className="w-3.5 h-3.5 text-sky-500" />
                         Inspect Dossier
                       </button>
                     </td>
@@ -286,7 +286,7 @@ export default function AdminOrgVerificationPage() {
             {/* Modal Header */}
             <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/60">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-sky-500/20 text-sky-500 flex items-center justify-center">
                   <Building className="w-5 h-5" />
                 </div>
                 <div>
@@ -337,7 +337,7 @@ export default function AdminOrgVerificationPage() {
                 </div>
                 <div>
                   <div className="text-slate-500 text-[10px]">Published Properties</div>
-                  <div className="font-semibold text-indigo-600 dark:text-indigo-400">{selectedOrg.listingsCount} Listings</div>
+                  <div className="font-semibold text-sky-600 dark:text-sky-400">{selectedOrg.listingsCount} Listings</div>
                 </div>
               </div>
 
@@ -345,13 +345,13 @@ export default function AdminOrgVerificationPage() {
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Users className="w-4 h-4 text-indigo-500" />
+                    <Users className="w-4 h-4 text-sky-500" />
                     <span>Seat Quota & Contact Credits Allowance</span>
                   </div>
                   {!editingAllowance ? (
                     <button
                       onClick={() => setEditingAllowance(true)}
-                      className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-semibold cursor-pointer"
+                      className="text-xs text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1 font-semibold cursor-pointer"
                     >
                       <Edit3 className="w-3.5 h-3.5" /> Edit Allowance
                     </button>
@@ -359,7 +359,7 @@ export default function AdminOrgVerificationPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={handleSaveAllowance}
-                        className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold"
+                        className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-semibold"
                       >
                         Save
                       </button>
@@ -420,7 +420,7 @@ export default function AdminOrgVerificationPage() {
                       className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-900 flex items-center justify-center text-indigo-500 border border-slate-200 dark:border-slate-800">
+                        <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-900 flex items-center justify-center text-sky-500 border border-slate-200 dark:border-slate-800">
                           <FileText className="w-4 h-4" />
                         </div>
                         <div>
@@ -463,7 +463,7 @@ export default function AdminOrgVerificationPage() {
                   disabled={isProcessing}
                   onChange={(e) => setReviewNotes(e.target.value)}
                   placeholder="Record verification checklist results (RERA registration checked on state portal, GSTIN active on portal)..."
-                  className="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition disabled:opacity-50"
+                  className="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-sky-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition disabled:opacity-50"
                 />
               </div>
             </div>
@@ -471,7 +471,7 @@ export default function AdminOrgVerificationPage() {
             {/* Modal Footer Decisions */}
             <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80 flex flex-wrap items-center justify-between gap-3">
               <div className="text-[11px] text-slate-500 font-mono">
-                Assigned Specialist: <span className="text-indigo-600 dark:text-indigo-400 font-semibold">{currentStaff?.name}</span>
+                Assigned Specialist: <span className="text-sky-600 dark:text-sky-400 font-semibold">{currentStaff?.name}</span>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
@@ -503,7 +503,7 @@ export default function AdminOrgVerificationPage() {
                   <button
                     disabled={isProcessing}
                     onClick={() => handleDecision("VERIFIED")}
-                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition cursor-pointer disabled:opacity-50"
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-rose-600 hover:from-emerald-500 hover:to-rose-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition cursor-pointer disabled:opacity-50"
                   >
                     <CheckCircle2 className="w-4 h-4" /> {isProcessing ? "Saving to Database..." : "Verify & Grant Badge"}
                   </button>

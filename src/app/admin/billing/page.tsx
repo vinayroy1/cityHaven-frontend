@@ -145,7 +145,7 @@ export default function AdminBillingPage() {
           onClick={() => setActiveTab("REFUND_QUEUE")}
           className={`px-4 py-2 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-2 ${
             activeTab === "REFUND_QUEUE"
-              ? "bg-gradient-to-r from-rose-600 to-indigo-600 text-white shadow-md"
+              ? "bg-gradient-to-r from-rose-600 to-rose-600 text-white shadow-md"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
@@ -198,7 +198,7 @@ export default function AdminBillingPage() {
 
                       <td className="py-3.5 px-4">
                         <div className="font-semibold text-slate-900 dark:text-white">{order.targetName}</div>
-                        <div className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">
+                        <div className="text-[10px] font-mono text-sky-600 dark:text-sky-400">
                           Scope: {order.scope} (ID #{order.targetId})
                         </div>
                       </td>

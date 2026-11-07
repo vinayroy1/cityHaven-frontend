@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdmin } from "@/features/admin/adminStore";
-import { Lock, Mail, KeyRound, ArrowRight, AlertCircle, Sun, Moon } from "lucide-react";
+import { Mail, KeyRound, ArrowRight, AlertCircle, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useIsMounted } from "@/features/admin/dateUtils";
 import Link from "next/link";
@@ -12,9 +12,9 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const mounted = useIsMounted();
-  const { loginStaff, requestOtp, staffList } = useAdmin();
+  const { loginStaff, requestOtp } = useAdmin();
 
-  const [loginId, setLoginId] = useState("vinay.admin@awasio.in");
+  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const isOtpEnabled = process.env.NEXT_PUBLIC_ENABLE_OTP_FLOW === "true";
   const [authMode, setAuthMode] = useState<"PASSWORD" | "OTP">(isOtpEnabled ? "OTP" : "PASSWORD");
@@ -105,19 +105,11 @@ export default function AdminLoginPage() {
     }
   };
 
-  const handleQuickSelect = async (staffEmail: string) => {
-    setLoginId(staffEmail);
-    setStep("INPUT");
-    setError(null);
-    setStatusMessage(null);
-    setDevOtp(null);
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-center items-center p-4 relative overflow-hidden transition-colors duration-200">
       {/* Background ambient lighting */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-rose-500/10 dark:bg-rose-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/3 -translate-x-1/2 w-80 h-80 bg-indigo-500/10 dark:bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/3 -translate-x-1/2 w-80 h-80 bg-amber-400/10 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Theme Switcher in Corner */}
       {mounted && (
@@ -126,24 +118,20 @@ export default function AdminLoginPage() {
           className="absolute top-4 right-4 p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 shadow-sm cursor-pointer"
           title="Toggle Dark/Light Mode"
         >
-          {resolvedTheme === "dark" ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
+          {resolvedTheme === "dark" ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
         </button>
       )}
 
       {/* Main card */}
       <div className="w-full max-w-md bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 backdrop-blur-xl rounded-2xl shadow-xl p-6 sm:p-8 relative z-10">
         <div className="flex items-center justify-center mb-6">
-          <div className="w-12 h-12 rounded-full bg-rose-600 flex items-center justify-center font-bold text-xl text-white shadow-xl shadow-rose-900/40">
-            A
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon.svg" alt="Awasio" width={52} height={48} className="h-12 w-auto" />
         </div>
 
         <div className="text-center mb-6">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Awasio Internal Portal</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Authorized Staff & Operations Access Only</p>
-          <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 text-rose-600 dark:text-rose-300 border border-slate-200 dark:border-slate-700">
-            <Lock className="w-3 h-3 text-rose-500" /> MFA & SSO Enforced
-          </div>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Awasio Admin</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Sign in with your staff account</p>
         </div>
 
         {statusMessage && (
@@ -234,12 +222,18 @@ export default function AdminLoginPage() {
                   </div>
                 </div>
 
+                <div className="-mt-2 text-right">
+                  <Link href="/admin/forgot-password" className="text-[11px] font-semibold text-rose-600 hover:underline dark:text-rose-400">
+                    Forgot password?
+                  </Link>
+                </div>
+
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
+                  className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
                 >
-                  <span>{loading ? "Authenticating Staff..." : "Sign In to Admin Console"}</span>
+                  <span>{loading ? "Signing in…" : "Sign in"}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
@@ -261,15 +255,15 @@ export default function AdminLoginPage() {
                       className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
                     />
                   </div>
-                  <p className="text-[10px] text-slate-500 mt-1">Must be an active staff member assigned in PostgreSQL.</p>
+                  <p className="text-[10px] text-slate-500 mt-1">We&apos;ll email a one-time code to this address.</p>
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
+                  className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
                 >
-                  <span>{loading ? "Verifying Staff & Dispatching OTP..." : "Send Verification Passcode"}</span>
+                  <span>{loading ? "Sending code…" : "Send sign-in code"}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
@@ -300,9 +294,9 @@ export default function AdminLoginPage() {
                   className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 rounded-xl text-sm font-mono tracking-widest text-center text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
                 />
               </div>
-              {devOtp && (
+              {devOtp && process.env.NODE_ENV === "development" && (
                 <div className="mt-2 text-center text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded-lg py-1 px-2">
-                  Dev Passcode from DB: <span className="font-bold underline">{devOtp}</span>
+                  Dev code: <span className="font-bold underline">{devOtp}</span>
                 </div>
               )}
             </div>
@@ -310,9 +304,9 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading || mfaCode.length < 6}
-              className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
+              className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950/20 transition disabled:opacity-50 cursor-pointer"
             >
-              {loading ? "Authenticating Session..." : "Verify & Launch Console"}
+              {loading ? "Verifying…" : "Verify & sign in"}
             </button>
 
             <button
@@ -326,41 +320,17 @@ export default function AdminLoginPage() {
               }}
               className="w-full text-center text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 py-1 transition cursor-pointer"
             >
-              ← Back to Email Selection
+              ← Back
             </button>
           </form>
         )}
-
-        {/* Demo Quick Logins */}
-        <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
-          <div className="font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
-            <span>Known Staff Accounts:</span>
-            <span className="text-[10px] font-mono text-slate-400">PostgreSQL Verified</span>
-          </div>
-          <div className="space-y-1">
-            {[
-              { email: "vinay.admin@awasio.in", role: "SUPER_ADMIN", name: "Vinay Admin" },
-              { email: "rohan.malhotra@awasio.in", role: "SUPER_ADMIN", name: "Rohan Malhotra" },
-            ].map((staff) => (
-              <button
-                key={staff.email}
-                type="button"
-                onClick={() => handleQuickSelect(staff.email)}
-                className="w-full text-left px-2 py-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition flex items-center justify-between font-mono text-[10px] cursor-pointer"
-              >
-                <span>{staff.email}</span>
-                <span className="text-rose-600 dark:text-rose-400 font-sans font-semibold">{staff.role}</span>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       <div className="mt-6 text-center text-xs text-slate-500 flex items-center gap-4">
-        <span>Awasio Systems v2.4</span>
+        <span>© Awasio</span>
         <span>•</span>
         <Link href="/" className="hover:text-slate-700 dark:hover:text-slate-300 underline">
-          Return to Customer Site
+          Back to awasio.com
         </Link>
       </div>
     </div>

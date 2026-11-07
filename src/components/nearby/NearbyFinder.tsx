@@ -50,7 +50,7 @@ export function NearbyFinder({
       type="button"
       onClick={go}
       disabled={!city || pending}
-      className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700 sm:w-auto"
+      className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 px-6 text-sm font-bold text-white shadow-lg shadow-rose-600/25 transition hover:from-rose-700 hover:to-rose-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none sm:w-auto"
     >
       {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
       {loc?.name ? "Search" : city ? `Explore ${city}` : "Search"}
@@ -66,7 +66,7 @@ export function NearbyFinder({
           ? "grid gap-2.5"
           : `grid gap-2.5 rounded-2xl p-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_auto] sm:items-end sm:p-4 ${
               hero
-                ? "bg-white/95 shadow-xl shadow-emerald-900/20 dark:bg-slate-900/95"
+                ? "bg-white/95 shadow-xl shadow-rose-900/10 dark:bg-slate-900/95"
                 : "border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
             }`
       }

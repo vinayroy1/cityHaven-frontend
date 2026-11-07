@@ -2,7 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, Building2, Sparkles, UserPlus, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  Building2,
+} from "lucide-react";
 import { PropertyListingFlow } from "@/components/propertyListing/PropertyListingFlow";
 import { BackButton } from "@/components/common/BackButton";
 

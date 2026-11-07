@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { ArrowUpRight, HeartPulse, Search, TramFront } from "lucide-react";
+import { ArrowUpRight, HeartPulse, MapPin, Search, TramFront } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { NearbyFinder } from "@/components/nearby/NearbyFinder";
 import { fetchNearbyData } from "@/components/nearby/NearbyPlaces";
-import { categoryOf, fmtKm, type CategoryKey, type ExplorerItem } from "@/components/nearby/nearbyCategories";
+import { CATEGORY_META, categoryOf, fmtKm, type CategoryKey, type ExplorerItem } from "@/components/nearby/nearbyCategories";
 import { flattenGroups } from "@/components/nearby/LocalityGuide";
 import { getGuideCities, guideCityKey } from "@/components/nearby/guideData";
 import { CountryContextChip } from "@/components/country/CountryContextChip";
@@ -98,25 +98,44 @@ export default async function NearbyIndexPage() {
             Nearest metro, hospitals, schools, colleges, malls and airport for any locality — with walking and driving time.
           </p>
 
-          <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-slate-200 bg-white p-2 text-left shadow-xl shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex items-center gap-2 px-3 pb-1 pt-2 text-xs font-semibold text-slate-500">
-              <Search className="h-3.5 w-3.5 text-rose-600" /> Pick a city, then your locality
+          <div className="relative mx-auto mt-8 max-w-2xl text-left">
+            <div aria-hidden className="pointer-events-none absolute -inset-4 rounded-[28px] bg-gradient-to-r from-rose-300/40 via-rose-200/30 to-amber-200/40 blur-2xl dark:from-rose-900/30 dark:to-amber-900/20" />
+            <div className="relative rounded-2xl bg-gradient-to-r from-rose-500 via-rose-400 to-amber-400 p-[1.5px] shadow-xl shadow-rose-900/10">
+              <div className="rounded-[15px] bg-white p-2 dark:bg-slate-900">
+                <div className="flex flex-wrap items-center justify-between gap-2 px-3 pb-1 pt-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-200">
+                    <Search className="h-3.5 w-3.5 text-rose-600" /> Pick a city, then your locality
+                  </span>
+                  <span className="flex items-center gap-1">
+                    {(["metro", "hospital", "school", "mall", "airport"] as const).map((k) => {
+                      const meta = CATEGORY_META[k];
+                      const Icon = meta.icon;
+                      return (
+                        <span key={k} title={meta.label} className={`inline-flex h-6 w-6 items-center justify-center rounded-full ${meta.dot}`}>
+                          <Icon className="h-3 w-3" />
+                        </span>
+                      );
+                    })}
+                  </span>
+                </div>
+                <NearbyFinder bare countryCode={country} />
+              </div>
             </div>
-            <NearbyFinder bare countryCode={country} />
           </div>
 
           {sample && (
-            <p className="mt-4 text-xs text-slate-500">
-              Try{" "}
-              {cards.slice(0, 4).map((c, i) => (
-                <span key={c.slug}>
-                  {i > 0 && " · "}
-                  <Link href={`/nearby/${c.slug}`} className="font-semibold text-rose-600 hover:underline dark:text-rose-400">
-                    {c.name}
-                  </Link>
-                </span>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+              <span className="text-xs font-semibold text-slate-500">Popular:</span>
+              {cards.slice(0, 4).map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/nearby/${c.slug}`}
+                  className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 shadow-xs ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:text-rose-600 hover:ring-rose-200 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-800"
+                >
+                  <MapPin className="h-3 w-3 text-rose-500" /> {c.name}
+                </Link>
               ))}
-            </p>
+            </div>
           )}
         </div>
       </section>

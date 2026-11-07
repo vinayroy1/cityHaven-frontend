@@ -5,17 +5,8 @@ import { useAdmin } from "@/features/admin/adminStore";
 import { useIsMounted, formatDateSafe } from "@/features/admin/dateUtils";
 import {
   ShieldAlert,
-  AlertTriangle,
   CheckCircle2,
-  XCircle,
-  Eye,
-  Search,
   Lock,
-  Zap,
-  RotateCcw,
-  Building2,
-  User,
-  Users2,
 } from "lucide-react";
 
 export default function AdminFraudCenterPage() {
@@ -138,7 +129,7 @@ export default function AdminFraudCenterPage() {
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   {alert.description}
                 </p>
-                <div className="text-[11px] font-mono text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+                <div className="text-[11px] font-mono text-sky-600 dark:text-sky-400 flex items-center gap-2">
                   <span>Target: {alert.targetType} #{alert.targetId}</span>
                   <span>•</span>
                   <span className="text-slate-500">Status: {alert.status}</span>
@@ -156,7 +147,7 @@ export default function AdminFraudCenterPage() {
                     </button>
                     <button
                       onClick={() => handleResolve(alert.id, "RESOLVED")}
-                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-md cursor-pointer"
+                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-600 hover:from-rose-500 hover:to-rose-500 text-white text-xs font-semibold shadow-md cursor-pointer"
                     >
                       Enforce & Quarantine
                     </button>

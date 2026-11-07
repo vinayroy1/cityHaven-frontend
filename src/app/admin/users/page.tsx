@@ -137,7 +137,7 @@ export default function AdminUsersPage() {
 
                     <td className="py-3.5 px-4">
                       <div className="text-slate-800 dark:text-slate-200">{user.listingsCount} Listings Posted</div>
-                      <div className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">
+                      <div className="text-[10px] font-mono text-sky-600 dark:text-sky-400">
                         {user.organizationsCount > 0 ? `${user.organizationsCount} Org Workspaces` : "Personal Only"}
                       </div>
                     </td>

@@ -4,7 +4,7 @@ import {
   INITIAL_ORG_VERIFICATIONS,
   INITIAL_DISPUTE_CASES,
   DEFAULT_GOVERNANCE_SETTINGS,
-} from "../mockData";
+} from "../__fixtures__/adminFixtures";
 import type { StaffRole, PropertyQcItem, OrgVerificationItem, AdminDisputeCase, AdminGovernanceSettings } from "../types";
 
 describe("Awasio Admin Operations & Governance Workflow", () => {

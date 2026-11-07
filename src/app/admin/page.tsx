@@ -7,8 +7,6 @@ import { useIsMounted, formatTimeSafe } from "@/features/admin/dateUtils";
 import {
   Building2,
   FileCheck2,
-  Users2,
-  UserCog,
   CreditCard,
   History,
   ShieldCheck,
@@ -48,16 +46,21 @@ export default function AdminOverviewPage() {
     .reduce((acc, curr) => acc + curr.amount, 0);
 
   const totalListingInventoryValue = propertyQcList.reduce((acc, curr) => acc + curr.price, 0);
+  const qcDurations = propertyQcList
+    .filter((p) => p.reviewedAt)
+    .map((p) => new Date(p.reviewedAt as string).getTime() - new Date(p.createdAt).getTime())
+    .filter((ms) => ms > 0);
+  const avgQcHours = qcDurations.length ? `${(qcDurations.reduce((a, b) => a + b, 0) / qcDurations.length / 3.6e6).toFixed(1)} hrs` : "—";
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/90 to-rose-950/80 border border-slate-800 text-white p-6 sm:p-8 shadow-md">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-rose-950/80 border border-slate-800 text-white p-6 sm:p-8 shadow-md">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-rose-500/20 border border-rose-500/30 text-[11px] font-mono text-rose-300 mb-3">
               <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
-              <span>Operations Console Active • Audit Trail v2.4</span>
+              <span>Awasio admin</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
               Welcome back, {currentStaff?.name || "Operations Lead"}
@@ -77,7 +80,7 @@ export default function AdminOverviewPage() {
             </Link>
             <Link
               href="/admin/properties"
-              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg shadow-rose-950/50 flex items-center gap-2 transition"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-600 hover:from-rose-500 hover:to-rose-500 text-white text-xs font-semibold shadow-lg shadow-rose-950/50 flex items-center gap-2 transition"
             >
               <span>Quality Control</span>
               <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px]">
@@ -118,22 +121,22 @@ export default function AdminOverviewPage() {
         {/* Pending Org Verifications */}
         <Link
           href="/admin/organizations"
-          className="group p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 hover:bg-slate-50 dark:hover:bg-slate-850 transition relative overflow-hidden shadow-sm"
+          className="group p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-sky-500/50 hover:bg-slate-50 dark:hover:bg-slate-850 transition relative overflow-hidden shadow-sm"
         >
           <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center">
               <FileCheck2 className="w-5 h-5" />
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20 dark:border-indigo-500/30 font-semibold">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 dark:bg-rose-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/20 dark:border-sky-500/30 font-semibold">
               KYC DOSSIER
             </span>
           </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition">
+          <div className="text-2xl font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-300 transition">
             {pendingOrgVerifs.length}
           </div>
           <div className="text-xs font-medium text-slate-600 dark:text-slate-400 mt-1 flex items-center justify-between">
             <span>Pending Org Verifications</span>
-            <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-sky-500 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </div>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 font-mono">
             {verifiedOrgCount} verified businesses
@@ -207,12 +210,12 @@ export default function AdminOverviewPage() {
       <div className="p-4 rounded-2xl bg-slate-900 text-white border border-slate-800 flex flex-wrap items-center justify-between gap-4 shadow-sm">
         <div className="flex flex-wrap items-center gap-6 text-xs">
           <div>
-            <div className="text-slate-400 text-[10px]">Managed GMV:</div>
+            <div className="text-slate-400 text-[10px]">Total asking value:</div>
             <div className="font-bold text-white text-sm">₹{(totalListingInventoryValue / 10000000).toFixed(2)} Cr</div>
           </div>
           <div className="hidden sm:block border-l border-slate-800 pl-6">
-            <div className="text-slate-400 text-[10px]">Avg Quality Control SLA:</div>
-            <div className="font-bold text-emerald-400 text-sm">1.8 hrs <span className="text-[10px] font-normal text-slate-400">(&lt; 4h target)</span></div>
+            <div className="text-slate-400 text-[10px]">Avg QC turnaround:</div>
+            <div className="font-bold text-emerald-400 text-sm">{avgQcHours}</div>
           </div>
           <div className="hidden md:block border-l border-slate-800 pl-6">
             <div className="text-slate-400 text-[10px]">Security Threats:</div>
@@ -271,7 +274,7 @@ export default function AdminOverviewPage() {
                         <span>•</span>
                         <span className="font-semibold text-slate-700 dark:text-slate-300">₹{(item.price / 100000).toFixed(1)} Lakh</span>
                         <span>•</span>
-                        <span className="font-mono text-indigo-600 dark:text-indigo-400">{item.ownerType}</span>
+                        <span className="font-mono text-sky-600 dark:text-sky-400">{item.ownerType}</span>
                       </div>
                     </div>
                     <Link
@@ -290,12 +293,12 @@ export default function AdminOverviewPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <FileCheck2 className="w-5 h-5 text-indigo-500" />
+                <FileCheck2 className="w-5 h-5 text-sky-500" />
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">Pending Organization KYC Verifications</h2>
               </div>
               <Link
                 href="/admin/organizations"
-                className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                className="text-xs font-medium text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1"
               >
                 View all dossier queue →
               </Link>
@@ -322,7 +325,7 @@ export default function AdminOverviewPage() {
                     </div>
                     <Link
                       href={`/admin/organizations`}
-                      className="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 hover:bg-indigo-100 dark:hover:bg-indigo-800/60 text-indigo-700 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-700/50 text-xs font-medium shrink-0 transition"
+                      className="px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-900/40 hover:bg-sky-100 dark:hover:bg-sky-800/60 text-sky-700 dark:text-sky-200 border border-sky-200 dark:border-sky-700/50 text-xs font-medium shrink-0 transition"
                     >
                       Verify Documents
                     </Link>
@@ -365,8 +368,8 @@ export default function AdminOverviewPage() {
           </div>
 
           <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 font-mono flex items-center justify-between">
-            <span>Audit Integrity: ENFORCED</span>
-            <span className="text-emerald-600 dark:text-emerald-400">● 100% Immutable</span>
+            <span>Latest admin actions</span>
+            <Link href="/admin/audit" className="text-rose-600 hover:underline dark:text-rose-400">View full audit log →</Link>
           </div>
         </div>
       </div>
