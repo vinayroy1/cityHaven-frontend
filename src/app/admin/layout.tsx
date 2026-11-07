@@ -31,6 +31,8 @@ import {
   Sliders,
   BookOpen,
   PlusCircle,
+  Search,
+  Users,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -65,6 +67,18 @@ const NAV_ITEMS = [
       "FINANCE_APPROVER",
       "ANALYST_AUDITOR",
     ],
+  },
+  {
+    label: "Lead Finder",
+    href: "/admin/lead-finder",
+    icon: Search,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "CATALOG_SPECIALIST"],
+  },
+  {
+    label: "Leads",
+    href: "/admin/leads",
+    icon: Users,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "CATALOG_SPECIALIST"],
   },
   {
     label: "Create Listing",

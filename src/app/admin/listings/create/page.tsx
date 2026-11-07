@@ -29,7 +29,7 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import { adminApi } from "@/features/admin/api";
+import { adminApi, leadFinderApi } from "@/features/admin/api";
 import { useAdmin } from "@/features/admin/adminStore";
 import { apiFetch } from "@/lib/api/query";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
@@ -64,10 +64,10 @@ function errorText(e: unknown, fallback: string) {
   return err?.response?.data?.message || err?.data?.message || err?.message || fallback;
 }
 
-function OwnerForm({ onStarted }: { onStarted: (s: AssistedSession) => void }) {
-  const [name, setName] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [email, setEmail] = useState("");
+function OwnerForm({ onStarted, initial }: { onStarted: (s: AssistedSession) => void; initial?: { name?: string; mobile?: string; email?: string } }) {
+  const [name, setName] = useState(initial?.name ?? "");
+  const [mobile, setMobile] = useState(initial?.mobile ?? "");
+  const [email, setEmail] = useState(initial?.email ?? "");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -132,6 +132,7 @@ function CreateListingHub() {
   const params = useSearchParams();
   const { currentStaff } = useAdmin();
   const initialType = (params.get("type") || "").toUpperCase() as ListingType;
+  const leadId = Number(params.get("leadId")) || null;
   const [session, setSession] = useState<AssistedSession | null>(null);
   const [type, setType] = useState<ListingType | null>(TYPES.some((t) => t.id === initialType) ? initialType : null);
   const [done, setDone] = useState<{ title: string; url: string; emailed: boolean; note?: string } | null>(null);
@@ -159,6 +160,14 @@ function CreateListingHub() {
       note = r?.message;
     } catch (err) {
       note = errorText(err, "Owner email could not be sent.");
+    }
+    // Came from the Leads board: mark that lead as Listed and link the listing to it.
+    if (leadId) {
+      try {
+        await leadFinderApi.markListed(leadId, { listedType: listingType, listedUrl: url, listedOwnerId: session.owner.id });
+      } catch (err) {
+        toast.error(errorText(err, "Listing saved, but the lead could not be marked as listed."));
+      }
     }
     setDone({ title, url, emailed, note });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -203,7 +212,7 @@ function CreateListingHub() {
       </div>
 
       {!session ? (
-        <OwnerForm onStarted={setSession} />
+        <OwnerForm onStarted={setSession} initial={{ name: params.get("ownerName") ?? "", mobile: params.get("ownerMobile") ?? "", email: params.get("ownerEmail") ?? "" }} />
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -233,6 +242,11 @@ function CreateListingHub() {
                 {done.emailed ? `Owner emailed at ${session.owner.email}.` : `Owner was not emailed${done.note ? `: ${done.note}` : "."} Share the link with them yourself.`}
               </p>
               <div className="flex flex-wrap justify-center gap-2 pt-2">
+                {leadId && (
+                  <Link href={`/admin/leads?open=${leadId}`} className="rounded-xl border border-emerald-300 px-4 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50">
+                    Back to lead
+                  </Link>
+                )}
                 <button type="button" onClick={() => reset(true)} className="rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-700">
                   Another listing for this owner
                 </button>

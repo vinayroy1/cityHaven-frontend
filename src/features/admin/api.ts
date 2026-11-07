@@ -174,3 +174,116 @@ export const adminApi = {
     return unwrap(await apiClient.patch<AdminGovernanceSettings>(API_ENDPOINTS.admin.governance, { ...settings, reason }));
   },
 };
+
+// ---------------------------------------------------------------------------
+// Lead Finder (sales sourcing)
+// ---------------------------------------------------------------------------
+export const LEAD_TYPES = ["PG", "STAY", "RENTAL", "PROJECT"] as const;
+export type LeadType = (typeof LEAD_TYPES)[number];
+export const LEAD_STATUSES = ["NEW", "NO_ANSWER", "CALL_BACK", "INTERESTED", "DOCS_PENDING", "LISTED", "NOT_INTERESTED", "DO_NOT_CONTACT"] as const;
+export type LeadStatus = (typeof LEAD_STATUSES)[number];
+
+export interface LeadSearchResult {
+  placeId: string;
+  name: string;
+  address: string;
+  businessStatus: string | null;
+  mapsUrl: string | null;
+  lat: number | null;
+  lng: number | null;
+  lead: { id: number; placeId: string; status: LeadStatus } | null;
+}
+export interface LeadSearchResponse {
+  query: string;
+  cached: boolean;
+  nextPageToken: string | null;
+  results: LeadSearchResult[];
+}
+export interface LeadActivity {
+  id: number;
+  staffName: string;
+  action: string;
+  status: LeadStatus | null;
+  note: string | null;
+  createdAt: string;
+}
+export interface SourcingLead {
+  id: number;
+  placeId: string;
+  type: LeadType;
+  status: LeadStatus;
+  cityName: string;
+  locality: string | null;
+  countryCode: string;
+  assignedToId: number | null;
+  assignedToName: string | null;
+  createdByName: string;
+  nextFollowUpAt: string | null;
+  ownerName: string | null;
+  ownerMobile: string | null;
+  ownerEmail: string | null;
+  notes: string | null;
+  listedType: string | null;
+  listedUrl: string | null;
+  lastContactAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  place?: { name: string; address: string } | null;
+  activities?: LeadActivity[];
+}
+export interface LeadPlaceDetails {
+  placeId: string;
+  name: string;
+  address: string;
+  businessStatus: string | null;
+  mapsUrl: string | null;
+  phone: string | null;
+  phoneInternational: string | null;
+  website: string | null;
+  rating: number | null;
+  ratingCount: number | null;
+  hours: string[];
+}
+export interface LeadStats {
+  byStatus: Partial<Record<LeadStatus, number>>;
+  callsToday: number;
+  listedThisWeek: number;
+  dueToday: number;
+  usage: { searches: { used: number; cap: number }; lookups: { used: number; cap: number } };
+  listedByStaff: Array<{ name: string; count: number }>;
+}
+
+const LF = `${API_ENDPOINTS.admin.base}/lead-finder`;
+export const leadFinderApi = {
+  async search(params: { type: LeadType; city: string; locality?: string; keyword?: string; country?: string; pageToken?: string }) {
+    return unwrap(await apiClient.get<LeadSearchResponse>(`${LF}/search`, { params }));
+  },
+  async saveLeads(leads: Array<{ placeId: string; type: LeadType; cityName: string; locality?: string | null; countryCode?: string }>) {
+    return unwrap(await apiClient.post<{ created: number; skipped: number }>(`${LF}/leads`, { leads }));
+  },
+  async list(params: { status?: LeadStatus; type?: LeadType; city?: string; assigned?: string; due?: "today"; page?: number }) {
+    return unwrap(
+      await apiClient.get<{ total: number; page: number; pageSize: number; counts: Partial<Record<LeadStatus, number>>; items: SourcingLead[] }>(`${LF}/leads`, { params }),
+    );
+  },
+  async get(id: number, refresh = false) {
+    return unwrap(
+      await apiClient.get<{ lead: SourcingLead; place: LeadPlaceDetails | null; placeError?: string }>(`${LF}/leads/${id}`, { params: refresh ? { refresh: 1 } : undefined }),
+    );
+  },
+  async update(
+    id: number,
+    body: Partial<{ status: LeadStatus; assignedToId: number | null; nextFollowUpAt: string | null; ownerName: string | null; ownerMobile: string | null; ownerEmail: string | null; notes: string | null; note: string }>,
+  ) {
+    return unwrap(await apiClient.patch<SourcingLead>(`${LF}/leads/${id}`, body));
+  },
+  async logActivity(id: number, body: { action: "CALL" | "WHATSAPP" | "NOTE"; status?: LeadStatus; note?: string; nextFollowUpAt?: string | null }) {
+    return unwrap(await apiClient.post<SourcingLead>(`${LF}/leads/${id}/activity`, body));
+  },
+  async markListed(id: number, body: { listedType: "PROPERTY" | "STAY" | "FLATMATE" | "INTERIOR" | "ADVISOR"; listedUrl: string; listedOwnerId?: number }) {
+    return unwrap(await apiClient.post<SourcingLead>(`${LF}/leads/${id}/listed`, body));
+  },
+  async stats() {
+    return unwrap(await apiClient.get<LeadStats>(`${LF}/stats`));
+  },
+};
