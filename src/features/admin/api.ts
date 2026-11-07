@@ -178,7 +178,7 @@ export const adminApi = {
 // ---------------------------------------------------------------------------
 // Lead Finder (sales sourcing)
 // ---------------------------------------------------------------------------
-export const LEAD_TYPES = ["PG", "STAY", "RENTAL", "PROJECT"] as const;
+export const LEAD_TYPES = ["PG", "STAY", "RENTAL", "PROJECT", "BUILDER", "AGENT", "INTERIOR"] as const;
 export type LeadType = (typeof LEAD_TYPES)[number];
 export const LEAD_STATUSES = ["NEW", "NO_ANSWER", "CALL_BACK", "INTERESTED", "DOCS_PENDING", "LISTED", "NOT_INTERESTED", "DO_NOT_CONTACT"] as const;
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
@@ -197,6 +197,8 @@ export interface LeadSearchResponse {
   query: string;
   cached: boolean;
   nextPageToken: string | null;
+  /** Businesses skipped because they're already saved as leads (when hideSaved is on). */
+  hiddenSaved: number;
   results: LeadSearchResult[];
 }
 export interface LeadActivity {
@@ -223,6 +225,7 @@ export interface SourcingLead {
   ownerMobile: string | null;
   ownerEmail: string | null;
   notes: string | null;
+  intake: Record<string, string | boolean> | null;
   listedType: string | null;
   listedUrl: string | null;
   lastContactAt: string | null;
@@ -255,13 +258,13 @@ export interface LeadStats {
 
 const LF = `${API_ENDPOINTS.admin.base}/lead-finder`;
 export const leadFinderApi = {
-  async search(params: { type: LeadType; city: string; locality?: string; keyword?: string; country?: string; pageToken?: string }) {
+  async search(params: { type: LeadType; city: string; locality?: string; keyword?: string; country?: string; pageToken?: string; hideSaved?: "0" | "1" }) {
     return unwrap(await apiClient.get<LeadSearchResponse>(`${LF}/search`, { params }));
   },
   async saveLeads(leads: Array<{ placeId: string; type: LeadType; cityName: string; locality?: string | null; countryCode?: string }>) {
     return unwrap(await apiClient.post<{ created: number; skipped: number }>(`${LF}/leads`, { leads }));
   },
-  async list(params: { status?: LeadStatus; type?: LeadType; city?: string; assigned?: string; due?: "today"; page?: number }) {
+  async list(params: { status?: LeadStatus; type?: LeadType; city?: string; locality?: string; assigned?: string; due?: "today"; page?: number }) {
     return unwrap(
       await apiClient.get<{ total: number; page: number; pageSize: number; counts: Partial<Record<LeadStatus, number>>; items: SourcingLead[] }>(`${LF}/leads`, { params }),
     );
@@ -273,7 +276,7 @@ export const leadFinderApi = {
   },
   async update(
     id: number,
-    body: Partial<{ status: LeadStatus; assignedToId: number | null; nextFollowUpAt: string | null; ownerName: string | null; ownerMobile: string | null; ownerEmail: string | null; notes: string | null; note: string }>,
+    body: Partial<{ status: LeadStatus; assignedToId: number | null; nextFollowUpAt: string | null; ownerName: string | null; ownerMobile: string | null; ownerEmail: string | null; notes: string | null; intake: Record<string, string | boolean> | null; note: string }>,
   ) {
     return unwrap(await apiClient.patch<SourcingLead>(`${LF}/leads/${id}`, body));
   },

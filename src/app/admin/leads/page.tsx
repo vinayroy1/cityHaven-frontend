@@ -27,6 +27,10 @@ import {
   X,
 } from "lucide-react";
 import { useAdmin } from "@/features/admin/adminStore";
+import { LeadIntakeForm } from "@/features/admin/leadIntake";
+import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
+import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
+import { useCountryCode } from "@/lib/country/useCountry";
 import {
   LEAD_STATUSES,
   LEAD_TYPES,
@@ -58,9 +62,9 @@ const STATUS_TONE: Record<LeadStatus, string> = {
   NOT_INTERESTED: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
   DO_NOT_CONTACT: "bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
 };
-const TYPE_LABEL: Record<LeadType, string> = { PG: "PG", STAY: "Hotel/Stay", RENTAL: "Rental", PROJECT: "Project" };
-/** Which listing form a lead usually becomes. PROJECT has no preset: staff choose in the hub. */
-const LISTING_FOR: Record<LeadType, string | null> = { PG: "property", STAY: "stay", RENTAL: "advisor", PROJECT: null };
+const TYPE_LABEL: Record<LeadType, string> = { PG: "PG", STAY: "Hotel/Stay", RENTAL: "Rental", PROJECT: "Project", BUILDER: "Builder", AGENT: "Agent", INTERIOR: "Interior designer" };
+/** Which listing form a lead usually becomes. PROJECT/BUILDER have no preset: staff choose in the hub. */
+const LISTING_FOR: Record<LeadType, string | null> = { PG: "property", STAY: "stay", RENTAL: "property", PROJECT: null, BUILDER: null, AGENT: "advisor", INTERIOR: "interior" };
 
 const errorText = (e: unknown, fallback: string) => {
   const err = e as { response?: { data?: { message?: string } }; message?: string };
@@ -298,6 +302,8 @@ function LeadDrawer({ id, onClose, onChanged }: { id: number; onClose: () => voi
               <p className="text-[11px] text-slate-400">Owner name, mobile and email are required to create the listing. Only details the owner gives you are saved here.</p>
             </section>
 
+            <LeadIntakeForm key={JSON.stringify(lead.intake ?? {})} type={lead.type} value={lead.intake} saving={saving} onSave={(intake) => void act(() => leadFinderApi.update(id, { intake }), "Details saved")} />
+
             {/* History */}
             <section>
               <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">History</h3>
@@ -334,7 +340,10 @@ function LeadsBoard() {
   const [type, setType] = useState<LeadType | "">("");
   const [assigned, setAssigned] = useState<"" | "me" | "none">("");
   const [due, setDue] = useState(false);
+  const country = useCountryCode();
   const [city, setCity] = useState("");
+  const [cityState, setCityState] = useState<string | undefined>();
+  const [locality, setLocality] = useState("");
   const [page, setPage] = useState(1);
   const [data, setData] = useState<Awaited<ReturnType<typeof leadFinderApi.list>> | null>(null);
   const [stats, setStats] = useState<LeadStats | null>(null);
@@ -347,7 +356,7 @@ function LeadsBoard() {
     setError("");
     try {
       const [list, st] = await Promise.all([
-        leadFinderApi.list({ status: status || undefined, type: type || undefined, city: city.trim() || undefined, assigned: assigned || undefined, due: due ? "today" : undefined, page }),
+        leadFinderApi.list({ status: status || undefined, type: type || undefined, city: city.trim() || undefined, locality: locality.trim() || undefined, assigned: assigned || undefined, due: due ? "today" : undefined, page }),
         leadFinderApi.stats(),
       ]);
       setData(list);
@@ -357,7 +366,7 @@ function LeadsBoard() {
     } finally {
       setLoading(false);
     }
-  }, [status, type, city, assigned, due, page]);
+  }, [status, type, city, locality, assigned, due, page]);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => void refresh(), [refresh]);
 
@@ -408,16 +417,48 @@ function LeadsBoard() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2">
-        <select value={type} onChange={(e) => { setType(e.target.value as LeadType | ""); setPage(1); }} className={`${input} !w-auto`}>
+        <select value={type} onChange={(e) => { setType(e.target.value as LeadType | ""); setPage(1); }} className={`${input} min-w-0 flex-1 sm:!w-auto sm:flex-none`}>
           <option value="">All types</option>
           {LEAD_TYPES.map((t) => <option key={t} value={t}>{TYPE_LABEL[t]}</option>)}
         </select>
-        <select value={assigned} onChange={(e) => { setAssigned(e.target.value as "" | "me" | "none"); setPage(1); }} className={`${input} !w-auto`}>
+        <select value={assigned} onChange={(e) => { setAssigned(e.target.value as "" | "me" | "none"); setPage(1); }} className={`${input} min-w-0 flex-1 sm:!w-auto sm:flex-none`}>
           <option value="">Everyone&apos;s leads</option>
           <option value="me">Assigned to me</option>
           <option value="none">Unassigned</option>
         </select>
-        <input value={city} onChange={(e) => { setCity(e.target.value); setPage(1); }} placeholder="Filter by city" className={`${input} !w-44`} />
+        <div className="w-full sm:w-52">
+          <PropertyListingCitySelector
+            value={city}
+            selectedState={cityState}
+            countryCode={country}
+            placeholder="All cities"
+            onChange={(c) => {
+              setCity(c.name);
+              setCityState(c.state);
+              setLocality("");
+              setPage(1);
+            }}
+          />
+        </div>
+        <div className="w-full sm:w-56">
+          <PropertyListingLocalitySelector
+            key={`${country}-${city}`}
+            value={locality}
+            cityName={city}
+            selectedState={cityState}
+            countryCode={country}
+            placeholder={city ? `Locality in ${city}` : "Pick a city first"}
+            onChange={(l) => {
+              setLocality(l.name || "");
+              setPage(1);
+            }}
+          />
+        </div>
+        {(city || locality) && (
+          <button type="button" onClick={() => { setCity(""); setCityState(undefined); setLocality(""); setPage(1); }} className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300">
+            Clear location
+          </button>
+        )}
       </div>
 
       {error && (
@@ -431,11 +472,11 @@ function LeadsBoard() {
           <thead className="border-b border-slate-200 bg-slate-50 text-[11px] text-slate-500 dark:border-slate-800 dark:bg-slate-950/80">
             <tr>
               <th className="px-4 py-3">Business</th>
-              <th className="px-4 py-3">Type</th>
+              <th className="hidden px-4 py-3 sm:table-cell">Type</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Assigned</th>
+              <th className="hidden px-4 py-3 md:table-cell">Assigned</th>
               <th className="px-4 py-3">Follow-up</th>
-              <th className="px-4 py-3">Last contact</th>
+              <th className="hidden px-4 py-3 lg:table-cell">Last contact</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -446,15 +487,15 @@ function LeadsBoard() {
             ) : (
               data.items.map((l) => (
                 <tr key={l.id} onClick={() => setOpenId(l.id)} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                  <td className="max-w-[260px] px-4 py-3">
+                  <td className="max-w-[180px] px-4 py-3 sm:max-w-[260px]">
                     <div className="truncate font-semibold text-slate-900 dark:text-white">{l.place?.name || `Lead #${l.id}`}</div>
                     <div className="truncate text-slate-500">{l.place?.address || [l.locality, l.cityName].filter(Boolean).join(", ")}</div>
                   </td>
-                  <td className="px-4 py-3">{TYPE_LABEL[l.type]}</td>
+                  <td className="hidden px-4 py-3 sm:table-cell">{TYPE_LABEL[l.type]}</td>
                   <td className="px-4 py-3"><Badge status={l.status} /></td>
-                  <td className="px-4 py-3">{l.assignedToName ?? <span className="text-slate-400">Unassigned</span>}</td>
-                  <td className={`px-4 py-3 ${l.nextFollowUpAt && new Date(l.nextFollowUpAt) <= new Date() && !["LISTED", "NOT_INTERESTED", "DO_NOT_CONTACT"].includes(l.status) ? "font-semibold text-amber-600" : ""}`}>{when(l.nextFollowUpAt)}</td>
-                  <td className="px-4 py-3 text-slate-500">{when(l.lastContactAt)}</td>
+                  <td className="hidden px-4 py-3 md:table-cell">{l.assignedToName ?? <span className="text-slate-400">Unassigned</span>}</td>
+                  <td className={`whitespace-nowrap px-4 py-3 ${l.nextFollowUpAt && new Date(l.nextFollowUpAt) <= new Date() && !["LISTED", "NOT_INTERESTED", "DO_NOT_CONTACT"].includes(l.status) ? "font-semibold text-amber-600" : ""}`}>{when(l.nextFollowUpAt)}</td>
+                  <td className="hidden px-4 py-3 text-slate-500 lg:table-cell">{when(l.lastContactAt)}</td>
                 </tr>
               ))
             )}

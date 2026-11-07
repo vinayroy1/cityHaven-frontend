@@ -29,7 +29,7 @@ import {
   UserCheck,
   Users,
 } from "lucide-react";
-import { adminApi, leadFinderApi } from "@/features/admin/api";
+import { adminApi, leadFinderApi, type SourcingLead } from "@/features/admin/api";
 import { useAdmin } from "@/features/admin/adminStore";
 import { apiFetch } from "@/lib/api/query";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
@@ -44,6 +44,7 @@ import { PropertyListingFlow } from "@/components/propertyListing/PropertyListin
 import { StayEditor } from "@/components/stays/StayEditor";
 import { FlatmateListingWizard } from "@/components/flatmates/FlatmateListingWizard";
 import { InteriorWizard } from "@/components/interiors/wizard";
+import { LeadIntakeSummary } from "@/features/admin/leadIntake";
 import { AdvisorProfileEditor } from "@/app/dashboard/advisor-profile/AdvisorProfileEditor";
 
 type ListingType = "PROPERTY" | "STAY" | "FLATMATE" | "INTERIOR" | "ADVISOR";
@@ -143,6 +144,13 @@ function CreateListingHub() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSession(getAssistedSession());
   }, []);
+
+  // Came from a lead: load the details sales collected on the call, shown beside the form.
+  const [lead, setLead] = useState<SourcingLead | null>(null);
+  useEffect(() => {
+    if (!leadId) return;
+    leadFinderApi.get(leadId).then((r) => setLead(r.lead)).catch(() => setLead(null));
+  }, [leadId]);
 
   const allowed = currentStaff?.roles.some((r) => CAN_CREATE.includes(r));
   if (currentStaff && !allowed) {
@@ -290,6 +298,8 @@ function CreateListingHub() {
                   </button>
                 )}
               </div>
+
+              {lead && <LeadIntakeSummary type={lead.type} value={lead.intake} notes={lead.notes} />}
 
               {type === "PROPERTY" && (
                 <PropertyListingFlow

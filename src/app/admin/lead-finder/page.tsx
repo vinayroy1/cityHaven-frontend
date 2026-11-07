@@ -7,7 +7,7 @@
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { AlertCircle, BedDouble, Building2, Check, ExternalLink, Hotel, Home, Loader2, MapPin, Search, Users } from "lucide-react";
+import { AlertCircle, BedDouble, Briefcase, HardHat, Sofa, Building2, Check, ExternalLink, Hotel, Home, Loader2, MapPin, Search, Users } from "lucide-react";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { useCountryCode } from "@/lib/country/useCountry";
@@ -16,8 +16,11 @@ import { leadFinderApi, type LeadSearchResult, type LeadType } from "@/features/
 const TABS: Array<{ id: LeadType; label: string; icon: typeof Home; hint: string; keyword: string }> = [
   { id: "PG", label: "PG / Hostel", icon: BedDouble, hint: "PGs, co-living and hostels", keyword: "e.g. girls PG, boys hostel" },
   { id: "STAY", label: "Hotel / Stay", icon: Hotel, hint: "Hotels, guest houses, lodges", keyword: "e.g. budget hotel, homestay" },
-  { id: "RENTAL", label: "Rental", icon: Home, hint: "Property dealers and rental agents", keyword: "e.g. 2 BHK rental" },
-  { id: "PROJECT", label: "Project", icon: Building2, hint: "Builders and residential projects", keyword: "e.g. township, villa project" },
+  { id: "RENTAL", label: "Rental", icon: Home, hint: "Rental flats, houses and serviced apartments", keyword: "e.g. 2 BHK rental" },
+  { id: "PROJECT", label: "Project", icon: Building2, hint: "Residential projects and new launches", keyword: "e.g. township, villa project" },
+  { id: "BUILDER", label: "Builder", icon: HardHat, hint: "Builders, developers and construction companies", keyword: "e.g. township developer" },
+  { id: "AGENT", label: "Agent", icon: Briefcase, hint: "Real estate agents, brokers and property dealers", keyword: "e.g. commercial broker" },
+  { id: "INTERIOR", label: "Interior Designer", icon: Sofa, hint: "Interior designers, decorators and modular kitchens", keyword: "e.g. modular kitchen" },
 ];
 
 const errorText = (e: unknown, fallback: string) => {
@@ -36,6 +39,8 @@ export default function LeadFinderPage() {
   const [nextToken, setNextToken] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const [cached, setCached] = useState(false);
+  const [hideSaved, setHideSaved] = useState(true);
+  const [hiddenSaved, setHiddenSaved] = useState(0);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -49,8 +54,13 @@ export default function LeadFinderPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await leadFinderApi.search({ type, city, locality: locality || undefined, keyword: keyword.trim() || undefined, country, pageToken });
-      setResults((prev) => (pageToken ? [...prev, ...res.results] : res.results));
+      const res = await leadFinderApi.search({ type, city, locality: locality || undefined, keyword: keyword.trim() || undefined, country, pageToken, hideSaved: hideSaved ? "1" : "0" });
+      setResults((prev) => {
+        if (!pageToken) return res.results;
+        const have = new Set(prev.map((r) => r.placeId));
+        return [...prev, ...res.results.filter((r) => !have.has(r.placeId))];
+      });
+      setHiddenSaved((n) => (pageToken ? n + res.hiddenSaved : res.hiddenSaved));
       setNextToken(res.nextPageToken);
       setCached(res.cached);
       setSearched(true);
@@ -162,6 +172,10 @@ export default function LeadFinderPage() {
             className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
           />
         </div>
+        <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400 md:col-span-4">
+          <input type="checkbox" checked={hideSaved} onChange={(e) => setHideSaved(e.target.checked)} className="h-4 w-4 rounded border-slate-300 accent-rose-600" />
+          Hide businesses I&apos;ve already saved (show only new ones)
+        </label>
         <button
           type="button"
           onClick={() => run()}
@@ -182,7 +196,8 @@ export default function LeadFinderPage() {
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-4 py-3 dark:border-slate-800">
             <div className="text-xs text-slate-600 dark:text-slate-400">
-              <span className="font-bold text-slate-900 dark:text-white">{results.length}</span> found · {selectable.length} not saved yet
+              <span className="font-bold text-slate-900 dark:text-white">{results.length}</span> {hideSaved ? "new" : "found"}
+              {hiddenSaved > 0 && <span className="text-slate-400"> · {hiddenSaved} already saved (hidden)</span>}
               {cached && <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">from cache, no cost</span>}
             </div>
             <div className="flex items-center gap-2">
@@ -196,11 +211,17 @@ export default function LeadFinderPage() {
           </div>
 
           {results.length === 0 ? (
-            <p className="p-8 text-center text-sm text-slate-500">No businesses found. Try a broader locality or a different keyword.</p>
+            <p className="p-8 text-center text-sm text-slate-500">
+              {nextToken
+                ? `No new businesses on this page${hiddenSaved > 0 ? ` (${hiddenSaved} already saved)` : ""}. Click "Find more businesses" for the next page.`
+                : hiddenSaved > 0
+                  ? `All ${hiddenSaved} businesses found here are already saved. Try a nearby locality or a keyword.`
+                  : "No businesses found. Try a broader locality or a different keyword."}
+            </p>
           ) : (
             <ul className="divide-y divide-slate-100 dark:divide-slate-800">
               {results.map((r) => (
-                <li key={r.placeId} className="flex items-center gap-3 px-4 py-3">
+                <li key={r.placeId} className="flex items-center gap-3 px-3 py-3 sm:px-4">
                   <input
                     type="checkbox"
                     disabled={!!r.lead}
@@ -221,11 +242,11 @@ export default function LeadFinderPage() {
                     </a>
                   )}
                   {r.lead ? (
-                    <Link href={r.lead.id ? `/admin/leads?open=${r.lead.id}` : "/admin/leads"} className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 hover:underline dark:bg-emerald-950/40 dark:text-emerald-300">
-                      Saved · {r.lead.status.replace(/_/g, " ").toLowerCase()}
+                    <Link href={r.lead.id ? `/admin/leads?open=${r.lead.id}` : "/admin/leads"} className="shrink-0 whitespace-nowrap rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 hover:underline dark:bg-emerald-950/40 dark:text-emerald-300">
+                      Saved<span className="hidden sm:inline"> · {r.lead.status.replace(/_/g, " ").toLowerCase()}</span>
                     </Link>
                   ) : (
-                    <button type="button" disabled={saving} onClick={() => save([r.placeId])} className="rounded-lg border border-rose-200 px-3 py-1 text-xs font-bold text-rose-600 hover:bg-rose-50 disabled:opacity-50 dark:border-rose-900/50 dark:hover:bg-rose-950/30">
+                    <button type="button" disabled={saving} onClick={() => save([r.placeId])} className="shrink-0 whitespace-nowrap rounded-lg border border-rose-200 px-3 py-1 text-xs font-bold text-rose-600 hover:bg-rose-50 disabled:opacity-50 dark:border-rose-900/50 dark:hover:bg-rose-950/30">
                       Save lead
                     </button>
                   )}
@@ -237,7 +258,7 @@ export default function LeadFinderPage() {
           {nextToken && (
             <div className="border-t border-slate-200 p-3 text-center dark:border-slate-800">
               <button type="button" disabled={loading} onClick={() => run(nextToken)} className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-200">
-                {loading ? "Loading…" : "Load more"}
+                {loading ? "Searching…" : "Find more businesses"}
               </button>
             </div>
           )}
