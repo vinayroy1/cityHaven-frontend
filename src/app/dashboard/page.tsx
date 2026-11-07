@@ -5,7 +5,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { DashboardClient } from "./components/DashboardClient";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Awasio",
+  title: { absolute: "Dashboard | Awasio" },
   description: "Monitor listings, leads, properties, flatmates, and documents from your Awasio control center.",
   alternates: { canonical: buildCanonical("/dashboard") },
   openGraph: {

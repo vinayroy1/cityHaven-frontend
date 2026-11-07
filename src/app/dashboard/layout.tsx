@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Awasio",
+  title: { absolute: "Dashboard | Awasio" },
   // Private pages: don't inherit the root layout's homepage canonical.
   alternates: { canonical: null },
   robots: {

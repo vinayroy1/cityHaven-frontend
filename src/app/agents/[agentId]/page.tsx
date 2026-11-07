@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = `${agent.name} (${agent.agency}) is an Awasio and RERA verified property specialist in ${agent.area}, ${agent.city}. Over ${agent.experience} experience with ${agent.tours} completed walkthroughs. Specializing in ${agent.focus}.`;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     keywords: [
       agent.name,

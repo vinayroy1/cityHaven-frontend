@@ -235,3 +235,6 @@ export function getAllTopSeoUrls(): string[] {
   return Array.from(new Set(urls));
 }
 
+
+/** Default social share (Open Graph / X) image, served from R2 through awasio.com/r2-cdn. Upload a new file name to change it. */
+export const OG_IMAGE_URL = `${SITE_URL}/r2-cdn/assets/og/og-image-v2.jpg`;

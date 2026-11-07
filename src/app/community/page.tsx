@@ -2,14 +2,14 @@ import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Users, MessageSquare, Sparkles, HelpCircle, ArrowRight } from "lucide-react";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Community Forum - Awasio",
+  title: { absolute: "Community Forum - Awasio" },
   description: "Join the Awasio real estate community to swap hosting tips, ask buying questions, and get expert help.",
   alternates: { canonical: buildCanonical("/community") },
   openGraph: {
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     description: "Discuss hosting, renting, and buying with the Awasio community.",
     url: buildCanonical("/community"),
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
   },
 };
 

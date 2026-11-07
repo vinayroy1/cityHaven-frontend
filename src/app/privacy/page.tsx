@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
@@ -31,6 +31,7 @@ export const metadata: Metadata = {
       "Learn how Awasio Technologies Private Limited collects, stores, protects, and manages your personal data in full compliance with the Digital Personal Data Protection Act (DPDPA 2023) and Indian IT Rules.",
     url: buildCanonical("/privacy"),
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
   },
 };
 

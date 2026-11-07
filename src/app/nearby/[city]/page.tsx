@@ -1,3 +1,4 @@
+import { OG_IMAGE_URL } from "@/constants/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ],
     alternates: { canonical: `/nearby/${d.city.key}` },
     robots: d.indexable ? undefined : { index: false, follow: true },
-    openGraph: { type: "website", title, description, url: `/nearby/${d.city.key}`, siteName: "Awasio", locale: "en_IN" },
+    openGraph: { type: "website", title, description, url: `/nearby/${d.city.key}`, siteName: "Awasio", locale: "en_IN", images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }] },
     twitter: { card: "summary_large_image", title, description },
   };
 }

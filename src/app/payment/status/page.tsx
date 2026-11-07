@@ -3,7 +3,7 @@ import { PaymentStatusClient } from "./PaymentStatusClient";
 import { Loader2 } from "lucide-react";
 
 export const metadata = {
-  title: "Payment Status | Awasio",
+  title: { absolute: "Payment Status | Awasio" },
   description: "Check your transaction and credit pack activation status on Awasio.",
 };
 

@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { PricingClient } from "./PricingClient";
 
 export const metadata: Metadata = {
@@ -14,6 +14,7 @@ export const metadata: Metadata = {
       "Unlock verified direct owner phone numbers on demand with zero lock-in, or get all-in-one listing memberships.",
     url: buildCanonical("/pricing"),
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
   },
   twitter: {
     card: "summary_large_image",

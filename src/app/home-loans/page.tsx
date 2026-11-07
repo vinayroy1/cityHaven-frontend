@@ -2,13 +2,13 @@ import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Landmark, Percent, ShieldCheck, CheckCircle2, ArrowRight } from "lucide-react";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Home Loans - Awasio",
+  title: { absolute: "Home Loans - Awasio" },
   description: "Compare home loan options, calculate interest rates, and start your property journey with Awasio.",
   alternates: { canonical: buildCanonical("/home-loans") },
   openGraph: {
@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     description: "Compare home loan options, calculate interest rates, and start your property journey with Awasio.",
     url: buildCanonical("/home-loans"),
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
   },
 };
 

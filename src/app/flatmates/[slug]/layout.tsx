@@ -19,13 +19,13 @@ export async function generateMetadata({ params }: Omit<Props, "children">): Pro
         const title = `${listing.title} | Flatmate in ${location} - Awasio`;
         const description = (listing.description || `${listing.mode === "HAVE_ROOM" ? "Room available" : "Flatmate requirement"} in ${location}. Compare budget, availability and lifestyle preferences.`).slice(0, 160);
         const canonical = buildCanonical(`/flatmates/${slug}`);
-        return { title, description, alternates: { canonical }, openGraph: { title, description, url: canonical, type: "website", images: listing.photos?.[0] ? [listing.photos[0]] : undefined } };
+        return { title: { absolute: title }, description, alternates: { canonical }, openGraph: { title, description, url: canonical, type: "website", images: listing.photos?.[0] ? [listing.photos[0]] : undefined } };
       }
     }
   } catch {
     // Use the safe fallback below when the API is temporarily unavailable.
   }
-  return { title: "Flatmate Listing | Awasio", robots: { index: false, follow: true } };
+  return { title: { absolute: "Flatmate Listing | Awasio" }, robots: { index: false, follow: true } };
 }
 
 export default function FlatmateDetailLayout({ children }: Props) {

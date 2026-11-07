@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
-import { buildCanonical, SITE_URL } from "@/constants/seo";
+import { buildCanonical, SITE_URL, OG_IMAGE_URL } from "@/constants/seo";
 import { fromSearchSlug, toSearchSlug } from "@/components/search/searchQuery";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
@@ -144,14 +144,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const canonical = buildCanonical(`/new-projects/${toSearchSlug(cityName)}`);
 
     return {
-      title,
+      title: { absolute: title },
       description,
       alternates: { canonical },
       robots: {
         index: true,
         follow: true,
       },
-      openGraph: { title, description, url: canonical, type: "website" },
+      openGraph: { title, description, url: canonical, type: "website", images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }] },
     };
   }
 
@@ -166,14 +166,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const canonical = buildCanonical(`/new-projects/${segments.join("/")}`);
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical },
     robots: {
       index: count > 0,
       follow: true,
     },
-    openGraph: { title, description, url: canonical, type: "website" },
+    openGraph: { title, description, url: canonical, type: "website", images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }] },
   };
 }
 

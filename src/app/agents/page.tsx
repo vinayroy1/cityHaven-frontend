@@ -8,7 +8,7 @@ import { AgentsDirectoryClient } from "./components/AgentsDirectoryClient";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Verified Real Estate Advisors & Local Tour Guides | Awasio",
+  title: { absolute: "Verified Real Estate Advisors & Local Tour Guides | Awasio" },
   description:
     "Find trusted, RERA-registered real estate advisors and local property guides across Delhi, Gurugram, Mumbai, Bengaluru, and Pune. Schedule verified in-person site visits and private property walkthroughs with zero buyer fees.",
   keywords: [

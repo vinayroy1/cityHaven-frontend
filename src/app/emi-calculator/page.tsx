@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Check, ChevronDown, ShieldCheck, Sparkles, TimerReset } from "lucide-react";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { EmiCalculator } from "@/components/emi/EmiCalculator";
@@ -10,7 +10,7 @@ import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Home Loan EMI Calculator | Awasio",
+  title: { absolute: "Home Loan EMI Calculator | Awasio" },
   description: "Calculate your home loan EMI, total interest, and total repayment instantly. Adjust the loan amount, interest rate, and tenure to plan with confidence.",
   alternates: { canonical: buildCanonical("/emi-calculator") },
   openGraph: {
@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     description: "Estimate your monthly home loan payment and total interest in seconds.",
     url: buildCanonical("/emi-calculator"),
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
   },
 };
 

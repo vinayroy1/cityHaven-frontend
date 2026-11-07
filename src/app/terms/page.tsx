@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
@@ -31,6 +31,7 @@ export const metadata: Metadata = {
       "Review the corporate terms of service, RERA intermediary disclosures, refund policies, and Grievance Redressal details for Awasio Technologies Private Limited.",
     url: buildCanonical("/terms"),
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
   },
 };
 

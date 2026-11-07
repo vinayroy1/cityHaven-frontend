@@ -2,7 +2,7 @@ import { cache } from "react";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import FlatmatesDiscoveryPage from "@/app/flatmates/page";
-import { buildCanonical, SITE_URL } from "@/constants/seo";
+import { buildCanonical, SITE_URL, OG_IMAGE_URL } from "@/constants/seo";
 import { fromSearchSlug } from "@/components/search/searchQuery";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import type { FlatmateListing } from "@/types/flatmate.types";
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = `Browse rooms offered, room seekers and buddy-up listings in ${location}. Compare budget, move-in date and lifestyle compatibility before connecting.`;
   const path = `/flatmate${segments.length ? `/${segments.join("/")}` : ""}`;
   const canonicalUrl = buildCanonical(path);
-  const socialImage = `${process.env.NEXT_PUBLIC_SITE_URL || "https://awasio.com"}/og-image.png`;
+  const socialImage = OG_IMAGE_URL;
 
   let hasResults = true;
   if (segments.length > 0) {

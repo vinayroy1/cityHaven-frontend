@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { SEARCH_INTENT_SLUGS, buildSearchHref, parseSearchParams } from "@/components/search/searchQuery";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 
@@ -59,8 +59,8 @@ export async function generateMetadata({ searchParams }: SearchProps): Promise<M
   // ------------------------------------------------
 
   const title = city || locality
-    ? `${countStr}Properties in ${locationLabel} ${intentLabel} | Verified Listings - Awasio`
-    : `Search ${countStr}Verified Properties ${intentLabel} Across India | Awasio`;
+    ? `${countStr}Properties in ${locationLabel} ${intentLabel} | Awasio`
+    : `Search ${countStr}Properties ${intentLabel} | Awasio`;
 
   const description =
     `Explore ${countStr || "verified "}apartments, builder floors, houses & commercial real estate ${intentLabel} in ${locationLabel}. Zero brokerage options, RERA certified advisors & transparent pricing on Awasio.`;
@@ -69,7 +69,7 @@ export async function generateMetadata({ searchParams }: SearchProps): Promise<M
   const canonicalPath = `/${SEARCH_INTENT_SLUGS[intentKey as keyof typeof SEARCH_INTENT_SLUGS] ?? "buy"}`;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: { canonical: buildCanonical(canonicalPath) },
     openGraph: {
@@ -78,6 +78,7 @@ export async function generateMetadata({ searchParams }: SearchProps): Promise<M
       url: buildCanonical(canonicalPath),
       type: "website",
       siteName: "Awasio",
+      images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
     },
     twitter: {
       card: "summary_large_image",

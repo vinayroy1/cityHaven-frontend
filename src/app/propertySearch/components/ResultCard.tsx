@@ -581,6 +581,7 @@ export function ResultCard({
       <SavePropertyButton propertyId={id} />
       <ResultCardSummary
         title={title}
+        href={detailsHref}
         subtitle={subtitle}
         price={price}
         area={area}

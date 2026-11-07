@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buildCanonical, SOCIAL_LINKS } from "@/constants/seo";
+import { buildCanonical, SOCIAL_LINKS, OG_IMAGE_URL } from "@/constants/seo";
 import { Mail, Phone, MessageSquare, MapPin, Clock, ShieldCheck, ArrowLeft, Linkedin, Youtube } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     description: "Reach Awasio for property bookings, listings, safety, or account help.",
     url: buildCanonical("/contact"),
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
   },
 };
 

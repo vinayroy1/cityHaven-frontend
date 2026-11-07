@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import {
   ShieldCheck,
   Sparkles,
@@ -31,6 +31,7 @@ export const metadata: Metadata = {
     description: "Learn how Awasio blends verified listings, human guidance, and locality insights for faster, safer moves.",
     url: buildCanonical("/about"),
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
   },
 };
 

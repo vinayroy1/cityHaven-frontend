@@ -50,6 +50,16 @@ type SearchPageClientProps = {
   initialTotal?: number;
 };
 
+/** Page heading per search tab (matches the page title wording). */
+const H1_LABEL: Record<string, string> = {
+  BUY: "Properties for Sale",
+  RENT: "Properties for Rent",
+  PG: "PG & Co-Living Spaces",
+  FLATMATE: "Flatmates & Shared Homes",
+  COMMERCIAL: "Commercial Properties",
+  PLOT: "Plots & Land",
+};
+
 export function SearchPageClient({
   routeCity,
   routeLocalities = [],
@@ -362,10 +372,8 @@ export function SearchPageClient({
           <div>
             <h1 className="text-base sm:text-xl font-bold tracking-tight text-slate-950 dark:text-white">
               {state.cityName || state.localities?.[0]?.label
-                ? `${state.intent === "FLATMATE" ? "Flatmates & Shared Homes in" : "Properties in"} ${[state.localities?.[0]?.label, state.cityName].filter(Boolean).join(", ")}`
-                : state.intent === "FLATMATE"
-                  ? `Flatmates & Shared Homes in ${portalCountry.name}`
-                  : `Verified Properties in ${portalCountry.name}`}
+                ? `${H1_LABEL[state.intent as string] ?? "Properties for Sale"} in ${[state.localities?.[0]?.label, state.cityName].filter(Boolean).join(", ")}`
+                : `${H1_LABEL[state.intent as string] ?? "Properties for Sale"} in ${portalCountry.name}`}
               <span className="ml-1.5 font-normal text-slate-500 text-xs sm:text-sm dark:text-slate-400 capitalize">
                 • {state.intent === "RENT" ? "Rent" : state.intent === "PG" ? "PG & Co-Living" : state.intent === "FLATMATE" ? "Flatmate" : state.intent === "COMMERCIAL" ? "Commercial" : "Buy & Rent"}
               </span>

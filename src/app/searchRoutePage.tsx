@@ -9,7 +9,7 @@ import {
   parseSearchParams,
   type IntentKey,
 } from "@/components/search/searchQuery";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { FlatmateListing } from "@/types/flatmate.types";
@@ -96,10 +96,13 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
   }
 
   const pageTitle = `${countLabel}${copy.label} in ${locationLabel}`;
-  const description = `Explore verified ${copy.label.toLowerCase()} in ${locationLabel}. Compare prices, essential details and direct-connect listings on Awasio.`;
+  const description =
+    intent === "FLATMATE"
+      ? `Find rooms, flatmates and shared homes in ${locationLabel}. Compare rent, move-in dates and preferences, and contact people directly on Awasio.`
+      : `${countLabel ? `Browse ${countLabel}` : "Browse "}${copy.label.toLowerCase()} in ${locationLabel}. Compare prices, photos, area and amenities, and contact owners, agents and builders directly on Awasio.`;
   const canonicalPath = `/${SEARCH_INTENT_SLUGS[intent]}${segments.length ? `/${segments.join("/")}` : ""}`;
   const canonicalUrl = buildCanonical(canonicalPath);
-  const socialImage = `${process.env.NEXT_PUBLIC_SITE_URL || "https://awasio.com"}/og-image.png`;
+  const socialImage = OG_IMAGE_URL;
 
   return {
     title: pageTitle,

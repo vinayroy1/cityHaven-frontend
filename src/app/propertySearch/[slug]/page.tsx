@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { buildSearchHref, parseSearchParams } from "@/components/search/searchQuery";
 
 export const revalidate = 60;
@@ -43,6 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: buildCanonical(canonicalPath),
           type: "website",
           siteName: "Awasio",
+          images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
         },
       };
     }
@@ -56,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .join(" ");
 
   return {
-    title: `${cleanTitle} | Verified Listings - Awasio`,
+    title: { absolute: `${cleanTitle} | Awasio` },
     description: `Explore verified properties for ${cleanTitle} on Awasio.`,
   };
 }

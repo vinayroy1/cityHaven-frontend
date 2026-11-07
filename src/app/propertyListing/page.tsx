@@ -4,12 +4,12 @@ import Link from "next/link";
 import { ArrowLeft, Home, Building2, ShieldCheck, Users } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PropertyListingFlow } from "@/components/propertyListing/PropertyListingFlow";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Post Property - Get 1,000 Free Credits on Signup | Awasio",
+  title: { absolute: "Post Property - Get 1,000 Free Credits on Signup | Awasio" },
   description:
     "Post your property on Awasio. Get 1,000 free credits on signup to list properties, unlock verified tenant & buyer contacts, and boost your listing with zero brokerage.",
   keywords: [
@@ -40,6 +40,7 @@ export const metadata: Metadata = {
       "Post your property for free on Awasio. Get 1,000 free credits on signup to list properties, unlock verified contacts, and boost listing visibility.",
     url: buildCanonical("/propertyListing"),
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
   },
 };
 

@@ -6,16 +6,16 @@ import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 import { getDefaultBlogListResponse } from "@/constants/defaultBlogs";
 import type { BlogListResponse } from "@/types/blog.types";
 
 export const metadata: Metadata = {
-  title: "Real Estate Insights, Guides & Market Trends | Awasio",
+  title: { absolute: "Real Estate Insights, Guides & Market Trends | Awasio" },
   description: "Practical property buying, renting, flatmate, investment and neighborhood guides from Awasio's real estate editorial team.",
   alternates: { canonical: buildCanonical("/blog"), types: { "application/rss+xml": buildCanonical("/blog/feed.xml") } },
-  openGraph: { title: "Awasio Insights - Property Guides & Market Intelligence", description: "Better property decisions start with better information.", url: buildCanonical("/blog"), type: "website" },
+  openGraph: { title: "Awasio Insights - Property Guides & Market Intelligence", description: "Better property decisions start with better information.", url: buildCanonical("/blog"), type: "website", images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }] },
 };
 
 type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };

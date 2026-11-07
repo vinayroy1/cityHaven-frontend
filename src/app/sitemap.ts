@@ -69,6 +69,32 @@ async function getFallbackProperties(): Promise<Array<{ id: number; slug?: strin
   }
 }
 
+type SlugRow = { slug?: string | null; updatedAt?: string | null; primaryCity?: string | null };
+
+/** Walks a paginated list endpoint (page/pageSize) up to `maxPages`; never throws. */
+async function fetchAllPages(path: string, pageSize: number, sizeParam: "pageSize" | "limit" = "pageSize", maxPages = 40): Promise<SlugRow[]> {
+  const out: SlugRow[] = [];
+  for (let page = 1; page <= maxPages; page++) {
+    try {
+      const sep = path.includes("?") ? "&" : "?";
+      const res = await fetch(toInternalApiUrl(`${path}${sep}page=${page}&${sizeParam}=${pageSize}`), {
+        next: { revalidate: 3600 },
+      });
+      if (!res.ok) break;
+      const json = await res.json();
+      const data = json?.data ?? json;
+      const items: SlugRow[] = data?.items ?? [];
+      out.push(...items);
+      const total = Number(data?.total ?? data?.pagination?.total ?? 0);
+      const more = data?.hasNextPage ?? data?.hasMore ?? (total ? out.length < total : items.length === pageSize);
+      if (!more || items.length === 0) break;
+    } catch {
+      break;
+    }
+  }
+  return out;
+}
+
 async function getActiveProjects(): Promise<Array<{ slug: string; city?: string | null; updatedAt?: string | null }>> {
   try {
     const endpoint = toInternalApiUrl(`${API_ENDPOINTS.projects.search}?pageSize=500`);
@@ -85,7 +111,7 @@ async function getActiveProjects(): Promise<Array<{ slug: string; city?: string 
 
 async function getPublishedBlogPosts(): Promise<Array<{ slug: string; updatedAt?: string | null }>> {
   try {
-    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.blog.list}?pageSize=100`);
+    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.blog.list}?pageSize=50`);
     const res = await fetch(endpoint, { next: { revalidate: 1800 } });
     if (res.ok) {
       const json = (await res.json()) as { data?: { items?: Array<{ slug: string; updatedAt?: string | null }> } };
@@ -334,6 +360,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.78,
   }));
 
+  // 8b. Hotels & stays, interior designer profiles and flatmate listings
+  const [stays, interiors, flatmates] = await Promise.all([
+    fetchAllPages("/v1/stays", 48),
+    fetchAllPages(API_ENDPOINTS.interiors.search.replace(/^.*\/api/, ""), 50, "limit"),
+    fetchAllPages("/v1/flatmates", 50),
+  ]);
+  const lastMod = (r: SlugRow) => (r.updatedAt ? new Date(r.updatedAt) : now);
+  const stayRoutes: MetadataRoute.Sitemap = [
+    { url: `${SITE_URL}/stays`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    ...stays.filter((r) => r.slug).map((r) => ({
+      url: `${SITE_URL}/stays/${r.slug}`,
+      lastModified: lastMod(r),
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    })),
+  ];
+  const interiorRoutes: MetadataRoute.Sitemap = [
+    { url: `${SITE_URL}/interior-designers`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    ...interiors.filter((r) => r.slug && r.primaryCity).map((r) => ({
+      url: `${SITE_URL}/interior-designers/${encodeURIComponent(r.primaryCity!.toLowerCase())}/${r.slug}`,
+      lastModified: lastMod(r),
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    })),
+  ];
+  const flatmateDetailRoutes: MetadataRoute.Sitemap = flatmates.filter((r) => r.slug).map((r) => ({
+    url: `${SITE_URL}/flatmates/${r.slug}`,
+    lastModified: lastMod(r),
+    changeFrequency: "daily" as const,
+    priority: 0.7,
+  }));
+
   // 9. Consolidate and Deduplicate all URLs
   const allRoutes = [
     ...staticRoutes,
@@ -347,6 +405,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...newProjectsCityRoutes,
     ...projectDetailRoutes,
     ...blogRoutes,
+    ...stayRoutes,
+    ...interiorRoutes,
+    ...flatmateDetailRoutes,
   ];
 
   const uniqueUrls = new Map<string, MetadataRoute.Sitemap[number]>();

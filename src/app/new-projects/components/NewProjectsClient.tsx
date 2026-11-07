@@ -1,5 +1,6 @@
 "use client";
 
+import { CardTitleLink } from "@/components/common/CardTitleLink";
 import React, { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -181,7 +182,7 @@ function ProjectGridCard({
           By {project.developerName}
         </p>
         <h3 className="mt-0.5 line-clamp-1 text-base font-black tracking-tight text-slate-950 transition-colors group-hover:text-rose-600 dark:text-white sm:text-lg">
-          {project.name}
+          <CardTitleLink href={projectHref}>{project.name}</CardTitleLink>
         </h3>
         <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 sm:text-xs">
           <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />

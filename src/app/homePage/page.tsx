@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { HeaderNav } from "./components/HeaderNav";
 import { HomeExperience } from "./components/HomeExperience";
 import { FooterLinks } from "./components/FooterLinks";
-import { seoDefaults, buildCanonical } from "@/constants/seo";
+import { seoDefaults, buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 
 export const metadata: Metadata = {
   title: seoDefaults.title,
@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     description: seoDefaults.description,
     url: buildCanonical("/"),
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
   },
 };
 

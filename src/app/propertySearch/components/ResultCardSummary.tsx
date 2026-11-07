@@ -5,6 +5,8 @@ import { Bath, BedDouble, Calendar, Heart, Loader2, MapPin, PhoneCall, Ruler } f
 
 type ResultCardSummaryProps = {
   title?: string;
+  /** Details page URL; renders the title as a crawlable link. */
+  href?: string;
   subtitle?: string;
   price?: string;
   area?: string;
@@ -25,6 +27,7 @@ type ResultCardSummaryProps = {
 };
 
 import { useRouter } from "next/navigation";
+import { CardTitleLink } from "@/components/common/CardTitleLink";
 import { useAddFavoriteMutation, useRemoveFavoriteMutation } from "@/features/propertyListing/api";
 import { APP_CONFIG } from "@/constants/app-config";
 
@@ -89,6 +92,7 @@ export function SavePropertyButton({ propertyId, initialSaved = false }: SavePro
 
 export function ResultCardSummary({
   title,
+  href,
   subtitle,
   price,
   area,
@@ -134,7 +138,7 @@ export function ResultCardSummary({
           title={title}
           className="line-clamp-1 text-sm font-bold text-slate-950 group-hover:text-rose-600 transition dark:text-white mt-0.5"
         >
-          {displayTitle}
+          {href ? <CardTitleLink href={href}>{displayTitle}</CardTitleLink> : displayTitle}
         </h3>
 
         {/* Location with MapPin */}

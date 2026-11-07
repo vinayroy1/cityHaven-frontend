@@ -6,7 +6,7 @@ import { BadgeCheck, Bath, BedDouble, Building2, CalendarClock, ChevronRight, Ho
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
-import { buildCanonical, SITE_URL } from "@/constants/seo";
+import { buildCanonical, SITE_URL, OG_IMAGE_URL } from "@/constants/seo";
 import { AboutHighlights } from "./components/AboutHighlights";
 import { GalleryStrip } from "./components/GalleryStrip";
 import { HeroHeader } from "./components/HeroHeader";
@@ -624,9 +624,21 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const location = compact([property.subLocality, property.localityRef?.name ?? property.locality, property.city?.name ?? property.cityName]);
   const price = formatMoney(property.price, property.currencyCode);
   const area = getArea(property);
-  const description = property.description
-    ? (property.description.length > 155 ? `${property.description.slice(0, 152)}...` : property.description)
-    : `${title} available for ${property.listingType?.toLowerCase() || "stay"} in ${location || "prime location"}. Price: ${price}. Carpet area: ${area.value}. Verified listings on Awasio.`;
+  // Lead with the facts (intent, place, price, size), then a cleaned-up slice of the owner's text.
+  const intentWord = isPg ? "PG" : property.listingType?.toLowerCase().includes("rent") ? "for rent" : "for sale";
+  const titleHasIntent = isPg || /\b(sale|rent|lease|pg)\b/i.test(title);
+  const where = location || property.cityName || "";
+  const titleHasPlace = !!property.cityName && title.toLowerCase().includes(property.cityName.toLowerCase());
+  const lead = `${title}${titleHasIntent ? "" : ` ${intentWord}`}${where && !titleHasPlace ? ` in ${where}` : ""}`;
+  const facts = [lead, price, area.value !== "Ask owner" ? area.value : ""]
+    .filter(Boolean)
+    .join(" · ");
+  const ownerText = (property.description || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/[A-Z][A-Z0-9 ,.&–-]{12,}/g, (m) => m.charAt(0) + m.slice(1).toLowerCase());
+  const rawDescription = ownerText ? `${facts}. ${ownerText}` : `${facts}. Contact the owner directly on Awasio.`;
+  const description = rawDescription.length > 158 ? `${rawDescription.slice(0, 155).replace(/\s+\S*$/, "")}…` : rawDescription;
 
   const ogImages = property.media?.map((m) => m.url).filter(Boolean) as string[] | undefined;
   const canonicalUrl = buildCanonical(`/properties/${property.slug || id}`);
@@ -642,13 +654,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       description,
       url: canonicalUrl,
       type: "website",
-      images: ogImages && ogImages.length > 0 ? ogImages.slice(0, 4).map((url) => ({ url })) : [CDN_ASSETS.placeholderWebp],
+      images: ogImages && ogImages.length > 0 ? ogImages.slice(0, 4).map((url) => ({ url })) : [OG_IMAGE_URL],
     },
     twitter: {
       card: "summary_large_image",
       title: `${title} | ${price}`,
       description,
-      images: ogImages && ogImages.length > 0 ? [ogImages[0]] : [CDN_ASSETS.placeholderWebp],
+      images: ogImages && ogImages.length > 0 ? [ogImages[0]] : [OG_IMAGE_URL],
     },
   };
 }
@@ -700,38 +712,50 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     ?.flatMap((group) => group.amenities?.map((item) => item.name).filter(Boolean) ?? [])
     .filter((name) => !/^others?$/i.test(String(name).trim())) as string[] | undefined;
 
-  const schemaType = property.resCom?.toLowerCase() === "commercial"
-    ? "CommercialRealEstate"
-    : (property.propertySubType?.name?.toLowerCase().includes("house") || property.propertySubType?.name?.toLowerCase().includes("villa") ? "SingleFamilyResidence" : "Apartment");
+  // Schema.org: a RealEstateListing (the page) whose `about` is the place itself, typed by property kind.
+  const subTypeName = `${property.propertySubType?.name ?? ""} ${property.propertyType?.name ?? ""}`.toLowerCase();
+  const isPlot = /plot|land/.test(subTypeName);
+  const isCommercial = property.resCom?.toLowerCase() === "commercial";
+  const placeType = isPlot || isCommercial
+    ? "Place"
+    : isPg
+    ? "Room"
+    : /house|villa|bungalow|independent/.test(subTypeName)
+    ? "SingleFamilyResidence"
+    : "Apartment";
+  const isAccommodation = placeType !== "Place";
+  const listingUrl = buildCanonical(`/properties/${property.slug || id}`);
 
   const propertyJsonLd = {
     "@context": "https://schema.org",
-    "@type": schemaType,
+    "@type": "RealEstateListing",
     name: title,
     description: property.description || `${title} in ${location || "prime location"}`,
-    url: buildCanonical(`/properties/${property.slug || id}`),
+    url: listingUrl,
     ...(images && images.length > 0 ? { image: images } : {}),
-    ...(property.bedrooms ? { numberOfRooms: property.bedrooms, numberOfBedrooms: property.bedrooms } : {}),
-    ...(property.bathrooms ? { numberOfBathroomsTotal: property.bathrooms } : {}),
-    ...(property.carpetArea ? {
-      floorSize: {
-        "@type": "QuantitativeValue",
-        value: property.carpetArea,
-        unitText: property.carpetAreaUnit || "SQFT",
-      },
-    } : {}),
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: property.localityRef?.name ?? property.locality ?? property.cityName ?? "India",
-      addressRegion: property.cityName ?? "India",
-      addressCountry: "IN",
-    },
+    ...(property.createdAt ? { datePosted: property.createdAt } : {}),
     offers: {
       "@type": "Offer",
-      price: property.price || 0,
-      priceCurrency: "INR",
+      ...(property.price ? { price: property.price } : {}),
+      priceCurrency: property.currencyCode || "INR",
       availability: "https://schema.org/InStock",
       businessFunction: property.listingType?.toLowerCase().includes("rent") || isPg ? "https://schema.org/LeaseOut" : "https://schema.org/Sell",
+      url: listingUrl,
+    },
+    about: {
+      "@type": placeType,
+      name: title,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: property.localityRef?.name ?? property.locality ?? property.cityName ?? undefined,
+        addressRegion: property.cityName ?? undefined,
+        addressCountry: property.countryCode || "IN",
+      },
+      ...(isAccommodation && property.bedrooms ? { numberOfRooms: property.bedrooms, numberOfBedrooms: property.bedrooms } : {}),
+      ...(isAccommodation && property.bathrooms ? { numberOfBathroomsTotal: property.bathrooms } : {}),
+      ...(isAccommodation && property.carpetArea
+        ? { floorSize: { "@type": "QuantitativeValue", value: property.carpetArea, unitText: property.carpetAreaUnit || "SQFT" } }
+        : {}),
     },
   };
 

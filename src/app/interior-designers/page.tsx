@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { buildCanonical } from "@/constants/seo";
+import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { DirectoryClient } from "./DirectoryClient";
 import { fetchInteriorDirectory } from "./lib/server-data";
 import { breadcrumbJsonLd } from "./lib/breadcrumbs";
@@ -25,7 +25,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { title, description, url, type: "website", siteName: "Awasio" },
+    openGraph: { title, description, url, type: "website", siteName: "Awasio", images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }] },
     twitter: { card: "summary_large_image", title, description },
   };
 }

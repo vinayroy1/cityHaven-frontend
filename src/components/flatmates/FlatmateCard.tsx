@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CardTitleLink } from "@/components/common/CardTitleLink";
 import {
   MapPin,
   Calendar,
@@ -287,7 +288,7 @@ export function FlatmateCard({
               <div className="space-y-2">
                 <div className="space-y-1">
                   <h3 className="truncate text-sm sm:text-base font-bold text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
-                    {listing.title}
+                    <CardTitleLink href={detailsHref}>{listing.title}</CardTitleLink>
                   </h3>
 
                   <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 truncate min-w-0">
@@ -599,7 +600,9 @@ export function FlatmateCard({
             {/* Row 1: Clean Name & Age */}
             <div className="flex items-center gap-1.5 min-w-0">
               <h3 className="truncate text-xs sm:text-sm font-bold text-slate-900 transition-colors group-hover:text-rose-600 dark:text-white dark:group-hover:text-rose-400">
-                {profile?.displayName || (listing.mode === "BUDDY_UP" ? "Buddy-Up Group" : "Room Seeker")}
+                <CardTitleLink href={detailsHref}>
+                  {profile?.displayName || (listing.mode === "BUDDY_UP" ? "Buddy-Up Group" : "Room Seeker")}
+                </CardTitleLink>
               </h3>
               {age && (
                 <span className="shrink-0 text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400">

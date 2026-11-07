@@ -7,7 +7,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { StayCard, StayCardSkeleton } from "@/components/stays/StayCard";
-import { useStaySearch } from "@/features/stays/api";
+import { useStaySearch, type StaySearchPage } from "@/features/stays/api";
 import { STAY_TYPES } from "@/features/stays/options";
 import type { StaySearchParams, StayType } from "@/features/stays/types";
 import { useCountry } from "@/lib/country/countryStore";
@@ -21,7 +21,18 @@ const STAY_HOTSPOTS: Record<string, string[]> = {
 
 const BUDGETS: Record<"lakh" | "million", number[]> = { lakh: [500, 1000, 2000, 3500, 6000], million: [3000, 6000, 10000, 20000] };
 
-export function StaysDirectory({ initialCity = "", initialLocality = "", initialType }: { initialCity?: string; initialLocality?: string; initialType?: StayType }) {
+export function StaysDirectory({
+  initialCity = "",
+  initialLocality = "",
+  initialType,
+  initialPage,
+}: {
+  initialCity?: string;
+  initialLocality?: string;
+  initialType?: StayType;
+  /** Server-rendered first page (default filters, India portal) so the list is in the HTML for search engines. */
+  initialPage?: { params: StaySearchParams; page: StaySearchPage } | null;
+}) {
   const country = useCountry();
   const [city, setCity] = useState(initialCity);
   const [locality, setLocality] = useState(initialLocality);
@@ -52,7 +63,7 @@ export function StaysDirectory({ initialCity = "", initialLocality = "", initial
     free,
     sort,
   };
-  const q = useStaySearch(params);
+  const q = useStaySearch(params, true, initialPage);
   const items = useMemo(() => q.data?.pages.flatMap((p) => p.items) ?? [], [q.data]);
   const total = q.data?.pages[0]?.total ?? 0;
   const hotspots = STAY_HOTSPOTS[country.code] ?? country.popularCities;

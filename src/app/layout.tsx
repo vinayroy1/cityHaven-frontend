@@ -3,7 +3,7 @@ import { GoogleAdsenseDeferred } from "@/components/common/GoogleAdsenseDeferred
 import "../styles/globals.css";
 import { Providers } from "./providers";
 import { MobileBottomNav } from "@/components/common/MobileBottomNav";
-import { buildCanonical, SITE_URL, SOCIAL_LINKS } from "@/constants/seo";
+import { SITE_URL, SOCIAL_LINKS, OG_IMAGE_URL } from "@/constants/seo";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -15,15 +15,15 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Awasio - Verified Real Estate & Local Advisors",
+    default: "Awasio: Buy, Rent & Sell Property, PGs & Flatmates",
     template: "%s | Awasio",
   },
   description:
-    "Discover verified homes, apartments, builder floors, and connect with certified RERA real estate advisors across India's top cities on Awasio.",
+    "Buy, rent or sell homes, flats, plots, PGs and commercial spaces, find flatmates and explore new projects on Awasio. Post your property free.",
   keywords: [
     "real estate india",
-    "verified property search",
-    "rera verified agents",
+    "property for rent",
+    "pg and flatmates",
     "property advisors",
     "builder floors delhi",
     "apartments gurugram",
@@ -33,26 +33,26 @@ export const metadata: Metadata = {
     "property in pune",
     "book site visit",
   ],
-  authors: [{ name: "Awasio Real Estate" }],
+  authors: [{ name: "Awasio" }],
   creator: "Awasio",
   publisher: "Awasio",
-  alternates: { canonical: buildCanonical("/") },
   openGraph: {
-    title: "Awasio - Verified Real Estate & Certified Local Advisors",
+    title: "Awasio: Buy, Rent & Sell Property, PGs & Flatmates",
     description:
-      "Search, shortlist, and book in-person site walkthroughs for verified residential and commercial properties across India.",
-    url: buildCanonical("/"),
+      "Buy, rent or sell homes, flats, plots, PGs and commercial spaces, find flatmates and explore new projects on Awasio.",
     siteName: "Awasio",
     locale: "en_IN",
     type: "website",
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio: find your next home, the easy way" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Awasio - Verified Real Estate & Certified Local Advisors",
+    title: "Awasio: Buy, Rent & Sell Property, PGs & Flatmates",
     description:
-      "Search verified properties and book private walkthroughs with certified RERA advisors.",
+      "Buy, rent or sell homes, flats, plots, PGs and commercial spaces, find flatmates and explore new projects on Awasio.",
     site: `@${SOCIAL_LINKS.x.handle}`,
     creator: `@${SOCIAL_LINKS.x.handle}`,
+    images: [OG_IMAGE_URL],
   },
   robots: {
     index: true,

@@ -26,11 +26,16 @@ const toParams = (p: StaySearchParams = {}) => ({
   free: p.free ? "true" : undefined,
 });
 
-export function useStaySearch(params: StaySearchParams, enabled = true) {
+export type StaySearchPage = Page;
+
+/** `initial` is a server-rendered first page; used only when its params match the current ones. */
+export function useStaySearch(params: StaySearchParams, enabled = true, initial?: { params: StaySearchParams; page: Page } | null) {
+  const useInitial = !!initial && JSON.stringify(initial.params) === JSON.stringify(params);
   return useInfiniteQuery<Page, Error>({
     queryKey: ["stays", params],
     initialPageParam: 1,
     enabled,
+    ...(useInitial ? { initialData: { pages: [initial!.page], pageParams: [1] }, staleTime: 60_000 } : {}),
     queryFn: ({ pageParam }) => apiFetch<Page>({ url: BASE, params: { ...toParams(params), page: pageParam as number } }),
     getNextPageParam: (last) => (last.hasNextPage ? last.page + 1 : undefined),
   });

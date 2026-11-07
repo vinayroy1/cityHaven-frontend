@@ -9,7 +9,7 @@ import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Policies & Safety - Awasio",
+  title: { absolute: "Policies & Safety - Awasio" },
   description: "Learn about Awasio's trust, safety, cancellation, and hosting policies.",
   alternates: { canonical: buildCanonical("/policies") },
 };

@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import { HeaderNav } from "./homePage/components/HeaderNav";
 import { HomeExperience } from "./homePage/components/HomeExperience";
 import { FooterLinks } from "./homePage/components/FooterLinks";
-import { SITE_URL, buildCanonical, SOCIAL_LINKS, SOCIAL_SAME_AS } from "@/constants/seo";
-import { CDN_ASSETS } from "@/config/cdn";
+import { SITE_URL, buildCanonical, SOCIAL_LINKS, SOCIAL_SAME_AS, OG_IMAGE_URL } from "@/constants/seo";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
@@ -110,28 +109,29 @@ const FALLBACK_LCP_IMAGE =
 
 export const revalidate = 60;
 
+const HOME_TITLE = "Awasio: Buy, Rent & Sell Property, PGs, Flatmates & New Projects";
+const HOME_DESCRIPTION =
+  "Awasio is a property platform to buy, rent or sell homes, flats, plots, PGs and commercial spaces, find flatmates, explore new projects and check what's nearby. Post your property free.";
+
 export const metadata: Metadata = {
-  title: "Awasio - Find Verified Homes, Apartments & Local Property Advisors",
-  description:
-    "Explore verified properties for sale & rent across Delhi, Gurugram, Noida, Mumbai, Bengaluru, and Pune. Connect with RERA-certified advisors for private walkthroughs.",
-  alternates: { canonical: SITE_URL },
+  title: { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
+  alternates: { canonical: `${SITE_URL}/` },
   openGraph: {
-    title: "Awasio - Verified Properties & Certified Local Advisors",
-    description:
-      "Find luxury builder floors, gated apartments, villas, and book private site visits directly with certified RERA real estate advisors.",
-    url: SITE_URL,
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    url: `${SITE_URL}/`,
     type: "website",
     siteName: "Awasio",
-    images: [{ url: `${SITE_URL}/og-image.png`, width: 1200, height: 630, alt: "Awasio - Verified Real Estate" }],
+    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio: property for sale and rent" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Awasio - Verified Real Estate & Certified Local Advisors",
-    description:
-      "Search verified properties and book private walkthroughs with certified RERA advisors.",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
     site: `@${SOCIAL_LINKS.x.handle}`,
     creator: `@${SOCIAL_LINKS.x.handle}`,
-    images: [`${SITE_URL}/og-image.png`],
+    images: [OG_IMAGE_URL],
   },
 };
 
@@ -147,22 +147,17 @@ export default async function RootPage() {
     : FALLBACK_LCP_IMAGE;
   const lcpImage = firstProjectImage ? sizedImageUrl(firstProjectImage, 640) : null;
 
-  // Schema.org Structured Data: WebSite with Sitelinks SearchBox & RealEstateOrganization
+  // Schema.org structured data: WebSite (site name + search) and Organization
   const websiteSchema = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "WebSite",
         "@id": `${SITE_URL}/#website`,
-        url: SITE_URL,
+        url: `${SITE_URL}/`,
         name: "Awasio",
-        alternateName: [
-          "Awasio Real Estate",
-          "awasio.com",
-          "Awasio India",
-          "Awasio Properties",
-        ],
-        description: "Verified Real Estate Marketplace & Certified Local Advisors in India",
+        alternateName: ["awasio.com", "Awasio Properties"],
+        description: HOME_DESCRIPTION,
         publisher: {
           "@id": `${SITE_URL}/#organization`,
         },
@@ -179,29 +174,21 @@ export default async function RootPage() {
         inLanguage: "en-IN",
       },
       {
-        "@type": "RealEstateAgent",
+        "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
         name: "Awasio",
-        legalName: "Awasio Real Estate",
-        alternateName: ["Awasio Real Estate", "awasio.com", "Awasio Properties"],
-        url: SITE_URL,
+        alternateName: ["awasio.com", "Awasio Properties"],
+        url: `${SITE_URL}/`,
         sameAs: SOCIAL_SAME_AS,
-        logo: CDN_ASSETS.logoPrimarySvg,
-        image: `${SITE_URL}/og-image.png`,
+        logo: { "@type": "ImageObject", url: `${SITE_URL}/icon-512.png`, width: 512, height: 512 },
+        image: OG_IMAGE_URL,
         description:
-          "India's transparent real estate marketplace connecting buyers and tenants with verified property listings and RERA-certified advisors.",
-        address: {
-          "@type": "PostalAddress",
-          addressCountry: "IN",
-        },
+          "Property platform for buying, renting and selling homes, plots, PGs and commercial spaces, with flatmate search, new projects and locality guides.",
         areaServed: [
-          "Delhi",
-          "Gurugram",
-          "Noida",
-          "Mumbai",
-          "Bengaluru",
-          "Pune",
-          "Hyderabad",
+          { "@type": "Country", name: "India" },
+          { "@type": "Country", name: "Nepal" },
+          { "@type": "Country", name: "Bangladesh" },
+          { "@type": "Country", name: "Sri Lanka" },
         ],
       },
     ],
