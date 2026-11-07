@@ -1,3 +1,4 @@
+import { getAuthToken } from "@/lib/auth/assistedSession";
 import { APP_CONFIG } from "@/constants/app-config";
 
 type FetchParams = {
@@ -44,7 +45,7 @@ export async function apiFetch<T = any>({ url, params, init }: FetchParams): Pro
     : null;
 
   const targetUrl = resolveClientUrl(url);
-  const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
+  const token = getAuthToken();
   const res = await fetch(search ? `${targetUrl}?${search.toString()}` : targetUrl, {
     credentials: "include",
     ...init,

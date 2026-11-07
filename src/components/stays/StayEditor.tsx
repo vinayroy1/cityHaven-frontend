@@ -382,7 +382,14 @@ function RoomEditor({ room, index, cc, onChange, onRemove, onDuplicate }: { room
   );
 }
 
-export function StayEditor({ stay }: { stay?: Stay | null }) {
+export function StayEditor({
+  stay,
+  onSaved,
+}: {
+  stay?: Stay | null;
+  /** When set (staff-assisted mode), called after a save instead of navigating away. */
+  onSaved?: (saved: Stay, published: boolean) => void;
+}) {
   const router = useRouter();
   const save = useSaveStay();
   // New stays start in the portal country (header switcher); editing keeps the stay's own country.
@@ -419,7 +426,8 @@ export function StayEditor({ stay }: { stay?: Stay | null }) {
     try {
       const saved = await save.mutateAsync({ id: stay?.id, body: toPayload(v, publish ? true : undefined) });
       toast.success(publish ? "Your stay is live 🎉" : "Draft saved");
-      router.push(publish ? `/stays/${saved.slug}` : `/dashboard/stays`);
+      if (onSaved) onSaved(saved, publish);
+      else router.push(publish ? `/stays/${saved.slug}` : `/dashboard/stays`);
     } catch (e) {
       toast.error(stayErrorMessage(e));
     }

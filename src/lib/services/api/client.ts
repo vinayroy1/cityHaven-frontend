@@ -1,3 +1,4 @@
+import { getAuthToken, isAssistedActive } from "@/lib/auth/assistedSession";
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
 import { ApiResponse, ApiError } from "@/types/api.types";
 import { APP_CONFIG } from "@/constants/app-config";
@@ -24,9 +25,10 @@ class ApiClient {
     // Request interceptor
     this.client.interceptors.request.use(
       async (config) => {
+        // On assisted (create-for-owner) pages only real /admin API calls use the staff token.
         const isAdminCall =
           Boolean(config.url?.includes("/admin")) ||
-          (typeof window !== "undefined" && window.location.pathname.startsWith("/admin"));
+          (typeof window !== "undefined" && window.location.pathname.startsWith("/admin") && !isAssistedActive());
 
         let token = isAdminCall ? this.getAdminToken() : this.getAccessToken();
 
@@ -48,7 +50,12 @@ class ApiClient {
 
         const isAdminRequest =
           Boolean(originalRequest?.url?.includes("/admin")) ||
-          (typeof window !== "undefined" && window.location.pathname.startsWith("/admin"));
+          (typeof window !== "undefined" && window.location.pathname.startsWith("/admin") && !isAssistedActive());
+
+        // Owner-token failures on assisted pages must not log the staff member out.
+        if ((status === 401 || status === 403) && !isAdminRequest && isAssistedActive()) {
+          return Promise.reject(this.handleError(error));
+        }
 
         if ((status === 401 || status === 403) && !isRefreshCall) {
           if (isAdminRequest) {
@@ -90,10 +97,7 @@ class ApiClient {
   }
 
   private getAccessToken(): string | null {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
-    }
-    return null;
+    return getAuthToken();
   }
 
   private getAdminToken(): string | null {

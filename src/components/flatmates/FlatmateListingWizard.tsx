@@ -1,5 +1,6 @@
 "use client";
 
+import { getAuthToken } from "@/lib/auth/assistedSession";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -76,7 +77,12 @@ const DIET_OPTIONS = ["Any Diet", "Pure Vegetarian", "Vegetarian & Eggetarian", 
 const WORK_MODE_OPTIONS = ["Remote / WFH", "Hybrid", "In-Office"];
 const SLEEP_SCHEDULE_OPTIONS = ["Flexible", "Early Bird", "Night Owl"];
 
-export function FlatmateListingWizard() {
+export function FlatmateListingWizard({
+  onSaved,
+}: {
+  /** When set (staff-assisted mode), called after posting instead of navigating away. */
+  onSaved?: (saved: { id?: number; slug: string; title?: string }) => void;
+} = {}) {
   const router = useRouter();
   const { data: meData } = useMeQuery();
   const { data: flatmateProfile } = useGetFlatmateProfileQuery();
@@ -210,7 +216,7 @@ export function FlatmateListingWizard() {
   }, [meData, flatmateProfile, mode, hideProfilePhoto]);
 
   React.useEffect(() => {
-    if (!window.localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)) {
+    if (!getAuthToken()) {
       router.replace(`/login?redirect=${encodeURIComponent("/flatmates/post")}`);
     }
   }, [router]);
@@ -391,8 +397,8 @@ export function FlatmateListingWizard() {
 
       const res = await createListing(payload).unwrap();
 
-      // Update local storage user if phone/email/name changed
-      if (typeof window !== "undefined") {
+      // Update local storage user if phone/email/name changed (not for staff-assisted posts)
+      if (!onSaved && typeof window !== "undefined") {
         try {
           const raw = window.localStorage.getItem(APP_CONFIG.AUTH.USER_KEY);
           if (raw) {
@@ -410,7 +416,8 @@ export function FlatmateListingWizard() {
       toast.success("Flatmate listing posted successfully!", {
         description: "Your listing is now live and room seekers can connect with you directly.",
       });
-      router.push(`/flatmates/${res.slug}`);
+      if (onSaved) onSaved(res as { id?: number; slug: string; title?: string });
+      else router.push(`/flatmates/${res.slug}`);
     } catch (err: any) {
       const msg = err?.data?.message || err?.message || "Failed to publish listing. Please check required fields.";
       toast.error(msg);

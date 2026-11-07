@@ -54,16 +54,24 @@ import { AdminDeduplicationAlert } from "./AdminDeduplicationAlert";
 import { getSelectedCountry } from "@/lib/country/countryStore";
 
 const PG_SUBTYPES = ["pg-private-room", "pg-shared-room", "pg-bed"];
+/** Where the admin store keeps the signed-in staff profile. */
+const STAFF_KEY = "awasio_admin_current_staff";
 
 export function PropertyListingFlow({
   propertyId: propIdOverride,
   adminMode = false,
   onSuccessRedirect,
+  assistedOwner,
+  onAssistedSaved,
 }: {
   propertyId?: string;
   adminMode?: boolean;
   onSuccessRedirect?: string;
+  /** Staff-assisted mode: the owner is fixed (API calls carry the owner's assisted token). */
+  assistedOwner?: { id: number; name: string | null; mobileNumber: string };
+  onAssistedSaved?: (created: { id?: number; slug?: string | null; title?: string | null }) => void;
 }) {
+  const isAssisted = Boolean(assistedOwner);
   const router = useRouter();
   const searchParams = useSearchParams();
   const propertyId = propIdOverride ?? searchParams.get("id") ?? undefined;
@@ -77,8 +85,8 @@ export function PropertyListingFlow({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      if (adminMode) {
-        const adminStaff = localStorage.getItem("awasio_admin_staff");
+      if (adminMode && !isAssisted) {
+        const adminStaff = localStorage.getItem(STAFF_KEY);
         const adminToken = localStorage.getItem("awasio_admin_token") || localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
         if (!adminStaff && !adminToken) {
           router.replace(`/admin/login?redirect=/admin/properties/create`);
@@ -93,7 +101,7 @@ export function PropertyListingFlow({
         }
       }
     }
-  }, [router, propertyId, duplicateOf, adminMode]);
+  }, [router, propertyId, duplicateOf, adminMode, isAssisted]);
 
   const [submitProperty, submitState] = useSubmitPropertyMutation();
   const [updateProperty, updateState] = useUpdatePropertyMutation();
@@ -493,7 +501,7 @@ export function PropertyListingFlow({
       return;
     }
 
-    if (adminMode) {
+    if (adminMode && !isAssisted) {
       const ownerContact = form.getValues("context.ownerContact");
       const cleanNum = (ownerContact || "").replace(/\D/g, "").slice(-10);
       if (!cleanNum || cleanNum.length !== 10 || !/^[6-9]\d{9}$/.test(cleanNum)) {
@@ -535,7 +543,7 @@ export function PropertyListingFlow({
 
     if (adminMode) {
       try {
-        const rawStaff = localStorage.getItem("awasio_admin_staff");
+        const rawStaff = localStorage.getItem(STAFF_KEY);
         if (rawStaff) {
           const staffObj = JSON.parse(rawStaff);
           if (staffObj?.id) {
@@ -546,6 +554,13 @@ export function PropertyListingFlow({
         /* no stored staff */
       }
       payload.context.isAssistedListing = true;
+      if (assistedOwner) {
+        payload.context.ownerId = assistedOwner.id;
+        payload.context.ownerName = assistedOwner.name || payload.context.ownerName;
+        payload.context.ownerContact = assistedOwner.mobileNumber;
+        // The backend applies the normal publish/QC policy for the owner's account.
+        payload.publishOptions = { status: "ACTIVE", qcRequired: true };
+      }
       if (!payload.publishOptions?.status) {
         payload.publishOptions = {
           status: "ACTIVE",
@@ -582,6 +597,15 @@ export function PropertyListingFlow({
       } else {
         const res = (await submitProperty(payload).unwrap()) as unknown as Record<string, unknown>;
         const created = ((res?.data as Record<string, unknown>) ?? res) as Record<string, unknown>;
+        if (isAssisted) {
+          clearPersistedDraft(storageKey);
+          onAssistedSaved?.({
+            id: Number(created?.id) || undefined,
+            slug: (created?.slug as string) ?? null,
+            title: (created?.title as string) ?? payload.meta?.title ?? null,
+          });
+          return;
+        }
         if (adminMode) {
           toast.success(
             `Property successfully listed on behalf of owner ${payload.context?.ownerContact ? `(+91 ${payload.context.ownerContact})` : ""}!`
@@ -727,7 +751,7 @@ export function PropertyListingFlow({
             </div>
 
             <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-              {adminMode && stepIndex === 0 && <AdminOwnerSourcingCard />}
+              {adminMode && !isAssisted && stepIndex === 0 && <AdminOwnerSourcingCard />}
 
               {adminMode && stepIndex > 0 && (
                 <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-200/90 bg-indigo-50/70 px-3.5 py-2 text-xs text-indigo-900 dark:border-indigo-800/80 dark:bg-indigo-950/40 dark:text-indigo-200">

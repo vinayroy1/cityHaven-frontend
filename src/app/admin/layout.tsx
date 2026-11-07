@@ -30,6 +30,7 @@ import {
   Flame,
   Sliders,
   BookOpen,
+  PlusCircle,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -64,6 +65,12 @@ const NAV_ITEMS = [
       "FINANCE_APPROVER",
       "ANALYST_AUDITOR",
     ],
+  },
+  {
+    label: "Create Listing",
+    href: "/admin/listings/create",
+    icon: PlusCircle,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "CATALOG_SPECIALIST"],
   },
   {
     label: "Property Quality Control",

@@ -23,7 +23,22 @@ function unwrap<T>(response: { data?: T } | T): T {
   return (response as any)?.data ?? (response as T);
 }
 
+export type AssistedSessionResponse = {
+  token: string;
+  expiresIn: string;
+  owner: { id: number; name: string | null; email: string | null; mobileNumber: string; isNew: boolean };
+};
+
 export const adminApi = {
+  /** Find or create the owner and get a listing-only token that acts as them. */
+  async startAssistedSession(body: { name: string; mobile: string; email: string }) {
+    return unwrap(await apiClient.post<AssistedSessionResponse>(`${API_ENDPOINTS.admin.base}/assisted/session`, body));
+  },
+  /** Email the owner that a listing was created for them. */
+  async notifyAssistedOwner(body: { ownerId: number; listingType: "PROPERTY" | "STAY" | "FLATMATE" | "INTERIOR" | "ADVISOR"; title: string; url: string }) {
+    return unwrap(await apiClient.post<{ sent: boolean; message?: string }>(`${API_ENDPOINTS.admin.base}/assisted/notify`, body));
+  },
+
   async requestOtp(email: string) {
     return unwrap(
       await apiClient.post<{ success: boolean; message: string; email: string; devOtp?: string }>(

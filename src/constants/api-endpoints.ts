@@ -150,6 +150,7 @@ export const API_ENDPOINTS = {
     localities: (cityId: number | string) => `${BASE}/cities/${cityId}/localities`,
   },
   admin: {
+    base: `${BASE}/admin`,
     auth: {
       requestOtp: `${BASE}/admin/auth/request-otp`,
       login: `${BASE}/admin/auth/login`,

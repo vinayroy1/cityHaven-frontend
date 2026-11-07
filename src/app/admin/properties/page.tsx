@@ -362,7 +362,7 @@ export default function AdminPropertyQcPage() {
 
         <div className="flex flex-wrap items-center gap-2">
           <Link
-            href="/admin/properties/create"
+            href="/admin/listings/create?type=property"
             className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-600 text-white text-xs font-semibold shadow-sm flex items-center gap-1.5 transition cursor-pointer"
           >
             <Building2 className="w-3.5 h-3.5" />

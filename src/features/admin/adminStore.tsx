@@ -22,6 +22,7 @@ import type {
   AdminGovernanceSettings,
 } from "./types";
 import { DEFAULT_GOVERNANCE_SETTINGS } from "./defaults";
+import { clearAssistedSession } from "@/lib/auth/assistedSession";
 
 interface AdminContextType {
   isHydrated: boolean;
@@ -305,6 +306,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const logoutStaff = () => {
     clearAdminStorage();
+    clearAssistedSession();
     setCurrentStaff(null);
     setStaffList([]);
     setPropertyQcList([]);

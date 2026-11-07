@@ -2,10 +2,11 @@ import { fetchBaseQuery, type BaseQueryFn, type FetchArgs, type FetchBaseQueryEr
 import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/app-config";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { getAuthToken, isAssistedActive } from "@/lib/auth/assistedSession";
 
 let refreshPromise: Promise<string | null> | null = null;
 
-const getAccessToken = () => (typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null);
+const getAccessToken = () => getAuthToken();
 const getRefreshToken = () => (typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY) : null);
 
 const setTokens = (accessToken?: string | null, refreshToken?: string | null) => {
@@ -64,6 +65,12 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
   let result = await rawBaseQuery(args, api, extraOptions);
   if (result?.error && result?.error?.status === 401) {
     const url = typeof args === "string" ? args : args.url;
+
+    // Assisted (staff-for-owner) sessions never refresh or touch the staff member's own login.
+    if (isAssistedActive()) {
+      toast.error("The owner session has expired. Start a new one from Create listing.");
+      return result;
+    }
 
     // Do NOT trigger reauth or window reload on login, register, verify-otp, or refresh endpoints
     const isAuthEndpoint =
