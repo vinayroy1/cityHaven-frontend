@@ -83,14 +83,28 @@ export default function LeadFinderPage() {
   const save = async (ids: string[]) => {
     if (!ids.length) return;
     setSaving(true);
+    // The API takes at most 40 leads per request, so large selections go in batches.
+    const BATCH = 40;
+    const done: string[] = [];
+    let created = 0;
+    let skipped = 0;
     try {
-      const res = await leadFinderApi.saveLeads(ids.map((placeId) => ({ placeId, type, cityName: city, locality: locality || null, countryCode: country })));
-      toast.success(`${res.created} lead(s) saved${res.skipped ? `, ${res.skipped} already existed` : ""}`);
-      setResults((prev) => prev.map((r) => (ids.includes(r.placeId) ? { ...r, lead: r.lead ?? { id: 0, placeId: r.placeId, status: "NEW" } } : r)));
-      setPicked(new Set());
+      for (let i = 0; i < ids.length; i += BATCH) {
+        const chunk = ids.slice(i, i + BATCH);
+        const res = await leadFinderApi.saveLeads(chunk.map((placeId) => ({ placeId, type, cityName: city, locality: locality || null, countryCode: country })));
+        created += res.created;
+        skipped += res.skipped;
+        done.push(...chunk);
+      }
+      toast.success(`${created} lead(s) saved${skipped ? `, ${skipped} already existed` : ""}`);
     } catch (e) {
-      toast.error(errorText(e, "Could not save leads."));
+      toast.error(`${done.length ? `${done.length} saved, then: ` : ""}${errorText(e, "Could not save leads.")}`);
     } finally {
+      if (done.length) {
+        const saved = new Set(done);
+        setResults((prev) => prev.map((r) => (saved.has(r.placeId) ? { ...r, lead: r.lead ?? { id: 0, placeId: r.placeId, status: "NEW" } } : r)));
+        setPicked((prev) => new Set([...prev].filter((id) => !saved.has(id))));
+      }
       setSaving(false);
     }
   };
