@@ -3,18 +3,19 @@
  * saved (older listings), falls back to the locality's precomputed landmarks from our DB.
  * Server component, so the content is in the HTML for SEO.
  */
-import { Bus, GraduationCap, HeartPulse, Navigation, ShoppingBag, TrainFront } from "lucide-react";
+import { Bus, GraduationCap, HeartPulse, Landmark, Navigation, ShoppingBag, TrainFront } from "lucide-react";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { internalHeaders } from "./guideData";
 
 type Item = { key?: string; name: string; distanceKm: number; type?: string; lat?: number | null; lng?: number | null };
-export type Groups = { transit: Item[]; healthcare: Item[]; education: Item[]; lifestyle: Item[] };
+export type Groups = { transit: Item[]; healthcare: Item[]; education: Item[]; lifestyle: Item[]; services: Item[] };
 
 const GROUPS: Array<{ key: keyof Groups; label: string; icon: typeof Bus; tone: string }> = [
   { key: "transit", label: "Transit", icon: TrainFront, tone: "bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300" },
-  { key: "healthcare", label: "Hospitals", icon: HeartPulse, tone: "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300" },
-  { key: "education", label: "Schools & colleges", icon: GraduationCap, tone: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" },
-  { key: "lifestyle", label: "Malls & offices", icon: ShoppingBag, tone: "bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300" },
+  { key: "healthcare", label: "Healthcare", icon: HeartPulse, tone: "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300" },
+  { key: "education", label: "Education", icon: GraduationCap, tone: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" },
+  { key: "lifestyle", label: "Shopping & lifestyle", icon: ShoppingBag, tone: "bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300" },
+  { key: "services", label: "Services", icon: Landmark, tone: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300" },
 ];
 
 const TYPE_LABEL: Record<string, string> = {
@@ -26,6 +27,22 @@ const TYPE_LABEL: Record<string, string> = {
   SCHOOL_COLLEGE: "School / College",
   SHOPPING_MALL: "Mall",
   IT_PARK: "IT Park",
+  FERRY_TERMINAL: "Ferry",
+  TRAM_STOP: "Tram",
+  CLINIC: "Clinic",
+  PHARMACY: "Pharmacy",
+  KINDERGARTEN_CHILDCARE: "Childcare",
+  SUPERMARKET: "Supermarket",
+  PARK: "Park",
+  BEACH: "Beach",
+  POLICE_STATION: "Police",
+  FIRE_STATION: "Fire station",
+  BANK: "Bank",
+  PLACE_OF_WORSHIP: "Worship",
+  SPORTS_FITNESS: "Gym / Sports",
+  LIBRARY: "Library",
+  CINEMA: "Cinema",
+  POST_OFFICE: "Post office",
 };
 
 function normalize(raw: unknown): Groups | null {
@@ -35,7 +52,13 @@ function normalize(raw: unknown): Groups | null {
     Array.isArray(r[k])
       ? (r[k] as Item[]).filter((x) => x && typeof x.name === "string" && Number.isFinite(Number(x.distanceKm)))
       : [];
-  const g = { transit: pick("transit"), healthcare: pick("healthcare"), education: pick("education"), lifestyle: pick("lifestyle") };
+  const g = {
+    transit: pick("transit"),
+    healthcare: pick("healthcare"),
+    education: pick("education"),
+    lifestyle: pick("lifestyle"),
+    services: pick("services"),
+  };
   return Object.values(g).some((l) => l.length) ? g : null;
 }
 
@@ -125,7 +148,7 @@ export function NearbyGrid({ groups, limit = 4, title = "What's nearby" }: { gro
                   <li key={it.key ?? `${it.name}-${it.distanceKm}`} className="flex items-center justify-between gap-2 text-xs">
                     <span className="min-w-0 truncate text-slate-700 dark:text-slate-300">
                       {it.name}
-                      {it.type && TYPE_LABEL[it.type] && key === "transit" && (
+                      {it.type && TYPE_LABEL[it.type] && it.type !== "HOSPITAL" && it.type !== "SCHOOL_COLLEGE" && (
                         <span className="ml-1 text-slate-400">· {TYPE_LABEL[it.type]}</span>
                       )}
                     </span>

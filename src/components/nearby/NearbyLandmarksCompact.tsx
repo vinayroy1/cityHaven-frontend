@@ -5,7 +5,7 @@
  * Collapsed: one line of chips with the nearest place per category. Expanded: a short list.
  */
 import { useEffect, useState } from "react";
-import { ChevronDown, GraduationCap, Hospital, Loader2, MapPin, ShoppingBag, Train, type LucideIcon } from "lucide-react";
+import { ChevronDown, GraduationCap, Hospital, Landmark, Loader2, MapPin, ShoppingBag, Train, type LucideIcon } from "lucide-react";
 
 type Item = { name: string; distanceKm: number; duration?: string; key?: string };
 export type CompactLandmarks = {
@@ -13,14 +13,16 @@ export type CompactLandmarks = {
   healthcare?: Item[];
   education?: Item[];
   lifestyle?: Item[];
+  services?: Item[];
   all?: unknown[];
 } | null;
 
-const CATS: Array<{ key: "transit" | "healthcare" | "education" | "lifestyle"; label: string; icon: LucideIcon; tone: string }> = [
+const CATS: Array<{ key: "transit" | "healthcare" | "education" | "lifestyle" | "services"; label: string; icon: LucideIcon; tone: string }> = [
   { key: "transit", label: "Transit", icon: Train, tone: "text-sky-600" },
   { key: "healthcare", label: "Hospital", icon: Hospital, tone: "text-rose-600" },
   { key: "education", label: "School", icon: GraduationCap, tone: "text-amber-600" },
   { key: "lifestyle", label: "Shopping", icon: ShoppingBag, tone: "text-emerald-600" },
+  { key: "services", label: "Services", icon: Landmark, tone: "text-slate-600" },
 ];
 
 const km = (n: number) => (n < 1 ? `${Math.round(n * 1000)} m` : `${Number(n.toFixed(1))} km`);
@@ -122,6 +124,7 @@ export function useLocalityLandmarks(locality: string | undefined, city: string 
             healthcare: (d.healthcare || []).slice(0, 5),
             education: (d.education || []).slice(0, 5),
             lifestyle: (d.lifestyle || []).slice(0, 5),
+            services: (d.services || []).slice(0, 5),
           };
         }
       } catch {

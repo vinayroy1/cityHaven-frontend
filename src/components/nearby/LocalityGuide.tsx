@@ -2,7 +2,9 @@
 import type { Groups } from "./NearbyPlaces";
 import { CATEGORY_META, categoryOf, fmtKm, type CategoryKey, type ExplorerItem } from "./nearbyCategories";
 
-export const flattenGroups = (g: Groups): ExplorerItem[] => [...g.transit, ...g.healthcare, ...g.education, ...g.lifestyle];
+export const flattenGroups = (g: Groups): ExplorerItem[] => [
+  ...g.transit, ...g.healthcare, ...g.education, ...g.lifestyle, ...(g.services ?? []),
+];
 
 function byCategory(items: ExplorerItem[]) {
   const m = new Map<CategoryKey, ExplorerItem[]>();
