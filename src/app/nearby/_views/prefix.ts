@@ -2,9 +2,9 @@
  * /nearby URL prefixes. India has none (existing indexed URLs stay as they are); every other
  * country lives under /nearby/{prefix}/… Must match guideCountryPrefix() in the backend.
  */
-const PREFIX_TO_COUNTRY: Record<string, string> = { ae: "AE", au: "AU", uk: "GB", np: "NP", bd: "BD", lk: "LK" };
+export const PREFIX_TO_COUNTRY: Record<string, string> = { ae: "AE", au: "AU", uk: "GB", np: "NP", bd: "BD", lk: "LK" };
 
-export const isCountryPrefix = (s: string) => s.toLowerCase() in PREFIX_TO_COUNTRY;
+export const isCountryPrefix = (s: string) => Object.hasOwn(PREFIX_TO_COUNTRY, s.toLowerCase());
 
 /** Prefixes to try when an old unprefixed foreign URL (/nearby/dubai/…) is requested. */
 export const COUNTRY_PREFIXES = Object.keys(PREFIX_TO_COUNTRY);
