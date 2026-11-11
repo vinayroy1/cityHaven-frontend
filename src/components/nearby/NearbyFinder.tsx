@@ -5,10 +5,12 @@
  */
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Loader2, Search } from "lucide-react";
+import { ChevronDown, Loader2, Search } from "lucide-react";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { useCountryCode } from "@/lib/country/useCountry";
+import { setSelectedCountry } from "@/lib/country/countryStore";
+import { COUNTRY_LIST } from "@/config/countries";
 
 export function NearbyFinder({
   defaultCity = "",
@@ -28,7 +30,9 @@ export function NearbyFinder({
 }) {
   const router = useRouter();
   const activeCountry = useCountryCode();
-  const countryCode = propCountryCode || activeCountry || "IN";
+  // The page's country is the starting value; the dropdown below overrides it.
+  const [chosen, setChosen] = useState<string | null>(null);
+  const countryCode = chosen || propCountryCode || activeCountry || "IN";
   const [city, setCity] = useState(defaultCity);
   const [state, setState] = useState<string | undefined>(undefined);
   const [loc, setLoc] = useState<{ name: string; slug?: string } | null>(null);
@@ -37,13 +41,46 @@ export function NearbyFinder({
 
   const go = () => {
     if (!city) return;
+    // Suggestion slugs only match database slugs for India / South Asia; elsewhere resolve by name.
+    const bySlug = loc?.slug && ["IN", "NP", "BD", "LK"].includes(countryCode);
     const target = loc?.name
-      ? loc.slug
-        ? `/nearby/find?slug=${encodeURIComponent(loc.slug)}`
+      ? bySlug
+        ? `/nearby/find?slug=${encodeURIComponent(loc.slug!)}`
         : `/nearby/find?locality=${encodeURIComponent(loc.name)}&city=${encodeURIComponent(city)}`
-      : `/nearby/${cityUrlKey(city)}`;
+      : `/nearby/${cityPrefix(countryCode)}${cityUrlKey(city)}`;
     startTransition(() => router.push(target));
   };
+
+  const changeCountry = (cc: string) => {
+    setChosen(cc);
+    setCity("");
+    setState(undefined);
+    setLoc(null);
+    // Same choice as the header switcher; server-rendered parts (popular cards) follow along.
+    setSelectedCountry(cc, "manual");
+    router.refresh();
+  };
+
+  const countrySelect = (
+    <div className="min-w-0">
+      <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">Country</p>
+      <div className="relative">
+        <select
+          aria-label="Country"
+          value={countryCode}
+          onChange={(e) => changeCountry(e.target.value)}
+          className="h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white pl-3 pr-8 text-sm font-semibold text-slate-800 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        >
+          {COUNTRY_LIST.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.flag} {c.name}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+      </div>
+    </div>
+  );
 
   const searchButton = (
     <button
@@ -61,16 +98,17 @@ export function NearbyFinder({
     <div
       className={
         bare
-          ? "grid gap-2.5 p-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_auto] sm:items-end sm:p-2"
+          ? "grid gap-2.5 p-1 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)_minmax(0,3fr)_auto] sm:items-end sm:p-2"
           : stacked
           ? "grid gap-2.5"
-          : `grid gap-2.5 rounded-2xl p-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_auto] sm:items-end sm:p-4 ${
+          : `grid gap-2.5 rounded-2xl p-3 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)_minmax(0,3fr)_auto] sm:items-end sm:p-4 ${
               hero
                 ? "bg-white/95 shadow-xl shadow-rose-900/10 dark:bg-slate-900/95"
                 : "border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
             }`
       }
     >
+      {countrySelect}
       <div className="min-w-0">
         <p className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">City</p>
         <PropertyListingCitySelector
@@ -114,4 +152,10 @@ function cityUrlKey(name: string) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "") || "x"
   );
+}
+
+/** /nearby URL prefix of a country (India has none). Must match guideCountryPrefix() in the backend. */
+function cityPrefix(cc: string) {
+  const c = cc.toUpperCase();
+  return c === "IN" ? "" : `${c === "GB" ? "uk" : c.toLowerCase()}/`;
 }

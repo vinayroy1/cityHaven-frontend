@@ -6,7 +6,7 @@
  * India ("IN") is the default everywhere, so existing data behaves exactly as before.
  */
 
-export type CountryCode = "IN" | "NP" | "BD" | "LK";
+export type CountryCode = "IN" | "NP" | "BD" | "LK" | "AE" | "AU" | "GB";
 
 export interface CountryConfig {
   code: CountryCode;
@@ -128,6 +128,72 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
     hasRera: false,
     defaultCity: "Colombo",
     popularCities: ["Colombo", "Negombo", "Kandy", "Galle", "Moratuwa", "Dehiwala-Mount Lavinia", "Jaffna", "Kurunegala"],
+  },
+  AE: {
+    code: "AE",
+    name: "United Arab Emirates",
+    flag: "🇦🇪",
+    currency: "AED",
+    currencySymbol: "AED",
+    locale: "en-AE",
+    bigNumbers: "million",
+    phoneCode: "+971",
+    phonePattern: /^5[024568]\d{7}$/,
+    phoneExample: "50 123 4567",
+    phoneDigits: 9,
+    timeZone: "Asia/Dubai",
+    regionLabel: "Emirate",
+    regions: ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Umm al-Quwain", "Ras al-Khaimah", "Fujairah"],
+    postalLabel: "PO Box",
+    postalPattern: /^\d{0,6}$/,
+    hasRera: false,
+    defaultCity: "Dubai",
+    popularCities: ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Al Ain", "Ras al-Khaimah", "Fujairah"],
+  },
+  AU: {
+    code: "AU",
+    name: "Australia",
+    flag: "🇦🇺",
+    currency: "AUD",
+    currencySymbol: "A$",
+    locale: "en-AU",
+    bigNumbers: "million",
+    phoneCode: "+61",
+    phonePattern: /^4\d{8}$/,
+    phoneExample: "412 345 678",
+    phoneDigits: 9,
+    timeZone: "Australia/Sydney",
+    regionLabel: "State",
+    regions: [
+      "New South Wales", "Victoria", "Queensland", "Western Australia", "South Australia", "Tasmania",
+      "Australian Capital Territory", "Northern Territory",
+    ],
+    postalLabel: "Postcode",
+    postalPattern: /^\d{4}$/,
+    hasRera: false,
+    defaultCity: "Sydney",
+    popularCities: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Gold Coast", "Canberra"],
+  },
+  GB: {
+    code: "GB",
+    name: "United Kingdom",
+    flag: "🇬🇧",
+    currency: "GBP",
+    currencySymbol: "£",
+    locale: "en-GB",
+    bigNumbers: "million",
+    phoneCode: "+44",
+    phonePattern: /^7\d{9}$/,
+    phoneExample: "7400 123456",
+    phoneDigits: 10,
+    timeZone: "Europe/London",
+    regionLabel: "Nation",
+    regions: ["England", "Scotland", "Wales", "Northern Ireland"],
+    postalLabel: "Postcode",
+    postalPattern: /^[A-Za-z]{1,2}\d[A-Za-z\d]?( ?\d[A-Za-z]{2})?$/,
+    hasRera: false,
+    defaultCity: "London",
+    popularCities: ["London", "Manchester", "Birmingham", "Leeds", "Glasgow", "Edinburgh", "Bristol", "Leicester"],
   },
 };
 

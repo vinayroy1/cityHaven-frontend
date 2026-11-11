@@ -81,24 +81,24 @@ export default async function NearbyIndexPage() {
           <div className="absolute -bottom-40 -left-24 h-80 w-80 rounded-full bg-amber-50/70 blur-3xl dark:bg-amber-950/10" />
         </div>
 
-        <div className="relative mx-auto max-w-3xl px-4 pb-12 pt-8 text-center sm:px-6 lg:pb-16 lg:pt-16">
-          <span className="inline-flex items-center rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 ring-1 ring-rose-200/70 dark:bg-rose-950/40 dark:text-rose-300 dark:ring-rose-900">
+        <div className="relative mx-auto max-w-3xl px-4 pb-6 pt-4 text-center sm:px-6 lg:pb-16 lg:pt-16">
+          <span className="hidden items-center rounded-full bg-rose-50 px-3 sm:inline-flex py-1 text-xs font-semibold text-rose-700 ring-1 ring-rose-200/70 dark:bg-rose-950/40 dark:text-rose-300 dark:ring-rose-900">
             Free locality guide · 2.5 lakh+ localities
           </span>
-          <div className="mt-3">
+          <div className="mt-3 hidden sm:block">
             <CountryContextChip what="Locality guides" />
           </div>
-          <h1 className="mt-4 text-[34px] font-black leading-[1.08] tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
+          <h1 className="text-2xl font-black leading-tight sm:mt-4 sm:leading-[1.08] tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
             Know the neighbourhood{" "}
             <span className="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 bg-clip-text text-transparent">
               before you move.
             </span>
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-slate-600 dark:text-slate-400 sm:text-base">
+          <p className="mx-auto mt-4 hidden max-w-xl text-sm sm:block text-slate-600 dark:text-slate-400 sm:text-base">
             Nearest metro, hospitals, schools, colleges, malls and airport for any locality — with walking and driving time.
           </p>
 
-          <div className="relative mx-auto mt-8 max-w-2xl text-left">
+          <div className="relative mx-auto mt-4 max-w-2xl sm:mt-8 text-left">
             <div aria-hidden className="pointer-events-none absolute -inset-4 rounded-[28px] bg-gradient-to-r from-rose-300/40 via-rose-200/30 to-amber-200/40 blur-2xl dark:from-rose-900/30 dark:to-amber-900/20" />
             <div className="relative rounded-2xl bg-gradient-to-r from-rose-500 via-rose-400 to-amber-400 p-[1.5px] shadow-xl shadow-rose-900/10">
               <div className="rounded-[15px] bg-white p-2 dark:bg-slate-900">
@@ -124,7 +124,7 @@ export default async function NearbyIndexPage() {
           </div>
 
           {sample && (
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            <div className="mt-4 flex flex-wrap items-center justify-center sm:mt-5 gap-2">
               <span className="text-xs font-semibold text-slate-500">Popular:</span>
               {cards.slice(0, 4).map((c) => (
                 <Link
