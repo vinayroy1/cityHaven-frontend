@@ -6,7 +6,7 @@
  * India ("IN") is the default everywhere, so existing data behaves exactly as before.
  */
 
-export type CountryCode = "IN" | "NP" | "BD" | "LK" | "AE" | "AU" | "GB";
+export type CountryCode = "IN" | "NP" | "BD" | "LK" | "AE" | "AU" | "GB" | "SG" | "IE" | "NZ";
 
 export interface CountryConfig {
   code: CountryCode;
@@ -194,6 +194,79 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
     hasRera: false,
     defaultCity: "London",
     popularCities: ["London", "Manchester", "Birmingham", "Leeds", "Glasgow", "Edinburgh", "Bristol", "Leicester"],
+  },
+  SG: {
+    code: "SG",
+    name: "Singapore",
+    flag: "🇸🇬",
+    currency: "SGD",
+    currencySymbol: "S$",
+    locale: "en-SG",
+    bigNumbers: "million",
+    phoneCode: "+65",
+    phonePattern: /^[89]\d{7}$/,
+    phoneExample: "8123 4567",
+    phoneDigits: 8,
+    timeZone: "Asia/Singapore",
+    regionLabel: "Region",
+    regions: ["Central Region", "East Region", "North Region", "North-east Region", "West Region"],
+    postalLabel: "Postal code",
+    postalPattern: /^\d{6}$/,
+    hasRera: false,
+    defaultCity: "Singapore",
+    popularCities: ["Singapore"],
+  },
+  IE: {
+    code: "IE",
+    name: "Ireland",
+    flag: "🇮🇪",
+    currency: "EUR",
+    currencySymbol: "€",
+    locale: "en-IE",
+    bigNumbers: "million",
+    phoneCode: "+353",
+    phonePattern: /^8[35-9]\d{7}$/,
+    phoneExample: "85 123 4567",
+    phoneDigits: 9,
+    timeZone: "Europe/Dublin",
+    regionLabel: "County",
+    regions: [
+      "County Carlow", "County Cavan", "County Clare", "County Cork", "County Donegal", "County Dublin", "County Galway",
+      "County Kerry", "County Kildare", "County Kilkenny", "County Laois", "County Leitrim", "County Limerick",
+      "County Longford", "County Louth", "County Mayo", "County Meath", "County Monaghan", "County Offaly",
+      "County Roscommon", "County Sligo", "County Tipperary", "County Waterford", "County Westmeath", "County Wexford",
+      "County Wicklow",
+    ],
+    postalLabel: "Eircode",
+    postalPattern: /^[A-Za-z]\d[\dWw] ?[A-Za-z\d]{4}$/,
+    hasRera: false,
+    defaultCity: "Dublin",
+    popularCities: ["Dublin", "Cork", "Galway", "Limerick", "Waterford"],
+  },
+  NZ: {
+    code: "NZ",
+    name: "New Zealand",
+    flag: "🇳🇿",
+    currency: "NZD",
+    currencySymbol: "NZ$",
+    locale: "en-NZ",
+    bigNumbers: "million",
+    phoneCode: "+64",
+    phonePattern: /^2\d{7,9}$/,
+    phoneExample: "21 123 4567",
+    phoneDigits: 9,
+    timeZone: "Pacific/Auckland",
+    regionLabel: "Region",
+    regions: [
+      "Auckland", "Bay of Plenty", "Canterbury", "Chatham Islands", "Gisborne", "Hawke's Bay", "Manawatū-Whanganui",
+      "Marlborough", "Nelson", "Northland", "Otago", "Southland", "Taranaki", "Tasman", "Waikato", "Wellington",
+      "West Coast",
+    ],
+    postalLabel: "Postcode",
+    postalPattern: /^\d{4}$/,
+    hasRera: false,
+    defaultCity: "Auckland",
+    popularCities: ["Auckland", "Wellington", "Christchurch", "Hamilton", "Tauranga", "Dunedin"],
   },
 };
 
