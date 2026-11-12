@@ -31,7 +31,7 @@ import type { CustomStepProps, ReadinessRule, VerticalConfig } from "@/lib/listi
 import type { InteriorWizardSection, InteriorWizardValues } from "@/types/interior.types";
 import { createInteriorInitialValues } from "./initialValues";
 import { interiorPredicates } from "./predicates";
-import { INTERIOR_PHASES, interiorSteps } from "./steps";
+import { INTERIOR_PHASES, interiorSetupSteps } from "./steps";
 
 export const INTERIOR_STORAGE_KEY = "interiorWizardDraft:v2";
 
@@ -60,7 +60,7 @@ const notWired = (name: string) => async () => {
 export function createInteriorVertical(deps: Partial<InteriorVerticalDeps> = {}): VerticalConfig<InteriorWizardValues> {
   return {
     id: "interiors",
-    steps: interiorSteps,
+    steps: interiorSetupSteps,
     phases: INTERIOR_PHASES,
     renderPreview: deps.renderPreview,
     initialValues: createInteriorInitialValues(),

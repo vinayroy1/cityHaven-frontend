@@ -30,7 +30,6 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
     ["materialsBoardHardware", ["PUBLISH"], (v) => void (v.materials.materialSpecs = v.materials.materialSpecs.filter((m) => m.category !== "HARDWARE"))],
     ["startingPrice", ["SUBMIT", "PUBLISH"], (v) => void (v.pricing.startingRateMin = null)],
     ["activePackage", ["PUBLISH"], (v) => void (v.pricing.packages[0].isActive = false)],
-    ["portfolio", ["PUBLISH"], (v) => void (v.portfolio.projects[0].afterImages = [])],
     ["idDocument", ["SUBMIT"], (v) => void (v.team.credentials = [])],
     ["documentVerified", ["PUBLISH"], (v) => void (v.team.credentials[0].status = "PENDING")],
     ["woodworkWarranty", ["PUBLISH"], (v) => void (v.warranty.warranties = v.warranty.warranties.map((w) => ({ ...w, years: null })))],
@@ -39,6 +38,13 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
   if (kind === "COMPANY") {
     cases.push(["headOffice", ["SUBMIT", "PUBLISH"], (v) => void (v.location.branches[0].branchType = "BRANCH")]);
   }
+
+  it("goes live without any portfolio project (projects are added after listing)", () => {
+    const v = completeValues(kind);
+    v.portfolio.projects = [];
+    v.portfolio.workGallery = [];
+    expect(run(v).canPublish).toBe(true);
+  });
 
   it.each(cases)("%s gates %j", (id, levels, breakIt) => {
     const v = completeValues(kind);

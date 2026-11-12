@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { BadgeCheck, CheckCircle2, Circle, Eye, Inbox, ShieldAlert, Unlock } from "lucide-react";
+import { BadgeCheck, CheckCircle2, Circle, Eye, Images, Inbox, ShieldAlert, Unlock } from "lucide-react";
 import { interiorSteps } from "@/features/interiors/wizard/steps";
 import type { ReadinessItem } from "@/types/interior.types";
 import { ListingStatusCard } from "./ListingStatusCard";
@@ -63,6 +63,24 @@ export function OverviewPanel() {
     <div className="space-y-4">
       <ListingStatusCard profile={profile} readiness={readiness} />
       <InteriorPlanCard profile={profile} />
+
+      {!(profile.projects ?? []).length && (
+        <Link
+          href={manageHref("portfolio", profile.id)}
+          className="flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900 transition hover:bg-rose-100 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-100"
+        >
+          <Images className="h-5 w-5 shrink-0" />
+          <span className="min-w-0">
+            <span className="block font-semibold">Add your recent projects</span>
+            <span className="block text-xs opacity-80">
+              {(profile.workGallery ?? []).length
+                ? "Group your best photos into projects. Profiles with projects get more enquiries."
+                : "Upload photos of homes you've done. Profiles with projects get more enquiries."}
+            </span>
+          </span>
+          <span className="ml-auto shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white">Add projects</span>
+        </Link>
+      )}
 
       {profile.isVerified ? (
         <div className="flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200">

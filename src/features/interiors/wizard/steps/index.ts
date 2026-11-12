@@ -27,6 +27,12 @@ export const interiorSteps: StepConfig[] = [
   contactStep,
 ];
 
+/**
+ * First-time setup skips Portfolio so a studio (or staff listing for one) can go live quickly;
+ * projects and the work gallery are added afterwards from the dashboard (manage → Portfolio).
+ */
+export const interiorSetupSteps: StepConfig[] = interiorSteps.filter((s) => s.id !== "portfolio");
+
 /** Every custom component name referenced by the step config. */
 export const INTERIOR_CUSTOM_COMPONENT_NAMES = [
   "ProviderTypeCards",

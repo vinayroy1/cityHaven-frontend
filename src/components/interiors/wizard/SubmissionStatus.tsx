@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Check, Clock, Rocket, Send } from "lucide-react";
 import { InteriorListingStatus } from "@/types/interior.types";
 import { cn } from "@/lib/utils";
+import { isAssistedActive } from "@/lib/auth/assistedSession";
 
 const STEPS = [
   { key: "submitted", label: "Submitted", hint: "We have your listing.", icon: Send },
@@ -52,6 +53,12 @@ export function SubmissionStatus({ status, submittedAt, reviewNotes }: { status?
         <Link href="/dashboard/interior-profile/manage" className="inline-flex h-11 items-center rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white dark:bg-white dark:text-slate-900">
           Go to my dashboard
         </Link>
+        {/* Projects are added by the owner from their own dashboard, never by staff in an assisted session. */}
+        {!isAssistedActive() && (
+        <Link href="/dashboard/interior-profile/manage/portfolio" className="inline-flex h-11 items-center rounded-xl border border-slate-300 px-5 text-sm font-semibold dark:border-slate-700">
+          Add recent projects
+        </Link>
+        )}
       </div>
     </div>
   );

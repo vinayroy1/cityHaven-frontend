@@ -5,7 +5,6 @@ import type { ReadinessRule } from "@/lib/listingEngine/types";
 import type { InteriorWizardValues } from "@/types/interior.types";
 import { INDIAN_PHONE_REGEX } from "./options";
 import { isValidPhone } from "@/lib/money";
-import { projectImageCount } from "./mapper";
 
 type V = InteriorWizardValues;
 
@@ -125,16 +124,6 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     fieldPath: "pricing.packages",
     appliesWhen: (v) => !isQuoteOnly(v),
     check: (v) => v.pricing.packages.some((p) => p.isActive && filled(p.packageName)),
-  },
-  {
-    id: "portfolio",
-    stepId: "portfolio",
-    label: `Add a portfolio project or ${MIN_PROJECT_IMAGES}+ work gallery photos`,
-    levels: ["PUBLISH"],
-    fieldPath: "portfolio.projects",
-    check: (v) =>
-      (v.portfolio.workGallery ?? []).length >= MIN_PROJECT_IMAGES ||
-      v.portfolio.projects.some((p) => projectImageCount(p) >= MIN_PROJECT_IMAGES),
   },
   {
     id: "idDocument",
