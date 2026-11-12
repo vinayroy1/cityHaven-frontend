@@ -349,7 +349,7 @@ export function PropertyListingCitySelector({
     (selectedState ? `Select City in ${selectedState}` : "Select City (or search across India)");
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className="relative min-w-0" ref={containerRef}>
       {/* Trigger Bar */}
       <div
         onClick={() => setIsOpen((prev) => !prev)}

@@ -3,9 +3,8 @@ import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { DirectoryClient } from "./DirectoryClient";
 import { fetchInteriorDirectory } from "./lib/server-data";
 import { breadcrumbJsonLd } from "./lib/breadcrumbs";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
-const DEFAULT_CITY = "Mumbai";
-const DEFAULT_STATE = "Maharashtra";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -32,7 +31,8 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
 
 export default async function InteriorDesignersDirectoryPage({ searchParams }: { searchParams: SearchParams }) {
   const urlCity = cityParam((await searchParams).city);
-  const city = urlCity ?? DEFAULT_CITY;
+  // No city in the URL = every designer in India (no more Mumbai default).
+  const city = urlCity ?? "";
   const initialData = await fetchInteriorDirectory(city);
 
   const jsonLd = [
@@ -45,14 +45,12 @@ export default async function InteriorDesignersDirectoryPage({ searchParams }: {
           {
             "@context": "https://schema.org",
             "@type": "ItemList",
-            name: `Interior designers in ${city}`,
+            name: `Interior designers in ${city || "India"}`,
             itemListElement: initialData.items.slice(0, 20).map((p, i) => ({
               "@type": "ListItem",
               position: i + 1,
               name: p.displayName || p.businessName || p.fullName || "Interior designer",
-              url: buildCanonical(
-                `/interior-designers/${encodeURIComponent((p.primaryCity || city).toLowerCase())}/${p.slug}`,
-              ),
+              url: buildCanonical(interiorProfilePath({ primaryCity: p.primaryCity || city, slug: p.slug })),
             })),
           },
         ]
@@ -67,7 +65,7 @@ export default async function InteriorDesignersDirectoryPage({ searchParams }: {
       />
       <DirectoryClient
         initialCity={city}
-        initialState={city === DEFAULT_CITY ? DEFAULT_STATE : ""}
+        initialState=""
         initialData={initialData}
         cityFromUrl={!!urlCity}
       />

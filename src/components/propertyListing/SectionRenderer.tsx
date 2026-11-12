@@ -103,7 +103,7 @@ export function SectionRenderer({
                     ? "col-span-2"
                     : "sm:col-span-2"
                   : undefined,
-                "transition-all duration-300 rounded-xl",
+                "min-w-0 transition-all duration-300 rounded-xl",
               )}
             >
               <FieldRenderer field={field} values={values} />

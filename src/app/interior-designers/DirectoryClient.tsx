@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
 import { DesignerGridSkeleton } from "@/components/interiors/skeletons";
 import {
   Search,
-  MapPin,
   Building2,
   SlidersHorizontal,
-  Sparkles,
   ShieldCheck,
   X,
   RotateCcw,
@@ -20,9 +18,6 @@ import { InteriorDesignerCard } from "./components/InteriorDesignerCard";
 import type { InteriorProfile, InteriorProviderType, InteriorSearchParams, InteriorSearchResponse } from "@/types/interior.types";
 import {
   INTERIOR_CITIES,
-  CITY_LOCALITIES,
-  BOARD_BRANDS,
-  HARDWARE_BRANDS,
   DESIGN_STYLES,
   SERVICES_OFFERED,
 } from "@/constants/interior-data";
@@ -35,9 +30,16 @@ import {
   type LocalitySelection,
 } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { useCountry } from "@/lib/country/countryStore";
-import { CountryContextChip } from "@/components/country/CountryContextChip";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
 // The enquiry form only loads once someone asks for a quote.
+const BUDGET_LABELS: Record<string, string> = {
+  ECONOMY: "Economy budget",
+  MID_RANGE: "Standard budget",
+  PREMIUM: "Premium budget",
+  LUXURY: "Luxury budget",
+};
+
 const InteriorInquiryModal = dynamic(
   () => import("./components/InteriorInquiryModal").then((m) => m.InteriorInquiryModal),
   { ssr: false },
@@ -52,14 +54,13 @@ interface DirectoryClientProps {
   cityFromUrl?: boolean;
 }
 
-export function DirectoryClient({ initialCity, initialState, initialData, cityFromUrl = false }: DirectoryClientProps) {
+export function DirectoryClient({ initialCity, initialState, initialData }: DirectoryClientProps) {
   const [selectedCity, setSelectedCity] = useState(initialCity);
   const [selectedState, setSelectedState] = useState(initialState);
   const [selectedLocality, setSelectedLocality] = useState("ALL");
   const [providerType, setProviderType] = useState<InteriorProviderType | "ALL">("ALL");
   const [selectedService, setSelectedService] = useState("ALL");
   const [selectedStyle, setSelectedStyle] = useState("ALL");
-  const [selectedBrand, setSelectedBrand] = useState("ALL");
   const [selectedBracket, setSelectedBracket] = useState("ALL");
   const [isVerifiedOnly, setIsVerifiedOnly] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -69,24 +70,9 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
   // Selected profile for inquiry quote modal
   const [inquiryProfile, setInquiryProfile] = useState<InteriorProfile | null>(null);
 
-  // Dynamic localities based on selected city
-  const availableLocalities = useMemo(() => {
-    return CITY_LOCALITIES[selectedCity] || [];
-  }, [selectedCity]);
-
-  // Combined Brands (Board + Hardware) for dropdown filter
-  const allBrands = useMemo(() => {
-    return Array.from(new Set([...HARDWARE_BRANDS, ...BOARD_BRANDS]));
-  }, []);
-
   // The server already rendered the default view; only fetch once filters change.
   const portalCountry = useCountry();
   const sym = portalCountry.currencySymbol;
-  // Outside India, a default (non-URL) Indian city makes no sense: open the country's main city.
-  useEffect(() => {
-    if (!cityFromUrl && portalCountry.code !== "IN" && selectedCity === initialCity) setSelectedCity(portalCountry.defaultCity);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [portalCountry.code]);
   // The server render is India's; other countries always fetch their own list.
   const isInitialQuery =
     portalCountry.code === "IN" &&
@@ -99,7 +85,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
 
   const query = useSearchInteriorDesignersQuery(
     {
-      city: selectedCity,
+      city: selectedCity || undefined,
       countryCode: portalCountry.code,
       providerType: providerType === "ALL" ? undefined : providerType,
       service: selectedService === "ALL" ? undefined : selectedService,
@@ -114,12 +100,11 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
   const data = isInitialQuery ? initialData : query.data;
   const isLoading = !isInitialQuery && query.isLoading;
 
-  const showCityCrumb = cityFromUrl || selectedCity !== initialCity;
-  const crumbs: BreadcrumbTrailItem[] = showCityCrumb
+  const crumbs: BreadcrumbTrailItem[] = selectedCity
     ? [{ label: "Interior designers", href: "/interior-designers" }, { label: selectedCity }]
     : [{ label: "Interior designers" }];
 
-  const rawDesigners = data?.items || [];
+  const rawDesigners = useMemo(() => data?.items || [], [data]);
 
   // Client-side filtering for search keyword, specific locality, brand, and design style
   const filteredDesigners = useMemo(() => {
@@ -141,14 +126,6 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
         }
       }
 
-      // Brand check
-      if (selectedBrand !== "ALL") {
-        const brands = [...(d.hardwareBrands || []), ...(d.boardBrands || []), ...(d.finishBrands || [])];
-        if (!brands.some((b) => b.toLowerCase().includes(selectedBrand.toLowerCase()))) {
-          return false;
-        }
-      }
-
       // Keyword check (Name, About, Tagline, Locality)
       if (searchKeyword.trim()) {
         const q = searchKeyword.toLowerCase();
@@ -161,7 +138,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
 
       return true;
     });
-  }, [rawDesigners, selectedLocality, selectedStyle, selectedBrand, searchKeyword]);
+  }, [rawDesigners, selectedLocality, selectedStyle, searchKeyword]);
 
   // Reset filters
   const handleResetFilters = () => {
@@ -169,21 +146,11 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
     setProviderType("ALL");
     setSelectedService("ALL");
     setSelectedStyle("ALL");
-    setSelectedBrand("ALL");
     setSelectedBracket("ALL");
     setIsVerifiedOnly(false);
     setSearchKeyword("");
   };
 
-  const activeFiltersCount =
-    (selectedLocality !== "ALL" ? 1 : 0) +
-    (providerType !== "ALL" ? 1 : 0) +
-    (selectedService !== "ALL" ? 1 : 0) +
-    (selectedStyle !== "ALL" ? 1 : 0) +
-    (selectedBrand !== "ALL" ? 1 : 0) +
-    (selectedBracket !== "ALL" ? 1 : 0) +
-    (isVerifiedOnly ? 1 : 0) +
-    (searchKeyword.trim() ? 1 : 0);
 
   // Inspiration Gallery feed
   const allProjects = useMemo(() => {
@@ -198,87 +165,73 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
     );
   }, [filteredDesigners]);
 
+  const where = selectedLocality !== "ALL" ? `${selectedLocality}, ${selectedCity}` : selectedCity || portalCountry.name || "India";
+
+  const pickCity = (city: string, state = "") => {
+    setSelectedCity(city);
+    setSelectedState(state);
+    setSelectedLocality("ALL");
+    // Keep the URL shareable (?city=Delhi) without a navigation.
+    const url = new URL(window.location.href);
+    if (city) url.searchParams.set("city", city);
+    else url.searchParams.delete("city");
+    window.history.replaceState(null, "", url.toString());
+  };
+
+  const activeChips: { label: string; clear: () => void }[] = [
+    ...(selectedLocality !== "ALL" ? [{ label: selectedLocality, clear: () => setSelectedLocality("ALL") }] : []),
+    ...(providerType !== "ALL"
+      ? [{ label: providerType === "COMPANY" ? "Studios & firms" : "Independent designers", clear: () => setProviderType("ALL") }]
+      : []),
+    ...(selectedService !== "ALL" ? [{ label: selectedService, clear: () => setSelectedService("ALL") }] : []),
+    ...(selectedStyle !== "ALL" ? [{ label: selectedStyle, clear: () => setSelectedStyle("ALL") }] : []),
+    ...(selectedBracket !== "ALL"
+      ? [{ label: BUDGET_LABELS[selectedBracket] ?? selectedBracket, clear: () => setSelectedBracket("ALL") }]
+      : []),
+    ...(isVerifiedOnly ? [{ label: "Verified only", clear: () => setIsVerifiedOnly(false) }] : []),
+  ];
+
+  const selectCls =
+    "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-800 focus:border-rose-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
+  const labelCls = "mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400";
+
   return (
     <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950">
-      {/* Top Hero Banner */}
-      <section className="relative overflow-hidden border-b border-slate-200/80 bg-gradient-to-b from-rose-50/80 via-white to-slate-50/60 pt-7 pb-8 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900/40 dark:to-slate-950">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center sm:justify-center">
-            <PageBreadcrumbs items={crumbs} renderJsonLd={false} className="-mt-3 mb-3" />
-          </div>
-          <div className="flex flex-col items-center text-center gap-5">
-            <div className="max-w-3xl">
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/90 px-3 py-1 text-xs font-bold text-rose-700 shadow-2xs backdrop-blur-xs dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
-                  <Sparkles className="h-3.5 w-3.5 fill-rose-500 text-rose-500" />
-                  <span>Vetted Interior Directory & Material Guarantee</span>
-                </div>
-                <CountryContextChip what="Interior designers" />
-              </div>
-              <h1 className="mt-3 text-2xl font-black tracking-tight text-slate-900 sm:text-4xl lg:text-5xl dark:text-white">
-                Best Interior Designers & Studios in{" "}
-                <span className="text-rose-600 dark:text-rose-400">{selectedCity}</span>
+      {/* Compact header */}
+      <section className="border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
+        <div className="mx-auto max-w-7xl px-4 pt-3 pb-4 sm:px-6 sm:pt-4 sm:pb-6 lg:px-8">
+          <PageBreadcrumbs items={crumbs} renderJsonLd={false} className="mb-2" />
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+                Interior designers in <span className="text-rose-600 dark:text-rose-400">{where}</span>
               </h1>
-              <p className="mx-auto mt-2 max-w-2xl text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                Connect with verified architects, modular factories & turnkey contractors. Compare verified material specifications (CenturyPly, Hafele, Blum) and transparent square-foot pricing.
+              <p className="mt-1 hidden text-sm text-slate-600 sm:block dark:text-slate-300">
+                Compare portfolios, starting prices and reviews. Call, WhatsApp or get free quotes.
               </p>
             </div>
-
-            {/* Quick Action: List Your Studio */}
-            <div className="shrink-0 flex items-center justify-center gap-3">
-              <Link
-                href="/dashboard/interior-profile"
-                prefetch={false}
-                className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-md transition hover:bg-slate-800 active:scale-95 dark:bg-rose-600 dark:hover:bg-rose-500"
-              >
-                <Building2 className="h-4 w-4" />
-                <span>List Your Interior Business</span>
-              </Link>
-            </div>
+            <Link
+              href="/dashboard/interior-profile"
+              prefetch={false}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50 sm:bg-slate-900 sm:text-white sm:border-transparent sm:hover:bg-slate-800 dark:border-slate-700 dark:text-slate-200 sm:dark:bg-rose-600"
+            >
+              <Building2 className="h-4 w-4" />
+              <span className="hidden sm:inline">List your business</span>
+              <span className="sm:hidden">List yours</span>
+            </Link>
           </div>
 
-          {/* City Chips Selector Row (Centered on desktop, scrollable on mobile) */}
-          <div className="mt-6 -mx-4 px-4 sm:mx-0 sm:px-0 flex items-center sm:justify-center gap-2 overflow-x-auto no-scrollbar pb-1">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 shrink-0 mr-1 flex items-center gap-1">
-              <MapPin className="h-3.5 w-3.5 text-rose-500" /> Popular Cities:
-            </span>
-            {INTERIOR_CITIES.slice(0, 10).map((city) => (
-              <button
-                key={city}
-                type="button"
-                onClick={() => {
-                  setSelectedCity(city);
-                  setSelectedLocality("ALL");
-                }}
-                className={`shrink-0 rounded-full px-3.5 py-1 text-xs font-bold transition ${
-                  selectedCity.toLowerCase() === city.toLowerCase()
-                    ? "bg-rose-600 text-white shadow-xs"
-                    : "bg-white text-slate-700 border border-slate-200/90 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                }`}
-              >
-                {city}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Main Directory & Filter Grid */}
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* Comprehensive Filter Control Panel */}
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-          {/* Top Search & Primary Filters Row */}
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-12 items-center">
-            {/* Search Input Box */}
-            <div className="relative md:col-span-3">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          {/* Search + city + filters: one row on desktop, two on mobile */}
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <div className="relative min-w-0 flex-1">
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
-                placeholder="Search by studio name, locality, or style..."
+                placeholder="Search name, area or service"
                 aria-label="Search interior designers"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/60 pl-10 pr-4 py-2.5 text-xs font-medium text-slate-900 placeholder-slate-400 focus:border-rose-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800/80 dark:text-white"
+                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 pl-10 pr-9 text-sm text-slate-900 placeholder-slate-400 focus:border-rose-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800/80 dark:text-white"
               />
               {searchKeyword && (
                 <button
@@ -287,245 +240,205 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
                   aria-label="Clear search"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-4 w-4" />
                 </button>
               )}
             </div>
-
-            {/* City Dropdown (Property Listing Nationwide Search) */}
-            <div className="md:col-span-3">
-              <label className="sr-only">City</label>
-              <PropertyListingCitySelector
-                value={selectedCity}
-                selectedState={selectedState}
-                onChange={(cityData: CitySelection) => {
-                  setSelectedCity(cityData.name);
-                  if (cityData.state) setSelectedState(cityData.state);
-                  setSelectedLocality("ALL");
-                }}
-                placeholder="Search city across India..."
-              />
-            </div>
-
-            {/* Locality Dropdown (Property Listing Locality Search) */}
-            <div className="md:col-span-3">
-              <label className="sr-only">Locality</label>
-              <PropertyListingLocalitySelector
-                value={selectedLocality === "ALL" ? "" : selectedLocality}
-                cityName={selectedCity}
-                selectedState={selectedState}
-                onChange={(locData: LocalitySelection) => {
-                  setSelectedLocality(locData.name);
-                }}
-                placeholder={`All localities in ${selectedCity || "city"}...`}
-              />
-            </div>
-
-            {/* Mobile Filter Toggle & Quick Actions */}
-            <div className="flex items-center gap-2 md:col-span-3 justify-end">
+            <div className="flex min-w-0 gap-2">
+              <div className="min-w-0 flex-1 sm:w-60 sm:flex-none">
+                <PropertyListingCitySelector
+                  value={selectedCity}
+                  selectedState={selectedState}
+                  onChange={(c: CitySelection) => pickCity(c.name, c.state || "")}
+                  placeholder="All cities"
+                />
+              </div>
               <button
                 type="button"
-                onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-                className={`inline-flex md:hidden items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs font-bold transition ${
-                  activeFiltersCount > 0
+                onClick={() => setMobileFilterOpen((o) => !o)}
+                aria-expanded={mobileFilterOpen}
+                className={`inline-flex h-11 shrink-0 items-center gap-2 rounded-xl border px-3.5 text-sm font-bold transition ${
+                  mobileFilterOpen || activeChips.length > 0
                     ? "border-rose-400 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
-                    : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-300"
+                    : "border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
                 }`}
               >
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-                <span>Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}</span>
+                <SlidersHorizontal className="h-4 w-4" />
+                Filters{activeChips.length > 0 ? ` (${activeChips.length})` : ""}
               </button>
-
-              {/* Provider Type Segment (Desktop) */}
-              <div className="hidden md:inline-flex rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setProviderType("ALL")}
-                  className={`rounded-lg px-2.5 py-1.5 text-xs font-bold transition ${
-                    providerType === "ALL"
-                      ? "bg-white text-slate-900 shadow-2xs dark:bg-slate-900 dark:text-white"
-                      : "text-slate-600 dark:text-slate-400"
-                  }`}
-                >
-                  All
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setProviderType("COMPANY")}
-                  className={`rounded-lg px-2.5 py-1.5 text-xs font-bold transition ${
-                    providerType === "COMPANY"
-                      ? "bg-white text-slate-900 shadow-2xs dark:bg-slate-900 dark:text-white"
-                      : "text-slate-600 dark:text-slate-400"
-                  }`}
-                >
-                  Studios
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setProviderType("INDIVIDUAL")}
-                  className={`rounded-lg px-2.5 py-1.5 text-xs font-bold transition ${
-                    providerType === "INDIVIDUAL"
-                      ? "bg-white text-slate-900 shadow-2xs dark:bg-slate-900 dark:text-white"
-                      : "text-slate-600 dark:text-slate-400"
-                  }`}
-                >
-                  Architects
-                </button>
-              </div>
             </div>
           </div>
 
-          {/* Secondary Filter Bar (Always visible on desktop, expandable on mobile) */}
-          <div
-            className={`mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 ${
-              mobileFilterOpen ? "block" : "hidden md:block"
-            }`}
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-              {/* Service Scope Dropdown */}
-              <div>
-                <label htmlFor="filter-service" className="block text-[11px] font-bold text-slate-600 mb-1 dark:text-slate-400">Service Required</label>
-                <select
-                  id="filter-service"
-                  value={selectedService}
-                  onChange={(e) => setSelectedService(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                >
-                  <option value="ALL">All Services</option>
-                  {SERVICES_OFFERED.map((svc) => (
-                    <option key={svc} value={svc}>
-                      {svc}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Design Style Dropdown */}
-              <div>
-                <label htmlFor="filter-style" className="block text-[11px] font-bold text-slate-600 mb-1 dark:text-slate-400">Design Style</label>
-                <select
-                  id="filter-style"
-                  value={selectedStyle}
-                  onChange={(e) => setSelectedStyle(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                >
-                  <option value="ALL">All Design Styles</option>
-                  {DESIGN_STYLES.map((st) => (
-                    <option key={st} value={st}>
-                      {st}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Verified Hardware / Board Brand Partner Dropdown */}
-              <div>
-                <label htmlFor="filter-brand" className="block text-[11px] font-bold text-slate-600 mb-1 dark:text-slate-400">Material Brand</label>
-                <select
-                  id="filter-brand"
-                  value={selectedBrand}
-                  onChange={(e) => setSelectedBrand(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                >
-                  <option value="ALL">Any Brand Partner</option>
-                  {allBrands.map((brand) => (
-                    <option key={brand} value={brand}>
-                      {brand}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Budget Range Bracket */}
-              <div>
-                <label htmlFor="filter-budget" className="block text-[11px] font-bold text-slate-600 mb-1 dark:text-slate-400">Budget Tier</label>
-                <select
-                  id="filter-budget"
-                  value={selectedBracket}
-                  onChange={(e) => setSelectedBracket(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                >
-                  <option value="ALL">All Price Tiers</option>
-                  <option value="ECONOMY">Economy (Under {sym}1,400/sq.ft.)</option>
-                  <option value="MID_RANGE">Standard ({sym}1,400 - {sym}2,200/sq.ft.)</option>
-                  <option value="PREMIUM">Premium ({sym}2,200 - {sym}3,500/sq.ft.)</option>
-                  <option value="LUXURY">Ultra Luxury ({sym}3,500+/sq.ft.)</option>
-                </select>
-              </div>
-
-              {/* Verified Pro Only Toggle & Reset */}
-              <div className="flex items-end gap-2">
+          {/* City quick picks */}
+          <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+            {[{ label: "All cities", value: "" }, ...INTERIOR_CITIES.slice(0, 10).map((c) => ({ label: c, value: c }))].map((c) => {
+              const active = selectedCity.toLowerCase() === c.value.toLowerCase();
+              return (
                 <button
+                  key={c.label}
                   type="button"
-                  onClick={() => setIsVerifiedOnly(!isVerifiedOnly)}
-                  className={`flex-1 rounded-xl border py-2 px-3 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition ${
-                    isVerifiedOnly
-                      ? "border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-                      : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                  onClick={() => pickCity(c.value)}
+                  className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                    active
+                      ? "bg-rose-600 text-white"
+                      : "border border-slate-200 bg-white text-slate-700 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
                   }`}
                 >
-                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                  <span>Verified Only</span>
+                  {c.label}
                 </button>
+              );
+            })}
+          </div>
 
-                {activeFiltersCount > 0 && (
+          {/* All filters in one panel (desktop and mobile) */}
+          {mobileFilterOpen && (
+            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="min-w-0">
+                  <span className={labelCls}>Designer type</span>
+                  <div className="grid h-11 grid-cols-3 rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800">
+                    {(
+                      [
+                        ["ALL", "All"],
+                        ["COMPANY", "Studios"],
+                        ["INDIVIDUAL", "Independent"],
+                      ] as const
+                    ).map(([v, l]) => (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => setProviderType(v)}
+                        className={`rounded-lg text-xs font-bold transition ${
+                          providerType === v
+                            ? "bg-white text-slate-900 shadow-2xs dark:bg-slate-900 dark:text-white"
+                            : "text-slate-600 dark:text-slate-400"
+                        }`}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {selectedCity && (
+                  <div className="min-w-0">
+                    <span className={labelCls}>Locality</span>
+                    <PropertyListingLocalitySelector
+                      value={selectedLocality === "ALL" ? "" : selectedLocality}
+                      cityName={selectedCity}
+                      selectedState={selectedState}
+                      onChange={(l: LocalitySelection) => setSelectedLocality(l.name || "ALL")}
+                      placeholder={`Any area in ${selectedCity}`}
+                    />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <label htmlFor="filter-service" className={labelCls}>Service</label>
+                  <select id="filter-service" value={selectedService} onChange={(e) => setSelectedService(e.target.value)} className={selectCls}>
+                    <option value="ALL">Any service</option>
+                    {SERVICES_OFFERED.map((svc) => (
+                      <option key={svc} value={svc}>{svc}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="min-w-0">
+                  <label htmlFor="filter-budget" className={labelCls}>Budget</label>
+                  <select id="filter-budget" value={selectedBracket} onChange={(e) => setSelectedBracket(e.target.value)} className={selectCls}>
+                    <option value="ALL">Any budget</option>
+                    <option value="ECONOMY">Economy (under {sym}1,400/sq.ft.)</option>
+                    <option value="MID_RANGE">Standard ({sym}1,400–2,200/sq.ft.)</option>
+                    <option value="PREMIUM">Premium ({sym}2,200–3,500/sq.ft.)</option>
+                    <option value="LUXURY">Luxury ({sym}3,500+/sq.ft.)</option>
+                  </select>
+                </div>
+                <div className="min-w-0">
+                  <label htmlFor="filter-style" className={labelCls}>Design style</label>
+                  <select id="filter-style" value={selectedStyle} onChange={(e) => setSelectedStyle(e.target.value)} className={selectCls}>
+                    <option value="ALL">Any style</option>
+                    {DESIGN_STYLES.map((st) => (
+                      <option key={st} value={st}>{st}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex min-w-0 items-end">
                   <button
                     type="button"
-                    onClick={handleResetFilters}
-                    className="rounded-xl border border-slate-200 bg-slate-100 p-2 text-slate-600 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                    title="Reset all filters"
-                    aria-label="Reset all filters"
+                    onClick={() => setIsVerifiedOnly(!isVerifiedOnly)}
+                    aria-pressed={isVerifiedOnly}
+                    className={`inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border text-sm font-bold transition ${
+                      isVerifiedOnly
+                        ? "border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                        : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                    }`}
                   >
-                    <RotateCcw className="h-4 w-4" />
+                    <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                    Verified only
+                  </button>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center justify-end gap-2">
+                {activeChips.length > 0 && (
+                  <button type="button" onClick={handleResetFilters} className="inline-flex h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+                    <RotateCcw className="h-4 w-4" /> Clear all
                   </button>
                 )}
+                <button type="button" onClick={() => setMobileFilterOpen(false)} className="h-10 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white hover:bg-rose-700">
+                  Show {filteredDesigners.length} {filteredDesigners.length === 1 ? "result" : "results"}
+                </button>
               </div>
             </div>
-          </div>
+          )}
         </div>
+      </section>
 
-        {/* Directory Bar: Count + View Selector */}
-        <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-200/80 pb-4 dark:border-slate-800">
-          <div>
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-              {filteredDesigners.length}{" "}
-              {filteredDesigners.length === 1 ? "Interior Designer" : "Interior Designers & Studios"}{" "}
-              available in {selectedLocality !== "ALL" ? `${selectedLocality}, ` : ""}{selectedCity}
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              100% genuine completed projects with verified hardware & 10-year warranty compliance
-            </p>
+      <main className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+        {/* Active filters */}
+        {activeChips.length > 0 && (
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            {activeChips.map((c) => (
+              <button
+                key={c.label}
+                type="button"
+                onClick={c.clear}
+                className="inline-flex max-w-full items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
+              >
+                <span className="truncate">{c.label}</span>
+                <X className="h-3.5 w-3.5 shrink-0" aria-label={`Remove ${c.label}`} />
+              </button>
+            ))}
+            <button type="button" onClick={handleResetFilters} className="text-xs font-semibold text-slate-500 underline-offset-2 hover:underline">
+              Clear all
+            </button>
           </div>
+        )}
 
-          {/* Dual View Toggle */}
-          <div className="inline-flex rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800 shrink-0 self-start sm:self-auto">
-            <button
-              type="button"
-              onClick={() => setViewTab("DIRECTORY")}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                viewTab === "DIRECTORY"
-                  ? "bg-white text-slate-900 shadow-2xs dark:bg-slate-900 dark:text-white"
-                  : "text-slate-600 dark:text-slate-400"
-              }`}
-            >
-              Studios Directory ({filteredDesigners.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewTab("INSPIRATION")}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                viewTab === "INSPIRATION"
-                  ? "bg-white text-slate-900 shadow-2xs dark:bg-slate-900 dark:text-white"
-                  : "text-slate-600 dark:text-slate-400"
-              }`}
-            >
-              Inspiration Photos ({allProjects.length})
-            </button>
+        {/* Count + view */}
+        <div className="flex items-center justify-between gap-3">
+          <p className="min-w-0 text-sm font-semibold text-slate-700 dark:text-slate-300">
+            {isLoading ? "Loading…" : `${filteredDesigners.length} ${filteredDesigners.length === 1 ? "designer" : "designers"}`}
+          </p>
+          <div className="inline-flex shrink-0 rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800">
+            {(
+              [
+                ["DIRECTORY", "Designers"],
+                ["INSPIRATION", `Photos (${allProjects.length})`],
+              ] as const
+            ).map(([v, l]) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setViewTab(v)}
+                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                  viewTab === v ? "bg-white text-slate-900 shadow-2xs dark:bg-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-400"
+                }`}
+              >
+                {l}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="mt-6">
+        <div className="mt-4">
           {isLoading ? (
             <DesignerGridSkeleton />
           ) : viewTab === "DIRECTORY" ? (
@@ -533,18 +446,21 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
               <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-800 dark:bg-slate-900/50">
                 <Building2 className="mx-auto h-12 w-12 text-slate-400" />
                 <h3 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">
-                  No interior designers found with these exact filters
+                  No designers found{selectedCity ? ` in ${where}` : ""} yet
                 </h3>
                 <p className="mt-1 text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
-                  Try clearing the locality or brand filter, or choose a different city to see vetted professionals.
+                  Try removing a filter or pick &quot;All cities&quot; to see every designer.
                 </p>
                 <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
                   <button
                     type="button"
-                    onClick={handleResetFilters}
+                    onClick={() => {
+                      handleResetFilters();
+                      pickCity("");
+                    }}
                     className="rounded-xl border border-slate-300 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
                   >
-                    Clear All Filters
+                    Show all designers
                   </button>
                   <Link
                     href="/dashboard/interior-profile"
@@ -601,7 +517,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, cityFr
                       <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
                         <span className="font-semibold truncate max-w-[150px]">By {project.designerName}</span>
                         <Link
-                          href={`/interior-designers/${encodeURIComponent(project.designerCity.toLowerCase())}/${project.designerSlug}`}
+                          href={interiorProfilePath({ primaryCity: project.designerCity, slug: project.designerSlug })}
                           className="font-bold text-rose-600 hover:underline dark:text-rose-400 shrink-0"
                         >
                           View Studio &rarr;

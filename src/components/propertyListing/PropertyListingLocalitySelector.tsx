@@ -338,16 +338,16 @@ export function PropertyListingLocalitySelector({
     : placeholder || `Select Locality in ${cityName}`;
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className="relative min-w-0" ref={containerRef}>
       {/* Multi-selection badges display */}
       {multiple && selectedList.length > 0 && (
         <div className="flex flex-wrap items-center gap-1.5 pb-2">
           {selectedList.map((loc, idx) => (
             <span
               key={loc}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 text-xs font-semibold border border-rose-200/70 dark:border-rose-900/50 shadow-2xs transition-all animate-in fade-in"
+              className="inline-flex max-w-full min-w-0 items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 text-xs font-semibold border border-rose-200/70 dark:border-rose-900/50 shadow-2xs transition-all animate-in fade-in"
             >
-              <span>{loc}</span>
+              <span className="min-w-0 truncate">{loc}</span>
               {idx === 0 && (
                 <span className="text-[9px] uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded bg-rose-200/80 text-rose-800 dark:bg-rose-900 dark:text-rose-200">
                   Primary
@@ -527,7 +527,7 @@ export function PropertyListingLocalitySelector({
                     : "hover:bg-slate-50 text-slate-800 dark:text-slate-200 dark:hover:bg-slate-800/80"
                 }`}
               >
-                <div className="flex min-w-0 items-center gap-2.5">
+                <div className="flex min-w-0 flex-1 items-center gap-2.5">
                   <MapPin
                     className={`h-3.5 w-3.5 shrink-0 transition-colors ${
                       isSelected

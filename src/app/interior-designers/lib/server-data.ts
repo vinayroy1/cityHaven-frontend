@@ -25,9 +25,11 @@ export const fetchInteriorProfile = cache((slug: string) =>
   getJson<InteriorProfile>(API_ENDPOINTS.interiors.detail(encodeURIComponent(slug))),
 );
 
-/** First page of the directory for a city (the default, unfiltered view). */
+/** First page of the directory for a city, or all of India when city is "" (the default view). */
 export const fetchInteriorDirectory = cache((city: string) =>
   getJson<InteriorSearchResponse>(
-    `${API_ENDPOINTS.interiors.search}?city=${encodeURIComponent(city)}&limit=30`,
+    city
+      ? `${API_ENDPOINTS.interiors.search}?city=${encodeURIComponent(city)}&limit=30`
+      : `${API_ENDPOINTS.interiors.search}?countryCode=IN&limit=30`,
   ),
 );

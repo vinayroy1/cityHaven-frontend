@@ -125,7 +125,7 @@ const Field = ({
   children: React.ReactNode;
   error?: string;
 }) => (
-  <div className="space-y-1.5">
+  <div className="min-w-0 space-y-1.5">
     <label className={fieldLabel}>
       {label}
       {required && <span className="ml-0.5 text-rose-500">*</span>}
