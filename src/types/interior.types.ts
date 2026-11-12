@@ -212,6 +212,8 @@ export interface InteriorProfile {
   specializations: string[];
   logo?: string | null;
   coverBanner?: string | null;
+  /** Showcase photos on the profile itself (no project needed). */
+  workGallery?: string[];
   tagline?: string | null;
   about: string;
   yearEstablished?: number | null;
@@ -724,6 +726,7 @@ export interface InteriorWizardValues {
   };
   portfolio: {
     projects: InteriorProjectDraft[];
+    workGallery: string[];
   };
   team: {
     qualification: string;

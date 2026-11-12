@@ -297,6 +297,42 @@ function ProjectDetailDialog({ project, onClose }: { project: InteriorProject | 
 }
 
 /* -------------------------------------------------------------------------- */
+/*                         Work gallery (no project)                          */
+/* -------------------------------------------------------------------------- */
+
+export function WorkGallery({ images, title }: { images: string[]; title: string }) {
+  const [index, setIndex] = useState<number | null>(null);
+  return (
+    <>
+      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {images.map((src, i) => (
+          <li key={`${src}-${i}`}>
+            <button
+              type="button"
+              onClick={() => setIndex(i)}
+              aria-label={`Open photo ${i + 1} of ${images.length}`}
+              className="group relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:bg-slate-800"
+            >
+              <Image
+                src={src}
+                alt={`${title} – work photo ${i + 1}`}
+                fill
+                sizes="(min-width: 1024px) 240px, (min-width: 640px) 30vw, 45vw"
+                unoptimized={!isOptimizableImage(src)}
+                className="object-cover transition duration-500 group-hover:scale-105"
+              />
+            </button>
+          </li>
+        ))}
+      </ul>
+      {index != null && (
+        <Lightbox images={images} index={index} title={title} onIndex={setIndex} onClose={() => setIndex(null)} />
+      )}
+    </>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /*                                  Lightbox                                  */
 /* -------------------------------------------------------------------------- */
 

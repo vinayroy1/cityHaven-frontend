@@ -129,10 +129,12 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
   {
     id: "portfolio",
     stepId: "portfolio",
-    label: `Add a portfolio project with at least ${MIN_PROJECT_IMAGES} photos`,
+    label: `Add a portfolio project or ${MIN_PROJECT_IMAGES}+ work gallery photos`,
     levels: ["PUBLISH"],
     fieldPath: "portfolio.projects",
-    check: (v) => v.portfolio.projects.some((p) => projectImageCount(p) >= MIN_PROJECT_IMAGES),
+    check: (v) =>
+      (v.portfolio.workGallery ?? []).length >= MIN_PROJECT_IMAGES ||
+      v.portfolio.projects.some((p) => projectImageCount(p) >= MIN_PROJECT_IMAGES),
   },
   {
     id: "idDocument",

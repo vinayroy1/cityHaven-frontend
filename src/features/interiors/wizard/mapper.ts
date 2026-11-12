@@ -204,7 +204,7 @@ export function formToProfilePayload(section: InteriorWizardSection, values: Int
       return asPayload(out);
     }
     case "portfolio":
-      return {};
+      return asPayload({ workGallery: values.portfolio.workGallery ?? [] });
     case "team": {
       const t = values.team;
       return asPayload({
@@ -605,7 +605,7 @@ export function profileToForm(profile: Partial<InteriorProfile> | null | undefin
     branchOverrides: arr(p.branchPricingOverrides).map((o) => ({ ...o })),
   };
 
-  v.portfolio = { projects: arr(p.projects).map(projectToDraft) };
+  v.portfolio = { projects: arr(p.projects).map(projectToDraft), workGallery: arr(p.workGallery) };
 
   v.team = {
     qualification: str(p.qualification ?? p.designQualifications),

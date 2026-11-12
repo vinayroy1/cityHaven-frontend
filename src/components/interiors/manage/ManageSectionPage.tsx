@@ -9,7 +9,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Info, Loader2 } from "lucide-react";
 import { ManageSectionSkeleton } from "@/components/interiors/skeletons";
-import { SectionRenderer } from "@/components/listingEngine";
+import { PresignUploadProvider, SectionRenderer } from "@/components/listingEngine";
 import { useAutosave } from "@/lib/listingEngine/useAutosave";
 import { interiorCustomComponents } from "@/components/interiors/wizard";
 import { usePatchMyInteriorSectionMutation } from "@/features/interiors/api";
@@ -70,8 +70,10 @@ export function ManageSectionPage({ section }: { section: InteriorWizardSection 
 
   const sections = (step.sections ?? []).filter((s) => evaluateCondition(values, s.visibleWhen, interiorPredicates));
 
+  // Upload fields (logo, cover, work gallery) need an uploader; the wizard shell provides one, this page must too.
   return (
-    <div className="space-y-4">
+    <PresignUploadProvider>
+      <div className="space-y-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">{step.title ?? step.label}</h2>
@@ -115,6 +117,7 @@ export function ManageSectionPage({ section }: { section: InteriorWizardSection 
           </section>
         );
       })}
-    </div>
+      </div>
+    </PresignUploadProvider>
   );
 }

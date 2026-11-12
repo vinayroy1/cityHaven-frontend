@@ -8,7 +8,7 @@ import { useGetInteriorProfileDetailQuery } from "@/features/interiors/api";
 import { DesignerProfileSkeleton } from "@/components/interiors/skeletons";
 import type { InteriorProfile } from "@/types/interior.types";
 import { ProfileBreadcrumbBar } from "../../components/profile/ProfileBreadcrumbBar";
-import { PortfolioGrid } from "../../components/profile/Portfolio";
+import { PortfolioGrid, WorkGallery } from "../../components/profile/Portfolio";
 import {
   EnquiryCard,
   MobileCtaBar,
@@ -62,6 +62,7 @@ export function ProfilePageClient({ slug, citySlug, initialProfile }: ProfilePag
   const error = initialProfile ? undefined : query.error;
 
   const materials = useMemo(() => (profile ? materialGroups(profile) : []), [profile]);
+  const gallery = profile?.workGallery ?? [];
   const projects = useMemo(
     () =>
       (profile?.projects ?? [])
@@ -144,7 +145,7 @@ export function ProfilePageClient({ slug, citySlug, initialProfile }: ProfilePag
           <Section
             id="portfolio"
             title="Portfolio"
-            subtitle={projects.length ? `Completed homes by ${name}` : undefined}
+            subtitle={projects.length || gallery.length ? `Completed homes by ${name}` : undefined}
             action={
               projects.length > 0 ? (
                 <span className="rounded-full bg-stone-100 px-3 py-1 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
@@ -153,9 +154,14 @@ export function ProfilePageClient({ slug, citySlug, initialProfile }: ProfilePag
               ) : undefined
             }
           >
-            {projects.length > 0 ? (
-              <PortfolioGrid projects={projects} />
-            ) : (
+            {projects.length > 0 && <PortfolioGrid projects={projects} />}
+            {gallery.length > 0 && (
+              <div className={projects.length ? "mt-6" : undefined}>
+                {projects.length > 0 && <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">More of our work</h3>}
+                <WorkGallery images={gallery} title={name} />
+              </div>
+            )}
+            {projects.length === 0 && gallery.length === 0 && (
               <div className="rounded-2xl border border-dashed border-stone-300 p-8 text-center dark:border-slate-700">
                 <ImageIcon className="mx-auto h-8 w-8 text-stone-300" aria-hidden />
                 <p className="mt-2 font-semibold text-slate-900 dark:text-white">Portfolio coming soon</p>

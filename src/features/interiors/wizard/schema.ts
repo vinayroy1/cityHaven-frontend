@@ -172,6 +172,7 @@ export const portfolioSchema = z.object({
       description: optText(2000, "Description").optional(),
     }),
   ),
+  workGallery: z.array(z.string()).max(40, "Up to 40 gallery photos").optional(),
 });
 
 export const teamSchema = z.object({

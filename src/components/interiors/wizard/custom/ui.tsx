@@ -399,12 +399,18 @@ export function ImagesUpload({
   const list = value ?? [];
   const addFiles = async (all: File[]) => {
     const files = all.filter((f) => f.type.startsWith("image/")).slice(0, Math.max(0, max - list.length));
-    const urls: string[] = [];
-    for (const f of files) {
-      const u = await upload(f);
-      if (u) urls.push(u);
-    }
-    if (urls.length) onChange([...list, ...urls]);
+    // 3 uploads at a time, kept in the order the files were picked
+    const urls: (string | null)[] = new Array(files.length).fill(null);
+    let next = 0;
+    const worker = async () => {
+      while (next < files.length) {
+        const i = next++;
+        urls[i] = await upload(files[i]);
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(3, files.length) }, worker));
+    const ok = urls.filter((u): u is string => !!u);
+    if (ok.length) onChange([...list, ...ok]);
   };
   return (
     <div

@@ -2,12 +2,23 @@
 
 import { useCallback } from "react";
 import { useGetPresignedUploadUrlMutation } from "@/features/propertyListing/api";
+import { compressImage } from "@/lib/utils/imageCompression";
 import { useGetMyInteriorProfileQuery, usePresignInteriorDocumentMutation } from "./api";
 
 /** `profile | cover | projects/<id>` — public media only. ID documents use `usePrivateInteriorDocUpload`. */
 export type InteriorUploadSubFolder = "profile" | "cover" | `projects/${string}`;
 
 export const MAX_INTERIOR_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+/** Phone / camera photos are often 10-25 MB; shrink them in the browser (2560 px, WebP) before the size check. */
+async function shrinkPhoto(file: File): Promise<File> {
+  if (!/^image\/(jpe?g|png|webp|heic|heif|avif)$/i.test(file.type)) return file;
+  try {
+    return await compressImage(file, { maxDimension: 2560, quality: 0.85 });
+  } catch {
+    return file; // browser can't decode it (e.g. HEIC on Chrome): fall back to the original
+  }
+}
 
 /**
  * Presign + PUT upload for interiors media. Returns the public URL.
@@ -19,9 +30,10 @@ export function useInteriorUpload(): (file: File, subFolder: InteriorUploadSubFo
   const profileId = profile?.id;
 
   return useCallback(
-    async (file: File, subFolder: InteriorUploadSubFolder) => {
+    async (original: File, subFolder: InteriorUploadSubFolder) => {
+      const file = await shrinkPhoto(original);
       if (file.size > MAX_INTERIOR_UPLOAD_BYTES) {
-        throw new Error("File is larger than 10 MB. Please choose a smaller file.");
+        throw new Error(`${original.name} is larger than 10 MB and couldn't be shrunk. Please choose a JPG or PNG photo.`);
       }
       const presigned = await getPresignedUploadUrl({
         fileName: file.name,

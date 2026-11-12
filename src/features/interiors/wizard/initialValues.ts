@@ -74,7 +74,7 @@ export const createInteriorInitialValues = (): InteriorWizardValues => ({
     consultationOptions: [],
     branchOverrides: [],
   },
-  portfolio: { projects: [] },
+  portfolio: { projects: [], workGallery: [] },
   team: {
     qualification: "",
     institute: "",

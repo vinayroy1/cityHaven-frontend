@@ -72,7 +72,7 @@ describe("interior mapper", () => {
       const keys = Object.keys(formToProfilePayload(s, v));
       for (const f of forbidden) expect(keys).not.toContain(f);
     }
-    expect(formToProfilePayload("portfolio", v)).toEqual({});
+    expect(formToProfilePayload("portfolio", v)).toEqual({ workGallery: [] });
   });
 
   it("hydrates legacy-only profiles", () => {

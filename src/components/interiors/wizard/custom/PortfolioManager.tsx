@@ -344,6 +344,17 @@ function ProjectEditor({
             <Chip key={r.value} active={rooms.some((g) => g.room === r.value)} onClick={() => toggleRoom(r.value)}>{r.label}</Chip>
           ))}
         </div>
+        {rooms.length === 0 && (
+          // Quickest path: select all photos at once; they go under "Other" and can be split by room later.
+          <ImagesUpload
+            label="Project photos"
+            subFolder={folder}
+            value={[]}
+            max={30}
+            onChange={(images) => set("roomGalleries", [{ room: "OTHER", images }])}
+          />
+        )}
+        {rooms.length === 0 && <p className="text-xs text-slate-500">Select many photos at once, or tap a room above to group them by room.</p>}
         {rooms.map((g) => (
           <Field key={g.room} label={ROOM_TYPES.find((r) => r.value === g.room)?.label ?? g.room}>
             {() => (

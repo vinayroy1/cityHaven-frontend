@@ -7,7 +7,7 @@ export const portfolioStep: StepConfig = {
   title: "Show your best work",
   caption: "Show your work · Portfolio",
   phase: "Show your work",
-  description: "Projects with room-wise photos convert best. You can submit without one, but need one to publish.",
+  description: "Add projects with room-wise photos, or just upload photos of your work to the gallery. You need one of the two to publish.",
   icon: "images",
   kind: "config",
   visibleWhen: preset("hasProviderType"),
@@ -22,6 +22,20 @@ export const portfolioStep: StepConfig = {
       scorePaths: ["portfolio.projects"],
       weight: 8,
       fields: [],
+    },
+    {
+      id: "gallery",
+      title: "Work gallery",
+      description: "No project details needed: select many photos of your work at once. 3 or more photos can stand in for a project.",
+      fields: [
+        {
+          id: "portfolio.workGallery",
+          label: "Photos of your work",
+          type: "gallery",
+          maxItems: 40,
+          meta: { category: "interiors", subFolder: "gallery", maxItems: 40 },
+        },
+      ],
     },
   ],
 };
