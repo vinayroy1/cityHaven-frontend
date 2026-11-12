@@ -74,7 +74,7 @@ export function InteriorPhotoCarousel({
   );
 }
 
-/** Hero first, then every project cover + gallery image, then the banner; de-duplicated. */
+/** Hero (featured project cover) first, then the cover banner, the work gallery, then project photos; de-duplicated. */
 export function interiorCardPhotos(profile: {
   coverBanner?: string | null;
   workGallery?: string[] | null;
@@ -88,7 +88,7 @@ export function interiorCardPhotos(profile: {
     null;
   return Array.from(
     new Set(
-      [hero, ...projects.flatMap((p) => [p.coverImage, ...(p.images || [])]), ...(profile.workGallery || []), profile.coverBanner].filter(
+      [hero, profile.coverBanner, ...(profile.workGallery || []), ...projects.flatMap((p) => [p.coverImage, ...(p.images || [])])].filter(
         (s): s is string => Boolean(s),
       ),
     ),

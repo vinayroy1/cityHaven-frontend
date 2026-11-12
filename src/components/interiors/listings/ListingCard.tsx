@@ -6,6 +6,7 @@ import { StatusBadge, effectiveStatus } from "@/components/interiors/manage/Stat
 import { InteriorListingStatus, type InteriorProfile } from "@/types/interior.types";
 import { cn } from "@/components/ui/utils";
 import { ListingBoostButton } from "./ListingBoostButton";
+import { InteriorPhotoCarousel, interiorCardPhotos } from "@/components/interiors/InteriorPhotoCarousel";
 
 const TOTAL_STEPS = 9;
 
@@ -51,11 +52,8 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
   const publicUrl = `/interior-designers/${encodeURIComponent(item.primaryCity?.toLowerCase() || "india")}/${item.slug}`;
   // Tapping the card opens the profile page (a private preview until it's live); drafts continue setup.
   const viewHref = isDraft || !item.slug ? target : publicUrl;
-  const cover =
-    item.coverBanner ||
-    item.workGallery?.[0] ||
-    item.projects?.find((p) => p.coverImage)?.coverImage ||
-    null;
+  // Cover banner + work gallery (+ project photos), swipeable like the public cards.
+  const photos = interiorCardPhotos(item);
   const boostedUntil = item.boostedUntil && new Date(item.boostedUntil) > new Date() ? new Date(item.boostedUntil) : null;
   const canBoost = item.status === InteriorListingStatus.PUBLISHED;
 
@@ -63,12 +61,17 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
     <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition hover:border-rose-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-rose-900/60">
       {/* Cover */}
       <Link href={viewHref} tabIndex={-1} aria-hidden className="relative block aspect-[16/9] w-full sm:aspect-auto sm:h-40">
-        {cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={cover} alt="" className="h-full w-full object-cover" loading="lazy" />
-        ) : (
-          <div className="h-full w-full bg-gradient-to-br from-rose-100 via-rose-50 to-amber-50 dark:from-rose-950/60 dark:via-slate-900 dark:to-amber-950/30" />
-        )}
+        <InteriorPhotoCarousel
+          photos={photos}
+          alt={name}
+          renderImage={(src) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={src} alt="" draggable={false} className="pointer-events-none h-full w-full object-cover" loading="lazy" />
+          )}
+          fallback={
+            <div className="h-full w-full bg-gradient-to-br from-rose-100 via-rose-50 to-amber-50 dark:from-rose-950/60 dark:via-slate-900 dark:to-amber-950/30" />
+          }
+        />
         <div className="absolute right-3 top-3">
           <StatusBadge profile={item} className="shadow-xs ring-1 ring-white/60 dark:ring-slate-900/60" />
         </div>
