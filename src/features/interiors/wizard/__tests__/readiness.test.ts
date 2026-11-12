@@ -25,7 +25,6 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
   const cases: Case[] = [
     ["providerType", ["SUBMIT", "PUBLISH"], (v) => void (v.identity.providerType = "")],
     ["name", ["SUBMIT", "PUBLISH"], (v) => void (kind === "COMPANY" ? (v.identity.businessName = "") : (v.identity.displayName = " "))],
-    ["about", ["PUBLISH"], (v) => void (v.identity.about = "short")],
     ["logo", ["PUBLISH"], (v) => void (v.identity.logo = "")],
     ["primaryLocation", ["SUBMIT", "PUBLISH"], (v) => void (v.location.primaryLocality = "")],
     ["services", ["SUBMIT", "PUBLISH"], (v) => void (v.services.servicesOffered = [])],

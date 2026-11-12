@@ -40,14 +40,7 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     fieldPath: "identity.displayName",
     check: (v) => (isCompany(v) ? filled(v.identity.businessName) : filled(v.identity.displayName) && filled(v.identity.fullName)),
   },
-  {
-    id: "about",
-    stepId: "identity",
-    label: `Write an "About" of at least ${MIN_ABOUT_CHARS} characters`,
-    levels: ["PUBLISH"],
-    fieldPath: "identity.about",
-    check: (v) => v.identity.about.trim().length >= MIN_ABOUT_CHARS,
-  },
+  // About is optional: when left empty the server writes one from the owner's details.
   {
     id: "logo",
     stepId: "identity",
