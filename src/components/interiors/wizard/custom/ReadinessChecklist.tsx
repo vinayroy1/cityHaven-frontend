@@ -7,7 +7,7 @@ import { computeReadiness } from "@/lib/listingEngine/readiness";
 import { interiorReadinessRules } from "@/features/interiors/wizard/readiness";
 import { cn } from "@/lib/utils";
 
-/** Required (red, blocks submit) vs Recommended (amber, needed to go live / adds visibility). */
+/** Required (red, blocks submit) vs needed to go live (amber, blocks publishing). */
 export default function ReadinessChecklist({ values, readiness, goToStep }: CustomStepProps<InteriorWizardValues>) {
   const report = readiness ?? computeReadiness(interiorReadinessRules, values);
   const required = report.items.filter((i) => i.level === "SUBMIT");
@@ -31,7 +31,7 @@ export default function ReadinessChecklist({ values, readiness, goToStep }: Cust
         ) : tone === "red" ? (
           <CircleAlert className="size-4 shrink-0 text-rose-600" aria-label="Required" />
         ) : (
-          <CircleDot className="size-4 shrink-0 text-amber-600" aria-label="Recommended" />
+          <CircleDot className="size-4 shrink-0 text-amber-600" aria-label="Needed to go live" />
         )}
         <span className={cn("flex-1", i.done && "line-through decoration-slate-300")}>{i.label}</span>
         {!i.done && goToStep && <ArrowRight className="size-4 shrink-0" aria-hidden />}
@@ -63,7 +63,7 @@ export default function ReadinessChecklist({ values, readiness, goToStep }: Cust
       </section>
       {recommended.length > 0 && (
         <section>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-amber-700">Recommended · adds visibility · {recommended.length - recLeft}/{recommended.length}</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-amber-700">Needed to go live · {recommended.length - recLeft}/{recommended.length}</p>
           <ul className="space-y-1.5">{recommended.map((i) => <Item key={`${i.id}-p`} i={i} tone="amber" />)}</ul>
         </section>
       )}

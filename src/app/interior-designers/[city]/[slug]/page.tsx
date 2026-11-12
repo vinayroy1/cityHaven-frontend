@@ -5,13 +5,13 @@ import { fetchInteriorProfile } from "../../lib/server-data";
 import { breadcrumbJsonLd, cityLabel } from "../../lib/breadcrumbs";
 import { profileName } from "../../components/profile/utils";
 import { ProfilePageClient } from "./ProfilePageClient";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
 export const revalidate = 60;
 
 type Params = Promise<{ city: string; slug: string }>;
 
-const profilePath = (p: InteriorProfile, citySlug: string) =>
-  `/interior-designers/${encodeURIComponent((p.primaryCity || citySlug).toLowerCase())}/${p.slug}`;
+const profilePath = (p: InteriorProfile, citySlug: string) => interiorProfilePath({ primaryCity: p.primaryCity || citySlug, slug: p.slug });
 
 function clip(text: string, max = 158) {
   const clean = text.replace(/\s+/g, " ").trim();

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
 import { formatMoney } from "@/lib/money";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
 interface InteriorCardProps {
   profile: InteriorProfile;
@@ -35,7 +36,7 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
     .slice(0, 2)
     .toUpperCase();
   const isCompany = profile.providerType === "COMPANY";
-  const profileUrl = `/interior-designers/${encodeURIComponent(profile.primaryCity.toLowerCase())}/${profile.slug}`;
+  const profileUrl = interiorProfilePath(profile);
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition duration-200 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">

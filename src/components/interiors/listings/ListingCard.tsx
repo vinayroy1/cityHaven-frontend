@@ -7,6 +7,7 @@ import { InteriorListingStatus, type InteriorProfile } from "@/types/interior.ty
 import { cn } from "@/components/ui/utils";
 import { ListingBoostButton } from "./ListingBoostButton";
 import { InteriorPhotoCarousel, interiorCardPhotos } from "@/components/interiors/InteriorPhotoCarousel";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
 const TOTAL_STEPS = 9;
 
@@ -49,7 +50,7 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
   const target = isDraft
     ? `/dashboard/interior-profile/setup?profileId=${item.id}`
     : `/dashboard/interior-profile/manage?profileId=${item.id}`;
-  const publicUrl = `/interior-designers/${encodeURIComponent(item.primaryCity?.toLowerCase() || "india")}/${item.slug}`;
+  const publicUrl = interiorProfilePath(item);
   // Tapping the card opens the profile page (a private preview until it's live); drafts continue setup.
   const viewHref = isDraft || !item.slug ? target : publicUrl;
   // Cover banner + work gallery (+ project photos), swipeable like the public cards.

@@ -4,9 +4,10 @@ import { sizedImageUrl } from "../lib/homeImage";
 import { ArrowRight, BadgeCheck, MapPin, Palette, Star } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
 import { InteriorPhotoCarousel, interiorCardPhotos, MAX_CARD_PHOTOS } from "@/components/interiors/InteriorPhotoCarousel";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
 export function interiorProfileHref(profile: InteriorProfile) {
-  return `/interior-designers/${encodeURIComponent((profile.primaryCity || "india").toLowerCase())}/${profile.slug}`;
+  return interiorProfilePath(profile);
 }
 
 function initialsOf(name: string) {

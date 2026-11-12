@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { CheckCircle2, Circle, ExternalLink, FileText, Loader2, Mail, Phone, RefreshCw, User } from "lucide-react";
 import { adminApi, type AdminInteriorItem } from "@/features/admin/api";
 import { cn } from "@/lib/utils";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
 const QUEUES = [
   { id: "pending", label: "Waiting for review" },
@@ -126,7 +127,7 @@ function InteriorDetail({ p, onDone }: { p: AdminInteriorItem; onDone: () => voi
   const missing = (p.readiness?.items ?? []).filter((i) => !i.done);
   const contact = p.contact;
   const gallery = p.workGallery ?? [];
-  const publicUrl = p.slug && p.primaryCity ? `/interior-designers/${encodeURIComponent(p.primaryCity.toLowerCase())}/${p.slug}` : null;
+  const publicUrl = p.slug && p.primaryCity ? interiorProfilePath(p) : null;
 
   const decide = async (decision: "APPROVE" | "REQUEST_CHANGES" | "REJECT") => {
     if (decision !== "APPROVE" && !notes.trim()) return toast.error("Write a note for the owner first.");
@@ -134,7 +135,15 @@ function InteriorDetail({ p, onDone }: { p: AdminInteriorItem; onDone: () => voi
     try {
       const res = (await adminApi.reviewInterior(p.id, decision, notes)) as { status?: string; statusReason?: string | null };
       if (decision === "APPROVE") {
-        toast.success(res?.status === "PUBLISHED" ? "Approved and live." : res?.statusReason === "PAYMENT_DUE" ? "Approved. Goes live once the owner pays the monthly fee." : "Approved.");
+        toast.success(
+          res?.status === "PUBLISHED"
+            ? "Approved and live."
+            : res?.statusReason === "PAYMENT_DUE"
+              ? "Approved. Goes live once the owner pays the monthly fee."
+              : res?.status === "CHANGES_REQUESTED"
+                ? "Approved. Sent back to the owner with the items left to go live."
+                : "Approved.",
+        );
       } else toast.success(decision === "REJECT" ? "Rejected." : "Changes requested. The owner will see your note.");
       onDone();
     } catch (e) {

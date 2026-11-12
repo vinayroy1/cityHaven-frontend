@@ -14,6 +14,7 @@ import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 import { SITEMAP_CLUSTERS, type SitemapCluster } from "@/constants/sitemapClusters";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
 const CITY_CANONICAL_MAP: Record<string, string> = {
   delhi: "new-delhi",
@@ -379,7 +380,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const interiorRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/interior-designers`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     ...interiors.filter((r) => r.slug && r.primaryCity).map((r) => ({
-      url: `${SITE_URL}/interior-designers/${encodeURIComponent(r.primaryCity!.toLowerCase())}/${r.slug}`,
+      url: `${SITE_URL}${interiorProfilePath(r)}`,
       lastModified: lastMod(r),
       changeFrequency: "weekly" as const,
       priority: 0.75,

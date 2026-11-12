@@ -46,6 +46,7 @@ import { FlatmateListingWizard } from "@/components/flatmates/FlatmateListingWiz
 import { InteriorWizard } from "@/components/interiors/wizard";
 import { LeadIntakeSummary } from "@/features/admin/leadIntake";
 import { AdvisorProfileEditor } from "@/app/dashboard/advisor-profile/AdvisorProfileEditor";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
 type ListingType = "PROPERTY" | "STAY" | "FLATMATE" | "INTERIOR" | "ADVISOR";
 const TYPES: Array<{ id: ListingType; label: string; icon: typeof Building2; hint: string }> = [
@@ -188,7 +189,7 @@ function CreateListingHub() {
       if (listingType === "INTERIOR") {
         const p = await apiFetch<{ slug?: string; primaryCity?: string; displayName?: string; businessName?: string }>({ url: API_ENDPOINTS.interiors.me });
         if (!p?.slug || !p?.primaryCity) throw new Error("Save the interior profile first.");
-        await finish(listingType, p.displayName || p.businessName || "Interior designer profile", `/interior-designers/${encodeURIComponent(p.primaryCity.toLowerCase())}/${p.slug}`);
+        await finish(listingType, p.displayName || p.businessName || "Interior designer profile", interiorProfilePath(p));
       } else {
         const p = await apiFetch<{ slug?: string; id?: number; name?: string }>({ url: API_ENDPOINTS.advisors.me });
         if (!p?.slug && !p?.id) throw new Error("Save the advisor profile first.");
