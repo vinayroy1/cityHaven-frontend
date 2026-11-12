@@ -10,6 +10,7 @@ import { InteriorListingStatus } from "@/types/interior.types";
 import { MANAGE_SECTIONS, manageHref, type ManageSectionId } from "./sections";
 import { useManageListing } from "./useManageListing";
 import { StatusBadge } from "./StatusBadge";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 import { InteriorManageLayoutSkeleton } from "@/components/interiors/skeletons";
 
 function activeSection(pathname: string): ManageSectionId {
@@ -49,13 +50,9 @@ export function InteriorManageLayout({ children }: { children: ReactNode }) {
   const dot = (id: ManageSectionId) => {
     const step = MANAGE_SECTIONS.find((s) => s.id === id)?.stepId;
     if (!step) return null;
-    const h = stepHealth[step];
-    return (
-      <span
-        aria-label={h === "done" ? "Complete" : "Needs attention"}
-        className={cn("h-2 w-2 shrink-0 rounded-full", h === "done" ? "bg-emerald-500" : "bg-amber-500")}
-      />
-    );
+    // Only a quiet green dot for finished sections; unfinished ones are listed once, under "Next steps".
+    if (stepHealth[step] !== "done") return null;
+    return <span aria-label="Complete" className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />;
   };
 
   return (
@@ -79,7 +76,7 @@ export function InteriorManageLayout({ children }: { children: ReactNode }) {
         </div>
         {isLive && profile.slug && (
           <Link
-            href={`/interior-designers/${encodeURIComponent((profile.primaryCity || "india").toLowerCase())}/${profile.slug}`}
+            href={interiorProfilePath(profile)}
             target="_blank"
             className="inline-flex w-fit items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
           >

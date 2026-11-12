@@ -26,7 +26,7 @@ const isPaymentRequired = (e: unknown) => (e as { status?: number })?.status ===
 type Pending = { kind: "PAUSED" | "TEMP_UNAVAILABLE" | "ARCHIVED" } | null;
 
 const HELP: Partial<Record<S, string>> = {
-  DRAFT: "Your listing is not visible to clients yet. Complete the checklist and submit it for review.",
+  DRAFT: "Not visible to clients yet. Finish the next steps below and submit.",
   SUBMITTED: "Thanks! Our team will review your listing, usually within 1–2 working days.",
   IN_REVIEW: "Our team is reviewing your listing. You can keep editing; changes are included in the review.",
   CHANGES_REQUESTED: "The reviewer asked for a few changes. Fix them and re-submit.",
@@ -77,7 +77,7 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
       await submit().unwrap();
       toast.success("Submitted for review.");
     } catch (e) {
-      toast.error(errorMessage(e, "Could not submit. Check the checklist below."));
+      toast.error(errorMessage(e, "Could not submit. Check the next steps below."));
     }
   };
 
@@ -89,7 +89,7 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
       toast.success("Your listing is live.");
     } catch (e) {
       if (isPaymentRequired(e)) setNeedsCredits(true);
-      toast.error(errorMessage(e, "Could not publish yet. Check the checklist below."));
+      toast.error(errorMessage(e, "Could not publish yet. Check the next steps below."));
     }
   };
 
@@ -138,7 +138,7 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
       <div className="mt-4 flex flex-wrap gap-2">
         {canSubmitNow && (
           <button type="button" className={primary} disabled={busy || !readiness.canSubmit} onClick={doSubmit}
-            title={readiness.canSubmit ? undefined : "Complete the 'Required to submit' items first"}>
+            title={readiness.canSubmit ? undefined : "Finish the steps marked 'Needed to go live' first"}>
             {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
             {status === S.DRAFT ? "Submit for review" : "Re-submit for review"}
           </button>
@@ -173,7 +173,7 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
         )}
       </div>
       {canSubmitNow && !readiness.canSubmit && (
-        <p className="mt-2 text-[11px] text-slate-500">Finish the items marked “Required to submit” to enable submission.</p>
+        <p className="mt-2 text-[11px] text-slate-500">Finish the steps marked “Needed to go live” below, then submit.</p>
       )}
 
       <AlertDialog open={pending !== null} onOpenChange={(o: boolean) => !o && setPending(null)}>

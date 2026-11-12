@@ -61,7 +61,7 @@ export function InteriorPlanCard({ profile }: { profile: InteriorProfile }) {
         <h2 id="plan-card-title" className="text-sm font-bold text-slate-900 dark:text-white">
           Plan &amp; visibility
         </h2>
-        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
           <Coins className="h-3.5 w-3.5" aria-hidden /> {billing.balance.toLocaleString("en-IN")} credits
         </span>
       </div>
