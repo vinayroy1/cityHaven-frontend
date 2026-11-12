@@ -160,6 +160,12 @@ export const API_ENDPOINTS = {
       acceptInvite: (token: string) => `${BASE}/admin/auth/invitations/${token}/accept`,
     },
     overview: `${BASE}/admin/overview`,
+    interiors: {
+      queue: (queue: string) => `${BASE}/admin/interiors?queue=${encodeURIComponent(queue)}`,
+      review: (id: number) => `${BASE}/admin/interiors/${id}/review`,
+      documentUrl: (id: number) => `${BASE}/admin/interiors/documents/${id}/url`,
+      document: (id: number) => `${BASE}/admin/interiors/documents/${id}`,
+    },
     analytics: {
       overview: `${BASE}/admin/overview`,
       kpis: `${BASE}/admin/analytics/kpis`,

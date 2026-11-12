@@ -30,6 +30,7 @@ import {
   Flame,
   Sliders,
   BookOpen,
+  Paintbrush,
   PlusCircle,
   Search,
   Users,
@@ -85,6 +86,12 @@ const NAV_ITEMS = [
     href: "/admin/listings/create",
     icon: PlusCircle,
     allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "CATALOG_SPECIALIST"],
+  },
+  {
+    label: "Interior Designers",
+    href: "/admin/interiors",
+    icon: Paintbrush,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SENIOR_QC_LEAD", "QC_REVIEWER", "CATALOG_SPECIALIST", "ANALYST_AUDITOR"],
   },
   {
     label: "Property Quality Control",
