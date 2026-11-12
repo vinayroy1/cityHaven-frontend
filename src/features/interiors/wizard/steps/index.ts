@@ -28,10 +28,21 @@ export const interiorSteps: StepConfig[] = [
 ];
 
 /**
- * First-time setup skips Portfolio so a studio (or staff listing for one) can go live quickly;
+ * First-time setup skips portfolio projects so a studio (or staff listing for one) can go live quickly;
  * projects and the work gallery are added afterwards from the dashboard (manage → Portfolio).
  */
-export const interiorSetupSteps: StepConfig[] = interiorSteps.filter((s) => s.id !== "portfolio");
+export const interiorSetupSteps: StepConfig[] = interiorSteps.map((s) =>
+  s.id !== "portfolio"
+    ? s
+    : {
+        // Setup keeps only the work gallery (quick multi-photo upload, staff can do it too); projects come later.
+        ...s,
+        label: "Work photos",
+        title: "Photos of your work",
+        description: "Optional. Select many photos at once. Detailed projects can be added from the dashboard later.",
+        sections: (s.sections ?? []).filter((sec) => sec.id === "gallery"),
+      },
+);
 
 /** Every custom component name referenced by the step config. */
 export const INTERIOR_CUSTOM_COMPONENT_NAMES = [
