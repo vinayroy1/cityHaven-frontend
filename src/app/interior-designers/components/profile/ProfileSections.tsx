@@ -1,5 +1,6 @@
 "use client";
 
+import { ContactButtons } from "./ContactReveal";
 import Image from "next/image";
 import { isOptimizableImage } from "../../lib/image";
 import React from "react";
@@ -12,7 +13,6 @@ import {
   Globe,
   Mail,
   MapPin,
-  MessageCircle,
   Phone,
   ShieldCheck,
   Star,
@@ -35,7 +35,6 @@ import {
   experienceYearsOf,
   profileName,
   telHref,
-  waHref,
 } from "./utils";
 
 /* --------------------------------- About ---------------------------------- */
@@ -651,9 +650,6 @@ export function ReviewsSection({ profile, onQuote }: { profile: InteriorProfile;
 /* --------------------------------- Contact -------------------------------- */
 
 export function ContactSection({ profile, onQuote }: { profile: InteriorProfile; onQuote: () => void }) {
-  const name = profileName(profile);
-  const phone = profile.isPhonePublic ? profile.primaryPhone || profile.contact?.phone : null;
-  const whatsapp = profile.whatsappPhone || profile.contact?.whatsapp;
   const email = profile.isEmailPublic ? profile.businessEmail || profile.contact?.email : null;
   const hours = workingSummary(profile);
   const consult = consultationSummary(profile);
@@ -704,21 +700,9 @@ export function ContactSection({ profile, onQuote }: { profile: InteriorProfile;
           >
             Get free quote
           </button>
-          {whatsapp && (
-            <a
-              href={waHref(whatsapp, `Hi ${name}, I found you on Awasio and would like a quote.`)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-emerald-200 text-sm font-semibold text-emerald-800 hover:bg-emerald-50 dark:border-emerald-900 dark:text-emerald-300"
-            >
-              <MessageCircle className="h-4 w-4" aria-hidden /> WhatsApp
-            </a>
-          )}
-          {phone && (
-            <a href={telHref(phone)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-stone-200 text-sm font-semibold text-slate-800 hover:bg-stone-50 dark:border-slate-700 dark:text-slate-200">
-              <Phone className="h-4 w-4" aria-hidden /> Call {phone}
-            </a>
-          )}
+          <div className="[&>div]:mt-0">
+            <ContactButtons variant="card" />
+          </div>
           {email && (
             <a href={`mailto:${email}`} className="inline-flex min-h-12 items-center justify-center gap-2 break-all rounded-xl border border-stone-200 px-3 text-sm font-semibold text-slate-800 hover:bg-stone-50 dark:border-slate-700 dark:text-slate-200">
               <Mail className="h-4 w-4 shrink-0" aria-hidden /> {email}

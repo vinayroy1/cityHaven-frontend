@@ -260,6 +260,7 @@ export const API_ENDPOINTS = {
     search: `${BASE}/interiors`,
     detail: (slugOrId: string | number) => `${BASE}/interiors/detail/${slugOrId}`,
     submitInquiry: (profileId: string | number) => `${BASE}/interiors/${profileId}/inquiries`,
+    revealContact: (profileId: string | number) => `${BASE}/interiors/${profileId}/contact`,
     myListings: `${BASE}/interiors/me/listings`,
     createListing: `${BASE}/interiors/me/listings`,
     me: `${BASE}/interiors/me`,

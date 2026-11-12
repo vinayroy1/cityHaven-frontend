@@ -34,6 +34,7 @@ import {
   materialGroups,
 } from "../../components/profile/ProfileSections";
 import { profileName } from "../../components/profile/utils";
+import { InteriorContactProvider } from "../../components/profile/ContactReveal";
 
 // The enquiry form is only needed after a click; keep it out of the initial bundle.
 const InteriorInquiryModal = dynamic(
@@ -124,6 +125,7 @@ export function ProfilePageClient({ slug, citySlug, initialProfile }: ProfilePag
   const name = profileName(profile);
 
   return (
+    <InteriorContactProvider profile={profile}>
     <div className="min-h-screen overflow-x-clip bg-stone-50 pb-28 lg:pb-16 dark:bg-slate-950">
       {profile.isPreview && (
         <div className="sticky top-0 z-30 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 bg-amber-100 px-4 py-2 text-center text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-100">
@@ -198,5 +200,6 @@ export function ProfilePageClient({ slug, citySlug, initialProfile }: ProfilePag
         <InteriorInquiryModal profile={profile} isOpen={isInquiryOpen} onClose={() => setIsInquiryOpen(false)} />
       )}
     </div>
+    </InteriorContactProvider>
   );
 }

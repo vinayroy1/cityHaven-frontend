@@ -9,8 +9,6 @@ import {
   CheckCircle2,
   Clock,
   MapPin,
-  MessageCircle,
-  Phone,
   ShieldCheck,
   Star,
   User,
@@ -18,7 +16,8 @@ import {
 import Image from "next/image";
 import type { InteriorProfile } from "@/types/interior.types";
 import { isOptimizableImage } from "../../lib/image";
-import { experienceYearsOf, humanize, inr, priceRange, profileName, telHref, unitLabel, waHref } from "./utils";
+import { ContactButtons } from "./ContactReveal";
+import { experienceYearsOf, humanize, inr, priceRange, profileName, unitLabel } from "./utils";
 
 /* ---------------------------------- Shell --------------------------------- */
 
@@ -87,8 +86,6 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
   const rating = Number(profile.rating);
   const hasReviews = (profile.reviewCount ?? 0) > 0 && rating > 0;
   const price = startingPriceLabel(profile);
-  const phone = profile.isPhonePublic ? profile.primaryPhone : null;
-  const whatsapp = profile.whatsappPhone || profile.contact?.whatsapp;
   const location = [profile.primaryLocality, profile.primaryCity]
     .filter((v, i, arr) => v && arr.indexOf(v) === i)
     .join(", ");
@@ -200,28 +197,7 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
               >
                 Get free quote
               </button>
-              {whatsapp && (
-                <a
-                  href={waHref(whatsapp, `Hi ${name}, I found you on Awasio and would like a quote.`)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`WhatsApp ${name}`}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
-                >
-                  <MessageCircle className="h-4 w-4" aria-hidden />
-                  WhatsApp
-                </a>
-              )}
-              {phone && (
-                <a
-                  href={telHref(phone)}
-                  aria-label={`Call ${name}`}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 text-sm font-semibold text-slate-800 hover:bg-stone-50 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-                >
-                  <Phone className="h-4 w-4" aria-hidden />
-                  Call
-                </a>
-              )}
+              <ContactButtons variant="hero" />
             </div>
           </div>
         </div>
@@ -311,8 +287,6 @@ export function EnquiryCard({ profile, onQuote }: { profile: InteriorProfile; on
   const hours = workingSummary(profile);
   const consult = consultationSummary(profile);
   const price = startingPriceLabel(profile);
-  const whatsapp = profile.whatsappPhone || profile.contact?.whatsapp;
-  const name = profileName(profile);
 
   return (
     <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -356,49 +330,17 @@ export function EnquiryCard({ profile, onQuote }: { profile: InteriorProfile; on
       >
         Get free quote
       </button>
-      {whatsapp && (
-        <a
-          href={waHref(whatsapp, `Hi ${name}, I found you on Awasio and would like a quote.`)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 text-sm font-semibold text-emerald-800 hover:bg-emerald-50 dark:border-emerald-900 dark:text-emerald-300 dark:hover:bg-emerald-950/40"
-        >
-          <MessageCircle className="h-4 w-4" aria-hidden />
-          Chat on WhatsApp
-        </a>
-      )}
+      <ContactButtons variant="card" />
       <p className="mt-3 text-center text-xs text-slate-500">Free, no-obligation estimate. Usually replies within a day.</p>
     </div>
   );
 }
 
-export function MobileCtaBar({ profile, onQuote }: { profile: InteriorProfile; onQuote: () => void }) {
-  const phone = profile.isPhonePublic ? profile.primaryPhone : null;
-  const whatsapp = profile.whatsappPhone || profile.contact?.whatsapp;
-  const name = profileName(profile);
+export function MobileCtaBar({ onQuote }: { profile: InteriorProfile; onQuote: () => void }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-stone-200 bg-white/95 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur lg:hidden dark:border-slate-800 dark:bg-slate-900/95">
       <div className="mx-auto flex max-w-xl gap-2">
-        {phone && (
-          <a
-            href={telHref(phone)}
-            aria-label={`Call ${name}`}
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-stone-200 text-slate-800 dark:border-slate-700 dark:text-slate-200"
-          >
-            <Phone className="h-5 w-5" aria-hidden />
-          </a>
-        )}
-        {whatsapp && (
-          <a
-            href={waHref(whatsapp, `Hi ${name}, I found you on Awasio and would like a quote.`)}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`WhatsApp ${name}`}
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
-          >
-            <MessageCircle className="h-5 w-5" aria-hidden />
-          </a>
-        )}
+        <ContactButtons variant="bar" />
         <button
           type="button"
           onClick={onQuote}

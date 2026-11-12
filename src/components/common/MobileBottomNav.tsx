@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { CountrySwitcher } from "@/components/country/CountrySwitcher";
-import { Ruler,
+import { Ruler, Paintbrush,
   Home,
   Search,
   Plus,
@@ -79,6 +79,7 @@ const categoryLinks: CategoryLink[] = [
   { label: "PG & Co-living", href: "/pg", icon: BedDouble },
   { label: "Find Flatmates", href: "/flatmate", icon: Users },
   { label: "Hotels & Stays", href: "/stays", icon: Hotel },
+  { label: "Interior Designers", href: "/interior-designers", icon: Paintbrush },
   { label: "Commercial", href: "/commercial", icon: Building2 },
   { label: "Plots & Land", href: "/plot", icon: MapPin },
   { label: "New Projects", href: "/new-projects", icon: Sparkles },

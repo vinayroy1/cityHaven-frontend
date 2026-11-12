@@ -223,6 +223,11 @@ export const interiorsApi = createApi({
       }),
     }),
 
+    revealInteriorContact: builder.mutation<InteriorRevealedContact, number | string>({
+      query: (profileId) => ({ url: API_ENDPOINTS.interiors.revealContact(profileId), method: "POST" }),
+      transformResponse: (response: ApiEnvelope<InteriorRevealedContact>) => response.data,
+    }),
+
     updateInteriorInquiryStatus: builder.mutation<InteriorInquiry, { id: number; status: InteriorInquiry["status"] }>({
       query: ({ id, status }) => ({ url: API_ENDPOINTS.interiors.inquiryStatus(id), method: "PATCH", body: { status } }),
       transformResponse: (response: ApiEnvelope<InteriorInquiry>) => response.data,
@@ -506,7 +511,10 @@ export const interiorsApi = createApi({
   }),
 });
 
+export type InteriorRevealedContact = { phone: string | null; whatsapp: string | null; email: string | null; contactName: string | null };
+
 export const {
+  useRevealInteriorContactMutation,
   useSearchInteriorDesignersQuery,
   useGetInteriorProfileDetailQuery,
   useGetMyInteriorListingsQuery,
