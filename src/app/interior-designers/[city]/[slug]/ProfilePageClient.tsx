@@ -125,6 +125,14 @@ export function ProfilePageClient({ slug, citySlug, initialProfile }: ProfilePag
 
   return (
     <div className="min-h-screen overflow-x-clip bg-stone-50 pb-28 lg:pb-16 dark:bg-slate-950">
+      {profile.isPreview && (
+        <div className="sticky top-0 z-30 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 bg-amber-100 px-4 py-2 text-center text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-100">
+          <span><strong>Preview</strong> · Only you can see this page. It goes live after Awasio approves your listing.</span>
+          <Link href={`/dashboard/interior-profile/manage?profileId=${profile.id}`} className="font-semibold underline underline-offset-2">
+            Edit listing
+          </Link>
+        </div>
+      )}
       <ProfileBreadcrumbBar
         citySlug={citySlug}
         cityName={profile.primaryCity}

@@ -48,17 +48,24 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
   const target = isDraft
     ? `/dashboard/interior-profile/setup?profileId=${item.id}`
     : `/dashboard/interior-profile/manage?profileId=${item.id}`;
-  const publicUrl = `/interior-designers/${item.primaryCity?.toLowerCase() || "india"}/${item.slug}`;
+  const publicUrl = `/interior-designers/${encodeURIComponent(item.primaryCity?.toLowerCase() || "india")}/${item.slug}`;
+  // Tapping the card opens the profile page (a private preview until it's live); drafts continue setup.
+  const viewHref = isDraft || !item.slug ? target : publicUrl;
+  const cover =
+    item.coverBanner ||
+    item.workGallery?.[0] ||
+    item.projects?.find((p) => p.coverImage)?.coverImage ||
+    null;
   const boostedUntil = item.boostedUntil && new Date(item.boostedUntil) > new Date() ? new Date(item.boostedUntil) : null;
   const canBoost = item.status === InteriorListingStatus.PUBLISHED;
 
   return (
     <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition hover:border-rose-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-rose-900/60">
       {/* Cover */}
-      <Link href={target} tabIndex={-1} aria-hidden className="relative block h-28 sm:h-32">
-        {item.coverBanner ? (
+      <Link href={viewHref} tabIndex={-1} aria-hidden className="relative block aspect-[16/9] w-full sm:aspect-auto sm:h-40">
+        {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.coverBanner} alt="" className="h-full w-full object-cover" loading="lazy" />
+          <img src={cover} alt="" className="h-full w-full object-cover" loading="lazy" />
         ) : (
           <div className="h-full w-full bg-gradient-to-br from-rose-100 via-rose-50 to-amber-50 dark:from-rose-950/60 dark:via-slate-900 dark:to-amber-950/30" />
         )}
@@ -78,7 +85,7 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
       <div className="flex flex-1 flex-col p-4 pt-8">
         <div className="flex min-w-0 items-start justify-between gap-2">
           <h2 className="min-w-0 truncate text-base font-bold text-slate-900 dark:text-white">
-            <Link href={target} className="hover:text-rose-600 dark:hover:text-rose-400">{name}</Link>
+            <Link href={viewHref} className="hover:text-rose-600 dark:hover:text-rose-400">{name}</Link>
           </h2>
           <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
             {isCompany ? <Building2 className="h-3 w-3" /> : <Briefcase className="h-3 w-3" />}
@@ -144,13 +151,12 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
             {!isDraft && <ArrowRight className="h-4 w-4" />}
           </Link>
           {canBoost && <ListingBoostButton profileId={item.id} boosted={!!boostedUntil} />}
-          {isLive && (
+          {!isDraft && item.slug && (
             <Link
               href={publicUrl}
-              target="_blank"
               className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              <ExternalLink className="h-4 w-4" /> View public page
+              <ExternalLink className="h-4 w-4" /> {isLive ? "View public page" : "Preview"}
             </Link>
           )}
         </div>

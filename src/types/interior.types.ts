@@ -300,6 +300,8 @@ export interface InteriorProfile {
   featuredOrder: number;
   /** Paid boost currently running (public search/detail only). */
   isBoosted?: boolean;
+  /** Owner / admin viewing a profile that is not live yet. */
+  isPreview?: boolean;
   /** End of the active boost (owner endpoints). */
   boostedUntil?: string | null;
   /** Shown in a paid sponsored slot on this results page (must be labelled). */
