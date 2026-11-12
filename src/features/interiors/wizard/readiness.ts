@@ -16,6 +16,8 @@ const normPhone = (p: string) => p.replace(/[\s()-]/g, "");
 
 export const MIN_ABOUT_CHARS = 80;
 export const MIN_PROJECT_IMAGES = 3;
+/** ID / GST documents optional for now (same flag in the backend interior.readiness.ts). */
+export const DOCUMENTS_REQUIRED = false;
 
 const ID_DOCS_INDIVIDUAL = ["ID_PROOF", "PAN"]; // mirrors backend interior.readiness.ts
 const ID_DOCS_COMPANY = ["GST_CERT", "COI"];
@@ -131,7 +133,7 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     label: "Upload ID proof (individual) or GST / incorporation certificate (company)",
     levels: ["SUBMIT"],
     fieldPath: "team.credentials",
-    appliesWhen: (v) => isIndividual(v) || isCompany(v),
+    appliesWhen: (v) => DOCUMENTS_REQUIRED && (isIndividual(v) || isCompany(v)),
     check: (v) => v.team.credentials.some((d) => idDocTypes(v).includes(d.type) && filled(d.fileUrl) && d.status !== "REJECTED"),
   },
   {
@@ -140,6 +142,7 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     label: "At least one document verified by Awasio",
     levels: ["PUBLISH"],
     fieldPath: "team.credentials",
+    appliesWhen: () => DOCUMENTS_REQUIRED,
     check: (v) => v.team.credentials.some((d) => idDocTypes(v).includes(d.type) && d.status === "VERIFIED"),
   },
   {

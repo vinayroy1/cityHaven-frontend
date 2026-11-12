@@ -1,7 +1,7 @@
 import { computeReadiness } from "@/lib/listingEngine/readiness";
 import type { InteriorWizardValues } from "@/types/interior.types";
 import { createInteriorInitialValues } from "../initialValues";
-import { interiorReadinessRules } from "../readiness";
+import { DOCUMENTS_REQUIRED, interiorReadinessRules } from "../readiness";
 import { completeValues } from "./fixtures";
 
 const run = (v: InteriorWizardValues) => computeReadiness(interiorReadinessRules, v);
@@ -18,6 +18,10 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
   });
 
   type Case = [id: string, levels: ("SUBMIT" | "PUBLISH")[], breakIt: (v: InteriorWizardValues) => void];
+  const docCases: Case[] = [
+    ["idDocument", ["SUBMIT"], (v) => void (v.team.credentials = [])],
+    ["documentVerified", ["PUBLISH"], (v) => void (v.team.credentials[0].status = "PENDING")],
+  ];
   const cases: Case[] = [
     ["providerType", ["SUBMIT", "PUBLISH"], (v) => void (v.identity.providerType = "")],
     ["name", ["SUBMIT", "PUBLISH"], (v) => void (kind === "COMPANY" ? (v.identity.businessName = "") : (v.identity.displayName = " "))],
@@ -30,11 +34,10 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
     ["materialsBoardHardware", ["PUBLISH"], (v) => void (v.materials.materialSpecs = v.materials.materialSpecs.filter((m) => m.category !== "HARDWARE"))],
     ["startingPrice", ["SUBMIT", "PUBLISH"], (v) => void (v.pricing.startingRateMin = null)],
     ["activePackage", ["PUBLISH"], (v) => void (v.pricing.packages[0].isActive = false)],
-    ["idDocument", ["SUBMIT"], (v) => void (v.team.credentials = [])],
-    ["documentVerified", ["PUBLISH"], (v) => void (v.team.credentials[0].status = "PENDING")],
     ["woodworkWarranty", ["PUBLISH"], (v) => void (v.warranty.warranties = v.warranty.warranties.map((w) => ({ ...w, years: null })))],
     ["contactPhone", ["SUBMIT", "PUBLISH"], (v) => void (v.contact.phone = "12345")],
   ];
+  if (DOCUMENTS_REQUIRED) cases.push(...docCases);
   if (kind === "COMPANY") {
     cases.push(["headOffice", ["SUBMIT", "PUBLISH"], (v) => void (v.location.branches[0].branchType = "BRANCH")]);
   }
@@ -44,6 +47,15 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
     v.portfolio.projects = [];
     v.portfolio.workGallery = [];
     expect(run(v).canPublish).toBe(true);
+  });
+
+  it("ID / GST documents don't block submit or going live while optional", () => {
+    if (DOCUMENTS_REQUIRED) return;
+    const v = completeValues(kind);
+    v.team.credentials = [];
+    const r = run(v);
+    expect(r.canSubmit).toBe(true);
+    expect(r.canPublish).toBe(true);
   });
 
   it.each(cases)("%s gates %j", (id, levels, breakIt) => {
@@ -86,7 +98,7 @@ describe("interior readiness specifics", () => {
     expect(r.canPublish).toBe(true);
   });
 
-  it("individual needs ID proof, company needs GST or COI", () => {
+  (DOCUMENTS_REQUIRED ? it : it.skip)("individual needs ID proof, company needs GST or COI", () => {
     const ind = completeValues("INDIVIDUAL");
     ind.team.credentials[0].type = "GST_CERT";
     expect(item(ind, "idDocument", "SUBMIT")?.done).toBe(false);
