@@ -40,7 +40,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-RUN mkdir -p /app/.next/cache && chown -R nextjs:nodejs /app/.next
+# route-cache: Next writes ISR results there at runtime; it fails with ENOENT if the folder is missing.
+RUN mkdir -p /app/.next/cache /app/.next/server/route-cache && chown -R nextjs:nodejs /app/.next
 
 USER nextjs
 
