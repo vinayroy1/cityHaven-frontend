@@ -1,7 +1,7 @@
 "use client";
 
 import { CardTitleLink } from "@/components/common/CardTitleLink";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -39,6 +39,8 @@ import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
 import { useSearchProjectsQuery } from "@/features/projects/api";
 import type { ProjectListing, ProjectStatus } from "@/types/project.types";
 import { toSearchSlug } from "@/components/search/searchQuery";
+
+const PAGE_SIZE = 24;
 
 function formatPrice(value?: number) {
   if (!value) return "Price on request";
@@ -374,23 +376,46 @@ export function NewProjectsClient({
     });
   };
 
-  const { data, isLoading, isFetching, isError, refetch } = useSearchProjectsQuery({
-    city: appliedCity && appliedCity !== "All" ? appliedCity : undefined,
-    locality: appliedLocalities.length ? appliedLocalities.join(",") : undefined,
-    q: appliedKeyword || undefined,
-    status: filterState.status === "ALL" ? undefined : filterState.status as ProjectStatus,
-    bhk: filterState.bhk === "All" ? undefined : filterState.bhk,
-    budgetMin: filterState.budgetMin,
-    budgetMax: filterState.budgetMax,
-    verifiedOnly: filterState.verifiedOnly || undefined,
-    sortBy: filterState.sortBy,
-    page: 1,
-    pageSize: 24,
-  });
+  const searchFilters = useMemo(
+    () => ({
+      city: appliedCity && appliedCity !== "All" ? appliedCity : undefined,
+      locality: appliedLocalities.length ? appliedLocalities.join(",") : undefined,
+      q: appliedKeyword || undefined,
+      status: filterState.status === "ALL" ? undefined : (filterState.status as ProjectStatus),
+      bhk: filterState.bhk === "All" ? undefined : filterState.bhk,
+      budgetMin: filterState.budgetMin,
+      budgetMax: filterState.budgetMax,
+      verifiedOnly: filterState.verifiedOnly || undefined,
+      sortBy: filterState.sortBy,
+      pageSize: PAGE_SIZE,
+    }),
+    [appliedCity, appliedLocalities, appliedKeyword, filterState],
+  );
+  // The page number belongs to one filter set; any filter change starts again from page 1.
+  const filtersKey = JSON.stringify(searchFilters);
+  const [paging, setPaging] = useState({ key: filtersKey, page: 1 });
+  const page = paging.key === filtersKey ? paging.page : 1;
+
+  const { data, isLoading, isFetching, isError, refetch } = useSearchProjectsQuery({ ...searchFilters, page });
   const projects = (data?.items && data.items.length > 0)
     ? data.items
     : (data?.items ? [] : (initialProjects.length > 0 ? initialProjects : []));
   const totalProjects = data?.total ?? initialTotal ?? projects.length;
+  const hasMore = projects.length < totalProjects;
+  // Pages already in the list decide the next one, so a list restored from cache continues correctly.
+  const loadMore = useCallback(() => {
+    if (isFetching || !hasMore) return;
+    setPaging({ key: filtersKey, page: Math.floor(projects.length / PAGE_SIZE) + 1 });
+  }, [isFetching, hasMore, filtersKey, projects.length]);
+
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node || !hasMore) return;
+    const observer = new IntersectionObserver((entries) => entries[0]?.isIntersecting && loadMore(), { rootMargin: "600px" });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
 
   const breadcrumbItems = useMemo(() => {
     const items: BreadcrumbTrailItem[] = [
@@ -593,6 +618,24 @@ export function NewProjectsClient({
                 onContactClick={(p) => setContactModalProject(p)}
               />
             ))}
+            {hasMore && (
+              <div ref={sentinelRef} className="col-span-full flex flex-col items-center gap-2 py-4">
+                {isFetching ? (
+                  <Loader2 className="h-6 w-6 animate-spin text-rose-600" aria-label="Loading more projects" />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={loadMore}
+                    className="min-h-11 rounded-full border border-slate-200 bg-white px-6 text-sm font-bold text-slate-800 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                  >
+                    Show more projects
+                  </button>
+                )}
+                <p className="text-xs text-slate-500">
+                  Showing {projects.length} of {totalProjects}
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="rounded-3xl border border-dashed border-slate-300 p-8 sm:p-12 text-center dark:border-slate-800">

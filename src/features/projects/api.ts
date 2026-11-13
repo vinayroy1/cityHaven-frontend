@@ -66,6 +66,20 @@ export const projectsApi = createApi({
         }
         return data;
       },
+      // One cache entry per filter set: page 2+ is appended to it, page 1 replaces it.
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        const { page: _page, ...filters } = (queryArgs || {}) as ProjectSearchParams;
+        void _page;
+        return `${endpointName}(${JSON.stringify(filters, Object.keys(filters).sort())})`;
+      },
+      merge: (current, incoming, { arg }) => {
+        const page = (arg as ProjectSearchParams | undefined)?.page ?? 1;
+        if (page <= 1 || !current?.items) return incoming;
+        const seen = new Set(current.items.map((item) => item.id));
+        return { ...incoming, items: [...current.items, ...incoming.items.filter((item) => !seen.has(item.id))] };
+      },
+      forceRefetch: ({ currentArg, previousArg }) =>
+        (currentArg as ProjectSearchParams | undefined)?.page !== (previousArg as ProjectSearchParams | undefined)?.page,
       providesTags: ["ProjectList"],
     }),
     getProject: builder.query<ProjectListing, string>({
