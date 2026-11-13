@@ -91,7 +91,18 @@ export default function LeadFinderPage() {
     try {
       for (let i = 0; i < ids.length; i += BATCH) {
         const chunk = ids.slice(i, i + BATCH);
-        const res = await leadFinderApi.saveLeads(chunk.map((placeId) => ({ placeId, type, cityName: city, locality: locality || null, countryCode: country })));
+        const byId = new Map(results.map((r) => [r.placeId, r]));
+        const res = await leadFinderApi.saveLeads(
+          chunk.map((placeId) => ({
+            placeId,
+            type,
+            cityName: city,
+            locality: locality || null,
+            countryCode: country,
+            name: byId.get(placeId)?.name || null,
+            address: byId.get(placeId)?.address || null,
+          })),
+        );
         created += res.created;
         skipped += res.skipped;
         done.push(...chunk);

@@ -281,7 +281,7 @@ export const leadFinderApi = {
   async search(params: { type: LeadType; city: string; locality?: string; keyword?: string; country?: string; pageToken?: string; hideSaved?: "0" | "1" }) {
     return unwrap(await apiClient.get<LeadSearchResponse>(`${LF}/search`, { params }));
   },
-  async saveLeads(leads: Array<{ placeId: string; type: LeadType; cityName: string; locality?: string | null; countryCode?: string }>) {
+  async saveLeads(leads: Array<{ placeId: string; type: LeadType; cityName: string; locality?: string | null; countryCode?: string; name?: string | null; address?: string | null }>) {
     return unwrap(await apiClient.post<{ created: number; skipped: number }>(`${LF}/leads`, { leads }));
   },
   async list(params: { status?: LeadStatus; type?: LeadType; city?: string; locality?: string; assigned?: string; due?: "today"; page?: number }) {
