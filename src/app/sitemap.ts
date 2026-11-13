@@ -96,20 +96,6 @@ async function fetchAllPages(path: string, pageSize: number, sizeParam: "pageSiz
   return out;
 }
 
-async function getActiveProjects(): Promise<Array<{ slug: string; city?: string | null; updatedAt?: string | null }>> {
-  try {
-    const endpoint = toInternalApiUrl(`${API_ENDPOINTS.projects.search}?pageSize=500`);
-    const res = await fetch(endpoint, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return [];
-    const json = (await res.json()) as { data?: { items?: Array<{ slug: string; city?: string | null; updatedAt?: string | null }> } };
-    return json?.data?.items ?? [];
-  } catch {
-    return [];
-  }
-}
-
 async function getPublishedBlogPosts(): Promise<Array<{ slug: string; updatedAt?: string | null }>> {
   try {
     const endpoint = toInternalApiUrl(`${API_ENDPOINTS.blog.list}?pageSize=50`);
@@ -335,14 +321,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 7. Dynamic Active Projects with SEO Slugs
-  const projects = await getActiveProjects();
-  const projectDetailRoutes: MetadataRoute.Sitemap = projects.map((proj) => ({
-    url: `${SITE_URL}/new-projects/${proj.slug}`,
-    lastModified: proj.updatedAt ? new Date(proj.updatedAt) : now,
-    changeFrequency: "weekly",
-    priority: 0.85,
-  }));
+  // 7. Project detail pages live in the per-state sitemaps (/sitemaps/projects-<state>.xml).
 
   // Populated new project city landing pages for all 59 cities
   const newProjectsCityRoutes: MetadataRoute.Sitemap = ALL_59_CITIES.map((city) => ({
@@ -404,7 +383,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...agentRoutes,
     ...propertyRoutes,
     ...newProjectsCityRoutes,
-    ...projectDetailRoutes,
     ...blogRoutes,
     ...stayRoutes,
     ...interiorRoutes,

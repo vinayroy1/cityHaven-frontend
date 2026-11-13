@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { PROJECT_SITEMAP_FILES } from "@/lib/seo/projectSitemaps";
 
 const SITEMAPS = [
   "https://awasio.com/sitemap.xml",
@@ -18,6 +19,7 @@ const SITEMAPS = [
   "https://awasio.com/nearby/sitemaps/kw.xml",
   "https://awasio.com/nearby/sitemaps/qa.xml",
   "https://awasio.com/nearby/sitemaps/bh.xml",
+  ...PROJECT_SITEMAP_FILES.map((f) => `https://awasio.com/sitemaps/${f}`),
 ];
 
 export async function GET() {
