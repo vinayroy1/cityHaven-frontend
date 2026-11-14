@@ -21,18 +21,17 @@ export function GoogleAdsenseDeferred() {
       window.removeEventListener("scroll", loadScript);
       window.removeEventListener("click", loadScript);
       window.removeEventListener("touchstart", loadScript);
-      window.removeEventListener("mousemove", loadScript);
       window.removeEventListener("keydown", loadScript);
     };
 
-    // Load on user interaction or fallback timer (5s) so Core Web Vitals measure cleanly
+    // Load only on real intentional user interaction (scroll, touch, or click)
+    // Avoid mousemove because automated bots, synthetic mouse events, or slight cursor drift trigger it instantly
     window.addEventListener("scroll", loadScript, { once: true, passive: true });
     window.addEventListener("click", loadScript, { once: true, passive: true });
     window.addEventListener("touchstart", loadScript, { once: true, passive: true });
-    window.addEventListener("mousemove", loadScript, { once: true, passive: true });
     window.addEventListener("keydown", loadScript, { once: true, passive: true });
 
-    const timer = setTimeout(loadScript, 12000);
+    const timer = setTimeout(loadScript, 15000);
 
     return () => {
       clearTimeout(timer);
