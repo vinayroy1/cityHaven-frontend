@@ -557,7 +557,7 @@ export function MobileBottomNav() {
                   <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Calculators &amp; Advisory
                   </p>
-                  <div className="mt-2 space-y-1">
+                  <div className="mt-2 grid grid-cols-2 gap-1">
                     {activeResourceLinks.map((item) => {
                       const Icon = item.icon;
                       if (item.onClick) {
@@ -566,11 +566,11 @@ export function MobileBottomNav() {
                             key={item.label}
                             type="button"
                             onClick={item.onClick}
-                            className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900 transition"
+                            className="flex w-full min-w-0 items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900 transition"
                           >
-                            <div className="flex items-center gap-2.5">
-                              <Icon className="h-4 w-4 text-amber-500 fill-amber-500/20" />
-                              <span className="font-semibold text-amber-900 dark:text-amber-200">{item.label}</span>
+                            <div className="flex min-w-0 items-center gap-2.5">
+                              <Icon className="h-4 w-4 shrink-0 text-amber-500 fill-amber-500/20" />
+                              <span className="truncate font-semibold text-amber-900 dark:text-amber-200">{item.label}</span>
                             </div>
                           </button>
                         );
@@ -580,11 +580,11 @@ export function MobileBottomNav() {
                           key={item.label}
                           href={item.href}
                           onNavigate={closeAfterNavigation}
-                          className="flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900 transition"
+                          className="flex min-w-0 items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900 transition"
                         >
-                          <div className="flex items-center gap-2.5">
-                            <Icon className="h-4 w-4 text-slate-400" />
-                            <span>{item.label}</span>
+                          <div className="flex min-w-0 items-center gap-2.5">
+                            <Icon className="h-4 w-4 shrink-0 text-slate-400" />
+                            <span className="truncate">{item.label}</span>
                           </div>
                         </Link>
                       );
