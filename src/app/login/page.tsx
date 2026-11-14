@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 
 import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/api/apiErrorMessage";
+import { safeRedirectPath } from "@/lib/auth/loginRedirect";
 import { APP_CONFIG } from "@/constants/app-config";
 import {
   useRequestOtpMutation,
@@ -150,11 +152,30 @@ function SplitOtpInput({
   );
 }
 
+/** Inline, persistent form error (toasts vanish after a few seconds and were easy to miss). */
+function AuthFormError({ message, onSignInInstead }: { message: string | null; onSignInInstead?: () => void }) {
+  if (!message) return null;
+  return (
+    <div
+      role="alert"
+      aria-live="assertive"
+      className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-sm text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"
+    >
+      <span className="min-w-0 flex-1">{message}</span>
+      {onSignInInstead && (
+        <button type="button" onClick={onSignInInstead} className="shrink-0 font-semibold underline underline-offset-2">
+          Sign in instead
+        </button>
+      )}
+    </div>
+  );
+}
+
 function LoginContent() {
   const year = new Date().getFullYear();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/";
+  const redirectTo = safeRedirectPath(searchParams.get("redirect"));
   const [redirectingSession, setRedirectingSession] = useState(false);
 
   // Form states
@@ -457,20 +478,20 @@ function LoginContent() {
     const mobileRegex = /^[0-9]{10}$/;
 
     if (!fullName.trim()) {
-      toast.error("Please enter your full name.");
+      setErrorMessage("Please enter your full name.");
       return;
     }
     if (!emailRegex.test(email.trim())) {
-      toast.error("Please enter a valid email address.");
+      setErrorMessage("Please enter a valid email address.");
       return;
     }
     const cleanMobile = storedMobile;
     if (!cleanMobile) {
-      toast.error(`Please enter a valid ${getCountry(mobileCountry).name} mobile number.`);
+      setErrorMessage(`Please enter a valid ${getCountry(mobileCountry).name} mobile number.`);
       return;
     }
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
+      setErrorMessage("Password must be at least 6 characters long.");
       return;
     }
 
@@ -484,8 +505,8 @@ function LoginContent() {
       setSignupStep("verify_email");
       setSignupOtp("");
       setSignupResendCountdown(60);
-    } catch (err: any) {
-      // Toast notification automatically surfaced by baseQueryWithReauth
+    } catch (err: unknown) {
+      setErrorMessage(getApiErrorMessage(err, "Could not send the verification code. Please try again."));
     }
   }
 
@@ -496,7 +517,7 @@ function LoginContent() {
 
     const cleanOtp = signupOtp.trim();
     if (!cleanOtp || cleanOtp.length !== 6) {
-      toast.error("Please enter the complete 6-digit verification code sent to your email.");
+      setErrorMessage("Please enter the complete 6-digit verification code sent to your email.");
       return;
     }
 
@@ -516,8 +537,8 @@ function LoginContent() {
         localStorage.removeItem("awasio_referral_code");
       } catch {}
       handleAuthSuccess(tokens);
-    } catch (err: any) {
-      // Handled by toast/unwrap
+    } catch (err: unknown) {
+      setErrorMessage(getApiErrorMessage(err, "Could not create your account. Please try again."));
     }
   }
 
@@ -539,11 +560,11 @@ function LoginContent() {
       const isMobile = mobileRegex.test(cleanLoginId.replace(/[^\d+]/g, ""));
 
       if (!isEmail && !isMobile) {
-        toast.error("Please enter a valid email address or mobile number.");
+        setErrorMessage("Please enter a valid email address or mobile number.");
         return;
       }
       if (password.length < 6) {
-        toast.error("Password must be at least 6 characters long.");
+        setErrorMessage("Password must be at least 6 characters long.");
         return;
       }
 
@@ -556,7 +577,7 @@ function LoginContent() {
         }).unwrap();
         handleAuthSuccess(tokens);
       } catch (err: any) {
-        toast.error(err?.data?.message || err?.message || "Invalid credentials. Please verify and try again.");
+        setErrorMessage(getApiErrorMessage(err, "Invalid credentials. Please verify and try again."));
       }
     }
 
@@ -824,6 +845,19 @@ function LoginContent() {
                   </p>
 
                   <form onSubmit={handleCompleteSignup} className="space-y-4">
+                    <AuthFormError
+                      message={errorMessage}
+                      onSignInInstead={
+                        isSignup && errorMessage && /already exists/i.test(errorMessage)
+                          ? () => {
+                              setIsSignup(false);
+                              setSignupStep("details");
+                              setLoginId(email.trim());
+                              setErrorMessage(null);
+                            }
+                          : undefined
+                      }
+                    />
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
                         <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
@@ -839,7 +873,10 @@ function LoginContent() {
                       </div>
                       <SplitOtpInput
                         value={signupOtp}
-                        onChange={setSignupOtp}
+                        onChange={(v) => {
+                          setSignupOtp(v);
+                          if (errorMessage) setErrorMessage(null);
+                        }}
                         disabled={signingUp}
                       />
                     </div>
@@ -923,6 +960,19 @@ function LoginContent() {
                   )}
 
                   <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                      <AuthFormError
+                        message={errorMessage}
+                        onSignInInstead={
+                          isSignup && errorMessage && /already exists/i.test(errorMessage)
+                            ? () => {
+                                setIsSignup(false);
+                                setSignupStep("details");
+                                setLoginId(email.trim());
+                                setErrorMessage(null);
+                              }
+                            : undefined
+                        }
+                      />
                       {isSignup && (
                         <div>
                           <label htmlFor="fullName" className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">

@@ -1,5 +1,7 @@
 import { fetchBaseQuery, type BaseQueryFn, type FetchArgs, type FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import { toast } from "sonner";
+import { loginUrlForCurrentPage } from "@/lib/auth/loginRedirect";
+import { getApiErrorMessage } from "@/lib/api/apiErrorMessage";
 import { APP_CONFIG } from "@/constants/app-config";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { getAuthToken, isAssistedActive } from "@/lib/auth/assistedSession";
@@ -91,7 +93,7 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
     // don't retry refresh endpoint itself
     if (url.includes("/auth/refresh")) {
       clearTokens();
-      if (typeof window !== "undefined") window.location.href = "/login";
+      if (typeof window !== "undefined") window.location.href = loginUrlForCurrentPage();
       return result;
     }
     if (!refreshPromise) {
@@ -116,7 +118,7 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
       result = await rawBaseQuery(retryArgs, api, extraOptions);
     } else {
       clearTokens();
-      if (typeof window !== "undefined") window.location.href = "/login";
+      if (typeof window !== "undefined") window.location.href = loginUrlForCurrentPage();
     }
   }
 
@@ -129,14 +131,10 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
     // Avoid popping up floating error toasts on silent background GET queries (such as 401 unauthenticated, 403 forbidden, or 404 not found)
     // Only display toast for user-initiated mutations, network fetch failures, or 500 server errors
     if (isMutation || status === 500 || status === "FETCH_ERROR") {
-      const errorData = result.error.data as any;
-      const message =
-        errorData?.message ||
-        errorData?.error ||
-        (typeof result.error.data === "string" ? result.error.data : null) ||
-        (status === "FETCH_ERROR"
-          ? "Network error. Please check your connection."
-          : "Something went wrong. Please try again.");
+      const message = getApiErrorMessage(
+        result.error,
+        status === "FETCH_ERROR" ? "Network error. Please check your connection." : "Something went wrong. Please try again."
+      );
 
       // Ignore abort/silent cancellations
       if (status !== "PARSING_ERROR" && message) {
