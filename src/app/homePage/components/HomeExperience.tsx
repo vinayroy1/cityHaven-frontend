@@ -91,8 +91,13 @@ export function HomeExperience({
   const country = useCountry();
   const isIndia = country.code === "IN";
 
+  const isExplicitCityRef = React.useRef(false);
+
   React.useEffect(() => {
     let cancelled = false;
+
+    // If user already explicitly picked or typed a city, do not overwrite or reset it
+    if (isExplicitCityRef.current) return;
 
     // 0. Outside India: saved city, else a detected city in that country, else the capital.
     if (!isIndia) {
@@ -127,7 +132,7 @@ export function HomeExperience({
     if (!isIdle) return;
 
     void detectUserLocation().then((profile) => {
-      if (!cancelled && profile?.city && profile.city.trim() && (profile.country || "IN") === "IN") {
+      if (!cancelled && !isExplicitCityRef.current && profile?.city && profile.city.trim() && (profile.country || "IN") === "IN") {
         const matched = profile.city.trim();
         setIsGeoCity(true);
         setSelectedCity(matched);
@@ -146,6 +151,7 @@ export function HomeExperience({
   }, [isIdle, isIndia, country]);
 
   const updateCity = (city: string) => {
+    isExplicitCityRef.current = true;
     setIsExplicitCity(true);
     setIsGeoCity(false);
     setSelectedCity(city);
@@ -159,7 +165,14 @@ export function HomeExperience({
     }
   };
 
+  // Stable object so unrelated re-renders (scroll, lazy sections) don't reset the search bar's draft.
+  const heroSearchValue = React.useMemo(
+    () => ({ ...searchState, cityName: selectedCity || undefined }),
+    [searchState, selectedCity],
+  );
+
   const submit = (next: SearchState) => {
+    isExplicitCityRef.current = true;
     setIsExplicitCity(true);
     const targetCity = next.cityName || selectedCity || undefined;
     const state = { ...next, cityName: targetCity };
@@ -340,7 +353,7 @@ export function HomeExperience({
           <div className="relative z-20 mt-2.5 w-full rounded-2xl border border-slate-200/90 bg-white/95 p-2 text-left shadow-[0_16px_40px_-15px_rgba(15,23,42,0.1)] backdrop-blur-md transition sm:mt-6 sm:p-5 dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-[0_16px_40px_-15px_rgba(0,0,0,0.5)]">
             <SearchBar
               variant="hero"
-              value={{ ...searchState, cityName: selectedCity || undefined }}
+              value={heroSearchValue}
               onChange={(next) => {
                 setSearchState(next);
                 if (next.cityName !== selectedCity) {

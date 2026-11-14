@@ -145,7 +145,9 @@ export function SearchEditor({ variant, value, onSubmit, onContextChange, showSu
                   localities: [], // Reset locality chips when city changes to avoid cross-city search conflicts
                 };
                 update(next);
-                if (liveChanges || variant === "results") {
+                // City is page context: the hero must report it too, or the page keeps the old city
+                // and re-syncs the draft back to it on the next render.
+                if (liveChanges || variant === "results" || variant === "hero") {
                   onContextChange?.(next);
                 }
               }}
