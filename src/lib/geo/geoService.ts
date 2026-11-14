@@ -55,6 +55,21 @@ export function getUserPreferredCity(fallbackCity?: string): string | undefined 
   return fallbackCity;
 }
 
+/**
+ * Remember the city the visitor explicitly picked on any search page (same key the homepage uses),
+ * so other pages and later visits open on it instead of the default / geo-detected city.
+ * An empty value is ignored: clearing a filter on one page should not forget the visitor's city.
+ */
+export function setUserPreferredCity(city?: string | null): void {
+  const value = city?.trim();
+  if (typeof window === "undefined" || !value) return;
+  try {
+    localStorage.setItem("awasio.home.city", value);
+  } catch {
+    // storage unavailable (private mode / quota): nothing to remember
+  }
+}
+
 function saveLocation(profile: UserLocationProfile): void {
   inMemoryProfile = profile;
   activeCluster = resolveMetroCluster(profile.city, profile.country);

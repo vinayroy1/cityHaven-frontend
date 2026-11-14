@@ -36,7 +36,7 @@ import {
   ProjectFilterRail,
   type ProjectFilterState,
 } from "./ProjectFilterSheet";
-import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
+import { getUserPreferredCity, detectUserLocation, setUserPreferredCity } from "@/lib/geo/geoService";
 import { useSearchProjectsQuery } from "@/features/projects/api";
 import type { ProjectListing, ProjectStatus } from "@/types/project.types";
 import { toSearchSlug } from "@/components/search/searchQuery";
@@ -335,6 +335,7 @@ export function NewProjectsClient({
   }, [initialCity, router]);
 
   const runSearch = () => {
+    setUserPreferredCity(cityDraft);
     setAppliedCity(cityDraft);
     setAppliedLocalities(localityDrafts);
     setAppliedKeyword(keywordDraft);
@@ -490,6 +491,9 @@ export function NewProjectsClient({
                   setLocalityDrafts([]);
                   setAppliedCity(selectedCity.name);
                   setAppliedLocalities([]);
+                  // Keep the choice across refresh / back-forward (URL) and other pages (saved city).
+                  setUserPreferredCity(selectedCity.name);
+                  router.push(buildProjectSearchHref(selectedCity.name), { scroll: false });
                 }}
               />
               <LocationSearchInput

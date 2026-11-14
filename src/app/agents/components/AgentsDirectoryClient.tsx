@@ -26,6 +26,8 @@ import { getMergedAgentsList } from "@/lib/services/agentProfile";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
 import { useGetAdvisorsQuery } from "@/features/advisors/api";
+import { useRouter } from "next/navigation";
+import { getUserPreferredCity, setUserPreferredCity } from "@/lib/geo/geoService";
 
 const SPECIALTIES = [
   "All Specialties",
@@ -49,8 +51,27 @@ const toCount = (value: unknown): number => {
 const experienceYears = (agent: Agent): number =>
   toCount((agent as Agent & { experienceYears?: number }).experienceYears ?? agent.experience);
 
+const PAGE_SIZE = 50;
+
 export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClientProps) {
-  const { data: serverAgents = [] } = useGetAdvisorsQuery({ city: initialCity || undefined, limit: 50 });
+  const router = useRouter();
+  // The city lives in the URL (/agents?city=Patna) so refresh and back/forward keep it; the page
+  // remounts this component per city (key={initialCity}), so paging state below is per city.
+  const [offset, setOffset] = useState(0);
+  const { data: serverAgents = [], isFetching: loadingPage, isSuccess } = useGetAdvisorsQuery({
+    city: initialCity || undefined,
+    limit: PAGE_SIZE,
+    offset,
+  });
+  // A full last page means there may be more (the API returns at most PAGE_SIZE per call).
+  const hasMore = serverAgents.length >= offset + PAGE_SIZE;
+
+  // No city in the URL: open on the visitor's saved city (same one the other search pages use).
+  React.useEffect(() => {
+    if (initialCity) return;
+    const preferred = getUserPreferredCity();
+    if (preferred) router.replace(`/agents?city=${encodeURIComponent(preferred)}`, { scroll: false });
+  }, [initialCity, router]);
   // Draft state (user selections before pressing Search)
   const [cityDraft, setCityDraft] = useState(
     initialCity && initialCity !== "All Cities" ? initialCity : ""
@@ -71,14 +92,20 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
 
   React.useEffect(() => {
     const updateList = () => {
-      setAgentsList(serverAgents.length ? serverAgents : getMergedAgentsList());
+      // Demo dataset only when the API has answered with nothing (never while it is still loading).
+      setAgentsList(serverAgents.length ? serverAgents : isSuccess ? getMergedAgentsList() : []);
     };
     updateList();
     window.addEventListener("awasio:agent-profile-updated", updateList);
     return () => window.removeEventListener("awasio:agent-profile-updated", updateList);
-  }, [serverAgents]);
+  }, [serverAgents, isSuccess]);
 
   const handleSearch = () => {
+    if ((cityDraft || "") !== (initialCity || "")) {
+      // New city: fetch it from the API (not just filter the current page) and remember it.
+      setUserPreferredCity(cityDraft);
+      router.push(cityDraft ? `/agents?city=${encodeURIComponent(cityDraft)}` : "/agents", { scroll: false });
+    }
     setAppliedCity(cityDraft);
     setAppliedLocalities(localitiesDraft);
     setAppliedSpecialty(specialtyDraft);
@@ -466,6 +493,19 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                 </div>
               </article>
             ))}
+          </div>
+        )}
+
+        {hasMore && serverAgents.length > 0 && (
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setOffset(serverAgents.length)}
+              disabled={loadingPage}
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 shadow-xs transition hover:border-rose-300 hover:text-rose-600 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              {loadingPage ? "Loading…" : `Load more advisors${initialCity ? ` in ${initialCity}` : ""}`}
+            </button>
           </div>
         )}
 

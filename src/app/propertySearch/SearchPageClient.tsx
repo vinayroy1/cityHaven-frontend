@@ -34,7 +34,7 @@ import {
   type SearchState,
 } from "@/components/search/searchQuery";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
-import { getUserPreferredCity, detectUserLocation } from "@/lib/geo/geoService";
+import { getUserPreferredCity, detectUserLocation, setUserPreferredCity } from "@/lib/geo/geoService";
 
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { FlatmateListing } from "@/types/flatmate.types";
@@ -181,6 +181,8 @@ export function SearchPageClient({
 
   const commit = React.useCallback(
     (next: SearchState) => {
+      // Remember the city so other pages / the next visit open on it (not the default city).
+      setUserPreferredCity(next.cityName);
       router.push(buildSearchHref(next), { scroll: false });
     },
     [router],

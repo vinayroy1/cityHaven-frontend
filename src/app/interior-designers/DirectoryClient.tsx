@@ -13,6 +13,7 @@ import {
   X,
   RotateCcw,
 } from "lucide-react";
+import { setUserPreferredCity } from "@/lib/geo/geoService";
 import { useSearchInteriorDesignersQuery } from "@/features/interiors/api";
 import { InteriorDesignerCard } from "./components/InteriorDesignerCard";
 import type { InteriorProfile, InteriorProviderType, InteriorSearchParams, InteriorSearchResponse } from "@/types/interior.types";
@@ -176,6 +177,7 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
     if (city) url.searchParams.set("city", city);
     else url.searchParams.delete("city");
     window.history.replaceState(null, "", url.toString());
+    setUserPreferredCity(city);
   };
 
   const activeChips: { label: string; clear: () => void }[] = [

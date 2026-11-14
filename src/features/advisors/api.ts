@@ -8,6 +8,8 @@ import type { Agent } from "@/data/agents";
 export interface GetAdvisorsParams {
   city?: string;
   limit?: number;
+  /** Skip this many advisors (paging; the API returns at most 50 per call). */
+  offset?: number;
   featured?: boolean;
 }
 
@@ -66,6 +68,7 @@ export const advisorsApi = createApi({
         const queryParams = new URLSearchParams();
         if (params?.city) queryParams.set("city", params.city);
         if (params?.limit) queryParams.set("limit", String(params.limit));
+        if (params?.offset) queryParams.set("offset", String(params.offset));
         if (params?.featured !== undefined) queryParams.set("featured", String(params.featured));
 
         const qs = queryParams.toString();
@@ -75,6 +78,17 @@ export const advisorsApi = createApi({
         };
       },
       transformResponse: (response: AdvisorsApiResponse) => response.data || [],
+      // Paging ("Load more"): one cache entry per filter set; later pages append to it.
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        const { offset: _offset, ...rest } = queryArgs || {};
+        return `${endpointName}(${JSON.stringify(rest)})`;
+      },
+      merge: (cached, incoming, { arg }) => {
+        if (!arg?.offset) return incoming;
+        const seen = new Set(cached.map((a) => a.id));
+        return [...cached, ...incoming.filter((a) => !seen.has(a.id))];
+      },
+      forceRefetch: ({ currentArg, previousArg }) => currentArg?.offset !== previousArg?.offset,
       providesTags: ["Advisor"],
     }),
 
