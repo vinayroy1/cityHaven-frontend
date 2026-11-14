@@ -3,6 +3,9 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // Max time caches (Cloudflare, browsers) may serve a stale ISR page while refreshing it.
+  // Next's default is 1 year, which let Cloudflare keep serving pre-deploy HTML for a long time.
+  expireTime: 3600,
   turbopack: {
     root: __dirname,
   },

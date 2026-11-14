@@ -115,6 +115,18 @@ pipeline {
 
                     docker network connect ${NETWORK_NAME} awasio-backend 2>/dev/null || true
 
+                    # 0. Keep every build's hashed JS/CSS on the host (nginx serves /_next/static from here,
+                    #    falling back to the container). HTML cached by Cloudflare/browsers before this deploy
+                    #    still references the previous build's chunks; without them the page crashes with
+                    #    ChunkLoadError. Files older than 14 days are dropped.
+                    STATIC_ROOT=/opt/awasio/next-static-root/_next/static
+                    mkdir -p "$STATIC_ROOT"
+                    CID=$(docker create ${DOCKER_IMAGE})
+                    docker cp "$CID":/app/.next/static/. "$STATIC_ROOT"/
+                    docker rm "$CID" > /dev/null
+                    chmod -R a+rX /opt/awasio/next-static-root
+                    find "$STATIC_ROOT" -type f -mtime +14 -delete || true
+
                     # 1. New version on the standby port. If it is unhealthy, abort: the old container keeps serving.
                     run_frontend "$STANDBY" 3001 no
                     if ! wait_healthy "$STANDBY"; then

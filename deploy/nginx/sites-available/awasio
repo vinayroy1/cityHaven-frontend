@@ -162,7 +162,17 @@ server {
     # ==========================================================================
 
     # Immutable hashed JS / CSS / Fonts
+    # Served from the host first: Jenkins copies every build's hashed assets into
+    # /opt/awasio/next-static-root/_next/static, so HTML cached before a deploy still finds
+    # the previous build's chunks (no ChunkLoadError). Falls back to the container.
     location /_next/static/ {
+        root /opt/awasio/next-static-root;
+        try_files $uri @next_static_upstream;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        access_log off;
+    }
+
+    location @next_static_upstream {
         proxy_pass http://awasio_frontend_upstream;
         proxy_http_version 1.1;
         proxy_set_header Connection "";
