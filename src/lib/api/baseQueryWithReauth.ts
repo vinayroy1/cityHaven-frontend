@@ -136,8 +136,13 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
         status === "FETCH_ERROR" ? "Network error. Please check your connection." : "Something went wrong. Please try again."
       );
 
-      // Ignore abort/silent cancellations
-      if (status !== "PARSING_ERROR" && message) {
+      // Ignore cancellations: RTK Query aborts in-flight requests when their args change or the
+      // component unmounts (e.g. switching country). Those surface as FETCH_ERROR "AbortError"
+      // and must not show "Network error".
+      const aborted =
+        api.signal?.aborted ||
+        (status === "FETCH_ERROR" && /abort/i.test(String((result.error as { error?: unknown }).error ?? "")));
+      if (status !== "PARSING_ERROR" && !aborted && message) {
         toast.error(message, {
           id: message,
           duration: 3500,

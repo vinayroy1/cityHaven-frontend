@@ -138,6 +138,7 @@ export function MobileBottomNav() {
       { label: "Price Trends", href: "/price-trends", icon: TrendingUp, onClick: undefined },
       { label: "Home Loans", href: "/home-loans", icon: Coins, onClick: undefined },
       { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator, onClick: undefined },
+      { label: "Rent Agreement", href: "/rental-agreement", icon: FileText, onClick: undefined },
       { label: "Area Converter", href: "/area-converter", icon: Ruler, onClick: undefined },
       purchaseEnabled
         ? { label: "Pricing & Plans", href: "/pricing", icon: Sparkles, onClick: undefined }
