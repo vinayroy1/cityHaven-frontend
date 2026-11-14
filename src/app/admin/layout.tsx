@@ -88,6 +88,12 @@ const NAV_ITEMS = [
     allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "CATALOG_SPECIALIST"],
   },
   {
+    label: "Project Claims",
+    href: "/admin/project-claims",
+    icon: BadgeCheck,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SENIOR_QC_LEAD", "QC_REVIEWER", "CATALOG_SPECIALIST", "ANALYST_AUDITOR"],
+  },
+  {
     label: "Interior Designers",
     href: "/admin/interiors",
     icon: Paintbrush,

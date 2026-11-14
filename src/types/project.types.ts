@@ -51,6 +51,8 @@ export interface ProjectListing {
   siteVisitTimings?: string;
   createdAt?: string;
   isVerified?: boolean;
+  /** True while no builder manages the page, so the "Claim this project" offer is shown. */
+  claimable?: boolean;
   isFeatured?: boolean;
 }
 

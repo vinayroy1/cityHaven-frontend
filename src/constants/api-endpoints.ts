@@ -96,6 +96,9 @@ export const API_ENDPOINTS = {
     my: `${BASE}/projects/me`,
     inquiry: (id: string | number) => `${BASE}/projects/${id}/inquiries`,
     presignMediaUpload: `${BASE}/projects/media/presign-upload`,
+    claim: (id: string | number) => `${BASE}/projects/${id}/claim`,
+    claimPresign: (id: string | number) => `${BASE}/projects/${id}/claim/presign`,
+    myClaims: `${BASE}/projects/claims/me`,
     media: (id: string | number) => `${BASE}/projects/${id}/media`,
   },
   blog: {
@@ -160,6 +163,11 @@ export const API_ENDPOINTS = {
       acceptInvite: (token: string) => `${BASE}/admin/auth/invitations/${token}/accept`,
     },
     overview: `${BASE}/admin/overview`,
+    projectClaims: {
+      list: (status: string) => `${BASE}/admin/project-claims?status=${encodeURIComponent(status)}`,
+      proofUrl: (id: number) => `${BASE}/admin/project-claims/${id}/proof-url`,
+      review: (id: number) => `${BASE}/admin/project-claims/${id}/review`,
+    },
     interiors: {
       queue: (queue: string) => `${BASE}/admin/interiors?queue=${encodeURIComponent(queue)}`,
       review: (id: number) => `${BASE}/admin/interiors/${id}/review`,

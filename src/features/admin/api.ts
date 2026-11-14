@@ -37,7 +37,47 @@ export type AssistedSessionResponse = {
   owner: { id: number; name: string | null; email: string | null; mobileNumber: string; isNew: boolean };
 };
 
+export type AdminProjectClaim = {
+  id: number;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  contactName: string;
+  designation: string | null;
+  phone: string;
+  email: string;
+  message: string | null;
+  reviewNotes: string | null;
+  createdAt: string;
+  reviewedAt: string | null;
+  hasProof: boolean;
+  claimable: boolean;
+  user: { id: number; name: string | null; email: string | null; mobileNumber: string | null; createdAt: string };
+  project: {
+    id: number;
+    slug: string;
+    name: string;
+    developerName: string;
+    reraId: string | null;
+    cityName: string;
+    locality: string;
+    stateName: string | null;
+    salesPhone: string;
+    salesEmail: string | null;
+    ownerId: number | null;
+    owner: { id: number; name: string | null; email: string | null; lastLogin: string | null } | null;
+  };
+  related: { id: number; slug: string; name: string; cityName: string; locality: string; reraId: string | null }[];
+};
+
 export const adminApi = {
+  async listProjectClaims(status: string) {
+    return unwrap(await apiClient.get<{ items: AdminProjectClaim[]; counts: Record<string, number> }>(API_ENDPOINTS.admin.projectClaims.list(status)));
+  },
+  async projectClaimProofUrl(id: number) {
+    return unwrap(await apiClient.get<{ url: string }>(API_ENDPOINTS.admin.projectClaims.proofUrl(id)));
+  },
+  async reviewProjectClaim(id: number, decision: "APPROVE" | "REJECT", notes?: string, alsoProjectIds?: number[]) {
+    return unwrap(await apiClient.post<{ id: number; status: string; projectIds?: number[] }>(API_ENDPOINTS.admin.projectClaims.review(id), { decision, notes: notes || null, alsoProjectIds }));
+  },
   /** Find or create the owner and get a listing-only token that acts as them. */
   async startAssistedSession(body: { name: string; mobile: string; email: string }) {
     return unwrap(await apiClient.post<AssistedSessionResponse>(`${API_ENDPOINTS.admin.base}/assisted/session`, body));

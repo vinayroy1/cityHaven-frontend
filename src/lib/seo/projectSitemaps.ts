@@ -10,6 +10,14 @@ export const PROJECT_SITEMAP_STATES: Record<string, string> = {
   haryana: "Haryana",
   jharkhand: "Jharkhand",
   bihar: "Bihar",
+  "uttar-pradesh": "Uttar Pradesh",
+  "west-bengal": "West Bengal",
+  assam: "Assam",
+  gujarat: "Gujarat",
+  karnataka: "Karnataka",
+  "madhya-pradesh": "Madhya Pradesh",
+  chhattisgarh: "Chhattisgarh",
+  uttarakhand: "Uttarakhand",
 };
 
 export const PROJECT_SITEMAP_FILES = [...Object.keys(PROJECT_SITEMAP_STATES), "other"].map((k) => `projects-${k}.xml`);

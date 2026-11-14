@@ -30,6 +30,7 @@ import { CDN_ASSETS } from "@/config/cdn";
 import type { ProjectConfiguration, ProjectListing } from "@/types/project.types";
 import { useCreateProjectInquiryMutation } from "@/features/projects/api";
 import { getStoredUserContact } from "@/lib/auth/storedUser";
+import ClaimProjectCard from "./ClaimProjectCard";
 
 function formatPrice(value?: number) {
   if (!value) return "Price on request";
@@ -440,6 +441,10 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
           </a>
         </div>
       </div>
+
+      {project.claimable && (
+        <ClaimProjectCard projectId={project.id} projectName={project.name} developerName={project.developerName} />
+      )}
 
       {/* Inquiry Dialog Modal */}
       {inquiryModalOpen && (
