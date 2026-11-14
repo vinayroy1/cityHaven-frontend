@@ -7,7 +7,10 @@ upstream awasio_backend_upstream {
 }
 
 upstream awasio_frontend_upstream {
-    server 127.0.0.1:3000;
+    # Zero-downtime deploys: :3000 is the live container; :3001 is a short-lived standby
+    # (same new image) that nginx uses only while :3000 is being replaced.
+    server 127.0.0.1:3000 max_fails=1 fail_timeout=5s;
+    server 127.0.0.1:3001 backup;
     keepalive 64;
 }
 

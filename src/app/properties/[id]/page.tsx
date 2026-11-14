@@ -141,6 +141,13 @@ import { formatMoney as fullMoney, formatMoneyShort, currencySymbol } from "@/li
 
 export const revalidate = 60;
 
+// Render each page on first request, then serve it from the ISR cache and refresh it in the
+// background every `revalidate` seconds. Without this, Next renders the route on every request
+// (no-store), so crawler cache misses cost ~1-1.7s each.
+export async function generateStaticParams() {
+  return [];
+}
+
 const FALLBACK_IMAGES = [CDN_ASSETS.placeholderWebp];
 
 const normalizeR2Url = (url?: string | null): string => {
@@ -157,12 +164,14 @@ const getProperty = cache(async (id: string): Promise<PropertyDetails | null> =>
       headers: { Accept: "application/json" },
     });
     if (response.status === 404) return null;
-    if (!response.ok) return null;
+    // Real failures must throw, not return null: a cached notFound() would serve a 404 to Google
+    // for the whole revalidate window. A thrown error is not cached; the last good page stays.
+    if (!response.ok) throw new Error(`property API responded ${response.status}`);
     const payload = (await response.json()) as { data?: PropertyDetails };
     return payload.data ?? null;
   } catch (error) {
     console.error(`[getProperty] Failed to fetch property ${id}:`, error);
-    return null;
+    throw error;
   }
 });
 

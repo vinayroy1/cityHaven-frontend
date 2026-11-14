@@ -19,6 +19,13 @@ import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
 export const revalidate = 60;
 
+// Render each page on first request, then serve it from the ISR cache and refresh it in the
+// background every `revalidate` seconds. Without this, Next renders the route on every request
+// (no-store), so crawler cache misses cost ~1-1.7s each.
+export async function generateStaticParams() {
+  return [];
+}
+
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
   return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
@@ -45,7 +52,9 @@ const getProject = cache(async (slug: string): Promise<ProjectListing | null> =>
       next: { revalidate: 300 },
       headers: { Accept: "application/json" },
     });
-    if (response.status === 404 || !response.ok) return null;
+    if (response.status === 404) return null;
+    // Throw on real failures so a backend blip is not cached as a 404 (see generateStaticParams).
+    if (!response.ok) throw new Error(`project API responded ${response.status}`);
     const payload = (await response.json()) as { success?: boolean; data?: any };
     const raw = payload?.data;
     if (!raw) return null;
@@ -66,7 +75,7 @@ const getProject = cache(async (slug: string): Promise<ProjectListing | null> =>
     };
   } catch (error) {
     console.error(`[getProject] Failed to fetch project ${slug}:`, error);
-    return null;
+    throw error;
   }
 });
 
@@ -245,7 +254,12 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
     }
   }
 
-  const { items: initialProjects, total: initialTotal } = await getInitialProjects(city, localities);
+  const { items: initialProjects, total: initialTotal, ok } = await getInitialProjects(city, localities);
+  // Not a project and no projects in this "city": a made-up URL (e.g. /new-projects/anything).
+  // Return a real 404 so crawlers don't index endless junk pages. If the API failed, throw instead,
+  // so a backend blip is never cached as a 404 (errors are not cached; the last good page stays).
+  if (!ok) throw new Error("projects API unavailable");
+  if (initialTotal === 0) notFound();
   const firstProject = initialProjects[0];
   // Must match the first card's src in NewProjectsClient (same resized rendition).
   const lcpImage = firstProject?.images?.[0] ? sizedImageUrl(normalizeR2Url(firstProject.images[0]), 640) : null;
