@@ -1,5 +1,6 @@
 "use client";
 
+import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -132,7 +133,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
           {/* Main Large Image */}
           <div className="relative h-72 sm:h-96 lg:col-span-8 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
             <img
-              src={normalizeR2Url(project.images?.[0] || CDN_ASSETS.placeholderWebp)}
+              src={sizedImageUrl(normalizeR2Url(project.images?.[0] || CDN_ASSETS.placeholderWebp), 1080)}
               alt={project.name}
               className="h-full w-full object-cover"
               fetchPriority="high"
@@ -168,7 +169,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
           <div className="hidden lg:grid lg:col-span-4 grid-rows-2 gap-2">
             <div className="h-48 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
               <img
-                src={normalizeR2Url(project.images?.[1] || project.images?.[0] || CDN_ASSETS.placeholderWebp)}
+                src={sizedImageUrl(normalizeR2Url(project.images?.[1] || project.images?.[0] || CDN_ASSETS.placeholderWebp), 640)}
                 alt="Project View 2"
                 className="h-full w-full object-cover"
                 loading="lazy"
@@ -177,7 +178,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
             </div>
             <div className="h-48 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
               <img
-                src={normalizeR2Url(project.images?.[2] || project.images?.[0] || CDN_ASSETS.placeholderWebp)}
+                src={sizedImageUrl(normalizeR2Url(project.images?.[2] || project.images?.[0] || CDN_ASSETS.placeholderWebp), 640)}
                 alt="Project View 3"
                 className="h-full w-full object-cover"
                 loading="lazy"

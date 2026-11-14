@@ -1,6 +1,5 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
 import React, { useEffect } from "react";
 
 export default function GlobalError({
@@ -13,7 +12,7 @@ export default function GlobalError({
   useEffect(() => {
     console.error("[Next.js Global Root Error]:", error);
     try {
-      Sentry.captureException(error);
+      void import("@sentry/nextjs").then((Sentry) => Sentry.captureException(error));
     } catch {
       // ignore
     }

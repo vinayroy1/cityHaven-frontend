@@ -45,26 +45,11 @@ export function ResultCardMedia({
   const [loaded, setLoaded] = React.useState(!deferImage);
   const [hasInteracted, setHasInteracted] = React.useState(activeImage > 0);
 
-  // Preload the 2nd image (index 1) during idle time so first swipe is instantaneous
-  React.useEffect(() => {
-    if (!safeImages || safeImages.length <= 1) return;
-    const schedule = () => {
-      if (safeImages[1]) preloadImage(safeImages[1]);
-    };
-    if (typeof window !== "undefined") {
-      if ("requestIdleCallback" in window) {
-        const idleId = (window as any).requestIdleCallback(schedule, { timeout: 2500 });
-        return () => (window as any).cancelIdleCallback(idleId);
-      } else {
-        const timer = setTimeout(schedule, 1200);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [safeImages]);
+  // No preloading on mount (it fetched extra photos for every card); hover/touch warm them.
 
   // Preload adjacent images whenever activeImage changes
   React.useEffect(() => {
-    if (safeImages && safeImages.length > 1) {
+    if (activeImage > 0 && safeImages && safeImages.length > 1) {
       preloadAdjacentCardImages(safeImages, activeImage);
       if (safeImages.length > 3) {
         const aheadIdx = (activeImage + 2) % safeImages.length;

@@ -54,30 +54,12 @@ export function useCardImageSwipe({
     }
   }, [effectiveTotal, activeImage]);
 
-  // Preload the 2nd image (index 1) in idle time so the first swipe is instantaneous
-  useEffect(() => {
-    if (!images || images.length <= 1) return;
-    const validImages = images.filter((img): img is string => Boolean(img));
-    if (validImages.length <= 1) return;
-
-    const schedule = () => {
-      if (validImages[1]) preloadImage(validImages[1]);
-    };
-
-    if (typeof window !== "undefined") {
-      if ("requestIdleCallback" in window) {
-        const idleId = (window as any).requestIdleCallback(schedule, { timeout: 2500 });
-        return () => (window as any).cancelIdleCallback(idleId);
-      } else {
-        const timer = setTimeout(schedule, 1200);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [images]);
+  // No preloading on mount: every card on a page did it, pulling 2-3 extra full-size photos
+  // per card and wrecking mobile page speed. Hover/touch (below) warm the next photo instead.
 
   // Preload adjacent images whenever activeImage changes
   useEffect(() => {
-    if (!images || images.length <= 1) return;
+    if (!hasInteracted || !images || images.length <= 1) return;
     const validImages = images.filter((img): img is string => Boolean(img));
     if (validImages.length <= 1) return;
 
@@ -88,7 +70,7 @@ export function useCardImageSwipe({
       const aheadIdx = (activeImage + 2) % validImages.length;
       if (validImages[aheadIdx]) preloadImage(validImages[aheadIdx]);
     }
-  }, [images, activeImage]);
+  }, [images, activeImage, hasInteracted]);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);

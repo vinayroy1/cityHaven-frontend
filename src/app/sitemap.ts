@@ -116,7 +116,9 @@ async function getPublishedBlogPosts(): Promise<Array<{ slug: string; updatedAt?
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
+  // No real modification date for these pages: omit <lastmod> rather than stamping "now" on every
+  // request (Google learns an always-fresh lastmod is meaningless and ignores it site-wide).
+  const now: Date | undefined = undefined;
 
   // 1. Core High-Value Top-Level Routes
   const staticRoutes: MetadataRoute.Sitemap = [

@@ -17,6 +17,7 @@ import {
 } from "@/features/contactVerify/api";
 import dynamic from "next/dynamic";
 import type { ScopeOption } from "./ContactUnlockDialog";
+import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
 import { ResultCardMedia } from "./ResultCardMedia";
 import { ResultCardSummary, SavePropertyButton } from "./ResultCardSummary";
 import { CONTACT_PLANS, FALLBACK_IMAGE, type ContactPlan, type ContactStep, type ResultCardProps } from "./resultCardTypes";
@@ -72,7 +73,11 @@ export function ResultCard({
   const router = useRouter();
   const [isNavigating, setIsNavigating] = React.useState(false);
   const detailsHref = `/properties/${slug || id}`;
-  const safeImages = React.useMemo(() => Array.from(new Set(images.filter(Boolean))), [images]);
+  // Cards render ~400px wide: serve resized renditions, not full-size originals.
+  const safeImages = React.useMemo(
+    () => Array.from(new Set(images.filter(Boolean))).map((u) => sizedImageUrl(u, 640)),
+    [images]
+  );
   const [activeImage, setActiveImage] = React.useState(0);
   const [imageFailed, setImageFailed] = React.useState(false);
   const [contactOpen, setContactOpen] = React.useState(false);

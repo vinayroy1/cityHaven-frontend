@@ -1,57 +1,55 @@
-import * as Sentry from "@sentry/nextjs";
+/**
+ * Sentry is loaded after the page's `load` event, not in the critical path: the browser SDK is
+ * ~130 KB gzipped and was the largest script on every page, costing mobile LCP / PageSpeed.
+ * Trade-off: errors thrown before `load` are not reported.
+ */
+type SentryModule = typeof import("@sentry/nextjs");
 
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.2 : 1.0,
-  // Session Replay is added after the page is idle (see loadReplayWhenIdle) so
-  // its ~130 KB is kept out of the critical path. Sample rates still apply.
-  integrations: [],
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
-  // Only send events if DSN is defined
-  enabled: !!process.env.NEXT_PUBLIC_SENTRY_DSN,
-});
-
+const DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 const REPLAY_DELAY_MS = 3000;
 
-function loadReplayWhenIdle() {
-  if (typeof window === "undefined" || !process.env.NEXT_PUBLIC_SENTRY_DSN) return;
+let sentry: SentryModule | null = null;
 
+function initSentry() {
+  import("@sentry/nextjs")
+    .then((Sentry) => {
+      Sentry.init({
+        dsn: DSN,
+        tracesSampleRate: process.env.NODE_ENV === "production" ? 0.2 : 1.0,
+        integrations: [],
+        replaysSessionSampleRate: 0.1,
+        replaysOnErrorSampleRate: 1.0,
+      });
+      sentry = Sentry;
+      window.setTimeout(loadReplay, REPLAY_DELAY_MS);
+    })
+    .catch(() => {
+      // Monitoring is best-effort.
+    });
+}
+
+function loadReplay() {
   const load = () => {
     // Served from our own bundle as a separate chunk (not the Sentry CDN), so
     // ad-blockers and a future CSP cannot break it.
     import("@sentry/replay")
       .then(({ replayIntegration }) => {
-        Sentry.addIntegration(
-          replayIntegration({
-            maskAllText: false,
-            blockAllMedia: true,
-          }),
-        );
+        sentry?.addIntegration(replayIntegration({ maskAllText: false, blockAllMedia: true }));
       })
-      .catch(() => {
-        // Replay is best-effort; error monitoring keeps working without it.
-      });
+      .catch(() => {});
   };
-
-  const schedule = () => {
-    window.setTimeout(() => {
-      if ("requestIdleCallback" in window) {
-        window.requestIdleCallback(load, { timeout: 5000 });
-      } else {
-        load();
-      }
-    }, REPLAY_DELAY_MS);
-  };
-
-  if (document.readyState === "complete") {
-    schedule();
-  } else {
-    window.addEventListener("load", schedule, { once: true });
-  }
+  if ("requestIdleCallback" in window) window.requestIdleCallback(load, { timeout: 5000 });
+  else load();
 }
 
-loadReplayWhenIdle();
+if (typeof window !== "undefined" && DSN) {
+  const start = () => {
+    if ("requestIdleCallback" in window) window.requestIdleCallback(initSentry, { timeout: 4000 });
+    else setTimeout(initSentry, 1);
+  };
+  if (document.readyState === "complete") start();
+  else window.addEventListener("load", start, { once: true });
+}
 
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+export const onRouterTransitionStart: SentryModule["captureRouterTransitionStart"] = (...args) =>
+  sentry?.captureRouterTransitionStart(...args);

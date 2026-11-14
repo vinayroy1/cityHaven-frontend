@@ -1,3 +1,4 @@
+import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
 import React, { cache } from "react";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -11,6 +12,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import type { ProjectListing } from "@/types/project.types";
 import { ProjectDetailInteractive } from "../components/ProjectDetailInteractive";
+import { getInitialProjects } from "../lib/initialProjects";
 import { NewProjectsClient } from "../components/NewProjectsClient";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
@@ -65,27 +67,6 @@ const getProject = cache(async (slug: string): Promise<ProjectListing | null> =>
   } catch (error) {
     console.error(`[getProject] Failed to fetch project ${slug}:`, error);
     return null;
-  }
-});
-
-const getInitialProjects = cache(async (city?: string, localities: string[] = []): Promise<{ items: ProjectListing[]; total: number }> => {
-  try {
-    const rawEndpoint = API_ENDPOINTS.projects.search;
-    const endpoint = toInternalApiUrl(rawEndpoint);
-    const url = new URL(endpoint);
-    if (city && city !== "All") url.searchParams.set("city", city);
-    if (localities.length) url.searchParams.set("locality", localities.join(","));
-    url.searchParams.set("page", "1");
-    url.searchParams.set("pageSize", "24");
-    url.searchParams.set("sortBy", "featured");
-    const response = await fetch(url, { next: { revalidate: 60 }, headers: { Accept: "application/json" } });
-    if (!response.ok) return { items: [], total: 0 };
-    const payload = await response.json();
-    const items = payload?.data?.items ?? payload?.items ?? [];
-    const total = Number(payload?.data?.total ?? payload?.total ?? items.length);
-    return { items, total };
-  } catch {
-    return { items: [], total: 0 };
   }
 });
 
@@ -188,7 +169,8 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
     const project = await getProject(segments[0]);
     if (project) {
       const cityName = typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "");
-      const lcpImage = project.images?.[0] ? normalizeR2Url(project.images[0]) : null;
+      // Must match the hero <img> src in ProjectDetailInteractive (same resized rendition).
+      const lcpImage = project.images?.[0] ? sizedImageUrl(normalizeR2Url(project.images[0]), 1080) : null;
       const jsonLd = {
         "@context": "https://schema.org",
         "@type": "RealEstateListing",
@@ -265,7 +247,8 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
 
   const { items: initialProjects, total: initialTotal } = await getInitialProjects(city, localities);
   const firstProject = initialProjects[0];
-  const lcpImage = firstProject?.images?.[0] ? normalizeR2Url(firstProject.images[0]) : null;
+  // Must match the first card's src in NewProjectsClient (same resized rendition).
+  const lcpImage = firstProject?.images?.[0] ? sizedImageUrl(normalizeR2Url(firstProject.images[0]), 640) : null;
 
   const breadcrumbsJsonLd = {
     "@context": "https://schema.org",

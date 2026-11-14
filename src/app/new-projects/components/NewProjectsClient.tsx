@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { CDN_ASSETS } from "@/config/cdn";
+import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
@@ -69,7 +70,10 @@ function ProjectGridCard({
   onContactClick: (project: ProjectListing) => void;
 }) {
   const router = useRouter();
-  const safeImages: string[] = Array.from(new Set<string>((project.images || []).map(normalizeR2Url).filter(Boolean)));
+  // Resized renditions (cards are ~400px wide), not the full-size originals.
+  const safeImages: string[] = Array.from(
+    new Set<string>((project.images || []).map((u) => sizedImageUrl(normalizeR2Url(u), 640)).filter(Boolean))
+  );
   const {
     activeImage,
     nextImage,

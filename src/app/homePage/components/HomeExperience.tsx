@@ -23,6 +23,7 @@ import { CitySparseCard } from "./CitySparseCard";
 import { HomeBannerCarousel } from "./HomeBannerCarousel";
 import { NearbySpotlight } from "./NearbySpotlight";
 import type { SpotlightLocality } from "../lib/nearbySpotlight";
+import type { Agent } from "@/data/agents";
 import { sizedImageUrl } from "../lib/homeImage";
 import type { ProjectListing } from "@/types/project.types";
 
@@ -68,10 +69,12 @@ export function HomeExperience({
   initialFreshListings = [],
   initialProjects = [],
   nearbySpotlight = {},
+  featuredAgents = [],
 }: {
   initialFreshListings?: PropertySearchItem[];
   initialProjects?: ProjectListing[];
   nearbySpotlight?: Record<string, SpotlightLocality[]>;
+  featuredAgents?: Agent[];
 } = {}) {
   const router = useRouter();
   const isIdle = useIdleState(1000);
@@ -388,7 +391,7 @@ export function HomeExperience({
         <div ref={belowFoldRef} aria-hidden />
 
         <RenderWhenNear minHeight={260}>
-          <PreferredAgentsSection selectedCity={selectedCity} />
+          <PreferredAgentsSection selectedCity={selectedCity} initialAgents={featuredAgents} />
         </RenderWhenNear>
 
         <ListingBlock

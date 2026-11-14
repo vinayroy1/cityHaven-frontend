@@ -4,6 +4,8 @@ import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { NewProjectsClient } from "./components/NewProjectsClient";
+import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
+import { getInitialProjects } from "./lib/initialProjects";
 
 export const revalidate = 60;
 
@@ -23,13 +25,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function NewProjectsPage() {
+export default async function NewProjectsPage() {
+  const { items: initialProjects, total: initialTotal } = await getInitialProjects();
+  const firstImage = initialProjects[0]?.images?.[0];
+  // Must match the first card's src in NewProjectsClient (same resized rendition).
+  const lcpImage = firstImage ? sizedImageUrl(firstImage, 640) : null;
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
+      {lcpImage && <link rel="preload" as="image" href={lcpImage} fetchPriority="high" />}
       <HeaderNav />
 
       <main className="flex-1">
-        <NewProjectsClient />
+        <NewProjectsClient initialProjects={initialProjects} initialTotal={initialTotal} />
       </main>
 
       <FooterLinks />

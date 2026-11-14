@@ -9,6 +9,10 @@ import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { ProjectListing } from "@/types/project.types";
 import { sizedImageUrl } from "./homePage/lib/homeImage";
+import { ALL_AGENTS } from "@/data/agents";
+
+// Computed on the server: the full agents dataset (~700 KB) never reaches the browser.
+const FEATURED_AGENTS = ALL_AGENTS.filter((a) => a.isHomepageFeatured);
 import { getNearbySpotlightByCountry } from "./homePage/lib/nearbySpotlight";
 
 const SEED_FALLBACK_LISTINGS: PropertySearchItem[] = [
@@ -210,7 +214,7 @@ export default async function RootPage() {
       />
       <div className="min-h-screen overflow-x-clip bg-white text-slate-900 transition-colors duration-150 dark:bg-slate-950 dark:text-slate-100">
         <HeaderNav />
-        <HomeExperience initialFreshListings={initialFreshListings} initialProjects={initialProjects} nearbySpotlight={nearbySpotlight} />
+        <HomeExperience initialFreshListings={initialFreshListings} initialProjects={initialProjects} nearbySpotlight={nearbySpotlight} featuredAgents={FEATURED_AGENTS} />
         <FooterLinks />
       </div>
     </>

@@ -7,8 +7,8 @@ import React from "react";
 import Link from "next/link";
 import { ViewAllCard } from "./ViewAllCard";
 import { ArrowRight, BadgeCheck, MapPin, ShieldCheck, Sparkles } from "lucide-react";
-import { ALL_AGENTS, type Agent } from "@/data/agents";
-import { getMergedHomepageFeaturedAgents } from "@/lib/services/agentProfile";
+// Type-only: the agents dataset (~700 KB) must not be bundled into the home page.
+import type { Agent } from "@/data/agents";
 import { useGetAdvisorsQuery } from "@/features/advisors/api";
 import { sizedImageUrl } from "../lib/homeImage";
 
@@ -27,7 +27,14 @@ function useIdleState(timeoutMs = 1200) {
   return isIdle;
 }
 
-export default function PreferredAgentsSection({ selectedCity }: { selectedCity: string }) {
+export default function PreferredAgentsSection({
+  selectedCity,
+  initialAgents = [],
+}: {
+  selectedCity: string;
+  /** Featured agents computed on the server, so the dataset stays out of the client bundle. */
+  initialAgents?: Agent[];
+}) {
   const isIdle = useIdleState(1200);
   const { data: apiAdvisors, isLoading } = useGetAdvisorsQuery(
     {
@@ -38,27 +45,35 @@ export default function PreferredAgentsSection({ selectedCity }: { selectedCity:
     { skip: !isIdle }
   );
 
-  const [staticAgents, setStaticAgents] = React.useState<Agent[]>(() => {
-    return ALL_AGENTS.filter((agent) => agent.isHomepageFeatured);
-  });
+  const [staticAgents, setStaticAgents] = React.useState<Agent[]>(initialAgents);
 
   React.useEffect(() => {
+    if (!isIdle) return;
+    let cancelled = false;
+    const byCity = () => {
+      const inCity = initialAgents.filter((a) => !selectedCity || a.city.toLowerCase() === selectedCity.toLowerCase());
+      return inCity.length ? inCity : initialAgents;
+    };
+    // Locally edited agent profiles (agentProfile service) are merged in lazily, after first paint.
     const refreshFeatured = () => {
-      try {
-        const featured = getMergedHomepageFeaturedAgents(selectedCity);
-        setStaticAgents(featured.length ? featured : ALL_AGENTS.filter((a) => a.isHomepageFeatured));
-      } catch {
-        const cityAgents = ALL_AGENTS.filter(
-          (agent) => agent.isHomepageFeatured && (!selectedCity || agent.city.toLowerCase() === selectedCity.toLowerCase())
-        );
-        setStaticAgents(cityAgents.length ? cityAgents : ALL_AGENTS.filter((a) => a.isHomepageFeatured));
-      }
+      import("@/lib/services/agentProfile")
+        .then(({ getMergedHomepageFeaturedAgents }) => {
+          if (cancelled) return;
+          const featured = getMergedHomepageFeaturedAgents(selectedCity);
+          setStaticAgents(featured.length ? featured : byCity());
+        })
+        .catch(() => {
+          if (!cancelled) setStaticAgents(byCity());
+        });
     };
 
     refreshFeatured();
     window.addEventListener("awasio:agent-profile-updated", refreshFeatured);
-    return () => window.removeEventListener("awasio:agent-profile-updated", refreshFeatured);
-  }, [selectedCity]);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("awasio:agent-profile-updated", refreshFeatured);
+    };
+  }, [selectedCity, isIdle, initialAgents]);
 
   // Use dynamic API advisors if available, fallback gracefully to static/local
   const allAgents = (apiAdvisors && apiAdvisors.length > 0) ? apiAdvisors : staticAgents;
