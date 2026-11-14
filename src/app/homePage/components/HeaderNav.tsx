@@ -38,10 +38,15 @@ import { BrandLogo } from "@/components/common/BrandLogo";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 import { useGetMyCreditsQuery, useGetCreditPlatformConfigQuery } from "@/features/contactVerify/api";
-import { CreditWalletModal } from "@/components/billing/CreditWalletModal";
+import dynamic from "next/dynamic";
 import { CountrySwitcher } from "@/components/country/CountrySwitcher";
 import { useMeQuery } from "@/features/auth/api";
 import { useGetLeadInboxSummaryQuery } from "@/features/leads/api";
+
+const CreditWalletModal = dynamic(
+  () => import("@/components/billing/CreditWalletModal").then((m) => m.CreditWalletModal),
+  { ssr: false }
+);
 
 interface UserProfile {
   name?: string;
@@ -727,11 +732,13 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
       </div>
 
       {/* Credit Wallet & Rewards Modal */}
-      <CreditWalletModal
-        isOpen={creditModalOpen}
-        onClose={() => setCreditModalOpen(false)}
-        userProfile={userProfile}
-      />
+      {creditModalOpen && (
+        <CreditWalletModal
+          isOpen={creditModalOpen}
+          onClose={() => setCreditModalOpen(false)}
+          userProfile={userProfile}
+        />
+      )}
     </header>
   );
 }

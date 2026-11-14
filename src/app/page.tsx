@@ -145,11 +145,14 @@ export default async function RootPage() {
     getInitialProjects(),
     getNearbySpotlightByCountry().catch(() => ({})),
   ]);
-  // LCP on mobile and desktop is the first "New Projects" card image.
+  // LCP candidates: preload both the first Featured Project and first Fresh Listing image so the browser downloads the visible hero immediately
   const firstProjectImage = initialProjects.length
     ? normalizeR2Url((initialProjects[0].images ?? []).find(Boolean))
     : FALLBACK_LCP_IMAGE;
-  const lcpImage = firstProjectImage ? sizedImageUrl(firstProjectImage, 640) : null;
+  const projectLcpImage = firstProjectImage ? sizedImageUrl(firstProjectImage, 640) : null;
+
+  const firstListingMedia = initialFreshListings[0]?.media?.[0]?.url || initialFreshListings[0]?.thumbnailUrl;
+  const listingLcpImage = firstListingMedia ? sizedImageUrl(normalizeR2Url(firstListingMedia), 640) : null;
 
   // Schema.org structured data: WebSite (site name + search) and Organization
   const websiteSchema = {
@@ -200,11 +203,19 @@ export default async function RootPage() {
 
   return (
     <>
-      {lcpImage && (
+      {projectLcpImage && (
         <link
           rel="preload"
           as="image"
-          href={lcpImage}
+          href={projectLcpImage}
+          fetchPriority="high"
+        />
+      )}
+      {listingLcpImage && (
+        <link
+          rel="preload"
+          as="image"
+          href={listingLcpImage}
           fetchPriority="high"
         />
       )}

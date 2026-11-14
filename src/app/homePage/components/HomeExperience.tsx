@@ -29,6 +29,7 @@ import type { ProjectListing } from "@/types/project.types";
 
 // Below-the-fold card components are split out of the initial homepage bundle.
 const PreferredAgentsSection = dynamic(() => import("./PreferredAgentsSection"));
+const HomeStaysSection = dynamic(() => import("@/components/stays/HomeStaysSection").then((m) => m.HomeStaysSection));
 const FlatmateCard = dynamic(() => import("@/components/flatmates/FlatmateCard").then((m) => m.FlatmateCard));
 const InteriorDesignerShowcaseCard = dynamic(() =>
   import("./InteriorDesignerShowcaseCard").then((m) => m.InteriorDesignerShowcaseCard),
@@ -40,7 +41,6 @@ import { getCountry } from "@/config/countries";
 
 const portalCountryName = () => getCountry(typeof document !== "undefined" ? getSelectedCountry() : "IN").name;
 import { formatMoney, formatMoneyShort } from "@/lib/money";
-import { HomeStaysSection } from "@/components/stays/HomeStaysSection";
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
@@ -524,9 +524,8 @@ function ListingBlock({
               <ResultCard
                 {...toResultCardProps(item)}
                 compact
-                priority={false}
-                // Below the projects carousel: keep these out of the LCP bandwidth window.
-                deferImage
+                priority={isFirstBlock && idx === 0}
+                deferImage={!isFirstBlock}
               />
             </div>
           ))}

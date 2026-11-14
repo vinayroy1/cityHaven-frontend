@@ -15,10 +15,14 @@ const MOBILE_PLACEHOLDER: Record<string, string> = {
   COMMERCIAL: "City, locality or market",
   PLOT: "City, locality or highway",
 };
+import dynamic from "next/dynamic";
 import { primaryButton } from "./theme";
 
 import { resolveSearchQueryToState } from "@/lib/search/intentParser";
-import { HotelHeroSearch } from "@/components/stays/HotelHeroSearch";
+const HotelHeroSearch = dynamic(
+  () => import("@/components/stays/HotelHeroSearch").then((m) => m.HotelHeroSearch),
+  { ssr: false }
+);
 
 type Props = {
   variant: "hero" | "results";
