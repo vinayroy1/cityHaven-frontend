@@ -5,6 +5,7 @@ import type {
   MaterialCategory,
 } from "@/types/interior.types";
 import { formatMoney, intlMobile, whatsappNumber } from "@/lib/money";
+import { isCommercialProjectType } from "@/features/interiors/wizard/options";
 
 export const humanize = (value?: string | null) =>
   (value ?? "")
@@ -95,8 +96,15 @@ export function projectGalleries(project: InteriorProject): GalleryGroup[] {
   return all.length ? [{ key: "ALL", label: "All", images: all }, ...groups] : groups;
 }
 
-export const projectMeta = (p: InteriorProject) =>
-  nonEmpty([p.bhk || p.propertyConfig, p.locality || p.cityName, p.designStyle]).join(" · ");
+/** "3 BHK · Whitefield · Modern" for homes; "Office · 2,500 sq.ft · Cyber City · Modern" for commercial work. */
+export const projectMeta = (p: InteriorProject) => {
+  const type = p.propertyType || p.projectCategory || "";
+  const area = p.areaSqft ?? p.carpetAreaSqft;
+  const head = isCommercialProjectType(type)
+    ? [type, area ? `${area.toLocaleString("en-IN")} sq.ft` : ""]
+    : [p.bhk || p.propertyConfig];
+  return nonEmpty([...head, p.locality || p.cityName, p.designStyle]).join(" · ");
+};
 
 export const projectBudget = (p: InteriorProject) =>
   p.budgetRange || (p.projectBudget ? `₹${(p.projectBudget / 100000).toFixed(1)}L` : "");

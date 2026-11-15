@@ -186,7 +186,7 @@ export function ListingSummary({ profile: p }: { profile: InteriorProfile }) {
                 </div>
                 <p className="mt-1 truncate text-xs font-semibold text-slate-800 dark:text-slate-200">{pr.title}</p>
                 <p className="truncate text-[11px] text-slate-500">
-                  {[pr.bhk || pr.propertyConfig, pr.cityName].filter(Boolean).join(" · ")}
+                  {[pr.bhk || pr.propertyConfig || pr.propertyType, pr.cityName].filter(Boolean).join(" · ")}
                   {pr.isApproved ? " · Approved" : " · In review"}
                 </p>
               </div>

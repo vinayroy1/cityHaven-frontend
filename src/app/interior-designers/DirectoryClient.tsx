@@ -506,7 +506,7 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
                         loading="lazy"
                       />
                       <div className="absolute top-2.5 left-2.5 rounded-full bg-slate-900/80 px-2.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs">
-                        {project.propertyConfig} · {project.designStyle}
+                        {[project.propertyConfig || project.propertyType, project.designStyle].filter(Boolean).join(" · ")}
                       </div>
                     </div>
                     <div className="p-4">

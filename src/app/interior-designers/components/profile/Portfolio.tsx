@@ -18,6 +18,7 @@ import {
   projectGalleries,
   projectMeta,
 } from "./utils";
+import { isCommercialProjectType } from "@/features/interiors/wizard/options";
 
 /* -------------------------------------------------------------------------- */
 /*                                Project grid                                */
@@ -124,7 +125,7 @@ function ProjectDetailDialog({ project, onClose }: { project: InteriorProject | 
     { icon: Ruler, label: "Area", value: area ? `${area.toLocaleString("en-IN")} sq.ft` : "" },
     { icon: Clock, label: "Duration", value: duration ? `${duration} days` : "" },
     { icon: null, label: "Budget", value: budget },
-    { icon: null, label: "Property", value: project.propertyType || project.projectCategory || "" },
+    { icon: null, label: isCommercialProjectType(project.propertyType || project.projectCategory) ? "Space" : "Property", value: project.propertyType || project.projectCategory || "" },
   ].filter((f) => f.value);
 
   return (

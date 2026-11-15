@@ -34,6 +34,7 @@ import type {
 } from "@/types/interior.types";
 import { createInteriorInitialValues } from "./initialValues";
 import { interiorSteps } from "./steps";
+import { isCommercialProjectType } from "./options";
 
 /** Section keys in wizard order (follows `interiorSteps`, so reordering steps needs no change here). */
 export const INTERIOR_SECTIONS: InteriorWizardSection[] = interiorSteps.map((s) => s.id as InteriorWizardSection);
@@ -419,7 +420,8 @@ export function projectDraftToPayload(p: InteriorProjectDraft): Partial<Interior
     propertyType: p.propertyType || null,
     projectCategory: p.propertyType,
     bhk: p.bhk || null,
-    propertyConfig: p.bhk,
+    // Short summary shown on cards: "3 BHK" for homes, the space type ("Office") for commercial work.
+    propertyConfig: p.bhk || p.propertyType || "",
     areaSqft: p.areaSqft,
     carpetAreaSqft: p.areaSqft,
     cityName: p.city,
@@ -453,7 +455,8 @@ export function projectToDraft(p: InteriorProject): InteriorProjectDraft {
     serverId: p.id,
     title: str(p.title),
     propertyType: str(p.propertyType ?? p.projectCategory),
-    bhk: str(p.bhk ?? p.propertyConfig),
+    // propertyConfig holds "Office" etc. for commercial projects; never treat that as a BHK.
+    bhk: str(p.bhk ?? (isCommercialProjectType(p.propertyConfig) ? "" : p.propertyConfig)),
     areaSqft: num(p.areaSqft ?? p.carpetAreaSqft),
     city: str(p.cityName),
     locality: str(p.locality),
