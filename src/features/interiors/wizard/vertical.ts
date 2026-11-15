@@ -34,6 +34,8 @@ import { interiorPredicates } from "./predicates";
 import { INTERIOR_PHASES, interiorSetupSteps } from "./steps";
 
 export const INTERIOR_STORAGE_KEY = "interiorWizardDraft:v2";
+/** One unsaved-changes copy per listing, so an owner with several listings never gets another listing's edits offered back. */
+export const interiorStorageKey = (profileId?: number | null) => `${INTERIOR_STORAGE_KEY}:${profileId ?? "default"}`;
 
 /**
  * Data-layer adapters (Chunk B wires these in useInteriorWizard.ts):
@@ -51,6 +53,8 @@ export type InteriorVerticalDeps = {
   readinessRules?: ReadinessRule<InteriorWizardValues>[];
   stepSchemas?: Record<string, ZodType>;
   renderPreview?: (values: InteriorWizardValues) => ReactNode;
+  /** Per-listing key for the unsaved-changes copy; defaults to the shared key. */
+  storageKey?: string;
 };
 
 const notWired = (name: string) => async () => {
@@ -68,7 +72,7 @@ export function createInteriorVertical(deps: Partial<InteriorVerticalDeps> = {})
     customComponents: deps.customComponents ?? {},
     stepSchemas: deps.stepSchemas,
     readinessRules: deps.readinessRules ?? [],
-    storageKey: INTERIOR_STORAGE_KEY,
+    storageKey: deps.storageKey ?? INTERIOR_STORAGE_KEY,
     load: deps.load ?? (() => ({ data: undefined, isLoading: false })),
     saveSection: deps.saveSection
       ? (stepId, values) => deps.saveSection!(stepId as InteriorWizardSection, values)

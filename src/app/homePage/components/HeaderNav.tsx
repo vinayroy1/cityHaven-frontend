@@ -1,5 +1,6 @@
 "use client";
 
+import { clearListingDrafts } from "@/lib/auth/listingDrafts";
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -229,6 +230,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
     localStorage.removeItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY);
     localStorage.removeItem(APP_CONFIG.AUTH.USER_KEY);
+    clearListingDrafts();
     setIsAuthed(false);
     setUserProfile(null);
     setAccountOpen(false);

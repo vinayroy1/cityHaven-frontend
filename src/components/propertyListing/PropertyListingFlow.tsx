@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectPropertyListing } from "@/store/store";
 import {
   hydrateDraft,
+  resetDraft,
   initialPropertyListingFormValues,
   saveDraft,
 } from "@/features/propertyListing/slice";
@@ -79,7 +80,9 @@ export function PropertyListingFlow({
   const duplicateOf = propertyId ? undefined : (searchParams.get("duplicateOf") ?? undefined);
   const organizationIdFromQuery = searchParams.get("orgId") ?? undefined;
   const dispatch = useAppDispatch();
-  const { draft } = useAppSelector(selectPropertyListing);
+  // The Redux draft is only a mirror of the form; a new listing never starts from it (it would still
+  // hold the last submitted or edited listing). Restoring unfinished work goes through localStorage.
+  useAppSelector(selectPropertyListing);
 
   const storageKey = adminMode ? "adminPropertySourcingDraft" : undefined;
 
@@ -121,10 +124,12 @@ export function PropertyListingFlow({
   const [published, setPublished] = useState<PublishedListing | null>(null);
   const [resume, setResume] = useState<{ form: PropertyListingFormValues; step?: number } | null>(null);
   const hydratedRef = useRef(false);
+  // Set after a successful submit/update so the autosave watcher can't write the finished listing back.
+  const doneRef = useRef(false);
 
   const form = useForm<PropertyListingFormValues>({
     mode: "onChange",
-    defaultValues: draft ?? {
+    defaultValues: {
       ...initialPropertyListingFormValues,
       context: {
         ...initialPropertyListingFormValues.context,
@@ -142,7 +147,7 @@ export function PropertyListingFlow({
 
   // New listing: start in the portal country the visitor picked (still changeable on the Location step).
   useEffect(() => {
-    if (propertyId || duplicateOf || draft) return;
+    if (propertyId || duplicateOf) return;
     if (form.getValues("location.cityName")) return;
     const portal = getSelectedCountry();
     if (portal !== (form.getValues("location.countryCode") || "IN")) form.setValue("location.countryCode", portal);
@@ -258,13 +263,15 @@ export function PropertyListingFlow({
   }, [form, organizationIdFromQuery, propertyId]);
 
   // Autosave to localStorage + Redux (debounced) only after form has been hydrated.
+  // Only for NEW listings: editing an existing one must not overwrite the "post a property" draft.
   useEffect(() => {
-    if (!hydratedRef.current) return;
+    if (!hydratedRef.current || propertyId) return;
     const sub = form.watch((v) => {
+      if (doneRef.current) return;
       persistDraft({ form: v as PropertyListingFormValues, step: stepIndex }, storageKey);
     });
     return () => sub.unsubscribe();
-  }, [form, stepIndex, storageKey]);
+  }, [form, stepIndex, storageKey, propertyId]);
 
   // Cross-field resets keyed on user changes to the classification fields.
   const listingType = values?.context?.listingType;
@@ -593,10 +600,16 @@ export function PropertyListingFlow({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ keys: [String(propertyId), slug].filter(Boolean) }),
         }).catch(() => undefined);
+        doneRef.current = true;
+        dispatch(resetDraft());
         toast.success("Listing updated.");
       } else {
         const res = (await submitProperty(payload).unwrap()) as unknown as Record<string, unknown>;
         const created = ((res?.data as Record<string, unknown>) ?? res) as Record<string, unknown>;
+        // Listing exists on the server now: drop every local copy of the form.
+        doneRef.current = true;
+        clearPersistedDraft(storageKey);
+        dispatch(resetDraft());
         if (isAssisted) {
           clearPersistedDraft(storageKey);
           onAssistedSaved?.({
@@ -858,7 +871,7 @@ export function PropertyListingFlow({
               onClick={() => {
                 const currentVals = form.getValues();
                 dispatch(saveDraft(currentVals));
-                persistDraft({ form: currentVals, step: stepIndex });
+                if (!propertyId) persistDraft({ form: currentVals, step: stepIndex }, storageKey);
                 toast.success("Draft saved.");
               }}
             >

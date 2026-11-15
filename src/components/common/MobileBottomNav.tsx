@@ -1,5 +1,6 @@
 "use client";
 
+import { clearListingDrafts } from "@/lib/auth/listingDrafts";
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -238,7 +239,9 @@ export function MobileBottomNav() {
 
   const logout = () => {
     localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
+    localStorage.removeItem(APP_CONFIG.AUTH.REFRESH_TOKEN_KEY);
     localStorage.removeItem(APP_CONFIG.AUTH.USER_KEY);
+    clearListingDrafts();
     window.dispatchEvent(new Event("auth-change"));
     setIsAuthed(false);
     setUserProfile(null);

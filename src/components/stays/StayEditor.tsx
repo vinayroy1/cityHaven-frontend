@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { TimePicker } from "@/components/common/TimePicker";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -419,13 +419,16 @@ export function StayEditor({
     return p;
   }, [v]);
 
+  const createdId = useRef<number | null>(null);
   const submit = async (publish: boolean) => {
     if (publish && problems.length) {
       toast.error(problems[0]);
       return;
     }
     try {
-      const saved = await save.mutateAsync({ id: stay?.id, body: toPayload(v, publish ? true : undefined) });
+      const saved = await save.mutateAsync({ id: stay?.id ?? createdId.current ?? undefined, body: toPayload(v, publish ? true : undefined) });
+      // The editor can stay open after a save (admin-assisted "Save draft"): later saves must update this stay, not create another.
+      if (!stay?.id && saved?.id) createdId.current = saved.id;
       toast.success(publish ? "Your stay is live 🎉" : "Draft saved");
       if (onSaved) onSaved(saved, publish);
       else router.push(publish ? `/stays/${saved.slug}` : `/dashboard/stays`);

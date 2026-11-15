@@ -1,5 +1,6 @@
 "use client";
 
+import { clearListingDrafts } from "@/lib/auth/listingDrafts";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -230,6 +231,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
   const handleLogout = () => {
     logoutStaff();
+    clearListingDrafts();
     router.push("/admin/login");
   };
 

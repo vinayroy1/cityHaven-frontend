@@ -167,9 +167,12 @@ const BASE = "/dashboard/construction-profile";
 export function ConstructionDashboard() {
   const params = useSearchParams();
   const id = params.get("id");
-  if (id === "new") return <ListingDashboard key="listing" listingId="new" />;
+  // One instance per listing, so switching listings never carries one listing's form into another.
+  // A listing just created from "new" comes back as `?id=X&setup=1` and keeps the same instance (and wizard step).
+  const flowKey = id === "new" || params.get("setup") === "1" ? "setup-flow" : `listing-${id}`;
+  if (id === "new") return <ListingDashboard key={flowKey} listingId="new" />;
   const n = Number(id);
-  if (id && Number.isInteger(n) && n > 0) return <ListingDashboard key="listing" listingId={n} />;
+  if (id && Number.isInteger(n) && n > 0) return <ListingDashboard key={flowKey} listingId={n} />;
   return <MyListings />;
 }
 

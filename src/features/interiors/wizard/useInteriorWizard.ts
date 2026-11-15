@@ -20,7 +20,7 @@ import {
 import { formToProfilePayload, profileToForm, sectionToWizardStep } from "./mapper";
 import { interiorReadinessRules } from "./readiness";
 import { interiorStepSchemas, validateInteriorAll } from "./schema";
-import { createInteriorVertical } from "./vertical";
+import { createInteriorVertical, interiorStorageKey } from "./vertical";
 
 /** Thrown by save/submit/publish; `fieldErrors` keys are form paths → `form.setError`. */
 export class InteriorSaveError extends Error {
@@ -134,9 +134,10 @@ export function useInteriorWizard(opts: UseInteriorWizardOptions = {}): UseInter
         publish,
         customComponents,
         readinessRules: interiorReadinessRules,
+        storageKey: interiorStorageKey(profileId),
         stepSchemas: interiorStepSchemas,
       }),
-    [profile, values, isLoading, saveSection, submit, publish, customComponents],
+    [profile, values, isLoading, saveSection, submit, publish, customComponents, profileId],
   );
 
   const getReadiness = useCallback((v: InteriorWizardValues) => computeReadiness(interiorReadinessRules, v), []);
