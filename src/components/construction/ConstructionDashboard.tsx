@@ -9,6 +9,7 @@ import { cn } from "@/components/ui/utils";
 import { useMyConstructionQuery, useSetMyConstructionStatusMutation, useSubmitMyConstructionMutation } from "@/features/construction/api";
 import { constructionProfilePath } from "@/features/construction/options";
 import type { MyConstruction } from "@/features/construction/types";
+import { ConstructionSkeleton } from "./ConstructionSkeleton";
 import { ConstructionWizard } from "./ConstructionWizard";
 import { LeadsPanel } from "./LeadsPanel";
 import { ProjectsPanel } from "./ProjectsPanel";
@@ -167,12 +168,7 @@ export function ConstructionDashboard() {
   };
 
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="h-28 animate-pulse rounded-3xl bg-white dark:bg-slate-900" />
-        <div className="h-64 animate-pulse rounded-3xl bg-white dark:bg-slate-900" />
-      </div>
-    );
+    return <ConstructionSkeleton />;
   }
   if (isError || !data) {
     return (

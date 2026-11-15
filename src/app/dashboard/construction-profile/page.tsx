@@ -6,6 +6,7 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 import { BackButton } from "@/components/common/BackButton";
 import { ConstructionDashboard } from "@/components/construction/ConstructionDashboard";
+import { ConstructionSkeleton } from "@/components/construction/ConstructionSkeleton";
 
 export default function ConstructionProfilePage() {
   return (
@@ -22,7 +23,7 @@ export default function ConstructionProfilePage() {
           </div>
           <h1 className="mt-0.5 text-xl font-black tracking-tight text-slate-950 sm:text-3xl dark:text-white">Your construction listing</h1>
         </div>
-        <React.Suspense fallback={<div className="h-64 animate-pulse rounded-3xl bg-white dark:bg-slate-900" />}>
+        <React.Suspense fallback={<ConstructionSkeleton />}>
           <ConstructionDashboard />
         </React.Suspense>
       </div>
