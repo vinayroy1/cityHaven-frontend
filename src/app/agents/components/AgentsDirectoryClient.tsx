@@ -28,6 +28,7 @@ import { LocationSearchInput } from "@/components/search/LocationSearchInput";
 import { useGetAdvisorsQuery } from "@/features/advisors/api";
 import { useRouter } from "next/navigation";
 import { getUserPreferredCity, setUserPreferredCity } from "@/lib/geo/geoService";
+import { CompanyAvatar } from "@/components/construction/public/CompanyAvatar";
 
 const SPECIALTIES = [
   "All Specialties",
@@ -369,10 +370,12 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                   {/* Header */}
                   <div className="flex items-start gap-3 sm:gap-4">
                     <div className="relative shrink-0">
-                      <img
-                        src={agent.avatar}
+                      <CompanyAvatar
+                        name={agent.name}
+                        logo={agent.avatar}
                         alt={agent.name}
-                        className="h-12 w-12 sm:h-16 sm:w-16 rounded-full object-cover ring-2 ring-slate-100 shadow-xs dark:ring-slate-800"
+                        className="h-12 w-12 sm:h-16 sm:w-16 rounded-full text-xs sm:text-base font-bold ring-2 ring-slate-100 shadow-xs dark:ring-slate-800"
+                        imageClassName="h-full w-full rounded-full object-cover"
                       />
                       <span
                         title="Available for in-person tours"

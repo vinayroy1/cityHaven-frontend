@@ -19,6 +19,7 @@ import {
 } from "@/features/construction/options";
 import type { ConstructionProfile } from "@/features/construction/types";
 import { InteriorPhotoCarousel } from "@/components/interiors/InteriorPhotoCarousel";
+import { CompanyAvatar } from "./CompanyAvatar";
 
 /** Directory card (server-safe: no hooks). */
 /** `badge` sits on the photo's top-right; `actions` replaces the bottom buttons (owner dashboard uses both). */
@@ -116,15 +117,12 @@ export function ConstructionCard({
               {[p.locality, p.city].filter(Boolean).join(", ")}
             </p>
           </div>
-          {p.logo && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={p.logo}
-              alt=""
-              className="h-10 w-10 shrink-0 rounded-full border border-slate-200 object-cover dark:border-slate-700"
-              loading="lazy"
-            />
-          )}
+          <CompanyAvatar
+            name={p.businessName}
+            logo={p.logo}
+            className="h-10 w-10 shrink-0 rounded-full border border-slate-200 dark:border-slate-700 text-xs"
+            alt={p.businessName}
+          />
         </div>
         <div className="mt-3 flex h-9 items-center gap-x-3 overflow-hidden whitespace-nowrap border-y border-slate-100 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
           {years ? (

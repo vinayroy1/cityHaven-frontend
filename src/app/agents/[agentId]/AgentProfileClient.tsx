@@ -30,6 +30,7 @@ import { BookVisitModal } from "@/components/agents/BookVisitModal";
 import { getAgentProfile } from "@/lib/services/agentProfile";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
+import { CompanyAvatar } from "@/components/construction/public/CompanyAvatar";
 
 interface AgentProfileClientProps {
   agent: Agent;
@@ -191,10 +192,12 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
             <article className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-start sm:items-center gap-3.5 sm:gap-5">
                 <div className="relative shrink-0">
-                  <img
-                    src={agent.avatar}
+                  <CompanyAvatar
+                    name={agent.name}
+                    logo={agent.avatar}
                     alt={agent.name}
-                    className="h-16 w-16 sm:h-28 sm:w-28 rounded-full object-cover ring-2 sm:ring-4 ring-white shadow-md dark:ring-slate-800"
+                    className="h-16 w-16 sm:h-28 sm:w-28 rounded-full text-lg sm:text-2xl font-bold ring-2 sm:ring-4 ring-white shadow-md dark:ring-slate-800"
+                    imageClassName="h-full w-full rounded-full object-cover"
                   />
                   <span
                     title="Online and available for in-person tours"
@@ -445,10 +448,12 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                       className="group flex flex-col justify-between rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 hover:border-rose-200 hover:bg-white hover:shadow-sm transition dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-700"
                     >
                       <div className="flex items-center gap-3">
-                        <img
-                          src={sim.avatar}
+                        <CompanyAvatar
+                          name={sim.name}
+                          logo={sim.avatar}
                           alt={sim.name}
-                          className="h-10 w-10 rounded-full object-cover ring-1 ring-slate-200"
+                          className="h-10 w-10 rounded-full text-xs font-bold ring-1 ring-slate-200"
+                          imageClassName="h-full w-full rounded-full object-cover"
                         />
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-slate-950 group-hover:text-rose-600 transition truncate dark:text-white">

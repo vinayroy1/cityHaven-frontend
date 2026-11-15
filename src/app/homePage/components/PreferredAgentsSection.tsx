@@ -11,6 +11,7 @@ import { ArrowRight, BadgeCheck, MapPin, ShieldCheck, Sparkles } from "lucide-re
 import type { Agent } from "@/data/agents";
 import { useGetAdvisorsQuery } from "@/features/advisors/api";
 import { sizedImageUrl } from "../lib/homeImage";
+import { CompanyAvatar } from "@/components/construction/public/CompanyAvatar";
 
 function useIdleState(timeoutMs = 1200) {
   const [isIdle, setIsIdle] = React.useState(false);
@@ -148,24 +149,13 @@ export default function PreferredAgentsSection({
                   {/* Agent Headshot & Identification */}
                   <div className="flex items-start gap-3.5">
                     <div className="relative shrink-0">
-                      {agent.avatar ? (
-                        <img
-                          src={sizedImageUrl(agent.avatar, 128)}
-                          alt={agent.name}
-                          width={56}
-                          height={56}
-                          loading="lazy"
-                          decoding="async"
-                          className="h-14 w-14 rounded-full object-cover ring-2 ring-slate-100 shadow-xs dark:ring-slate-800 group-hover:ring-rose-200 transition"
-                        />
-                      ) : (
-                        <span
-                          aria-hidden
-                          className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-lg font-bold text-rose-700 ring-2 ring-slate-100 dark:bg-rose-950/50 dark:text-rose-300 dark:ring-slate-800"
-                        >
-                          {(agent.name || "A").trim().charAt(0).toUpperCase()}
-                        </span>
-                      )}
+                      <CompanyAvatar
+                        name={agent.name || "Advisor"}
+                        logo={agent.avatar ? sizedImageUrl(agent.avatar, 128) : null}
+                        alt={agent.name}
+                        className="h-14 w-14 rounded-full text-base font-bold ring-2 ring-slate-100 shadow-xs dark:ring-slate-800 group-hover:ring-rose-200 transition"
+                        imageClassName="h-full w-full rounded-full object-cover"
+                      />
                       {/* Active / In-Person tour availability indicator */}
                       <span
                         title="Available for in-person tours"

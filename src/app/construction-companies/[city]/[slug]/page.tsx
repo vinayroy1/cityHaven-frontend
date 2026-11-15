@@ -8,6 +8,7 @@ import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 import { ContactButton, QuoteForm } from "@/components/construction/public/QuoteForm";
 import { GalleryProvider, HeroGallery, PhotoGrid, ProjectPhotos } from "@/components/construction/public/ConstructionGallery";
+import { CompanyAvatar } from "@/components/construction/public/CompanyAvatar";
 import {
   BUILDING_TYPE_OPTIONS,
   CERTIFICATION_OPTIONS,
@@ -101,14 +102,13 @@ export default async function ConstructionProfilePage({ params }: Props) {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0">
             <div className="mx-auto flex max-w-6xl items-end gap-4 px-4 pb-5 sm:px-6">
-              {p.logo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.logo} alt={`${p.businessName} logo`} className="h-16 w-16 shrink-0 rounded-2xl border-2 border-white object-cover shadow-lg sm:h-20 sm:w-20" />
-              ) : (
-                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border-2 border-white bg-amber-400 shadow-lg sm:h-20 sm:w-20">
-                  <HardHat className="h-8 w-8 text-slate-900" />
-                </span>
-              )}
+              <CompanyAvatar
+                name={p.businessName}
+                logo={p.logo}
+                className="h-16 w-16 shrink-0 rounded-2xl border-2 border-white shadow-lg text-lg font-black sm:h-20 sm:w-20"
+                imageClassName="h-full w-full rounded-2xl object-cover"
+                alt={`${p.businessName} logo`}
+              />
               <div className="min-w-0 text-white">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-bold backdrop-blur">
