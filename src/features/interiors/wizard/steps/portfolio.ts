@@ -17,7 +17,7 @@ export const portfolioStep: StepConfig = {
       title: "Add your projects, one at a time",
       kind: "custom",
       component: "PortfolioManager",
-      badge: "PUBLISH",
+      badge: "RECOMMENDED",
       props: { field: "portfolio.projects", materialSpecsField: "materials.materialSpecs", branchesField: "location.branches", minImages: 3 },
       scorePaths: ["portfolio.projects"],
       weight: 8,

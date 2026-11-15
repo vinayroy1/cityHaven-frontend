@@ -13,6 +13,12 @@ import { FieldRenderer, MissingComponent } from "./FieldRenderer";
 import { sectionCard } from "./theme";
 
 export function ReadinessBadge({ level }: { level: ReadinessLevel }) {
+  if (level === "RECOMMENDED")
+    return (
+      <span className="rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sky-700 dark:bg-sky-950/50 dark:text-sky-300">
+        Recommended
+      </span>
+    );
   return level === "SUBMIT" ? (
     <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-rose-600 dark:bg-rose-950/50 dark:text-rose-300">
       Required

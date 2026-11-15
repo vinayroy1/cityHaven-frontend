@@ -188,7 +188,8 @@ export type StepConfig = {
   phase?: string;
 };
 
-export type ReadinessLevel = "SUBMIT" | "PUBLISH";
+/** SUBMIT/PUBLISH block those actions; RECOMMENDED never blocks (shown as "improve your profile"). */
+export type ReadinessLevel = "SUBMIT" | "PUBLISH" | "RECOMMENDED";
 
 export interface ReadinessItem {
   id: string;

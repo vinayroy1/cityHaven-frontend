@@ -28,21 +28,37 @@ export const interiorSteps: StepConfig[] = [
 ];
 
 /**
- * First-time setup skips portfolio projects so a studio (or staff listing for one) can go live quickly;
- * projects and the work gallery are added afterwards from the dashboard (manage → Portfolio).
+ * First-time setup asks only what a homeowner needs to find and contact the studio, so a designer
+ * can go live in a few minutes (mobile included). Everything else (pitch, links, travel radius,
+ * styles, in-house capabilities, packages, room pricing, consultations, materials, team,
+ * documents, warranty, working hours, detailed projects) is added later from the dashboard, where
+ * every section of `interiorSteps` stays editable. Those items are RECOMMENDED in readiness, so they
+ * never block going live.
  */
-export const interiorSetupSteps: StepConfig[] = interiorSteps.map((s) =>
-  s.id !== "portfolio"
-    ? s
-    : {
-        // Setup keeps only the work gallery (quick multi-photo upload, staff can do it too); projects come later.
-        ...s,
+const SETUP_SECTIONS: Record<string, string[]> = {
+  identity: ["providerType", "individualBasics", "companyBasics", "branding"],
+  location: ["primaryLocation", "branches"],
+  services: ["offerings"],
+  pricing: ["startingPrice"],
+  portfolio: ["gallery"],
+  contact: ["contactDetails", "readiness", "preview"],
+};
+
+export const interiorSetupSteps: StepConfig[] = interiorSteps
+  .filter((s) => s.id in SETUP_SECTIONS)
+  .map((s) => {
+    const keep = SETUP_SECTIONS[s.id];
+    const step: StepConfig = { ...s, sections: (s.sections ?? []).filter((sec) => keep.includes(sec.id)) };
+    if (s.id === "portfolio") {
+      return {
+        ...step,
         label: "Work photos",
         title: "Photos of your work",
-        description: "Optional. Select many photos at once. Detailed projects can be added from the dashboard later.",
-        sections: (s.sections ?? []).filter((sec) => sec.id === "gallery"),
-      },
-);
+        description: "Optional, but profiles with photos get far more enquiries. Select many photos at once; detailed projects can be added from your dashboard later.",
+      };
+    }
+    return step;
+  });
 
 /** Every custom component name referenced by the step config. */
 export const INTERIOR_CUSTOM_COMPONENT_NAMES = [

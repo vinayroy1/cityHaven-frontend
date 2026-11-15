@@ -22,7 +22,6 @@ export const servicesStep: StepConfig = {
       badge: "SUBMIT",
       requires: [
         { path: "services.servicesOffered", label: "At least one service" },
-        { path: "services.propertyTypesHandled", label: "Property types you handle" },
       ],
       scorePaths: [
         "services.servicesOffered",
@@ -40,7 +39,7 @@ export const servicesStep: StepConfig = {
       description: "Pick up to 5 — they appear as tags on your card.",
       kind: "custom",
       component: "DesignStyleTiles",
-      badge: "PUBLISH",
+      badge: "RECOMMENDED",
       props: { field: "services.designStyles", max: 5 },
       scorePaths: ["services.designStyles"],
       weight: 3,

@@ -54,7 +54,8 @@ export function OverviewPanel() {
 
   // One list: required items first, then helpful extras (projects, documents). No separate warning banners.
   const steps: Step[] = [
-    ...readiness.items.map((i) => ({ id: i.id, label: i.label, href: hrefFor(i, profile.id), done: i.done, required: i.level === "SUBMIT" })),
+    // One row per rule (rules report SUBMIT and PUBLISH items separately). Required = blocks going live.
+    ...readiness.items.map((i) => ({ id: i.id.split(":")[0], label: i.label, href: hrefFor(i, profile.id), done: i.done, required: i.level !== "RECOMMENDED" })),
     { id: "projects", label: "Add your recent projects", href: manageHref("portfolio", profile.id), done: (profile.projects ?? []).length > 0, required: false },
     { id: "verify", label: "Upload documents for a verified badge", href: manageHref("team", profile.id), done: !!profile.isVerified, required: false },
   ].filter((s, i, arr) => arr.findIndex((x) => x.id === s.id) === i);
@@ -74,7 +75,7 @@ export function OverviewPanel() {
       <section className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-            {todo.length ? "Next steps" : "Your profile is complete"}
+            {todo.length ? "Complete your profile" : "Your profile is complete"}
           </h2>
           <span className="text-xs font-semibold text-slate-500">{pct}% complete</span>
         </div>
@@ -82,6 +83,9 @@ export function OverviewPanel() {
           <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${pct}%` }} />
         </div>
 
+        {todo.length > 0 && (
+          <p className="mt-2 text-xs text-slate-500">Complete profiles rank higher in search and get more enquiries.</p>
+        )}
         {todo.length === 0 ? (
           <p className="mt-3 flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-300">
             <BadgeCheck className="h-4 w-4 shrink-0" /> Everything is filled in. Clients see your full profile.

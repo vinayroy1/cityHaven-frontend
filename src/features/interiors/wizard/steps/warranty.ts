@@ -19,7 +19,7 @@ export const warrantyStep: StepConfig = {
       description: "One row per component, with a short scope note. Woodwork is required to publish.",
       kind: "custom",
       component: "WarrantyMatrix",
-      badge: "PUBLISH",
+      badge: "RECOMMENDED",
       props: { field: "warranty.warranties" },
       scorePaths: ["warranty.warranties"],
       weight: 3,

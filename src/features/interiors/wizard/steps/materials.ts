@@ -18,7 +18,7 @@ export const materialsStep: StepConfig = {
       description: "Add rows per category. Use the quick-add chips or enter your own brand.",
       kind: "custom",
       component: "MaterialSpecTable",
-      badge: "PUBLISH",
+      badge: "RECOMMENDED",
       props: { field: "materials.materialSpecs" },
       scorePaths: ["materials.materialSpecs"],
       weight: 6,

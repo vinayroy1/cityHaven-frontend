@@ -5,7 +5,7 @@ import { DOCUMENTS_REQUIRED, interiorReadinessRules } from "../readiness";
 import { completeValues } from "./fixtures";
 
 const run = (v: InteriorWizardValues) => computeReadiness(interiorReadinessRules, v);
-const item = (v: InteriorWizardValues, id: string, level: "SUBMIT" | "PUBLISH") =>
+const item = (v: InteriorWizardValues, id: string, level: "SUBMIT" | "PUBLISH" | "RECOMMENDED") =>
   run(v).items.find((i) => i.id === `${id}:${level}`);
 
 describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (kind) => {
@@ -17,7 +17,7 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
     expect(r.pct).toBe(100);
   });
 
-  type Case = [id: string, levels: ("SUBMIT" | "PUBLISH")[], breakIt: (v: InteriorWizardValues) => void];
+  type Case = [id: string, levels: ("SUBMIT" | "PUBLISH" | "RECOMMENDED")[], breakIt: (v: InteriorWizardValues) => void];
   const docCases: Case[] = [
     ["idDocument", ["SUBMIT"], (v) => void (v.team.credentials = [])],
     ["documentVerified", ["PUBLISH"], (v) => void (v.team.credentials[0].status = "PENDING")],
@@ -25,15 +25,15 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
   const cases: Case[] = [
     ["providerType", ["SUBMIT", "PUBLISH"], (v) => void (v.identity.providerType = "")],
     ["name", ["SUBMIT", "PUBLISH"], (v) => void (kind === "COMPANY" ? (v.identity.businessName = "") : (v.identity.displayName = " "))],
-    ["logo", ["PUBLISH"], (v) => void (v.identity.logo = "")],
+    ["logo", ["RECOMMENDED"], (v) => void (v.identity.logo = "")],
     ["primaryLocation", ["SUBMIT", "PUBLISH"], (v) => void (v.location.primaryLocality = "")],
     ["services", ["SUBMIT", "PUBLISH"], (v) => void (v.services.servicesOffered = [])],
-    ["propertyTypes", ["SUBMIT", "PUBLISH"], (v) => void (v.services.propertyTypesHandled = [])],
-    ["designStyles", ["PUBLISH"], (v) => void (v.services.designStyles = [])],
-    ["materialsBoardHardware", ["PUBLISH"], (v) => void (v.materials.materialSpecs = v.materials.materialSpecs.filter((m) => m.category !== "HARDWARE"))],
+    ["propertyTypes", ["RECOMMENDED"], (v) => void (v.services.propertyTypesHandled = [])],
+    ["designStyles", ["RECOMMENDED"], (v) => void (v.services.designStyles = [])],
+    ["materialsBoardHardware", ["RECOMMENDED"], (v) => void (v.materials.materialSpecs = v.materials.materialSpecs.filter((m) => m.category !== "HARDWARE"))],
     ["startingPrice", ["SUBMIT", "PUBLISH"], (v) => void (v.pricing.startingRateMin = null)],
-    ["activePackage", ["PUBLISH"], (v) => void (v.pricing.packages[0].isActive = false)],
-    ["woodworkWarranty", ["PUBLISH"], (v) => void (v.warranty.warranties = v.warranty.warranties.map((w) => ({ ...w, years: null })))],
+    ["activePackage", ["RECOMMENDED"], (v) => void (v.pricing.packages[0].isActive = false)],
+    ["woodworkWarranty", ["RECOMMENDED"], (v) => void (v.warranty.warranties = v.warranty.warranties.map((w) => ({ ...w, years: null })))],
     ["contactPhone", ["SUBMIT", "PUBLISH"], (v) => void (v.contact.phone = "12345")],
   ];
   if (DOCUMENTS_REQUIRED) cases.push(...docCases);
@@ -62,6 +62,16 @@ describe.each(["INDIVIDUAL", "COMPANY"] as const)("interior readiness (%s)", (ki
     breakIt(v);
     if (id === "providerType") {
       expect(item(v, id, "SUBMIT")?.done).toBe(false);
+      return;
+    }
+    if (levels.includes("RECOMMENDED")) {
+      // Recommended items are reported but never block submitting or going live.
+      expect(item(v, id, "RECOMMENDED")?.done).toBe(false);
+      expect(item(v, id, "SUBMIT")).toBeUndefined();
+      expect(item(v, id, "PUBLISH")).toBeUndefined();
+      const r = run(v);
+      expect(r.canSubmit).toBe(true);
+      expect(r.canPublish).toBe(true);
       return;
     }
     for (const level of ["SUBMIT", "PUBLISH"] as const) {
@@ -118,5 +128,16 @@ describe("interior readiness specifics", () => {
     const r = run(createInteriorInitialValues());
     expect(r.canSubmit).toBe(false);
     expect(r.canPublish).toBe(false);
+  });
+});
+
+describe("quick setup", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { interiorSetupSteps, interiorSteps } = require("../steps") as typeof import("../steps");
+  it("asks only the essentials and never shows an empty step", () => {
+    expect(interiorSetupSteps.map((s) => s.id)).toEqual(["identity", "location", "services", "pricing", "portfolio", "contact"]);
+    for (const s of interiorSetupSteps) expect((s.sections ?? []).length).toBeGreaterThan(0);
+    // The dashboard keeps every section editable.
+    expect(interiorSteps.map((s) => s.id)).toContain("warranty");
   });
 });

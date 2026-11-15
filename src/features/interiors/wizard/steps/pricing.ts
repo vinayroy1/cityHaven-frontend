@@ -58,7 +58,7 @@ export const pricingStep: StepConfig = {
       description: "Turn on the tiers you offer — Essential, Premium, Luxury — or add a Custom package. Only tiers you turn on need details.",
       kind: "custom",
       component: "PackageManager",
-      badge: "PUBLISH",
+      badge: "RECOMMENDED",
       props: { field: "pricing.packages", materialSpecsField: "materials.materialSpecs" },
       scorePaths: ["pricing.packages"],
       weight: 4,

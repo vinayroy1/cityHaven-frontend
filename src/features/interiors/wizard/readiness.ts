@@ -1,4 +1,7 @@
 // Submission vs publication readiness (plan §3 readiness matrix).
+// Going live needs only the basics a homeowner needs to find and contact the studio (type, name,
+// city/locality, services, starting price or quote-only, phone; companies: head office).
+// Everything else is RECOMMENDED: shown as "improve your profile", never blocks.
 // The server's GET /interiors/me/readiness is authoritative; this is the client fallback.
 
 import type { ReadinessRule } from "@/lib/listingEngine/types";
@@ -45,7 +48,7 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     id: "logo",
     stepId: "identity",
     label: "Upload a logo or profile photo",
-    levels: ["PUBLISH"],
+    levels: ["RECOMMENDED"],
     fieldPath: "identity.logo",
     check: (v) => filled(v.identity.logo),
   },
@@ -78,7 +81,7 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     id: "propertyTypes",
     stepId: "services",
     label: "Pick at least one property type",
-    levels: ["SUBMIT", "PUBLISH"],
+    levels: ["RECOMMENDED"],
     fieldPath: "services.propertyTypesHandled",
     check: (v) => v.services.propertyTypesHandled.length > 0,
   },
@@ -86,7 +89,7 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     id: "designStyles",
     stepId: "services",
     label: "Pick at least one design style",
-    levels: ["PUBLISH"],
+    levels: ["RECOMMENDED"],
     fieldPath: "services.designStyles",
     check: (v) => v.services.designStyles.length > 0,
   },
@@ -94,7 +97,7 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     id: "materialsBoardHardware",
     stepId: "materials",
     label: "Add at least one board and one hardware spec",
-    levels: ["PUBLISH"],
+    levels: ["RECOMMENDED"],
     fieldPath: "materials.materialSpecs",
     check: (v) => {
       const rows = v.materials.materialSpecs.filter((r) => filled(r.material));
@@ -115,7 +118,7 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     id: "activePackage",
     stepId: "pricing",
     label: "Add at least one active package",
-    levels: ["PUBLISH"],
+    levels: ["RECOMMENDED"],
     fieldPath: "pricing.packages",
     appliesWhen: (v) => !isQuoteOnly(v),
     check: (v) => v.pricing.packages.some((p) => p.isActive && filled(p.packageName)),
@@ -142,7 +145,7 @@ export const interiorReadinessRules: ReadinessRule<V>[] = [
     id: "woodworkWarranty",
     stepId: "warranty",
     label: "Fill in your woodwork warranty",
-    levels: ["PUBLISH"],
+    levels: ["RECOMMENDED"],
     fieldPath: "warranty.warranties",
     check: (v) =>
       v.warranty.warranties.some((w) => w.category === "WOODWORK" && ((w.years ?? 0) > 0 || (w.months ?? 0) > 0)),

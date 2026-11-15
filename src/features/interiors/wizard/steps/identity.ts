@@ -62,7 +62,7 @@ export const identityStep: StepConfig = {
     {
       id: "pitch",
       title: "Your pitch",
-      badge: "PUBLISH",
+      badge: "RECOMMENDED",
       visibleWhen: preset("hasProviderType"),
       fields: [
         { id: "identity.tagline", label: "Tagline", type: "text", maxLength: 80, placeholder: "e.g. Warm, functional homes for modern families" },
@@ -79,7 +79,7 @@ export const identityStep: StepConfig = {
     {
       id: "branding",
       title: "Photos & branding",
-      badge: "PUBLISH",
+      badge: "RECOMMENDED",
       visibleWhen: preset("hasProviderType"),
       mobileColumns: 2,
       fields: [
@@ -87,7 +87,6 @@ export const identityStep: StepConfig = {
           id: "identity.logo",
           label: "Profile photo / logo",
           type: "upload",
-          requiredFor: "PUBLISH",
           helpText: "Square image, at least 400×400.",
           meta: { category: "interiors", subFolder: "profile", accept: "image/*", aspect: "square" },
         },
