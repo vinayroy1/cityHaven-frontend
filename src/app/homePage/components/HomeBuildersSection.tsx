@@ -41,14 +41,27 @@ function CardSkeleton() {
 }
 
 export default function HomeBuildersSection({ selectedCity }: { selectedCity: string }) {
-  const idle = useIdle();
   const city = selectedCity.trim();
   const scrollerRef = React.useRef<HTMLDivElement>(null);
-  // Builders work locally: with a city chosen, only that city's builders (no national top-up).
-  const { data, isLoading } = useSearchConstructionQuery({ city: city || undefined, segment: "RESIDENTIAL", limit: 8 }, { skip: !idle });
+  
+  // 1. First fetch for the visitor's selected/detected city
+  const cityQuery = useSearchConstructionQuery(
+    { city: city || undefined, segment: "RESIDENTIAL", limit: 8 }
+  );
+
+  // 2. If the user's city has < 3 builders (e.g. smaller town), fallback to top regional/Delhi NCR builders
+  const hasFewCityItems = Boolean(city && cityQuery.data && cityQuery.data.items.length < MIN_ITEMS);
+  const fallbackQuery = useSearchConstructionQuery(
+    { segment: "RESIDENTIAL", limit: 8 },
+    { skip: !hasFewCityItems }
+  );
+
+  const isFallback = Boolean(city && cityQuery.data && cityQuery.data.items.length < MIN_ITEMS);
+  const data = isFallback ? fallbackQuery.data : cityQuery.data;
+  const isLoading = cityQuery.isLoading || (hasFewCityItems && fallbackQuery.isLoading);
+
   const items = data?.items ?? [];
-  const loading = !idle || isLoading;
-  if (!loading && items.length < MIN_ITEMS) return null;
+  if (!isLoading && items.length < MIN_ITEMS) return null;
 
   const base = "/construction-companies";
   const viewAllHref = city ? `${base}/${citySlug(city)}` : base;
@@ -95,7 +108,7 @@ export default function HomeBuildersSection({ selectedCity }: { selectedCity: st
       </div>
 
       <div ref={scrollerRef} className="no-scrollbar flex w-full snap-x snap-mandatory items-stretch gap-3 overflow-x-auto pb-3 pt-1">
-        {loading
+        {isLoading
           ? [1, 2, 3, 4].map((i) => (
               <div key={i} className={itemClass}>
                 <CardSkeleton />
