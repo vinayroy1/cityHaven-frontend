@@ -448,6 +448,17 @@ export type RoomType =
   | "STUDY"
   | "BALCONY"
   | "FOYER"
+  | "RECEPTION"
+  | "WORKSTATIONS"
+  | "CABIN"
+  | "CONFERENCE"
+  | "PANTRY"
+  | "WASHROOM"
+  | "LOBBY"
+  | "STOREFRONT"
+  | "DISPLAY_AREA"
+  | "SEATING_AREA"
+  | "GUEST_ROOM"
   | "OTHER";
 
 export interface RoomPricingRow {

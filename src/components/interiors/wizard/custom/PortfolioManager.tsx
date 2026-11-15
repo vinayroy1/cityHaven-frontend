@@ -7,7 +7,10 @@ import type { CustomStepProps } from "@/lib/listingEngine/types";
 import type { InteriorProjectDraft, InteriorWizardValues, MaterialSpecRow, RoomType } from "@/types/interior.types";
 import { useDeletePortfolioProjectMutation, useGetMyInteriorProfileQuery, useSavePortfolioProjectMutation } from "@/features/interiors/api";
 import { projectDraftToPayload, projectImageCount } from "@/features/interiors/wizard/mapper";
-import { BHK_OPTIONS, DESIGN_STYLE_OPTIONS, PROPERTY_TYPE_OPTIONS, ROOM_TYPES, SERVICE_OPTIONS } from "@/features/interiors/wizard/options";
+import {
+  ALL_ROOM_TYPES, BHK_OPTIONS, COMMERCIAL_PROJECT_TYPES, COMMERCIAL_ROOM_TYPES, DESIGN_STYLE_OPTIONS, RESIDENTIAL_PROJECT_TYPES,
+  ROOM_TYPES, SERVICE_OPTIONS, isCommercialProjectType,
+} from "@/features/interiors/wizard/options";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { cn } from "@/lib/utils";
 import {
@@ -60,19 +63,28 @@ const emptyProject = (city: string): InteriorProjectDraft => ({
   isFeatured: false,
 });
 
-/** Required tags (competitor-flow §1): cover, title, room/BHK, city, budget band (+ style). */
-export function projectMissing(p: InteriorProjectDraft): string[] {
+/**
+ * Required tags: cover, title, city, budget band, style, plus — residential: BHK or a room;
+ * commercial: the space type (office, retail, restaurant…). BHK means nothing for an office.
+ */
+export function projectMissing(p: InteriorProjectDraft, commercial = isCommercialProjectType(p.propertyType)): string[] {
   const m: string[] = [];
   if (!p.coverImage) m.push("Cover photo");
   if (!p.title.trim()) m.push("Title");
-  if (!p.bhk && !p.roomGalleries.length) m.push("BHK or room");
+  if (commercial) {
+    if (!isCommercialProjectType(p.propertyType)) m.push("Space type");
+  } else if (!p.bhk && !p.roomGalleries.length) m.push("BHK or room");
   if (!p.city) m.push("City");
   if (!p.designStyle) m.push("Style");
   if (!p.budgetRange) m.push("Budget band");
   return m;
 }
 
-export const projectCaption = (p: InteriorProjectDraft) => [p.bhk, p.city, p.designStyle].filter(Boolean).join(" · ");
+export const projectCaption = (p: InteriorProjectDraft) =>
+  (isCommercialProjectType(p.propertyType)
+    ? [p.propertyType, p.areaSqft ? `${p.areaSqft.toLocaleString("en-IN")} sq.ft` : "", p.city, p.designStyle]
+    : [p.bhk, p.city, p.designStyle]
+  ).filter(Boolean).join(" · ");
 
 type Status = { label: string; tone: "slate" | "amber" | "green" };
 
@@ -278,13 +290,35 @@ function ProjectEditor({
   onSave: (p: InteriorProjectDraft) => void;
 }) {
   const [p, setP] = useState(project);
+  const [segment, setSegment] = useState<"RESIDENTIAL" | "COMMERCIAL">(
+    isCommercialProjectType(project.propertyType) ? "COMMERCIAL" : "RESIDENTIAL",
+  );
+  const commercial = segment === "COMMERCIAL";
+  const switchSegment = (next: "RESIDENTIAL" | "COMMERCIAL") => {
+    if (next === segment) return;
+    setSegment(next);
+    // Drop fields that don't apply to the other segment; photos stay (moved under "Other" if the room no longer fits).
+    const allowed = new Set<string>((next === "COMMERCIAL" ? COMMERCIAL_ROOM_TYPES : ROOM_TYPES).map((r) => r.value));
+    setP((x) => {
+      const keep = x.roomGalleries.filter((g) => allowed.has(g.room));
+      const moved = x.roomGalleries.filter((g) => !allowed.has(g.room)).flatMap((g) => g.images);
+      const other = keep.find((g) => g.room === "OTHER");
+      const galleries = moved.length
+        ? other
+          ? keep.map((g) => (g.room === "OTHER" ? { ...g, images: [...g.images, ...moved] } : g))
+          : [...keep, { room: "OTHER" as RoomType, images: moved }]
+        : keep;
+      return { ...x, bhk: next === "COMMERCIAL" ? "" : x.bhk, propertyType: "", roomGalleries: galleries };
+    });
+  };
+  const roomChoices = commercial ? COMMERCIAL_ROOM_TYPES : ROOM_TYPES;
   const set = <K extends keyof InteriorProjectDraft>(k: K, v: InteriorProjectDraft[K]) => setP((x) => ({ ...x, [k]: v }));
   const folder = `projects/${p.id}`;
   const rooms = p.roomGalleries;
   const toggleRoom = (room: RoomType) =>
     set("roomGalleries", rooms.some((g) => g.room === room) ? rooms.filter((g) => g.room !== room) : [...rooms, { room, images: [] }]);
   const imgs = projectImageCount(p);
-  const missing = projectMissing(p);
+  const missing = projectMissing(p, commercial);
 
   return (
     <EditorPanel
@@ -303,26 +337,71 @@ function ProjectEditor({
       }
     >
       <CoverPicker value={p.coverImage} onChange={(v) => set("coverImage", v)} subFolder={folder} />
+      <div>
+        <p className="mb-1.5 text-sm font-semibold">Project type</p>
+        <div className="grid grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-slate-800" role="radiogroup" aria-label="Project type">
+          {([
+            ["RESIDENTIAL", "🏠 Residential", "Homes, apartments, villas"],
+            ["COMMERCIAL", "🏢 Commercial", "Offices, shops, restaurants, hotels"],
+          ] as const).map(([v, label, sub]) => (
+            <button
+              key={v}
+              type="button"
+              role="radio"
+              aria-checked={segment === v}
+              onClick={() => switchSegment(v)}
+              className={`rounded-xl px-3 py-2 text-left transition ${segment === v ? "bg-white shadow-sm dark:bg-slate-900" : "hover:bg-white/60 dark:hover:bg-slate-900/50"}`}
+            >
+              <span className={`block text-sm font-bold ${segment === v ? "text-rose-600" : "text-slate-700 dark:text-slate-200"}`}>{label}</span>
+              <span className="block text-[11px] text-slate-500">{sub}</span>
+            </button>
+          ))}
+        </div>
+      </div>
       <Field label="Project title" required>
-        {(id) => <input id={id} className={inputCls} maxLength={120} placeholder="e.g. Warm 3 BHK in Whitefield" value={p.title} onChange={(e) => set("title", e.target.value)} />}
+        {(id) => (
+          <input
+            id={id}
+            className={inputCls}
+            maxLength={120}
+            placeholder={commercial ? "e.g. 120-seat tech office in Cyber City" : "e.g. Warm 3 BHK in Whitefield"}
+            value={p.title}
+            onChange={(e) => set("title", e.target.value)}
+          />
+        )}
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="BHK" required>
-          {(id) => (
-            <select id={id} className={inputCls} value={p.bhk} onChange={(e) => set("bhk", e.target.value)}>
-              <option value="">Select</option>
-              {strOpts(BHK_OPTIONS).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          )}
-        </Field>
-        <Field label="Property type">
-          {(id) => (
-            <select id={id} className={inputCls} value={p.propertyType} onChange={(e) => set("propertyType", e.target.value)}>
-              <option value="">Select</option>
-              {strOpts(PROPERTY_TYPE_OPTIONS).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          )}
-        </Field>
+        {commercial ? (
+          <Field label="Space type" required>
+            {(id) => (
+              <select id={id} className={inputCls} value={p.propertyType} onChange={(e) => set("propertyType", e.target.value)}>
+                <option value="">Select</option>
+                {COMMERCIAL_PROJECT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            )}
+          </Field>
+        ) : (
+          <>
+            <Field label="BHK" required>
+              {(id) => (
+                <select id={id} className={inputCls} value={p.bhk} onChange={(e) => set("bhk", e.target.value)}>
+                  <option value="">Select</option>
+                  {strOpts(BHK_OPTIONS).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+              )}
+            </Field>
+            <Field label="Property type">
+              {(id) => (
+                <select id={id} className={inputCls} value={p.propertyType} onChange={(e) => set("propertyType", e.target.value)}>
+                  <option value="">Select</option>
+                  {[...RESIDENTIAL_PROJECT_TYPES, ...(p.propertyType && !RESIDENTIAL_PROJECT_TYPES.includes(p.propertyType) ? [p.propertyType] : [])].map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              )}
+            </Field>
+          </>
+        )}
         <Field label="City" required>
           {() => <PropertyListingCitySelector countryCode={countryCode} value={p.city} placeholder="Search city" onChange={(c) => set("city", c.name)} />}
         </Field>
@@ -338,9 +417,9 @@ function ProjectEditor({
       </Field>
 
       <div className="space-y-3">
-        <p className="text-sm font-semibold">Photos by room <span className="font-normal text-slate-500">(at least {minImages} in total)</span></p>
+        <p className="text-sm font-semibold">{commercial ? "Photos by area" : "Photos by room"} <span className="font-normal text-slate-500">(at least {minImages} in total)</span></p>
         <div className="flex flex-wrap gap-2">
-          {ROOM_TYPES.map((r) => (
+          {roomChoices.map((r) => (
             <Chip key={r.value} active={rooms.some((g) => g.room === r.value)} onClick={() => toggleRoom(r.value)}>{r.label}</Chip>
           ))}
         </div>
@@ -354,9 +433,9 @@ function ProjectEditor({
             onChange={(images) => set("roomGalleries", [{ room: "OTHER", images }])}
           />
         )}
-        {rooms.length === 0 && <p className="text-xs text-slate-500">Select many photos at once, or tap a room above to group them by room.</p>}
+        {rooms.length === 0 && <p className="text-xs text-slate-500">Select many photos at once, or tap {commercial ? "an area" : "a room"} above to group them.</p>}
         {rooms.map((g) => (
-          <Field key={g.room} label={ROOM_TYPES.find((r) => r.value === g.room)?.label ?? g.room}>
+          <Field key={g.room} label={ALL_ROOM_TYPES.find((r) => r.value === g.room)?.label ?? g.room}>
             {() => (
               <ImagesUpload
                 label={`${g.room} photos`}

@@ -162,6 +162,35 @@ export const ROOM_TYPES: { value: RoomType; label: string }[] = [
   { value: "FOYER", label: "Foyer" },
   { value: "OTHER", label: "Other" },
 ];
+
+/** Spaces for commercial portfolio projects (offices, shops, restaurants, hotels, clinics). */
+export const COMMERCIAL_ROOM_TYPES: { value: RoomType; label: string }[] = [
+  { value: "RECEPTION", label: "Reception" },
+  { value: "LOBBY", label: "Lobby / Entrance" },
+  { value: "WORKSTATIONS", label: "Workstations" },
+  { value: "CABIN", label: "Cabins" },
+  { value: "CONFERENCE", label: "Conference / Meeting" },
+  { value: "PANTRY", label: "Pantry / Cafeteria" },
+  { value: "STOREFRONT", label: "Storefront / Facade" },
+  { value: "DISPLAY_AREA", label: "Display / Sales floor" },
+  { value: "SEATING_AREA", label: "Seating / Dining area" },
+  { value: "GUEST_ROOM", label: "Guest room" },
+  { value: "WASHROOM", label: "Washroom" },
+  { value: "OTHER", label: "Other" },
+];
+export const ALL_ROOM_TYPES = [...ROOM_TYPES, ...COMMERCIAL_ROOM_TYPES.filter((r) => r.value !== "OTHER")];
+
+export const RESIDENTIAL_PROJECT_TYPES = [
+  "Apartment", "Builder Floor", "Independent House", "Villa / Bungalow", "Penthouse / Duplex", "Studio Apartment", "Farmhouse",
+];
+export const COMMERCIAL_PROJECT_TYPES = [
+  "Office", "Co-working Space", "Retail Store / Showroom", "Restaurant / Café", "Hotel / Resort", "Clinic / Hospital",
+  "Salon / Spa / Gym", "School / Institute", "Bank / Branch", "Warehouse / Factory", "Other Commercial",
+];
+/** Older saved values that also count as commercial. */
+const LEGACY_COMMERCIAL = ["Corporate Office", "Retail Store / Cafe", "Hospitality (Hotel / Restaurant)"];
+export const isCommercialProjectType = (t: string | null | undefined) =>
+  !!t && (COMMERCIAL_PROJECT_TYPES.includes(t) || LEGACY_COMMERCIAL.includes(t));
 export const ROOM_TYPE_OPTIONS: Option[] = ROOM_TYPES.map((r) => ({ ...r }));
 
 export const CONSULTATION_MODE_OPTIONS: Option[] = [
