@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { TimePicker } from "@/components/common/TimePicker";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Bath, BedDouble, Copy, ExternalLink, HeartHandshake, ImagePlus, Link2, Loader2, Plus, ShieldCheck, Snowflake, Sparkles, Star, Trash2, Wind, X } from "lucide-react";
@@ -570,15 +571,15 @@ export function StayEditor({
         <div className="mt-4 grid grid-cols-3 gap-2">
           <label className={label}>
             Check-in
-            <input type="time" className={`${input} mt-1`} value={v.checkInTime ?? ""} onChange={(e) => set("checkInTime", e.target.value)} />
+            <TimePicker className="mt-1" value={v.checkInTime ?? ""} onChange={(t) => set("checkInTime", t)} />
           </label>
           <label className={label}>
             Check-out
-            <input type="time" className={`${input} mt-1`} value={v.checkOutTime ?? ""} onChange={(e) => set("checkOutTime", e.target.value)} />
+            <TimePicker className="mt-1" value={v.checkOutTime ?? ""} onChange={(t) => set("checkOutTime", t)} />
           </label>
           <label className={label}>
             Gate closes
-            <input type="time" className={`${input} mt-1`} value={v.curfewTime ?? ""} onChange={(e) => set("curfewTime", e.target.value)} />
+            <TimePicker className="mt-1" value={v.curfewTime ?? ""} onChange={(t) => set("curfewTime", t)} />
           </label>
         </div>
         <div className="mt-3 flex flex-wrap gap-1.5">

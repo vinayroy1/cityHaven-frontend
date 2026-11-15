@@ -10,6 +10,7 @@ import { getStoredUserContact } from "@/lib/auth/storedUser";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
+import { TimePicker } from "@/components/common/TimePicker";
 import { useEngine } from "./EngineContext";
 import { describedBy, domId, FieldShell } from "./FieldShell";
 import { GalleryField } from "./GalleryField";
@@ -196,11 +197,16 @@ function ControlledField({
   const str = f.value === null || f.value === undefined ? "" : String(f.value);
 
   switch (field.type) {
+    case "time":
+      return (
+        <FieldShell {...shell}>
+          <TimePicker id={id} value={str} onChange={(v) => f.onChange(v)} onBlur={f.onBlur} disabled={disabled} placeholder={field.placeholder} {...aria} />
+        </FieldShell>
+      );
     case "text":
     case "email":
     case "url":
     case "date":
-    case "time":
     case "month-year": {
       const inputType =
         field.type === "month-year" ? "month" : field.type === "text" ? "text" : field.type;
@@ -228,7 +234,7 @@ function ControlledField({
               if (slug) v = toSlug(v, true);
               f.onChange(v);
             }}
-            className={cn(inputCls, field.type === "date" || field.type === "time" ? "appearance-none" : "")}
+            className={cn(inputCls, field.type === "date" ? "appearance-none" : "")}
             {...aria}
           />
           {slug && <SlugPreview field={field} value={str} onUseSuggestion={(s) => f.onChange(s)} />}
