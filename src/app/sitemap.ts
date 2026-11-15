@@ -15,6 +15,7 @@ import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 import { SITEMAP_CLUSTERS, type SitemapCluster } from "@/constants/sitemapClusters";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
+import { citySlug, constructionProfilePath } from "@/features/construction/options";
 
 const CITY_CANONICAL_MAP: Record<string, string> = {
   delhi: "new-delhi",
@@ -70,7 +71,7 @@ async function getFallbackProperties(): Promise<Array<{ id: number; slug?: strin
   }
 }
 
-type SlugRow = { slug?: string | null; updatedAt?: string | null; primaryCity?: string | null };
+type SlugRow = { slug?: string | null; updatedAt?: string | null; primaryCity?: string | null; city?: string | null };
 
 /** Walks a paginated list endpoint (page/pageSize) up to `maxPages`; never throws. */
 async function fetchAllPages(path: string, pageSize: number, sizeParam: "pageSize" | "limit" = "pageSize", maxPages = 40): Promise<SlugRow[]> {
@@ -345,10 +346,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // 8b. Hotels & stays, interior designer profiles and flatmate listings
-  const [stays, interiors, flatmates] = await Promise.all([
+  const [stays, interiors, flatmates, construction] = await Promise.all([
     fetchAllPages("/v1/stays", 48),
     fetchAllPages(API_ENDPOINTS.interiors.search.replace(/^.*\/api/, ""), 50, "limit"),
     fetchAllPages("/v1/flatmates", 50),
+    fetchAllPages("/v1/construction", 50, "limit"),
   ]);
   const lastMod = (r: SlugRow) => (r.updatedAt ? new Date(r.updatedAt) : now);
   const stayRoutes: MetadataRoute.Sitemap = [
@@ -358,6 +360,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: lastMod(r),
       changeFrequency: "weekly" as const,
       priority: 0.75,
+    })),
+  ];
+  // Construction companies: directory, one page per city that has listings, and each profile.
+  const constructionCities = Array.from(new Set(construction.map((r) => r.city).filter(Boolean) as string[]));
+  const constructionRoutes: MetadataRoute.Sitemap = [
+    { url: `${SITE_URL}/construction-companies`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    ...constructionCities.map((c) => ({ url: `${SITE_URL}/construction-companies/${citySlug(c)}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.75 })),
+    ...construction.filter((r) => r.slug && r.city).map((r) => ({
+      url: `${SITE_URL}${constructionProfilePath({ slug: r.slug!, city: r.city! })}`,
+      lastModified: lastMod(r),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
     })),
   ];
   const interiorRoutes: MetadataRoute.Sitemap = [
@@ -390,6 +404,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...blogRoutes,
     ...stayRoutes,
     ...interiorRoutes,
+    ...constructionRoutes,
     ...flatmateDetailRoutes,
   ];
 

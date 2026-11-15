@@ -22,6 +22,7 @@ const columns = [
       { label: "EMI Calculator", href: "/emi-calculator" },
       { label: "Free rental agreement (PDF)", href: "/rental-agreement" },
       { label: "Rent receipt generator (HRA)", href: "/rent-receipt" },
+      { label: "House construction companies", href: "/construction-companies" },
       { label: "Home Loans", href: "/home-loans" },
       { label: "Price Trends", href: "/price-trends" },
       { label: "Pricing & Plans", href: "/pricing" },

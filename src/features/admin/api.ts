@@ -20,6 +20,11 @@ import type {
 } from "./types";
 
 /** Interior profile as returned by GET /admin/interiors (full profile + owner + readiness). */
+export type AdminConstructionItem = import("@/features/construction/types").ConstructionProfile & {
+  owner?: { id: number; name?: string | null; email?: string | null; mobileNumber?: string | null };
+  readiness?: { canSubmit: boolean; pct: number; items: { id: string; label: string; required: boolean; done: boolean }[] };
+};
+
 export type AdminInteriorItem = import("@/types/interior.types").InteriorProfile & {
   owner?: { id: number; name?: string | null; email?: string | null; mobileNumber?: string | null };
   readiness?: { canSubmit: boolean; canPublish: boolean; pct: number; items: { id: string; label: string; done: boolean; level: string }[] };
@@ -135,6 +140,12 @@ export const adminApi = {
   },
   async deactivateStaff(staffId: number) {
     return unwrap(await apiClient.post<StaffUser>(API_ENDPOINTS.admin.staff.deactivate(staffId)));
+  },
+  async listConstructionQueue(queue: string) {
+    return unwrap(await apiClient.get<{ items: AdminConstructionItem[]; counts: Record<string, number> }>(API_ENDPOINTS.admin.construction.queue(queue)));
+  },
+  async reviewConstruction(id: number, decision: "APPROVE" | "REQUEST_CHANGES" | "REJECT", notes?: string) {
+    return unwrap(await apiClient.post<{ outcome: string }>(API_ENDPOINTS.admin.construction.review(id), { decision, notes: notes || null }));
   },
   async listInteriorQueue(queue: string) {
     return unwrap(await apiClient.get<{ items: AdminInteriorItem[]; counts: Record<string, number> }>(API_ENDPOINTS.admin.interiors.queue(queue)));

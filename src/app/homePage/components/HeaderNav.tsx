@@ -32,6 +32,7 @@ import { Ruler,
   Users,
   BedDouble,
   Zap,
+  HardHat,
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { BrandLogo } from "@/components/common/BrandLogo";
@@ -90,6 +91,7 @@ const categoryExploreLinks = [
   { label: "Locality Guide", href: "/nearby", icon: MapPin, desc: "Metro, hospitals & schools near any locality" },
   { label: "Area Converter", href: "/area-converter", icon: Ruler, desc: "Sq ft, sq m, sq yd, acre & hectare" },
   { label: "Interior Designers", href: "/interior-designers", icon: Paintbrush, desc: "Architects, modular experts & decor firms" },
+  { label: "Construction Companies", href: "/construction-companies", icon: HardHat, desc: "Builders & contractors to build your house" },
   { label: "Hotels & Stays", href: "/stays", icon: Hotel, desc: "Hotels, guest houses, homestays & dharamshalas" },
   { label: "PG & Co-living", href: "/pg", icon: BedDouble, desc: "Verified hostels & coliving spaces" },
   { label: "Commercial", href: "/commercial", icon: Building2, desc: "Offices, shops & commercial spaces" },
@@ -263,6 +265,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     { label: "Leads", href: "/dashboard/leads", icon: Inbox, badge: newLeads > 0 ? `${newLeads} new` : null, onClick: undefined },
     { label: "My Profile", href: "/dashboard/profile", icon: User, badge: null, onClick: undefined },
     { label: "Interior Designer Profile", href: "/dashboard/interior-profile", icon: Paintbrush, badge: null, onClick: undefined },
+    { label: "Construction Business", href: "/dashboard/construction-profile", icon: HardHat, badge: null, onClick: undefined },
     { label: "My Hotels & Stays", href: "/dashboard/stays", icon: Hotel, badge: null, onClick: undefined },
     { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null, onClick: undefined },
     { label: "My Flatmates", href: "/dashboard/flatmates", icon: Users, badge: null, onClick: undefined },

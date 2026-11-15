@@ -26,6 +26,7 @@ export default function robots(): MetadataRoute.Robots {
           "/emi-calculator",
           "/rental-agreement",
           "/rent-receipt",
+          "/construction-companies",
           "/area-converter",
           "/nearby",
           "/about",

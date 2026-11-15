@@ -31,6 +31,7 @@ import {
   Sliders,
   BookOpen,
   Paintbrush,
+  HardHat,
   PlusCircle,
   Search,
   Users,
@@ -97,6 +98,12 @@ const NAV_ITEMS = [
     label: "Interior Designers",
     href: "/admin/interiors",
     icon: Paintbrush,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SENIOR_QC_LEAD", "QC_REVIEWER", "CATALOG_SPECIALIST", "ANALYST_AUDITOR"],
+  },
+  {
+    label: "Construction Companies",
+    href: "/admin/construction",
+    icon: HardHat,
     allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SENIOR_QC_LEAD", "QC_REVIEWER", "CATALOG_SPECIALIST", "ANALYST_AUDITOR"],
   },
   {
