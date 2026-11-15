@@ -38,6 +38,41 @@ function isLoggedIn() {
   }
 }
 
+/**
+ * Save the click as a lead in the admin contact inbox (POST /v1/contact, source HOME_LOAN), with the
+ * signed-in user's name / email / phone. Fire-and-forget: the bank site opens regardless.
+ * Once per bank per browser session so repeat clicks don't flood the inbox.
+ */
+function recordLoanLead(bank: Bank) {
+  try {
+    const key = `awasio_loan_lead_${bank.id}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
+    const user = JSON.parse(localStorage.getItem(APP_CONFIG.AUTH.USER_KEY) || "{}") as {
+      name?: string; fullName?: string; email?: string; mobileNumber?: string; phone?: string;
+    };
+    const phone = user.mobileNumber || user.phone;
+    void fetch(`${APP_CONFIG.API.BASE_URL}/v1/contact`, {
+      method: "POST",
+      keepalive: true,
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({
+        ...(user.name || user.fullName ? { fullName: (user.name || user.fullName)!.slice(0, 120) } : {}),
+        ...(user.email ? { email: user.email } : {}),
+        ...(phone ? { phone: String(phone).slice(0, 20) } : {}),
+        reason: "GENERAL",
+        source: "HOME_LOAN",
+        subject: `Home loan interest: ${bank.name}`,
+        message: `Clicked "Apply now" for ${bank.name} home loan (${bank.rate.toFixed(2)}% p.a., processing fee ${bank.fee}) on the Awasio home loans page.`,
+        pageUrl: window.location.origin + "/home-loans",
+      }),
+    }).catch(() => {});
+  } catch {
+    // Never block the user on lead logging.
+  }
+}
+
 const noopSubscribe = () => () => {};
 
 export function BankOffers() {
@@ -60,6 +95,7 @@ export function BankOffers() {
       return;
     }
     setDismissed(true);
+    recordLoanLead(bank);
     window.open(bank.url, "_blank", "noopener,noreferrer");
   };
 
