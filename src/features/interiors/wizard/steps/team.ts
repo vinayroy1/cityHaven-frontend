@@ -50,14 +50,13 @@ export const teamStep: StepConfig = {
     },
     {
       id: "documents",
-      title: "Upload a verification document",
-      description: "Individuals: ID proof. Companies: GST certificate or certificate of incorporation.",
+      title: "Upload a verification document (optional)",
+      description: "Get a Verified badge. Individuals: ID proof. Companies: GST certificate or certificate of incorporation.",
       kind: "custom",
       component: "DocumentUploader",
-      badge: "SUBMIT",
+      // Optional: DOCUMENTS_REQUIRED is false, so no "Required" badge and no required count.
       moderated: true,
       props: { field: "team.credentials" },
-      requires: [{ path: "team.credentials", label: "Verification document" }],
       scorePaths: ["team.credentials"],
       weight: 4,
       fields: [],
