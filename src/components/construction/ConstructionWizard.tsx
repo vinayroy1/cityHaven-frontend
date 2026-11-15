@@ -4,6 +4,7 @@ import React from "react";
 import { ArrowLeft, ArrowRight, Building2, CheckCircle2, CircleAlert, CircleDot, HardHat, Loader2, Plus, Send, Trash2, User } from "lucide-react";
 import { toast } from "sonner";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
+import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { getStoredUserContact } from "@/lib/auth/storedUser";
 import { cn } from "@/components/ui/utils";
 import { useSaveMyConstructionMutation, useSubmitMyConstructionMutation } from "@/features/construction/api";
@@ -253,6 +254,7 @@ export function ConstructionWizard({ data, onDone, mode = "setup" }: { data: MyC
                   placeholder="Search your city"
                   hasError={!!errors.city}
                   onChange={(c) => {
+                    if (c.name !== form.city) set("locality", "");
                     set("city", c.name);
                     if (c.state) set("state", c.state);
                   }}
@@ -260,7 +262,21 @@ export function ConstructionWizard({ data, onDone, mode = "setup" }: { data: MyC
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Locality / area" htmlFor="c-loc">
-                  <input id="c-loc" className={inputCls} maxLength={120} placeholder="e.g. Kankarbagh" value={form.locality ?? ""} onChange={(e) => set("locality", e.target.value)} />
+                  {form.city ? (
+                    <PropertyListingLocalitySelector
+                      key={form.city}
+                      value={form.locality ?? ""}
+                      cityName={form.city}
+                      selectedState={form.state ?? undefined}
+                      placeholder="Search locality"
+                      onChange={(l) => {
+                        set("locality", l.name);
+                        if (l.pincode && !form.pincode) set("pincode", l.pincode);
+                      }}
+                    />
+                  ) : (
+                    <input id="c-loc" className={inputCls} disabled placeholder="Choose a city first" />
+                  )}
                 </Field>
                 <Field label="Pincode" htmlFor="c-pin">
                   <input id="c-pin" inputMode="numeric" maxLength={6} className={inputCls} value={form.pincode ?? ""} onChange={(e) => set("pincode", e.target.value.replace(/\D/g, ""))} />
