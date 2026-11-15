@@ -168,6 +168,10 @@ export const API_ENDPOINTS = {
       proofUrl: (id: number) => `${BASE}/admin/project-claims/${id}/proof-url`,
       review: (id: number) => `${BASE}/admin/project-claims/${id}/review`,
     },
+    construction: {
+      queue: (queue: string) => `${BASE}/admin/construction?queue=${encodeURIComponent(queue)}`,
+      review: (id: number) => `${BASE}/admin/construction/${id}/review`,
+    },
     interiors: {
       queue: (queue: string) => `${BASE}/admin/interiors?queue=${encodeURIComponent(queue)}`,
       review: (id: number) => `${BASE}/admin/interiors/${id}/review`,
@@ -263,6 +267,21 @@ export const API_ENDPOINTS = {
     detail: (id: number | string) => `${BASE}/documents/${id}`,
     download: (id: number | string) => `${BASE}/documents/${id}/download`,
     delete: (id: number | string) => `${BASE}/documents/${id}`,
+  },
+  construction: {
+    search: `${BASE}/construction`,
+    cities: `${BASE}/construction/cities`,
+    detail: (slug: string) => `${BASE}/construction/detail/${encodeURIComponent(slug)}`,
+    inquiry: (id: number) => `${BASE}/construction/${id}/inquiries`,
+    contact: (id: number) => `${BASE}/construction/${id}/contact`,
+    me: `${BASE}/construction/me`,
+    submit: `${BASE}/construction/me/submit`,
+    status: `${BASE}/construction/me/status`,
+    projects: `${BASE}/construction/me/projects`,
+    project: (id: number) => `${BASE}/construction/me/projects/${id}`,
+    leads: `${BASE}/construction/me/leads`,
+    lead: (id: number) => `${BASE}/construction/me/leads/${id}`,
+    unlockLead: (id: number) => `${BASE}/construction/me/leads/${id}/unlock`,
   },
   interiors: {
     search: `${BASE}/interiors`,
