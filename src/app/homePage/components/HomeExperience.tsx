@@ -29,6 +29,7 @@ import type { ProjectListing } from "@/types/project.types";
 
 // Below-the-fold card components are split out of the initial homepage bundle.
 const PreferredAgentsSection = dynamic(() => import("./PreferredAgentsSection"));
+const HomeBuildersSection = dynamic(() => import("./HomeBuildersSection"));
 const HomeStaysSection = dynamic(() => import("@/components/stays/HomeStaysSection").then((m) => m.HomeStaysSection));
 const FlatmateCard = dynamic(() => import("@/components/flatmates/FlatmateCard").then((m) => m.FlatmateCard));
 const InteriorDesignerShowcaseCard = dynamic(() =>
@@ -464,6 +465,11 @@ export function HomeExperience({
 
         <RenderWhenNear minHeight={360}>
           <FeaturedSeekersBuddyUpSection selectedCity={selectedCity} />
+        </RenderWhenNear>
+
+        {/* Build, then furnish: builders sit right before interior designers. */}
+        <RenderWhenNear minHeight={420}>
+          <HomeBuildersSection selectedCity={selectedCity} />
         </RenderWhenNear>
 
         <RenderWhenNear minHeight={420}>
