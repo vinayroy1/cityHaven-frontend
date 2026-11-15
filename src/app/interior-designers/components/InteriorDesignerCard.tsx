@@ -153,16 +153,6 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
           <div>
             <span className="font-bold text-slate-900 dark:text-white">{experienceYearsOf(profile)}y</span> Exp
           </div>
-          {/* Portfolio items on Awasio, not lifetime homes completed: label it as such, hide when empty. */}
-          {(profile._count?.projects || 0) > 0 && (
-            <>
-              <div className="h-3 w-px bg-slate-200 dark:bg-slate-700" />
-              <div>
-                <span className="font-bold text-slate-900 dark:text-white">{profile._count?.projects}</span>{" "}
-                {profile._count?.projects === 1 ? "Project" : "Projects"} on Awasio
-              </div>
-            </>
-          )}
           {isCompany && (profile.branches?.length || 0) > 1 && (
             <>
               <div className="h-3 w-px bg-slate-200 dark:bg-slate-700" />
