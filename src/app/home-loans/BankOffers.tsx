@@ -100,7 +100,7 @@ export function BankOffers() {
   };
 
   return (
-    <section className="mx-auto max-w-5xl px-4 pt-10 sm:px-6" aria-labelledby="bank-offers-title">
+    <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6" aria-labelledby="bank-offers-title">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
