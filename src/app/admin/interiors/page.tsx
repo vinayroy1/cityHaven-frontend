@@ -124,7 +124,12 @@ export default function AdminInteriorsPage() {
 function InteriorDetail({ p, onDone }: { p: AdminInteriorItem; onDone: () => void }) {
   const [notes, setNotes] = useState(p.reviewNotes ?? "");
   const [busy, setBusy] = useState<string | null>(null);
-  const missing = (p.readiness?.items ?? []).filter((i) => !i.done);
+  // One row per rule (rules report SUBMIT + PUBLISH separately); required first, optional extras after.
+  const missing = (p.readiness?.items ?? [])
+    .filter((i) => !i.done)
+    .filter((i, idx, all) => all.findIndex((x) => x.id.split(":")[0] === i.id.split(":")[0]) === idx)
+    .sort((a, b) => Number(a.level === "RECOMMENDED") - Number(b.level === "RECOMMENDED"));
+  const missingRequired = missing.filter((i) => i.level !== "RECOMMENDED").length;
   const contact = p.contact;
   const gallery = p.workGallery ?? [];
   const publicUrl = p.slug && p.primaryCity ? interiorProfilePath(p) : null;
@@ -250,13 +255,17 @@ function InteriorDetail({ p, onDone }: { p: AdminInteriorItem; onDone: () => voi
         </ul>
       </Box>
 
-      <Box title={missing.length ? `Not filled yet (${missing.length})` : "Profile checklist"}>
+      <Box title={missing.length ? `Not filled yet (${missingRequired} required, ${missing.length - missingRequired} optional)` : "Profile checklist"}>
         {missing.length ? (
           <ul className="space-y-1">
             {missing.map((i) => (
               <li key={`${i.id}-${i.level}`} className="flex items-center gap-2 text-sm">
-                <Circle className="h-3.5 w-3.5 text-amber-500" /> {i.label}
-                {i.level === "SUBMIT" && <span className="text-xs text-rose-600">required</span>}
+                <Circle className={`h-3.5 w-3.5 ${i.level === "RECOMMENDED" ? "text-sky-500" : "text-amber-500"}`} /> {i.label}
+                {i.level === "RECOMMENDED" ? (
+                  <span className="text-xs text-slate-400">optional</span>
+                ) : (
+                  <span className="text-xs text-rose-600">required</span>
+                )}
               </li>
             ))}
           </ul>
@@ -264,7 +273,7 @@ function InteriorDetail({ p, onDone }: { p: AdminInteriorItem; onDone: () => voi
           <p className="flex items-center gap-2 text-sm text-emerald-700"><CheckCircle2 className="h-4 w-4" /> Everything filled in.</p>
         )}
         {p.readiness && !p.readiness.canPublish && (
-          <p className="mt-2 text-xs text-slate-500">Approving marks it verified, but it only goes live once the items above are filled in.</p>
+          <p className="mt-2 text-xs text-slate-500">Approving marks it verified, but it only goes live once the required items above are filled in. Optional items never block.</p>
         )}
       </Box>
 
