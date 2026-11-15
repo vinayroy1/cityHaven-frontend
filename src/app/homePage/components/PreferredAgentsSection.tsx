@@ -39,7 +39,9 @@ export default function PreferredAgentsSection({
   const { data: apiAdvisors, isLoading } = useGetAdvisorsQuery(
     {
       city: selectedCity,
-      featured: true,
+      // With a city: every advisor there (the API lists homepage-featured ones first), so cities
+      // without hand-picked advisors still get the section. Without a city: the featured picks.
+      ...(selectedCity.trim() ? {} : { featured: true }),
       limit: 8,
     },
     { skip: !isIdle }
