@@ -195,7 +195,7 @@ function MyListings() {
       </div>
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data.map((p) => (
-          <li key={p.id} className="flex">
+          <li key={p.id} className="flex flex-col">
             <ConstructionCard
               p={p}
               badge={
