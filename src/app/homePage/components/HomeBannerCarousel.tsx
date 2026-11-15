@@ -48,8 +48,8 @@ const SLIDES: Slide[] = [
     href: "/propertyListing",
     opensCredits: true,
     icon: Zap,
-    bg: "from-amber-500 via-orange-500 to-rose-500",
-    accent: "text-rose-950",
+    bg: "from-indigo-950 via-slate-900 to-violet-950",
+    accent: "text-amber-400",
     chips: ["1,000 credits free", "Unlock contacts", "Boost listings"],
   },
 
@@ -62,8 +62,8 @@ const SLIDES: Slide[] = [
     cta: "Explore projects",
     href: "/new-projects",
     icon: Building2,
-    bg: "from-slate-800 via-slate-700 to-rose-700",
-    accent: "text-amber-300",
+    bg: "from-slate-900 via-sky-950 to-blue-900",
+    accent: "text-cyan-300",
     chips: ["Floor plans", "Price lists", "Site visits"],
   },
   {
@@ -75,8 +75,8 @@ const SLIDES: Slide[] = [
     cta: "Find a stay",
     href: "/stays",
     icon: Hotel,
-    bg: "from-amber-500 via-orange-400 to-rose-400",
-    accent: "text-rose-900",
+    bg: "from-emerald-950 via-teal-900 to-slate-900",
+    accent: "text-emerald-300",
     chips: ["Daily & monthly", "Near metro", "Instant contact"],
   },
   {
@@ -88,8 +88,8 @@ const SLIDES: Slide[] = [
     cta: "Meet designers",
     href: "/interior-designers",
     icon: Paintbrush,
-    bg: "from-rose-700 via-rose-600 to-pink-500",
-    accent: "text-amber-200",
+    bg: "from-purple-950 via-fuchsia-950 to-slate-900",
+    accent: "text-fuchsia-300",
     chips: ["Portfolios", "Free quotes", "Modular kitchens"],
   },
 
