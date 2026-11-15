@@ -516,6 +516,7 @@ export type InteriorRevealedContact = { phone: string | null; whatsapp: string |
 export const {
   useRevealInteriorContactMutation,
   useSearchInteriorDesignersQuery,
+  useLazySearchInteriorDesignersQuery,
   useGetInteriorProfileDetailQuery,
   useGetMyInteriorListingsQuery,
   useCreateInteriorListingMutation,

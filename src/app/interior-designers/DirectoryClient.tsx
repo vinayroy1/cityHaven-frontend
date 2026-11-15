@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+
+const PAGE_SIZE = 30;
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
@@ -14,7 +16,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { setUserPreferredCity } from "@/lib/geo/geoService";
-import { useSearchInteriorDesignersQuery } from "@/features/interiors/api";
+import { useLazySearchInteriorDesignersQuery, useSearchInteriorDesignersQuery } from "@/features/interiors/api";
 import { InteriorDesignerCard } from "./components/InteriorDesignerCard";
 import type { InteriorProfile, InteriorProviderType, InteriorSearchParams, InteriorSearchResponse } from "@/types/interior.types";
 import {
@@ -84,8 +86,7 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
     selectedBracket === "ALL" &&
     !isVerifiedOnly;
 
-  const query = useSearchInteriorDesignersQuery(
-    {
+  const searchArgs: InteriorSearchParams = {
       city: selectedCity || undefined,
       countryCode: portalCountry.code,
       providerType: providerType === "ALL" ? undefined : providerType,
@@ -94,10 +95,9 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
       // `budgetSegment` filters on the tiers designers pick in their profile.
       budgetSegment: selectedBracket === "ALL" ? undefined : (selectedBracket as InteriorSearchParams["budgetSegment"]),
       isVerified: isVerifiedOnly ? true : undefined,
-      limit: 30,
-    },
-    { skip: isInitialQuery },
-  );
+      limit: PAGE_SIZE,
+  };
+  const query = useSearchInteriorDesignersQuery(searchArgs, { skip: isInitialQuery });
   const data = isInitialQuery ? initialData : query.data;
   const isLoading = !isInitialQuery && query.isLoading;
 
@@ -105,7 +105,28 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
     ? [{ label: "Interior designers", href: "/interior-designers" }, { label: selectedCity }]
     : [{ label: "Interior designers" }];
 
-  const rawDesigners = useMemo(() => data?.items || [], [data]);
+  // "Load more": later pages are appended for the current filters only (key change = fresh list).
+  const filterKey = JSON.stringify(searchArgs);
+  const [more, setMore] = useState<{ key: string; page: number; items: InteriorProfile[] }>({ key: "", page: 1, items: [] });
+  const extra = more.key === filterKey ? more : { key: filterKey, page: 1, items: [] as InteriorProfile[] };
+  const [fetchPage, { isFetching: loadingMore }] = useLazySearchInteriorDesignersQuery();
+  const total = data?.pagination?.total ?? 0;
+  const rawDesigners = useMemo(() => {
+    const first = data?.items || [];
+    const seen = new Set(first.map((d) => d.id));
+    return [...first, ...extra.items.filter((d) => !seen.has(d.id) && (seen.add(d.id), true))];
+  }, [data, extra.items]);
+  const hasMore = rawDesigners.length < total;
+  const loadMore = async () => {
+    const page = extra.page + 1;
+    try {
+      const res = await fetchPage({ ...searchArgs, page }).unwrap();
+      setMore({ key: filterKey, page, items: [...extra.items, ...(res?.items ?? [])] });
+    } catch {
+      // Keep what is shown; the button stays so the visitor can retry.
+    }
+  };
+  const clientFiltered = selectedLocality !== "ALL" || selectedStyle !== "ALL" || !!searchKeyword.trim();
 
   // Client-side filtering for search keyword, specific locality, brand, and design style
   const filteredDesigners = useMemo(() => {
@@ -416,7 +437,13 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
         {/* Count + view */}
         <div className="flex items-center justify-between gap-3">
           <p className="min-w-0 text-sm font-semibold text-slate-700 dark:text-slate-300">
-            {isLoading ? "Loading…" : `${filteredDesigners.length} ${filteredDesigners.length === 1 ? "designer" : "designers"}`}
+            {isLoading
+              ? "Loading…"
+              : (() => {
+                  // Server total when no on-page filter narrows the list; otherwise what's shown.
+                  const n = clientFiltered || !total ? filteredDesigners.length : total;
+                  return `${n} ${n === 1 ? "designer" : "designers"}`;
+                })()}
           </p>
           <div className="inline-flex shrink-0 rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800">
             {(
@@ -485,7 +512,21 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
                 ))}
               </div>
             )
-          ) : (
+          ) : null}
+          {!isLoading && viewTab === "DIRECTORY" && filteredDesigners.length > 0 && hasMore && (
+            <div className="mt-8 flex flex-col items-center gap-2">
+              <button
+                type="button"
+                onClick={() => void loadMore()}
+                disabled={loadingMore}
+                className="inline-flex h-11 min-w-[200px] items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-800 shadow-sm transition hover:border-rose-300 hover:text-rose-700 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+              >
+                {loadingMore ? "Loading…" : "Load more designers"}
+              </button>
+              <p className="text-xs text-slate-500">Showing {rawDesigners.length} of {total}</p>
+            </div>
+          )}
+          {isLoading || viewTab === "DIRECTORY" ? null : (
             /* Inspiration Project Gallery View (Pinterest-style room feed) */
             allProjects.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-300 p-12 text-center dark:border-slate-800">
