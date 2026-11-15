@@ -3,10 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertTriangle, CheckCircle2, CircleDot, Clock, ExternalLink, HardHat, Loader2, Pause, Play, RefreshCw } from "lucide-react";
+import { ArrowLeft, Plus, AlertTriangle, CheckCircle2, CircleDot, Clock, ExternalLink, HardHat, Loader2, Pause, Play, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/components/ui/utils";
-import { useMyConstructionQuery, useSetMyConstructionStatusMutation, useSubmitMyConstructionMutation } from "@/features/construction/api";
+import { type ListingId, useMyConstructionListQuery, useMyConstructionQuery, useSetMyConstructionStatusMutation, useSubmitMyConstructionMutation } from "@/features/construction/api";
 import { constructionProfilePath } from "@/features/construction/options";
 import type { MyConstruction } from "@/features/construction/types";
 import { ConstructionSkeleton } from "./ConstructionSkeleton";
@@ -31,7 +31,7 @@ function StatusCard({ data }: { data: MyConstruction }) {
   const [submit, { isLoading: submitting }] = useSubmitMyConstructionMutation();
   const [setStatus, { isLoading: changing }] = useSetMyConstructionStatusMutation();
   const err = (e: unknown, fallback: string) => toast.error((e as { data?: { message?: string } })?.data?.message || fallback);
-  const resume = () => void setStatus("PUBLISHED").unwrap().then(() => toast.success("Your listing is live again")).catch((e) => err(e, "Couldn't resume"));
+  const resume = () => void setStatus({ profileId: p.id, status: "PUBLISHED" }).unwrap().then(() => toast.success("Your listing is live again")).catch((e) => err(e, "Couldn't resume"));
 
   const view: Record<string, { tone: string; icon: React.ReactNode; title: string; body: React.ReactNode; action?: React.ReactNode }> = {
     DRAFT: {
@@ -40,7 +40,7 @@ function StatusCard({ data }: { data: MyConstruction }) {
       title: "Draft: not submitted yet",
       body: data.readiness.canSubmit ? "Everything required is filled in. Submit for approval to go live." : "Finish the required details, then submit for approval.",
       action: data.readiness.canSubmit ? (
-        <button type="button" className={primaryBtn} disabled={submitting} onClick={() => void submit().unwrap().then(() => toast.success("Submitted for approval")).catch((e) => err(e, "Couldn't submit"))}>
+        <button type="button" className={primaryBtn} disabled={submitting} onClick={() => void submit(p.id).unwrap().then(() => toast.success("Submitted for approval")).catch((e) => err(e, "Couldn't submit"))}>
           {submitting && <Loader2 className="h-4 w-4 animate-spin" />} Submit for approval
         </button>
       ) : undefined,
@@ -67,7 +67,7 @@ function StatusCard({ data }: { data: MyConstruction }) {
           <Link href={constructionProfilePath(p)} target="_blank" className={secondaryBtn}>
             <ExternalLink className="h-4 w-4" /> View public profile
           </Link>
-          <button type="button" className={secondaryBtn} disabled={changing} onClick={() => void setStatus("PAUSED").unwrap().then(() => toast.success("Listing paused")).catch((e) => err(e, "Couldn't pause"))}>
+          <button type="button" className={secondaryBtn} disabled={changing} onClick={() => void setStatus({ profileId: p.id, status: "PAUSED" }).unwrap().then(() => toast.success("Listing paused")).catch((e) => err(e, "Couldn't pause"))}>
             <Pause className="h-4 w-4" /> Pause
           </button>
         </div>
@@ -161,50 +161,132 @@ function Overview({ data, goTab }: { data: MyConstruction; goTab: (t: Tab) => vo
   );
 }
 
+const BASE = "/dashboard/construction-profile";
+
+/** Entry: `?id=` opens one listing, `?id=new` creates another, no id shows all of the owner's listings. */
 export function ConstructionDashboard() {
+  const params = useSearchParams();
+  const id = params.get("id");
+  if (id === "new") return <ListingDashboard key="listing" listingId="new" />;
+  const n = Number(id);
+  if (id && Number.isInteger(n) && n > 0) return <ListingDashboard key="listing" listingId={n} />;
+  return <MyListings />;
+}
+
+function MyListings() {
+  const router = useRouter();
+  const { data, isLoading, isError, refetch, isFetching } = useMyConstructionListQuery();
+  const empty = !isLoading && !isError && (data?.length ?? 0) === 0;
+  React.useEffect(() => {
+    if (empty) router.replace(`${BASE}?id=new`, { scroll: false });
+  }, [empty, router]);
+  if (isLoading || empty) return <ConstructionSkeleton />;
+  if (isError || !data) return <LoadError onRetry={refetch} spinning={isFetching} />;
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Your listings ({data.length})</h2>
+          <p className="text-sm text-slate-500">Each company or branch gets its own listing, enquiries and monthly plan.</p>
+        </div>
+        <Link href={`${BASE}?id=new`} className={primaryBtn}>
+          <Plus className="h-4 w-4" /> Add another listing
+        </Link>
+      </div>
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {data.map((p) => (
+          <li key={p.id} className="flex flex-col gap-2">
+            <ConstructionCard p={p} />
+            <div className="flex items-center justify-between gap-2 px-1">
+              <span className={cn("rounded-full px-2.5 py-1 text-[11px] font-bold", STATUS_TONE[p.status] ?? "bg-slate-100 text-slate-600")}>
+                {STATUS_LABEL[p.status] ?? p.status} · {p.readiness.pct}%
+              </span>
+              <Link href={`${BASE}?id=${p.id}`} className="text-sm font-bold text-rose-600 hover:underline">
+                Manage →
+              </Link>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  DRAFT: "Draft",
+  SUBMITTED: "In review",
+  CHANGES_REQUESTED: "Changes requested",
+  PUBLISHED: "Live",
+  PAUSED: "Paused",
+  REJECTED: "Rejected",
+  ARCHIVED: "Archived",
+};
+const STATUS_TONE: Record<string, string> = {
+  DRAFT: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  SUBMITTED: "bg-sky-100 text-sky-800",
+  CHANGES_REQUESTED: "bg-amber-100 text-amber-800",
+  PUBLISHED: "bg-emerald-100 text-emerald-800",
+  PAUSED: "bg-slate-200 text-slate-700",
+  REJECTED: "bg-rose-100 text-rose-800",
+};
+
+function LoadError({ onRetry, spinning }: { onRetry: () => void; spinning: boolean }) {
+  return (
+    <div className="rounded-3xl border border-rose-200 bg-rose-50 p-6 text-center text-sm text-rose-800">
+      Couldn&apos;t load your listing.
+      <button type="button" onClick={() => void onRetry()} className="ml-2 inline-flex items-center gap-1 font-bold underline">
+        <RefreshCw className={cn("h-3.5 w-3.5", spinning && "animate-spin")} /> Retry
+      </button>
+    </div>
+  );
+}
+
+function ListingDashboard({ listingId }: { listingId: ListingId }) {
   const router = useRouter();
   const params = useSearchParams();
-  const { data, isLoading, isError, refetch, isFetching } = useMyConstructionQuery();
+  const { data, isLoading, isError, refetch, isFetching } = useMyConstructionQuery(listingId);
+  const { data: all } = useMyConstructionListQuery();
   const tab = (params.get("tab") as Tab) || "overview";
-  // Setup stays in the wizard until it's submitted or the owner leaves it (saving each step must not
-  // flip the page to the overview half-way through).
-  const [leftSetup, setLeftSetup] = React.useState(false);
-  // Only someone who opened this page with no listing stays in the wizard; a returning owner with a
-  // saved listing lands on the overview and sees their listing card.
-  const [startedEmpty, setStartedEmpty] = React.useState<boolean | null>(null);
-  if (startedEmpty === null && data) setStartedEmpty(!data.profile);
+  // A listing being created stays in the wizard until it's submitted or the owner leaves it (saving
+  // each step must not flip the page to the overview half-way through).
+  const [inSetup, setInSetup] = React.useState(listingId === "new" || params.get("setup") === "1");
   const goTab = (t: Tab) => {
-    setLeftSetup(true);
-    router.replace(`/dashboard/construction-profile${t === "overview" ? "" : `?tab=${t}`}`, { scroll: false });
+    setInSetup(false);
+    const id = data?.profile?.id ?? listingId;
+    router.replace(`${BASE}?id=${id}${t === "overview" ? "" : `&tab=${t}`}`, { scroll: false });
   };
 
-  if (isLoading) {
-    return <ConstructionSkeleton />;
-  }
-  if (isError || !data) {
+  if (isLoading) return <ConstructionSkeleton />;
+  if (isError || !data) return <LoadError onRetry={refetch} spinning={isFetching} />;
+  if (listingId !== "new" && !data.profile) {
     return (
-      <div className="rounded-3xl border border-rose-200 bg-rose-50 p-6 text-center text-sm text-rose-800">
-        Couldn&apos;t load your listing.
-        <button type="button" onClick={() => void refetch()} className="ml-2 inline-flex items-center gap-1 font-bold underline">
-          <RefreshCw className={cn("h-3.5 w-3.5", isFetching && "animate-spin")} /> Retry
-        </button>
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 text-center text-sm dark:border-slate-800 dark:bg-slate-900">
+        This listing doesn&apos;t exist or isn&apos;t yours. <Link href={BASE} className="font-bold text-rose-600 underline">See your listings</Link>
       </div>
     );
   }
+  const backToAll = (all?.length ?? 0) > 0 && (
+    <Link href={BASE} className="mb-3 inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-rose-600 dark:text-slate-300">
+      <ArrowLeft className="h-4 w-4" /> All listings ({all!.length})
+    </Link>
+  );
 
-  // First-time setup: no listing yet, or a draft that was never submitted.
-  const firstSetup = !data.profile || (data.profile.status === "DRAFT" && !data.profile.submittedAt && !data.profile.publishedAt);
-  if (!data.profile || (firstSetup && startedEmpty && !leftSetup && tab === "overview")) {
+  if (!data.profile || (inSetup && tab === "overview")) {
     return (
       <div>
+        {backToAll}
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-slate-900 to-rose-950 p-4 text-white">
           <HardHat className="h-8 w-8 shrink-0 text-amber-300" />
           <div>
-            <p className="text-sm font-bold">List your construction business on Awasio</p>
+            <p className="text-sm font-bold">{(all?.length ?? 0) > 0 && listingId === "new" ? "Add another construction business" : "List your construction business on Awasio"}</p>
             <p className="text-xs text-slate-300">About 5 minutes. Get enquiries from people building their homes.</p>
           </div>
         </div>
-        <ConstructionWizard data={data} onDone={() => goTab("overview")} />
+        <ConstructionWizard
+          data={data}
+          onCreated={(newId) => router.replace(`${BASE}?id=${newId}&setup=1`, { scroll: false })}
+          onDone={() => goTab("overview")}
+        />
         {data.profile && (
           <p className="mt-2 text-center text-xs text-slate-500">
             <button type="button" className="font-semibold underline" onClick={() => goTab("overview")}>Finish later</button> — your progress is saved.
@@ -217,6 +299,7 @@ export function ConstructionDashboard() {
   const p = data.profile;
   return (
     <div className="space-y-5">
+      {backToAll}
       <nav className="no-scrollbar -mx-4 flex gap-1 overflow-x-auto px-4 sm:mx-0 sm:px-0" aria-label="Listing sections">
         {TABS.map(([t, l]) => (
           <button
@@ -236,7 +319,7 @@ export function ConstructionDashboard() {
       {tab === "overview" && <Overview data={data} goTab={goTab} />}
       {tab === "edit" && <ConstructionWizard key={p.id} data={data} mode={p.status === "DRAFT" || p.status === "CHANGES_REQUESTED" ? "setup" : "edit"} onDone={() => goTab("overview")} />}
       {tab === "projects" && <ProjectsPanel projects={p.projects} profileId={p.id} city={p.city} />}
-      {tab === "leads" && <LeadsPanel />}
+      {tab === "leads" && <LeadsPanel profileId={p.id} />}
     </div>
   );
 }

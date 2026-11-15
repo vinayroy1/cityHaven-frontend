@@ -23,7 +23,7 @@ function ProjectEditor({ initial, profileId, onClose }: { initial: Draft; profil
     if (!p.images.length) return setError("Add at least one photo");
     try {
       const { id, title, city, locality, buildingType, plotSizeSqft, builtUpSqft, floors, packageName, costLakhs, durationMonths, completedOn, images, description, isFeatured } = p;
-      await save({ id, title: title.trim(), city, locality, buildingType, plotSizeSqft, builtUpSqft, floors, packageName, costLakhs, durationMonths, completedOn: completedOn || null, images, coverImage: images[0], description, isFeatured }).unwrap();
+      await save({ id, profileId, title: title.trim(), city, locality, buildingType, plotSizeSqft, builtUpSqft, floors, packageName, costLakhs, durationMonths, completedOn: completedOn || null, images, coverImage: images[0], description, isFeatured }).unwrap();
       toast.success(p.id ? "Project updated" : "Project added");
       onClose();
     } catch (err) {

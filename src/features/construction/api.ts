@@ -25,6 +25,10 @@ const qs = (params?: object) => {
   return s ? `?${s}` : "";
 };
 
+/** A listing id, or "new" for the one being created. */
+export type ListingId = number | "new";
+const pid = (id: ListingId) => `?profileId=${id}`;
+
 export const constructionApi = createApi({
   reducerPath: "constructionApi",
   baseQuery: baseQueryWithReauth,
@@ -53,37 +57,45 @@ export const constructionApi = createApi({
       transformResponse: unwrap<{ phone: string; whatsapp: string }>,
     }),
 
-    // Owner
-    myConstruction: b.query<MyConstruction, void>({
-      query: () => ({ url: API_ENDPOINTS.construction.me }),
+    // Owner. An account can run several listings; every call names the listing (`"new"` = create one).
+    myConstructionList: b.query<(ConstructionProfile & { readiness: MyConstruction["readiness"] })[], void>({
+      query: () => ({ url: API_ENDPOINTS.construction.myList }),
+      transformResponse: unwrap<(ConstructionProfile & { readiness: MyConstruction["readiness"] })[]>,
+      providesTags: ["Mine"],
+    }),
+    myConstruction: b.query<MyConstruction, ListingId>({
+      query: (id) => ({ url: `${API_ENDPOINTS.construction.me}${pid(id)}` }),
       transformResponse: unwrap<MyConstruction>,
       providesTags: ["Mine"],
     }),
-    saveMyConstruction: b.mutation<MyConstruction, ConstructionSave>({
-      query: (body) => ({ url: API_ENDPOINTS.construction.me, method: "PUT", body }),
+    saveMyConstruction: b.mutation<MyConstruction, { profileId: ListingId; body: ConstructionSave }>({
+      query: ({ profileId, body }) => ({ url: `${API_ENDPOINTS.construction.me}${pid(profileId)}`, method: "PUT", body }),
       transformResponse: unwrap<MyConstruction>,
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ profileId }, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          dispatch(constructionApi.util.updateQueryData("myConstruction", undefined, () => data));
+          // Seed the cache under the real id so moving from "new" to the created listing doesn't reload.
+          if (data.profile) dispatch(constructionApi.util.upsertQueryData("myConstruction", data.profile.id, data));
+          if (profileId !== data.profile?.id) dispatch(constructionApi.util.invalidateTags(["Mine"]));
+          else dispatch(constructionApi.util.updateQueryData("myConstructionList", undefined, (list) => list.map((x) => (x.id === data.profile?.id ? { ...x, ...data.profile, readiness: data.readiness } : x))));
         } catch {
           /* the form shows the error */
         }
       },
     }),
-    submitMyConstruction: b.mutation<MyConstruction, void>({
-      query: () => ({ url: API_ENDPOINTS.construction.submit, method: "POST" }),
+    submitMyConstruction: b.mutation<MyConstruction, number>({
+      query: (id) => ({ url: `${API_ENDPOINTS.construction.submit}${pid(id)}`, method: "POST" }),
       transformResponse: unwrap<MyConstruction>,
       invalidatesTags: ["Mine"],
     }),
-    setMyConstructionStatus: b.mutation<MyConstruction, "PAUSED" | "PUBLISHED">({
-      query: (status) => ({ url: API_ENDPOINTS.construction.status, method: "POST", body: { status } }),
+    setMyConstructionStatus: b.mutation<MyConstruction, { profileId: number; status: "PAUSED" | "PUBLISHED" }>({
+      query: ({ profileId, status }) => ({ url: `${API_ENDPOINTS.construction.status}${pid(profileId)}`, method: "POST", body: { status } }),
       transformResponse: unwrap<MyConstruction>,
       invalidatesTags: ["Mine"],
     }),
-    saveConstructionProject: b.mutation<ConstructionProject, Partial<ConstructionProject> & { id?: number }>({
-      query: ({ id, ...body }) => ({
-        url: id ? API_ENDPOINTS.construction.project(id) : API_ENDPOINTS.construction.projects,
+    saveConstructionProject: b.mutation<ConstructionProject, Partial<ConstructionProject> & { id?: number; profileId: number }>({
+      query: ({ id, profileId, ...body }) => ({
+        url: `${id ? API_ENDPOINTS.construction.project(id) : API_ENDPOINTS.construction.projects}${pid(profileId)}`,
         method: id ? "PUT" : "POST",
         body,
       }),
@@ -94,8 +106,8 @@ export const constructionApi = createApi({
       query: (id) => ({ url: API_ENDPOINTS.construction.project(id), method: "DELETE" }),
       invalidatesTags: ["Mine"],
     }),
-    myConstructionLeads: b.query<{ items: ConstructionLead[]; unlockCost: number }, void>({
-      query: () => ({ url: API_ENDPOINTS.construction.leads }),
+    myConstructionLeads: b.query<{ items: ConstructionLead[]; unlockCost: number }, number | void>({
+      query: (id) => ({ url: `${API_ENDPOINTS.construction.leads}${id ? pid(id) : ""}` }),
       transformResponse: unwrap<{ items: ConstructionLead[]; unlockCost: number }>,
       providesTags: ["Leads"],
     }),
@@ -119,6 +131,7 @@ export const {
   useConstructionDetailQuery,
   useSendConstructionInquiryMutation,
   useRevealConstructionContactMutation,
+  useMyConstructionListQuery,
   useMyConstructionQuery,
   useSaveMyConstructionMutation,
   useSubmitMyConstructionMutation,

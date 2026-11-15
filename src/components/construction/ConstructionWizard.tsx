@@ -86,7 +86,7 @@ function stepErrors(step: StepId, f: ConstructionSave): Record<string, string> {
  * `setup`: first-time flow ending in "Submit for approval".
  * `edit`: same steps for a submitted / live listing; the last step just saves.
  */
-export function ConstructionWizard({ data, onDone, mode = "setup" }: { data: MyConstruction | undefined; onDone?: () => void; mode?: "setup" | "edit" }) {
+export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: { data: MyConstruction | undefined; onDone?: () => void; onCreated?: (id: number) => void; mode?: "setup" | "edit" }) {
   const [form, setForm] = React.useState<ConstructionSave>(() => initialForm(data));
   const [stepIdx, setStepIdx] = React.useState(0);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
@@ -103,6 +103,8 @@ export function ConstructionWizard({ data, onDone, mode = "setup" }: { data: MyC
     });
   };
   const entityId = data?.profile?.id ?? "draft";
+  // Id of a listing created by this wizard's first save, so later steps update it instead of making another.
+  const createdId = React.useRef<number | null>(null);
   const top = React.useRef<HTMLDivElement>(null);
 
   const payload = (): ConstructionSave => ({
@@ -116,7 +118,12 @@ export function ConstructionWizard({ data, onDone, mode = "setup" }: { data: MyC
 
   const persist = async () => {
     try {
-      return await save(payload()).unwrap();
+      const res = await save({ profileId: createdId.current ?? data?.profile?.id ?? "new", body: payload() }).unwrap();
+      if (res.profile && !createdId.current && !data?.profile) {
+        createdId.current = res.profile.id;
+        onCreated?.(res.profile.id);
+      }
+      return res;
     } catch (err) {
       const msg = (err as { data?: { message?: string } })?.data?.message;
       toast.error(msg || "Couldn't save. Check your connection and try again.");
@@ -162,7 +169,7 @@ export function ConstructionWizard({ data, onDone, mode = "setup" }: { data: MyC
       return;
     }
     try {
-      await submit().unwrap();
+      await submit(saved.profile!.id).unwrap();
       toast.success("Submitted! We'll review your listing shortly.");
       onDone?.();
     } catch (err) {

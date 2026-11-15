@@ -96,8 +96,8 @@ function LeadCard({ lead, unlockCost }: { lead: ConstructionLead; unlockCost: nu
   );
 }
 
-export function LeadsPanel() {
-  const { data, isLoading, isError, refetch } = useMyConstructionLeadsQuery();
+export function LeadsPanel({ profileId }: { profileId: number }) {
+  const { data, isLoading, isError, refetch } = useMyConstructionLeadsQuery(profileId);
   if (isLoading) return <div className="h-40 animate-pulse rounded-3xl bg-white dark:bg-slate-900" />;
   if (isError)
     return (

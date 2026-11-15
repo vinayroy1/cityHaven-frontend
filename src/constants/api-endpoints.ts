@@ -275,6 +275,7 @@ export const API_ENDPOINTS = {
     inquiry: (id: number) => `${BASE}/construction/${id}/inquiries`,
     contact: (id: number) => `${BASE}/construction/${id}/contact`,
     me: `${BASE}/construction/me`,
+    myList: `${BASE}/construction/me/list`,
     submit: `${BASE}/construction/me/submit`,
     status: `${BASE}/construction/me/status`,
     projects: `${BASE}/construction/me/projects`,
