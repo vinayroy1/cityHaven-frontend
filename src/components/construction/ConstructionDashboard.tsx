@@ -195,16 +195,25 @@ function MyListings() {
       </div>
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data.map((p) => (
-          <li key={p.id} className="flex flex-col gap-2">
-            <ConstructionCard p={p} />
-            <div className="flex items-center justify-between gap-2 px-1">
-              <span className={cn("rounded-full px-2.5 py-1 text-[11px] font-bold", STATUS_TONE[p.status] ?? "bg-slate-100 text-slate-600")}>
-                {STATUS_LABEL[p.status] ?? p.status} · {p.readiness.pct}%
-              </span>
-              <Link href={`${BASE}?id=${p.id}`} className="text-sm font-bold text-rose-600 hover:underline">
-                Manage →
-              </Link>
-            </div>
+          <li key={p.id} className="flex">
+            <ConstructionCard
+              p={p}
+              badge={
+                <span className={cn("rounded-full px-2.5 py-1 text-[10px] font-bold shadow-sm", STATUS_TONE[p.status] ?? "bg-slate-100 text-slate-600")}>
+                  {STATUS_LABEL[p.status] ?? p.status} · {p.readiness.pct}%
+                </span>
+              }
+              actions={
+                <>
+                  <Link href={constructionProfilePath(p)} target="_blank" className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
+                    Preview <ExternalLink className="h-3.5 w-3.5" />
+                  </Link>
+                  <Link href={`${BASE}?id=${p.id}`} className="inline-flex h-10 items-center justify-center rounded-xl bg-rose-600 text-sm font-bold text-white hover:bg-rose-700">
+                    Manage
+                  </Link>
+                </>
+              }
+            />
           </li>
         ))}
       </ul>
@@ -222,7 +231,7 @@ const STATUS_LABEL: Record<string, string> = {
   ARCHIVED: "Archived",
 };
 const STATUS_TONE: Record<string, string> = {
-  DRAFT: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  DRAFT: "bg-white text-slate-700",
   SUBMITTED: "bg-sky-100 text-sky-800",
   CHANGES_REQUESTED: "bg-amber-100 text-amber-800",
   PUBLISHED: "bg-emerald-100 text-emerald-800",
