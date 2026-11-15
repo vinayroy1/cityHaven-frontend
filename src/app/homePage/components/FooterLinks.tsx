@@ -22,13 +22,22 @@ const columns = [
       { label: "EMI Calculator", href: "/emi-calculator" },
       { label: "Free rental agreement (PDF)", href: "/rental-agreement" },
       { label: "Rent receipt generator (HRA)", href: "/rent-receipt" },
-      { label: "House construction companies", href: "/construction-companies" },
-      { label: "Infrastructure contractors", href: "/construction-companies?segment=INFRA" },
       { label: "Home Loans", href: "/home-loans" },
       { label: "Price Trends", href: "/price-trends" },
       { label: "Pricing & Plans", href: "/pricing" },
-      { label: "Find verified agents", href: "/agents" },
       { label: "Blog & Guides", href: "/blog" },
+    ],
+  },
+  {
+    title: "Home Services",
+    links: [
+      { label: "Interior designers", href: "/interior-designers" },
+      { label: "House construction companies", href: "/construction-companies" },
+      { label: "Infrastructure contractors", href: "/construction-companies?segment=INFRA" },
+      { label: "Pandit for griha pravesh & puja", href: "/pandit-vastu" },
+      { label: "Vastu consultants", href: "/pandit-vastu?segment=VASTU" },
+      { label: "Hotels & stays", href: "/stays" },
+      { label: "Find verified agents", href: "/agents" },
     ],
   },
 ];
@@ -39,7 +48,7 @@ export function FooterLinks() {
       <div className="mx-auto hidden max-w-6xl px-4 py-6 sm:block sm:px-6 sm:py-10">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-12 md:gap-8">
           {/* Brand Info */}
-          <div className="space-y-2.5 md:col-span-6">
+          <div className="space-y-2.5 md:col-span-4">
             <BrandLogo size="md" showTagline taglineText="Verified Real Estate" />
             <p className="hidden sm:block max-w-md text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               Buy, rent, post and manage approved property listings across Indian cities with transparent pricing.
@@ -124,8 +133,8 @@ export function FooterLinks() {
             </div>
           </div>
 
-          {/* Links: 2 side-by-side columns on mobile and desktop */}
-          <div className="grid grid-cols-2 gap-4 sm:gap-8 md:col-span-6">
+          {/* Links: 3 side-by-side columns */}
+          <div className="grid grid-cols-3 gap-4 sm:gap-6 md:col-span-8">
             {columns.map((col) => (
               <div key={col.title}>
                 <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">

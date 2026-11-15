@@ -34,6 +34,7 @@ import { Ruler,
   BedDouble,
   Zap,
   HardHat,
+  Flame,
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { BrandLogo } from "@/components/common/BrandLogo";
@@ -88,20 +89,26 @@ const emiCalculatorLinks = [
   },
 ];
 
-const categoryExploreLinks = [
-  { label: "Locality Guide", href: "/nearby", icon: MapPin, desc: "Metro, hospitals & schools near any locality" },
-  { label: "Area Converter", href: "/area-converter", icon: Ruler, desc: "Sq ft, sq m, sq yd, acre & hectare" },
-  { label: "Interior Designers", href: "/interior-designers", icon: Paintbrush, desc: "Architects, modular experts & decor firms" },
-  { label: "Construction Companies", href: "/construction-companies", icon: HardHat, desc: "Builders & contractors to build your house" },
-  { label: "Hotels & Stays", href: "/stays", icon: Hotel, desc: "Hotels, guest houses, homestays & dharamshalas" },
+const propertyExploreLinks = [
   { label: "PG & Co-living", href: "/pg", icon: BedDouble, desc: "Verified hostels & coliving spaces" },
   { label: "Commercial", href: "/commercial", icon: Building2, desc: "Offices, shops & commercial spaces" },
   { label: "Plots & Land", href: "/plot", icon: MapPin, desc: "Residential & commercial plots" },
-  { label: "Price Trends", href: "/price-trends", icon: TrendingUp, desc: "Locality price index & appreciation rates" },
   { label: "Find Flatmates", href: "/flatmate", icon: Users, desc: "Find verified roommates nearby" },
   { label: "Find Agents", href: "/agents", icon: ShieldCheck, desc: "Connect with verified local brokers" },
+  { label: "Price Trends", href: "/price-trends", icon: TrendingUp, desc: "Locality price index & appreciation rates" },
   { label: "Post Project (Builder)", href: "/post-project", icon: Building2, desc: "List new residential & commercial projects" },
 ];
+
+const homeServiceLinks = [
+  { label: "Interior Designers", href: "/interior-designers", icon: Paintbrush, desc: "Architects, modular experts & decor firms" },
+  { label: "Construction Companies", href: "/construction-companies", icon: HardHat, desc: "Builders & contractors to build your house" },
+  { label: "Pandit & Vastu", href: "/pandit-vastu", icon: Flame, desc: "Griha pravesh, puja & vastu consultants" },
+  { label: "Hotels & Stays", href: "/stays", icon: Hotel, desc: "Hotels, guest houses, homestays & dharamshalas" },
+  { label: "Locality Guide", href: "/nearby", icon: MapPin, desc: "Metro, hospitals & schools near any locality" },
+  { label: "Area Converter", href: "/area-converter", icon: Ruler, desc: "Sq ft, sq m, sq yd, acre & hectare" },
+];
+
+const categoryExploreLinks = [...propertyExploreLinks, ...homeServiceLinks];
 
 const companySupportLinks = [
   { label: "About Us", href: "/about", icon: Info },
@@ -268,6 +275,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     { label: "My Profile", href: "/dashboard/profile", icon: User, badge: null, onClick: undefined },
     { label: "Interior Designer Profile", href: "/dashboard/interior-profile", icon: Paintbrush, badge: null, onClick: undefined },
     { label: "Construction Business", href: "/dashboard/construction-profile", icon: HardHat, badge: null, onClick: undefined },
+    { label: "Pandit & Vastu Listing", href: "/dashboard/pandit-profile", icon: Flame, badge: null, onClick: undefined },
     { label: "My Hotels & Stays", href: "/dashboard/stays", icon: Hotel, badge: null, onClick: undefined },
     { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null, onClick: undefined },
     { label: "My Flatmates", href: "/dashboard/flatmates", icon: Users, badge: null, onClick: undefined },
@@ -376,17 +384,61 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
             </button>
 
             {moreNavOpen && (
-              <div className="absolute right-0 top-10 z-50 w-[540px] max-w-[calc(100vw-32px)] origin-top-right rounded-2xl border border-slate-200/90 bg-white/95 p-3 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 dark:border-slate-800 dark:bg-slate-950/95">
-                <div className="grid grid-cols-2 gap-3">
+              <div className="absolute right-0 top-10 z-50 w-[800px] max-w-[calc(100vw-32px)] origin-top-right rounded-2xl border border-slate-200/90 bg-white/95 p-3 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 dark:border-slate-800 dark:bg-slate-950/95">
+                <div className="grid grid-cols-3 gap-3">
                   {/* Section 1: Explore Portals */}
                   <div>
                     <div className="px-2 py-1 mb-1">
                       <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                        Explore Portals
+                        Explore Properties
                       </p>
                     </div>
                     <div className="space-y-0.5">
-                      {categoryExploreLinks.map((item) => {
+                      {propertyExploreLinks.map((item) => {
+                        const Icon = item.icon;
+                        const active = isLinkActive(item.href);
+                        return (
+                          <Link
+                            key={item.label}
+                            href={item.href}
+                            prefetch={false}
+                            onNavigate={closeMenusAfterNavigation}
+                            className={`flex items-start gap-2.5 rounded-xl p-2 transition-all ${
+                              active
+                                ? "bg-rose-50/80 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+                                : "text-slate-700 hover:bg-slate-100/80 dark:text-slate-200 dark:hover:bg-slate-900"
+                            }`}
+                          >
+                            <div
+                              className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                                active
+                                  ? "bg-rose-100 text-rose-600 dark:bg-rose-900/50 dark:text-rose-300"
+                                  : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                              }`}
+                            >
+                              <Icon className="h-3.5 w-3.5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <span className="text-xs font-semibold block leading-tight">{item.label}</span>
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                                {item.desc}
+                              </span>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Section 1b: Home services & tools */}
+                  <div>
+                    <div className="px-2 py-1 mb-1">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                        Home Services & Tools
+                      </p>
+                    </div>
+                    <div className="space-y-0.5">
+                      {homeServiceLinks.map((item) => {
                         const Icon = item.icon;
                         const active = isLinkActive(item.href);
                         return (
@@ -630,7 +682,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
 
               {/* Polished Account Dropdown */}
               {accountOpen && (
-                <div className="absolute right-0 top-12 z-50 w-64 max-w-[calc(100vw-24px)] origin-top-right animate-in fade-in zoom-in-95 rounded-2xl border border-slate-200/90 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 dark:border-slate-800 dark:bg-slate-950/95">
+                <div className="absolute right-0 top-12 z-50 w-64 max-w-[calc(100vw-24px)] max-h-[calc(100dvh-9rem-env(safe-area-inset-bottom))] sm:max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain origin-top-right animate-in fade-in zoom-in-95 rounded-2xl border border-slate-200/90 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl duration-150 dark:border-slate-800 dark:bg-slate-950/95">
                   {/* User Profile Header */}
                   <div className="rounded-xl bg-slate-50/80 p-3 dark:bg-slate-900/80">
                     <div className="flex items-center gap-3">

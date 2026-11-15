@@ -27,6 +27,7 @@ export default function robots(): MetadataRoute.Robots {
           "/rental-agreement",
           "/rent-receipt",
           "/construction-companies",
+          "/pandit-vastu",
           "/area-converter",
           "/nearby",
           "/about",

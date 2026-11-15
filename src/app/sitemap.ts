@@ -16,6 +16,7 @@ import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 import { SITEMAP_CLUSTERS, type SitemapCluster } from "@/constants/sitemapClusters";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 import { citySlug, constructionProfilePath } from "@/features/construction/options";
+import { panditProfilePath } from "@/features/pandit/options";
 
 const CITY_CANONICAL_MAP: Record<string, string> = {
   delhi: "new-delhi",
@@ -346,11 +347,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // 8b. Hotels & stays, interior designer profiles and flatmate listings
-  const [stays, interiors, flatmates, construction] = await Promise.all([
+  const [stays, interiors, flatmates, construction, pandits] = await Promise.all([
     fetchAllPages("/v1/stays", 48),
     fetchAllPages(API_ENDPOINTS.interiors.search.replace(/^.*\/api/, ""), 50, "limit"),
     fetchAllPages("/v1/flatmates", 50),
     fetchAllPages("/v1/construction", 50, "limit"),
+    fetchAllPages("/v1/pandits", 50, "limit"),
   ]);
   const lastMod = (r: SlugRow) => (r.updatedAt ? new Date(r.updatedAt) : now);
   const stayRoutes: MetadataRoute.Sitemap = [
@@ -369,6 +371,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...constructionCities.map((c) => ({ url: `${SITE_URL}/construction-companies/${citySlug(c)}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.75 })),
     ...construction.filter((r) => r.slug && r.city).map((r) => ({
       url: `${SITE_URL}${constructionProfilePath({ slug: r.slug!, city: r.city! })}`,
+      lastModified: lastMod(r),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
+  ];
+  // Pandits & vastu consultants: directory, city pages and profiles.
+  const panditCities = Array.from(new Set(pandits.map((r) => r.city).filter(Boolean) as string[]));
+  const panditRoutes: MetadataRoute.Sitemap = [
+    { url: `${SITE_URL}/pandit-vastu`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    ...panditCities.map((c) => ({ url: `${SITE_URL}/pandit-vastu/${citySlug(c)}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.75 })),
+    ...pandits.filter((r) => r.slug && r.city).map((r) => ({
+      url: `${SITE_URL}${panditProfilePath({ slug: r.slug!, city: r.city! })}`,
       lastModified: lastMod(r),
       changeFrequency: "weekly" as const,
       priority: 0.7,
@@ -405,6 +419,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...stayRoutes,
     ...interiorRoutes,
     ...constructionRoutes,
+    ...panditRoutes,
     ...flatmateDetailRoutes,
   ];
 

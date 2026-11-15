@@ -6,7 +6,7 @@
  */
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, BadgePercent, Building2, ChevronLeft, ChevronRight, Hotel, Paintbrush, PlusCircle, Zap, type LucideIcon } from "lucide-react";
+import { ArrowRight, BadgePercent, Building2, ChevronLeft, ChevronRight, Flame, Hotel, Paintbrush, PlusCircle, Zap, type LucideIcon } from "lucide-react";
 
 type Slide = {
   id: string;
@@ -91,6 +91,19 @@ const SLIDES: Slide[] = [
     bg: "from-purple-950 via-fuchsia-950 to-slate-900",
     accent: "text-fuchsia-300",
     chips: ["Portfolios", "Free quotes", "Modular kitchens"],
+  },
+  {
+    id: "pandit-vastu",
+    eyebrow: "Moving in?",
+    title: "Book a pandit for",
+    highlight: "griha pravesh",
+    body: "Pandits for every puja and vastu experts for homes, plots and offices. Compare dakshina and reviews.",
+    cta: "Find pandit & vastu",
+    href: "/pandit-vastu",
+    icon: Flame,
+    bg: "from-orange-600 via-amber-600 to-rose-700",
+    accent: "text-amber-100",
+    chips: ["Griha pravesh", "Bhoomi pujan", "Vastu check"],
   },
 
 ];

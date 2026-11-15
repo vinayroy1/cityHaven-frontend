@@ -17,6 +17,7 @@ import { notificationsApi } from "@/features/notifications/api";
 import { messagingApi } from "@/features/messaging/api";
 import { interiorsApi } from "@/features/interiors/api";
 import { constructionApi } from "@/features/construction/api";
+import { panditApi } from "@/features/pandit/api";
 
 export const makeStore = () =>
   configureStore({
@@ -32,6 +33,7 @@ export const makeStore = () =>
       [projectsApi.reducerPath]: projectsApi.reducer,
       [interiorsApi.reducerPath]: interiorsApi.reducer,
       [constructionApi.reducerPath]: constructionApi.reducer,
+      [panditApi.reducerPath]: panditApi.reducer,
       [blogApi.reducerPath]: blogApi.reducer,
       [locationsApi.reducerPath]: locationsApi.reducer,
       [leadsApi.reducerPath]: leadsApi.reducer,
@@ -50,6 +52,7 @@ export const makeStore = () =>
         projectsApi.middleware,
         interiorsApi.middleware,
         constructionApi.middleware,
+        panditApi.middleware,
         blogApi.middleware,
         locationsApi.middleware,
         leadsApi.middleware,

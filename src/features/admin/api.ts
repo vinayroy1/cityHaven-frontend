@@ -25,6 +25,11 @@ export type AdminConstructionItem = import("@/features/construction/types").Cons
   readiness?: { canSubmit: boolean; pct: number; items: { id: string; label: string; required: boolean; done: boolean }[] };
 };
 
+export type AdminPanditItem = import("@/features/pandit/types").PanditProfile & {
+  owner?: { id: number; name?: string | null; email?: string | null; mobileNumber?: string | null };
+  readiness?: { canSubmit: boolean; pct: number; items: { id: string; label: string; required: boolean; done: boolean }[] };
+};
+
 export type AdminInteriorItem = import("@/types/interior.types").InteriorProfile & {
   owner?: { id: number; name?: string | null; email?: string | null; mobileNumber?: string | null };
   readiness?: { canSubmit: boolean; canPublish: boolean; pct: number; items: { id: string; label: string; done: boolean; level: string }[] };
@@ -146,6 +151,18 @@ export const adminApi = {
   },
   async reviewConstruction(id: number, decision: "APPROVE" | "REQUEST_CHANGES" | "REJECT", notes?: string) {
     return unwrap(await apiClient.post<{ outcome: string }>(API_ENDPOINTS.admin.construction.review(id), { decision, notes: notes || null }));
+  },
+  async listPanditQueue(queue: string) {
+    return unwrap(await apiClient.get<{ items: AdminPanditItem[]; counts: Record<string, number> }>(API_ENDPOINTS.admin.pandits.queue(queue)));
+  },
+  async reviewPandit(id: number, decision: "APPROVE" | "REQUEST_CHANGES" | "REJECT", notes?: string) {
+    return unwrap(await apiClient.post<{ outcome: string }>(API_ENDPOINTS.admin.pandits.review(id), { decision, notes: notes || null }));
+  },
+  async listPanditReviews(id: number) {
+    return unwrap(await apiClient.get<import("@/features/pandit/types").PanditReview[]>(API_ENDPOINTS.admin.pandits.reviews(id)));
+  },
+  async setPanditReviewHidden(reviewId: number, hidden: boolean) {
+    return unwrap(await apiClient.post<unknown>(API_ENDPOINTS.admin.pandits.reviewVisibility(reviewId), { hidden }));
   },
   async listInteriorQueue(queue: string) {
     return unwrap(await apiClient.get<{ items: AdminInteriorItem[]; counts: Record<string, number> }>(API_ENDPOINTS.admin.interiors.queue(queue)));

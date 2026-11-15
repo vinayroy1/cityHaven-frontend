@@ -108,6 +108,12 @@ const NAV_ITEMS = [
     allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SENIOR_QC_LEAD", "QC_REVIEWER", "CATALOG_SPECIALIST", "ANALYST_AUDITOR"],
   },
   {
+    label: "Pandit & Vastu",
+    href: "/admin/pandits",
+    icon: Flame,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SENIOR_QC_LEAD", "QC_REVIEWER", "CATALOG_SPECIALIST", "ANALYST_AUDITOR"],
+  },
+  {
     label: "Property Quality Control",
     href: "/admin/properties",
     icon: Building2,
