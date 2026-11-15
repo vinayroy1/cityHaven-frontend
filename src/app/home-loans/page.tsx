@@ -6,6 +6,7 @@ import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
+import { BankOffers } from "./BankOffers";
 
 export const metadata: Metadata = {
   title: { absolute: "Home Loans - Awasio" },
@@ -69,6 +70,10 @@ export default function HomeLoansPage() {
           </div>
         </div>
 
+        <React.Suspense fallback={null}>
+          <BankOffers />
+        </React.Suspense>
+
         {/* Benefits Grid */}
         <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
           <div className="grid gap-6 sm:grid-cols-3">
@@ -78,7 +83,7 @@ export default function HomeLoansPage() {
               </div>
               <h2 className="mt-4 text-lg font-bold text-slate-950 dark:text-white">Competitive Rates</h2>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                Access low interest rates starting from 8.35% p.a. with flexible repayment tenures up to 30 years.
+                Access low interest rates starting from 7.35% p.a. with flexible repayment tenures up to 30 years.
               </p>
             </div>
 
