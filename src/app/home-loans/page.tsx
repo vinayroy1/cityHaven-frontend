@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Landmark, Percent, ShieldCheck, CheckCircle2, ArrowRight } from "lucide-react";
+import { ArrowLeft, Landmark, ArrowRight } from "lucide-react";
 import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
@@ -74,40 +74,6 @@ export default function HomeLoansPage() {
           <BankOffers />
         </React.Suspense>
 
-        {/* Benefits Grid */}
-        <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-          <div className="grid gap-6 sm:grid-cols-3">
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
-                <Percent className="h-6 w-6" />
-              </div>
-              <h2 className="mt-4 text-lg font-bold text-slate-950 dark:text-white">Competitive Rates</h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                Access low interest rates starting from 7.35% p.a. with flexible repayment tenures up to 30 years.
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
-                <ShieldCheck className="h-6 w-6" />
-              </div>
-              <h2 className="mt-4 text-lg font-bold text-slate-950 dark:text-white">Digital Approval</h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                Minimal paperwork and hassle-free instant digital eligibility checks with leading public and private lenders.
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 text-sky-600 dark:bg-sky-950 dark:text-sky-400">
-                <CheckCircle2 className="h-6 w-6" />
-              </div>
-              <h2 className="mt-4 text-lg font-bold text-slate-950 dark:text-white">End-to-End Support</h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                Dedicated loan advisors to guide you through documentation, property valuation, and loan disbursement.
-              </p>
-            </div>
-          </div>
-        </div>
       </main>
 
       <FooterLinks />
