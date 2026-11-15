@@ -95,7 +95,7 @@ export const createInteriorInitialValues = (): InteriorWizardValues => ({
   contact: {
     contactName: "",
     phone: "",
-    whatsappSameAsPhone: false,
+    whatsappSameAsPhone: true, // most Indian business numbers are on WhatsApp
     whatsapp: "",
     email: "",
     showPhonePublicly: false,

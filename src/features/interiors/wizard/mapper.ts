@@ -653,7 +653,8 @@ export function profileToForm(profile: Partial<InteriorProfile> | null | undefin
   const c = p.contact as (Partial<ContactAvailability> & { acceptingNewProjects?: boolean | null }) | null | undefined;
   const phone = str(c?.phone ?? p.primaryPhone);
   const whatsapp = str(c?.whatsapp ?? p.whatsappPhone);
-  const same = !!phone && whatsapp === phone;
+  // No separate WhatsApp saved yet (new listing) or the same number: treat as "same as phone".
+  const same = !whatsapp || whatsapp === phone;
   // v2 JSON wins (null = unanswered); legacy rows fall back to the flat column.
   const accepting = c ? (c.acceptingNewProjects ?? null) : (p.isAcceptingProjects ?? null);
   const leadPref = (c?.leadPreference || p.preferredContactMethod || "") as LeadPreference | "";

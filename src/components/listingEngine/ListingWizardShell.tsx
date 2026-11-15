@@ -478,7 +478,7 @@ function ShellInner<V extends FormValues>({
                 />
                 {isLast && !readiness.canSubmit && (
                   <p className="mt-2 text-center text-xs text-slate-500 lg:text-right">
-                    {submitItemsLeft} required {submitItemsLeft === 1 ? "item" : "items"} left before you can submit.
+                    {submitItemsLeft} required {submitItemsLeft === 1 ? "item" : "items"} left before you can go live.
                   </p>
                 )}
                 {exitHref && (

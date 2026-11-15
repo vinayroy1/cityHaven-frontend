@@ -79,7 +79,7 @@ export function InteriorWizard() {
       topNav={topNav}
       vertical={config}
       heading="List your interior studio"
-      subheading="About 10 minutes. Saved as you go — come back any time."
+      subheading="About 3 minutes. Saved as you go — add more details later from your dashboard."
       exitHref={exitHref}
       submitLabel="Submit for review"
       publishLabel="Submit & publish"
