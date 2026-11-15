@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, ArrowRight, Building2, CheckCircle2, CircleAlert, CircleDot, HardHat, Loader2, Plus, Send, Trash2, User } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, CheckCircle2, CircleAlert, CircleDot, HardHat, Loader2, Plus, Send, Trash2, User, X } from "lucide-react";
 import { toast } from "sonner";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
@@ -286,7 +286,32 @@ export function ConstructionWizard({ data, onDone, mode = "setup" }: { data: MyC
                 <input id="c-addr" className={inputCls} maxLength={300} value={form.address ?? ""} onChange={(e) => set("address", e.target.value)} />
               </Field>
               <Field label="Other cities you work in" hint="Customers in these cities will also find you.">
-                <TagInput value={form.serviceCities ?? []} onChange={(v) => set("serviceCities", v)} placeholder="Type a city and press Enter" max={30} />
+                <div className="space-y-2">
+                  {(form.serviceCities ?? []).length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {(form.serviceCities ?? []).map((c) => (
+                        <span key={c} className="inline-flex items-center gap-1 rounded-full bg-rose-50 py-1 pl-3 pr-1.5 text-sm font-medium text-rose-700 dark:bg-rose-950/50 dark:text-rose-200">
+                          {c}
+                          <button type="button" aria-label={`Remove ${c}`} onClick={() => set("serviceCities", (form.serviceCities ?? []).filter((x) => x !== c))} className="rounded-full p-0.5 hover:bg-rose-100 dark:hover:bg-rose-900">
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {(form.serviceCities ?? []).length < 30 && (
+                    <PropertyListingCitySelector
+                      key={(form.serviceCities ?? []).join("|")}
+                      value=""
+                      placeholder="Add a city"
+                      onChange={(c) => {
+                        const list = form.serviceCities ?? [];
+                        if (!c.name || c.name === form.city || list.some((x) => x.toLowerCase() === c.name.toLowerCase())) return;
+                        set("serviceCities", [...list, c.name]);
+                      }}
+                    />
+                  )}
+                </div>
               </Field>
             </>
           )}
