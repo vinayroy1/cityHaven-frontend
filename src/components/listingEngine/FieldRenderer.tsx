@@ -23,6 +23,7 @@ import { chip, helpText, inputBase } from "./theme";
 /** Types that should span the full row of a 2-column section grid. */
 export const FULL_WIDTH_TYPES = new Set([
   "textarea",
+  "tel", // +91 prefix and "Use my number" need the room; half width squeezed the input to nothing
   "chip-radio",
   "chip-multi",
   "chip-add",
@@ -244,9 +245,9 @@ function ControlledField({
     case "tel":
       return (
         <FieldShell {...shell}>
-          <div className="flex min-w-0 gap-2">
-            <div className="relative min-w-0 flex-1">
-              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500">+91</span>
+          <div className="flex min-w-0 flex-wrap gap-2">
+            <div className="relative min-w-[200px] flex-1">
+              <span className="pointer-events-none absolute inset-y-1.5 left-1.5 flex items-center rounded-lg bg-slate-100 px-2.5 text-sm font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">+91</span>
               <input
                 id={id}
                 ref={f.ref}
@@ -259,7 +260,7 @@ function ControlledField({
                 maxLength={10}
                 onBlur={f.onBlur}
                 onChange={(e) => f.onChange(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                className={cn(inputCls, "pl-11 tabular-nums")}
+                className={cn(inputCls, "pl-16 text-base tracking-wide tabular-nums")}
                 {...aria}
               />
             </div>
