@@ -12,6 +12,7 @@ export function StickyActionBar({
   primary,
   secondary,
   extra,
+  tone = "neutral",
 }: {
   onBack?: () => void;
   backLabel?: string;
@@ -20,6 +21,8 @@ export function StickyActionBar({
   secondary?: { label: string; onClick: () => void; busy?: boolean; disabled?: boolean };
   /** quiet action next to the primary, e.g. "Save & exit" or "Preview". */
   extra?: React.ReactNode;
+  /** "brand": rose primary button (step-card layout). */
+  tone?: "neutral" | "brand";
 }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 lg:static lg:mt-6 lg:rounded-2xl lg:border lg:px-5 lg:pb-3">
@@ -55,7 +58,10 @@ export function StickyActionBar({
             onClick={primary.onClick}
             disabled={primary.disabled || primary.busy}
             className={cn(
-              "inline-flex h-11 items-center gap-1.5 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:opacity-40 dark:bg-white dark:text-slate-900",
+              "inline-flex h-11 items-center gap-1.5 rounded-xl px-4 text-sm font-semibold text-white shadow-sm transition disabled:opacity-40",
+              tone === "brand"
+                ? "bg-rose-600 font-bold shadow-rose-200 hover:bg-rose-700 dark:shadow-none"
+                : "bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900",
             )}
           >
             {primary.busy && <Loader2 className="h-4 w-4 animate-spin" />}

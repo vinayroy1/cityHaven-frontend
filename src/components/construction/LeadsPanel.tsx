@@ -6,7 +6,7 @@ import { Inbox, Loader2, Lock, MessageCircle, Phone, Unlock } from "lucide-react
 import { toast } from "sonner";
 import { cn } from "@/components/ui/utils";
 import { useMyConstructionLeadsQuery, useUnlockConstructionLeadMutation, useUpdateConstructionLeadMutation } from "@/features/construction/api";
-import { BUILDING_TYPE_OPTIONS, FLOOR_OPTIONS, LEAD_STATUS_OPTIONS, START_WHEN_OPTIONS, label } from "@/features/construction/options";
+import { BUILDING_TYPE_OPTIONS, ENQUIRY_TYPE_OPTIONS, FLOOR_OPTIONS, LEAD_STATUS_OPTIONS, START_WHEN_OPTIONS, label } from "@/features/construction/options";
 import type { ConstructionLead, LeadStatus } from "@/features/construction/types";
 
 const timeAgo = (iso: string) => {
@@ -20,6 +20,8 @@ function LeadCard({ lead, unlockCost }: { lead: ConstructionLead; unlockCost: nu
   const [unlock, { isLoading: unlocking }] = useUnlockConstructionLeadMutation();
   const [update, { isLoading: updating }] = useUpdateConstructionLeadMutation();
   const facts = [
+    lead.organization ?? "",
+    lead.enquiryType ? label(ENQUIRY_TYPE_OPTIONS, lead.enquiryType) : "",
     lead.floors ? label(FLOOR_OPTIONS, lead.floors) : "",
     lead.plotSizeSqft ? `${lead.plotSizeSqft.toLocaleString("en-IN")} sq.ft plot` : "",
     lead.buildingType ? label(BUILDING_TYPE_OPTIONS, lead.buildingType) : "",

@@ -82,7 +82,6 @@ export function ListingSummary({ profile: p }: { profile: InteriorProfile }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="px-1 text-sm font-bold text-slate-900 dark:text-white">Your listing at a glance</h2>
 
       {/* Identity */}
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">

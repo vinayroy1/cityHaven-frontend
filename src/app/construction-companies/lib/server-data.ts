@@ -18,6 +18,9 @@ async function getJson<T>(endpoint: string): Promise<{ ok: boolean; status: numb
     const body = (await res.json()) as { data?: T };
     return { ok: true, status: res.status, data: body?.data ?? null };
   } catch {
+    // `next build` runs without the backend (Docker build has no network to it): render an empty shell
+    // and let ISR fill it on the first request instead of failing the whole build.
+    if (process.env.NEXT_PHASE === "phase-production-build") return { ok: true, status: 0, data: null };
     return { ok: false, status: 0, data: null };
   }
 }

@@ -2,12 +2,11 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
-import { BackButton } from "@/components/common/BackButton";
 import { cn } from "@/components/ui/utils";
 import { InteriorListingStatus } from "@/types/interior.types";
-import { MANAGE_SECTIONS, manageHref, type ManageSectionId } from "./sections";
+import { EDIT_SECTIONS, MANAGE_SECTIONS, MANAGE_TABS, manageHref, tabForSection, type ManageSectionId, type ManageTab } from "./sections";
 import { useManageListing } from "./useManageListing";
 import { StatusBadge } from "./StatusBadge";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
@@ -33,7 +32,6 @@ export function InteriorManageLayout({ children }: { children: ReactNode }) {
 
   const name = profile.displayName || profile.businessName || "Your listing";
   const isLive = profile.status === InteriorListingStatus.PUBLISHED || (!profile.status && profile.isPublished);
-  const visibleSections = MANAGE_SECTIONS.filter((s) => !s.stepId || stepHealth[s.stepId] !== "hidden");
 
   const sectionLabel = MANAGE_SECTIONS.find((s) => s.id === current)?.label ?? "Overview";
   const crumbs: BreadcrumbTrailItem[] = [
@@ -44,8 +42,6 @@ export function InteriorManageLayout({ children }: { children: ReactNode }) {
       : { label: name, href: manageHref("overview", profile.id) },
     ...(current === "overview" ? [] : [{ label: sectionLabel }]),
   ];
-  // Back goes up one level: section → overview → all listings.
-  const backHref = current === "overview" ? "/dashboard/interior-profile" : manageHref("overview", profile.id);
 
   const dot = (id: ManageSectionId) => {
     const step = MANAGE_SECTIONS.find((s) => s.id === id)?.stepId;
@@ -55,68 +51,80 @@ export function InteriorManageLayout({ children }: { children: ReactNode }) {
     return <span aria-label="Complete" className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />;
   };
 
+  const tab = tabForSection(current);
+  const editSections = EDIT_SECTIONS.filter((s) => stepHealth[s.stepId!] !== "hidden");
+  const tabHref = (t: ManageTab) =>
+    t === "edit" ? manageHref(editSections[0]?.id ?? "identity", profile.id) : manageHref(t === "overview" ? "overview" : t, profile.id);
+
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
-      <header className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-8">
+      <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <PageBreadcrumbs items={crumbs} includeHome={false} renderJsonLd={false} />
-          <div className="mt-1 flex min-w-0 items-center gap-2">
-            <BackButton
-              variant="icon"
-              fallbackHref={backHref}
-              ariaLabel="Go back"
-              className="sm:hidden"
-            />
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <h1 className="truncate text-xl font-bold text-slate-900 dark:text-white">{name}</h1>
-              <StatusBadge profile={profile} />
-            </div>
+          <div className="hidden sm:block">
+            <PageBreadcrumbs items={crumbs} includeHome={false} renderJsonLd={false} />
           </div>
-          <p className="text-xs text-slate-500">Interior business listing</p>
+          <Link href="/dashboard/interior-profile" className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-rose-600 sm:hidden dark:text-slate-300">
+            <ArrowLeft className="h-4 w-4" /> All listings
+          </Link>
+          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2">
+            <h1 className="truncate text-xl font-black tracking-tight text-slate-950 sm:text-2xl dark:text-white">{name}</h1>
+            <StatusBadge profile={profile} />
+          </div>
         </div>
         {isLive && profile.slug && (
           <Link
             href={interiorProfilePath(profile)}
             target="_blank"
-            className="inline-flex w-fit items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+            className="inline-flex h-10 w-fit items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
-            View public page <ExternalLink className="h-3.5 w-3.5" />
+            View public page <ExternalLink className="h-4 w-4" />
           </Link>
         )}
       </header>
 
-      <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
-        {/* Mobile: horizontal pills. Desktop: sidebar. */}
-        <nav aria-label="Listing sections" className="-mx-4 lg:mx-0 lg:w-60 lg:shrink-0">
-          <ul className="flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] lg:sticky lg:top-20 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:px-0">
-            {visibleSections.map((s, i) => {
-              const active = s.id === current;
-              const showHeading = s.group && s.group !== visibleSections[i - 1]?.group;
-              return (
-                <li key={s.id} className="shrink-0">
-                  {showHeading && (
-                    <p className="hidden px-3 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wide text-slate-400 lg:block">{s.group}</p>
-                  )}
-                  <Link
-                    href={manageHref(s.id, profile?.id)}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "flex items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors lg:rounded-xl lg:border-transparent lg:text-sm",
-                      active
-                        ? "border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-900"
-                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 lg:bg-transparent",
-                    )}
-                  >
-                    <span className="flex-1">{s.label}</span>
-                    {dot(s.id)}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+      {/* Tabs */}
+      <nav aria-label="Listing sections" className="no-scrollbar -mx-4 mb-5 flex gap-1 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+        {MANAGE_TABS.map((t) => (
+          <Link
+            key={t.id}
+            href={tabHref(t.id)}
+            aria-current={tab === t.id ? "page" : undefined}
+            className={cn(
+              "shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition",
+              tab === t.id ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900" : "bg-white text-slate-600 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800",
+            )}
+          >
+            {t.label}
+          </Link>
+        ))}
+      </nav>
+
+      {/* Edit listing: compact section strip (scrolls on mobile), green dot = complete */}
+      {tab === "edit" && (
+        <nav aria-label="Edit sections" className="no-scrollbar -mx-4 mb-4 flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+          {editSections.map((s) => {
+            const active = s.id === current;
+            return (
+              <Link
+                key={s.id}
+                href={manageHref(s.id, profile.id)}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border px-3 py-1.5 text-xs font-semibold transition",
+                  active
+                    ? "border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-200"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300",
+                )}
+              >
+                {s.label}
+                {dot(s.id)}
+              </Link>
+            );
+          })}
         </nav>
-        <main className="min-w-0 flex-1">{children}</main>
-      </div>
+      )}
+
+      <main className="min-w-0">{children}</main>
     </div>
   );
 }

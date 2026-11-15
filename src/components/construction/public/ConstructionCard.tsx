@@ -8,12 +8,17 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import {
+  SECTOR_OPTIONS,
   SERVICE_OPTIONS,
+  TURNOVER_OPTIONS,
   constructionProfilePath,
+  formatCr,
   formatRate,
+  isInfra,
   label,
 } from "@/features/construction/options";
 import type { ConstructionProfile } from "@/features/construction/types";
+import { InteriorPhotoCarousel } from "@/components/interiors/InteriorPhotoCarousel";
 
 /** Directory card (server-safe: no hooks). */
 /** `badge` sits on the photo's top-right; `actions` replaces the bottom buttons (owner dashboard uses both). */
@@ -22,16 +27,33 @@ export function ConstructionCard({
   priority = false,
   badge,
   actions,
+  completeness,
 }: {
   p: ConstructionProfile;
   priority?: boolean;
   badge?: ReactNode;
   actions?: ReactNode;
+  /** Owner views: profile completeness 0–100, shown as a progress bar. */
+  completeness?: number;
 }) {
   const href = constructionProfilePath(p);
-  const cover =
-    p.coverImage || p.workGallery?.[0] || p.projects?.[0]?.coverImage || null;
+  const photos = Array.from(
+    new Set(
+      [p.coverImage, ...(p.workGallery ?? []), ...(p.projects ?? []).flatMap((x) => [x.coverImage, ...(x.images ?? [])])].filter(
+        (u): u is string => Boolean(u),
+      ),
+    ),
+  );
   const years = p.experienceYears;
+  const infra = isInfra(p);
+  const tags = infra ? (p.sectors ?? []).slice(0, 3).map((s) => label(SECTOR_OPTIONS, s)) : p.services.slice(0, 3).map((s) => label(SERVICE_OPTIONS, s));
+  const headline = infra
+    ? p.maxContractCr
+      ? { k: "Largest contract", v: formatCr(p.maxContractCr) }
+      : p.turnoverBand
+        ? { k: "Annual turnover", v: label(TURNOVER_OPTIONS, p.turnoverBand) }
+        : { k: "Infrastructure", v: "Govt & private works" }
+    : { k: p.quoteOnly ? "Pricing" : "Starting from", v: p.quoteOnly || !p.startingRate ? "Price on request" : formatRate(p.startingRate) };
   return (
     <article className="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
       <Link
@@ -39,26 +61,33 @@ export function ConstructionCard({
         className="relative block aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-800 to-slate-950"
         aria-label={p.businessName}
       >
-        {cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={cover}
-            alt={`${p.businessName} construction work`}
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-            loading={priority ? "eager" : "lazy"}
-          />
-        ) : (
-          <span className="flex h-full w-full items-center justify-center">
-            <HardHat className="h-12 w-12 text-amber-300/80" />
-          </span>
-        )}
-        <span className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent" />
+        <InteriorPhotoCarousel
+          photos={photos}
+          alt={p.businessName}
+          fallback={
+            <span className="flex h-full w-full items-center justify-center">
+              <HardHat className="h-12 w-12 text-amber-300/80" />
+            </span>
+          }
+          renderImage={(src, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={src}
+              alt={`${p.businessName} construction work ${i + 1}`}
+              className="h-full w-full object-cover"
+              loading={priority && i === 0 ? "eager" : "lazy"}
+            />
+          )}
+        />
+        <span className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent" />
         <span className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/80 px-2.5 py-1 text-[10px] font-bold text-white backdrop-blur">
             <Building2 className="h-3 w-3" />{" "}
-            {p.providerType === "COMPANY"
-              ? "Construction company"
-              : "Contractor"}
+            {infra
+              ? "Infra contractor"
+              : p.providerType === "COMPANY"
+                ? "Construction company"
+                : "Contractor"}
           </span>
           {p.isVerified && (
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-1 text-[10px] font-bold text-white">
@@ -67,15 +96,11 @@ export function ConstructionCard({
           )}
         </span>
         {badge && <span className="absolute right-3 top-3">{badge}</span>}
-        <span className="absolute bottom-3 left-3 text-white">
+        <span className="pointer-events-none absolute bottom-3 left-3 text-white">
           <span className="block text-[10px] font-semibold uppercase tracking-wider opacity-80">
-            {p.quoteOnly ? "Pricing" : "Starting from"}
+            {headline.k}
           </span>
-          <span className="block text-lg font-black">
-            {p.quoteOnly || !p.startingRate
-              ? "Price on request"
-              : formatRate(p.startingRate)}
-          </span>
+          <span className="block text-lg font-black">{headline.v}</span>
         </span>
       </Link>
       <div className="flex flex-1 flex-col p-4">
@@ -101,7 +126,7 @@ export function ConstructionCard({
             />
           )}
         </div>
-        <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 border-y border-slate-100 py-2 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
+        <div className="mt-3 flex h-9 items-center gap-x-3 overflow-hidden whitespace-nowrap border-y border-slate-100 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
           {years ? (
             <span>
               <b className="text-slate-900 dark:text-white">{years}y</b>{" "}
@@ -114,23 +139,39 @@ export function ConstructionCard({
               projects
             </span>
           ) : null}
-          {p.structuralWarrantyYears ? (
+          {infra && p.majorClients?.length ? (
+            <span className="min-w-0 truncate">
+              Clients: <b className="text-slate-900 dark:text-white">{p.majorClients.slice(0, 2).join(", ")}</b>
+            </span>
+          ) : null}
+          {!infra && p.structuralWarrantyYears ? (
             <span className="inline-flex items-center gap-1">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />{" "}
               {p.structuralWarrantyYears}y structural warranty
             </span>
           ) : null}
         </div>
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {p.services.slice(0, 3).map((s) => (
+        <div className="mt-3 flex h-6 flex-wrap gap-1.5 overflow-hidden">
+          {tags.map((s) => (
             <span
               key={s}
-              className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+              className="max-w-full truncate rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300"
             >
-              {label(SERVICE_OPTIONS, s)}
+              {s}
             </span>
           ))}
         </div>
+        {typeof completeness === "number" && (
+          <div className="mt-3">
+            <div className="flex items-center justify-between text-[11px] font-semibold">
+              <span className="text-slate-600 dark:text-slate-300">Profile completeness</span>
+              <span className="text-slate-900 dark:text-white">{completeness}%</span>
+            </div>
+            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800" role="progressbar" aria-valuenow={completeness} aria-valuemin={0} aria-valuemax={100} aria-label="Profile completeness">
+              <div className={`h-full rounded-full transition-all ${completeness >= 100 ? "bg-emerald-500" : "bg-rose-500"}`} style={{ width: `${Math.max(0, Math.min(100, completeness))}%` }} />
+            </div>
+          </div>
+        )}
         <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
           {actions ?? (
             <>
@@ -144,7 +185,7 @@ export function ConstructionCard({
                 href={`${href}#quote`}
                 className="inline-flex h-10 items-center justify-center rounded-xl bg-rose-600 text-sm font-bold text-white hover:bg-rose-700"
               >
-                Get free quote
+                {infra ? "Send enquiry" : "Get free quote"}
               </Link>
             </>
           )}

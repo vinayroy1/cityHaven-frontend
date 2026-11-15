@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { Sofa } from "lucide-react";
 import { InteriorWizardSkeleton } from "@/components/interiors/skeletons";
 import { ListingWizardShell } from "@/components/listingEngine";
 import { useInteriorWizard } from "@/features/interiors/wizard/useInteriorWizard";
@@ -78,7 +79,9 @@ export function InteriorWizard() {
     <ListingWizardShell
       topNav={topNav}
       vertical={config}
-      heading="List your interior studio"
+      layout="steps"
+      bannerIcon={<Sofa className="h-8 w-8" />}
+      heading={profile?.id ? `Set up ${listingName}` : "List your interior studio on Awasio"}
       subheading="About 3 minutes. Saved as you go — add more details later from your dashboard."
       exitHref={exitHref}
       submitLabel="Submit for review"

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, ArrowRight, Building2, CheckCircle2, CircleAlert, CircleDot, HardHat, Loader2, Plus, Send, Trash2, User, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, Home, Landmark, CheckCircle2, CircleAlert, CircleDot, HardHat, Loader2, Plus, Send, Trash2, User, X } from "lucide-react";
 import { toast } from "sonner";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
@@ -10,16 +10,22 @@ import { cn } from "@/components/ui/utils";
 import { useSaveMyConstructionMutation, useSubmitMyConstructionMutation } from "@/features/construction/api";
 import {
   BUILDING_TYPE_OPTIONS,
+  CERTIFICATION_OPTIONS,
+  CLIENT_SUGGESTIONS,
+  EQUIPMENT_SUGGESTIONS,
   IN_HOUSE_OPTIONS,
   MATERIAL_GROUPS,
   PACKAGE_PRESETS,
+  SECTOR_OPTIONS,
   SERVICE_OPTIONS,
+  TURNOVER_OPTIONS,
 } from "@/features/construction/options";
-import type { ConstructionPackage, ConstructionSave, MyConstruction } from "@/features/construction/types";
+import type { ConstructionPackage, ConstructionSave, ConstructionSegment, ContractorRegistration, MyConstruction, TurnoverBand } from "@/features/construction/types";
 import { ChipMulti, Field, PhotoUploader, TagInput, inputCls, primaryBtn, secondaryBtn, textareaCls, toInt } from "./ui";
 
 type StepId = "basics" | "location" | "services" | "pricing" | "photos" | "contact";
-const STEPS: { id: StepId; label: string; title: string; sub: string }[] = [
+type Step = { id: StepId; label: string; title: string; sub: string };
+const STEPS: Step[] = [
   { id: "basics", label: "Business", title: "Tell us about your business", sub: "This is what customers see first." },
   { id: "location", label: "Location", title: "Where do you work?", sub: "Customers search by city." },
   { id: "services", label: "Services", title: "What do you build?", sub: "Pick everything you take on." },
@@ -28,13 +34,32 @@ const STEPS: { id: StepId; label: string; title: string; sub: string }[] = [
   { id: "contact", label: "Contact", title: "How should customers reach you?", sub: "Then review and submit for approval." },
 ];
 
+/** Same step ids (readiness items point at them), wording for infrastructure / govt contractors. */
+const INFRA_STEPS: Step[] = [
+  { id: "basics", label: "Company", title: "Tell us about your company", sub: "Departments, developers and partners see this first." },
+  { id: "location", label: "Location", title: "Where are you based?", sub: "Head office, and the states or cities you take work in." },
+  { id: "services", label: "Sectors", title: "What kind of projects do you execute?", sub: "Pick every sector you have done or bid for." },
+  { id: "pricing", label: "Credentials", title: "Registrations & capacity", sub: "Contractor class, turnover and clients help you get trusted faster. All optional." },
+  { id: "photos", label: "Photos", title: "Show your sites", sub: "Roads, buildings, plants, machinery: anything you've executed." },
+  { id: "contact", label: "Contact", title: "How should people reach you?", sub: "Then review and submit for approval." },
+];
+
 const PHONE_RE = /^(\+?91|0)?[6-9]\d{9}$/;
 const cleanPhone = (s: string) => s.replace(/[\s()-]/g, "");
 
 function initialForm(d: MyConstruction | undefined): ConstructionSave {
   const p = d?.profile;
   const me = getStoredUserContact();
+  const urlSegment = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("segment") === "INFRA" ? "INFRA" : null;
   return {
+    segment: p?.segment ?? urlSegment ?? "RESIDENTIAL",
+    sectors: p?.sectors ?? [],
+    registrations: p?.registrations ?? [],
+    turnoverBand: p?.turnoverBand ?? null,
+    maxContractCr: p?.maxContractCr ?? null,
+    certifications: p?.certifications ?? [],
+    majorClients: p?.majorClients ?? [],
+    equipment: p?.equipment ?? [],
     providerType: p?.providerType ?? "COMPANY",
     businessName: p?.businessName && p.businessName !== "My construction company" ? p.businessName : "",
     ownerName: p?.ownerName ?? me?.name ?? "",
@@ -73,6 +98,15 @@ const savablePackages = (pk: ConstructionPackage[] = []) =>
 
 function stepErrors(step: StepId, f: ConstructionSave): Record<string, string> {
   const e: Record<string, string> = {};
+  if (f.segment === "INFRA") {
+    if (step === "basics" && !f.businessName?.trim()) e.businessName = "Enter your company name";
+    if (step === "location" && !f.city?.trim()) e.city = "Choose your head office city";
+    if (step === "services" && !(f.sectors ?? []).length) e.sectors = "Pick at least one sector";
+    if (step === "pricing" && (f.registrations ?? []).some((r) => !r.authority.trim())) e.registrations = "Enter the department for each registration, or remove the empty row";
+    if (step === "contact" && !PHONE_RE.test(cleanPhone(f.phone ?? ""))) e.phone = "Enter a valid 10-digit mobile number";
+    if (step === "contact" && f.whatsapp && !PHONE_RE.test(cleanPhone(f.whatsapp))) e.whatsapp = "Enter a valid WhatsApp number or leave it empty";
+    return e;
+  }
   if (step === "basics" && !f.businessName?.trim()) e.businessName = "Enter your business name";
   if (step === "location" && !f.city?.trim()) e.city = "Choose your city";
   if (step === "services" && !(f.services ?? []).length) e.services = "Pick at least one service";
@@ -92,7 +126,9 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [save, { isLoading: saving }] = useSaveMyConstructionMutation();
   const [submit, { isLoading: submitting }] = useSubmitMyConstructionMutation();
-  const step = STEPS[stepIdx];
+  const infra = form.segment === "INFRA";
+  const steps = infra ? INFRA_STEPS : STEPS;
+  const step = steps[stepIdx];
   const set = <K extends keyof ConstructionSave>(k: K, v: ConstructionSave[K]) => {
     setForm((x) => ({ ...x, [k]: v }));
     setErrors((e) => {
@@ -112,6 +148,7 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
     phone: form.phone ? cleanPhone(form.phone) : form.phone,
     whatsapp: form.whatsapp ? cleanPhone(form.whatsapp) : "",
     packages: savablePackages(form.packages),
+    registrations: (form.registrations ?? []).filter((r) => r.authority.trim()),
     businessName: form.businessName?.trim() || undefined,
     city: form.city?.trim() || undefined,
   });
@@ -145,7 +182,7 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
     }
     const saved = await persist();
     if (!saved) return;
-    if (stepIdx < STEPS.length - 1) go(stepIdx + 1);
+    if (stepIdx < steps.length - 1) go(stepIdx + 1);
   };
 
   const finish = async () => {
@@ -164,7 +201,7 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
     if (!saved.readiness.canSubmit) {
       const first = saved.readiness.items.find((i) => i.required && !i.done);
       toast.error(`Please add: ${saved.readiness.items.filter((i) => i.required && !i.done).map((i) => i.label).join(", ")}`);
-      const idx = STEPS.findIndex((s) => s.id === first?.step);
+      const idx = steps.findIndex((s) => s.id === first?.step);
       if (idx >= 0) go(idx);
       return;
     }
@@ -184,7 +221,7 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
     <div ref={top} className="scroll-mt-24">
       {/* Progress */}
       <ol className="mb-5 grid grid-cols-6 gap-1.5" aria-label="Steps">
-        {STEPS.map((s, i) => (
+        {steps.map((s, i) => (
           <li key={s.id}>
             <button
               type="button"
@@ -201,17 +238,47 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
       </ol>
 
       <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
-        <p className="text-xs font-semibold uppercase tracking-wider text-rose-600">Step {stepIdx + 1} of {STEPS.length}</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-rose-600">Step {stepIdx + 1} of {steps.length}</p>
         <h2 className="mt-1 text-xl font-black tracking-tight text-slate-950 sm:text-2xl dark:text-white">{step.title}</h2>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{step.sub}</p>
 
         <div className="mt-6 space-y-5">
           {step.id === "basics" && (
             <>
+              <div>
+                <p className="mb-2 text-sm font-semibold text-slate-800 dark:text-slate-200">What kind of work do you do?</p>
+                <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Kind of work">
+                  {([
+                    ["RESIDENTIAL", "Homes & buildings", "Houses, villas, apartments, shops for private clients", Home],
+                    ["INFRA", "Infrastructure / Govt contracts", "Roads, bridges, hospitals, schools, water, EPC", Landmark],
+                  ] as const).map(([v, l, h, Icon]) => (
+                    <button
+                      key={v}
+                      type="button"
+                      role="radio"
+                      aria-checked={form.segment === v}
+                      onClick={() => {
+                        set("segment", v as ConstructionSegment);
+                        if (v === "INFRA") set("providerType", "COMPANY");
+                      }}
+                      className={cn(
+                        "flex items-start gap-3 rounded-2xl border-2 p-3 text-left transition sm:p-4",
+                        form.segment === v ? "border-rose-500 bg-rose-50/60 dark:bg-rose-950/30" : "border-slate-200 hover:border-slate-300 dark:border-slate-700",
+                      )}
+                    >
+                      <Icon className={cn("mt-0.5 h-5 w-5 shrink-0", form.segment === v ? "text-rose-600" : "text-slate-400")} />
+                      <span>
+                        <span className="block text-sm font-bold text-slate-900 dark:text-white">{l}</span>
+                        <span className="block text-xs text-slate-500">{h}</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Business type">
                 {([
-                  ["COMPANY", "Construction company", "Registered firm or builder", Building2],
-                  ["INDIVIDUAL", "Independent contractor", "Thekedar / small team", User],
+                  ["COMPANY", infra ? "Company / firm" : "Construction company", infra ? "Pvt Ltd, LLP, partnership, proprietorship" : "Registered firm or builder", Building2],
+                  ["INDIVIDUAL", infra ? "Individual contractor" : "Independent contractor", infra ? "Registered contractor in own name" : "Thekedar / small team", User],
                 ] as const).map(([v, l, h, Icon]) => (
                   <button
                     key={v}
@@ -232,7 +299,7 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Business name" required htmlFor="c-name" error={errors.businessName}>
-                  <input id="c-name" className={inputCls} maxLength={120} placeholder="e.g. Shree Ram Constructions" value={form.businessName ?? ""} onChange={(e) => set("businessName", e.target.value)} />
+                  <input id="c-name" className={inputCls} maxLength={120} placeholder={infra ? "e.g. Shree Ram Infra Projects Pvt Ltd" : "e.g. Shree Ram Constructions"} value={form.businessName ?? ""} onChange={(e) => set("businessName", e.target.value)} />
                 </Field>
                 <Field label="Owner / contact person" htmlFor="c-owner">
                   <input id="c-owner" className={inputCls} maxLength={120} value={form.ownerName ?? ""} onChange={(e) => set("ownerName", e.target.value)} />
@@ -247,7 +314,7 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
               <Field label="Logo or your photo" hint="Square image works best.">
                 <PhotoUploader single value={form.logo ? [form.logo] : []} onChange={(v) => set("logo", v[0] ?? "")} entityId={entityId} folder="logo" label="Upload logo" />
               </Field>
-              <Field label="About your company" htmlFor="c-about" hint="Experience, kind of homes you build, areas you cover. 2–4 lines is enough.">
+              <Field label="About your company" htmlFor="c-about" hint={infra ? "Key projects, departments you work with, states you cover. 2–4 lines is enough." : "Experience, kind of homes you build, areas you cover. 2–4 lines is enough."}>
                 <textarea id="c-about" rows={4} maxLength={3000} className={textareaCls} value={form.about ?? ""} onChange={(e) => set("about", e.target.value)} />
               </Field>
             </>
@@ -292,7 +359,7 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
               <Field label="Office address" htmlFor="c-addr" hint="Not shown publicly in full. Helps us verify your business.">
                 <input id="c-addr" className={inputCls} maxLength={300} value={form.address ?? ""} onChange={(e) => set("address", e.target.value)} />
               </Field>
-              <Field label="Other cities you work in" hint="Customers in these cities will also find you.">
+              <Field label={infra ? "Other cities / districts you take work in" : "Other cities you work in"} hint={infra ? "You will also appear in these cities." : "Customers in these cities will also find you."}>
                 <div className="space-y-2">
                   {(form.serviceCities ?? []).length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
@@ -323,7 +390,47 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
             </>
           )}
 
-          {step.id === "services" && (
+          {step.id === "services" && infra && (
+            <>
+              <Field label="Sectors" required error={errors.sectors}>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {SECTOR_OPTIONS.map((o) => {
+                    const on = (form.sectors ?? []).includes(o.value);
+                    return (
+                      <button
+                        key={o.value}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => set("sectors", on ? (form.sectors ?? []).filter((x) => x !== o.value) : [...(form.sectors ?? []), o.value])}
+                        className={cn(
+                          "flex items-start gap-3 rounded-2xl border-2 p-3 text-left transition",
+                          on ? "border-rose-500 bg-rose-50/60 dark:bg-rose-950/30" : "border-slate-200 hover:border-slate-300 dark:border-slate-700",
+                        )}
+                      >
+                        <span className="text-xl" aria-hidden>{o.icon}</span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-bold text-slate-900 dark:text-white">{o.label}</span>
+                          <span className="block text-xs text-slate-500">{o.hint}</span>
+                        </span>
+                        {on && <CheckCircle2 className="ml-auto h-5 w-5 shrink-0 text-rose-600" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </Field>
+              <Field label="In-house team & support">
+                <ChipMulti options={IN_HOUSE_OPTIONS.filter((o) => o.value !== "3D_ELEVATION")} value={form.inHouse ?? []} onChange={(v) => set("inHouse", v)} />
+              </Field>
+              <Field label="Machinery & plants you own" hint="Tap a suggestion or type your own.">
+                <TagInput value={form.equipment ?? []} max={30} suggestions={EQUIPMENT_SUGGESTIONS} placeholder="e.g. Hot mix plant" onChange={(v) => set("equipment", v)} />
+              </Field>
+              <Field label="Projects you can run at once" htmlFor="c-conc">
+                <input id="c-conc" inputMode="numeric" className={inputCls} placeholder="e.g. 4" value={form.maxConcurrentProjects ?? ""} onChange={(e) => set("maxConcurrentProjects", toInt(e.target.value))} />
+              </Field>
+            </>
+          )}
+
+          {step.id === "services" && !infra && (
             <>
               <Field label="Services" required error={errors.services}>
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -368,7 +475,58 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
             </>
           )}
 
-          {step.id === "pricing" && (
+          {step.id === "pricing" && infra && (
+            <>
+              <Field label="Contractor registrations" hint="e.g. Bihar PWD — Class I, CPWD — Class II, MES — Class A." error={errors.registrations}>
+                <div className="space-y-2">
+                  {(form.registrations ?? []).map((r, i) => {
+                    const upd = (patch: Partial<ContractorRegistration>) => set("registrations", (form.registrations ?? []).map((x, j) => (j === i ? { ...x, ...patch } : x)));
+                    return (
+                      <div key={i} className="grid grid-cols-[1fr_auto] gap-2 rounded-2xl border border-slate-200 p-2 sm:grid-cols-[1.4fr_1fr_1fr_auto] dark:border-slate-700">
+                        <input aria-label="Department / authority" className={inputCls} maxLength={120} placeholder="Department, e.g. Bihar PWD" value={r.authority} onChange={(e) => upd({ authority: e.target.value })} />
+                        <button type="button" aria-label="Remove registration" onClick={() => set("registrations", (form.registrations ?? []).filter((_, j) => j !== i))} className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 hover:bg-rose-50 hover:text-rose-600 sm:order-last">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        <input aria-label="Class" className={inputCls} maxLength={40} placeholder="Class, e.g. Class I" value={r.contractorClass ?? ""} onChange={(e) => upd({ contractorClass: e.target.value })} />
+                        <input aria-label="Registration number" className={inputCls} maxLength={60} placeholder="Reg. no. (optional)" value={r.number ?? ""} onChange={(e) => upd({ number: e.target.value })} />
+                      </div>
+                    );
+                  })}
+                  {(form.registrations ?? []).length < 10 && (
+                    <button type="button" className={secondaryBtn} onClick={() => set("registrations", [...(form.registrations ?? []), { authority: "", contractorClass: "", number: "" }])}>
+                      <Plus className="h-4 w-4" /> Add registration
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Annual turnover" htmlFor="c-turn">
+                  <select id="c-turn" className={inputCls} value={form.turnoverBand ?? ""} onChange={(e) => set("turnoverBand", (e.target.value || null) as TurnoverBand | null)}>
+                    <option value="">Prefer not to say</option>
+                    {TURNOVER_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </Field>
+                <Field label="Largest single contract (₹ crore)" htmlFor="c-maxcr">
+                  <input
+                    id="c-maxcr"
+                    inputMode="decimal"
+                    className={inputCls}
+                    placeholder="e.g. 85"
+                    value={form.maxContractCr ?? ""}
+                    onChange={(e) => set("maxContractCr", e.target.value ? Number(e.target.value.replace(/[^\d.]/g, "")) || null : null)}
+                  />
+                </Field>
+              </div>
+              <Field label="Departments & clients you've worked for" hint="Tap a suggestion or type your own.">
+                <TagInput value={form.majorClients ?? []} max={20} suggestions={CLIENT_SUGGESTIONS} placeholder="e.g. NHAI, Bihar BSRDC" onChange={(v) => set("majorClients", v)} />
+              </Field>
+              <Field label="Certifications">
+                <ChipMulti options={CERTIFICATION_OPTIONS} value={form.certifications ?? []} onChange={(v) => set("certifications", v)} />
+              </Field>
+            </>
+          )}
+
+          {step.id === "pricing" && !infra && (
             <>
               <label className="flex items-start gap-3 rounded-2xl border border-slate-200 p-3 dark:border-slate-700">
                 <input type="checkbox" className="mt-1 h-4 w-4 accent-rose-600" checked={!!form.quoteOnly} onChange={(e) => set("quoteOnly", e.target.checked)} />
@@ -427,9 +585,11 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
 
           {step.id === "photos" && (
             <>
-              <Field label="Photos of homes you've built" hint="Up to 20. Site progress and finished houses both work.">
+              <Field label={infra ? "Site & project photos" : "Photos of homes you've built"} hint={infra ? "Up to 20. Completed works, ongoing sites, plants and machinery." : "Up to 20. Site progress and finished houses both work."}>
                 <PhotoUploader value={form.workGallery ?? []} onChange={(v) => set("workGallery", v)} entityId={entityId} folder="gallery" max={20} />
               </Field>
+              {!infra && (
+              <>
               <div className="rounded-2xl border border-slate-200 p-4 dark:border-slate-700">
                 <p className="text-sm font-bold text-slate-900 dark:text-white">Materials & brands you use</p>
                 <p className="mb-3 text-xs text-slate-500">Optional. Tap a suggestion or type your own.</p>
@@ -453,6 +613,8 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
                   <input id="c-ww" inputMode="numeric" className={inputCls} placeholder="e.g. 5" value={form.waterproofingWarrantyYears ?? ""} onChange={(e) => set("waterproofingWarrantyYears", toInt(e.target.value))} />
                 </Field>
               </div>
+              </>
+              )}
             </>
           )}
 
@@ -478,7 +640,7 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
               <label className="flex items-start gap-3">
                 <input type="checkbox" className="mt-1 h-4 w-4 accent-rose-600" checked={!!form.showPhone} onChange={(e) => set("showPhone", e.target.checked)} />
                 <span className="text-sm text-slate-700 dark:text-slate-300">
-                  Let signed-in customers see my number
+                  {infra ? "Let signed-in visitors see my number" : "Let signed-in customers see my number"}
                   <span className="block text-xs text-slate-500">Off: customers reach you only through quote requests.</span>
                 </span>
               </label>
@@ -515,7 +677,7 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
           <ArrowLeft className="h-4 w-4" /> <span className="hidden sm:inline">Back</span>
         </button>
         <span className="ml-auto hidden text-xs text-slate-500 sm:inline">{saving ? "Saving…" : "Saved as you go"}</span>
-        {stepIdx < STEPS.length - 1 ? (
+        {stepIdx < steps.length - 1 ? (
           <button type="button" className={cn(primaryBtn, "flex-1 sm:flex-none")} onClick={() => void next()} disabled={busy}>
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             {step.id === "photos" && !(form.workGallery ?? []).length ? "Skip for now" : "Save & continue"} <ArrowRight className="h-4 w-4" />

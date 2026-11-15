@@ -46,7 +46,7 @@ export function ListingBoostButton({ profileId, boosted }: { profileId: number; 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-4 text-sm font-bold text-rose-700 transition hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-300"
+        className="inline-flex h-10 w-full min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-rose-200 bg-rose-50 px-3 text-sm font-bold text-rose-700 transition hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-300"
       >
         <Rocket className="h-4 w-4" /> {boosted ? "Extend boost" : "Boost"}
       </button>

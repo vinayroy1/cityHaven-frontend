@@ -337,7 +337,7 @@ export function WorkGallery({ images, title }: { images: string[]; title: string
 /*                                  Lightbox                                  */
 /* -------------------------------------------------------------------------- */
 
-function Lightbox({
+export function Lightbox({
   images,
   index,
   title,

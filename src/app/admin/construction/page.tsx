@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { CheckCircle2, Circle, ExternalLink, Loader2, Mail, Phone, RefreshCw, User } from "lucide-react";
 import { adminApi, type AdminConstructionItem } from "@/features/admin/api";
 import { cn } from "@/lib/utils";
-import { SERVICE_OPTIONS, constructionProfilePath, formatRate, label } from "@/features/construction/options";
+import { SECTOR_OPTIONS, SERVICE_OPTIONS, TURNOVER_OPTIONS, constructionProfilePath, formatCr, formatRate, isInfra, label } from "@/features/construction/options";
 
 const QUEUES: [string, string][] = [
   ["pending", "Pending review"],
@@ -151,8 +151,20 @@ function Detail({ item: p, onDone }: { item: AdminConstructionItem; onDone: () =
       </div>
 
       <dl className="grid gap-3 text-sm sm:grid-cols-2">
-        <div><dt className="text-xs text-slate-500">Services</dt><dd>{p.services.map((s) => label(SERVICE_OPTIONS, s)).join(", ") || "—"}</dd></div>
-        <div><dt className="text-xs text-slate-500">Pricing</dt><dd>{p.quoteOnly ? "Price on request" : p.packages.map((k) => `${k.name}: ${formatRate(k.ratePerSqft)}`).join(" · ") || "—"}</dd></div>
+        {isInfra(p) ? (
+          <>
+            <div><dt className="text-xs text-slate-500">Segment</dt><dd className="font-semibold text-amber-700">Infrastructure / Govt contractor</dd></div>
+            <div><dt className="text-xs text-slate-500">Sectors</dt><dd>{p.sectors.map((s) => label(SECTOR_OPTIONS, s)).join(", ") || "—"}</dd></div>
+            <div><dt className="text-xs text-slate-500">Registrations</dt><dd>{p.registrations.map((r) => [r.authority, r.contractorClass, r.number].filter(Boolean).join(" · ")).join("; ") || "—"}</dd></div>
+            <div><dt className="text-xs text-slate-500">Turnover / largest contract</dt><dd>{[p.turnoverBand ? label(TURNOVER_OPTIONS, p.turnoverBand) : "", formatCr(p.maxContractCr)].filter(Boolean).join(" · ") || "—"}</dd></div>
+            <div><dt className="text-xs text-slate-500">Clients</dt><dd>{p.majorClients.join(", ") || "—"}</dd></div>
+          </>
+        ) : (
+          <>
+            <div><dt className="text-xs text-slate-500">Services</dt><dd>{p.services.map((s) => label(SERVICE_OPTIONS, s)).join(", ") || "—"}</dd></div>
+            <div><dt className="text-xs text-slate-500">Pricing</dt><dd>{p.quoteOnly ? "Price on request" : p.packages.map((k) => `${k.name}: ${formatRate(k.ratePerSqft)}`).join(" · ") || "—"}</dd></div>
+          </>
+        )}
         <div><dt className="text-xs text-slate-500">GSTIN</dt><dd>{p.gstin || "—"}</dd></div>
         <div><dt className="text-xs text-slate-500">Projects / photos</dt><dd>{p.projectCount} projects · {p.workGallery.length} photos</dd></div>
         {p.about && <div className="sm:col-span-2"><dt className="text-xs text-slate-500">About</dt><dd className="whitespace-pre-line">{p.about}</dd></div>}

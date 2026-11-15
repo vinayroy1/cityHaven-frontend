@@ -145,10 +145,10 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
         </div>
 
         {/* Actions */}
-        <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4 dark:border-slate-800 sm:flex-row">
+        <div className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 pt-4 dark:border-slate-800">
           <Link
             href={target}
-            className="inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-rose-600 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-rose-700 active:scale-[0.98] dark:bg-rose-500 dark:hover:bg-rose-600"
+            className="col-span-2 inline-flex h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-rose-600 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-rose-700 active:scale-[0.98] dark:bg-rose-500 dark:hover:bg-rose-600"
           >
             {isDraft ? <Pencil className="h-4 w-4" /> : null}
             {isDraft ? "Continue setup" : "Manage"}
@@ -158,9 +158,12 @@ export function ListingCard({ item }: { item: InteriorProfile }) {
           {!isDraft && item.slug && (
             <Link
               href={publicUrl}
-              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+              className={cn(
+                "inline-flex h-10 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800",
+                !canBoost && "col-span-2",
+              )}
             >
-              <ExternalLink className="h-4 w-4" /> {isLive ? "View public page" : "Preview"}
+              <ExternalLink className="h-4 w-4 shrink-0" /> <span className="truncate">{isLive ? "View page" : "Preview"}</span>
             </Link>
           )}
         </div>

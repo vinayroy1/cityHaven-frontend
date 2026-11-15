@@ -1,4 +1,4 @@
-import type { BuildingType, ConstructionService, Floors, InHouse, LeadStatus, StartWhen } from "./types";
+import type { BuildingType, Certification, ConstructionService, EnquiryType, Floors, InfraSector, InHouse, LeadStatus, ProjectStatus, StartWhen, TurnoverBand } from "./types";
 
 /** Labels for option keys. Keys must match the backend construction.constants.ts. */
 export const SERVICE_OPTIONS: { value: ConstructionService; label: string; hint: string; icon: string }[] = [
@@ -72,6 +72,65 @@ export const MATERIAL_GROUPS: { key: "cement" | "steel" | "bricks" | "electrical
   { key: "plumbing", label: "Plumbing", suggestions: ["Supreme", "Astral", "Ashirvad", "Finolex", "Prince"] },
   { key: "paint", label: "Paint", suggestions: ["Asian Paints", "Berger", "Nippon", "Dulux"] },
 ];
+
+/* ---------------- Infrastructure / government contractors ---------------- */
+
+export const SECTOR_OPTIONS: { value: InfraSector; label: string; hint: string; icon: string }[] = [
+  { value: "ROADS_HIGHWAYS", label: "Roads & highways", hint: "NH, SH, PMGSY, city roads", icon: "🛣️" },
+  { value: "BRIDGES_FLYOVERS", label: "Bridges & flyovers", hint: "ROB, RUB, culverts, elevated roads", icon: "🌉" },
+  { value: "HOSPITALS_HEALTHCARE", label: "Hospitals & healthcare", hint: "Medical colleges, PHCs, AIIMS blocks", icon: "🏥" },
+  { value: "SCHOOLS_INSTITUTIONAL", label: "Schools & institutions", hint: "Schools, colleges, hostels, universities", icon: "🏫" },
+  { value: "GOVT_BUILDINGS", label: "Government buildings", hint: "Offices, courts, police lines, quarters", icon: "🏛️" },
+  { value: "WATER_SEWAGE", label: "Water supply & sewage", hint: "Pipelines, STP, WTP, Jal Jeevan", icon: "🚰" },
+  { value: "IRRIGATION_DAMS", label: "Irrigation & dams", hint: "Canals, barrages, embankments", icon: "🌊" },
+  { value: "RAILWAYS_METRO", label: "Railways & metro", hint: "Track, stations, civil works", icon: "🚆" },
+  { value: "AIRPORTS_PORTS", label: "Airports & ports", hint: "Terminals, runways, jetties", icon: "✈️" },
+  { value: "POWER_ELECTRICAL", label: "Power & electrical", hint: "Substations, transmission, solar", icon: "⚡" },
+  { value: "INDUSTRIAL_EPC", label: "Industrial / EPC", hint: "Plants, factories, turnkey EPC", icon: "🏭" },
+  { value: "URBAN_INFRA", label: "Urban infrastructure", hint: "Smart city, drains, parks, street lights", icon: "🏙️" },
+  { value: "HOUSING_SCHEMES", label: "Housing schemes", hint: "PMAY, govt housing, townships", icon: "🏘️" },
+];
+
+export const TURNOVER_OPTIONS: { value: TurnoverBand; label: string }[] = [
+  { value: "UNDER_5CR", label: "Under ₹5 Cr" },
+  { value: "5_25CR", label: "₹5–25 Cr" },
+  { value: "25_100CR", label: "₹25–100 Cr" },
+  { value: "100_500CR", label: "₹100–500 Cr" },
+  { value: "ABOVE_500CR", label: "Above ₹500 Cr" },
+];
+
+export const CERTIFICATION_OPTIONS: { value: Certification; label: string }[] = [
+  { value: "ISO_9001", label: "ISO 9001 (Quality)" },
+  { value: "ISO_14001", label: "ISO 14001 (Environment)" },
+  { value: "ISO_45001", label: "ISO 45001 (Safety)" },
+  { value: "CIDC", label: "CIDC graded" },
+  { value: "MSME", label: "MSME / Udyam" },
+  { value: "STARTUP_INDIA", label: "Startup India" },
+];
+
+export const PROJECT_STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
+  { value: "COMPLETED", label: "Completed" },
+  { value: "ONGOING", label: "Ongoing" },
+];
+
+export const ENQUIRY_TYPE_OPTIONS: { value: EnquiryType; label: string }[] = [
+  { value: "PROJECT", label: "Execute a project for us" },
+  { value: "SUBCONTRACT", label: "Subcontract work" },
+  { value: "MATERIAL_SUPPLY", label: "Supply material" },
+  { value: "JOINT_VENTURE", label: "Joint venture / tender partner" },
+  { value: "EQUIPMENT_HIRE", label: "Hire / supply equipment" },
+  { value: "JOB", label: "Job / work with you" },
+  { value: "OTHER", label: "Something else" },
+];
+
+export const CLIENT_SUGGESTIONS = ["NHAI", "CPWD", "State PWD", "MoRTH", "PMGSY", "Indian Railways", "RVNL", "Metro Rail", "NBCC", "MES", "Municipal Corporation", "Smart City SPV", "Jal Jeevan Mission", "Health Department", "BSRDC", "NHIDCL"];
+export const EQUIPMENT_SUGGESTIONS = ["Hot mix plant", "Wet mix plant", "Sensor paver", "Batching plant", "Transit mixers", "Excavators", "Motor grader", "Vibratory roller", "Tower crane", "Piling rig", "Boom placer"];
+
+/** Rupee crore label, e.g. 120 → "₹120 Cr", 0.5 → "₹50 L". */
+export const formatCr = (n: number | null | undefined) =>
+  !n ? "" : n < 1 ? `₹${Math.round(n * 100)} L` : `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 1 })} Cr`;
+
+export const isInfra = (p: { segment?: string | null } | null | undefined) => p?.segment === "INFRA";
 
 export const label = <T extends string>(list: { value: T; label: string }[], v: T | null | undefined) =>
   list.find((o) => o.value === v)?.label ?? v ?? "";

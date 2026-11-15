@@ -120,7 +120,7 @@ function Overview({ data, goTab }: { data: MyConstruction; goTab: (t: Tab) => vo
       <div className="grid gap-4 md:grid-cols-[300px_1fr] md:items-start">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Your listing</p>
-          <ConstructionCard p={p} />
+          <ConstructionCard p={p} completeness={data.readiness.pct} />
         </div>
         <StatusCard data={data} />
       </div>
@@ -198,9 +198,10 @@ function MyListings() {
           <li key={p.id} className="flex flex-col">
             <ConstructionCard
               p={p}
+              completeness={p.readiness.pct}
               badge={
                 <span className={cn("rounded-full px-2.5 py-1 text-[10px] font-bold shadow-sm", STATUS_TONE[p.status] ?? "bg-slate-100 text-slate-600")}>
-                  {STATUS_LABEL[p.status] ?? p.status} · {p.readiness.pct}%
+                  {STATUS_LABEL[p.status] ?? p.status}
                 </span>
               }
               actions={
@@ -327,7 +328,7 @@ function ListingDashboard({ listingId }: { listingId: ListingId }) {
       </nav>
       {tab === "overview" && <Overview data={data} goTab={goTab} />}
       {tab === "edit" && <ConstructionWizard key={p.id} data={data} mode={p.status === "DRAFT" || p.status === "CHANGES_REQUESTED" ? "setup" : "edit"} onDone={() => goTab("overview")} />}
-      {tab === "projects" && <ProjectsPanel projects={p.projects} profileId={p.id} city={p.city} />}
+      {tab === "projects" && <ProjectsPanel projects={p.projects} profileId={p.id} city={p.city} infra={p.segment === "INFRA"} />}
       {tab === "leads" && <LeadsPanel profileId={p.id} />}
     </div>
   );

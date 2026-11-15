@@ -27,6 +27,32 @@ export type InHouse =
   | "SOIL_TESTING"
   | "APPROVALS_SUPPORT";
 
+export type ConstructionSegment = "RESIDENTIAL" | "INFRA";
+export type InfraSector =
+  | "ROADS_HIGHWAYS"
+  | "BRIDGES_FLYOVERS"
+  | "HOSPITALS_HEALTHCARE"
+  | "SCHOOLS_INSTITUTIONAL"
+  | "GOVT_BUILDINGS"
+  | "WATER_SEWAGE"
+  | "IRRIGATION_DAMS"
+  | "RAILWAYS_METRO"
+  | "AIRPORTS_PORTS"
+  | "POWER_ELECTRICAL"
+  | "INDUSTRIAL_EPC"
+  | "URBAN_INFRA"
+  | "HOUSING_SCHEMES";
+export type TurnoverBand = "UNDER_5CR" | "5_25CR" | "25_100CR" | "100_500CR" | "ABOVE_500CR";
+export type Certification = "ISO_9001" | "ISO_14001" | "ISO_45001" | "CIDC" | "MSME" | "STARTUP_INDIA";
+export type ProjectStatus = "COMPLETED" | "ONGOING";
+export type EnquiryType = "PROJECT" | "SUBCONTRACT" | "MATERIAL_SUPPLY" | "JOINT_VENTURE" | "EQUIPMENT_HIRE" | "JOB" | "OTHER";
+
+export interface ContractorRegistration {
+  authority: string;
+  contractorClass?: string | null;
+  number?: string | null;
+}
+
 export type Floors = "G" | "G+1" | "G+2" | "G+3" | "G+4+";
 export type StartWhen = "IMMEDIATE" | "1_3_MONTHS" | "3_6_MONTHS" | "EXPLORING";
 export type ListingStatus = "DRAFT" | "SUBMITTED" | "CHANGES_REQUESTED" | "PUBLISHED" | "PAUSED" | "REJECTED" | "ARCHIVED";
@@ -63,6 +89,10 @@ export interface ConstructionProject {
   coverImage: string | null;
   images: string[];
   description: string | null;
+  sector: InfraSector | null;
+  clientAuthority: string | null;
+  contractValueCr: number | null;
+  projectStatus: ProjectStatus | null;
   isFeatured: boolean;
 }
 
@@ -70,6 +100,14 @@ export interface ConstructionProfile {
   id: number;
   slug: string;
   providerType: "INDIVIDUAL" | "COMPANY";
+  segment: ConstructionSegment;
+  sectors: InfraSector[];
+  registrations: ContractorRegistration[];
+  turnoverBand: TurnoverBand | null;
+  maxContractCr: number | null;
+  certifications: Certification[];
+  majorClients: string[];
+  equipment: string[];
   businessName: string;
   ownerName: string | null;
   logo: string | null;
@@ -146,6 +184,8 @@ export interface ConstructionLead {
   buildingType: BuildingType | null;
   budgetLakhs: number | null;
   startWhen: StartWhen | null;
+  enquiryType: EnquiryType | null;
+  organization: string | null;
   message: string | null;
   status: LeadStatus;
   isUnlocked: boolean;
@@ -163,11 +203,16 @@ export interface ConstructionInquiryInput {
   buildingType?: BuildingType | null;
   budgetLakhs?: number | null;
   startWhen?: StartWhen | null;
+  enquiryType?: EnquiryType | null;
+  organization?: string;
   message?: string;
 }
 
 export interface ConstructionSearchParams {
   city?: string;
+  locality?: string;
+  segment?: ConstructionSegment;
+  sector?: InfraSector;
   service?: ConstructionService;
   buildingType?: BuildingType;
   q?: string;

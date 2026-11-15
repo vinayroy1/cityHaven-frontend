@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { BadgeCheck, CheckCircle2, ChevronRight, Circle, Eye, Inbox, Unlock } from "lucide-react";
+import { BadgeCheck, CheckCircle2, ChevronDown, ChevronRight, Circle, Eye, Inbox, Unlock } from "lucide-react";
+import { cn } from "@/components/ui/utils";
+import { ListingCard } from "@/components/interiors/listings/ListingCard";
 import type { ReadinessItem } from "@/types/interior.types";
 import { ListingStatusCard } from "./ListingStatusCard";
 import { InteriorPlanCard } from "./InteriorPlanCard";
@@ -44,6 +46,7 @@ function StepRow({ step }: { step: Step }) {
 export function OverviewPanel() {
   const { profile, readiness, score } = useManageListing();
   const [showAll, setShowAll] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
   if (!profile) return <OverviewSkeleton />;
 
   const inquiries = profile.inquiries ?? [];
@@ -70,9 +73,27 @@ export function OverviewPanel() {
 
   return (
     <div className="space-y-4">
-      <ListingStatusCard profile={profile} readiness={readiness} />
+      {/* Your listing card + status, side by side on desktop */}
+      <div className="grid gap-4 md:grid-cols-[300px_minmax(0,1fr)] md:items-start">
+        <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Your listing</p>
+          <ListingCard item={profile} />
+        </div>
+        <div className="space-y-4">
+          <ListingStatusCard profile={profile} readiness={readiness} />
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            {stats.map((s) => (
+              <div key={s.label} className="rounded-2xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+                <s.icon className="h-4 w-4 text-slate-400" aria-hidden />
+                <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">{s.value}</p>
+                <p className="text-[11px] text-slate-500">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5">
+      <section className="rounded-3xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-sm font-bold text-slate-900 dark:text-white">
             {todo.length ? "Complete your profile" : "Your profile is complete"}
@@ -82,10 +103,7 @@ export function OverviewPanel() {
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Profile completeness">
           <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${pct}%` }} />
         </div>
-
-        {todo.length > 0 && (
-          <p className="mt-2 text-xs text-slate-500">Complete profiles rank higher in search and get more enquiries.</p>
-        )}
+        {todo.length > 0 && <p className="mt-2 text-xs text-slate-500">Complete profiles rank higher in search and get more enquiries.</p>}
         {todo.length === 0 ? (
           <p className="mt-3 flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-300">
             <BadgeCheck className="h-4 w-4 shrink-0" /> Everything is filled in. Clients see your full profile.
@@ -98,28 +116,34 @@ export function OverviewPanel() {
           </ul>
         )}
         {steps.length > top.length && (
-          <button
-            type="button"
-            onClick={() => setShowAll((v) => !v)}
-            className="mt-2 text-xs font-semibold text-rose-600 hover:underline dark:text-rose-400"
-          >
+          <button type="button" onClick={() => setShowAll((v) => !v)} className="mt-2 text-xs font-semibold text-rose-600 hover:underline dark:text-rose-400">
             {showAll ? "Show less" : `Show full checklist (${steps.length - todo.length}/${steps.length} done)`}
           </button>
         )}
       </section>
 
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        {stats.map((s) => (
-          <div key={s.label} className="rounded-2xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
-            <s.icon className="h-4 w-4 text-slate-400" aria-hidden />
-            <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">{s.value}</p>
-            <p className="text-[11px] text-slate-500">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
       <InteriorPlanCard profile={profile} />
-      <ListingSummary profile={profile} />
+
+      {/* Full read-only snapshot: collapsed so the overview stays short */}
+      <section className="rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+        <button
+          type="button"
+          onClick={() => setShowSummary((v) => !v)}
+          aria-expanded={showSummary}
+          className="flex w-full items-center justify-between gap-3 p-4 text-left sm:p-5"
+        >
+          <span>
+            <span className="block text-sm font-bold text-slate-900 dark:text-white">Everything on your listing</span>
+            <span className="block text-xs text-slate-500">Services, pricing, projects, materials and contact, with quick edit links.</span>
+          </span>
+          <ChevronDown className={cn("h-5 w-5 shrink-0 text-slate-400 transition", showSummary && "rotate-180")} />
+        </button>
+        {showSummary && (
+          <div className="border-t border-slate-100 p-3 sm:p-4 dark:border-slate-800">
+            <ListingSummary profile={profile} />
+          </div>
+        )}
+      </section>
     </div>
   );
 }

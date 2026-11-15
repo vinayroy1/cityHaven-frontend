@@ -52,6 +52,13 @@ export type ListingWizardShellProps<V extends FormValues> = {
   debounceMs?: number;
   submitLabel?: string;
   publishLabel?: string;
+  /**
+   * "rail" (default): stepper sidebar + preview column.
+   * "steps": single column — segmented progress bar and one step card (same look as the construction wizard).
+   */
+  layout?: "rail" | "steps";
+  /** "steps" layout: icon shown in the intro banner. */
+  bannerIcon?: React.ReactNode;
 };
 
 const readStepParam = () => {
@@ -108,6 +115,8 @@ function ShellInner<V extends FormValues>({
   debounceMs,
   submitLabel = "Submit for review",
   publishLabel = "Publish",
+  layout = "rail",
+  bannerIcon,
 }: ListingWizardShellProps<V>) {
   const form = useForm<V>({ defaultValues: vertical.initialValues as DefaultValues<V>, mode: "onTouched" });
   const loaded = vertical.load();
@@ -343,6 +352,209 @@ function ShellInner<V extends FormValues>({
   const statusPill = <SaveStatusPill status={autosave.status} lastSavedAt={autosave.lastSavedAt} onRetry={() => void autosave.flush()} />;
 
   const CustomStep = step?.kind === "custom" && step.component ? vertical.customComponents[step.component] : undefined;
+
+  const resumeBanner = resume && (
+    <div role="region" aria-label="Unsaved draft" className="mb-4 flex flex-col gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900 dark:border-sky-900 dark:bg-sky-950/50 dark:text-sky-100 sm:flex-row sm:items-center">
+      <History className="hidden h-5 w-5 shrink-0 sm:block" />
+      <p className="min-w-0 flex-1">
+        You have unsaved changes from {new Date(resume.updatedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}. Pick up where you left off?
+      </p>
+      <div className="flex gap-2">
+        <button type="button" onClick={restore} className="h-10 rounded-xl bg-sky-900 px-4 text-sm font-semibold text-white dark:bg-sky-200 dark:text-sky-950">
+          Restore
+        </button>
+        <button type="button" onClick={discard} className="h-10 rounded-xl px-3 text-sm font-medium hover:bg-sky-100 dark:hover:bg-sky-900">
+          Discard
+        </button>
+      </div>
+    </div>
+  );
+
+  const issuesBox = issues.length > 0 && (
+    <div role="alert" className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">
+      <div className="flex items-start gap-2">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold">
+            {issues.length === 1 ? "1 thing to fix" : `${issues.length} things to fix`} before continuing
+          </p>
+          <ul className="mt-1 space-y-0.5">
+            {issues.slice(0, 6).map((i) => (
+              <li key={i.path}>
+                <button type="button" onClick={() => scrollToPath(i.path)} className="text-left underline-offset-2 hover:underline">
+                  {i.message}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <button type="button" aria-label="Dismiss" onClick={() => setIssues([])} className="rounded p-1 hover:bg-rose-100 dark:hover:bg-rose-900">
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+
+  const stepContent = (
+    <div className="space-y-4">
+      {step?.kind === "custom" ? (
+        CustomStep ? (
+          <div data-requires={(step.requires ?? []).map((r) => r.path).join(" ")}>
+            <CustomStep values={values} form={form} mode="wizard" goToStep={goToStep} readiness={readiness} section={{ id: step.id, title: step.title, fields: [] }} />
+          </div>
+        ) : (
+          <MissingComponent name={step.component} />
+        )
+      ) : (
+        step?.sections?.map((sec) => <SectionRenderer key={sec.id} section={sec} />)
+      )}
+    </div>
+  );
+
+  const previewButton = vertical.renderPreview && (
+    <button type="button" onClick={() => setPreviewOpen(true)} className={cn("inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800", layout === "rail" && "xl:hidden")}>
+      <Eye className="h-4 w-4" />
+      <span className="max-sm:sr-only">Preview</span>
+    </button>
+  );
+
+  const actionBar = (
+    <StickyActionBar
+      onBack={back}
+      status={statusPill}
+      tone={layout === "steps" ? "brand" : "neutral"}
+      extra={
+        <>
+          {previewButton}
+          {exitHref && (
+            <Link href={exitHref} onClick={() => void autosave.flush()} className="hidden h-11 items-center rounded-xl px-3 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 sm:inline-flex">
+              Save &amp; exit
+            </Link>
+          )}
+        </>
+      }
+      primary={
+        isLast
+          ? {
+              label: submitLabel,
+              onClick: () => void finish("submit"),
+              busy: busy === "submit",
+              disabled: !readiness.canSubmit || busy !== null,
+              icon: "none",
+            }
+          : { label: layout === "steps" ? "Save & continue" : "Next", onClick: next }
+      }
+      secondary={
+        isLast && readiness.canSubmit
+          ? { label: publishLabel, onClick: () => void finish("publish"), busy: busy === "publish", disabled: !readiness.canPublish || busy !== null }
+          : undefined
+      }
+    />
+  );
+
+  const previewSheet = vertical.renderPreview && (
+    <Sheet open={previewOpen} onOpenChange={setPreviewOpen}>
+      <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Preview</SheetTitle>
+        </SheetHeader>
+        <div className="px-4 pb-6">{previewOpen ? vertical.renderPreview(values) : null}</div>
+      </SheetContent>
+    </Sheet>
+  );
+
+  if (layout === "steps") {
+    return (
+      <FormProvider {...form}>
+        <ListingEngineProvider value={engineValue}>
+          <div className={cn(pageBg, "overflow-x-clip")}>
+            <div className="mx-auto w-full max-w-3xl px-4 pb-32 pt-3 sm:px-6 lg:pb-12 lg:pt-8">
+              {topNav && (
+                <div
+                  className="pb-4"
+                  onClickCapture={(e) => {
+                    if ((e.target as HTMLElement).closest("a, button")) void autosave.flush();
+                  }}
+                >
+                  {topNav}
+                </div>
+              )}
+              {heading && (
+                <div className="mb-5 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-slate-900 to-rose-950 p-4 text-white">
+                  {bannerIcon && <span className="shrink-0 text-amber-300">{bannerIcon}</span>}
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold">{heading}</p>
+                    {subheading && <p className="text-xs text-slate-300">{subheading}</p>}
+                  </div>
+                </div>
+              )}
+
+              {/* Segmented progress: done / current / ahead; finished steps are tappable. */}
+              <ol className="mb-5 grid gap-1.5" style={{ gridTemplateColumns: `repeat(${visibleSteps.length}, minmax(0, 1fr))` }} aria-label="Steps">
+                {visibleSteps.map((s, i) => {
+                  const st = statusFor(s.id);
+                  return (
+                    <li key={s.id}>
+                      <button
+                        type="button"
+                        onClick={() => i <= maxVisited && i !== idx && goToIndex(i)}
+                        disabled={i > maxVisited}
+                        aria-current={i === idx ? "step" : undefined}
+                        aria-label={`Step ${i + 1}: ${s.label}`}
+                        className="group w-full text-left disabled:cursor-default"
+                      >
+                        <span
+                          className={cn(
+                            "block h-1.5 rounded-full transition",
+                            errorStepId === s.id ? "bg-amber-500" : i <= idx ? "bg-rose-600" : i <= maxVisited ? "bg-rose-300" : "bg-slate-200 dark:bg-slate-800",
+                          )}
+                        />
+                        <span className={cn("mt-1.5 hidden truncate text-[11px] font-semibold sm:block", i === idx ? "text-rose-600" : st === "todo" && i < idx ? "text-amber-600" : "text-slate-500")}>
+                          {s.label}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
+
+              {resumeBanner}
+
+              <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+                {step && (
+                  <header className="mb-6">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-rose-600">
+                      Step {idx + 1} of {visibleSteps.length}
+                    </p>
+                    <h1 className="mt-1 text-xl font-black tracking-tight text-slate-950 sm:text-2xl dark:text-white">{step.title ?? step.label}</h1>
+                    {step.description && <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{step.description}</p>}
+                  </header>
+                )}
+                {issuesBox}
+                {stepContent}
+              </section>
+
+              {actionBar}
+              {isLast && !readiness.canSubmit && (
+                <p className="mt-2 text-center text-xs text-slate-500">
+                  {submitItemsLeft} required {submitItemsLeft === 1 ? "item" : "items"} left before you can go live.
+                </p>
+              )}
+              {exitHref && (
+                <p className="mt-3 text-center text-xs text-slate-500 sm:hidden">
+                  <Link href={exitHref} onClick={() => void autosave.flush()} className="font-semibold underline underline-offset-2">
+                    Finish later
+                  </Link>{" "}
+                  — your progress is saved.
+                </p>
+              )}
+            </div>
+          </div>
+          {previewSheet}
+        </ListingEngineProvider>
+      </FormProvider>
+    );
+  }
 
   return (
     <FormProvider {...form}>
