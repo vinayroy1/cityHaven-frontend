@@ -36,6 +36,7 @@ import { Ruler, Paintbrush,
   Linkedin,
   Youtube,
   Hotel,
+  Receipt,
 } from "lucide-react";
 import { SOCIAL_LINKS } from "@/constants/seo";
 import { APP_CONFIG } from "@/constants/app-config";
@@ -139,6 +140,7 @@ export function MobileBottomNav() {
       { label: "Home Loans", href: "/home-loans", icon: Coins, onClick: undefined },
       { label: "EMI Calculator", href: "/emi-calculator", icon: Calculator, onClick: undefined },
       { label: "Rent Agreement", href: "/rental-agreement", icon: FileText, onClick: undefined },
+      { label: "Rent Receipt", href: "/rent-receipt", icon: Receipt, onClick: undefined },
       { label: "Area Converter", href: "/area-converter", icon: Ruler, onClick: undefined },
       purchaseEnabled
         ? { label: "Pricing & Plans", href: "/pricing", icon: Sparkles, onClick: undefined }
