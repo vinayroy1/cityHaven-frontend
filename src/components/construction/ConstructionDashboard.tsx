@@ -10,6 +10,7 @@ import { useMyConstructionQuery, useSetMyConstructionStatusMutation, useSubmitMy
 import { constructionProfilePath } from "@/features/construction/options";
 import type { MyConstruction } from "@/features/construction/types";
 import { ConstructionSkeleton } from "./ConstructionSkeleton";
+import { ConstructionCard } from "./public/ConstructionCard";
 import { ConstructionWizard } from "./ConstructionWizard";
 import { LeadsPanel } from "./LeadsPanel";
 import { ProjectsPanel } from "./ProjectsPanel";
@@ -116,7 +117,13 @@ function Overview({ data, goTab }: { data: MyConstruction; goTab: (t: Tab) => vo
   const stepTab = (step: string): Tab => (step === "projects" ? "projects" : "edit");
   return (
     <div className="space-y-4">
-      <StatusCard data={data} />
+      <div className="grid gap-4 md:grid-cols-[300px_1fr] md:items-start">
+        <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Your listing</p>
+          <ConstructionCard p={p} />
+        </div>
+        <StatusCard data={data} />
+      </div>
       <section className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-sm font-bold text-slate-900 dark:text-white">{todo.length ? "Complete your profile" : "Your profile is complete"}</h2>
@@ -162,6 +169,10 @@ export function ConstructionDashboard() {
   // Setup stays in the wizard until it's submitted or the owner leaves it (saving each step must not
   // flip the page to the overview half-way through).
   const [leftSetup, setLeftSetup] = React.useState(false);
+  // Only someone who opened this page with no listing stays in the wizard; a returning owner with a
+  // saved listing lands on the overview and sees their listing card.
+  const [startedEmpty, setStartedEmpty] = React.useState<boolean | null>(null);
+  if (startedEmpty === null && data) setStartedEmpty(!data.profile);
   const goTab = (t: Tab) => {
     setLeftSetup(true);
     router.replace(`/dashboard/construction-profile${t === "overview" ? "" : `?tab=${t}`}`, { scroll: false });
@@ -183,7 +194,7 @@ export function ConstructionDashboard() {
 
   // First-time setup: no listing yet, or a draft that was never submitted.
   const firstSetup = !data.profile || (data.profile.status === "DRAFT" && !data.profile.submittedAt && !data.profile.publishedAt);
-  if (!data.profile || (firstSetup && !leftSetup && tab === "overview")) {
+  if (!data.profile || (firstSetup && startedEmpty && !leftSetup && tab === "overview")) {
     return (
       <div>
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-slate-900 to-rose-950 p-4 text-white">
