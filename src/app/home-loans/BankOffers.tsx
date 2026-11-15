@@ -88,6 +88,7 @@ export function BankOffers() {
   const pending = params.get("apply");
   const loggedIn = React.useSyncExternalStore(noopSubscribe, isLoggedIn, () => false);
   const [dismissed, setDismissed] = React.useState(false);
+  const [sortBy, setSortBy] = React.useState<"rate" | "fee">("rate");
   const resumeId = !dismissed && loggedIn && pending && BANKS.some((b) => b.id === pending) ? pending : null;
 
   React.useEffect(() => {
@@ -104,93 +105,126 @@ export function BankOffers() {
     window.open(bank.url, "_blank", "noopener,noreferrer");
   };
 
+  const sorted = [...BANKS].sort((x, y) => (sortBy === "rate" ? x.rate - y.rate : parseFloat(x.fee) - parseFloat(y.fee)) || x.rate - y.rate);
+  const top = BANKS.find((b) => b.rate === LOWEST)!;
+
   return (
-    <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6" aria-labelledby="bank-offers-title">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-            <BadgePercent className="h-4 w-4" /> Home loans
+    <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10" aria-labelledby="bank-offers-title">
+      {/* Best-deal banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950 p-5 text-white shadow-xl sm:p-7">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-rose-500/30 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-48 w-48 rounded-full bg-orange-400/20 blur-3xl" />
+        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-rose-300">
+              <BadgePercent className="h-4 w-4" /> Top banks · {RATES_AS_OF}
+            </div>
+            <h2 id="bank-offers-title" className="mt-2 text-2xl font-black leading-tight tracking-tight sm:text-3xl">
+              Home loans from <span className="bg-gradient-to-r from-rose-300 to-amber-200 bg-clip-text text-transparent">{LOWEST.toFixed(2)}%</span> p.a.
+            </h2>
+            <p className="mt-1.5 max-w-md text-sm text-slate-300">
+              Compare interest rates, processing fees and EMI from {BANKS.length} leading banks — then apply in one tap.
+            </p>
           </div>
-          <h2 id="bank-offers-title" className="mt-1 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl dark:text-white">
-            Top banks &amp; home loan offers
-          </h2>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            Compare interest rates and processing fees from leading banks.
-          </p>
+          <div className="flex items-center gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur sm:min-w-[300px]">
+            <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${top.badge} ${top.short.length > 4 ? "text-[8px]" : "text-[10px]"} font-black shadow-lg`}>{top.short}</span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300"><Sparkles className="h-3 w-3" /> Lowest rate</div>
+              <div className="truncate text-sm font-semibold">{top.name}</div>
+              <div className="text-2xl font-black">{top.rate.toFixed(2)}%</div>
+            </div>
+            <button type="button" onClick={() => apply(top)} className="rounded-xl bg-white px-3.5 py-2 text-sm font-bold text-slate-900 transition hover:bg-rose-50 active:scale-95">
+              Apply
+            </button>
+          </div>
         </div>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-          Starting rates · {RATES_AS_OF}
-        </span>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {BANKS.map((b) => {
+      {/* Sort + legend */}
+      <div className="mt-6 flex items-center justify-between gap-3">
+        <h3 className="text-base font-bold text-slate-900 dark:text-white">Compare banks</h3>
+        <div className="inline-flex rounded-full bg-slate-100 p-1 text-xs font-semibold dark:bg-slate-800">
+          {(["rate", "fee"] as const).map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setSortBy(k)}
+              className={`rounded-full px-3 py-1.5 transition ${sortBy === k ? "bg-white text-rose-600 shadow-sm dark:bg-slate-900" : "text-slate-500 hover:text-slate-800 dark:text-slate-400"}`}
+            >
+              {k === "rate" ? "Lowest rate" : "Lowest fee"}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop column headings */}
+      <div className="mt-3 hidden grid-cols-[2.2fr_1fr_1fr_1fr_auto] gap-4 px-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400 md:grid">
+        <span>Bank</span><span>Interest rate</span><span>Processing fee</span><span>EMI / ₹10 L*</span><span className="w-32" />
+      </div>
+
+      <ol className="mt-2 space-y-2.5">
+        {sorted.map((b, i) => {
           const best = b.rate === LOWEST;
           const resume = resumeId === b.id;
+          const freeFee = parseFloat(b.fee) === 0;
           return (
-            <article
+            <li
               key={b.id}
               id={`bank-${b.id}`}
-              className={`group relative flex flex-col overflow-hidden rounded-3xl border bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-100/60 dark:bg-slate-900 dark:hover:shadow-black/40 ${
-                resume || best
-                  ? "border-rose-300 ring-2 ring-rose-200/70 dark:border-rose-800 dark:ring-rose-900/60"
-                  : "border-slate-200/80 dark:border-slate-800"
+              className={`group relative grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-2 rounded-2xl border bg-white p-3.5 shadow-sm transition hover:border-rose-200 hover:shadow-md sm:p-4 md:grid-cols-[2.2fr_1fr_1fr_1fr_auto] md:gap-4 md:px-5 dark:bg-slate-900 dark:hover:border-rose-900 ${
+                resume ? "border-rose-400 ring-2 ring-rose-200 dark:ring-rose-900" : best ? "border-emerald-200 dark:border-emerald-900" : "border-slate-200/80 dark:border-slate-800"
               }`}
             >
-              <div className={`relative overflow-hidden bg-gradient-to-br ${b.badge} px-4 pb-10 pt-4 text-white`}>
-                <div className="pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-white/10 transition duration-500 group-hover:scale-125" />
-                <div className="pointer-events-none absolute -bottom-10 right-10 h-20 w-20 rounded-full bg-white/10" />
-                <div className="relative flex items-center justify-between gap-2">
-                  <span className="rounded-lg bg-white/20 px-2 py-1 text-[11px] font-black tracking-wide backdrop-blur-sm">{b.short}</span>
-                  {best && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-emerald-700 shadow">
-                      <Sparkles className="h-3 w-3" /> Lowest rate
-                    </span>
-                  )}
-                </div>
-                <h3 className="relative mt-2 truncate text-sm font-semibold text-white/90">{b.name}</h3>
-              </div>
+              <span className={`absolute inset-y-3 left-0 w-1 rounded-r-full bg-gradient-to-b ${b.badge} opacity-0 transition group-hover:opacity-100 ${best || resume ? "opacity-100" : ""}`} />
 
-              <div className="relative -mt-7 mx-3 rounded-2xl border border-slate-100 bg-white p-3 text-center shadow-md dark:border-slate-800 dark:bg-slate-900">
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Interest from</div>
-                <div className="mt-0.5 text-3xl font-black tracking-tight text-slate-950 dark:text-white">
-                  {b.rate.toFixed(2)}<span className="text-lg">%</span>
-                  <span className="ml-1 text-xs font-semibold text-slate-400">p.a.</span>
+              {/* Bank */}
+              <div className="col-span-2 flex min-w-0 items-center gap-3 md:col-span-1">
+                <span className="w-4 text-center text-xs font-bold text-slate-400">{i + 1}</span>
+                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${b.badge} ${b.short.length > 4 ? "text-[8px]" : "text-[10px]"} font-black text-white shadow-sm`}>{b.short}</span>
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-bold text-slate-900 dark:text-white">{b.name}</div>
+                  <div className="mt-0.5 flex flex-wrap gap-1">
+                    {best && <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Lowest rate</span>}
+                    {freeFee && <span className="rounded-md bg-sky-50 px-1.5 py-0.5 text-[10px] font-bold text-sky-700 dark:bg-sky-950 dark:text-sky-300">Zero fee</span>}
+                  </div>
                 </div>
               </div>
 
-              <dl className="grid grid-cols-2 gap-2 px-4 pt-3 text-center">
-                <div className="rounded-xl bg-slate-50 py-2 dark:bg-slate-800/60">
-                  <dt className="text-[10px] font-medium text-slate-500 dark:text-slate-400">Processing fee</dt>
-                  <dd className={`text-sm font-bold ${b.fee === "0.00%" ? "text-emerald-600" : "text-slate-900 dark:text-white"}`}>
-                    {b.fee === "0.00%" ? "Nil" : b.fee}
-                  </dd>
-                </div>
-                <div className="rounded-xl bg-slate-50 py-2 dark:bg-slate-800/60">
-                  <dt className="text-[10px] font-medium text-slate-500 dark:text-slate-400">EMI / ₹10 L*</dt>
-                  <dd className="text-sm font-bold text-slate-900 dark:text-white">₹{emiPer10L(b.rate).toLocaleString("en-IN")}</dd>
-                </div>
-              </dl>
-
-              <div className="mt-auto p-4">
-                <button
-                  type="button"
-                  onClick={() => apply(b)}
-                  className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-orange-500 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-rose-200 transition hover:shadow-lg hover:brightness-110 active:scale-[0.98] dark:shadow-none"
-                >
-                  {resume ? `Continue to ${b.short}` : "Apply now"}
-                  <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </button>
+              {/* Rate (mobile: top-right) */}
+              <div className="row-start-1 col-start-3 text-right md:col-start-auto md:row-start-auto md:text-left">
+                <div className="text-xl font-black tracking-tight text-slate-950 dark:text-white">{b.rate.toFixed(2)}%</div>
+                <div className="text-[10px] font-medium text-slate-400 md:hidden">p.a. onwards</div>
               </div>
-            </article>
+
+              {/* Fee + EMI */}
+              <div className="col-span-2 flex items-center gap-3 pl-7 text-xs text-slate-500 md:contents dark:text-slate-400">
+                <div className="flex items-baseline gap-1">
+                  <span className="md:hidden">Fee</span>
+                  <div className={`text-xs font-bold md:text-sm ${freeFee ? "text-emerald-600" : "text-slate-800 dark:text-slate-200"}`}>{freeFee ? "Nil" : b.fee}</div>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="md:hidden">EMI*</span>
+                  <div className="text-xs font-bold md:text-sm text-slate-800 dark:text-slate-200">₹{emiPer10L(b.rate).toLocaleString("en-IN")}<span className="text-[10px] font-medium text-slate-400">/mo</span></div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => apply(b)}
+                className="col-start-3 inline-flex items-center justify-center gap-1 rounded-xl bg-rose-600 px-3.5 py-2 text-xs md:col-start-auto md:px-4 md:py-2.5 md:text-sm font-bold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 active:scale-[0.98] md:col-span-1 md:w-32 dark:shadow-none"
+              >
+                {resume ? `Continue` : "Apply now"}
+                <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </button>
+            </li>
           );
         })}
-      </div>
+      </ol>
 
-      <p className="mt-3 flex items-start gap-1.5 text-[11px] leading-5 text-slate-500 dark:text-slate-400">
+      <p className="mt-4 flex items-start gap-1.5 text-[11px] leading-5 text-slate-500 dark:text-slate-400">
         <Lock className="mt-0.5 h-3 w-3 shrink-0" />
-        *EMI for ₹10 lakh over 20 years at the starting rate. Sign in to apply; you&apos;ll continue on the bank&apos;s official website. Rates are indicative starting rates and depend
-        on your credit score, income and loan amount. Check the final rate and fees with the bank.
+        *EMI for ₹10 lakh over 20 years at the starting rate. Sign in to apply; you&apos;ll continue on the bank&apos;s official website.
+        Rates are indicative and depend on your credit score, income and loan amount — confirm the final rate and fees with the bank.
       </p>
     </section>
   );
