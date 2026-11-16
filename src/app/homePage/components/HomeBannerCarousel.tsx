@@ -28,16 +28,16 @@ type Slide = {
 const SLIDES: Slide[] = [
   {
     id: "post-free",
-    eyebrow: "For owners",
+    eyebrow: "For owners & brokers",
     title: "Post your property FREE",
     highlight: "· 0% commission",
-    body: "No brokerage, no hidden charges. Live in 2 minutes, reach verified buyers & tenants.",
+    body: "Owners and brokers post free with 0% commission to Awasio. Live in 2 minutes, reach verified buyers & tenants.",
     cta: "Post property free",
     href: "/propertyListing",
     icon: PlusCircle,
     bg: "from-slate-950 via-slate-900 to-rose-800",
     accent: "text-amber-300",
-    chips: ["0% commission", "Zero brokerage", "Live in 2 min", "Verified leads", "WhatsApp alerts"],
+    chips: ["0% commission", "Set your own brokerage", "Live in 2 min", "Verified leads", "WhatsApp alerts"],
   },  {
     id: "free-credits",
     eyebrow: "Welcome bonus",

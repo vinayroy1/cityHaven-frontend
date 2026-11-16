@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Pricing & Contact Packs | Awasio",
     description:
-      "Unlock verified direct owner phone numbers on demand with zero lock-in, or get all-in-one listing memberships.",
+      "Unlock verified owner and broker phone numbers on demand with zero lock-in, or get all-in-one listing memberships.",
     url: buildCanonical("/pricing"),
     type: "website",
     images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
@@ -60,7 +60,7 @@ export default function PricingPage() {
     "@context": "https://schema.org",
     "@type": "Product",
     name: "Awasio Verified Contact Packs & Memberships",
-    description: "Direct owner phone number unlocks and verified property listing plans on Awasio.",
+    description: "Owner and broker phone number unlocks and verified property listing plans on Awasio.",
     brand: {
       "@type": "Brand",
       name: "Awasio",

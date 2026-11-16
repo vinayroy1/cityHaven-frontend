@@ -210,7 +210,7 @@ export function ScheduleVisitDialog({
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-semibold backdrop-blur-md">
                   <Coins className="h-3 w-3 text-amber-300" />
-                  5 Credits • Direct Owner Connection
+                  5 Credits • Direct Connection
                 </span>
                 {property.price && (
                   <span className="w-fit rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold text-white/95 sm:bg-transparent sm:px-0 sm:py-0 sm:text-sm">{property.price}</span>

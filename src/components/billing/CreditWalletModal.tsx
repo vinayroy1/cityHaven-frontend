@@ -441,7 +441,7 @@ export function CreditWalletModal({ isOpen, onClose, userProfile }: CreditWallet
         {/* Footer info & explicit Close Button */}
         <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-4 sm:px-6 py-2.5 sm:py-3 text-xs dark:border-slate-800 dark:bg-slate-900/60 shrink-0">
           <span className="text-[11px] text-slate-500 dark:text-slate-400">
-            Credits never expire &bull; Zero brokerage
+            Credits never expire &bull; 0% commission
           </span>
           <button
             type="button"

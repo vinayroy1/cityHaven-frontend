@@ -87,7 +87,7 @@ export function localityFaqs(p: LocalitySeoInput): Faq[] {
     q: `Is ${p.name} a good place to live?`,
     a: `${p.name} has ${p.items.filter((i) => i.distanceKm <= 2).length} key places (metro, hospitals, schools, malls) within 2 km${
       metro ? `, with ${metro.name} metro ${fmtKm(metro.distanceKm)} away` : ""
-    }. Compare rents and homes for sale in ${p.name} on Awasio — direct from owners with zero brokerage.`,
+    }. Compare rents and homes for sale in ${p.name} on Awasio — from direct owners and verified brokers, with brokerage shown upfront.`,
   });
   return faqs;
 }

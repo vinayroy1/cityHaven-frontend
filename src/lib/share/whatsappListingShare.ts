@@ -112,7 +112,7 @@ export function buildPropertyWhatsAppCard(input: PropertyWhatsAppCardInput): {
   const isOwner = (input.postedAs || "").toUpperCase() === "OWNER";
   const badge = isOwner
     ? "🚫 *Zero Brokerage · Direct Owner*"
-    : "✨ *Verified Listing on Awasio*";
+    : "✨ *Verified Listing · Brokerage shown upfront*";
 
   // Line 3: Top Connectivity / Landmarks
   const connectivity = extractConnectivitySnippet(input.nearbyLandmarks);

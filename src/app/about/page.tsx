@@ -188,7 +188,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-1 text-xs text-slate-300">
-                  {["Instant OTP Access", "Direct Owner Connect", "Micro-market Analytics", "Zero Brokerage Picks"].map((tag) => (
+                  {["Instant OTP Access", "Direct Owner Connect", "Micro-market Analytics", "Upfront Brokerage"].map((tag) => (
                     <span
                       key={tag}
                       className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-slate-200"

@@ -237,7 +237,7 @@ export function ContactUnlockDialog({
         {/* Footer info & explicit Close Button */}
         <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-2.5 border-t border-zinc-200 bg-zinc-50 px-4 sm:px-5 py-3 text-xs dark:border-slate-800 dark:bg-slate-900/60 shrink-0">
           <span className="text-[11px] text-zinc-500 dark:text-slate-400 text-center sm:text-left min-w-0">
-            Universal Credits never expire &bull; Verified direct owners
+            Universal Credits never expire &bull; Verified owners &amp; brokers
           </span>
           <button
             type="button"
@@ -309,7 +309,7 @@ export function LeadDetailsStep(props: {
           </div>
           <div>
             <p className="text-sm font-bold text-zinc-950 dark:text-white">Sign In Required to View Contact</p>
-            <p className="text-xs text-zinc-500 dark:text-slate-400">Direct owner details require an active account</p>
+            <p className="text-xs text-zinc-500 dark:text-slate-400">Owner &amp; broker details require an active account</p>
           </div>
         </div>
 
@@ -570,7 +570,7 @@ export function UnlockedContactStep({
               {ownerContact?.phone ? displayMobile(ownerContact.phone) : "+91 ..... ....."}
             </p>
             <p className="mt-1 text-[11px] text-zinc-500 dark:text-slate-400">
-              Direct connection &bull; Zero brokerage &bull; Lifetime unlocked
+              Direct connection &bull; Brokerage shown upfront &bull; Lifetime unlocked
             </p>
           </div>
         </div>

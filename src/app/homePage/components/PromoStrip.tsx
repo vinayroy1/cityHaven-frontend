@@ -14,8 +14,8 @@ type Promo = { id: string; text: string; short: string; cta: string; href: strin
 const PROMOS: Promo[] = [
   {
     id: "post-free",
-    text: "Post your property FREE · Zero brokerage · Live in 2 min",
-    short: "0% brokerage",
+    text: "Post your property FREE · 0% commission to Awasio · Live in 2 min",
+    short: "0% commission",
     cta: "Post Free",
     href: "/propertyListing",
     icon: PlusCircle,

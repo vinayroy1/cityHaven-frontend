@@ -968,7 +968,7 @@ function FeaturedFlatAvailableSection({ selectedCity }: { selectedCity: string }
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
             <Home className="h-3.5 w-3.5 text-rose-600" />
-            <span>Zero Brokerage Shared Flats</span>
+            <span>No-Brokerage Shared Flats</span>
           </div>
           <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
             {selectedCity && cityItems.length < MIN_SECTION_ITEMS

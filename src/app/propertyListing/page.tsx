@@ -11,7 +11,7 @@ import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 export const metadata: Metadata = {
   title: { absolute: "Post Property - Get 1,000 Free Credits on Signup | Awasio" },
   description:
-    "Post your property on Awasio. Get 1,000 free credits on signup to list properties, unlock verified tenant & buyer contacts, and boost your listing with zero brokerage.",
+    "Post your property on Awasio. Get 1,000 free credits on signup to list properties, unlock verified tenant & buyer contacts, and boost your listing. Owners and brokers post free with 0% commission to Awasio.",
   keywords: [
     "post property free",
     "free 1000 credits property",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     "sell house online",
     "unlock contact credits",
     "boost property listing",
-    "zero brokerage real estate india",
+    "owner and broker property listing india",
   ],
   alternates: { canonical: buildCanonical("/propertyListing") },
   robots: {
@@ -65,7 +65,7 @@ export default function PropertyListingPage() {
 
             <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 px-2.5 sm:px-3 py-1 rounded-full shrink-0">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="hidden sm:inline">Direct Verified Inquiries • Zero Brokerage</span>
+              <span className="hidden sm:inline">Verified Inquiries • 0% Commission to Awasio</span>
               <span className="sm:hidden">Direct Verified</span>
             </div>
           </div>

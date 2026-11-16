@@ -21,7 +21,7 @@ export function PublishSuccess({ listing, onPostAnother }: { listing: PublishedL
   const live = listing.status === "ACTIVE";
   const path = `/properties/${listing.slug || listing.id}`;
   const url = typeof window !== "undefined" ? `${window.location.origin}${path}` : `https://awasio.com${path}`;
-  const shareText = `🏠 *${listing.title || "Check out this property"}* on Awasio – zero brokerage direct owner:\n🔗 ${url}`;
+  const shareText = `🏠 *${listing.title || "Check out this property"}* on Awasio, with verified contact and upfront pricing:\n🔗 ${url}`;
 
   return (
     <div className={cn(panel, "mx-auto max-w-xl p-6 text-center sm:p-8")} data-testid="publish-success">

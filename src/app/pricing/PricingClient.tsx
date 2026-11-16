@@ -68,7 +68,7 @@ const CATEGORY_CONFIG: Record<PlanCategory | string, CategoryMeta> = {
   },
   OWNER_LANDLORD: {
     label: "Property Owners",
-    badgeLabel: "Zero Brokerage",
+    badgeLabel: "0% Commission",
     subtitle: "Post your property for ₹0. Boost visibility with top-rank locality spotlights and rental agreement assistance.",
     icon: Home,
   },
@@ -298,7 +298,7 @@ export function PricingClient() {
           <div className="text-center max-w-3xl mx-auto mb-10">
             <div className="inline-flex items-center gap-2 rounded-full bg-rose-50 border border-rose-200 px-3.5 py-1 text-xs font-bold text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300 mb-3 shadow-sm">
               <Sparkles className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
-              <span>Zero Brokerage &bull; Micro-Transaction Disruption</span>
+              <span>0% Commission &bull; Brokerage Shown Upfront</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-950 dark:text-white">
@@ -643,7 +643,7 @@ export function PricingClient() {
                         </div>
                         <div className="flex items-start gap-2">
                           <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-                          <span>Zero brokerage &bull; Instant activation</span>
+                          <span>0% commission &bull; Instant activation</span>
                         </div>
                       </div>
                     </div>
@@ -766,7 +766,7 @@ export function PricingClient() {
                   Is property listing really 100% free for owners?
                 </p>
                 <p>
-                  Yes! Genuine property owners can list their property for ₹0 with zero brokerage commission. If you want faster occupancy, you can opt for an optional Locality Spotlight Boost (₹149) or Owner Complete Pack with KYC and digital rental agreement templates (₹399).
+                  Yes! Genuine property owners can list their property for ₹0, and Awasio takes no commission. If you want faster occupancy, you can opt for an optional Locality Spotlight Boost (₹149) or Owner Complete Pack with KYC and digital rental agreement templates (₹399).
                 </p>
               </div>
 

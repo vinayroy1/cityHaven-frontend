@@ -1274,7 +1274,7 @@ function LoginContent() {
           <div className="relative z-10 flex items-center justify-between">
             <div className="inline-flex items-center gap-2 rounded-full border border-rose-200/80 bg-white/90 px-3.5 py-1.5 text-xs font-bold text-slate-800 shadow-sm backdrop-blur-md dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200">
               <Sparkles className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400 animate-pulse" />
-              <span>India&apos;s #1 Direct Owner Portal</span>
+              <span>Owners, Brokers &amp; Builders: All Verified</span>
             </div>
             <div className="flex items-center gap-2 rounded-full border border-emerald-200/80 bg-emerald-50/90 px-3 py-1 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur-md dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300">
               <span className="relative flex h-2 w-2">
@@ -1290,16 +1290,16 @@ function LoginContent() {
             <div className="space-y-3">
               <div className="inline-flex items-center gap-1.5 rounded-full border border-rose-200/70 bg-rose-50/80 px-3 py-1 text-xs font-bold uppercase tracking-wider text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300">
                 <Star className="h-3.5 w-3.5 fill-rose-500 text-rose-500 dark:fill-rose-400 dark:text-rose-400" />
-                <span>Zero Brokerage • 100% Direct Contact</span>
+                <span>Verified Listings • Transparent Brokerage</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight text-slate-950 dark:text-white">
-                Find Your Haven. <br />
+                Find Your Next Home. <br />
                 <span className="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-500 bg-clip-text text-transparent dark:from-rose-400 dark:via-rose-300 dark:to-amber-400">
-                  Direct from Verified Owners.
+                  Your Way, Your Choice.
                 </span>
               </h2>
               <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 font-medium">
-                Unlock instant phone numbers, schedule direct site visits, and manage multi-seat agency teams with zero friction.
+                Deal directly with owners or with verified brokers. Brokerage is shown upfront on every listing, so there are no surprises. Book site visits, contact sellers instantly, and manage your agency team in one place.
               </p>
             </div>
 

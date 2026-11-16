@@ -63,7 +63,7 @@ export async function generateMetadata({ searchParams }: SearchProps): Promise<M
     : `Search ${countStr}Properties ${intentLabel} | Awasio`;
 
   const description =
-    `Explore ${countStr || "verified "}apartments, builder floors, houses & commercial real estate ${intentLabel} in ${locationLabel}. Zero brokerage options, RERA certified advisors & transparent pricing on Awasio.`;
+    `Explore ${countStr || "verified "}apartments, builder floors, houses & commercial real estate ${intentLabel} in ${locationLabel}. Direct owners & verified brokers with brokerage shown upfront on Awasio.`;
 
   const intentKey = (intent || "BUY").toUpperCase();
   const canonicalPath = `/${SEARCH_INTENT_SLUGS[intentKey as keyof typeof SEARCH_INTENT_SLUGS] ?? "buy"}`;

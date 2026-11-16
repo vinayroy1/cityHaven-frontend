@@ -188,7 +188,7 @@ export function WelcomeCreditModal() {
               </div>
               <div className="min-w-0">
                 <h3 className="text-xs sm:text-sm font-bold text-white">Post 100 Property &amp; Flatmate Listings</h3>
-                <p className="text-[10px] sm:text-[11px] text-slate-400">Only 10 credits per listing &bull; Never expires &bull; Zero brokerage fees</p>
+                <p className="text-[10px] sm:text-[11px] text-slate-400">Only 10 credits per listing &bull; Never expires &bull; 0% commission</p>
               </div>
             </div>
 
@@ -215,7 +215,7 @@ export function WelcomeCreditModal() {
             </span>
             <span className="flex items-center gap-1">
               <ShieldCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-rose-400" />
-              <span>0 Brokerage</span>
+              <span>0% Commission</span>
             </span>
           </div>
         </div>

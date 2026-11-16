@@ -165,7 +165,7 @@ export async function LocalityView({ ck, lk }: { ck: string; lk: string }) {
             <div className="rounded-2xl bg-slate-900 p-5 text-white shadow-lg dark:bg-slate-800">
               <p className="text-xs font-semibold uppercase tracking-wider text-rose-400">Like it here?</p>
               <h2 className="mt-1 text-xl font-bold leading-snug">Find a home in {name}</h2>
-              <p className="mt-1 text-sm text-slate-300">Direct from owners · zero brokerage</p>
+              <p className="mt-1 text-sm text-slate-300">Direct owners &amp; verified brokers · brokerage shown upfront</p>
               <div className="mt-4 space-y-2">
                 {homeLinks.map(({ href, label, icon: Icon }) => (
                   <Link
