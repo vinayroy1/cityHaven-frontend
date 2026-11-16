@@ -257,9 +257,6 @@ export default function PrivacyPage() {
                   </a>{" "}
                   (cc: <code>privacy@awasio.com</code>)
                 </p>
-                <p className="text-sm text-slate-900 dark:text-white">
-                  <strong>Helpline:</strong> +91-8848510629 (10:00 AM - 6:00 PM IST)
-                </p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   <strong>Postal Address:</strong> Grievance Redressal Cell, Awasio Technologies Private Limited, Unit 402, 4th Floor, Magnum Global Park, Sector 58, Golf Course Ext Road, Gurugram, Haryana - 122011, India.
                 </p>

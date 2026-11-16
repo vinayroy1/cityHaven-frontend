@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Phone, Mail, Linkedin, Youtube, Instagram, Facebook } from "lucide-react";
+import { Mail, Linkedin, Youtube, Instagram, Facebook } from "lucide-react";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { SOCIAL_LINKS } from "@/constants/seo";
 
@@ -55,14 +55,6 @@ export function FooterLinks() {
             </p>
             {/* Compact Horizontal Contact Pills */}
             <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
-              <a
-                href="tel:+918848510629"
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-slate-50/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-2xs transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:text-rose-400"
-                aria-label="Call Helpline +91-8848510629"
-              >
-                <Phone className="h-3 w-3 text-rose-500 shrink-0" />
-                <span>+91-8848510629</span>
-              </a>
               <a
                 href="mailto:contact@awasio.com"
                 className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-slate-50/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-2xs transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:text-rose-400"

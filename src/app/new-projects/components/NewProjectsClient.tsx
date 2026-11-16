@@ -686,13 +686,6 @@ export function NewProjectsClient({
               >
                 List Your Project
               </Link>
-              <a
-                href="tel:+918848510629"
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-xs font-bold text-white backdrop-blur-md transition hover:bg-white/20"
-              >
-                <PhoneCall className="h-3.5 w-3.5" />
-                <span>Call Builder Desk: +91-8848510629</span>
-              </a>
             </div>
           </div>
         </div>
@@ -726,18 +719,19 @@ export function NewProjectsClient({
               By {contactModalProject.developerName}
             </p>
 
+            {contactModalProject.salesPhone && (
             <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 Official Sales Desk Phone
               </span>
               <div className="mt-1 flex items-center justify-between">
                 <span className="text-lg font-black text-slate-950 dark:text-white">
-                  +91 {(contactModalProject.salesPhone || "8848510629").replace(/^\+?91\s*[-]?\s*/, "")}
+                  +91 {(contactModalProject.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "")}
                 </span>
                 <button
                   type="button"
                   onClick={() => {
-                    const raw = (contactModalProject.salesPhone || "8848510629").replace(/^\+?91\s*[-]?\s*/, "");
+                    const raw = (contactModalProject.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "");
                     navigator.clipboard.writeText(`+91-${raw}`);
                     setCopiedCardPhone(true);
                     toast.success("Phone number copied!");
@@ -756,6 +750,7 @@ export function NewProjectsClient({
                 <span>Call Sales Desk Now</span>
               </a>
             </div>
+            )}
 
             {contactModalProject.salesEmail && (
               <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/40">

@@ -586,17 +586,18 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               By {project.developerName}
             </p>
 
+            {project.salesPhone && (
             <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 Official Sales Phone
               </span>
               <div className="mt-1 flex items-center justify-between">
                 <span className="text-lg font-black text-slate-950 dark:text-white">
-                  +91 {(project.salesPhone || "8848510629").replace(/^\+?91\s*[-]?\s*/, "")}
+                  +91 {(project.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "")}
                 </span>
                 <button
                   onClick={() => {
-                    const raw = (project.salesPhone || "8848510629").replace(/^\+?91\s*[-]?\s*/, "");
+                    const raw = (project.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "");
                     navigator.clipboard.writeText(`+91-${raw}`);
                     setCopiedPhone(true);
                     toast.success("Phone number copied!");
@@ -615,6 +616,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
                 <span>Call Sales Desk Now</span>
               </a>
             </div>
+            )}
 
             {project.salesEmail && (
               <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/40">

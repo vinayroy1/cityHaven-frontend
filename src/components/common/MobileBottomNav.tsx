@@ -31,7 +31,6 @@ import { Ruler, Paintbrush,
   Shield,
   FileText,
   Mail,
-  Phone,
   BookOpenText,
   Zap,
   Linkedin,
@@ -112,7 +111,6 @@ const companyAndSupportLinks = [
   { label: "Search properties", href: "/propertySearch", icon: Search },
   { label: "Saved properties", href: "/favorites", icon: Heart },
   { label: "Email support", href: "mailto:contact@awasio.com", icon: Mail },
-  { label: "Call support", href: "tel:+918848510629", icon: Phone },
 ];
 
 export function MobileBottomNav() {

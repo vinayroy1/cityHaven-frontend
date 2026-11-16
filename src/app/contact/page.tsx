@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildCanonical, SOCIAL_LINKS, OG_IMAGE_URL } from "@/constants/seo";
-import { Mail, Phone, MessageSquare, MapPin, Clock, ShieldCheck, ArrowLeft, Linkedin, Youtube } from "lucide-react";
+import { Mail, MapPin, Clock, ShieldCheck, ArrowLeft, Linkedin, Youtube } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { ContactForm } from "./ContactForm";
@@ -23,28 +23,12 @@ export const metadata: Metadata = {
 
 const contacts = [
   {
-    title: "Call support",
-    value: "+91-8848510629",
-    href: "tel:+918848510629",
-    description: "9AM - 11PM IST, 7 days a week",
-    icon: Phone,
-    accent: "text-emerald-600 bg-emerald-50 border-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300",
-  },
-  {
     title: "Email us",
     value: "contact@awasio.com",
     href: "mailto:contact@awasio.com",
     description: "We respond within 1 business day",
     icon: Mail,
     accent: "text-rose-600 bg-rose-50 border-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300",
-  },
-  {
-    title: "WhatsApp chat",
-    value: "+91-8848510629",
-    href: "https://wa.me/918848510629?text=Hi%20Awasio%20Support%2C%20I%20have%20an%20enquiry",
-    description: "Instant responses on WhatsApp",
-    icon: MessageSquare,
-    accent: "text-sky-600 bg-sky-50 border-sky-100 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-300",
   },
 ];
 
