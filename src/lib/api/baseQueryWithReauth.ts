@@ -5,6 +5,7 @@ import { getApiErrorMessage } from "@/lib/api/apiErrorMessage";
 import { APP_CONFIG } from "@/constants/app-config";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { getAuthToken, isAssistedActive } from "@/lib/auth/assistedSession";
+import { attributionHeader } from "@/lib/attribution";
 
 let refreshPromise: Promise<string | null> | null = null;
 
@@ -30,6 +31,11 @@ const rawBaseQuery = fetchBaseQuery({
   prepareHeaders: (headers) => {
     const token = getAccessToken();
     if (token) headers.set("authorization", `Bearer ${token}`);
+    else {
+      // Logged out: send first-touch attribution so a signup on this request can be tagged.
+      const attr = attributionHeader();
+      if (attr) headers.set("x-awasio-attr", attr);
+    }
     return headers;
   },
 });

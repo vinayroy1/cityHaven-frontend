@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import type { PropsWithChildren } from "react";
 import { StoreProvider } from "@/store/Providers";
 import { requestLocationPermissionOnce } from "@/lib/permissions";
+import { captureFirstTouch } from "@/lib/attribution";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import dynamic from "next/dynamic";
@@ -21,6 +22,7 @@ export function Providers({ children }: PropsWithChildren) {
   const [queryClient] = useState(() => new QueryClient());
 
   useEffect(() => {
+    captureFirstTouch();
     void requestLocationPermissionOnce({ storageKey: "globalLocationPermissionAsked" });
   }, []);
 

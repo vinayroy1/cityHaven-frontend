@@ -13,6 +13,7 @@ import {
   Building2,
   FileCheck2,
   Users2,
+  UserPlus,
   CreditCard,
   History,
   LayoutDashboard,
@@ -152,6 +153,12 @@ const NAV_ITEMS = [
     href: "/admin/staff",
     icon: UserCog,
     allowedRoles: ["SUPER_ADMIN"],
+  },
+  {
+    label: "Signups",
+    href: "/admin/signups",
+    icon: UserPlus,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SUPPORT_EXECUTIVE", "ANALYST_AUDITOR"],
   },
   {
     label: "Customer Accounts",

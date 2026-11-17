@@ -152,6 +152,10 @@ export const adminApi = {
   async reviewConstruction(id: number, decision: "APPROVE" | "REQUEST_CHANGES" | "REJECT", notes?: string) {
     return unwrap(await apiClient.post<{ outcome: string }>(API_ENDPOINTS.admin.construction.review(id), { decision, notes: notes || null }));
   },
+  async listSignups(params: { days: number; type: string; stage?: string; q?: string }) {
+    const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== "").map(([k, v]) => [k, String(v)])).toString();
+    return unwrap(await apiClient.get<AdminSignupsResponse>(API_ENDPOINTS.admin.signups(qs)));
+  },
   async listPanditQueue(queue: string) {
     return unwrap(await apiClient.get<{ items: AdminPanditItem[]; counts: Record<string, number> }>(API_ENDPOINTS.admin.pandits.queue(queue)));
   },
@@ -377,4 +381,32 @@ export const leadFinderApi = {
   async stats() {
     return unwrap(await apiClient.get<LeadStats>(`${LF}/stats`));
   },
+};
+
+export type SignupStage = "PUBLISHED" | "IN_PROGRESS" | "ENGAGED" | "SIGNED_UP_ONLY";
+export type AdminSignup = {
+  id: number;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  createdAt: string;
+  lastLogin: string | null;
+  credits: number;
+  signupSource: string;
+  source: string;
+  utm: { source: string | null; medium: string | null; campaign: string | null } | null;
+  referrer: string | null;
+  landingPage: string | null;
+  signupPage: string | null;
+  intent: string | null;
+  device: string | null;
+  listings: { properties: number; propertiesLive: number; business: number; businessLive: number; projects: number; flatmate: number };
+  activity: { unlocks: number; visits: number };
+  stage: SignupStage;
+};
+export type AdminSignupsResponse = {
+  days: number;
+  type: string;
+  summary: { total: number; byStage: Record<string, number>; bySource: Record<string, number> };
+  items: AdminSignup[];
 };

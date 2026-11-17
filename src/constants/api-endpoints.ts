@@ -172,6 +172,7 @@ export const API_ENDPOINTS = {
       queue: (queue: string) => `${BASE}/admin/construction?queue=${encodeURIComponent(queue)}`,
       review: (id: number) => `${BASE}/admin/construction/${id}/review`,
     },
+    signups: (qs: string) => `${BASE}/admin/signups${qs ? `?${qs}` : ""}`,
     pandits: {
       queue: (queue: string) => `${BASE}/admin/pandits?queue=${encodeURIComponent(queue)}`,
       review: (id: number) => `${BASE}/admin/pandits/${id}/review`,
