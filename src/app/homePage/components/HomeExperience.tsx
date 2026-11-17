@@ -32,10 +32,7 @@ const PreferredAgentsSection = dynamic(() => import("./PreferredAgentsSection"))
 const HomeBuildersSection = dynamic(() => import("./HomeBuildersSection"));
 const HomeStaysSection = dynamic(() => import("@/components/stays/HomeStaysSection").then((m) => m.HomeStaysSection));
 const FlatmateCard = dynamic(() => import("@/components/flatmates/FlatmateCard").then((m) => m.FlatmateCard));
-const InteriorDesignerShowcaseCard = dynamic(() =>
-  import("./InteriorDesignerShowcaseCard").then((m) => m.InteriorDesignerShowcaseCard),
-  { loading: () => <InteriorDesignerShowcaseSkeleton /> }
-);
+import { InteriorDesignerShowcaseCard } from "./InteriorDesignerShowcaseCard";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { getSelectedCountry, useCountry } from "@/lib/country/countryStore";
 import { getCountry } from "@/config/countries";
@@ -1104,17 +1101,19 @@ function FeaturedSeekersBuddyUpSection({ selectedCity }: { selectedCity: string 
 }
 
 function InteriorDesignersSection({ selectedCity }: { selectedCity: string }) {
-  const isIdle = useIdleState(1200);
+  // No idle delay: this section sits mid-page, so fetch right away (RTK cache makes repeat visits instant).
   const scrollerRef = React.useRef<HTMLDivElement>(null);
   const normalizedCity = selectedCity?.toLowerCase().includes("delhi") ? "Delhi" : (selectedCity || undefined);
 
   const { data: cityData, isLoading: isCityLoading } = useSearchInteriorDesignersQuery(
     { city: normalizedCity, sort: "recommended", limit: 8 },
-    { skip: !isIdle || !normalizedCity }
+    { skip: !normalizedCity }
   );
+  // Country-wide top-up only when there is no city or the city has fewer than 4 designers.
+  const needsFallback = !normalizedCity || (!isCityLoading && (cityData?.items.length ?? 0) < 4);
   const { data: fallbackData, isLoading: isFallbackLoading } = useSearchInteriorDesignersQuery(
     { sort: "recommended", limit: 8, countryCode: getSelectedCountry() },
-    { skip: !isIdle }
+    { skip: !needsFallback }
   );
 
   const cityItems = cityData?.items ?? [];
@@ -1127,9 +1126,9 @@ function InteriorDesignersSection({ selectedCity }: { selectedCity: string }) {
   }
   const isCityScoped = cityItems.length > 0 && !!selectedCity;
   // Wait for the fallback top-up too when the city has < 4 results, so cards don't pop in late.
-  const isLoading =
-    !isIdle ||
-    (normalizedCity ? isCityLoading || (cityItems.length < 4 && isFallbackLoading) : isFallbackLoading);
+  const isLoading = normalizedCity
+    ? isCityLoading || (needsFallback && isFallbackLoading)
+    : isFallbackLoading;
   // Directory has no /interior-designers/[city] index route (only [city]/[slug]), so link the directory.
   const viewAllHref = "/interior-designers";
 
