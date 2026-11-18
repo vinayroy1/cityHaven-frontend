@@ -33,9 +33,10 @@ export function SignupCreditCard({ benefit = "unlock verified owner & builder co
     <Link
       href={href}
       prefetch={false}
-      className={`group flex flex-col gap-3 rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50 via-white to-amber-50 p-4 shadow-sm transition hover:border-rose-300 hover:shadow-md sm:flex-row sm:items-center sm:p-5 dark:border-rose-900/60 dark:from-rose-950/40 dark:via-slate-900 dark:to-amber-950/30 ${className}`}
+      className={`group flex flex-col gap-2.5 sm:gap-3 rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50 via-white to-amber-50 p-3.5 shadow-sm transition hover:border-rose-300 hover:shadow-md sm:flex-row sm:items-center sm:p-5 dark:border-rose-900/60 dark:from-rose-950/40 dark:via-slate-900 dark:to-amber-950/30 ${className}`}
     >
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600 to-pink-600 text-white shadow-md shadow-rose-600/25">
+      <span className="flex min-w-0 flex-1 items-center gap-3">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600 to-pink-600 text-white shadow-md shadow-rose-600/25 sm:h-11 sm:w-11">
         <Gift className="h-5 w-5" />
       </span>
       <span className="min-w-0 flex-1">
@@ -47,7 +48,8 @@ export function SignupCreditCard({ benefit = "unlock verified owner & builder co
           Use them to {benefit}. Free, takes a minute.
         </span>
       </span>
-      <span className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-rose-600 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-rose-600/25 transition group-hover:-translate-y-0.5 sm:text-sm">
+      </span>
+      <span className="inline-flex h-10 w-full shrink-0 items-center justify-center gap-1.5 rounded-full sm:h-auto sm:w-auto bg-gradient-to-r from-rose-600 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-rose-600/25 transition group-hover:-translate-y-0.5 sm:text-sm">
         Sign up free
         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
       </span>

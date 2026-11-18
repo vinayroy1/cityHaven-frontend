@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoLoadMore } from "@/lib/hooks/useAutoLoadMore";
 import { advisorPhoto } from "@/features/advisors/avatar";
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
@@ -81,6 +82,8 @@ export function AgentsDirectoryClient({ initialCity = "", initialLocality = "", 
   });
   // A full last page means there may be more (the API returns at most PAGE_SIZE per call).
   const hasMore = serverAgents.length >= offset + PAGE_SIZE;
+  // Infinite scroll; the "Load more advisors" button stays as a fallback.
+  const sentinelRef = useAutoLoadMore(() => setOffset(serverAgents.length), hasMore && serverAgents.length > 0, loadingPage, serverAgents.length);
 
   // No city in the URL: open on the visitor's saved city (same one the other search pages use).
   React.useEffect(() => {
@@ -381,9 +384,9 @@ export function AgentsDirectoryClient({ initialCity = "", initialLocality = "", 
           </div>
         ) : (
           <div className="grid gap-3 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredAgents.map((agent) => (
+            {filteredAgents.map((agent, idx) => (
+              <React.Fragment key={agent.id}>
               <article
-                key={agent.id}
                 className="flex flex-col justify-between rounded-xl sm:rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-5 shadow-xs transition-all duration-200 hover:border-rose-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
               >
                 <div>
@@ -515,12 +518,13 @@ export function AgentsDirectoryClient({ initialCity = "", initialLocality = "", 
                   </Link>
                 </div>
               </article>
+              </React.Fragment>
             ))}
           </div>
         )}
 
         {hasMore && serverAgents.length > 0 && (
-          <div className="mt-6 flex justify-center">
+          <div ref={sentinelRef} className="mt-6 flex justify-center">
             <button
               type="button"
               onClick={() => setOffset(serverAgents.length)}

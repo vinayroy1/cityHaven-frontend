@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoLoadMore } from "@/lib/hooks/useAutoLoadMore";
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { BedDouble, Heart, Landmark, Plus, Search, SlidersHorizontal, Snowflake, Sparkles, Users, X } from "lucide-react";
@@ -82,6 +83,8 @@ export function StaysDirectory({
   const q = useStaySearch(params, true, initialPage);
   const items = useMemo(() => q.data?.pages.flatMap((p) => p.items) ?? [], [q.data]);
   const total = q.data?.pages[0]?.total ?? 0;
+  // Infinite scroll; the "Show more stays" button stays as a fallback.
+  const sentinelRef = useAutoLoadMore(() => void q.fetchNextPage(), !!q.hasNextPage, q.isFetchingNextPage, items.length);
   const hotspots = STAY_HOTSPOTS[country.code] ?? country.popularCities;
   const activeFilters = [priceMax, ac, coupleFriendly, familyFriendly, free].filter(Boolean).length;
 
@@ -335,7 +338,9 @@ export function StaysDirectory({
         <div className="mt-3 grid grid-cols-1 gap-4 sm:mt-4 sm:grid-cols-2 lg:grid-cols-3">
           {q.isLoading && Array.from({ length: 6 }).map((_, i) => <StayCardSkeleton key={i} />)}
           {items.map((s, i) => (
-            <StayCard key={s.id} stay={s} priority={i < 3} />
+            <React.Fragment key={s.id}>
+              <StayCard stay={s} priority={i < 3} />
+            </React.Fragment>
           ))}
         </div>
 
@@ -351,7 +356,7 @@ export function StaysDirectory({
         )}
 
         {q.hasNextPage && (
-          <div className="mt-6 text-center">
+          <div ref={sentinelRef} className="mt-6 text-center">
             <button
               type="button"
               onClick={() => q.fetchNextPage()}

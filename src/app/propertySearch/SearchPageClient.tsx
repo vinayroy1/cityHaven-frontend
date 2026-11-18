@@ -63,7 +63,26 @@ const H1_LABEL: Record<string, string> = {
   PLOT: "Plots & Land",
 };
 
-export function SearchPageClient({
+/**
+ * The search page is pre-rendered and cached (ISR), and useSearchParams() is not available while
+ * pre-rendering. So the server renders the page for the clean URL (no filters: the same results
+ * Google sees), and in the browser the real query string (?priceMax=…, sort, r.*) takes over.
+ */
+export function SearchPageClient(props: SearchPageClientProps = {}) {
+  return (
+    <React.Suspense fallback={<SearchPageView {...props} query="" />}>
+      <SearchPageWithQuery {...props} />
+    </React.Suspense>
+  );
+}
+
+function SearchPageWithQuery(props: SearchPageClientProps) {
+  const searchParams = useSearchParams();
+  return <SearchPageView {...props} query={searchParams.toString()} />;
+}
+
+function SearchPageView({
+  query,
   routeCity,
   routeLocalities = [],
   routeIntent,
@@ -71,14 +90,13 @@ export function SearchPageClient({
   routeCountry = null,
   initialItems,
   initialTotal,
-}: SearchPageClientProps = {}) {
+}: SearchPageClientProps & { query: string }) {
   const router = useRouter();
   useUrlCountry(routeCountry);
-  const searchParams = useSearchParams();
   const routeLocalitiesKey = routeLocalities.join("\u001f");
 
   const state = React.useMemo(() => {
-    const parsed = parseSearchParams(new URLSearchParams(searchParams.toString()));
+    const parsed = parseSearchParams(new URLSearchParams(query));
     if (routeIntent) parsed.intent = routeIntent;
     if (routeState && !parsed.q) parsed.q = routeState;
     if (routeCity) parsed.cityName = routeCity;
@@ -87,7 +105,7 @@ export function SearchPageClient({
       parsed.localities = pathLocalities.slice(0, 2).map((label) => ({ label, city: routeCity }));
     }
     return parsed;
-  }, [searchParams, routeCity, routeLocalitiesKey, routeIntent, routeState]);
+  }, [query, routeCity, routeLocalitiesKey, routeIntent, routeState]);
 
   React.useEffect(() => {
     // Restore browser-only city preferences after hydration. Keeping storage
@@ -442,7 +460,7 @@ export function SearchPageClient({
       )}
 
       {/* Floating Bottom Filter Button (NoBroker / 99acres style on mobile) */}
-      <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-40 md:hidden">
+      <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom)+var(--signup-bar,0px))] right-4 transition-[bottom] duration-300 z-40 md:hidden">
         <button
           type="button"
           onClick={() => openFilters()}

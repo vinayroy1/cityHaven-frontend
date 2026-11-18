@@ -1,5 +1,4 @@
 "use client";
-import { SignupCreditCard } from "@/components/marketing/SignupCreditCard";
 import { formatMoneyShort } from "@/lib/money";
 
 import { CardTitleLink } from "@/components/common/CardTitleLink";
@@ -647,9 +646,6 @@ export function NewProjectsClient({
                   idx={idx}
                   onContactClick={(p) => setContactModalProject(p)}
                 />
-                {idx === Math.min(5, projects.length - 1) && (
-                  <SignupCreditCard className="col-span-full" benefit="unlock builder contacts, brochures & price sheets" />
-                )}
               </React.Fragment>
             ))}
             {hasMore && (

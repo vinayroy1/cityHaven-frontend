@@ -1,9 +1,10 @@
 "use client";
 
+import { useAutoLoadMore } from "@/lib/hooks/useAutoLoadMore";
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Flame, Loader2, Search, SlidersHorizontal, X } from "lucide-react";
+import { ArrowUpDown, BadgeCheck, MapPin, BookOpen, ChevronDown, Flame, Languages, Loader2, Search, SlidersHorizontal } from "lucide-react";
 import { PropertyListingCitySelector, type CitySelection } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector, type LocalitySelection } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { cn } from "@/components/ui/utils";
@@ -17,7 +18,27 @@ import type { PanditProfile, PanditSegment, PanditSort } from "@/features/pandit
 import { PanditCard } from "./PanditCard";
 
 const PAGE_SIZE = 24;
-const selCls = "h-9 shrink-0 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200";
+/** Shared look for every search/filter box: same height, font, left icon and chevron as the city picker. */
+const fieldCls = (active: boolean) =>
+  cn(
+    "h-11 w-full min-w-0 truncate rounded-xl border border-slate-200 bg-white pl-9 text-sm outline-none transition-colors hover:border-slate-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600",
+    active ? "font-semibold text-slate-900 dark:text-slate-100" : "text-slate-400 dark:text-slate-500",
+  );
+
+function FilterSelect({
+  icon: Icon,
+  active,
+  className,
+  ...props
+}: React.SelectHTMLAttributes<HTMLSelectElement> & { icon: React.ComponentType<{ className?: string }>; active: boolean }) {
+  return (
+    <div className={cn("relative min-w-0", className)}>
+      <Icon className={cn("pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2", active ? "text-rose-500" : "text-slate-400")} />
+      <select {...props} className={cn(fieldCls(active), "cursor-pointer appearance-none pr-9")} />
+      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+    </div>
+  );
+}
 
 /** Quick picks shown as chips; the full list is in the service select. */
 const QUICK: Record<"" | PanditSegment, string[]> = {
@@ -58,6 +79,21 @@ export function DirectoryClient({
   const [q, setQ] = React.useState("");
   const [query, setQuery] = React.useState("");
   const [more, setMore] = React.useState(false);
+  // The Filters panel closes on a click/tap outside the search box, on Escape, or with "Done".
+  const searchBoxRef = React.useRef<HTMLDivElement | null>(null);
+  React.useEffect(() => {
+    if (!more) return;
+    const onDown = (e: PointerEvent) => {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target as Node)) setMore(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMore(false);
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [more]);
   const [fetchPage, { isFetching }] = useLazySearchPanditsQuery();
 
   const setSegment = (v: "" | PanditSegment) => {
@@ -130,14 +166,21 @@ export function DirectoryClient({
   const items = view?.items ?? [];
   const total = view?.total ?? 0;
 
+  const loadingMore = React.useRef(false);
   const loadMore = async () => {
-    if (!view) return;
+    if (!view || loadingMore.current) return;
+    loadingMore.current = true;
     const page = view.page + 1;
     const r = await fetchPage(params(page)).unwrap().catch(() => null);
+    loadingMore.current = false;
     if (!r) return;
     const seen = new Set(view.items.map((x) => x.id));
     setState({ key, page, items: [...view.items, ...r.items.filter((x) => !seen.has(x.id))], total: r.pagination.total });
   };
+
+  // Infinite scroll (shared with every directory); the button below stays as a fallback.
+  const hasMore = !!view && items.length < total;
+  const sentinelRef = useAutoLoadMore(() => void loadMore(), hasMore, isFetching, items.length);
 
   const clearAll = () => {
     setSegmentState("");
@@ -158,49 +201,45 @@ export function DirectoryClient({
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="grid grid-cols-2 gap-2 lg:grid-cols-[1.3fr_1fr_1fr]">
-          <form
-            className="relative col-span-2 lg:col-span-1"
-            role="search"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setQuery(q.trim());
-            }}
-          >
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input
-              aria-label="Search by name"
-              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 pl-9 pr-3 text-sm outline-none focus:border-rose-400 focus:bg-white focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800/60"
-              placeholder="Search by name"
-              value={q}
-              onChange={(e) => {
-                setQ(e.target.value);
-                if (!e.target.value) setQuery("");
-              }}
-              onBlur={() => setQuery(q.trim())}
-            />
-          </form>
+      {/* Simple search: where + which puja. Everything else sits behind one Filters button. */}
+      <div ref={searchBoxRef} className="relative space-y-3 lg:space-y-0 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        {/* Phones: fields stacked, then tabs + Filters. Desktop: everything on one row. */}
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-2">
+        <div className="grid grid-cols-2 gap-2 lg:min-w-0 lg:flex-1 lg:grid-cols-[1fr_1fr_1.2fr]">
           <div className="min-w-0">
-            <PropertyListingCitySelector value={city} placeholder="All cities" onChange={pickCity} />
+            <PropertyListingCitySelector compact value={city} placeholder="Select city" onChange={pickCity} />
           </div>
-          <div className="relative min-w-0">
+          {/* Always shown so visitors know they can search by area; disabled until a city is picked. */}
+          <div className="min-w-0">
             {city ? (
-              <>
-                <PropertyListingLocalitySelector key={`${city}|${locality}`} value={locality} cityName={city} placeholder="Any area" onChange={(l: LocalitySelection) => setLocality(l.name || "")} />
-                {locality && (
-                  <button type="button" aria-label="Clear area" onClick={() => setLocality("")} className="absolute right-9 top-1/2 z-10 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800">
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </>
+              <PropertyListingLocalitySelector key={`${city}|${locality}`} value={locality} cityName={city} placeholder="Any area" onChange={(l: LocalitySelection) => setLocality(l.name || "")} />
             ) : (
-              <input disabled aria-label="Area" placeholder="Pick a city first" className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-400 dark:border-slate-700 dark:bg-slate-800/60" />
+              <div aria-disabled="true" title="Select a city first" className="flex h-11 cursor-not-allowed items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-400 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-500">
+                <MapPin className="h-4 w-4 shrink-0" />
+                <span className="truncate">Any area</span>
+              </div>
             )}
           </div>
+          <FilterSelect
+            className="col-span-2 lg:col-span-1"
+            icon={Flame}
+            active={!!service}
+                        aria-label="Puja or service"
+            value={service}
+            onChange={(e) => setService(e.target.value)}
+          >
+            <option value="">{segment === "VASTU" ? "Which consultation?" : "Which puja or service?"}</option>
+            {serviceGroups.map((g) => (
+              <optgroup key={g.key} label={g.label}>
+                {ALL_SERVICE_OPTIONS.filter((o) => o.group === g.key).map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </optgroup>
+            ))}
+          </FilterSelect>
         </div>
 
-        <div className="no-scrollbar -mx-2 flex items-center gap-2 overflow-x-auto px-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 lg:shrink-0 lg:flex-nowrap">
           <div className="inline-flex shrink-0 rounded-lg bg-slate-100 p-0.5 text-xs font-semibold dark:bg-slate-800" role="tablist" aria-label="Kind of expert">
             {([
               ["", "All"],
@@ -219,55 +258,77 @@ export function DirectoryClient({
               </button>
             ))}
           </div>
-          <select aria-label="Puja or service" className={selCls} value={service} onChange={(e) => setService(e.target.value)}>
-            <option value="">{segment === "VASTU" ? "All consultations" : "All pujas & services"}</option>
-            {serviceGroups.map((g) => (
-              <optgroup key={g.key} label={g.label}>
-                {ALL_SERVICE_OPTIONS.filter((o) => o.group === g.key).map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-          <select aria-label="Language" className={selCls} value={language} onChange={(e) => setLanguage(e.target.value)}>
-            <option value="">Any language</option>
-            {LANGUAGE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-          <button
-            type="button"
-            onClick={() => setMore((m) => !m)}
-            aria-expanded={more}
-            className={cn("inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-semibold", extraCount ? "border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40" : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-200")}
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5" /> More{extraCount ? ` (${extraCount})` : ""}
-          </button>
-          {filtered && (
-            <button type="button" onClick={clearAll} className="shrink-0 whitespace-nowrap text-xs font-semibold text-rose-600 hover:underline">
-              Clear all
+          <div className="flex items-center gap-3">
+            {filtered && (
+              <button type="button" onClick={clearAll} className="whitespace-nowrap text-xs font-semibold text-rose-600 hover:underline">
+                Clear all
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setMore((m) => !m)}
+              aria-expanded={more}
+              className={cn("inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold", extraCount || query ? "border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40" : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-200")}
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" /> Filters{extraCount + (query ? 1 : 0) ? ` (${extraCount + (query ? 1 : 0)})` : ""}
             </button>
-          )}
+          </div>
+        </div>
+
         </div>
 
         {more && (
-          <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 px-1 pt-2 dark:border-slate-800">
+          <div className="grid gap-2 border-t border-slate-100 pt-3 sm:grid-cols-2 dark:border-slate-800 lg:absolute lg:right-3 lg:top-[calc(100%+0.5rem)] lg:z-30 lg:w-[480px] lg:rounded-2xl lg:border lg:border-slate-200 lg:bg-white lg:p-4 lg:shadow-xl lg:dark:border-slate-700 lg:dark:bg-slate-900">
+            <form
+              className="relative sm:col-span-2"
+              role="search"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setQuery(q.trim());
+              }}
+            >
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                aria-label="Search by name"
+                className={cn(fieldCls(!!q), "pr-3 placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-slate-500")}
+                placeholder="Pandit name"
+                value={q}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  if (!e.target.value) setQuery("");
+                }}
+                onBlur={() => setQuery(q.trim())}
+              />
+            </form>
+            <FilterSelect icon={Languages} active={!!language} aria-label="Language" value={language} onChange={(e) => setLanguage(e.target.value)}>
+              <option value="">Any language</option>
+              {LANGUAGE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </FilterSelect>
             {segment !== "VASTU" && (
-              <select aria-label="Tradition" className={selCls} value={tradition} onChange={(e) => setTradition(e.target.value)}>
+              <FilterSelect icon={BookOpen} active={!!tradition} aria-label="Tradition" value={tradition} onChange={(e) => setTradition(e.target.value)}>
                 <option value="">Any tradition</option>
                 {TRADITION_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+              </FilterSelect>
             )}
-            <select aria-label="Sort by" className={selCls} value={sort} onChange={(e) => setSort(e.target.value as PanditSort)}>
+            <FilterSelect icon={ArrowUpDown} active={sort !== "relevance"} aria-label="Sort by" value={sort} onChange={(e) => setSort(e.target.value as PanditSort)}>
               <option value="relevance">Sort: Recommended</option>
               <option value="rating">Sort: Highest rated</option>
               <option value="price">Sort: Lowest fee</option>
               <option value="experience">Sort: Most experienced</option>
-            </select>
-            <label className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200">
-              <input type="checkbox" className="h-3.5 w-3.5 accent-rose-600" checked={online} onChange={(e) => setOnline(e.target.checked)} /> Online available
-            </label>
-            <label className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200">
-              <input type="checkbox" className="h-3.5 w-3.5 accent-rose-600" checked={verified} onChange={(e) => setVerified(e.target.checked)} /> <BadgeCheck className="h-3.5 w-3.5 text-emerald-600" /> Verified only
-            </label>
+            </FilterSelect>
+            <div className="flex flex-wrap gap-2 sm:col-span-2">
+              <label className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                <input type="checkbox" className="h-3.5 w-3.5 accent-rose-600" checked={online} onChange={(e) => setOnline(e.target.checked)} /> Online available
+              </label>
+              <label className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                <input type="checkbox" className="h-3.5 w-3.5 accent-rose-600" checked={verified} onChange={(e) => setVerified(e.target.checked)} /> <BadgeCheck className="h-3.5 w-3.5 text-emerald-600" /> Verified only
+              </label>
+            </div>
+            <div className="flex justify-end sm:col-span-2">
+              <button type="button" onClick={() => setMore(false)} className="inline-flex h-10 items-center rounded-xl bg-slate-900 px-5 text-sm font-bold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900">
+                Done
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -333,14 +394,18 @@ export function DirectoryClient({
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((p, i) => <PanditCard key={p.id} p={p} priority={i === 0} service={service || undefined} />)}
+          {items.map((p, i) => (
+            <React.Fragment key={p.id}>
+              <PanditCard p={p} priority={i === 0} service={service || undefined} />
+            </React.Fragment>
+          ))}
         </div>
       )}
 
-      {view && items.length < total && (
-        <div className="flex flex-col items-center gap-1.5">
+      {hasMore && (
+        <div ref={sentinelRef} className="flex flex-col items-center gap-1.5">
           <button type="button" onClick={() => void loadMore()} disabled={isFetching} className="inline-flex h-11 min-w-[220px] items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-800 shadow-sm hover:border-rose-300 hover:text-rose-700 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
-            {isFetching && <Loader2 className="h-4 w-4 animate-spin" />} Load more
+            {isFetching ? <><Loader2 className="h-4 w-4 animate-spin" /> Loading…</> : "Load more"}
           </button>
           <p className="text-xs text-slate-500">Showing {items.length} of {total}</p>
         </div>

@@ -97,21 +97,22 @@ export function ResultsList({ results }: { results: SearchResults }) {
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-        {visible.map((item, idx) =>
-          isFlatmate ? (
-            <FlatmateCard key={item.id} listing={item as FlatmateListing} />
-          ) : (
-            <ResultCard
-              key={item.id}
-              {...toResultCardProps(item as PropertySearchItem)}
-              compact
-              priority={idx === 0}
-              // The first rows are on screen at once (desktop grid shows ~6): load them now; the
-              // rest wait for a scroll/tap, and the browser lazy-loads them as they come into view.
-              deferImage={idx > 5}
-            />
-          ),
-        )}
+        {visible.map((item, idx) => (
+          <React.Fragment key={item.id}>
+            {isFlatmate ? (
+              <FlatmateCard listing={item as FlatmateListing} />
+            ) : (
+              <ResultCard
+                {...toResultCardProps(item as PropertySearchItem)}
+                compact
+                priority={idx === 0}
+                // The first rows are on screen at once (desktop grid shows ~6): load them now; the
+                // rest wait for a scroll/tap, and the browser lazy-loads them as they come into view.
+                deferImage={idx > 5}
+              />
+            )}
+          </React.Fragment>
+        ))}
       </div>
 
       <div ref={sentinelRef} className="h-1 w-full" />

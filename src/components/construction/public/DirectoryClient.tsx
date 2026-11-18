@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoLoadMore } from "@/lib/hooks/useAutoLoadMore";
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -107,13 +108,15 @@ export function DirectoryClient({
   const total = view?.total ?? 0;
 
   const loadMore = async () => {
-    if (!view) return;
+    if (!view || isFetching) return;
     const page = view.page + 1;
     const r = await fetchPage(params(page)).unwrap().catch(() => null);
     if (!r) return;
     const seen = new Set(view.items.map((x) => x.id));
     setState({ key, page, items: [...view.items, ...r.items.filter((x) => !seen.has(x.id))], total: r.pagination.total });
   };
+  // Infinite scroll; the button stays as a fallback.
+  const sentinelRef = useAutoLoadMore(() => void loadMore(), !!view && items.length < total, isFetching, items.length);
 
   return (
     <div className="space-y-4">
@@ -238,12 +241,16 @@ export function DirectoryClient({
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((p, i) => <ConstructionCard key={p.id} p={p} priority={i === 0} />)}
+          {items.map((p, i) => (
+            <React.Fragment key={p.id}>
+              <ConstructionCard p={p} priority={i === 0} />
+            </React.Fragment>
+          ))}
         </div>
       )}
 
       {view && items.length < total && (
-        <div className="flex flex-col items-center gap-1.5">
+        <div ref={sentinelRef} className="flex flex-col items-center gap-1.5">
           <button type="button" onClick={() => void loadMore()} disabled={isFetching} className="inline-flex h-11 min-w-[220px] items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-800 shadow-sm hover:border-rose-300 hover:text-rose-700 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
             {isFetching && <Loader2 className="h-4 w-4 animate-spin" />} Load more companies
           </button>

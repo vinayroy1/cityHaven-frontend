@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { formatCredits, useSignupBonus } from "@/features/contactVerify/useSignupBonus";
+
+const BAR_DISMISSED_KEY = "awasio:signupBarDismissed";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -24,6 +27,35 @@ export function WelcomeCreditModal() {
   const [isAuthed, setIsAuthed] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const bonus = useSignupBonus();
+  const bonusText = formatCredits(bonus || 1000);
+
+  // Closed bar stays closed for this browser session (it used to come back on every page).
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- read once on mount
+      if (sessionStorage.getItem(BAR_DISMISSED_KEY)) setIsDismissed(true);
+    } catch {}
+  }, []);
+  // Show the bar once the visitor scrolls (or after 6s on short pages), so it never covers the first
+  // screen straight away.
+  useEffect(() => {
+    const show = () => {
+      setScrolled(true);
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(timer);
+    };
+    const onScroll = () => {
+      if (window.scrollY > 300) show();
+    };
+    const timer = setTimeout(show, 6000);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
   const [returnUrl, setReturnUrl] = useState<string>("");
 
   const checkAuth = useCallback(() => {
@@ -106,6 +138,18 @@ export function WelcomeCreditModal() {
     pathname.startsWith("/propertyListing") ||
     pathname.startsWith("/post-project") ||
     pathname.startsWith("/flatmates/post");
+
+  // While the bar shows, other floating bottom elements (search Filters button, profile action bars)
+  // move up by its height via the --signup-bar CSS variable.
+  const barVisible = mounted && !isAuthed && !isAuthOrDashboardPage && !isOpen && !isDismissed && scrolled;
+  useEffect(() => {
+    const root = document.documentElement;
+    if (barVisible) root.style.setProperty("--signup-bar", "4.25rem");
+    else root.style.removeProperty("--signup-bar");
+    return () => {
+      root.style.removeProperty("--signup-bar");
+    };
+  }, [barVisible]);
 
   // NEVER render popup or pill if:
   // 1. Not mounted
@@ -249,38 +293,48 @@ export function WelcomeCreditModal() {
 
   return (
     <>
-      {/* Approach 3: Floating Gift Pill for Non-Logged-In Users (never shown on auth/dashboard pages) */}
-      {!isOpen && !isDismissed && (
-        <div className="fixed bottom-20 sm:bottom-6 left-4 sm:left-6 z-40 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div className="group relative flex items-center">
+      {/* Sticky signup bar for logged-out visitors (never on auth/dashboard/posting pages). It appears
+          once they scroll, sits above the phone's bottom menu, and stays closed for the session. */}
+      {!isOpen && !isDismissed && scrolled && (
+        <div className="fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] z-40 mx-auto max-w-xl animate-in fade-in slide-in-from-bottom-4 duration-300 lg:bottom-5">
+          <div className="flex items-center gap-2.5 rounded-2xl border border-rose-200 bg-white/95 p-2 pl-2.5 shadow-[0_10px_30px_rgba(244,63,94,0.25)] backdrop-blur-md dark:border-rose-900/60 dark:bg-slate-900/95">
             <button
               type="button"
               onClick={() => {
                 setReturnUrl(window.location.pathname + window.location.search);
                 setIsOpen(true);
               }}
-              aria-label="Claim 1,000 free credits"
-              className="flex items-center gap-2.5 rounded-full bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600 p-1 sm:pr-4 text-xs font-black text-white shadow-[0_4px_25px_rgba(244,63,94,0.45)] hover:scale-105 active:scale-95 transition-all"
+              className="flex min-w-0 flex-1 items-center gap-2.5 text-left"
+              aria-label={`See what you get with ${bonusText} free credits`}
             >
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/30 backdrop-blur-md shadow-inner text-amber-300 animate-pulse">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600 to-pink-600 text-white">
                 <Gift className="h-4 w-4" />
               </span>
-              <span className="hidden tracking-wide sm:inline">
-                1,000 Free Credits <span className="text-amber-200 uppercase text-[10px] ml-1 font-bold">Claim</span>
+              <span className="min-w-0">
+                <span className="block truncate text-[13px] font-extrabold text-slate-900 dark:text-white">Get {bonusText} free credits</span>
+                <span className="block truncate text-[11px] text-slate-500 dark:text-slate-400">Unlock owner contacts</span>
               </span>
             </button>
-
-            {/* Close small dismiss button */}
+            <Link
+              href={loginHref}
+              prefetch={false}
+              className="inline-flex h-9 shrink-0 items-center rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 px-3.5 text-xs font-bold text-white shadow-md shadow-rose-600/25 transition hover:brightness-110 active:scale-95"
+            >
+              Sign up<span className="hidden min-[400px]:inline">&nbsp;free</span>
+            </Link>
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
                 setIsDismissed(true);
+                try {
+                  sessionStorage.setItem(BAR_DISMISSED_KEY, "1");
+                } catch {}
               }}
-              className="ml-1 flex h-6 w-6 items-center justify-center rounded-full bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800 transition"
-              title="Dismiss for this session"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800"
+              aria-label="Close"
+              title="Close"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </button>
           </div>
         </div>

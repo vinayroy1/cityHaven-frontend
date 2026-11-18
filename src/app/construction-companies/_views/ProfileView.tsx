@@ -340,7 +340,7 @@ export function ConstructionProfileView({ p }: { p: ConstructionProfile }) {
         </div>
 
         {/* Mobile quote bar */}
-        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t border-slate-200 bg-white/95 px-4 py-2.5 backdrop-blur sm:hidden dark:border-slate-800 dark:bg-slate-950/95">
+        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom)+var(--signup-bar,0px))] z-30 transition-[bottom] duration-300 border-t border-slate-200 bg-white/95 px-4 py-2.5 backdrop-blur sm:hidden dark:border-slate-800 dark:bg-slate-950/95">
           <a href="#quote" className="flex h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-rose-600 to-orange-500 text-sm font-bold text-white">
             {infra ? "Send enquiry" : "Get free quote"}
           </a>

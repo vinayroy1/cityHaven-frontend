@@ -882,7 +882,7 @@ export default function FlatmateDetailPage() {
       </main>
 
       {/* Floating Bottom Bar for Mobile conversion */}
-      <div className="fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] z-30 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-2xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95 lg:hidden">
+      <div className="fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px)+var(--signup-bar,0px))] z-30 transition-[bottom] duration-300 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-2xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95 lg:hidden">
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-black text-slate-900 dark:text-white">{formattedRent()}</p>
           <p className="text-[10px] text-slate-500">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAutoLoadMore } from "@/lib/hooks/useAutoLoadMore";
 import React, { useState, useMemo } from "react";
 
 const PAGE_SIZE = 30;
@@ -147,6 +148,8 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
       // Keep what is shown; the button stays so the visitor can retry.
     }
   };
+  // Infinite scroll; the "Load more designers" button stays as a fallback.
+  const sentinelRef = useAutoLoadMore(() => void loadMore(), hasMore, loadingMore, rawDesigners.length);
   const clientFiltered = selectedStyle !== "ALL" || !!searchKeyword.trim();
 
   // Client-side filtering for search keyword, specific locality, brand, and design style
@@ -513,18 +516,19 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
             ) : (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredDesigners.map((profile, idx) => (
-                  <InteriorDesignerCard
-                    key={profile.id}
-                    profile={profile}
-                    priority={idx === 0}
-                    onOpenInquiry={(p) => setInquiryProfile(p)}
-                  />
+                  <React.Fragment key={profile.id}>
+                    <InteriorDesignerCard
+                      profile={profile}
+                      priority={idx === 0}
+                      onOpenInquiry={(p) => setInquiryProfile(p)}
+                    />
+                  </React.Fragment>
                 ))}
               </div>
             )
           ) : null}
           {!isLoading && viewTab === "DIRECTORY" && filteredDesigners.length > 0 && hasMore && (
-            <div className="mt-8 flex flex-col items-center gap-2">
+            <div ref={sentinelRef} className="mt-8 flex flex-col items-center gap-2">
               <button
                 type="button"
                 onClick={() => void loadMore()}
