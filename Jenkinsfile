@@ -31,12 +31,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo "🔨 [Build] Compiling Next.js production Docker image without cache..."
+                echo "🔨 [Build] Compiling Next.js production Docker image..."
                 sh '''
                     # Keep the currently deployed image as :previous for a one-step rollback.
                     docker image inspect ${DOCKER_IMAGE} > /dev/null 2>&1 && docker tag ${DOCKER_IMAGE} ${APP_NAME}:previous || true
+                    # No --no-cache: the npm ci layer is keyed on package*.json, so packages are only
+                    # reinstalled when they change (saves ~2 min per build); source changes always rebuild.
                     DOCKER_BUILDKIT=1 docker build \
-                        --no-cache \
                         --progress=plain \
                         --build-arg NEXT_PUBLIC_API_URL=https://awasio.com/api \
                         --build-arg INTERNAL_API_URL=http://awasio-backend:4000/api \

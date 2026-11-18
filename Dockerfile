@@ -20,8 +20,9 @@ ENV INTERNAL_API_URL=$INTERNAL_API_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
+# next build already type-checks; "npm run build" would run tsc a second time (~85s).
 RUN --mount=type=cache,target=/app/.next/cache \
-    npm run build
+    npx next build --webpack
 
 FROM node:20-alpine AS runner
 WORKDIR /app
