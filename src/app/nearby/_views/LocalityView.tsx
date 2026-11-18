@@ -1,3 +1,4 @@
+import { SignupCreditCard } from "@/components/marketing/SignupCreditCard";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -143,6 +144,7 @@ export async function LocalityView({ ck, lk }: { ck: string; lk: string }) {
 
       <div className="mx-auto grid max-w-6xl gap-6 px-4 pt-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
         <div className="min-w-0">
+          <SignupCreditCard className="mb-6" benefit="unlock owner contacts for homes around here" />
           {items.length ? (
             <>
               <h2 className="mb-3 text-lg font-bold text-slate-900 dark:text-white">Explore around {name}</h2>

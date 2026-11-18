@@ -1,3 +1,4 @@
+import { SignupCreditCard } from "@/components/marketing/SignupCreditCard";
 import { OG_IMAGE_URL } from "@/constants/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -94,6 +95,7 @@ export async function CityView({ cityKey: key }: { cityKey: string }) {
       </section>
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <SignupCreditCard className="mt-6" benefit="unlock owner contacts for homes in these areas" />
         {best.length > 0 && (
           <section className="pt-7">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Best-connected areas</h2>

@@ -1,4 +1,6 @@
 import React from "react";
+import { advisorPhoto } from "@/features/advisors/avatar";
+import { OG_IMAGE_URL as OG_FALLBACK } from "@/constants/seo";
 import type { Metadata } from "next";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
@@ -31,7 +33,7 @@ export function profileMetadata(agent: Agent): Metadata {
       siteName: "Awasio",
       images: [
         {
-          url: agent.avatar,
+          url: advisorPhoto(agent.avatar) ?? OG_FALLBACK,
           width: 600,
           height: 600,
           alt: `${agent.name} - Real Estate Advisor`,
@@ -43,7 +45,7 @@ export function profileMetadata(agent: Agent): Metadata {
       card: "summary_large_image",
       title,
       description,
-      images: [agent.avatar],
+      images: [advisorPhoto(agent.avatar) ?? OG_FALLBACK],
     },
     alternates: {
       canonical: `https://awasio.com${agentPath(agent)}`,
@@ -61,7 +63,7 @@ export function AgentProfileView({ agent }: { agent: Agent }) {
     "@type": "RealEstateAgent",
     name: agent.name,
     jobTitle: agent.role,
-    image: agent.avatar,
+    image: advisorPhoto(agent.avatar) ?? undefined,
     telephone: agent.phone,
     email: agent.email,
     address: {

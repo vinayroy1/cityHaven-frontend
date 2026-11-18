@@ -1,4 +1,5 @@
 "use client";
+import { advisorPhoto } from "@/features/advisors/avatar";
 import { agentPath, agentsListPath } from "@/features/advisors/paths";
 
 import React, { useState } from "react";
@@ -195,7 +196,7 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                 <div className="relative shrink-0">
                   <CompanyAvatar
                     name={agent.name}
-                    logo={agent.avatar}
+                    logo={advisorPhoto(agent.avatar)}
                     alt={agent.name}
                     className="h-16 w-16 sm:h-28 sm:w-28 rounded-full text-lg sm:text-2xl font-bold ring-2 sm:ring-4 ring-white shadow-md dark:ring-slate-800"
                     imageClassName="h-full w-full rounded-full object-cover"
@@ -451,7 +452,7 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                       <div className="flex items-center gap-3">
                         <CompanyAvatar
                           name={sim.name}
-                          logo={sim.avatar}
+                          logo={advisorPhoto(sim.avatar)}
                           alt={sim.name}
                           className="h-10 w-10 rounded-full text-xs font-bold ring-1 ring-slate-200"
                           imageClassName="h-full w-full rounded-full object-cover"

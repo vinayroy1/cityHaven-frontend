@@ -1,3 +1,4 @@
+import { SignupCreditCard } from "@/components/marketing/SignupCreditCard";
 import Link from "next/link";
 import { Compass, Flame } from "lucide-react";
 import { buildCanonical } from "@/constants/seo";
@@ -94,6 +95,7 @@ export function DirectoryPage({
         </section>
         <div className="mx-auto max-w-6xl space-y-10 px-4 py-6 sm:px-6 sm:py-10">
           <DirectoryClient city={city} locality={locality ?? ""} country={country} initialItems={items} initialTotal={total} cities={cities} />
+          <SignupCreditCard benefit="contact pandits & vastu experts directly" />
 
           <section aria-labelledby="popular-title">
             <h2 id="popular-title" className="text-lg font-bold text-slate-900 dark:text-white">Popular{where ? ` in ${where}` : ""}</h2>

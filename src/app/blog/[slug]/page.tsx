@@ -1,3 +1,4 @@
+import { SignupCreditCard } from "@/components/marketing/SignupCreditCard";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -168,6 +169,7 @@ export default async function BlogDetailPage({ params }: Props) {
               </nav>
             )}
             <BlogContent blocks={post.content} />
+            <SignupCreditCard className="mt-8" />
           </div>
         </article>
         {related.length > 0 && (

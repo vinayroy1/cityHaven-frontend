@@ -1,5 +1,6 @@
 "use client";
 
+import { advisorPhoto } from "@/features/advisors/avatar";
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -391,7 +392,7 @@ export function AgentsDirectoryClient({ initialCity = "", initialLocality = "", 
                     <div className="relative shrink-0">
                       <CompanyAvatar
                         name={agent.name}
-                        logo={agent.avatar}
+                        logo={advisorPhoto(agent.avatar)}
                         alt={agent.name}
                         className="h-12 w-12 sm:h-16 sm:w-16 rounded-full text-xs sm:text-base font-bold ring-2 ring-slate-100 shadow-xs dark:ring-slate-800"
                         imageClassName="h-full w-full rounded-full object-cover"

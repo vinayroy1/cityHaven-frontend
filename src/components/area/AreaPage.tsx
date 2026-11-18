@@ -1,3 +1,4 @@
+import { SignupCreditCard } from "@/components/marketing/SignupCreditCard";
 /** Shared server layout for /area-converter and /area-converter/[pair]. */
 import Link from "next/link";
 import { ChevronDown, Ruler } from "lucide-react";
@@ -86,6 +87,7 @@ export function AreaPage({
         </section>
 
         <div className="mx-auto max-w-3xl space-y-8 px-4 pt-7 sm:px-6">
+          <SignupCreditCard benefit="unlock verified owner contacts for plots & homes" />
           {table && (
             <section>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">

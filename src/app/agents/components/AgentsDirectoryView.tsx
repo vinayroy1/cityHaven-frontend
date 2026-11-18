@@ -1,4 +1,5 @@
 import React from "react";
+import { advisorPhoto } from "@/features/advisors/avatar";
 import { CheckCircle2, ChevronDown, HelpCircle, ShieldCheck } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
@@ -57,7 +58,7 @@ export function AgentsDirectoryView({
         "@type": "RealEstateAgent",
         name: agent.name,
         url: `https://awasio.com${agentPath(agent)}`,
-        image: agent.avatar,
+        image: advisorPhoto(agent.avatar) ?? undefined,
         telephone: agent.phone,
         address: {
           "@type": "PostalAddress",

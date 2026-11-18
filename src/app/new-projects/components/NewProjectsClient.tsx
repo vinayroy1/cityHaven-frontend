@@ -1,4 +1,5 @@
 "use client";
+import { SignupCreditCard } from "@/components/marketing/SignupCreditCard";
 import { formatMoneyShort } from "@/lib/money";
 
 import { CardTitleLink } from "@/components/common/CardTitleLink";
@@ -640,12 +641,16 @@ export function NewProjectsClient({
         ) : projects.length > 0 ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 xl:gap-4">
             {projects.map((project, idx) => (
-              <ProjectGridCard
-                key={project.id}
-                project={project}
-                idx={idx}
-                onContactClick={(p) => setContactModalProject(p)}
-              />
+              <React.Fragment key={project.id}>
+                <ProjectGridCard
+                  project={project}
+                  idx={idx}
+                  onContactClick={(p) => setContactModalProject(p)}
+                />
+                {idx === Math.min(5, projects.length - 1) && (
+                  <SignupCreditCard className="col-span-full" benefit="unlock builder contacts, brochures & price sheets" />
+                )}
+              </React.Fragment>
             ))}
             {hasMore && (
               <div ref={sentinelRef} className="col-span-full flex flex-col items-center gap-2 py-4">

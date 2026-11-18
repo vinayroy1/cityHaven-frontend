@@ -1,4 +1,5 @@
 "use client";
+import { advisorPhoto } from "@/features/advisors/avatar";
 import { agentPath } from "@/features/advisors/paths";
 /* eslint-disable @typescript-eslint/no-explicit-any -- moved verbatim from HomeExperience */
 
@@ -152,7 +153,7 @@ export default function PreferredAgentsSection({
                     <div className="relative shrink-0">
                       <CompanyAvatar
                         name={agent.name || "Advisor"}
-                        logo={agent.avatar ? sizedImageUrl(agent.avatar, 128) : null}
+                        logo={advisorPhoto(agent.avatar) ? sizedImageUrl(agent.avatar, 128) : null}
                         alt={agent.name}
                         className="h-14 w-14 rounded-full text-base font-bold ring-2 ring-slate-100 shadow-xs dark:ring-slate-800 group-hover:ring-rose-200 transition"
                         imageClassName="h-full w-full rounded-full object-cover"
