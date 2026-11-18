@@ -1,4 +1,5 @@
 "use client";
+import { projectDetailPath } from "@/app/new-projects/lib/projectUrls";
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -25,6 +26,9 @@ import { toast } from "sonner";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import indiaCitiesData from "@/data/india-cities-by-state.json";
+import { COUNTRY_LIST, getCountry } from "@/config/countries";
+import { getSelectedCountry } from "@/lib/country/countryStore";
+import { currencySymbol, formatMoneyShort } from "@/lib/money";
 import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import { fetchAwasioSuggestions } from "@/lib/awasioSuggestions";
 import type { CreateProjectInput, ProjectConfiguration, ProjectStatus } from "@/types/project.types";
@@ -188,6 +192,11 @@ export default function PostProjectPage() {
   const [name, setName] = useState("");
   const [developerName, setDeveloperName] = useState("");
   const [reraId, setReraId] = useState("");
+  // Starts on the portal country; India keeps its states/cities list and RERA, others use their own regions.
+  const [countryCode, setCountryCode] = useState<string>(() => getSelectedCountry());
+  const country = getCountry(countryCode);
+  const isIndia = country.code === "IN";
+  const cur = currencySymbol(country.code);
   const [status, setStatus] = useState<ProjectStatus>("UNDER_CONSTRUCTION");
   const [possessionDate, setPossessionDate] = useState("");
   const [selectedState, setSelectedState] = useState("");
@@ -206,11 +215,13 @@ export default function PostProjectPage() {
 
   // States list from JSON
   const statesList = useMemo(() => {
+    if (!isIndia) return country.regions ?? [];
     return (indiaCitiesData.states || []).map((s) => s.state).sort();
-  }, []);
+  }, [isIndia, country.regions]);
 
   // Filtered Cities list based on selected state
   const citiesList = useMemo(() => {
+    if (!isIndia) return country.popularCities;
     if (!selectedState) {
       return Array.from(
         new Set(
@@ -222,7 +233,16 @@ export default function PostProjectPage() {
     }
     const match = (indiaCitiesData.states || []).find((s) => s.state === selectedState);
     return match ? [...match.cities].sort() : [];
-  }, [selectedState]);
+  }, [selectedState, isIndia, country.popularCities]);
+
+  const handleCountryChange = (code: string) => {
+    if (code === countryCode) return;
+    setCountryCode(code);
+    setSelectedState("");
+    setCity("");
+    setLocality("");
+    setPincode("");
+  };
 
   // Combined localities list (dynamic suggestions from API + known popular sectors)
   const localityOptions = useMemo(() => {
@@ -362,22 +382,18 @@ export default function PostProjectPage() {
   }
 
   function formatMoney(num?: number | string) {
-    if (!num) return "₹0";
-    const n = Number(num);
-    if (n >= 10000000) return `₹${(n / 10000000).toFixed(2)} Cr`;
-    if (n >= 100000) return `₹${(n / 100000).toFixed(2)} L`;
-    return `₹${n.toLocaleString("en-IN")}`;
+    return formatMoneyShort(Number(num) || 0, country.code);
   }
 
   function handleNext() {
     if (currentStep === 1) {
       if (!name.trim()) return toast.error("Please enter project name");
       if (!developerName.trim()) return toast.error("Please enter developer / builder name");
-      if (!reraId.trim()) return toast.error("Please enter RERA registration number");
+      if (country.hasRera && !reraId.trim()) return toast.error("Please enter RERA registration number");
       if (!possessionDate.trim()) return toast.error("Please enter possession timeline (e.g. December 2026 or Ready)");
       if (!city.trim()) return toast.error("Please select a city");
       if (!locality.trim()) return toast.error("Please enter locality or sector");
-      if (!pincode.trim()) return toast.error("Please enter the project pincode");
+      if (isIndia && !pincode.trim()) return toast.error("Please enter the project pincode");
       setCurrentStep(2);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (currentStep === 2) {
@@ -408,7 +424,9 @@ export default function PostProjectPage() {
     const newProject: CreateProjectInput = {
       name,
       developerName,
-      reraId,
+      reraId: reraId.trim() || undefined,
+      countryCode: country.code,
+      stateName: selectedState || undefined,
       status,
       possessionDate,
       priceMin: calculatedMin,
@@ -437,7 +455,7 @@ export default function PostProjectPage() {
     try {
       const created = await createProject(newProject).unwrap();
       toast.success("Project submitted successfully.");
-      router.push(`/new-projects/${created.slug || created.id}`);
+      router.push(created.slug ? projectDetailPath(created) : `/new-projects/${created.id}`);
     } catch {
       // The shared API layer displays the backend validation/authentication error.
     }
@@ -570,14 +588,14 @@ export default function PostProjectPage() {
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
                         <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                          RERA Registration Number *
+                          {country.hasRera ? "RERA Registration Number *" : "Registration / Permit Number (optional)"}
                         </label>
                         <div className="relative">
                           <input
                             type="text"
                             value={reraId}
                             onChange={(e) => setReraId(e.target.value)}
-                            placeholder="e.g. UPRERAPRJ704730 or P51700000001"
+                            placeholder={country.hasRera ? "e.g. UPRERAPRJ704730 or P51700000001" : "e.g. developer / regulator permit number"}
                             className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:border-rose-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                           />
                           <FileCheck2 className="absolute right-3 top-3 h-4 w-4 text-emerald-600" />
@@ -635,21 +653,37 @@ export default function PostProjectPage() {
                       </div>
                     </div>
 
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        Country *
+                      </label>
+                      <SearchableSelect
+                        value={countryCode}
+                        onChange={handleCountryChange}
+                        options={COUNTRY_LIST.map((c) => ({ value: c.code, label: `${c.flag} ${c.name}`, badge: c.currency }))}
+                        placeholder="Select country..."
+                        searchPlaceholder="Search country..."
+                      />
+                    </div>
+
                     {/* State & City Searchable Dropdowns */}
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
                         <div className="flex items-center justify-between mb-1.5">
                           <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                            State *
+                            {country.regionLabel}{isIndia ? " *" : ""}
                           </label>
                           <span className="text-[11px] text-slate-400">Searchable dropdown</span>
                         </div>
                         <SearchableSelect
                           value={selectedState}
-                          onChange={handleStateChange}
+                          onChange={(v) => v !== "__CUSTOM__" && handleStateChange(v)}
                           options={statesList}
-                          placeholder="Select State (e.g. Uttar Pradesh)..."
-                          searchPlaceholder="Search State..."
+                          allowCustom={!isIndia}
+                          customLabel={`+ Use typed ${country.regionLabel.toLowerCase()}`}
+                          onCustomSelect={handleStateChange}
+                          placeholder={isIndia ? "Select State (e.g. Uttar Pradesh)..." : `Select or type ${country.regionLabel.toLowerCase()}...`}
+                          searchPlaceholder={`Search ${country.regionLabel}...`}
                         />
                       </div>
 
@@ -662,9 +696,12 @@ export default function PostProjectPage() {
                         </div>
                         <SearchableSelect
                           value={city}
-                          onChange={handleCityChange}
+                          onChange={(v) => v !== "__CUSTOM__" && handleCityChange(v)}
                           options={citiesList}
-                          placeholder="Select City (e.g. Noida)..."
+                          allowCustom={!isIndia}
+                          customLabel="+ Use typed city"
+                          onCustomSelect={handleCityChange}
+                          placeholder={isIndia ? "Select City (e.g. Noida)..." : `Select or type a city (e.g. ${country.defaultCity})...`}
                           searchPlaceholder="Search City..."
                         />
 
@@ -695,14 +732,14 @@ export default function PostProjectPage() {
 
                       <div>
                         <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                          Pincode
+                          {country.postalLabel}
                         </label>
                         <input
                           type="text"
-                          maxLength={6}
+                          maxLength={isIndia ? 6 : 10}
                           value={pincode}
-                          onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
-                          placeholder="e.g. 201301"
+                          onChange={(e) => setPincode(isIndia ? e.target.value.replace(/\D/g, "") : e.target.value.toUpperCase())}
+                          placeholder={isIndia ? "e.g. 201301" : "optional"}
                           className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:border-rose-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                         />
                       </div>
@@ -795,7 +832,7 @@ export default function PostProjectPage() {
                       <div className="grid gap-4 sm:grid-cols-3">
                         <div>
                           <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                            Starting Price (₹)
+                            Starting Price ({cur})
                           </label>
                           <input
                             type="number"
@@ -808,7 +845,7 @@ export default function PostProjectPage() {
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                            Max Price (₹)
+                            Max Price ({cur})
                           </label>
                           <input
                             type="number"
@@ -821,7 +858,7 @@ export default function PostProjectPage() {
                         </div>
                         <div>
                           <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                            Base Rate (₹ / sq.ft)
+                            Base Rate ({cur} / sq.ft)
                           </label>
                           <input
                             type="number"
@@ -902,7 +939,7 @@ export default function PostProjectPage() {
 
                               <div>
                                 <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                  Starting Price (₹)
+                                  Starting Price ({cur})
                                 </label>
                                 <input
                                   type="number"

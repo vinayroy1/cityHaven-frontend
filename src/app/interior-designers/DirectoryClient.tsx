@@ -32,7 +32,11 @@ import {
   PropertyListingLocalitySelector,
   type LocalitySelection,
 } from "@/components/propertyListing/PropertyListingLocalitySelector";
-import { useCountry } from "@/lib/country/countryStore";
+import { getSelectedCountry, useCountry } from "@/lib/country/countryStore";
+import { getCountry } from "@/config/countries";
+import { listingPath } from "@/lib/seo/countryPath";
+import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
+import { useRouter } from "next/navigation";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
 // The enquiry form only loads once someone asks for a quote.
@@ -53,14 +57,26 @@ interface DirectoryClientProps {
   initialState: string;
   /** Server-rendered first page for `initialCity` with no filters applied. */
   initialData: InteriorSearchResponse | null;
-  /** True when the URL asked for a specific city (?city=...). */
-  cityFromUrl?: boolean;
+  /** Locality from the URL (/interior-designers/[cc/]city/locality); "" = whole city. */
+  initialLocality?: string;
+  /** Country from the URL prefix; null = India / no prefix. */
+  country?: string | null;
 }
 
-export function DirectoryClient({ initialCity, initialState, initialData }: DirectoryClientProps) {
-  const [selectedCity, setSelectedCity] = useState(initialCity);
+const BASE = "/interior-designers";
+
+export function DirectoryClient({ initialCity, initialState, initialData, initialLocality = "", country = null }: DirectoryClientProps) {
+  const router = useRouter();
+  // City and area live in the URL (same as projects / property search): picking one navigates.
+  const selectedCity = initialCity;
   const [selectedState, setSelectedState] = useState(initialState);
-  const [selectedLocality, setSelectedLocality] = useState("ALL");
+  const selectedLocality = initialLocality || "ALL";
+  const setSelectedLocality = (next: string) => {
+    const loc = next === "ALL" ? "" : next;
+    if (loc.toLowerCase() === initialLocality.toLowerCase()) return;
+    router.push(listingPath(BASE, selectedCity, loc || null, country));
+  };
+  useUrlCountry(country);
   const [providerType, setProviderType] = useState<InteriorProviderType | "ALL">("ALL");
   const [selectedService, setSelectedService] = useState("ALL");
   const [selectedStyle, setSelectedStyle] = useState("ALL");
@@ -75,10 +91,12 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
 
   // The server already rendered the default view; only fetch once filters change.
   const portalCountry = useCountry();
-  const sym = portalCountry.currencySymbol;
-  // The server render is India's; other countries always fetch their own list.
+  // A city page is in the URL's country; without a city, the site's selected country.
+  const pageCountry = selectedCity ? getCountry(country ?? "IN") : portalCountry;
+  const sym = pageCountry.currencySymbol;
+  // The server render is the URL's city, or India's list without one; other site countries fetch their own.
   const isInitialQuery =
-    portalCountry.code === "IN" &&
+    (!!selectedCity || portalCountry.code === "IN") &&
     !!initialData &&
     selectedCity === initialCity &&
     providerType === "ALL" &&
@@ -88,6 +106,7 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
 
   const searchArgs: InteriorSearchParams = {
       city: selectedCity || undefined,
+      locality: (selectedCity && initialLocality) || undefined,
       countryCode: portalCountry.code,
       providerType: providerType === "ALL" ? undefined : providerType,
       service: selectedService === "ALL" ? undefined : selectedService,
@@ -101,9 +120,11 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
   const data = isInitialQuery ? initialData : query.data;
   const isLoading = !isInitialQuery && query.isLoading;
 
-  const crumbs: BreadcrumbTrailItem[] = selectedCity
-    ? [{ label: "Interior designers", href: "/interior-designers" }, { label: selectedCity }]
-    : [{ label: "Interior designers" }];
+  const crumbs: BreadcrumbTrailItem[] = !selectedCity
+    ? [{ label: "Interior designers" }]
+    : initialLocality
+      ? [{ label: "Interior designers", href: BASE }, { label: selectedCity, href: listingPath(BASE, selectedCity, null, country) }, { label: initialLocality }]
+      : [{ label: "Interior designers", href: BASE }, { label: selectedCity }];
 
   // "Load more": later pages are appended for the current filters only (key change = fresh list).
   const filterKey = JSON.stringify(searchArgs);
@@ -126,20 +147,12 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
       // Keep what is shown; the button stays so the visitor can retry.
     }
   };
-  const clientFiltered = selectedLocality !== "ALL" || selectedStyle !== "ALL" || !!searchKeyword.trim();
+  const clientFiltered = selectedStyle !== "ALL" || !!searchKeyword.trim();
 
   // Client-side filtering for search keyword, specific locality, brand, and design style
   const filteredDesigners = useMemo(() => {
     return rawDesigners.filter((d) => {
-      // Locality check
-      if (selectedLocality !== "ALL") {
-        const matchesPrimary = d.primaryLocality?.toLowerCase() === selectedLocality.toLowerCase();
-        const matchesBranches = d.branches?.some(
-          (b) => b.locality?.toLowerCase() === selectedLocality.toLowerCase()
-        );
-        if (!matchesPrimary && !matchesBranches) return false;
-      }
-
+      // Locality is filtered by the API (the URL's area), including designers who serve it.
       // Design style check
       if (selectedStyle !== "ALL") {
         const styles = d.designStyles || [];
@@ -160,11 +173,11 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
 
       return true;
     });
-  }, [rawDesigners, selectedLocality, selectedStyle, searchKeyword]);
+  }, [rawDesigners, selectedStyle, searchKeyword]);
 
   // Reset filters
   const handleResetFilters = () => {
-    setSelectedLocality("ALL");
+    if (initialLocality) setSelectedLocality("ALL");
     setProviderType("ALL");
     setSelectedService("ALL");
     setSelectedStyle("ALL");
@@ -190,15 +203,11 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
   const where = selectedLocality !== "ALL" ? `${selectedLocality}, ${selectedCity}` : selectedCity || portalCountry.name || "India";
 
   const pickCity = (city: string, state = "") => {
-    setSelectedCity(city);
     setSelectedState(state);
-    setSelectedLocality("ALL");
-    // Keep the URL shareable (?city=Delhi) without a navigation.
-    const url = new URL(window.location.href);
-    if (city) url.searchParams.set("city", city);
-    else url.searchParams.delete("city");
-    window.history.replaceState(null, "", url.toString());
     setUserPreferredCity(city);
+    if (city.toLowerCase() === selectedCity.toLowerCase() && !initialLocality) return;
+    // Cities in the picker belong to the site's selected country, so its prefix goes in the URL.
+    router.push(listingPath(BASE, city || null, null, getSelectedCountry()));
   };
 
   const activeChips: { label: string; clear: () => void }[] = [
@@ -414,6 +423,7 @@ export function DirectoryClient({ initialCity, initialState, initialData }: Dire
       </section>
 
       <main className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+        <CountryResultsBanner countryCode={selectedCity ? country ?? "IN" : null} what="designers" className="mb-3" />
         {/* Active filters */}
         {activeChips.length > 0 && (
           <div className="mb-3 flex flex-wrap items-center gap-2">

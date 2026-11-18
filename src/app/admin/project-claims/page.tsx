@@ -1,4 +1,5 @@
 "use client";
+import { projectDetailPath } from "@/app/new-projects/lib/projectUrls";
 
 /**
  * Builder claims on project pages listed from public RERA registers. Staff check the proof, then approve
@@ -155,7 +156,7 @@ function ClaimDetail({ claim, onDone }: { claim: AdminProjectClaim; onDone: () =
       <div>
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">{p.name}</h2>
-          <Link href={`/new-projects/${p.slug}`} target="_blank" className="inline-flex items-center gap-1 text-xs text-rose-600 hover:underline">
+          <Link href={projectDetailPath(p)} target="_blank" className="inline-flex items-center gap-1 text-xs text-rose-600 hover:underline">
             View page <ExternalLink className="h-3 w-3" />
           </Link>
         </div>

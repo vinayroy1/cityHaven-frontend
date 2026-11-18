@@ -1,4 +1,6 @@
 import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
+import { formatMoneyShort } from "@/lib/money";
+import { getCountry } from "@/config/countries";
 import React, { cache } from "react";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -7,12 +9,13 @@ import { ArrowLeft } from "lucide-react";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { buildCanonical, SITE_URL, OG_IMAGE_URL } from "@/constants/seo";
-import { fromSearchSlug, toSearchSlug } from "@/components/search/searchQuery";
+import { fromSearchSlug } from "@/components/search/searchQuery";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import type { ProjectListing } from "@/types/project.types";
 import { ProjectDetailInteractive } from "../components/ProjectDetailInteractive";
 import { getInitialProjects } from "../lib/initialProjects";
+import { projectDetailPath, projectSearchPath, splitCountry } from "../lib/projectUrls";
 import { NewProjectsClient } from "../components/NewProjectsClient";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
@@ -79,11 +82,9 @@ const getProject = cache(async (slug: string): Promise<ProjectListing | null> =>
   }
 });
 
-function formatPrice(value?: number) {
+function formatPrice(value?: number, countryCode?: string | null) {
   if (!value) return "Price on request";
-  if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)} Cr`;
-  if (value >= 100000) return `₹${(value / 100000).toFixed(2)} L`;
-  return `₹${value.toLocaleString("en-IN")}`;
+  return formatMoneyShort(value, countryCode || "IN");
 }
 
 function parseLocation(segments: string[]) {
@@ -95,8 +96,21 @@ function parseLocation(segments: string[]) {
   return { city, localities, normalizedCitySlug };
 }
 
+/**
+ * Projects for a city/locality page. Unprefixed URLs are India; if India has none there but another
+ * country does (e.g. /new-projects/dubai), `moveTo` is that country's prefixed URL.
+ */
+async function loadLocation(country: string | null, city: string, localities: string[]) {
+  const result = await getInitialProjects(city, localities, country ?? "IN");
+  if (country || !result.ok || result.total > 0) return { ...result, moveTo: null as string | null };
+  const anywhere = await getInitialProjects(city, localities);
+  const other = anywhere.items.find((p) => p.countryCode && p.countryCode !== "IN")?.countryCode;
+  return { ...result, moveTo: other ? projectSearchPath(city, localities, other) : null };
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { segments = [] } = await params;
+  const { segments: rawSegments = [] } = await params;
+  const { country, rest: segments } = splitCountry(rawSegments);
   if (!segments.length) return {};
 
   // Case 1: Single segment could be a project slug OR a city slug
@@ -104,11 +118,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const project = await getProject(segments[0]);
     if (project) {
       const cityName = typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "");
-      const locLabel = [project.locality, cityName].filter(Boolean).join(", ") || "India";
+      const locLabel = [project.locality, cityName].filter(Boolean).join(", ") || getCountry(project.countryCode).name;
       const devLabel = project.developerName || "Premier Developer";
       const title = `${project.name} by ${devLabel} in ${locLabel} - Price & Floor Plans`;
-      const description = `Explore ${project.name} in ${locLabel}. RERA Reg: ${project.reraId || "Verified"}. Configurations, price from ${formatPrice(project.priceMin)}, floor plans & possession date.`;
-      const canonical = buildCanonical(`/new-projects/${project.slug}`);
+      const description = `Explore ${project.name} in ${locLabel}. ${project.reraId ? `RERA Reg: ${project.reraId}. ` : ""}Configurations, price from ${formatPrice(project.priceMin, project.countryCode)}, floor plans & possession date.`;
+      const canonical = buildCanonical(projectDetailPath(project));
 
       return {
         title,
@@ -127,11 +141,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // It's a city landing page or project category (e.g. /new-projects/bengaluru)
     const location = parseLocation(segments);
     const cityName = location?.city || fromSearchSlug(segments[0]);
-    const { total: count } = location ? await getInitialProjects(location.city) : { total: 0 };
+    const { total: count } = location ? await loadLocation(country, location.city, []) : { total: 0 };
     const countLabel = count > 0 ? `${count} ` : "";
     const title = `${countLabel}New Residential Projects in ${cityName} | Awasio`;
     const description = `Explore ${countLabel || "verified "}new residential projects, luxury apartments, and township developments in ${cityName} with RERA verification, floor plans, and developer pricing.`;
-    const canonical = buildCanonical(`/new-projects/${toSearchSlug(cityName)}`);
+    const canonical = buildCanonical(projectSearchPath(cityName, [], country));
 
     return {
       title: { absolute: title },
@@ -149,11 +163,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const location = parseLocation(segments);
   if (!location) return {};
   const label = [...location.localities, location.city].join(", ");
-  const { total: count } = await getInitialProjects(location.city, location.localities);
+  const { total: count } = await loadLocation(country, location.city, location.localities);
   const countLabel = count > 0 ? `${count} ` : "";
   const title = `${countLabel}New Projects in ${label} | Price & Floor Plans | Awasio`;
   const description = `Browse ${countLabel || "verified "}new residential projects, high-rises and gated societies in ${label}. Compare RERA IDs, amenities, price per sqft and developer reputation.`;
-  const canonical = buildCanonical(`/new-projects/${segments.join("/")}`);
+  const canonical = buildCanonical(projectSearchPath(location.city, location.localities, country));
 
   return {
     title: { absolute: title },
@@ -168,7 +182,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function NewProjectsDynamicPage({ params }: Props) {
-  const { segments = [] } = await params;
+  const { segments: rawSegments = [] } = await params;
+  const { country, rest: segments } = splitCountry(rawSegments);
   if (!segments.length || segments.length > 3) {
     notFound();
   }
@@ -177,6 +192,9 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
   if (segments.length === 1) {
     const project = await getProject(segments[0]);
     if (project) {
+      // One URL per project: India unprefixed, other countries under their code.
+      const canonicalPath = projectDetailPath(project);
+      if (canonicalPath !== `/new-projects/${rawSegments.join("/")}`) permanentRedirect(canonicalPath);
       const cityName = typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "");
       // Must match the hero <img> src in ProjectDetailInteractive (same resized rendition).
       const lcpImage = project.images?.[0] ? sizedImageUrl(normalizeR2Url(project.images[0]), 1080) : null;
@@ -184,11 +202,11 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
         "@context": "https://schema.org",
         "@type": "RealEstateListing",
         name: project.name,
-        description: `Residential project by ${project.developerName} in ${project.locality}, ${cityName}. RERA ID: ${project.reraId || "Verified"}`,
-        url: `${SITE_URL}/new-projects/${project.slug}`,
+        description: `Residential project by ${project.developerName} in ${project.locality}, ${cityName}.${project.reraId ? ` RERA ID: ${project.reraId}` : ""}`,
+        url: `${SITE_URL}${canonicalPath}`,
         offers: {
           "@type": "AggregateOffer",
-          priceCurrency: "INR",
+          priceCurrency: getCountry(project.countryCode).currency,
           lowPrice: project.priceMin,
           highPrice: project.priceMax,
         },
@@ -223,7 +241,7 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
                 <PageBreadcrumbs
                   items={[
                     { label: "New Projects", href: "/new-projects" },
-                    ...(cityName ? [{ label: cityName, href: `/new-projects/${toSearchSlug(cityName)}` }] : []),
+                    ...(cityName ? [{ label: cityName, href: projectSearchPath(cityName, [], project.countryCode) }] : []),
                     { label: project.name },
                   ]}
                   renderJsonLd={false}
@@ -248,13 +266,12 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
 
   // Redirect alias or non-canonical casing/slug if canonical location is recognized
   if (location) {
-    const canonicalSegments = [toSearchSlug(location.city), ...location.localities.map(toSearchSlug)];
-    if (canonicalSegments.some((value, index) => value !== segments[index])) {
-      permanentRedirect(`/new-projects/${canonicalSegments.join("/")}`);
-    }
+    const canonicalPath = projectSearchPath(location.city, location.localities, country);
+    if (canonicalPath !== `/new-projects/${rawSegments.join("/")}`) permanentRedirect(canonicalPath);
   }
 
-  const { items: initialProjects, total: initialTotal, ok } = await getInitialProjects(city, localities);
+  const { items: initialProjects, total: initialTotal, ok, moveTo } = await loadLocation(country, city, localities);
+  if (moveTo) permanentRedirect(moveTo);
   // Not a project and no projects in this "city": a made-up URL (e.g. /new-projects/anything).
   // Return a real 404 so crawlers don't index endless junk pages. If the API failed, throw instead,
   // so a backend blip is never cached as a 404 (errors are not cached; the last good page stays).
@@ -284,7 +301,7 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
         "@type": "ListItem",
         position: 3,
         name: city,
-        item: `${SITE_URL}/new-projects/${toSearchSlug(city)}`,
+        item: `${SITE_URL}${projectSearchPath(city, [], country)}`,
       },
       ...(localities[0]
         ? [
@@ -292,7 +309,7 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
               "@type": "ListItem",
               position: 4,
               name: localities[0],
-              item: `${SITE_URL}/new-projects/${toSearchSlug(city)}/${toSearchSlug(localities[0])}`,
+              item: `${SITE_URL}${projectSearchPath(city, [localities[0]], country)}`,
             },
           ]
         : []),
@@ -315,6 +332,7 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
         <NewProjectsClient
           initialCity={city}
           initialLocalities={localities}
+          initialCountry={country}
           initialProjects={initialProjects}
           initialTotal={initialTotal}
         />

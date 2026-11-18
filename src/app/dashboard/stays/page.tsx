@@ -1,4 +1,5 @@
 "use client";
+import { stayPath } from "@/features/stays/options";
 
 import Link from "next/link";
 import { BedDouble, Eye, MessageSquare, MousePointerClick, Pencil, Phone, Plus } from "lucide-react";
@@ -70,7 +71,7 @@ export default function MyStaysPage() {
                   <Link href={`/dashboard/stays/${s.id}`} className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl bg-slate-900 py-2 text-xs font-bold text-white">
                     <Pencil className="h-3.5 w-3.5" /> Edit rooms & prices
                   </Link>
-                  <Link href={`/stays/${s.slug}`} className="inline-flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-2 text-xs font-bold text-slate-700 dark:border-slate-700 dark:text-slate-200">
+                  <Link href={stayPath(s)} className="inline-flex flex-1 items-center justify-center rounded-xl border border-slate-200 py-2 text-xs font-bold text-slate-700 dark:border-slate-700 dark:text-slate-200">
                     View page
                   </Link>
                 </div>

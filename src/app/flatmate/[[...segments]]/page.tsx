@@ -6,6 +6,8 @@ import { buildCanonical, SITE_URL, OG_IMAGE_URL } from "@/constants/seo";
 import { fromSearchSlug } from "@/components/search/searchQuery";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import type { FlatmateListing } from "@/types/flatmate.types";
+import { splitCountry } from "@/lib/seo/countryPath";
+import { flatmateSearchPath } from "@/features/flatmates/paths";
 
 export const revalidate = 60;
 
@@ -39,14 +41,14 @@ const getInitialFlatmates = cache(async (city?: string, locality?: string) => {
 });
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { segments = [] } = await params;
+  const { segments: rawSegments = [] } = await params;
+  const { country, rest: segments } = splitCountry(rawSegments);
   const city = segments[0] ? fromSearchSlug(segments[0]) : "India";
   const locality = segments[1] ? fromSearchSlug(segments[1]) : "";
   const location = [locality, city].filter(Boolean).join(", ");
   const pageTitle = `Find Rooms & Compatible Flatmates in ${location}`;
   const description = `Browse rooms offered, room seekers and buddy-up listings in ${location}. Compare budget, move-in date and lifestyle compatibility before connecting.`;
-  const path = `/flatmate${segments.length ? `/${segments.join("/")}` : ""}`;
-  const canonicalUrl = buildCanonical(path);
+  const canonicalUrl = buildCanonical(flatmateSearchPath(segments[0] ? city : null, locality || null, country));
   const socialImage = OG_IMAGE_URL;
 
   let hasResults = true;
@@ -88,16 +90,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function FlatmateSearchPage({ params }: Props) {
-  const { segments = [] } = await params;
+  const { segments: rawSegments = [] } = await params;
+  // /flatmate[/cc]/city[/locality]: India has no country segment, other countries their ISO code.
+  const { country, rest: segments } = splitCountry(rawSegments);
   if (segments.length > 2) notFound();
   const alias = segments[0] && CITY_ALIASES[segments[0].toLowerCase()];
-  if (alias) permanentRedirect(`/flatmate/${alias}${segments[1] ? `/${segments[1]}` : ""}`);
+  if (alias) permanentRedirect(flatmateSearchPath(alias, segments[1] ?? null, country));
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://awasio.com";
   const city = segments[0] ? fromSearchSlug(segments[0]) : "";
   const locality = segments[1] ? fromSearchSlug(segments[1]) : "";
 
   const initialData = await getInitialFlatmates(city || undefined, locality || undefined);
+  // The results decide the real country (an unprefixed Dubai page moves to /flatmate/ae/dubai).
+  if (city) {
+    const canonical = flatmateSearchPath(city, locality || null, initialData.items[0]?.countryCode ?? country);
+    if (canonical !== `/flatmate/${rawSegments.join("/")}`) permanentRedirect(canonical);
+  }
   const getCardImage = (item?: FlatmateListing) => {
     if (!item) return null;
     const raw = item.mode === "HAVE_ROOM" ? item.photos?.[0] : item.profile?.profilePhoto || item.photos?.[0];
@@ -115,7 +124,7 @@ export default async function FlatmateSearchPage({ params }: Props) {
       "@type": "ListItem",
       position: 3,
       name: city,
-      item: buildCanonical(`/flatmate/${segments[0]}`),
+      item: buildCanonical(flatmateSearchPath(city, null, country)),
     });
   }
   if (locality && segments[1]) {
@@ -123,7 +132,7 @@ export default async function FlatmateSearchPage({ params }: Props) {
       "@type": "ListItem",
       position: 4,
       name: locality,
-      item: buildCanonical(`/flatmate/${segments[0]}/${segments[1]}`),
+      item: buildCanonical(flatmateSearchPath(city, locality, country)),
     });
   }
 
@@ -148,6 +157,7 @@ export default async function FlatmateSearchPage({ params }: Props) {
       <FlatmatesDiscoveryPage
         initialCity={city}
         initialLocality={locality}
+        initialCountry={country}
         initialItems={initialData.items}
         initialTotal={initialData.total}
       />

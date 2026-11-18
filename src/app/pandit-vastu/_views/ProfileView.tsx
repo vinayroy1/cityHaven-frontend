@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, permanentRedirect } from "next/navigation";
 import { BadgeCheck, CalendarClock, CheckCircle2, Compass, Flame, GraduationCap, IndianRupee, Languages, MapPin, PlayCircle, Star, Video } from "lucide-react";
 import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
@@ -16,48 +15,37 @@ import {
   PANDIT_BASE,
   SEGMENT_LABEL,
   TRADITION_OPTIONS,
-  citySlug,
   formatInr,
   label,
   panditName,
   panditProfilePath,
   serviceLabel,
 } from "@/features/pandit/options";
-import { fetchPanditProfile } from "../../lib/server-data";
+import { fetchPanditProfile } from "../lib/server-data";
+import type { PanditProfile } from "@/features/pandit/types";
+import { listingPath } from "@/lib/seo/countryPath";
+import { formatNumber } from "@/lib/money";
 
-export const revalidate = 120;
-export function generateStaticParams() {
-  return [];
-}
-
-type Props = { params: Promise<{ city: string; slug: string }> };
-
-async function load(slug: string) {
+/** Profile for a slug; null when it is not a profile (the route then tries a locality page). */
+export async function loadProfile(slug: string) {
   const res = await fetchPanditProfile(slug);
   if (!res.ok) throw new Error("pandit API unavailable");
   return res.data;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const p = await load(slug);
-  if (!p) return { title: { absolute: "Profile not found | Awasio" }, robots: { index: false } };
+export function profileMetadata(p: PanditProfile): Metadata {
   const name = panditName(p);
   const vastu = p.segment === "VASTU";
   const top = p.services.slice(0, 3).map(serviceLabel).join(", ");
   const rating = p.ratingCount ? ` ★ ${p.ratingAvg.toFixed(1)} (${p.ratingCount} reviews).` : "";
-  const title = `${name} – ${vastu ? "Vastu Consultant" : "Pandit for Puja"} in ${p.city}${p.startingPrice ? ` from ${formatInr(p.startingPrice)}` : ""} | Awasio`;
+  const title = `${name} – ${vastu ? "Vastu Consultant" : "Pandit for Puja"} in ${p.city}${p.startingPrice ? ` from ${formatInr(p.startingPrice, p.countryCode)}` : ""} | Awasio`;
   const description = `${name}, ${[p.locality, p.city].filter(Boolean).join(", ")}. ${top}.${rating} Languages: ${p.languages.slice(0, 3).map((l) => label(LANGUAGE_OPTIONS, l)).join(", ")}. Check availability for your date.`;
   const url = buildCanonical(panditProfilePath(p));
   const image = p.coverImage || p.gallery[0] || p.photo || OG_IMAGE_URL;
   return { title: { absolute: title }, description, alternates: { canonical: url }, openGraph: { title, description, url, type: "profile", images: [{ url: image, alt: name }] } };
 }
 
-export default async function PanditProfilePage({ params }: Props) {
-  const { city, slug } = await params;
-  const p = await load(slug);
-  if (!p) notFound();
-  if (citySlug(p.city) !== city) permanentRedirect(panditProfilePath(p));
+export function PanditProfileView({ p }: { p: PanditProfile }) {
 
   const name = panditName(p);
   const vastu = p.segment === "VASTU";
@@ -77,7 +65,7 @@ export default async function PanditProfilePage({ params }: Props) {
     description: p.about || undefined,
     address: { "@type": "PostalAddress", addressLocality: p.city, addressRegion: p.state || undefined, addressCountry: p.countryCode || "IN", streetAddress: p.locality || undefined },
     areaServed: [p.city, ...p.serviceCities].map((c) => ({ "@type": "City", name: c })),
-    priceRange: p.startingPrice ? `${formatInr(p.startingPrice)} onwards` : undefined,
+    priceRange: p.startingPrice ? `${formatInr(p.startingPrice, p.countryCode)} onwards` : undefined,
     knowsLanguage: p.languages.map((l) => label(LANGUAGE_OPTIONS, l)),
     makesOffer: p.services.slice(0, 20).map((s) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: serviceLabel(s) } })),
     aggregateRating: p.ratingCount ? { "@type": "AggregateRating", ratingValue: p.ratingAvg, reviewCount: p.ratingCount, bestRating: 5 } : undefined,
@@ -85,7 +73,7 @@ export default async function PanditProfilePage({ params }: Props) {
   };
 
   const facts = [
-    { icon: IndianRupee, k: vastu ? "Consultation from" : "Dakshina from", v: p.startingPrice ? formatInr(p.startingPrice) : "On request" },
+    { icon: IndianRupee, k: vastu ? "Consultation from" : "Dakshina from", v: p.startingPrice ? formatInr(p.startingPrice, p.countryCode) : "On request" },
     { icon: CalendarClock, k: "Experience", v: p.experienceYears ? `${p.experienceYears} years` : "—" },
     { icon: Languages, k: "Languages", v: p.languages.slice(0, 2).map((l) => label(LANGUAGE_OPTIONS, l)).join(", ") || "—" },
     { icon: Star, k: "Rating", v: p.ratingCount ? `${p.ratingAvg.toFixed(1)} / 5 (${p.ratingCount})` : "New" },
@@ -137,7 +125,7 @@ export default async function PanditProfilePage({ params }: Props) {
 
           <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
             <div className="mb-4 hidden sm:block">
-              <PageBreadcrumbs items={[{ label: "Pandit & Vastu", href: PANDIT_BASE }, { label: p.city, href: `${PANDIT_BASE}/${citySlug(p.city)}` }, { label: name }]} renderJsonLd={true} />
+              <PageBreadcrumbs items={[{ label: "Pandit & Vastu", href: PANDIT_BASE }, { label: p.city, href: listingPath(PANDIT_BASE, p.city, null, p.countryCode) }, { label: name }]} renderJsonLd={true} />
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
@@ -176,8 +164,8 @@ export default async function PanditProfilePage({ params }: Props) {
                             {[r.durationHours ? `${r.durationHours} h` : "", r.samagriIncluded ? "samagri included" : ""].filter(Boolean).join(" · ")}
                           </span>
                           <span className="text-sm font-black text-slate-950 dark:text-white">
-                            {formatInr(r.priceFrom)}
-                            {r.priceTo && r.priceTo > r.priceFrom ? `–${formatInr(r.priceTo).slice(1)}` : "+"}
+                            {formatInr(r.priceFrom, p.countryCode)}
+                            {r.priceTo && r.priceTo > r.priceFrom ? `–${formatNumber(r.priceTo, p.countryCode)}` : "+"}
                           </span>
                           <a href={`?service=${r.service}#enquire`} className="text-xs font-bold text-rose-600 hover:underline">Enquire</a>
                         </li>
@@ -284,7 +272,7 @@ export default async function PanditProfilePage({ params }: Props) {
                   </div>
                   <ContactButton profileId={p.id} />
                 </div>
-                <Link href={`${PANDIT_BASE}/${citySlug(p.city)}${vastu ? "?segment=VASTU" : ""}`} className="mt-3 block text-center text-sm font-semibold text-rose-600 hover:underline">
+                <Link href={`${listingPath(PANDIT_BASE, p.city, null, p.countryCode)}${vastu ? "?segment=VASTU" : ""}`} className="mt-3 block text-center text-sm font-semibold text-rose-600 hover:underline">
                   {vastu ? `More vastu consultants in ${p.city}` : `More pandits in ${p.city}`}
                 </Link>
               </aside>

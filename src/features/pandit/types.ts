@@ -143,6 +143,7 @@ export interface PanditInquiryInput {
 export type PanditSort = "relevance" | "rating" | "price" | "experience";
 
 export interface PanditSearchParams {
+  countryCode?: string;
   city?: string;
   locality?: string;
   segment?: PanditSegment;

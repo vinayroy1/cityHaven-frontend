@@ -1,4 +1,5 @@
 "use client";
+import { agentPath } from "@/features/advisors/paths";
 /* eslint-disable @typescript-eslint/no-explicit-any -- moved verbatim from HomeExperience */
 
 // Split out of HomeExperience so the large static advisor dataset (@/data/agents)
@@ -141,7 +142,7 @@ export default function PreferredAgentsSection({
             return (
               <Link
                 key={agentKey}
-                href={`/agents/${agentKey}`}
+                href={agentPath(agent)}
                 prefetch={false}
                 className="group flex w-[285px] shrink-0 snap-start flex-col rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700 sm:w-[310px]"
               >

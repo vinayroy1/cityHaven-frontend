@@ -25,9 +25,14 @@ async function getJson<T>(endpoint: string): Promise<{ ok: boolean; status: numb
   }
 }
 
-export const fetchConstructionDirectory = cache((city: string) =>
-  getJson<ConstructionSearchResponse>(`${API_ENDPOINTS.construction.search}?limit=${PAGE_SIZE}${city ? `&city=${encodeURIComponent(city)}` : ""}`),
-);
+/** No city: `countryCode` limits to one country (the root page renders India's list). */
+export const fetchConstructionDirectory = cache((city: string, locality?: string | null, countryCode?: string) => {
+  const qs = new URLSearchParams({ limit: String(PAGE_SIZE) });
+  if (city) qs.set("city", city);
+  if (city && locality) qs.set("locality", locality);
+  if (!city && countryCode) qs.set("countryCode", countryCode);
+  return getJson<ConstructionSearchResponse>(`${API_ENDPOINTS.construction.search}?${qs}`);
+});
 
 export const fetchConstructionCities = cache(() => getJson<{ city: string; count: number }[]>(API_ENDPOINTS.construction.cities));
 

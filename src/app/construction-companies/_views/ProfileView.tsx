@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, permanentRedirect } from "next/navigation";
 import { BadgeCheck, Building2, CalendarClock, CheckCircle2, FileBadge2, HardHat, IndianRupee, MapPin, ShieldCheck, Users } from "lucide-react";
 import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
@@ -18,32 +17,25 @@ import {
   SECTOR_OPTIONS,
   SERVICE_OPTIONS,
   TURNOVER_OPTIONS,
-  citySlug,
   constructionProfilePath,
   formatCr,
   formatRate,
   isInfra,
   label,
 } from "@/features/construction/options";
-import { fetchConstructionProfile } from "../../lib/server-data";
+import { fetchConstructionProfile } from "../lib/server-data";
+import type { ConstructionProfile } from "@/features/construction/types";
+import { listingPath } from "@/lib/seo/countryPath";
+import { formatMoney, formatMoneyShort } from "@/lib/money";
 
-export const revalidate = 120;
-export function generateStaticParams() {
-  return [];
-}
-
-type Props = { params: Promise<{ city: string; slug: string }> };
-
-async function load(slug: string) {
+/** Profile for a slug; null when it is not a company (the route then tries a locality page). */
+export async function loadProfile(slug: string) {
   const res = await fetchConstructionProfile(slug);
   if (!res.ok) throw new Error("construction API unavailable");
   return res.data;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const p = await load(slug);
-  if (!p) return { title: { absolute: "Construction company not found | Awasio" }, robots: { index: false } };
+export function profileMetadata(p: ConstructionProfile): Metadata {
   const where = [p.locality, p.city].filter(Boolean).join(", ");
   if (isInfra(p)) {
     const sectors = p.sectors.slice(0, 3).map((s) => label(SECTOR_OPTIONS, s)).join(", ");
@@ -53,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const image = p.coverImage || p.workGallery[0] || p.projects[0]?.coverImage || OG_IMAGE_URL;
     return { title: { absolute: title }, description, alternates: { canonical: url }, openGraph: { title, description, url, type: "profile", images: [{ url: image, alt: p.businessName }] } };
   }
-  const rate = p.quoteOnly || !p.startingRate ? "" : ` from ${formatRate(p.startingRate)}`;
+  const rate = p.quoteOnly || !p.startingRate ? "" : ` from ${formatRate(p.startingRate, p.countryCode)}`;
   const title = `${p.businessName} – House Construction in ${p.city}${rate} | Awasio`;
   const description = `${p.businessName}, ${where}. ${p.services.slice(0, 3).map((s) => label(SERVICE_OPTIONS, s)).join(", ")}. See rates, completed homes and get a free quote.`;
   const url = buildCanonical(constructionProfilePath(p));
@@ -66,11 +58,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ConstructionProfilePage({ params }: Props) {
-  const { city, slug } = await params;
-  const p = await load(slug);
-  if (!p) notFound();
-  if (citySlug(p.city) !== city) permanentRedirect(constructionProfilePath(p));
+export function ConstructionProfileView({ p }: { p: ConstructionProfile }) {
 
   const where = [p.locality, p.city].filter(Boolean).join(", ");
   const infra = isInfra(p);
@@ -87,7 +75,7 @@ export default async function ConstructionProfilePage({ params }: Props) {
     address: { "@type": "PostalAddress", addressLocality: p.city, addressRegion: p.state || undefined, addressCountry: p.countryCode || "IN", streetAddress: p.locality || undefined },
     areaServed: [p.city, ...p.serviceCities].map((c) => ({ "@type": "City", name: c })),
     foundingDate: p.yearEstablished ? String(p.yearEstablished) : undefined,
-    priceRange: p.startingRate && !p.quoteOnly ? `₹${p.startingRate}/sq.ft onwards` : undefined,
+    priceRange: p.startingRate && !p.quoteOnly ? `${formatRate(p.startingRate, p.countryCode)} onwards` : undefined,
   };
 
   return (
@@ -129,7 +117,7 @@ export default async function ConstructionProfilePage({ params }: Props) {
 
         <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
           <div className="mb-4 hidden sm:block">
-            <PageBreadcrumbs items={[{ label: "Construction companies", href: "/construction-companies" }, { label: p.city, href: `/construction-companies/${citySlug(p.city)}` }, { label: p.businessName }]} renderJsonLd={true} />
+            <PageBreadcrumbs items={[{ label: "Construction companies", href: "/construction-companies" }, { label: p.city, href: listingPath("/construction-companies", p.city, null, p.countryCode) }, { label: p.businessName }]} renderJsonLd={true} />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
@@ -138,13 +126,13 @@ export default async function ConstructionProfilePage({ params }: Props) {
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {(infra
                   ? [
-                      { icon: IndianRupee, k: "Largest contract", v: formatCr(p.maxContractCr) || "—" },
+                      { icon: IndianRupee, k: "Largest contract", v: formatCr(p.maxContractCr, p.countryCode) || "—" },
                       { icon: CalendarClock, k: "Experience", v: p.experienceYears ? `${p.experienceYears} years` : "—" },
                       { icon: FileBadge2, k: "Annual turnover", v: p.turnoverBand ? label(TURNOVER_OPTIONS, p.turnoverBand) : "—" },
                       { icon: Users, k: "Team", v: p.teamSize ? `${p.teamSize}+ people` : "—" },
                     ]
                   : [
-                  { icon: HardHat, k: "Starting rate", v: p.quoteOnly || !p.startingRate ? "On request" : formatRate(p.startingRate) },
+                  { icon: HardHat, k: "Starting rate", v: p.quoteOnly || !p.startingRate ? "On request" : formatRate(p.startingRate, p.countryCode) },
                   { icon: CalendarClock, k: "Experience", v: p.experienceYears ? `${p.experienceYears} years` : "—" },
                   { icon: ShieldCheck, k: "Structural warranty", v: p.structuralWarrantyYears ? `${p.structuralWarrantyYears} years` : "—" },
                   { icon: Users, k: "Team", v: p.teamSize ? `${p.teamSize}+ people` : "—" },
@@ -227,7 +215,7 @@ export default async function ConstructionProfilePage({ params }: Props) {
                       <div key={pk.name} className={`rounded-2xl border bg-white p-4 dark:bg-slate-900 ${i === 1 ? "border-amber-300 ring-2 ring-amber-100 dark:ring-amber-900/40" : "border-slate-200 dark:border-slate-800"}`}>
                         <p className="text-sm font-bold text-slate-900 dark:text-white">{pk.name}</p>
                         <p className="mt-1 text-2xl font-black text-slate-950 dark:text-white">
-                          ₹{pk.ratePerSqft.toLocaleString("en-IN")}<span className="text-xs font-semibold text-slate-500"> /sq.ft</span>
+                          {formatMoney(pk.ratePerSqft, p.countryCode)}<span className="text-xs font-semibold text-slate-500"> /sq.ft</span>
                         </p>
                         {pk.includes.length > 0 && (
                           <ul className="mt-2 space-y-1">
@@ -284,7 +272,7 @@ export default async function ConstructionProfilePage({ params }: Props) {
                         <div className="p-3">
                           <h3 className="text-sm font-bold text-slate-900 dark:text-white">{pj.title}</h3>
                           <p className="mt-0.5 text-xs text-slate-500">
-                            {(infra ? [pj.projectStatus === "ONGOING" ? "Ongoing" : pj.projectStatus === "COMPLETED" ? "Completed" : "", pj.sector ? label(SECTOR_OPTIONS, pj.sector) : "", pj.clientAuthority ?? "", formatCr(pj.contractValueCr), pj.durationMonths ? `${pj.durationMonths} months` : "", [pj.locality, pj.city].filter(Boolean).join(", ")] : [pj.floors ? label(FLOOR_OPTIONS, pj.floors) : "", pj.builtUpSqft ? `${pj.builtUpSqft.toLocaleString("en-IN")} sq.ft` : "", pj.durationMonths ? `${pj.durationMonths} months` : "", pj.costLakhs ? `~₹${pj.costLakhs} L` : "", [pj.locality, pj.city].filter(Boolean).join(", ")]).filter(Boolean).join(" · ")}
+                            {(infra ? [pj.projectStatus === "ONGOING" ? "Ongoing" : pj.projectStatus === "COMPLETED" ? "Completed" : "", pj.sector ? label(SECTOR_OPTIONS, pj.sector) : "", pj.clientAuthority ?? "", formatCr(pj.contractValueCr, p.countryCode), pj.durationMonths ? `${pj.durationMonths} months` : "", [pj.locality, pj.city].filter(Boolean).join(", ")] : [pj.floors ? label(FLOOR_OPTIONS, pj.floors) : "", pj.builtUpSqft ? `${pj.builtUpSqft.toLocaleString("en-IN")} sq.ft` : "", pj.durationMonths ? `${pj.durationMonths} months` : "", pj.costLakhs ? `~${formatMoneyShort(pj.costLakhs * 1e5, p.countryCode)}` : "", [pj.locality, pj.city].filter(Boolean).join(", ")]).filter(Boolean).join(" · ")}
                           </p>
                           {pj.description && <p className="mt-1.5 line-clamp-3 text-xs text-slate-600 dark:text-slate-300">{pj.description}</p>}
                         </div>
@@ -344,7 +332,7 @@ export default async function ConstructionProfilePage({ params }: Props) {
                 </div>
                 <ContactButton profileId={p.id} />
               </div>
-              <Link href={`/construction-companies/${citySlug(p.city)}`} className="mt-3 block text-center text-sm font-semibold text-rose-600 hover:underline">
+              <Link href={listingPath("/construction-companies", p.city, null, p.countryCode)} className="mt-3 block text-center text-sm font-semibold text-rose-600 hover:underline">
                 {infra ? `More contractors in ${p.city}` : `Compare more builders in ${p.city}`}
               </Link>
             </aside>

@@ -1,4 +1,6 @@
 "use client";
+import { listingPath } from "@/lib/seo/countryPath";
+import { getSelectedCountry } from "@/lib/country/countryStore";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,12 +9,9 @@ import { PropertyListingCitySelector } from "@/components/propertyListing/Proper
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { useCountry } from "@/lib/country/countryStore";
 
+/** /stays[/cc]/city[/locality]; the city belongs to the site's selected country. */
 export function staysHref(city?: string, locality?: string) {
-  const qs = new URLSearchParams();
-  if (city) qs.set("city", city);
-  if (city && locality) qs.set("locality", locality);
-  const s = qs.toString();
-  return `/stays${s ? `?${s}` : ""}`;
+  return listingPath("/stays", city || null, locality || null, getSelectedCountry());
 }
 
 /**

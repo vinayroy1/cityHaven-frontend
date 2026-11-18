@@ -9,13 +9,17 @@ import {
 } from "@/constants/seo";
 import { toSearchSlug } from "@/components/search/searchQuery";
 import { getAllAgentIds } from "@/data/agents";
+import { agentPath, agentsListPath } from "@/features/advisors/paths";
 import { ALL_PAIRS, pairSlug } from "@/components/area/units";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 import { SITEMAP_CLUSTERS, type SitemapCluster } from "@/constants/sitemapClusters";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
-import { citySlug, constructionProfilePath } from "@/features/construction/options";
+import { constructionProfilePath } from "@/features/construction/options";
+import { countrySegment, listingPath } from "@/lib/seo/countryPath";
+import { stayPath } from "@/features/stays/options";
+import { flatmatePath } from "@/features/flatmates/paths";
 import { panditProfilePath } from "@/features/pandit/options";
 
 const CITY_CANONICAL_MAP: Record<string, string> = {
@@ -72,7 +76,24 @@ async function getFallbackProperties(): Promise<Array<{ id: number; slug?: strin
   }
 }
 
-type SlugRow = { slug?: string | null; updatedAt?: string | null; primaryCity?: string | null; city?: string | null };
+type SlugRow = { slug?: string | null; updatedAt?: string | null; primaryCity?: string | null; city?: string | null; cityName?: string | null; countryCode?: string | null };
+
+/** Every advisor's city and country (the advisors API pages with limit/offset, 50 at a time). Never throws. */
+async function fetchAllAdvisors(): Promise<Array<{ city?: string | null; countryCode?: string | null }>> {
+  const out: Array<{ city?: string | null; countryCode?: string | null }> = [];
+  for (let offset = 0; offset < 5000; offset += 50) {
+    try {
+      const res = await fetch(toInternalApiUrl(`${API_ENDPOINTS.advisors.list}?limit=50&offset=${offset}`), { next: { revalidate: 3600 } });
+      if (!res.ok) break;
+      const rows = ((await res.json())?.data ?? []) as Array<{ city?: string | null; countryCode?: string | null }>;
+      out.push(...rows);
+      if (rows.length < 50) break;
+    } catch {
+      break;
+    }
+  }
+  return out;
+}
 
 /** Walks a paginated list endpoint (page/pageSize) up to `maxPages`; never throws. */
 async function fetchAllPages(path: string, pageSize: number, sizeParam: "pageSize" | "limit" = "pageSize", maxPages = 40): Promise<SlugRow[]> {
@@ -305,7 +326,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const locSlug = toSearchSlug(cluster.locality);
 
     if (citySlug && locSlug) {
-      const url = `${SITE_URL}/${cluster.intent}/${citySlug}/${locSlug}`;
+      const cc = countrySegment(cluster.countryCode);
+      const url = `${SITE_URL}/${cluster.intent}/${cc ? `${cc}/` : ""}${citySlug}/${locSlug}`;
       if (!visitedLocalityUrls.has(url)) {
         visitedLocalityUrls.add(url);
         localitySearchRoutes.push({
@@ -318,14 +340,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // 6. Verified Real Estate Advisor Profiles
+  // 6. Verified Real Estate Advisor Profiles, plus one directory page per city that has advisors.
   const agentIds = getAllAgentIds();
   const agentRoutes: MetadataRoute.Sitemap = agentIds.map((id) => ({
-    url: `${SITE_URL}/agents/${id.toLowerCase().replace(/\s+/g, "-")}`,
+    url: `${SITE_URL}${agentPath({ id: id.toLowerCase().replace(/\s+/g, "-") })}`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.8,
   }));
+  const advisorRows = await fetchAllAdvisors();
+  const agentCityRoutes: MetadataRoute.Sitemap = Array.from(
+    new Set(advisorRows.filter((a) => a.city).map((a) => agentsListPath(a.city, null, a.countryCode))),
+  ).map((path) => ({ url: `${SITE_URL}${path}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.75 }));
 
   // 7. Project detail pages live in the per-state sitemaps (/sitemaps/projects-<state>.xml).
 
@@ -358,31 +384,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const stayRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/stays`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     ...stays.filter((r) => r.slug).map((r) => ({
-      url: `${SITE_URL}/stays/${r.slug}`,
+      url: `${SITE_URL}${stayPath({ slug: r.slug!, countryCode: r.countryCode })}`,
       lastModified: lastMod(r),
       changeFrequency: "weekly" as const,
       priority: 0.75,
     })),
   ];
   // Construction companies: directory, one page per city that has listings, and each profile.
-  const constructionCities = Array.from(new Set(construction.map((r) => r.city).filter(Boolean) as string[]));
+  // One entry per city page (country-prefixed outside India).
+  const cityPages = (rows: SlugRow[], base: string) =>
+    Array.from(new Set(rows.filter((r) => r.city).map((r) => listingPath(base, r.city, null, r.countryCode))));
+  const constructionCities = cityPages(construction, "/construction-companies");
   const constructionRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/construction-companies`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
-    ...constructionCities.map((c) => ({ url: `${SITE_URL}/construction-companies/${citySlug(c)}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.75 })),
+    ...constructionCities.map((path) => ({ url: `${SITE_URL}${path}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.75 })),
     ...construction.filter((r) => r.slug && r.city).map((r) => ({
-      url: `${SITE_URL}${constructionProfilePath({ slug: r.slug!, city: r.city! })}`,
+      url: `${SITE_URL}${constructionProfilePath({ slug: r.slug!, city: r.city!, countryCode: r.countryCode })}`,
       lastModified: lastMod(r),
       changeFrequency: "weekly" as const,
       priority: 0.7,
     })),
   ];
   // Pandits & vastu consultants: directory, city pages and profiles.
-  const panditCities = Array.from(new Set(pandits.map((r) => r.city).filter(Boolean) as string[]));
+  const panditCities = cityPages(pandits, "/pandit-vastu");
   const panditRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/pandit-vastu`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
-    ...panditCities.map((c) => ({ url: `${SITE_URL}/pandit-vastu/${citySlug(c)}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.75 })),
+    ...panditCities.map((path) => ({ url: `${SITE_URL}${path}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.75 })),
     ...pandits.filter((r) => r.slug && r.city).map((r) => ({
-      url: `${SITE_URL}${panditProfilePath({ slug: r.slug!, city: r.city! })}`,
+      url: `${SITE_URL}${panditProfilePath({ slug: r.slug!, city: r.city!, countryCode: r.countryCode })}`,
       lastModified: lastMod(r),
       changeFrequency: "weekly" as const,
       priority: 0.7,
@@ -390,6 +419,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
   const interiorRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/interior-designers`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    ...Array.from(new Set(interiors.filter((r) => r.primaryCity).map((r) => listingPath("/interior-designers", r.primaryCity, null, r.countryCode)))).map((path) => ({
+      url: `${SITE_URL}${path}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.75,
+    })),
     ...interiors.filter((r) => r.slug && r.primaryCity).map((r) => ({
       url: `${SITE_URL}${interiorProfilePath(r)}`,
       lastModified: lastMod(r),
@@ -398,7 +433,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
   const flatmateDetailRoutes: MetadataRoute.Sitemap = flatmates.filter((r) => r.slug).map((r) => ({
-    url: `${SITE_URL}/flatmates/${r.slug}`,
+    url: `${SITE_URL}${flatmatePath({ slug: r.slug!, countryCode: r.countryCode })}`,
     lastModified: lastMod(r),
     changeFrequency: "daily" as const,
     priority: 0.7,
@@ -413,6 +448,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...flatmateCityRoutes,
     ...localitySearchRoutes,
     ...agentRoutes,
+    ...agentCityRoutes,
     ...propertyRoutes,
     ...newProjectsCityRoutes,
     ...blogRoutes,

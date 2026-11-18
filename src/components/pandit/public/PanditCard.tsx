@@ -114,7 +114,7 @@ export function PanditCard({
         <div className="flex items-end justify-between border-t border-dashed border-slate-200 pt-3 dark:border-slate-700">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{vastu ? "Consultation from" : "Dakshina from"}</p>
-            <p className="text-lg font-black text-slate-950 dark:text-white">{p.startingPrice ? formatInr(p.startingPrice) : "On request"}</p>
+            <p className="text-lg font-black text-slate-950 dark:text-white">{p.startingPrice ? formatInr(p.startingPrice, p.countryCode) : "On request"}</p>
           </div>
           {badge && <RatingPill avg={p.ratingAvg} count={p.ratingCount} />}
         </div>

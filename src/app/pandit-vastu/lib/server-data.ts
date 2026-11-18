@@ -24,9 +24,14 @@ async function getJson<T>(endpoint: string): Promise<{ ok: boolean; status: numb
   }
 }
 
-export const fetchPanditDirectory = cache((city: string) =>
-  getJson<PanditSearchResponse>(`${API_ENDPOINTS.pandits.search}?limit=${PAGE_SIZE}${city ? `&city=${encodeURIComponent(city)}` : ""}`),
-);
+/** No city: `countryCode` limits to one country (the root page renders India's list). */
+export const fetchPanditDirectory = cache((city: string, locality?: string | null, countryCode?: string) => {
+  const qs = new URLSearchParams({ limit: String(PAGE_SIZE) });
+  if (city) qs.set("city", city);
+  if (city && locality) qs.set("locality", locality);
+  if (!city && countryCode) qs.set("countryCode", countryCode);
+  return getJson<PanditSearchResponse>(`${API_ENDPOINTS.pandits.search}?${qs}`);
+});
 
 export const fetchPanditCities = cache(() => getJson<{ city: string; count: number }[]>(API_ENDPOINTS.pandits.cities));
 

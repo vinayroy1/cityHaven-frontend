@@ -2,7 +2,6 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -211,8 +210,7 @@ function NearbySection({ stay }: { stay: Stay }) {
   );
 }
 
-export default function StayDetail() {
-  const { slug } = useParams<{ slug: string }>();
+export default function StayDetail({ slug }: { slug: string }) {
   const { data: stay, isLoading, error } = useStay(slug);
   const [lightbox, setLightbox] = useState<number | null>(null);
   const [enquire, setEnquire] = useState<{ room?: StayRoom | null } | null>(null);

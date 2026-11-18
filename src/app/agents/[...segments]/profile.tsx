@@ -1,77 +1,13 @@
-import React, { cache } from "react";
+import React from "react";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
-import {
-  ALL_AGENTS,
-  getAgentById,
-  getAllAgentIds,
-  getSimilarAgents,
-} from "@/data/agents";
+import { getSimilarAgents } from "@/data/agents";
 import type { Agent } from "@/data/agents";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { agentPath, agentsListPath } from "@/features/advisors/paths";
 import { AgentProfileClient } from "./AgentProfileClient";
 
-// Static demo agents first; otherwise resolve a published backend advisor by slug or id.
-const resolveAgent = cache(async (agentId: string): Promise<Agent | null> => {
-  const local = getAgentById(agentId);
-  if (local) return local;
-  try {
-    const res = await fetch(API_ENDPOINTS.advisors.detail(encodeURIComponent(agentId)), {
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return null;
-    const json = (await res.json()) as { data?: Partial<Agent> & Record<string, unknown> };
-    const raw = json?.data;
-    if (!raw) return null;
-    const str = (v: unknown, fallback = "") => (typeof v === "string" && v ? v : fallback);
-    return {
-      ...(raw as Agent),
-      id: String(raw.id),
-      name: str(raw.name, "Advisor"),
-      role: str(raw.role, "Real Estate Advisor"),
-      agency: str(raw.agency, "Independent Advisor"),
-      reraId: str(raw.reraId),
-      city: str(raw.city),
-      area: str(raw.area),
-      focus: str(raw.focus),
-      avatar: str(raw.avatar),
-      phone: str(raw.phone),
-      email: str(raw.email),
-      experience: str(raw.experience),
-      services: Array.isArray(raw.services) ? raw.services : [],
-      languages: Array.isArray(raw.languages) ? raw.languages : [],
-      tours: str(raw.tours, "0"),
-      rating: String(raw.rating ?? "5.0"),
-      bio: str(raw.bio),
-      responseTime: str(raw.responseTime, str(raw.responseTimeText, "Within a few hours")),
-      featuredListings: Array.isArray(raw.featuredListings) ? raw.featuredListings : [],
-      reviews: Array.isArray(raw.reviews) ? raw.reviews : [],
-    } as Agent;
-  } catch {
-    return null;
-  }
-});
-
-interface PageProps {
-  params: Promise<{ agentId: string }>;
-}
-
-export async function generateStaticParams() {
-  return getAllAgentIds().map((agentId) => ({ agentId }));
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { agentId } = await params;
-  const agent = await resolveAgent(agentId);
-
-  if (!agent) {
-    return {
-      title: "Real Estate Advisor Not Found | Awasio",
-      description: "The requested verified real estate advisor profile could not be found.",
-    };
-  }
+export function profileMetadata(agent: Agent): Metadata {
 
   const title = `${agent.name} - Verified Real Estate Advisor in ${agent.city} | Awasio`;
   const description = `${agent.name} (${agent.agency}) is an Awasio and RERA verified property specialist in ${agent.area}, ${agent.city}. Over ${agent.experience} experience with ${agent.tours} completed walkthroughs. Specializing in ${agent.focus}.`;
@@ -91,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      url: `https://awasio.com/agents/${agent.id}`,
+      url: `https://awasio.com${agentPath(agent)}`,
       siteName: "Awasio",
       images: [
         {
@@ -110,18 +46,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: [agent.avatar],
     },
     alternates: {
-      canonical: `https://awasio.com/agents/${agent.id}`,
+      canonical: `https://awasio.com${agentPath(agent)}`,
     },
   };
 }
 
-export default async function AgentPage({ params }: PageProps) {
-  const { agentId } = await params;
-  const agent = await resolveAgent(agentId);
-
-  if (!agent) {
-    notFound();
-  }
+export function AgentProfileView({ agent }: { agent: Agent }) {
 
   const similarAgents = getSimilarAgents(agent.id, agent.city, 3);
 
@@ -138,9 +68,8 @@ export default async function AgentPage({ params }: PageProps) {
       "@type": "PostalAddress",
       addressLocality: agent.area,
       addressRegion: agent.city,
-      addressCountry: "IN",
+      addressCountry: agent.countryCode || "IN",
     },
-    priceRange: "₹₹₹₹",
     knowsAbout: agent.services,
     hasCredential: {
       "@type": "EducationalOccupationalCredential",
@@ -181,13 +110,13 @@ export default async function AgentPage({ params }: PageProps) {
         "@type": "ListItem",
         position: 3,
         name: agent.city,
-        item: `https://awasio.com/agents?city=${encodeURIComponent(agent.city)}`,
+        item: `https://awasio.com${agentsListPath(agent.city, null, agent.countryCode)}`,
       },
       {
         "@type": "ListItem",
         position: 4,
         name: agent.name,
-        item: `https://awasio.com/agents/${agent.id}`,
+        item: `https://awasio.com${agentPath(agent)}`,
       },
     ],
   };

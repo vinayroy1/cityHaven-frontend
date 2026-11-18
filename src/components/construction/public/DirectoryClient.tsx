@@ -8,7 +8,13 @@ import { PropertyListingLocalitySelector, type LocalitySelection } from "@/compo
 import { HardHat, Loader2, Search, X } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 import { useLazySearchConstructionQuery } from "@/features/construction/api";
-import { BUILDING_TYPE_OPTIONS, SECTOR_OPTIONS, SERVICE_OPTIONS, citySlug } from "@/features/construction/options";
+import { BUILDING_TYPE_OPTIONS, SECTOR_OPTIONS, SERVICE_OPTIONS } from "@/features/construction/options";
+import { listingPath } from "@/lib/seo/countryPath";
+import { getSelectedCountry } from "@/lib/country/countryStore";
+import { useCountryCode } from "@/lib/country/useCountry";
+import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
+
+const BASE = "/construction-companies";
 import type { BuildingType, ConstructionProfile, ConstructionSegment, ConstructionService, InfraSector } from "@/features/construction/types";
 import { ConstructionCard } from "./ConstructionCard";
 
@@ -18,11 +24,17 @@ const selCls =
 
 export function DirectoryClient({
   city,
+  locality,
+  country,
   initialItems,
   initialTotal,
   cities,
 }: {
   city: string;
+  /** Locality from the URL (/construction-companies/[cc/]city/locality); "" = whole city. */
+  locality: string;
+  /** Country from the URL prefix; null = India / no prefix. */
+  country: string | null;
   initialItems: ConstructionProfile[];
   initialTotal: number;
   cities: { city: string; count: number }[];
@@ -31,12 +43,18 @@ export function DirectoryClient({
     typeof window !== "undefined" && new URLSearchParams(window.location.search).get("segment") === "INFRA" ? "INFRA" : "",
   );
   const router = useRouter();
-  const [locality, setLocality] = React.useState("");
+  const portalCountry = useCountryCode();
+  useUrlCountry(country);
+  const qs = () => (segment ? `?segment=${segment}` : "");
+  // City and area live in the URL (same as projects / property search), so they can be shared and indexed.
   const pickCity = (c: CitySelection) => {
     const next = c.name?.trim();
     if (!next || next.toLowerCase() === city.toLowerCase()) return;
-    const qs = segment ? `?segment=${segment}` : "";
-    router.push(`/construction-companies/${citySlug(next)}${qs}`);
+    router.push(`${listingPath(BASE, next, null, getSelectedCountry())}${qs()}`);
+  };
+  const setLocality = (next: string) => {
+    if (next.toLowerCase() === locality.toLowerCase()) return;
+    router.push(`${listingPath(BASE, city, next || null, country)}${qs()}`);
   };
   const [sector, setSector] = React.useState<InfraSector | "">("");
   const [service, setService] = React.useState<ConstructionService | "">("");
@@ -50,12 +68,15 @@ export function DirectoryClient({
     setService("");
     setBuildingType("");
   };
-  const filtered = !!(locality || segment || sector || service || buildingType || query);
-  const key = JSON.stringify({ city, locality, segment, sector, service, buildingType, query });
-  const baseKey = JSON.stringify({ city, locality: "", segment: "", sector: "", service: "", buildingType: "", query: "" });
+  // Without a city the server renders India's list; another site country loads its own.
+  const otherCountry = !city && portalCountry !== "IN";
+  const filtered = !!(otherCountry || segment || sector || service || buildingType || query);
+  const key = JSON.stringify({ city, locality, portalCountry: city ? "" : portalCountry, segment, sector, service, buildingType, query });
+  const baseKey = JSON.stringify({ city, locality, portalCountry: city ? "" : "IN", segment: "", sector: "", service: "", buildingType: "", query: "" });
   const params = (page: number) => ({
     city: city || undefined,
     locality: (city && locality) || undefined,
+    countryCode: city ? undefined : portalCountry,
     segment: segment || undefined,
     sector: sector || undefined,
     service: service || undefined,
@@ -184,7 +205,7 @@ export function DirectoryClient({
           )}
           {!city &&
             cities.slice(0, 6).map((c) => (
-              <Link key={c.city} href={`/construction-companies/${citySlug(c.city)}`} className="shrink-0 whitespace-nowrap rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:border-rose-300 hover:text-rose-600 dark:border-slate-700 dark:text-slate-300">
+              <Link key={c.city} href={listingPath(BASE, c.city)} className="shrink-0 whitespace-nowrap rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:border-rose-300 hover:text-rose-600 dark:border-slate-700 dark:text-slate-300">
                 {c.city} <span className="opacity-60">{c.count}</span>
               </Link>
             ))}
@@ -195,6 +216,8 @@ export function DirectoryClient({
           )}
         </div>
       </div>
+
+      <CountryResultsBanner countryCode={city ? country ?? "IN" : null} what="companies" />
 
       <p className="text-sm font-semibold text-slate-700 dark:text-slate-300" aria-live="polite">
         {!view && isFetching ? "Loading…" : `${total} ${total === 1 ? "company" : "companies"}${city ? ` in ${locality ? `${locality}, ` : ""}${city}` : ""}`}

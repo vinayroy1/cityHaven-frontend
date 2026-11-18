@@ -10,7 +10,11 @@ import { StayCard, StayCardSkeleton } from "@/components/stays/StayCard";
 import { useStaySearch, type StaySearchPage } from "@/features/stays/api";
 import { STAY_TYPES } from "@/features/stays/options";
 import type { StaySearchParams, StayType } from "@/features/stays/types";
-import { useCountry } from "@/lib/country/countryStore";
+import { getSelectedCountry, useCountry } from "@/lib/country/countryStore";
+import { useRouter } from "next/navigation";
+import { getCountry } from "@/config/countries";
+import { listingPath } from "@/lib/seo/countryPath";
+import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
 import { formatMoney } from "@/lib/money";
 import { CountryContextChip } from "@/components/country/CountryContextChip";
 
@@ -26,7 +30,10 @@ export function StaysDirectory({
   initialLocality = "",
   initialType,
   initialPage,
+  country: urlCountry = null,
 }: {
+  /** Country from the URL prefix (/stays/ae/dubai); null = India / no prefix. */
+  country?: string | null;
   initialCity?: string;
   initialLocality?: string;
   initialType?: StayType;
@@ -34,12 +41,21 @@ export function StaysDirectory({
   initialPage?: { params: StaySearchParams; page: StaySearchPage } | null;
 }) {
   const country = useCountry();
-  const [city, setCity] = useState(initialCity);
-  const [locality, setLocality] = useState(initialLocality);
-  // New city -> old area no longer applies.
+  const router = useRouter();
+  useUrlCountry(urlCountry);
+  // A city page is in the URL's country (budgets in its currency); without a city, the site's country.
+  const pageCountry = initialCity ? getCountry(urlCountry ?? "IN") : country;
+  // City and area live in the URL (same as projects / property search): picking one navigates.
+  const city = initialCity;
+  const locality = initialLocality;
   const pickCity = (c: string) => {
-    setCity(c);
-    setLocality("");
+    if (c.toLowerCase() === city.toLowerCase() && !locality) return;
+    // Cities in the picker belong to the site's selected country, so its prefix goes in the URL.
+    router.push(listingPath("/stays", c || null, null, getSelectedCountry()));
+  };
+  const setLocality = (l: string) => {
+    if (l.toLowerCase() === locality.toLowerCase()) return;
+    router.push(listingPath("/stays", city, l || null, urlCountry));
   };
   const [type, setType] = useState<StayType | undefined>(initialType);
   const [priceMax, setPriceMax] = useState<number | undefined>();
@@ -76,7 +92,7 @@ export function StaysDirectory({
     setCoupleFriendly(false);
     setFamilyFriendly(false);
     setFree(false);
-    setLocality("");
+    if (locality) setLocality("");
   };
 
   const toggle = (on: boolean, set: (v: boolean) => void, label: string, Icon: typeof Heart) => (
@@ -97,10 +113,13 @@ export function StaysDirectory({
 
       {/* Hero */}
       {/* Soft, light hero: tinted mesh + dark text (the old saturated gradient felt heavy). */}
-      <section className="relative hidden overflow-hidden border-b border-slate-200/70 bg-gradient-to-b sm:block from-rose-50/80 via-white to-slate-50 px-4 pb-12 pt-5 text-slate-900 sm:pb-16 sm:pt-12 dark:border-slate-800 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950 dark:text-white">
-        <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-rose-200/40 blur-3xl dark:bg-rose-900/20" />
-        <div className="pointer-events-none absolute -left-20 top-10 h-64 w-64 rounded-full bg-amber-200/40 blur-3xl dark:bg-amber-900/10" />
-        <div className="pointer-events-none absolute bottom-0 right-1/3 h-48 w-48 rounded-full bg-sky-200/30 blur-3xl dark:bg-sky-900/10" />
+      {/* No overflow-hidden here: it clipped the city / area dropdowns; the blobs clip in their own layer. */}
+      <section className="relative z-20 hidden border-b border-slate-200/70 bg-gradient-to-b sm:block from-rose-50/80 via-white to-slate-50 px-4 pb-12 pt-5 text-slate-900 sm:pb-16 sm:pt-12 dark:border-slate-800 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950 dark:text-white">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-rose-200/40 blur-3xl dark:bg-rose-900/20" />
+          <div className="pointer-events-none absolute -left-20 top-10 h-64 w-64 rounded-full bg-amber-200/40 blur-3xl dark:bg-amber-900/10" />
+          <div className="pointer-events-none absolute bottom-0 right-1/3 h-48 w-48 rounded-full bg-sky-200/30 blur-3xl dark:bg-sky-900/10" />
+        </div>
         <div className="relative mx-auto max-w-4xl sm:text-center">
           <div className="flex items-center gap-2 sm:justify-center">
             <p className="hidden items-center gap-1.5 rounded-full border border-rose-200 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-rose-600 shadow-2xs backdrop-blur sm:inline-flex dark:border-rose-900 dark:bg-slate-900/70 dark:text-rose-300">
@@ -258,7 +277,7 @@ export function StaysDirectory({
             onClick={() => setShowFilters((v) => !v)}
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
           >
-            <SlidersHorizontal className="h-3.5 w-3.5" /> Budget{priceMax ? `: ≤ ${formatMoney(priceMax, country.code)}` : ""}
+            <SlidersHorizontal className="h-3.5 w-3.5" /> Budget{priceMax ? `: ≤ ${formatMoney(priceMax, pageCountry.code)}` : ""}
           </button>
           {toggle(ac, setAc, "AC rooms", Snowflake)}
           {toggle(coupleFriendly, setCoupleFriendly, "Couple friendly", Heart)}
@@ -282,11 +301,13 @@ export function StaysDirectory({
                   priceMax === b ? "border-rose-600 bg-rose-600 text-white" : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-200"
                 }`}
               >
-                Under {formatMoney(b, country.code)}
+                Under {formatMoney(b, pageCountry.code)}
               </button>
             ))}
           </div>
         )}
+
+        <CountryResultsBanner countryCode={city ? urlCountry ?? "IN" : null} what="stays" className="mt-3" />
 
         {/* Results header */}
         <div id="stay-results" className="mt-3 flex scroll-mt-20 items-center justify-between gap-3 sm:mt-5 sm:items-end">
@@ -442,7 +463,7 @@ export function StaysDirectory({
                           priceMax === b ? "border-rose-600 bg-rose-600 text-white" : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-200"
                         }`}
                       >
-                        Under {formatMoney(b, country.code)}
+                        Under {formatMoney(b, pageCountry.code)}
                       </button>
                     ))}
                   </div>

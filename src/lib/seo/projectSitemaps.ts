@@ -22,7 +22,7 @@ export const PROJECT_SITEMAP_STATES: Record<string, string> = {
 
 export const PROJECT_SITEMAP_FILES = [...Object.keys(PROJECT_SITEMAP_STATES), "other"].map((k) => `projects-${k}.xml`);
 
-export type SitemapProject = { slug: string; cityName?: string | null; stateName?: string | null; updatedAt?: string | null };
+export type SitemapProject = { slug: string; cityName?: string | null; stateName?: string | null; countryCode?: string | null; updatedAt?: string | null };
 
 const PAGE_SIZE = 100; // the search API's maximum
 const MAX_PAGES = 200;
@@ -38,7 +38,7 @@ export async function getAllProjectsForSitemap(): Promise<SitemapProject[]> {
       if (!res.ok) break;
       const data = (await res.json())?.data;
       const items: SitemapProject[] = data?.items ?? [];
-      for (const p of items) if (p?.slug) out.push({ slug: p.slug, cityName: p.cityName, stateName: p.stateName, updatedAt: p.updatedAt });
+      for (const p of items) if (p?.slug) out.push({ slug: p.slug, cityName: p.cityName, stateName: p.stateName, countryCode: p.countryCode, updatedAt: p.updatedAt });
       if (items.length < PAGE_SIZE || out.length >= Number(data?.total ?? 0)) break;
     } catch {
       break;

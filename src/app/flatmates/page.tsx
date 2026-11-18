@@ -25,14 +25,15 @@ import {
   countActiveFilters,
   initialSearchState,
   parseSearchParams,
-  toSearchSlug,
   type SearchState,
 } from "@/components/search/searchQuery";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import type { FlatmateListing, FlatmateListingMode } from "@/types/flatmate.types";
 import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
-import { useCountry } from "@/lib/country/countryStore";
+import { getSelectedCountry, useCountry } from "@/lib/country/countryStore";
+import { flatmateSearchPath } from "@/features/flatmates/paths";
+import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
 import { CountryContextChip } from "@/components/country/CountryContextChip";
 
 const FilterSheet = dynamic(
@@ -43,6 +44,8 @@ const FilterSheet = dynamic(
 type FlatmatesDiscoveryPageProps = {
   initialCity?: string;
   initialLocality?: string;
+  /** Country from the URL prefix (/flatmate/ae/dubai); null = India / no prefix. */
+  initialCountry?: string | null;
   initialItems?: FlatmateListing[];
   initialTotal?: number;
 };
@@ -90,10 +93,12 @@ function FlatmateQuerySync({ onQuery }: { onQuery: (query: string) => void }) {
 export default function FlatmatesDiscoveryPage({
   initialCity = "",
   initialLocality = "",
+  initialCountry = null,
   initialItems = [],
   initialTotal = 0,
 }: FlatmatesDiscoveryPageProps) {
   const router = useRouter();
+  useUrlCountry(initialCountry);
   const [city, setCity] = useState(initialCity);
   const [localities, setLocalities] = useState<string[]>(initialLocality ? [initialLocality] : []);
   const [cityDraft, setCityDraft] = useState(initialCity);
@@ -163,7 +168,7 @@ export default function FlatmatesDiscoveryPage({
       const normalized = canonicalizeCity({ id: 0, name: rawCity.trim(), slug: locationSlug(rawCity) }).name;
       setCity(normalized);
       setCityDraft(normalized);
-      router.replace(`/flatmate/${locationSlug(normalized)}${window.location.search}`);
+      router.replace(`${flatmateSearchPath(normalized, null, getSelectedCountry())}${window.location.search}`);
     };
 
     const preferredCity = getUserPreferredCity();
@@ -205,8 +210,9 @@ export default function FlatmatesDiscoveryPage({
   });
 
   const navigateToLocation = (nextCity: string, nextLocalities: string[], nextFilters: SearchState) => {
-    const segments = [nextCity, nextLocalities[0]].map((value) => locationSlug(value || "")).filter(Boolean);
-    pushFilters(`/flatmate${segments.length ? `/${segments.join("/")}` : ""}`, nextFilters);
+    // Same city keeps the URL's country; a newly picked city belongs to the site's selected country.
+    const cc = nextCity && nextCity.toLowerCase() === initialCity.toLowerCase() ? initialCountry : getSelectedCountry();
+    pushFilters(flatmateSearchPath(nextCity || null, nextLocalities[0] || null, cc), nextFilters);
   };
 
   const runSearch = (nextFilters = filterState) => {
@@ -227,19 +233,17 @@ export default function FlatmatesDiscoveryPage({
 
   const breadcrumbItems = React.useMemo(() => {
     const items: BreadcrumbTrailItem[] = [];
-    const citySlug = city ? toSearchSlug(city) : "";
     const localityName = localities[0];
-    const localitySlug = localityName ? toSearchSlug(localityName) : "";
 
     if (city) {
       items.push({
         label: `Flatmates in ${city}`,
-        href: `/flatmate/${citySlug}`,
+        href: flatmateSearchPath(city, null, initialCountry),
       });
       if (localityName) {
         items.push({
           label: localityName,
-          href: `/flatmate/${citySlug}/${localitySlug}`,
+          href: flatmateSearchPath(city, localityName, initialCountry),
         });
       }
     } else {
@@ -250,7 +254,7 @@ export default function FlatmatesDiscoveryPage({
     }
 
     return items;
-  }, [city, localities]);
+  }, [city, localities, initialCountry]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
@@ -452,6 +456,8 @@ export default function FlatmatesDiscoveryPage({
                 )}
               </div>
 
+
+          <CountryResultsBanner countryCode={city ? initialCountry ?? "IN" : null} what="listings" className="mb-3" />
 
           {/* Cards Grid */}
           {showSkeleton ? (

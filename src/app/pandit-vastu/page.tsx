@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PanditDirectoryPage() {
-  const [dir, cities] = await Promise.all([fetchPanditDirectory(""), fetchPanditCities()]);
+  const [dir, cities] = await Promise.all([fetchPanditDirectory("", null, "IN"), fetchPanditCities()]);
   if (!dir.ok) throw new Error("pandit API unavailable");
-  return <DirectoryPage city="" items={dir.data?.items ?? []} total={dir.data?.pagination.total ?? 0} cities={cities.data ?? []} />;
+  return <DirectoryPage city="" locality={null} country={null} items={dir.data?.items ?? []} total={dir.data?.pagination.total ?? 0} cities={cities.data ?? []} />;
 }

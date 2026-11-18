@@ -1,4 +1,5 @@
 "use client";
+import { stayPath } from "@/features/stays/options";
 
 import Link from "next/link";
 import { BadgeCheck, BedDouble, Heart, MapPin, Snowflake, Star } from "lucide-react";
@@ -25,7 +26,7 @@ export function StayCard({ stay, priority = false }: { stay: Stay; priority?: bo
 
   return (
     <Link
-      href={`/stays/${stay.slug}`}
+      href={stayPath(stay)}
       prefetch={false}
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-900/5 dark:border-slate-800 dark:bg-slate-900"
     >

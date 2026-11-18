@@ -1,4 +1,6 @@
 import type { BuildingType, Certification, ConstructionService, EnquiryType, Floors, InfraSector, InHouse, LeadStatus, ProjectStatus, StartWhen, TurnoverBand } from "./types";
+import { cityDetailPath } from "@/lib/seo/countryPath";
+import { formatMoney, formatMoneyShort } from "@/lib/money";
 
 /** Labels for option keys. Keys must match the backend construction.constants.ts. */
 export const SERVICE_OPTIONS: { value: ConstructionService; label: string; hint: string; icon: string }[] = [
@@ -127,16 +129,25 @@ export const CLIENT_SUGGESTIONS = ["NHAI", "CPWD", "State PWD", "MoRTH", "PMGSY"
 export const EQUIPMENT_SUGGESTIONS = ["Hot mix plant", "Wet mix plant", "Sensor paver", "Batching plant", "Transit mixers", "Excavators", "Motor grader", "Vibratory roller", "Tower crane", "Piling rig", "Boom placer"];
 
 /** Rupee crore label, e.g. 120 → "₹120 Cr", 0.5 → "₹50 L". */
-export const formatCr = (n: number | null | undefined) =>
-  !n ? "" : n < 1 ? `₹${Math.round(n * 100)} L` : `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 1 })} Cr`;
+/** Values are stored in crore; outside India they are shown in the company's currency (₹1 Cr = 10,000,000). */
+export const formatCr = (n: number | null | undefined, countryCode?: string | null) =>
+  !n
+    ? ""
+    : countryCode && countryCode !== "IN"
+      ? formatMoneyShort(n * 1e7, countryCode, { decimals: "trim" })
+      : n < 1
+        ? `₹${Math.round(n * 100)} L`
+        : `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 1 })} Cr`;
 
 export const isInfra = (p: { segment?: string | null } | null | undefined) => p?.segment === "INFRA";
 
 export const label = <T extends string>(list: { value: T; label: string }[], v: T | null | undefined) =>
   list.find((o) => o.value === v)?.label ?? v ?? "";
 
-export const formatRate = (n: number | null | undefined) => (n ? `₹${Math.round(n).toLocaleString("en-IN")}/sq.ft` : "");
+export const formatRate = (n: number | null | undefined, countryCode?: string | null) =>
+  n ? `${formatMoney(Math.round(n), countryCode || "IN")}/sq.ft` : "";
 
-export const constructionProfilePath = (p: { slug: string; city: string }) =>
-  `/construction-companies/${encodeURIComponent(citySlug(p.city || "india"))}/${p.slug}`;
+/** /construction-companies[/cc]/city/slug: non-India companies carry their country code (see countryPath). */
+export const constructionProfilePath = (p: { slug: string; city: string; countryCode?: string | null }) =>
+  cityDetailPath("/construction-companies", p.city, p.slug, p.countryCode);
 export const citySlug = (city: string) => city.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

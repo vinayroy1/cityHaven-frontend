@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ConstructionDirectoryPage() {
-  const [dir, cities] = await Promise.all([fetchConstructionDirectory(""), fetchConstructionCities()]);
+  const [dir, cities] = await Promise.all([fetchConstructionDirectory("", null, "IN"), fetchConstructionCities()]);
   if (!dir.ok) throw new Error("construction API unavailable");
   const items = dir.data?.items ?? [];
   const jsonLd = {
@@ -55,7 +55,7 @@ export default async function ConstructionDirectoryPage() {
           </div>
         </section>
         <div className="mx-auto max-w-6xl space-y-10 px-4 py-6 sm:px-6 sm:py-10">
-          <DirectoryClient city="" initialItems={items} initialTotal={dir.data?.pagination.total ?? 0} cities={cities.data ?? []} />
+          <DirectoryClient city="" locality="" country={null} initialItems={items} initialTotal={dir.data?.pagination.total ?? 0} cities={cities.data ?? []} />
           <ListYourCompany />
         </div>
       </main>

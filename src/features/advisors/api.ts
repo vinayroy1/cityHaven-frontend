@@ -7,6 +7,12 @@ import type { Agent } from "@/data/agents";
 
 export interface GetAdvisorsParams {
   city?: string;
+  /** Primary area within the city. */
+  locality?: string;
+  /** Portal country; the API applies it only without a city. */
+  countryCode?: string;
+  /** No fallback to other cities when the city has nobody (directory pages show an empty state). */
+  strict?: boolean;
   limit?: number;
   /** Skip this many advisors (paging; the API returns at most 50 per call). */
   offset?: number;
@@ -67,6 +73,9 @@ export const advisorsApi = createApi({
       query: (params) => {
         const queryParams = new URLSearchParams();
         if (params?.city) queryParams.set("city", params.city);
+        if (params?.city && params.locality) queryParams.set("locality", params.locality);
+        if (!params?.city && params?.countryCode) queryParams.set("countryCode", params.countryCode);
+        if (params?.strict) queryParams.set("strict", "1");
         if (params?.limit) queryParams.set("limit", String(params.limit));
         if (params?.offset) queryParams.set("offset", String(params.offset));
         if (params?.featured !== undefined) queryParams.set("featured", String(params.featured));

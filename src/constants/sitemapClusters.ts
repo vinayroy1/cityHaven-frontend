@@ -9,6 +9,8 @@ export interface SitemapCluster {
   intent: "buy" | "rent" | "commercial" | "plot" | "pg" | "flatmate";
   city: string;
   locality: string;
+  /** ISO country; missing = India (no URL prefix). */
+  countryCode?: string;
   count: number;
 }
 

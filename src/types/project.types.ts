@@ -21,11 +21,14 @@ export interface ProjectListing {
   name: string;
   developerName: string;
   reraId?: string;
+  /** ISO country (IN default). Prices are in this country's currency. */
+  countryCode?: string | null;
+  stateName?: string | null;
   status: ProjectStatus;
   launchDate?: string;
   possessionDate?: string; // e.g. "Dec 2026" or "Ready to Move"
-  priceMin?: number; // Starting price in INR
-  priceMax?: number; // Max price in INR
+  priceMin?: number; // Starting price, in the project's country currency
+  priceMax?: number; // Max price, in the project's country currency
   pricePerSqFt?: number;
   city?: string | { id?: number; name?: string; slug?: string } | any;
   cityName?: string;
@@ -60,6 +63,8 @@ export type ProjectSort = "featured" | "price_asc" | "price_desc" | "possession_
 
 export interface ProjectSearchParams {
   q?: string;
+  /** Portal country; only sent when no city/locality is chosen (the city already decides it). */
+  countryCode?: string;
   city?: string;
   locality?: string;
   status?: ProjectStatus;

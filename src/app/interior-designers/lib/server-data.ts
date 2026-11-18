@@ -26,10 +26,10 @@ export const fetchInteriorProfile = cache((slug: string) =>
 );
 
 /** First page of the directory for a city, or all of India when city is "" (the default view). */
-export const fetchInteriorDirectory = cache((city: string) =>
-  getJson<InteriorSearchResponse>(
-    city
-      ? `${API_ENDPOINTS.interiors.search}?city=${encodeURIComponent(city)}&limit=30`
-      : `${API_ENDPOINTS.interiors.search}?countryCode=IN&limit=30`,
-  ),
-);
+export const fetchInteriorDirectory = cache((city: string, locality?: string | null) => {
+  const qs = new URLSearchParams({ limit: "30" });
+  if (city) qs.set("city", city);
+  else qs.set("countryCode", "IN");
+  if (city && locality) qs.set("locality", locality);
+  return getJson<InteriorSearchResponse>(`${API_ENDPOINTS.interiors.search}?${qs}`);
+});

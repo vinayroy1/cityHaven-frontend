@@ -1,4 +1,5 @@
 "use client";
+import { formatMoney, formatMoneyShort } from "@/lib/money";
 
 import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
 import React, { useEffect, useState } from "react";
@@ -33,11 +34,9 @@ import { useCreateProjectInquiryMutation } from "@/features/projects/api";
 import { getStoredUserContact } from "@/lib/auth/storedUser";
 import ClaimProjectCard from "./ClaimProjectCard";
 
-function formatPrice(value?: number) {
+function formatPrice(value?: number, countryCode?: string | null) {
   if (!value) return "Price on request";
-  if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)} Cr`;
-  if (value >= 100000) return `₹${(value / 100000).toFixed(2)} L`;
-  return `₹${value.toLocaleString("en-IN")}`;
+  return formatMoneyShort(value, countryCode || "IN");
 }
 
 const normalizeR2Url = (url?: string | null): string => {
@@ -142,10 +141,12 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
             <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md px-3 py-1 text-xs font-black text-emerald-700 shadow-sm">
-                <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                <span>RERA Verified: {project.reraId || "Registered"}</span>
-              </span>
+              {project.reraId && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md px-3 py-1 text-xs font-black text-emerald-700 shadow-sm">
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                  <span>RERA Verified: {project.reraId}</span>
+                </span>
+              )}
               <span className="rounded-full bg-slate-950/80 backdrop-blur-md px-3 py-1 text-xs font-bold text-white uppercase tracking-wider">
                 {project.status?.replace(/_/g, " ") || "NEW LAUNCH"}
               </span>
@@ -195,11 +196,11 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               Price Range
             </span>
             <div className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white">
-              {formatPrice(project.priceMin)} – {formatPrice(project.priceMax)}
+              {formatPrice(project.priceMin, project.countryCode)} – {formatPrice(project.priceMax, project.countryCode)}
             </div>
             {project.pricePerSqFt && (
               <span className="text-xs font-semibold text-slate-500">
-                Avg. ₹{project.pricePerSqFt.toLocaleString("en-IN")} / sq.ft
+                Avg. {formatMoney(project.pricePerSqFt, project.countryCode || "IN")} / sq.ft
               </span>
             )}
           </div>
@@ -269,7 +270,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
             Legal Authority
           </div>
           <div className="mt-1 text-base font-black text-emerald-600 dark:text-emerald-400">
-            RERA Approved
+            {project.reraId ? "RERA Approved" : "Developer listed"}
           </div>
         </div>
       </div>
@@ -365,7 +366,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
                     Price Range
                   </span>
                   <div className="text-lg font-black text-slate-950 dark:text-white">
-                    {formatPrice(cfg.priceMin)} {cfg.priceMax ? `– ${formatPrice(cfg.priceMax)}` : "Onwards"}
+                    {formatPrice(cfg.priceMin, project.countryCode)} {cfg.priceMax ? `– ${formatPrice(cfg.priceMax, project.countryCode)}` : "Onwards"}
                   </div>
                 </div>
               </div>

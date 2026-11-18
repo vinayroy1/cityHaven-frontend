@@ -1,4 +1,5 @@
 "use client";
+import { flatmatePath } from "@/features/flatmates/paths";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -73,7 +74,7 @@ export function FlatmateCard({
 }: FlatmateCardProps) {
   const router = useRouter();
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const detailsHref = `/flatmates/${listing.slug}`;
+  const detailsHref = flatmatePath(listing);
 
   const isPlaceListing = listing.mode === "HAVE_ROOM";
   const isForceVertical = layout === "vertical";

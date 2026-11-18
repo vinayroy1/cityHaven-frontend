@@ -4,20 +4,22 @@ import React from "react";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
 import { BackButton } from "@/components/common/BackButton";
 import { cityLabel } from "../../lib/breadcrumbs";
+import { listingPath } from "@/lib/seo/countryPath";
 
 interface ProfileBreadcrumbBarProps {
   citySlug: string;
   cityName?: string | null;
+  countryCode?: string | null;
   name?: string;
   className?: string;
 }
 
 /** Home › Interior designers › {City} › {Name}, plus a back button on mobile. */
-export function ProfileBreadcrumbBar({ citySlug, cityName, name, className = "" }: ProfileBreadcrumbBarProps) {
+export function ProfileBreadcrumbBar({ citySlug, cityName, countryCode, name, className = "" }: ProfileBreadcrumbBarProps) {
   const city = cityName || cityLabel(citySlug);
   const items: BreadcrumbTrailItem[] = [
     { label: "Interior designers", href: "/interior-designers" },
-    { label: city, href: `/interior-designers?city=${encodeURIComponent(city)}` },
+    { label: city, href: listingPath("/interior-designers", city, null, countryCode) },
   ];
   if (name) items.push({ label: name });
 

@@ -23,6 +23,8 @@ export interface Agent {
   coverImage?: string;
   city: string;
   cityName?: string;
+  /** ISO country of the advisor; missing = India. */
+  countryCode?: string | null;
   area: string;
   primaryArea?: string;
   experience: string;

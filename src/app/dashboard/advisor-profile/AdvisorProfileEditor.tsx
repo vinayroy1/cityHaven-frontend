@@ -1,4 +1,5 @@
 "use client";
+import { agentPath } from "@/features/advisors/paths";
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -407,7 +408,7 @@ export function AdvisorProfileEditor({ embedded = false }: { embedded?: boolean 
 
               {/* View Live Profile Link */}
               <Link
-                href={`/agents/${serverAdvisor?.slug || serverAdvisor?.id || profile.id}`}
+                href={agentPath({ id: serverAdvisor?.id ?? profile.id, slug: serverAdvisor?.slug, countryCode: serverAdvisor?.countryCode })}
                 target="_blank"
                 className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
               >

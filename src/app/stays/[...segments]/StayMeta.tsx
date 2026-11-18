@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import StayDetail from "./StayDetail";
+import { stayPath } from "@/features/stays/options";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import { buildCanonical } from "@/constants/seo";
 import type { Stay } from "@/features/stays/types";
@@ -13,7 +13,7 @@ const TYPE_LABEL: Record<string, string> = {
   LODGE: "Lodge",
 };
 
-async function getStay(slug: string): Promise<Stay | null> {
+export async function getStay(slug: string): Promise<Stay | null> {
   try {
     const res = await fetch(toInternalApiUrl(`/v1/stays/${encodeURIComponent(slug)}`), { next: { revalidate: 3600 } });
     if (!res.ok) return null;
@@ -24,13 +24,8 @@ async function getStay(slug: string): Promise<Stay | null> {
   }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
-  const stay = await getStay(slug);
-  const canonical = buildCanonical(`/stays/${slug}`);
-  if (!stay?.name) {
-    return { title: { absolute: "Stay details: rooms & nightly prices | Awasio" }, alternates: { canonical } };
-  }
+export function stayMetadata(stay: Stay): Metadata {
+  const canonical = buildCanonical(stayPath(stay));
 
   const kind = TYPE_LABEL[String(stay.type)] ?? "Stay";
   const where = [stay.locality, stay.cityName].filter(Boolean).join(", ");
@@ -48,8 +43,4 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: { title, description, url: canonical, type: "website", siteName: "Awasio", ...(image ? { images: [{ url: image }] } : {}) },
     twitter: { card: "summary_large_image", title, description, ...(image ? { images: [image] } : {}) },
   };
-}
-
-export default function StayPage() {
-  return <StayDetail />;
 }

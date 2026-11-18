@@ -1,4 +1,5 @@
 "use client";
+import { agentPath, agentsListPath } from "@/features/advisors/paths";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -140,7 +141,7 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
           <PageBreadcrumbs
             items={[
               { label: "Verified Advisors", href: "/agents" },
-              { label: agent.city, href: `/agents?city=${encodeURIComponent(agent.city)}` },
+              { label: agent.city, href: agentsListPath(agent.city, null, agent.countryCode) },
               { label: agent.name },
             ]}
             renderJsonLd={false}
@@ -444,7 +445,7 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                   {similarAgents.map((sim) => (
                     <Link
                       key={sim.id}
-                      href={`/agents/${sim.id}`}
+                      href={agentPath(sim)}
                       className="group flex flex-col justify-between rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 hover:border-rose-200 hover:bg-white hover:shadow-sm transition dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-700"
                     >
                       <div className="flex items-center gap-3">

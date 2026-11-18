@@ -1,4 +1,5 @@
 "use client";
+import { flatmatePath } from "@/features/flatmates/paths";
 
 import { getAuthToken } from "@/lib/auth/assistedSession";
 import React, { useState } from "react";
@@ -417,7 +418,7 @@ export function FlatmateListingWizard({
         description: "Your listing is now live and room seekers can connect with you directly.",
       });
       if (onSaved) onSaved(res as { id?: number; slug: string; title?: string });
-      else router.push(`/flatmates/${res.slug}`);
+      else router.push(flatmatePath(res));
     } catch (err: any) {
       const msg = err?.data?.message || err?.message || "Failed to publish listing. Please check required fields.";
       toast.error(msg);

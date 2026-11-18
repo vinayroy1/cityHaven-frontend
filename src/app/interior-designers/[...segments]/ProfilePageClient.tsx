@@ -7,15 +7,15 @@ import { ImageIcon } from "lucide-react";
 import { useGetInteriorProfileDetailQuery } from "@/features/interiors/api";
 import { DesignerProfileSkeleton } from "@/components/interiors/skeletons";
 import type { InteriorProfile } from "@/types/interior.types";
-import { ProfileBreadcrumbBar } from "../../components/profile/ProfileBreadcrumbBar";
-import { PortfolioGrid, WorkGallery } from "../../components/profile/Portfolio";
+import { ProfileBreadcrumbBar } from "../components/profile/ProfileBreadcrumbBar";
+import { PortfolioGrid, WorkGallery } from "../components/profile/Portfolio";
 import {
   EnquiryCard,
   MobileCtaBar,
   ProfileHero,
   Section,
   SectionNav,
-} from "../../components/profile/ProfileParts";
+} from "../components/profile/ProfileParts";
 import {
   AboutSection,
   AreasSection,
@@ -32,13 +32,13 @@ import {
   hasServices,
   hasWarranty,
   materialGroups,
-} from "../../components/profile/ProfileSections";
-import { profileName } from "../../components/profile/utils";
-import { InteriorContactProvider } from "../../components/profile/ContactReveal";
+} from "../components/profile/ProfileSections";
+import { profileName } from "../components/profile/utils";
+import { InteriorContactProvider } from "../components/profile/ContactReveal";
 
 // The enquiry form is only needed after a click; keep it out of the initial bundle.
 const InteriorInquiryModal = dynamic(
-  () => import("../../components/InteriorInquiryModal").then((m) => m.InteriorInquiryModal),
+  () => import("../components/InteriorInquiryModal").then((m) => m.InteriorInquiryModal),
   { ssr: false },
 );
 
@@ -138,6 +138,7 @@ export function ProfilePageClient({ slug, citySlug, initialProfile }: ProfilePag
       <ProfileBreadcrumbBar
         citySlug={citySlug}
         cityName={profile.primaryCity}
+        countryCode={profile.countryCode}
         name={name}
         className="mx-auto max-w-6xl px-4 pt-3 sm:px-6"
       />

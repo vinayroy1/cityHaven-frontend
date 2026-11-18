@@ -11,6 +11,8 @@
  */
 
 import type { FlatmateListing } from "@/types/flatmate.types";
+import { countrySegment } from "@/lib/seo/countryPath";
+import { getSelectedCountry } from "@/lib/country/countryStore";
 
 export type LocalityTag = {
   label: string;
@@ -286,7 +288,12 @@ export const intentFromSearchSlug = (value: string): IntentKey | undefined => {
 };
 
 /** Build the canonical SEO route while keeping non-location filters in query params. */
-export function buildSearchHref(state: SearchState): string {
+/**
+ * /buy[/cc]/city[/locality…]?filters. India has no country segment; other countries use their ISO code
+ * (same rule as every directory, see lib/seo/countryPath). `countryCode` defaults to the site's selected
+ * country on the client (the city picker lists that country's cities) and India on the server.
+ */
+export function buildSearchHref(state: SearchState, countryCode?: string | null): string {
   const params = buildSearchParams(state);
   params.delete("city");
   params.delete("cityName");
@@ -304,6 +311,8 @@ export function buildSearchHref(state: SearchState): string {
   }
 
   const query = params.toString();
+  const cc = city ? countrySegment(countryCode === undefined ? getSelectedCountry() : countryCode) : null;
+  if (cc) pathSegments.unshift(cc);
   const base = `/${SEARCH_INTENT_SLUGS[state.intent]}`;
   return `${base}${pathSegments.length ? `/${pathSegments.join("/")}` : ""}${query ? `?${query}` : ""}`;
 }

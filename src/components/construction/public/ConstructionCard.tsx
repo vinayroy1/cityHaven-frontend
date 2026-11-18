@@ -50,11 +50,11 @@ export function ConstructionCard({
   const tags = infra ? (p.sectors ?? []).slice(0, 3).map((s) => label(SECTOR_OPTIONS, s)) : p.services.slice(0, 3).map((s) => label(SERVICE_OPTIONS, s));
   const headline = infra
     ? p.maxContractCr
-      ? { k: "Largest contract", v: formatCr(p.maxContractCr) }
+      ? { k: "Largest contract", v: formatCr(p.maxContractCr, p.countryCode) }
       : p.turnoverBand
         ? { k: "Annual turnover", v: label(TURNOVER_OPTIONS, p.turnoverBand) }
         : { k: "Infrastructure", v: "Govt & private works" }
-    : { k: p.quoteOnly ? "Pricing" : "Starting from", v: p.quoteOnly || !p.startingRate ? "Price on request" : formatRate(p.startingRate) };
+    : { k: p.quoteOnly ? "Pricing" : "Starting from", v: p.quoteOnly || !p.startingRate ? "Price on request" : formatRate(p.startingRate, p.countryCode) };
   return (
     <article className="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
       <Link

@@ -209,6 +209,7 @@ export interface ConstructionInquiryInput {
 }
 
 export interface ConstructionSearchParams {
+  countryCode?: string;
   city?: string;
   locality?: string;
   segment?: ConstructionSegment;

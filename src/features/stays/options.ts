@@ -1,3 +1,4 @@
+import { flatDetailPath } from "@/lib/seo/countryPath";
 import { BedDouble, Building2, Castle, Home, Hotel, Landmark, Tent, Users } from "lucide-react";
 import type { StayType } from "./types";
 
@@ -77,3 +78,6 @@ export function bookingUrlError(platform: string, url: string): string | null {
     return `This doesn't look like a ${p.label} link`;
   return null;
 }
+
+/** /stays[/cc]/<slug>: non-India stays carry their country code (see lib/seo/countryPath). */
+export const stayPath = (s: { slug: string; countryCode?: string | null }) => flatDetailPath("/stays", s.slug, s.countryCode);

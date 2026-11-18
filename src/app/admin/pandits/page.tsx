@@ -173,7 +173,7 @@ function Detail({ item: p, onDone }: { item: AdminPanditItem; onDone: () => void
   const rows: [string, string][] = [
     ["Kind", `${SEGMENT_LABEL[p.segment]} · ${p.providerType === "TEAM" ? "Team" : "Individual"}`],
     ["Services", p.services.map(serviceLabel).join(", ")],
-    ["Fees", p.rateCard.map((r) => `${serviceLabel(r.service)}: ${formatInr(r.priceFrom)}`).join(" · ")],
+    ["Fees", p.rateCard.map((r) => `${serviceLabel(r.service)}: ${formatInr(r.priceFrom, p.countryCode)}`).join(" · ")],
     ["Languages", p.languages.map((l) => label(LANGUAGE_OPTIONS, l)).join(", ")],
     ["Traditions / modes", [...p.traditions.map((t) => label(TRADITION_OPTIONS, t)), ...p.consultModes.map((m) => label(CONSULT_MODE_OPTIONS, m))].join(", ")],
     ["Qualification", [p.qualification, p.gurukul].filter(Boolean).join(" — ")],

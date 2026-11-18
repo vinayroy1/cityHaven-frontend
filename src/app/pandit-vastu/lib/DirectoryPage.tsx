@@ -5,7 +5,8 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 import { DirectoryClient } from "@/components/pandit/public/DirectoryClient";
-import { ALL_SERVICE_OPTIONS, PANDIT_BASE, citySlug, panditName, panditProfilePath } from "@/features/pandit/options";
+import { ALL_SERVICE_OPTIONS, PANDIT_BASE, panditName, panditProfilePath } from "@/features/pandit/options";
+import { listingPath } from "@/lib/seo/countryPath";
 import type { PanditProfile } from "@/features/pandit/types";
 import { ListYourService } from "../ListYourService";
 
@@ -30,12 +31,26 @@ const faqs = (where: string) => [
   },
 ];
 
-export function DirectoryPage({ city, items, total, cities }: { city: string; items: PanditProfile[]; total: number; cities: { city: string; count: number }[] }) {
-  const where = city || "";
+export function DirectoryPage({
+  city,
+  locality,
+  country,
+  items,
+  total,
+  cities,
+}: {
+  city: string;
+  locality: string | null;
+  country: string | null;
+  items: PanditProfile[];
+  total: number;
+  cities: { city: string; count: number }[];
+}) {
+  const where = [locality, city].filter(Boolean).join(", ");
   const list = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: city ? `Pandits and vastu consultants in ${city}` : "Pandits and vastu consultants",
+    name: where ? `Pandits and vastu consultants in ${where}` : "Pandits and vastu consultants",
     itemListElement: items.slice(0, 20).map((p, i) => ({ "@type": "ListItem", position: i + 1, url: buildCanonical(panditProfilePath(p)), name: panditName(p) })),
   };
   const faq = {
@@ -43,7 +58,7 @@ export function DirectoryPage({ city, items, total, cities }: { city: string; it
     "@type": "FAQPage",
     mainEntity: faqs(where).map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
   };
-  const base = city ? `${PANDIT_BASE}/${citySlug(city)}` : PANDIT_BASE;
+  const base = listingPath(PANDIT_BASE, city, locality, country);
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       {items.length > 0 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(list) }} />}
@@ -54,14 +69,23 @@ export function DirectoryPage({ city, items, total, cities }: { city: string; it
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_10%,rgba(251,146,60,0.18),transparent_32%),radial-gradient(circle_at_10%_90%,rgba(244,63,94,0.10),transparent_30%)]" />
           <div className="relative mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-10">
             <div className="mb-3 hidden sm:block">
-              <PageBreadcrumbs items={city ? [{ label: "Pandit & Vastu", href: PANDIT_BASE }, { label: city }] : [{ label: "Pandit & Vastu" }]} renderJsonLd={true} />
+              <PageBreadcrumbs
+                items={
+                  !city
+                    ? [{ label: "Pandit & Vastu" }]
+                    : locality
+                      ? [{ label: "Pandit & Vastu", href: PANDIT_BASE }, { label: city, href: listingPath(PANDIT_BASE, city, null, country) }, { label: locality }]
+                      : [{ label: "Pandit & Vastu", href: PANDIT_BASE }, { label: city }]
+                }
+                renderJsonLd={true}
+              />
             </div>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-orange-600">
-              <Flame className="h-4 w-4" /> Puja & vastu{city ? ` in ${city}` : ""}
+              <Flame className="h-4 w-4" /> Puja & vastu{where ? ` in ${where}` : ""}
               <Compass className="h-4 w-4" />
             </div>
             <h1 className="mt-1 text-2xl font-black leading-tight tracking-tight text-slate-950 sm:text-4xl dark:text-white">
-              {city ? `Pandits & vastu consultants in ${city}` : <>Book a pandit ji or <span className="bg-gradient-to-r from-amber-500 to-rose-600 bg-clip-text text-transparent">vastu expert</span></>}
+              {where ? `Pandits & vastu consultants in ${where}` : <>Book a pandit ji or <span className="bg-gradient-to-r from-amber-500 to-rose-600 bg-clip-text text-transparent">vastu expert</span></>}
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base dark:text-slate-300">
               Griha pravesh, bhoomi pujan, katha, havan, sanskars and vastu checks. Compare dakshina, languages and reviews, then enquire for your date.
@@ -69,16 +93,16 @@ export function DirectoryPage({ city, items, total, cities }: { city: string; it
           </div>
         </section>
         <div className="mx-auto max-w-6xl space-y-10 px-4 py-6 sm:px-6 sm:py-10">
-          <DirectoryClient city={city} initialItems={items} initialTotal={total} cities={cities} />
+          <DirectoryClient city={city} locality={locality ?? ""} country={country} initialItems={items} initialTotal={total} cities={cities} />
 
           <section aria-labelledby="popular-title">
-            <h2 id="popular-title" className="text-lg font-bold text-slate-900 dark:text-white">Popular{city ? ` in ${city}` : ""}</h2>
+            <h2 id="popular-title" className="text-lg font-bold text-slate-900 dark:text-white">Popular{where ? ` in ${where}` : ""}</h2>
             <div className="mt-3 flex flex-wrap gap-2">
               {POPULAR.map((s) => {
                 const o = ALL_SERVICE_OPTIONS.find((x) => x.value === s)!;
                 return (
                   <Link key={s} href={`${base}?service=${s}`} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:border-amber-300 hover:text-amber-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-                    {o.icon} {o.label}{city ? ` in ${city}` : ""}
+                    {o.icon} {o.label}{where ? ` in ${where}` : ""}
                   </Link>
                 );
               })}

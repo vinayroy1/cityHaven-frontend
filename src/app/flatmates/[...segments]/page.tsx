@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
+import { flatmateSearchPath } from "@/features/flatmates/paths";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -40,7 +41,6 @@ import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { useGetFlatmateListingQuery } from "@/features/flatmates/api";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
-import { toSearchSlug } from "@/components/search/searchQuery";
 import { FlatmateDetailSkeleton } from "@/components/flatmates/FlatmateDetailSkeleton";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { WhatsAppShareButton } from "@/components/common/WhatsAppShareButton";
@@ -61,8 +61,9 @@ const normalizeR2Url = (url?: string | null): string => {
 };
 
 export default function FlatmateDetailPage() {
-  const params = useParams();
-  const slug = String(params?.slug || "");
+  const params = useParams<{ segments?: string[] }>();
+  // /flatmates/<slug> or /flatmates/<cc>/<slug> (non-India listings carry their country code).
+  const slug = String(params?.segments?.[params.segments.length - 1] || "");
   const { data: listing, isLoading, error } = useGetFlatmateListingQuery(slug, {
     skip: !slug,
   });
@@ -142,20 +143,18 @@ export default function FlatmateDetailPage() {
   const isBuddyUp = listing.mode === "BUDDY_UP";
   const displayName = profile?.displayName || (isBuddyUp ? "Buddy-Up Group" : "Room Seeker");
 
-  const citySlug = listing.cityName ? toSearchSlug(listing.cityName) : "";
   const localityName = preferredAreas[0] || listing.locality || "";
-  const localitySlug = localityName ? toSearchSlug(localityName) : "";
 
   const flatmateBreadcrumbs: BreadcrumbTrailItem[] = [
     {
       label: listing.cityName ? `Flatmates in ${listing.cityName}` : "Flatmates",
-      href: citySlug ? `/flatmate/${citySlug}` : "/flatmate",
+      href: flatmateSearchPath(listing.cityName, null, listing.countryCode),
     },
-    ...(localityName && citySlug
+    ...(localityName && listing.cityName
       ? [
           {
             label: localityName,
-            href: `/flatmate/${citySlug}/${localitySlug}`,
+            href: flatmateSearchPath(listing.cityName, localityName, listing.countryCode),
           },
         ]
       : []),

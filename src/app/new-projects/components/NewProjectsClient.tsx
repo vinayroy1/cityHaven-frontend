@@ -1,4 +1,5 @@
 "use client";
+import { formatMoneyShort } from "@/lib/money";
 
 import { CardTitleLink } from "@/components/common/CardTitleLink";
 import React, { useCallback, useMemo, useRef, useState, useEffect } from "react";
@@ -38,22 +39,24 @@ import {
 } from "./ProjectFilterSheet";
 import { getUserPreferredCity, detectUserLocation, setUserPreferredCity } from "@/lib/geo/geoService";
 import { useSearchProjectsQuery } from "@/features/projects/api";
+import { projectDetailPath, projectSearchPath } from "../lib/projectUrls";
+import { useCountryCode } from "@/lib/country/useCountry";
+import { getSelectedCountry } from "@/lib/country/countryStore";
+import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
+import { getCountry } from "@/config/countries";
 import type { ProjectListing, ProjectStatus } from "@/types/project.types";
-import { toSearchSlug } from "@/components/search/searchQuery";
 
 const PAGE_SIZE = 24;
 
-function formatPrice(value?: number) {
+// Cities in the picker belong to the site's selected country, so its prefix goes in the URL.
+const buildProjectSearchHref = (city: string, localities: string[] = []) =>
+  projectSearchPath(city, localities, getSelectedCountry());
+
+function formatPrice(value?: number, countryCode?: string | null) {
   if (!value) return "Price on request";
-  if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)} Cr`;
-  if (value >= 100000) return `₹${(value / 100000).toFixed(2)} L`;
-  return `₹${value.toLocaleString("en-IN")}`;
+  return formatMoneyShort(value, countryCode || "IN");
 }
 
-const buildProjectSearchHref = (city: string, localities: string[] = []) => {
-  const segments = [city, ...localities.slice(0, 2)].map(toSearchSlug).filter(Boolean);
-  return segments.length ? `/new-projects/${segments.join("/")}` : "/new-projects";
-};
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
@@ -93,7 +96,7 @@ function ProjectGridCard({
   });
 
   const projectImage = safeImages[activeImage] || safeImages[0] || CDN_ASSETS.placeholderWebp;
-  const projectHref = `/new-projects/${project.slug}`;
+  const projectHref = projectDetailPath(project);
 
   const openDetails = () => {
     if (isCardDragged()) return;
@@ -157,10 +160,12 @@ function ProjectGridCard({
 
         {/* Badges */}
         <div className="absolute left-2.5 top-2.5 z-10 flex flex-wrap gap-1.5 pointer-events-none sm:left-3 sm:top-3">
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/95 px-2 py-1 text-[9px] font-black text-emerald-700 shadow-sm backdrop-blur-md sm:px-2.5 sm:text-[10px]">
-            <ShieldCheck className="h-3 w-3 text-emerald-600 sm:h-3.5 sm:w-3.5" />
-            <span>RERA Verified</span>
-          </span>
+          {project.reraId && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/95 px-2 py-1 text-[9px] font-black text-emerald-700 shadow-sm backdrop-blur-md sm:px-2.5 sm:text-[10px]">
+              <ShieldCheck className="h-3 w-3 text-emerald-600 sm:h-3.5 sm:w-3.5" />
+              <span>RERA Verified</span>
+            </span>
+          )}
         </div>
 
         <div className="absolute right-2.5 top-2.5 z-10 pointer-events-none sm:right-3 sm:top-3">
@@ -172,7 +177,7 @@ function ProjectGridCard({
         <div className="absolute inset-x-2.5 bottom-2.5 z-10 flex items-end justify-between gap-2 pointer-events-none sm:inset-x-3 sm:bottom-3">
           <div className="rounded-xl bg-slate-950/85 px-3 py-1.5 text-white shadow-lg backdrop-blur-md">
             <p className="text-[8px] font-semibold uppercase tracking-wider text-slate-300">Starting from</p>
-            <p className="text-base font-black leading-tight sm:text-lg">{formatPrice(project.priceMin)}</p>
+            <p className="text-base font-black leading-tight sm:text-lg">{formatPrice(project.priceMin, project.countryCode)}</p>
           </div>
           {hasCarousel && (
             <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/80 px-2 py-1 text-[9px] font-bold text-white backdrop-blur-md">
@@ -232,7 +237,7 @@ function ProjectGridCard({
             </span>
             {project.priceMax && project.priceMin && project.priceMax > project.priceMin ? (
               <span className="mt-0.5 block truncate text-[10px] font-bold text-slate-700 dark:text-slate-300">
-                Up to {formatPrice(project.priceMax)}
+                Up to {formatPrice(project.priceMax, project.countryCode)}
               </span>
             ) : null}
           </div>
@@ -264,6 +269,8 @@ function ProjectGridCard({
 
 type NewProjectsClientProps = {
   initialCity?: string;
+  /** Country from the URL prefix (/new-projects/ae/...); null = India / not in URL. */
+  initialCountry?: string | null;
   initialLocalities?: string[];
   initialProjects?: ProjectListing[];
   initialTotal?: number;
@@ -271,6 +278,7 @@ type NewProjectsClientProps = {
 
 export function NewProjectsClient({
   initialCity = "",
+  initialCountry = null,
   initialLocalities = [],
   initialProjects = [],
   initialTotal,
@@ -401,11 +409,22 @@ export function NewProjectsClient({
   const [paging, setPaging] = useState({ key: filtersKey, page: 1 });
   const page = paging.key === filtersKey ? paging.page : 1;
 
-  const { data, isLoading, isFetching, isError, refetch } = useSearchProjectsQuery({ ...searchFilters, page });
+  // Same rule as property search: a chosen city decides the country; without one, show the portal country.
+  const portalCountry = useCountryCode();
+  // A city page shows the URL's country (unprefixed = India); with no city, the site's selected country.
+  const urlCountry = initialCountry ?? "IN";
+  const hasLocation = Boolean(searchFilters.city || searchFilters.locality);
+  const countryCode = hasLocation ? urlCountry : portalCountry;
+
+  useUrlCountry(initialCountry);
+  const { data, isLoading, isFetching, isError, refetch } = useSearchProjectsQuery({ ...searchFilters, countryCode, page });
   const projects = (data?.items && data.items.length > 0)
     ? data.items
     : (data?.items ? [] : (initialProjects.length > 0 ? initialProjects : []));
   const totalProjects = data?.total ?? initialTotal ?? projects.length;
+  // Same as property search: a city link from another country shows its projects and offers to switch the site.
+  const portal = getCountry(portalCountry);
+  const resultsCountry = hasLocation ? urlCountry : null;
   const hasMore = projects.length < totalProjects;
   // Pages already in the list decide the next one, so a list restored from cache continues correctly.
   const loadMore = useCallback(() => {
@@ -427,12 +446,11 @@ export function NewProjectsClient({
       { label: "New Projects", href: "/new-projects" },
     ];
     if (appliedCity) {
-      const citySlug = toSearchSlug(appliedCity);
       const locality = appliedLocalities[0];
       if (locality) {
         items.push({
           label: `Projects in ${appliedCity}`,
-          href: `/new-projects/${citySlug}`,
+          href: projectSearchPath(appliedCity, [], initialCountry),
         });
         items.push({
           label: locality,
@@ -444,7 +462,7 @@ export function NewProjectsClient({
       }
     }
     return items;
-  }, [appliedCity, appliedLocalities]);
+  }, [appliedCity, appliedLocalities, initialCountry]);
 
   return (
     <div className="pb-16 min-w-0">
@@ -464,7 +482,9 @@ export function NewProjectsClient({
                 New Projects & Townships
               </h1>
               <p className="mt-1.5 hidden text-sm text-slate-600 dark:text-slate-300 sm:block">
-                Browse government RERA-approved residential projects, luxury gated societies, and builder launches across India.
+                {portal.hasRera
+                  ? `Browse government RERA-approved residential projects, luxury gated societies, and builder launches across ${portal.name}.`
+                  : `Browse new residential projects, gated communities, and developer launches across ${portal.name}.`}
               </p>
             </div>
 
@@ -582,11 +602,12 @@ export function NewProjectsClient({
 
       {/* Results Section */}
       <div className="mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-6 lg:px-8">
+        <CountryResultsBanner countryCode={resultsCountry} what="projects" className="mb-3" />
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 sm:mb-4 sm:gap-3">
           <div className="flex items-center gap-2">
             <p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
               Showing <span className="text-rose-600 font-extrabold">{totalProjects}</span> Verified Projects
-              {appliedCity ? ` in ${appliedCity}` : " across India"}
+              {appliedCity ? ` in ${appliedCity}` : ` across ${portal.name}`}
             </p>
             {activeFilterCount > 0 && (
               <span className="rounded-full bg-rose-50 px-2.5 py-0.5 text-[10px] font-bold text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200/60 dark:border-rose-900/40">
@@ -773,7 +794,7 @@ export function NewProjectsClient({
             </div>
 
             <Link
-              href={`/new-projects/${contactModalProject.slug}`}
+              href={projectDetailPath(contactModalProject)}
               className="mt-4 block w-full text-center rounded-xl border border-slate-200 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               View Full Floor Plans & Pricing

@@ -8,7 +8,11 @@ import { PropertyListingCitySelector, type CitySelection } from "@/components/pr
 import { PropertyListingLocalitySelector, type LocalitySelection } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { cn } from "@/components/ui/utils";
 import { useLazySearchPanditsQuery } from "@/features/pandit/api";
-import { ALL_SERVICE_OPTIONS, LANGUAGE_OPTIONS, PANDIT_BASE, SERVICE_GROUPS, TRADITION_OPTIONS, citySlug } from "@/features/pandit/options";
+import { ALL_SERVICE_OPTIONS, LANGUAGE_OPTIONS, PANDIT_BASE, SERVICE_GROUPS, TRADITION_OPTIONS } from "@/features/pandit/options";
+import { listingPath } from "@/lib/seo/countryPath";
+import { getSelectedCountry } from "@/lib/country/countryStore";
+import { useCountryCode } from "@/lib/country/useCountry";
+import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
 import type { PanditProfile, PanditSegment, PanditSort } from "@/features/pandit/types";
 import { PanditCard } from "./PanditCard";
 
@@ -26,11 +30,17 @@ const readParam = (k: string) => (typeof window !== "undefined" ? new URLSearchP
 
 export function DirectoryClient({
   city,
+  locality,
+  country,
   initialItems,
   initialTotal,
   cities,
 }: {
   city: string;
+  /** Locality from the URL (/pandit-vastu/[cc/]city/locality); "" = whole city. */
+  locality: string;
+  /** Country from the URL prefix; null = India / no prefix. */
+  country: string | null;
   initialItems: PanditProfile[];
   initialTotal: number;
   cities: { city: string; count: number }[];
@@ -38,7 +48,8 @@ export function DirectoryClient({
   const router = useRouter();
   const [segment, setSegmentState] = React.useState<"" | PanditSegment>(() => (["PANDIT", "VASTU"].includes(readParam("segment")) ? (readParam("segment") as PanditSegment) : ""));
   const [service, setService] = React.useState(() => (ALL_SERVICE_OPTIONS.some((o) => o.value === readParam("service")) ? readParam("service") : ""));
-  const [locality, setLocality] = React.useState("");
+  const portalCountry = useCountryCode();
+  useUrlCountry(country);
   const [language, setLanguage] = React.useState("");
   const [tradition, setTradition] = React.useState("");
   const [online, setOnline] = React.useState(false);
@@ -57,8 +68,16 @@ export function DirectoryClient({
   const pickCity = (c: CitySelection) => {
     const next = c.name?.trim();
     if (!next || next.toLowerCase() === city.toLowerCase()) return;
+    router.push(`${listingPath(PANDIT_BASE, next, null, getSelectedCountry())}${urlQuery()}`);
+  };
+  // City and area live in the URL (same as projects / property search), so they can be shared and indexed.
+  const urlQuery = () => {
     const qs = new URLSearchParams({ ...(segment ? { segment } : {}), ...(service ? { service } : {}) }).toString();
-    router.push(`${PANDIT_BASE}/${citySlug(next)}${qs ? `?${qs}` : ""}`);
+    return qs ? `?${qs}` : "";
+  };
+  const setLocality = (next: string) => {
+    if (next.toLowerCase() === locality.toLowerCase()) return;
+    router.push(`${listingPath(PANDIT_BASE, city, next || null, country)}${urlQuery()}`);
   };
 
   // Keep the URL shareable (segment + service) without a navigation.
@@ -72,12 +91,15 @@ export function DirectoryClient({
   }, [segment, service]);
 
   const filters = { locality, segment, service, language, tradition, online, verified, sort, query };
-  const filtered = !!(locality || segment || service || language || tradition || online || verified || sort !== "relevance" || query);
-  const key = JSON.stringify({ city, ...filters });
-  const baseKey = JSON.stringify({ city, locality: "", segment: "", service: "", language: "", tradition: "", online: false, verified: false, sort: "relevance", query: "" });
+  // Without a city the server renders India's list; another site country loads its own.
+  const otherCountry = !city && portalCountry !== "IN";
+  const filtered = !!(otherCountry || segment || service || language || tradition || online || verified || sort !== "relevance" || query);
+  const key = JSON.stringify({ city, portalCountry: city ? "" : portalCountry, ...filters });
+  const baseKey = JSON.stringify({ city, portalCountry: city ? "" : "IN", locality, segment: "", service: "", language: "", tradition: "", online: false, verified: false, sort: "relevance", query: "" });
   const params = (page: number) => ({
     city: city || undefined,
     locality: (city && locality) || undefined,
+    countryCode: city ? undefined : portalCountry,
     segment: segment || undefined,
     service: service || undefined,
     language: language || undefined,
@@ -120,7 +142,7 @@ export function DirectoryClient({
   const clearAll = () => {
     setSegmentState("");
     setService("");
-    setLocality("");
+    if (locality) setLocality("");
     setLanguage("");
     setTradition("");
     setOnline(false);
@@ -272,7 +294,7 @@ export function DirectoryClient({
         })}
         {!city &&
           cities.slice(0, 6).map((c) => (
-            <Link key={c.city} href={`${PANDIT_BASE}/${citySlug(c.city)}`} className="shrink-0 whitespace-nowrap rounded-full border border-dashed border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-rose-300 hover:text-rose-600 dark:border-slate-700 dark:text-slate-300">
+            <Link key={c.city} href={listingPath(PANDIT_BASE, c.city)} className="shrink-0 whitespace-nowrap rounded-full border border-dashed border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-rose-300 hover:text-rose-600 dark:border-slate-700 dark:text-slate-300">
               {c.city} <span className="opacity-60">{c.count}</span>
             </Link>
           ))}
@@ -282,6 +304,8 @@ export function DirectoryClient({
           </Link>
         )}
       </div>
+
+      <CountryResultsBanner countryCode={city ? country ?? "IN" : null} what="pandits and vastu consultants" />
 
       <p className="text-sm font-semibold text-slate-700 dark:text-slate-300" aria-live="polite">
         {!view && isFetching ? "Loading…" : `${total} ${noun}${total === 1 ? "" : "s"}${city ? ` in ${locality ? `${locality}, ` : ""}${city}` : ""}`}

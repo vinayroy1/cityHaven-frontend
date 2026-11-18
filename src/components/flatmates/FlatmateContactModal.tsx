@@ -1,4 +1,5 @@
 "use client";
+import { flatmatePath } from "@/features/flatmates/paths";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -126,7 +127,7 @@ function FlatmateContactModalContent({
 
   const handleUnlock = async () => {
     if (!hasToken) {
-      const returnTo = `/flatmates/${listing.slug}`;
+      const returnTo = flatmatePath(listing);
       router.push(`/login?redirect=${encodeURIComponent(returnTo)}`);
       return;
     }
@@ -387,7 +388,7 @@ function FlatmateContactModalContent({
                   Cancel
                 </Button>
                 <Link
-                  href={`/login?redirect=${encodeURIComponent(`/flatmates/${listing.slug}`)}`}
+                  href={`/login?redirect=${encodeURIComponent(flatmatePath(listing))}`}
                   className="flex-1 h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md shadow-rose-200 dark:shadow-none flex items-center justify-center gap-1.5"
                 >
                   <LogIn className="w-4 h-4" />

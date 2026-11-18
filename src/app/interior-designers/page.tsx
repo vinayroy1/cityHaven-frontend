@@ -4,6 +4,8 @@ import { DirectoryClient } from "./DirectoryClient";
 import { fetchInteriorDirectory } from "./lib/server-data";
 import { breadcrumbJsonLd } from "./lib/breadcrumbs";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
+import { listingPath } from "@/lib/seo/countryPath";
+import { permanentRedirect } from "next/navigation";
 
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -14,9 +16,8 @@ function cityParam(raw: string | string[] | undefined): string | null {
   return v.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
-  const city = cityParam((await searchParams).city);
-  const where = city ?? "India";
+export async function generateMetadata(): Promise<Metadata> {
+  const where = "India";
   const title = `Best Interior Designers & Studios in ${where}`;
   const description = `Compare verified interior designers, architects and modular studios in ${where}. See real portfolios, material brands, per sq.ft. pricing and warranties, then get free quotes on Awasio.`;
   const url = buildCanonical("/interior-designers");
@@ -30,9 +31,12 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
 }
 
 export default async function InteriorDesignersDirectoryPage({ searchParams }: { searchParams: SearchParams }) {
-  const urlCity = cityParam((await searchParams).city);
-  // No city in the URL = every designer in India (no more Mumbai default).
-  const city = urlCity ?? "";
+  const sp = await searchParams;
+  // Old ?city= / ?locality= links move to the path URL (/interior-designers/mumbai/andheri).
+  const legacyCity = cityParam(sp.city);
+  if (legacyCity) permanentRedirect(listingPath("/interior-designers", legacyCity, cityParam(sp.locality)));
+  // No city = every designer in India; the client loads another site country's own list.
+  const city = "";
   const initialData = await fetchInteriorDirectory(city);
 
   const jsonLd = [
@@ -67,7 +71,6 @@ export default async function InteriorDesignersDirectoryPage({ searchParams }: {
         initialCity={city}
         initialState=""
         initialData={initialData}
-        cityFromUrl={!!urlCity}
       />
     </>
   );

@@ -27,6 +27,10 @@ import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
 import { LocationSearchInput } from "@/components/search/LocationSearchInput";
 import { useGetAdvisorsQuery } from "@/features/advisors/api";
 import { useRouter } from "next/navigation";
+import { agentPath, agentsListPath } from "@/features/advisors/paths";
+import { getSelectedCountry } from "@/lib/country/countryStore";
+import { useCountryCode } from "@/lib/country/useCountry";
+import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
 import { getUserPreferredCity, setUserPreferredCity } from "@/lib/geo/geoService";
 import { CompanyAvatar } from "@/components/construction/public/CompanyAvatar";
 
@@ -41,6 +45,10 @@ const SPECIALTIES = [
 
 interface AgentsDirectoryClientProps {
   initialCity?: string;
+  /** Area from the URL (/agents/<city>/<area>); "" = whole city. */
+  initialLocality?: string;
+  /** Country from the URL prefix (/agents/ae/dubai); null = India / no prefix. */
+  country?: string | null;
 }
 
 // Static agents carry text ("12 yrs"); backend advisors send `experienceYears`
@@ -54,13 +62,19 @@ const experienceYears = (agent: Agent): number =>
 
 const PAGE_SIZE = 50;
 
-export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClientProps) {
+export function AgentsDirectoryClient({ initialCity = "", initialLocality = "", country = null }: AgentsDirectoryClientProps) {
   const router = useRouter();
-  // The city lives in the URL (/agents?city=Patna) so refresh and back/forward keep it; the page
-  // remounts this component per city (key={initialCity}), so paging state below is per city.
+  const portalCountry = useCountryCode();
+  useUrlCountry(country);
+  // City and area live in the URL (/agents/patna/boring-road, same as every directory) so refresh and
+  // back/forward keep them; the page remounts this component per place, so paging below is per place.
   const [offset, setOffset] = useState(0);
   const { data: serverAgents = [], isFetching: loadingPage, isSuccess } = useGetAdvisorsQuery({
     city: initialCity || undefined,
+    locality: initialLocality || undefined,
+    // Without a city: the site's selected country; with one, the city decides.
+    countryCode: initialCity ? undefined : portalCountry,
+    strict: !!initialCity,
     limit: PAGE_SIZE,
     offset,
   });
@@ -71,20 +85,20 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
   React.useEffect(() => {
     if (initialCity) return;
     const preferred = getUserPreferredCity();
-    if (preferred) router.replace(`/agents?city=${encodeURIComponent(preferred)}`, { scroll: false });
+    if (preferred) router.replace(agentsListPath(preferred, null, getSelectedCountry()), { scroll: false });
   }, [initialCity, router]);
   // Draft state (user selections before pressing Search)
   const [cityDraft, setCityDraft] = useState(
     initialCity && initialCity !== "All Cities" ? initialCity : ""
   );
-  const [localitiesDraft, setLocalitiesDraft] = useState<string[]>([]);
+  const [localitiesDraft, setLocalitiesDraft] = useState<string[]>(initialLocality ? [initialLocality] : []);
   const [specialtyDraft, setSpecialtyDraft] = useState("All Specialties");
   const [queryDraft, setQueryDraft] = useState("");
   const [sortBy, setSortBy] = useState<"experience" | "tours">("experience");
 
   // Applied state (only updated on clicking dedicated Search button or Reset)
   const [appliedCity, setAppliedCity] = useState(cityDraft);
-  const [appliedLocalities, setAppliedLocalities] = useState<string[]>([]);
+  const [appliedLocalities, setAppliedLocalities] = useState<string[]>(initialLocality ? [initialLocality] : []);
   const [appliedSpecialty, setAppliedSpecialty] = useState("All Specialties");
   const [appliedQuery, setAppliedQuery] = useState("");
 
@@ -102,10 +116,13 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
   }, [serverAgents, isSuccess]);
 
   const handleSearch = () => {
-    if ((cityDraft || "") !== (initialCity || "")) {
-      // New city: fetch it from the API (not just filter the current page) and remember it.
+    const nextArea = localitiesDraft[0] || "";
+    const sameCity = (cityDraft || "").toLowerCase() === (initialCity || "").toLowerCase();
+    if (!sameCity || (cityDraft && nextArea.toLowerCase() !== initialLocality.toLowerCase())) {
+      // New city / area: load it from the API (not just filter the current page) and remember the city.
       setUserPreferredCity(cityDraft);
-      router.push(cityDraft ? `/agents?city=${encodeURIComponent(cityDraft)}` : "/agents", { scroll: false });
+      // Same city keeps the URL's country; a newly picked city is in the site's selected country.
+      router.push(agentsListPath(cityDraft || null, nextArea || null, sameCity ? country : getSelectedCountry()), { scroll: false });
     }
     setAppliedCity(cityDraft);
     setAppliedLocalities(localitiesDraft);
@@ -174,6 +191,7 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
     setAppliedLocalities([]);
     setAppliedSpecialty("All Specialties");
     setAppliedQuery("");
+    if (initialCity) router.push("/agents", { scroll: false });
   };
 
   const hasActiveFilters =
@@ -302,6 +320,7 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
 
       {/* Directory Results */}
       <main className="mx-auto max-w-6xl px-4 pt-2.5 pb-8 sm:py-8 sm:px-6">
+        <CountryResultsBanner countryCode={initialCity ? country ?? "IN" : null} what="advisors" className="mb-3" />
         <div className="mb-2.5 sm:mb-6 flex items-center justify-between text-xs sm:text-sm">
           <p className="font-semibold text-slate-700 dark:text-slate-300">
             Showing <span className="font-bold text-slate-950 dark:text-white">{filteredAgents.length}</span> verified advisors
@@ -386,7 +405,7 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
                         <Link
-                          href={`/agents/${agent.id}`}
+                          href={agentPath(agent)}
                           className="truncate text-sm sm:text-base font-bold text-slate-950 hover:text-rose-600 transition dark:text-white dark:hover:text-rose-400"
                         >
                           {agent.name}
@@ -488,7 +507,7 @@ export function AgentsDirectoryClient({ initialCity = "" }: AgentsDirectoryClien
                     )}
                   </div>
                   <Link
-                    href={`/agents/${agent.id}`}
+                    href={agentPath(agent)}
                     className="block text-center text-[10px] sm:text-xs font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 py-0.5"
                   >
                     View full advisor profile & listings →

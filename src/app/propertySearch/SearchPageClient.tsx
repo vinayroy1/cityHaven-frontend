@@ -39,6 +39,7 @@ import { getUserPreferredCity, detectUserLocation, setUserPreferredCity } from "
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { FlatmateListing } from "@/types/flatmate.types";
 import { setSelectedCountry, useCountry } from "@/lib/country/countryStore";
+import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
 import { getCountry } from "@/config/countries";
 
 type SearchPageClientProps = {
@@ -46,6 +47,8 @@ type SearchPageClientProps = {
   routeLocalities?: string[];
   routeIntent?: IntentKey;
   routeState?: string;
+  /** Country from the URL prefix (/buy/ae/dubai); null = India / no prefix. */
+  routeCountry?: string | null;
   initialItems?: (PropertySearchItem | FlatmateListing)[];
   initialTotal?: number;
 };
@@ -65,10 +68,12 @@ export function SearchPageClient({
   routeLocalities = [],
   routeIntent,
   routeState,
+  routeCountry = null,
   initialItems,
   initialTotal,
 }: SearchPageClientProps = {}) {
   const router = useRouter();
+  useUrlCountry(routeCountry);
   const searchParams = useSearchParams();
   const routeLocalitiesKey = routeLocalities.join("\u001f");
 
@@ -183,9 +188,11 @@ export function SearchPageClient({
     (next: SearchState) => {
       // Remember the city so other pages / the next visit open on it (not the default city).
       setUserPreferredCity(next.cityName);
-      router.push(buildSearchHref(next), { scroll: false });
+      // Same city keeps the URL's country (filter changes); a newly picked city is in the site's country.
+      const sameCity = !!next.cityName && next.cityName.toLowerCase() === (routeCity ?? "").toLowerCase();
+      router.push(buildSearchHref(next, sameCity ? routeCountry : undefined), { scroll: false });
     },
-    [router],
+    [router, routeCity, routeCountry],
   );
 
   const results = useSearchResults(state, initialItems, initialTotal);
@@ -393,21 +400,8 @@ export function SearchPageClient({
           </div>
         </div>
 
-        {/* City belongs to another country than the portal one: offer to switch the whole site. */}
-        {resultsCountry && resultsCountry.code !== portalCountry.code && (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-900 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-200">
-            <span>
-              {resultsCountry.flag} These listings are in {resultsCountry.name}. Prices are in {resultsCountry.currency}.
-            </span>
-            <button
-              type="button"
-              onClick={() => setSelectedCountry(resultsCountry.code, "manual")}
-              className="rounded-full bg-sky-600 px-3 py-1 font-semibold text-white hover:bg-sky-700"
-            >
-              Switch site to {resultsCountry.name}
-            </button>
-          </div>
-        )}
+        {/* City belongs to another country than the site's one: offer to switch the whole site. */}
+        <CountryResultsBanner countryCode={resultsCountry?.code} what="listings" className="mt-3" />
 
         <div className="mt-3 hidden empty:hidden sm:block">
           <AppliedChips state={state} onChange={commit} />

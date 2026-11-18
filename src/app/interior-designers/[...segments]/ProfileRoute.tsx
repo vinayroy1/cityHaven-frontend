@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
 import { buildCanonical } from "@/constants/seo";
 import type { InteriorProfile } from "@/types/interior.types";
-import { fetchInteriorProfile } from "../../lib/server-data";
-import { breadcrumbJsonLd, cityLabel } from "../../lib/breadcrumbs";
-import { profileName } from "../../components/profile/utils";
+import { breadcrumbJsonLd, cityLabel } from "../lib/breadcrumbs";
+import { listingPath } from "@/lib/seo/countryPath";
+import { profileName } from "../components/profile/utils";
 import { ProfilePageClient } from "./ProfilePageClient";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
-
-export const revalidate = 60;
-
-type Params = Promise<{ city: string; slug: string }>;
 
 const profilePath = (p: InteriorProfile, citySlug: string) => interiorProfilePath({ primaryCity: p.primaryCity || citySlug, slug: p.slug });
 
@@ -18,16 +14,7 @@ function clip(text: string, max = 158) {
   return clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;
 }
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const { city, slug } = await params;
-  const profile = await fetchInteriorProfile(slug);
-  if (!profile) {
-    return {
-      title: "Interior designer not found",
-      robots: { index: false, follow: true },
-      alternates: { canonical: buildCanonical(`/interior-designers/${city}/${slug}`) },
-    };
-  }
+export function profileMetadata(profile: InteriorProfile, city: string): Metadata {
   const name = profileName(profile);
   const cityName = profile.primaryCity || cityLabel(city);
   const title = `${name} – Interior Designer in ${cityName}`;
@@ -69,7 +56,7 @@ function businessJsonLd(p: InteriorProfile, url: string) {
       "@type": "PostalAddress",
       addressLocality: p.primaryLocality || p.primaryCity,
       addressRegion: p.primaryCity,
-      addressCountry: "IN",
+      addressCountry: p.countryCode || "IN",
     },
     areaServed: (p.serviceCities?.length ? p.serviceCities : [p.primaryCity]).filter(Boolean),
     ...(p.reviewCount > 0 && rating > 0
@@ -78,15 +65,12 @@ function businessJsonLd(p: InteriorProfile, url: string) {
   };
 }
 
-export default async function InteriorProfileDetailPage({ params }: { params: Params }) {
-  const { city, slug } = await params;
-  const profile = await fetchInteriorProfile(slug);
-
+export function InteriorProfileView({ profile, city, slug }: { profile: InteriorProfile; city: string; slug: string }) {
   const cityName = profile?.primaryCity || cityLabel(city);
   const trail = [
     { name: "Home", path: "/" },
     { name: "Interior designers", path: "/interior-designers" },
-    { name: cityName, path: `/interior-designers?city=${encodeURIComponent(cityName)}` },
+    { name: cityName, path: listingPath("/interior-designers", cityName, null, profile.countryCode) },
     ...(profile ? [{ name: profileName(profile), path: profilePath(profile, city) }] : []),
   ];
   const jsonLd: object[] = [breadcrumbJsonLd(trail)];

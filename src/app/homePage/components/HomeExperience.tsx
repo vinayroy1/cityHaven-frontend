@@ -1,4 +1,5 @@
 "use client";
+import { projectDetailPath } from "@/app/new-projects/lib/projectUrls";
 
 import React from "react";
 import Link from "next/link";
@@ -586,7 +587,7 @@ function FeaturedProjectCard({ project, priority = false }: { project: any; prio
   });
 
   const projectImage = safeImages[activeImage] || safeImages[0];
-  const projectHref = `/new-projects/${project.slug}`;
+  const projectHref = projectDetailPath(project);
 
   const openDetails = () => {
     if (isCardDragged()) return;

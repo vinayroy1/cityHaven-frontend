@@ -1,3 +1,4 @@
+import { projectDetailPath, projectSearchPath } from "@/app/new-projects/lib/projectUrls";
 /**
  * /sitemaps/{file}.xml -> Direct top-level access for Google Search Console
  * e.g. /sitemaps/uk.xml, /sitemaps/my.xml, etc.
@@ -5,7 +6,6 @@
 import { SITE_URL } from "@/constants/seo";
 import { getGuideCities, getGuideCityPage, guideCityKey } from "@/components/nearby/guideData";
 import { PREFIX_TO_COUNTRY } from "@/app/nearby/_views/prefix";
-import { toSearchSlug } from "@/components/search/searchQuery";
 import { getAllProjectsForSitemap, projectsForSitemap } from "@/lib/seo/projectSitemaps";
 
 export const dynamic = "force-dynamic";
@@ -58,10 +58,10 @@ async function projectSitemap(key: string): Promise<Response> {
   if (!projects || !projects.length) return new Response("Not found", { status: 404 });
 
   const now = new Date().toISOString();
-  const cities = [...new Set(projects.map((p) => toSearchSlug(p.cityName ?? "")).filter(Boolean))];
+  const cityPaths = [...new Set(projects.filter((p) => p.cityName).map((p) => projectSearchPath(p.cityName ?? "", [], p.countryCode)))];
   const rows = [
-    ...cities.map((c) => ({ loc: `${SITE_URL}/new-projects/${c}`, lastmod: now, freq: "daily", priority: "0.8" })),
-    ...projects.map((p) => ({ loc: `${SITE_URL}/new-projects/${p.slug}`, lastmod: p.updatedAt || now, freq: "weekly", priority: "0.7" })),
+    ...cityPaths.map((path) => ({ loc: `${SITE_URL}${path}`, lastmod: now, freq: "daily", priority: "0.8" })),
+    ...projects.map((p) => ({ loc: `${SITE_URL}${projectDetailPath(p)}`, lastmod: p.updatedAt || now, freq: "weekly", priority: "0.7" })),
   ];
   const body =
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +

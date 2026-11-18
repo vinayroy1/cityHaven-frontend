@@ -12,7 +12,7 @@ import { SearchableSelect } from "@/components/propertyListing/SearchableSelect"
 import { COUNTRY_LIST, getCountry } from "@/config/countries";
 import { useGetPresignedUploadUrlMutation } from "@/features/propertyListing/api";
 import { stayErrorMessage, useSaveStay } from "@/features/stays/api";
-import { BED_TYPES, BOOKING_PLATFORMS, FACILITIES, ROOM_FEATURES, STAY_TYPES, bookingUrlError } from "@/features/stays/options";
+import { BED_TYPES, BOOKING_PLATFORMS, FACILITIES, ROOM_FEATURES, STAY_TYPES, bookingUrlError, stayPath } from "@/features/stays/options";
 import type { Stay, StayInput, StayRoom } from "@/features/stays/types";
 import { getSelectedCountry } from "@/lib/country/countryStore";
 
@@ -431,7 +431,7 @@ export function StayEditor({
       if (!stay?.id && saved?.id) createdId.current = saved.id;
       toast.success(publish ? "Your stay is live 🎉" : "Draft saved");
       if (onSaved) onSaved(saved, publish);
-      else router.push(publish ? `/stays/${saved.slug}` : `/dashboard/stays`);
+      else router.push(publish ? stayPath(saved) : `/dashboard/stays`);
     } catch (e) {
       toast.error(stayErrorMessage(e));
     }
@@ -675,7 +675,7 @@ export function StayEditor({
             {problems.length ? `To publish: ${problems[0]}` : "Ready to publish ✓"}
           </p>
           {stay?.slug && (
-            <Link href={`/stays/${stay.slug}`} target="_blank" className="inline-flex h-11 items-center gap-1 rounded-2xl px-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
+            <Link href={stayPath(stay)} target="_blank" className="inline-flex h-11 items-center gap-1 rounded-2xl px-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
               <ExternalLink className="h-4 w-4" /> Preview
             </Link>
           )}

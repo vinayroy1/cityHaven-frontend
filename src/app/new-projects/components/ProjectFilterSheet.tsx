@@ -1,6 +1,9 @@
 "use client";
 
 import React from "react";
+import { getCountry } from "@/config/countries";
+import { useCountryCode } from "@/lib/country/useCountry";
+import { formatMoneyShort } from "@/lib/money";
 import { createPortal } from "react-dom";
 import { X, SlidersHorizontal, Check, RotateCcw, Loader2 } from "lucide-react";
 
@@ -22,25 +25,27 @@ export const STATUS_OPTIONS = [
 
 export const BHK_OPTIONS = ["All", "1 BHK", "2 BHK", "3 BHK", "4 BHK", "5+ BHK"];
 
-export const BUDGET_MIN_PRESETS = [
-  { label: "No Min", value: undefined },
-  { label: "₹50 L", value: 5000000 },
-  { label: "₹1 Cr", value: 10000000 },
-  { label: "₹1.5 Cr", value: 15000000 },
-  { label: "₹2 Cr", value: 20000000 },
-  { label: "₹3 Cr", value: 30000000 },
-  { label: "₹5 Cr", value: 50000000 },
-];
+type BudgetPreset = { label: string; value: number | undefined };
 
-export const BUDGET_MAX_PRESETS = [
-  { label: "No Max", value: undefined },
-  { label: "₹1 Cr", value: 10000000 },
-  { label: "₹1.5 Cr", value: 15000000 },
-  { label: "₹2 Cr", value: 20000000 },
-  { label: "₹3 Cr", value: 30000000 },
-  { label: "₹5 Cr", value: 50000000 },
-  { label: "₹10 Cr+", value: 100000000 },
-];
+// Steps in the portal country's currency: lakh/crore countries use India's steps, others use millions.
+function budgetPresets(countryCode: string): { min: BudgetPreset[]; max: BudgetPreset[] } {
+  const lakh = getCountry(countryCode).bigNumbers === "lakh";
+  const minSteps = lakh ? [5e6, 1e7, 1.5e7, 2e7, 3e7, 5e7] : [2.5e5, 5e5, 1e6, 2e6, 3e6, 5e6];
+  const maxSteps = lakh ? [1e7, 1.5e7, 2e7, 3e7, 5e7, 1e8] : [5e5, 1e6, 2e6, 3e6, 5e6, 1e7];
+  const label = (v: number) => formatMoneyShort(v, countryCode, { decimals: "trim" });
+  return {
+    min: [{ label: "No Min", value: undefined }, ...minSteps.map((v) => ({ label: label(v), value: v }))],
+    max: [
+      { label: "No Max", value: undefined },
+      ...maxSteps.map((v, i) => ({ label: i === maxSteps.length - 1 ? `${label(v)}+` : label(v), value: v })),
+    ],
+  };
+}
+
+function useBudgetPresets() {
+  const countryCode = useCountryCode();
+  return React.useMemo(() => budgetPresets(countryCode), [countryCode]);
+}
 
 interface ProjectFilterSheetProps {
   open: boolean;
@@ -59,6 +64,7 @@ export function ProjectFilterRail({
   onChange: (next: ProjectFilterState) => void;
   onReset: () => void;
 }) {
+  const budget = useBudgetPresets();
   const activeCount = Number(state.status !== "ALL") + Number(state.bhk !== "All") + Number(state.budgetMin !== undefined || state.budgetMax !== undefined) + Number(state.verifiedOnly) + Number(state.sortBy !== "featured");
 
   return (
@@ -73,8 +79,8 @@ export function ProjectFilterRail({
         <div>
           <FilterLabel>Budget Range</FilterLabel>
           <div className="grid grid-cols-2 gap-2">
-            <BudgetSelect label="Min" value={state.budgetMin} options={BUDGET_MIN_PRESETS} onChange={(budgetMin) => onChange({ ...state, budgetMin })} />
-            <BudgetSelect label="Max" value={state.budgetMax} options={BUDGET_MAX_PRESETS} onChange={(budgetMax) => onChange({ ...state, budgetMax })} />
+            <BudgetSelect label="Min" value={state.budgetMin} options={budget.min} onChange={(budgetMin) => onChange({ ...state, budgetMin })} />
+            <BudgetSelect label="Max" value={state.budgetMax} options={budget.max} onChange={(budgetMax) => onChange({ ...state, budgetMax })} />
           </div>
         </div>
         <FilterChoice label="Sort By" options={[{ label: "Featured", value: "featured" }, { label: "Price: Low to High", value: "price_asc" }, { label: "Price: High to Low", value: "price_desc" }]} value={state.sortBy} onChange={(sortBy) => onChange({ ...state, sortBy: sortBy as ProjectFilterState["sortBy"] })} />
@@ -106,6 +112,7 @@ export function ProjectFilterSheet({
   onApply,
   totalResultsCount,
 }: ProjectFilterSheetProps) {
+  const budget = useBudgetPresets();
   const [draft, setDraft] = React.useState<ProjectFilterState>(state);
   const [mounted, setMounted] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -287,7 +294,7 @@ export function ProjectFilterSheet({
                   }
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 focus:outline-none"
                 >
-                  {BUDGET_MIN_PRESETS.map((p) => (
+                  {budget.min.map((p) => (
                     <option key={p.label} value={p.value !== undefined ? String(p.value) : ""}>
                       {p.label}
                     </option>
@@ -307,7 +314,7 @@ export function ProjectFilterSheet({
                   }
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 focus:outline-none"
                 >
-                  {BUDGET_MAX_PRESETS.map((p) => (
+                  {budget.max.map((p) => (
                     <option key={p.label} value={p.value !== undefined ? String(p.value) : ""}>
                       {p.label}
                     </option>

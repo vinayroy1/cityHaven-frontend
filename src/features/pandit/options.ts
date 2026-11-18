@@ -1,4 +1,6 @@
 import type { ConsultMode, PanditLeadStatus, PanditSegment, ServiceKey } from "./types";
+import { cityDetailPath } from "@/lib/seo/countryPath";
+import { formatMoney } from "@/lib/money";
 
 export type ServiceOption = { value: ServiceKey; label: string; hint: string; icon: string; group: "home" | "sanskar" | "katha" | "dosh" | "other" | "vastu" };
 
@@ -117,11 +119,13 @@ export const label = (list: { value: string; label: string }[], v: string | null
 export const serviceLabel = (v: string | null | undefined) => label(ALL_SERVICE_OPTIONS, v);
 export const isVastuService = (v: string) => v.startsWith("VASTU_") && v !== "VASTU_SHANTI";
 
-export const formatInr = (n: number | null | undefined) => (n ? `₹${Math.round(n).toLocaleString("en-IN")}` : "");
+/** Fee in the profile's currency (₹ for India, the default). */
+export const formatInr = (n: number | null | undefined, countryCode?: string | null) => (n ? formatMoney(Math.round(n), countryCode || "IN") : "");
 
 export const panditName = (p: { honorific?: string | null; displayName: string }) =>
   p.honorific && !p.displayName.toLowerCase().startsWith(p.honorific.toLowerCase()) ? `${p.honorific} ${p.displayName}` : p.displayName;
 
 export const citySlug = (city: string) => city.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 export const PANDIT_BASE = "/pandit-vastu";
-export const panditProfilePath = (p: { slug: string; city: string }) => `${PANDIT_BASE}/${encodeURIComponent(citySlug(p.city || "india"))}/${p.slug}`;
+/** /pandit-vastu[/cc]/city/slug: non-India profiles carry their country code (see countryPath). */
+export const panditProfilePath = (p: { slug: string; city: string; countryCode?: string | null }) => cityDetailPath(PANDIT_BASE, p.city, p.slug, p.countryCode);

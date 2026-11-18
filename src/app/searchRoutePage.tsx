@@ -10,6 +10,7 @@ import {
   type IntentKey,
 } from "@/components/search/searchQuery";
 import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
+import { countrySegment, splitCountry } from "@/lib/seo/countryPath";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { FlatmateListing } from "@/types/flatmate.types";
@@ -51,8 +52,13 @@ function intentCopy(intent: IntentKey) {
   }
 }
 
+/** /buy[/cc]/city[/locality…]: the path without the intent, with the country prefix outside India. */
+const locationPath = (segments: string[], country: string | null) =>
+  [countrySegment(country), ...segments].filter(Boolean).join("/");
+
 export async function metadataForIntentSearch({ params }: IntentSearchRouteProps): Promise<Metadata> {
-  const { intent: intentSlug, segments = [] } = await params;
+  const { intent: intentSlug, segments: rawSegments = [] } = await params;
+  const { country, rest: segments } = splitCountry(rawSegments);
   const intent = intentFromSearchSlug(intentSlug);
   const location = parseLocation(segments);
   if (!intent || !location) return {};
@@ -100,7 +106,7 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
     intent === "FLATMATE"
       ? `Find rooms, flatmates and shared homes in ${locationLabel}. Compare rent, move-in dates and preferences, and contact people directly on Awasio.`
       : `${countLabel ? `Browse ${countLabel}` : "Browse "}${copy.label.toLowerCase()} in ${locationLabel}. Compare prices, photos, area and amenities, and contact owners, agents and builders directly on Awasio.`;
-  const canonicalPath = `/${SEARCH_INTENT_SLUGS[intent]}${segments.length ? `/${segments.join("/")}` : ""}`;
+  const canonicalPath = `/${SEARCH_INTENT_SLUGS[intent]}${segments.length ? `/${locationPath(segments, country)}` : ""}`;
   const canonicalUrl = buildCanonical(canonicalPath);
   const socialImage = OG_IMAGE_URL;
 
@@ -137,7 +143,9 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
 }
 
 export async function IntentSearchRoute({ params, searchParams }: IntentSearchRouteProps) {
-  const { intent: intentSlug, segments = [] } = await params;
+  const { intent: intentSlug, segments: rawSegments = [] } = await params;
+  // India has no country segment; other countries use their ISO code (/buy/ae/dubai/jvc).
+  const { country, rest: segments } = splitCountry(rawSegments);
   const query = await searchParams;
   const intent = intentFromSearchSlug(intentSlug);
   const location = parseLocation(segments);
@@ -146,18 +154,17 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
   const canonicalIntent = SEARCH_INTENT_SLUGS[intent];
   const citySlug = segments[0]?.toLowerCase();
   const canonicalCity = citySlug && CITY_ALIASES[citySlug];
+  // Keep the filters (`?priceMax=…&r.*=…`) when normalising the path.
+  const carried = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (Array.isArray(value)) value.forEach((entry) => carried.append(key, entry));
+    else if (value) carried.set(key, value);
+  }
+  const carriedQuery = carried.toString();
+  const redirectTo = (segs: string[], cc: string | null) =>
+    permanentRedirect(`/${canonicalIntent}${segs.length ? `/${locationPath(segs, cc)}` : ""}${carriedQuery ? `?${carriedQuery}` : ""}`);
   if (intentSlug !== canonicalIntent || canonicalCity) {
-    const normalized = canonicalCity ? [canonicalCity, ...segments.slice(1)] : segments;
-    // Keep the filters (`?priceMax=…&r.*=…`) when normalising the path.
-    const carried = new URLSearchParams();
-    for (const [key, value] of Object.entries(query)) {
-      if (Array.isArray(value)) value.forEach((entry) => carried.append(key, entry));
-      else if (value) carried.set(key, value);
-    }
-    const carriedQuery = carried.toString();
-    permanentRedirect(
-      `/${canonicalIntent}${normalized.length ? `/${normalized.join("/")}` : ""}${carriedQuery ? `?${carriedQuery}` : ""}`,
-    );
+    redirectTo(canonicalCity ? [canonicalCity, ...segments.slice(1)] : segments, country);
   }
 
   const hasLegacyLocationParams = ["city", "cityName", "locality", "localities", "loc", "intent"]
@@ -171,7 +178,7 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
     if (location.state) {
       for (const key of ["city", "cityName", "locality", "localities", "loc", "intent"]) urlParams.delete(key);
       const remaining = urlParams.toString();
-      permanentRedirect(`/${canonicalIntent}/state/${segments[1]}${remaining ? `?${remaining}` : ""}`);
+      permanentRedirect(`/${canonicalIntent}/${locationPath(["state", segments[1]], country)}${remaining ? `?${remaining}` : ""}`);
     }
     const normalizedState = parseSearchParams(urlParams);
     normalizedState.intent = intent;
@@ -179,7 +186,7 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
     if (location.localities.length > 0) {
       normalizedState.localities = location.localities.map((label) => ({ label, city: location.city }));
     }
-    permanentRedirect(buildSearchHref(normalizedState));
+    permanentRedirect(buildSearchHref(normalizedState, country));
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://awasio.com";
@@ -193,7 +200,7 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
       "@type": "ListItem",
       position: 3,
       name: location.city,
-      item: buildCanonical(`/${canonicalIntent}/${segments[0]}`),
+      item: buildCanonical(`/${canonicalIntent}/${locationPath([segments[0]], country)}`),
     });
   }
   if (location.localities?.[0] && segments[1]) {
@@ -201,7 +208,7 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
       "@type": "ListItem",
       position: 4,
       name: location.localities[0],
-      item: buildCanonical(`/${canonicalIntent}/${segments[0]}/${segments[1]}`),
+      item: buildCanonical(`/${canonicalIntent}/${locationPath([segments[0], segments[1]], country)}`),
     });
   }
 
@@ -273,6 +280,13 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
     // Outer fallback
   }
 
+  // The results decide the real country: an unprefixed Dubai page moves to /buy/ae/dubai, and a
+  // prefixed Indian city drops the prefix. Listings saved before countries existed count as India.
+  if (location.city && intent !== "FLATMATE" && initialItems.length) {
+    const actual = ((initialItems[0] as PropertySearchItem).countryCode || "IN").toUpperCase();
+    if (actual !== (country ?? "IN")) redirectTo(segments, actual);
+  }
+
   return (
     <>
       {lcpImage && (
@@ -292,6 +306,7 @@ export async function IntentSearchRoute({ params, searchParams }: IntentSearchRo
         routeCity={location.city}
         routeLocalities={location.localities}
         routeState={location.state}
+        routeCountry={country}
         initialItems={initialItems}
         initialTotal={initialTotal}
       />
