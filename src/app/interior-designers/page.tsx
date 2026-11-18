@@ -4,17 +4,7 @@ import { DirectoryClient } from "./DirectoryClient";
 import { fetchInteriorDirectory } from "./lib/server-data";
 import { breadcrumbJsonLd } from "./lib/breadcrumbs";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
-import { listingPath } from "@/lib/seo/countryPath";
-import { permanentRedirect } from "next/navigation";
 
-
-type SearchParams = Promise<Record<string, string | string[] | undefined>>;
-
-function cityParam(raw: string | string[] | undefined): string | null {
-  const v = (Array.isArray(raw) ? raw[0] : raw)?.trim();
-  if (!v || v.length > 60 || !/^[\p{L} .'-]+$/u.test(v)) return null;
-  return v.replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   const where = "India";
@@ -30,11 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function InteriorDesignersDirectoryPage({ searchParams }: { searchParams: SearchParams }) {
-  const sp = await searchParams;
-  // Old ?city= / ?locality= links move to the path URL (/interior-designers/mumbai/andheri).
-  const legacyCity = cityParam(sp.city);
-  if (legacyCity) permanentRedirect(listingPath("/interior-designers", legacyCity, cityParam(sp.locality)));
+// Old ?city= / ?locality= links are moved to the path URL by src/proxy.ts (a real 308), so this
+// page doesn't read the query string and stays cacheable (ISR + Cloudflare).
+export const revalidate = 60;
+
+export default async function InteriorDesignersDirectoryPage() {
   // No city = every designer in India; the client loads another site country's own list.
   const city = "";
   const initialData = await fetchInteriorDirectory(city);

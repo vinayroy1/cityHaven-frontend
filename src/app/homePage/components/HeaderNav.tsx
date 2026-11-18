@@ -781,7 +781,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white/90 px-3.5 py-1.5 text-xs font-bold text-slate-900 shadow-2xs backdrop-blur-sm transition-all duration-200 hover:border-slate-400 hover:bg-slate-50 hover:shadow-xs dark:border-slate-700 dark:bg-slate-900/90 dark:text-white dark:hover:border-slate-600 dark:hover:bg-slate-800"
             >
               <User className="h-3.5 w-3.5" />
-              <span>Login</span>
+              <span>Login<span className="hidden sm:inline"> / Sign up</span></span>
             </Link>
           )}
 

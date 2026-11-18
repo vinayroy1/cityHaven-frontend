@@ -9,6 +9,11 @@ import { getInitialPage, staysMetadata } from "../serverData";
 
 export const revalidate = 300;
 
+// Pages are rendered on first visit, then cached (ISR) — without this the route is fully dynamic.
+export function generateStaticParams() {
+  return [];
+}
+
 type Props = { params: Promise<{ segments: string[] }> };
 
 /**

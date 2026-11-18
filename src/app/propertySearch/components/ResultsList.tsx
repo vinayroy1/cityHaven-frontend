@@ -106,7 +106,9 @@ export function ResultsList({ results }: { results: SearchResults }) {
               {...toResultCardProps(item as PropertySearchItem)}
               compact
               priority={idx === 0}
-              deferImage={idx > 0}
+              // The first rows are on screen at once (desktop grid shows ~6): load them now; the
+              // rest wait for a scroll/tap, and the browser lazy-loads them as they come into view.
+              deferImage={idx > 5}
             />
           ),
         )}

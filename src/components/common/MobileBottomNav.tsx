@@ -46,6 +46,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 import { useGetMyCreditsQuery, useGetCreditPlatformConfigQuery } from "@/features/contactVerify/api";
 import { useMeQuery } from "@/features/auth/api";
+import { formatCredits, useSignupBonus } from "@/features/contactVerify/useSignupBonus";
 import { useGetLeadInboxSummaryQuery } from "@/features/leads/api";
 import dynamic from "next/dynamic";
 
@@ -133,6 +134,7 @@ export function MobileBottomNav() {
   const { data: leadSummary } = useGetLeadInboxSummaryQuery(undefined, { skip: !isAuthed });
   const newLeads = leadSummary?.total ?? 0;
   const { data: platformData } = useGetCreditPlatformConfigQuery();
+  const signupBonus = useSignupBonus();
   const purchaseEnabled = platformData?.data?.flags?.find((f) => f.key === "CREDIT_PURCHASES_ENABLED")?.isEnabled ?? false;
   const creditBalance = creditsData?.data?.credits ?? (userProfile as any)?.credits ?? 0;
 
@@ -510,7 +512,7 @@ export function MobileBottomNav() {
                         className="inline-flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-2 py-1 text-[11px] font-bold text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
                       >
                         <Zap className="h-3 w-3 fill-amber-500 text-amber-500" />
-                        <span>100 Credits</span>
+                        <span>{signupBonus > 0 ? `${formatCredits(signupBonus)} Free Credits` : "Credits"}</span>
                       </button>
                       <Link
                         href={`/login?redirect=${encodeURIComponent(pathname || "/")}`}
@@ -518,7 +520,7 @@ export function MobileBottomNav() {
                         className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-3 py-1 text-xs font-bold text-white shadow-sm hover:bg-rose-700 transition"
                       >
                         <User className="h-3.5 w-3.5" />
-                        <span>Login</span>
+                        <span>Login / Sign up</span>
                       </Link>
                     </div>
                   </div>

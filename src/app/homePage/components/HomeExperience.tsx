@@ -40,6 +40,7 @@ import { getCountry } from "@/config/countries";
 
 const portalCountryName = () => getCountry(typeof document !== "undefined" ? getSelectedCountry() : "IN").name;
 import { formatMoney, formatMoneyShort } from "@/lib/money";
+import { SignupBonusLine } from "./SignupBonusLine";
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
@@ -347,6 +348,7 @@ export function HomeExperience({
           <p className="hidden sm:block mx-auto mt-1 sm:mt-2 max-w-xl text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             Verified rental homes, apartments, and commercial spaces across {country.name}.
           </p>
+          <SignupBonusLine />
 
           {/* Centered Elevated Search Bar */}
           <div className="relative z-20 mt-2.5 w-full rounded-2xl border border-slate-200/90 bg-white/95 p-2 text-left shadow-[0_16px_40px_-15px_rgba(15,23,42,0.1)] backdrop-blur-md transition sm:mt-6 sm:p-5 dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-[0_16px_40px_-15px_rgba(0,0,0,0.5)]">

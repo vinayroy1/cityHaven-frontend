@@ -11,6 +11,11 @@ import { flatmateSearchPath } from "@/features/flatmates/paths";
 
 export const revalidate = 60;
 
+// Pages are rendered on first visit, then cached (ISR) — without this the route is fully dynamic.
+export function generateStaticParams() {
+  return [];
+}
+
 type Props = { params: Promise<{ segments?: string[] }> };
 
 const CITY_ALIASES: Record<string, string> = { bangalore: "bengaluru", delhi: "new-delhi", gurgaon: "gurugram" };

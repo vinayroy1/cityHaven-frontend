@@ -115,7 +115,7 @@ export function WelcomeCreditModal() {
 
   const currentRedirect =
     returnUrl || (typeof window !== "undefined" ? window.location.pathname + window.location.search : "/");
-  const loginHref = `/login?redirect=${encodeURIComponent(currentRedirect)}`;
+  const loginHref = `/login?mode=signup&redirect=${encodeURIComponent(currentRedirect)}`;
 
   const modalPortal = isOpen ? (
     <div

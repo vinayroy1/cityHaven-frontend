@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { permanentRedirect } from "next/navigation";
-import { agentsListPath } from "@/features/advisors/paths";
 import { AgentsDirectoryView } from "./components/AgentsDirectoryView";
 import { fetchAdvisors } from "./lib/server-data";
 
@@ -47,17 +45,11 @@ export const metadata: Metadata = {
   },
 };
 
-const one = (v?: string | string[]) => (Array.isArray(v) ? v[0] : v)?.trim().slice(0, 80) || "";
+// Old ?city= / ?locality= links are moved to the path URL by src/proxy.ts (a real 308), so this
+// page doesn't read the query string and stays cacheable (ISR + Cloudflare).
+export const revalidate = 120;
 
-export default async function AgentsDirectoryPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const sp = await searchParams;
-  // Old /agents?city=Patna links move to the path URL (/agents/patna).
-  const city = one(sp.city);
-  if (city && city !== "All Cities") permanentRedirect(agentsListPath(city, one(sp.locality) || null));
+export default async function AgentsDirectoryPage() {
   const agents = await fetchAdvisors({ countryCode: "IN" });
   return <AgentsDirectoryView agents={agents} />;
 }

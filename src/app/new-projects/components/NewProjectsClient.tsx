@@ -649,6 +649,8 @@ export function NewProjectsClient({
             ))}
             {hasMore && (
               <div ref={sentinelRef} className="col-span-full flex flex-col items-center gap-2 py-4">
+                {/* Spinner and button share one fixed-height slot so swapping them never moves the page. */}
+                <div className="flex h-11 items-center justify-center">
                 {isFetching ? (
                   <Loader2 className="h-6 w-6 animate-spin text-rose-600" aria-label="Loading more projects" />
                 ) : (
@@ -660,6 +662,7 @@ export function NewProjectsClient({
                     Show more projects
                   </button>
                 )}
+                </div>
                 <p className="text-xs text-slate-500">
                   Showing {projects.length} of {totalProjects}
                 </p>

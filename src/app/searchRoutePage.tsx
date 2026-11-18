@@ -3,10 +3,8 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { SearchPageClient } from "@/app/propertySearch/SearchPageClient";
 import {
   SEARCH_INTENT_SLUGS,
-  buildSearchHref,
   fromSearchSlug,
   intentFromSearchSlug,
-  parseSearchParams,
   type IntentKey,
 } from "@/components/search/searchQuery";
 import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
@@ -15,15 +13,15 @@ import { toInternalApiUrl } from "@/lib/api/internalApi";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { FlatmateListing } from "@/types/flatmate.types";
 import { toResultCardProps } from "@/app/propertySearch/components/propertyCardAdapter";
+import { searchRedirect } from "@/app/propertySearch/searchRedirect";
 
 export type IntentSearchRouteProps = {
   params: Promise<{ intent: string; segments?: string[] }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 const API_BASE = rawApiUrl.replace(/\/api$/, "");
-const CITY_ALIASES: Record<string, string> = { bangalore: "bengaluru", delhi: "new-delhi", gurgaon: "gurugram" };
 const searchSsrCache = new Map<string, { items: (PropertySearchItem | FlatmateListing)[]; total: number; timestamp: number }>();
 
 type RouteLocation = { state?: string; city?: string; localities: string[] };
@@ -142,52 +140,21 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
   };
 }
 
-export async function IntentSearchRoute({ params, searchParams }: IntentSearchRouteProps) {
+export async function IntentSearchRoute({ params }: IntentSearchRouteProps) {
   const { intent: intentSlug, segments: rawSegments = [] } = await params;
   // India has no country segment; other countries use their ISO code (/buy/ae/dubai/jvc).
   const { country, rest: segments } = splitCountry(rawSegments);
-  const query = await searchParams;
   const intent = intentFromSearchSlug(intentSlug);
   const location = parseLocation(segments);
   if (!intent || !location) notFound();
 
   const canonicalIntent = SEARCH_INTENT_SLUGS[intent];
-  const citySlug = segments[0]?.toLowerCase();
-  const canonicalCity = citySlug && CITY_ALIASES[citySlug];
-  // Keep the filters (`?priceMax=…&r.*=…`) when normalising the path.
-  const carried = new URLSearchParams();
-  for (const [key, value] of Object.entries(query)) {
-    if (Array.isArray(value)) value.forEach((entry) => carried.append(key, entry));
-    else if (value) carried.set(key, value);
-  }
-  const carriedQuery = carried.toString();
+  // Old ?city= links and filtered URLs are normalised by src/proxy.ts (it sees the query string);
+  // here only the path is checked, so the page never reads searchParams and stays cacheable.
+  const moveTo = searchRedirect(intentSlug, rawSegments, new URLSearchParams());
+  if (moveTo) permanentRedirect(moveTo);
   const redirectTo = (segs: string[], cc: string | null) =>
-    permanentRedirect(`/${canonicalIntent}${segs.length ? `/${locationPath(segs, cc)}` : ""}${carriedQuery ? `?${carriedQuery}` : ""}`);
-  if (intentSlug !== canonicalIntent || canonicalCity) {
-    redirectTo(canonicalCity ? [canonicalCity, ...segments.slice(1)] : segments, country);
-  }
-
-  const hasLegacyLocationParams = ["city", "cityName", "locality", "localities", "loc", "intent"]
-    .some((key) => query[key] !== undefined);
-  if (hasLegacyLocationParams) {
-    const urlParams = new URLSearchParams();
-    for (const [key, value] of Object.entries(query)) {
-      if (Array.isArray(value)) value.forEach((entry) => urlParams.append(key, entry));
-      else if (value) urlParams.set(key, value);
-    }
-    if (location.state) {
-      for (const key of ["city", "cityName", "locality", "localities", "loc", "intent"]) urlParams.delete(key);
-      const remaining = urlParams.toString();
-      permanentRedirect(`/${canonicalIntent}/${locationPath(["state", segments[1]], country)}${remaining ? `?${remaining}` : ""}`);
-    }
-    const normalizedState = parseSearchParams(urlParams);
-    normalizedState.intent = intent;
-    if (location.city) normalizedState.cityName = location.city;
-    if (location.localities.length > 0) {
-      normalizedState.localities = location.localities.map((label) => ({ label, city: location.city }));
-    }
-    permanentRedirect(buildSearchHref(normalizedState, country));
-  }
+    permanentRedirect(`/${canonicalIntent}${segs.length ? `/${locationPath(segs, cc)}` : ""}`);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://awasio.com";
   const copy = intentCopy(intent);

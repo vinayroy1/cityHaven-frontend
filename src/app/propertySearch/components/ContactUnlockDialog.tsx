@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import type { ContactPlan, ContactStep } from "./resultCardTypes";
 import { useModalBackHandler } from "@/lib/navigation/useModalBackHandler";
 import { displayMobile, intlMobile } from "@/lib/money";
+import { formatCredits, useSignupBonus } from "@/features/contactVerify/useSignupBonus";
 
 type OwnerContact = { name: string | null; phone: string | null } | null;
 
@@ -297,8 +298,9 @@ export function LeadDetailsStep(props: {
     ? `/login?redirect=${encodeURIComponent(props.returnUrl)}`
     : `/login`;
   const registerRedirectUrl = props.returnUrl
-    ? `/auth/register?redirect=${encodeURIComponent(props.returnUrl)}`
-    : `/auth/register`;
+    ? `/login?mode=signup&redirect=${encodeURIComponent(props.returnUrl)}`
+    : `/login?mode=signup`;
+  const signupBonus = useSignupBonus();
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -391,7 +393,7 @@ export function LeadDetailsStep(props: {
       <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs text-zinc-500 pt-2 border-t border-zinc-100">
         <span>Don&apos;t have an account?</span>
         <Link href={registerRedirectUrl} className="font-bold text-rose-600 hover:underline">
-          Register now (Free 100 Credits)
+          {signupBonus > 0 ? `Sign up free (${formatCredits(signupBonus)} credits)` : "Sign up free"}
         </Link>
       </div>
     </form>
