@@ -151,8 +151,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: { absolute: title },
       description,
       alternates: { canonical },
+      // Thin pages (no projects yet) stay out of the index until they have listings.
       robots: {
-        index: true,
+        index: count > 0,
         follow: true,
       },
       openGraph: { title, description, url: canonical, type: "website", images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }] },
@@ -272,11 +273,9 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
 
   const { items: initialProjects, total: initialTotal, ok, moveTo } = await loadLocation(country, city, localities);
   if (moveTo) permanentRedirect(moveTo);
-  // Not a project and no projects in this "city": a made-up URL (e.g. /new-projects/anything).
-  // Return a real 404 so crawlers don't index endless junk pages. If the API failed, throw instead,
-  // so a backend blip is never cached as a 404 (errors are not cached; the last good page stays).
+  // If the API failed, throw so a backend blip is never cached as an empty page (the last good page stays).
+  // An empty city / area still renders (empty state, noindex), same as every other directory.
   if (!ok) throw new Error("projects API unavailable");
-  if (initialTotal === 0) notFound();
   const firstProject = initialProjects[0];
   // Must match the first card's src in NewProjectsClient (same resized rendition).
   const lcpImage = firstProject?.images?.[0] ? sizedImageUrl(normalizeR2Url(firstProject.images[0]), 640) : null;
