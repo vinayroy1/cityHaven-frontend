@@ -41,6 +41,7 @@ import { getCountry } from "@/config/countries";
 const portalCountryName = () => getCountry(typeof document !== "undefined" ? getSelectedCountry() : "IN").name;
 import { formatMoney, formatMoneyShort } from "@/lib/money";
 import { SignupBonusLine } from "./SignupBonusLine";
+import { HomeServicesRow } from "./HomeServicesRow";
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
@@ -364,6 +365,7 @@ export function HomeExperience({
               onSubmit={submit}
             />
           </div>
+          <HomeServicesRow />
         </div>
       </section>
 

@@ -17,6 +17,9 @@ const MOBILE_PLACEHOLDER: Record<string, string> = {
 };
 import dynamic from "next/dynamic";
 import { primaryButton } from "./theme";
+import Link from "next/link";
+import { projectSearchPath } from "@/app/new-projects/lib/projectUrls";
+import { getSelectedCountry } from "@/lib/country/countryStore";
 
 import { resolveSearchQueryToState } from "@/lib/search/intentParser";
 const HotelHeroSearch = dynamic(
@@ -35,6 +38,18 @@ type Props = {
   compact?: boolean;
   onBack?: () => void;
 };
+
+/**
+ * Tab order: Buy, New Projects, Rent, PG, Flatmate, Hotels, Commercial, Plot. New Projects is a link
+ * to its own pages (keeping the picked city / area); Hotels is the home page's extra tab.
+ */
+const tabOrder = (intent: (typeof INTENT_KEYS)[number]) => {
+  const i = INTENT_KEYS.indexOf(intent);
+  return i * 2 + (i >= 4 ? 2 : 0);
+};
+const HOTELS_ORDER = 8;
+const projectsHref = (s: SearchState) =>
+  projectSearchPath(s.cityName || undefined, (s.localities ?? []).map((l) => l.label), getSelectedCountry());
 
 /** Extra tab outside the property intents (home "Hotels" tab) that swaps in its own search form. */
 type ExtraTab = { label: string; active: boolean; onSelect: () => void; onLeave: () => void; content: React.ReactNode };
@@ -79,7 +94,7 @@ export function SearchEditor({ variant, value, onSubmit, onContextChange, showSu
               extraTab?.onLeave();
               changeContext(intent === draft.intent ? draft : clearAllFilters({ ...draft, intent, transaction: "SELL" }));
             }}
-            style={{ order: INTENT_KEYS.indexOf(intent) < 4 ? INTENT_KEYS.indexOf(intent) : INTENT_KEYS.indexOf(intent) + 1 }}
+            style={{ order: tabOrder(intent) }}
             className={`shrink-0 border-b-2 pb-3 text-sm font-bold transition ${
               !extraTab?.active && draft.intent === intent
                 ? "border-rose-600 text-rose-600 dark:text-rose-400 dark:border-rose-400"
@@ -89,12 +104,20 @@ export function SearchEditor({ variant, value, onSubmit, onContextChange, showSu
             {INTENT_CONFIG[intent].label}
           </button>
         ))}
+        <Link
+          href={projectsHref(draft)}
+          prefetch={false}
+          style={{ order: 1 }}
+          className="shrink-0 border-b-2 border-transparent pb-3 text-sm font-bold text-zinc-500 transition hover:text-zinc-900 dark:text-slate-400 dark:hover:text-white"
+        >
+          New Projects
+        </Link>
         {extraTab && (
           <button
             type="button"
             aria-pressed={extraTab.active}
             onClick={extraTab.onSelect}
-            style={{ order: 4 }}
+            style={{ order: HOTELS_ORDER }}
             className={`inline-flex shrink-0 items-center gap-1.5 border-b-2 pb-3 text-sm font-bold transition ${
               extraTab.active
                 ? "border-rose-600 text-rose-600 dark:border-rose-400 dark:text-rose-400"
@@ -258,7 +281,7 @@ export function SearchBar({
                   setHotelMode(false);
                   onChange(intent === value.intent ? value : clearAllFilters({ ...value, intent, transaction: "SELL" }));
                 }}
-                style={{ order: INTENT_KEYS.indexOf(intent) < 4 ? INTENT_KEYS.indexOf(intent) : INTENT_KEYS.indexOf(intent) + 1 }}
+                style={{ order: tabOrder(intent) }}
                 className={`shrink-0 border-b-2 px-1 pb-2 text-xs font-bold transition ${
                   !hotelMode && value.intent === intent
                     ? "border-rose-600 text-rose-600 dark:border-rose-400 dark:text-rose-400"
@@ -275,11 +298,20 @@ export function SearchBar({
                 )}
               </button>
             ))}
+            <Link
+              href={projectsHref(value)}
+              prefetch={false}
+              style={{ order: 1 }}
+              className="shrink-0 border-b-2 border-transparent px-1 pb-2 text-xs font-bold text-slate-400 transition dark:text-slate-500"
+            >
+              <span className="min-[400px]:hidden">Projects</span>
+              <span className="hidden min-[400px]:inline">New Projects</span>
+            </Link>
             <button
               type="button"
               aria-pressed={hotelMode}
               onClick={() => setHotelMode(true)}
-              style={{ order: 4 }}
+              style={{ order: HOTELS_ORDER }}
               className={`inline-flex shrink-0 items-center gap-1 border-b-2 px-1 pb-2 text-xs font-bold transition ${
                 hotelMode ? "border-rose-600 text-rose-600 dark:border-rose-400 dark:text-rose-400" : "border-transparent text-slate-400 dark:text-slate-500"
               }`}
