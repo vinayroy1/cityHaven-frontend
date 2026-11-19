@@ -34,6 +34,8 @@ interface Props {
   values?: string[];
   onValuesChange?: (values: string[]) => void;
   maxSelections?: number;
+  /** Open the list from the right edge, wider than the box (for a narrow right-hand column on phones). */
+  menuAlignEnd?: boolean;
 }
 
 export function PropertyListingLocalitySelector({
@@ -48,6 +50,7 @@ export function PropertyListingLocalitySelector({
   values = [],
   onValuesChange,
   maxSelections = 5,
+  menuAlignEnd = false,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -473,7 +476,7 @@ export function PropertyListingLocalitySelector({
       {/* Dropdown Panel */}
       {isOpen && isCitySelected && (
         <div
-          className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl transition-all dark:border-slate-700 dark:bg-slate-900"
+          className={`absolute top-[calc(100%+6px)] z-50 ${menuAlignEnd ? "right-0 w-[min(20rem,calc(100vw-2rem))] sm:left-0 sm:w-auto" : "left-0 right-0"} max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl transition-all dark:border-slate-700 dark:bg-slate-900`}
           onScroll={(e) => {
             const el = e.currentTarget;
             if (el.scrollHeight - el.scrollTop - el.clientHeight <= 48) {

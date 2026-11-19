@@ -212,7 +212,7 @@ export function DirectoryClient({
           {/* Always shown so visitors know they can search by area; disabled until a city is picked. */}
           <div className="min-w-0">
             {city ? (
-              <PropertyListingLocalitySelector key={`${city}|${locality}`} value={locality} cityName={city} placeholder="Any area" onChange={(l: LocalitySelection) => setLocality(l.name || "")} />
+              <PropertyListingLocalitySelector key={`${city}|${locality}`} value={locality} cityName={city} placeholder="Any area" menuAlignEnd onChange={(l: LocalitySelection) => setLocality(l.name || "")} />
             ) : (
               <div aria-disabled="true" title="Select a city first" className="flex h-11 cursor-not-allowed items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-400 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-500">
                 <MapPin className="h-4 w-4 shrink-0" />

@@ -84,10 +84,10 @@ export function DirectoryPage({
               <Flame className="h-4 w-4" /> Puja & vastu{where ? ` in ${where}` : ""}
               <Compass className="h-4 w-4" />
             </div>
-            <h1 className="mt-1 text-2xl font-black leading-tight tracking-tight text-slate-950 sm:text-4xl dark:text-white">
+            <h1 className="mt-1 text-xl font-black leading-tight tracking-tight text-slate-950 sm:text-4xl dark:text-white">
               {where ? `Pandits & vastu consultants in ${where}` : <>Book a pandit ji or <span className="bg-gradient-to-r from-amber-500 to-rose-600 bg-clip-text text-transparent">vastu expert</span></>}
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base dark:text-slate-300">
+            <p className="mt-2 hidden max-w-2xl text-sm text-slate-600 sm:block sm:text-base dark:text-slate-300">
               Griha pravesh, bhoomi pujan, katha, havan, sanskars and vastu checks. Compare dakshina, languages and reviews, then enquire for your date.
             </p>
           </div>
