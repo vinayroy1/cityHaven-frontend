@@ -56,7 +56,7 @@ export function ConstructionCard({
         : { k: "Infrastructure", v: "Govt & private works" }
     : { k: p.quoteOnly ? "Pricing" : "Starting from", v: p.quoteOnly || !p.startingRate ? "Price on request" : formatRate(p.startingRate, p.countryCode) };
   return (
-    <article className="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
       <Link
         href={href}
         className="relative block aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-800 to-slate-950"

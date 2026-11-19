@@ -6,6 +6,8 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight, HardHat, Landmark } from "lucide-react";
 import { useSearchConstructionQuery } from "@/features/construction/api";
+import { getCountry } from "@/config/countries";
+import { useCountryCode } from "@/lib/country/useCountry";
 import { citySlug } from "@/features/construction/options";
 import { ConstructionCard } from "@/components/construction/public/ConstructionCard";
 import { ViewAllCard } from "./ViewAllCard";
@@ -29,7 +31,7 @@ function useIdle(timeoutMs = 1200) {
 
 function CardSkeleton() {
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900" aria-hidden>
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900" aria-hidden>
       <div className="aspect-[16/10] animate-pulse bg-slate-200 dark:bg-slate-800" />
       <div className="space-y-2 p-4">
         <div className="h-4 w-2/3 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
@@ -61,11 +63,14 @@ export default function HomeBuildersSection({ selectedCity }: { selectedCity: st
   const isLoading = cityQuery.isLoading || (hasFewCityItems && fallbackQuery.isLoading);
 
   const items = data?.items ?? [];
+  const countryName = getCountry(useCountryCode()).name;
   if (!isLoading && items.length < MIN_ITEMS) return null;
 
   const base = "/construction-companies";
-  const viewAllHref = city ? `${base}/${citySlug(city)}` : base;
-  const infraHref = `${city ? `${base}/${citySlug(city)}` : base}?segment=INFRA`;
+  // Showing other cities' builders (too few in this city): link to all builders, not the near-empty city page.
+  const scoped = Boolean(city) && !isFallback;
+  const viewAllHref = scoped ? `${base}/${citySlug(city)}` : base;
+  const infraHref = `${scoped ? `${base}/${citySlug(city)}` : base}?segment=INFRA`;
   const scrollBy = (dir: 1 | -1) => {
     const el = scrollerRef.current;
     if (el) el.scrollBy({ left: dir * el.clientWidth * 0.9, behavior: "smooth" });
@@ -81,10 +86,16 @@ export default function HomeBuildersSection({ selectedCity }: { selectedCity: st
             <span>Build your home</span>
           </div>
           <h2 id="home-builders-heading" className="mt-1 text-xl font-bold tracking-tight text-slate-950 sm:text-2xl dark:text-white">
-            {city ? `House construction companies in ${city}` : "House construction companies near you"}
+            {scoped
+              ? `House construction companies in ${city}`
+              : isFallback
+                ? `Top house construction companies across ${countryName}`
+                : "House construction companies near you"}
           </h2>
-          <p className="mt-0.5 hidden text-sm text-slate-500 sm:block dark:text-slate-400">
-            Compare rates per sq.ft, completed homes and warranties. Free quotes.
+          <p className="mt-0.5 text-xs text-slate-500 sm:text-sm dark:text-slate-400">
+            {isFallback
+              ? `No builders listed in ${city} yet. Showing top builders across ${countryName}.`
+              : <span className="hidden sm:inline">Compare rates per sq.ft, completed homes and warranties. Free quotes.</span>}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
