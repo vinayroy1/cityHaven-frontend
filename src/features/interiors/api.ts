@@ -1,5 +1,6 @@
 "use client";
 
+import { withCdnImages } from "@/config/cdn";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { baseQueryWithReauth } from "@/lib/api/baseQueryWithReauth";
@@ -125,7 +126,7 @@ export const interiorsApi = createApi({
           method: "GET",
         };
       },
-      transformResponse: (response: ApiEnvelope<InteriorSearchResponse>) => response.data,
+      transformResponse: (response: ApiEnvelope<InteriorSearchResponse>) => withCdnImages(response.data),
       providesTags: ["InteriorList"],
     }),
 
@@ -134,7 +135,7 @@ export const interiorsApi = createApi({
         url: API_ENDPOINTS.interiors.detail(slugOrId),
         method: "GET",
       }),
-      transformResponse: (response: ApiEnvelope<InteriorProfile>) => response.data,
+      transformResponse: (response: ApiEnvelope<InteriorProfile>) => withCdnImages(response.data),
       providesTags: (_res, _err, slugOrId) => [{ type: "InteriorProfile", id: slugOrId }],
     }),
 

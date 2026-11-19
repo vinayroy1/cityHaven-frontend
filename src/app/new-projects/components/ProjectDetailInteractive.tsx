@@ -28,7 +28,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
-import { CDN_ASSETS } from "@/config/cdn";
+import { CDN_ASSETS, cdnImageUrl } from "@/config/cdn";
 import type { ProjectConfiguration, ProjectListing } from "@/types/project.types";
 import { useCreateProjectInquiryMutation } from "@/features/projects/api";
 import { getStoredUserContact } from "@/lib/auth/storedUser";
@@ -41,7 +41,7 @@ function formatPrice(value?: number, countryCode?: string | null) {
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
-  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+  return cdnImageUrl(url);
 };
 
 export function ProjectDetailInteractive({ project }: { project: ProjectListing }) {

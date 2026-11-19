@@ -1,3 +1,4 @@
+import { cdnImageUrl } from "@/config/cdn";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { ResultCardProps } from "./resultCardTypes";
 import { formatMoney, formatMoneyShort } from "@/lib/money";
@@ -96,7 +97,7 @@ export const isFreshListing = (createdAt?: string) => {
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
-  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+  return cdnImageUrl(url);
 };
 
 export function toResultCardProps(item: PropertySearchItem): ResultCardProps {

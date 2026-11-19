@@ -1,3 +1,4 @@
+import { cdnImageUrl } from "@/config/cdn";
 import { cache } from "react";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -22,7 +23,7 @@ const CITY_ALIASES: Record<string, string> = { bangalore: "bengaluru", delhi: "n
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
-  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+  return cdnImageUrl(url);
 };
 
 const getInitialFlatmates = cache(async (city?: string, locality?: string) => {

@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "img.awasio.com",
+      },
+      {
+        protocol: "https",
         hostname: "images.unsplash.com",
       },
       {

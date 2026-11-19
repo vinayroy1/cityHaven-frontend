@@ -26,7 +26,7 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
-import { CDN_ASSETS } from "@/config/cdn";
+import { CDN_ASSETS, cdnImageUrl } from "@/config/cdn";
 import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
@@ -60,7 +60,7 @@ function formatPrice(value?: number, countryCode?: string | null) {
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
-  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+  return cdnImageUrl(url);
 };
 
 function ProjectGridCard({

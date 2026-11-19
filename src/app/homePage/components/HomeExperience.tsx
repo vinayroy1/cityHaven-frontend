@@ -1,4 +1,5 @@
 "use client";
+import { cdnImageUrl } from "@/config/cdn";
 import { projectDetailPath } from "@/app/new-projects/lib/projectUrls";
 
 import React from "react";
@@ -45,7 +46,7 @@ import { HomeServicesRow } from "./HomeServicesRow";
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
-  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+  return cdnImageUrl(url);
 };
 
 const CITY_OPTIONS = ["Delhi", "Gurugram", "Noida", "Mumbai", "Bengaluru", "Pune", "Hyderabad"];

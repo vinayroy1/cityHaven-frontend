@@ -1,3 +1,4 @@
+import { withCdnImages } from "@/config/cdn";
 import { cache } from "react";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
@@ -14,7 +15,8 @@ async function getJson<T>(endpoint: string): Promise<T | null> {
     });
     if (!res.ok) return null;
     const body = (await res.json()) as { data?: T };
-    return body?.data ?? null;
+    // Photos via the CDN (img.awasio.com), not the slow r2.dev host stored in the DB.
+    return body?.data != null ? withCdnImages(body.data) : null;
   } catch {
     return null;
   }

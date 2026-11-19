@@ -1,3 +1,4 @@
+import { cdnImageUrl } from "@/config/cdn";
 import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
 import { formatMoneyShort } from "@/lib/money";
 import { getCountry } from "@/config/countries";
@@ -31,7 +32,7 @@ export async function generateStaticParams() {
 
 const normalizeR2Url = (url?: string | null): string => {
   if (!url) return "";
-  return url.replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+  return cdnImageUrl(url);
 };
 
 type Props = {

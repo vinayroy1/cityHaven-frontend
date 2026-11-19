@@ -1,3 +1,4 @@
+import { cdnImageUrl } from "@/config/cdn";
 import React from "react";
 import type { Metadata } from "next";
 import { HeaderNav } from "./homePage/components/HeaderNav";
@@ -105,7 +106,7 @@ async function getInitialProjects(): Promise<ProjectListing[]> {
 }
 
 const normalizeR2Url = (url?: string | null) =>
-  (url ?? "").replace(/^https:\/\/pub-47ad872a9b3848e190cdf10b7ad7a298\.r2\.dev\//i, "/r2-cdn/");
+  cdnImageUrl(url);
 
 // Must match MUMBAI_FALLBACK_PROJECTS[0] in HomeExperience when the API returns nothing.
 const FALLBACK_LCP_IMAGE =
