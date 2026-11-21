@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { X, CheckCircle2, Calculator, Sparkles, Building2, User, MapPin, IndianRupee, ShieldCheck } from "lucide-react";
+import { X, CheckCircle2, Sparkles, Building2, User, MapPin, ShieldCheck } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
 import { useSubmitInteriorInquiryMutation } from "@/features/interiors/api";
 import { CITY_LOCALITIES, PROPERTY_TYPES, SERVICES_OFFERED } from "@/constants/interior-data";
@@ -9,8 +9,6 @@ import {
   PropertyListingLocalitySelector,
   type LocalitySelection,
 } from "@/components/propertyListing/PropertyListingLocalitySelector";
-import { formatMoneyShort } from "@/lib/money";
-import { getCountry } from "@/config/countries";
 
 interface InquiryModalProps {
   profile: InteriorProfile | null;
@@ -19,11 +17,6 @@ interface InquiryModalProps {
 }
 
 export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalProps) {
-  // India keeps "₹12.50 Lakhs"; other countries use their own currency/units.
-  const budgetText = (amount: number) =>
-    !profile?.countryCode || profile.countryCode === "IN"
-      ? `₹${(amount / 100000).toFixed(2)} Lakhs`
-      : formatMoneyShort(amount, profile.countryCode, { units: "long" });
   const [step, setStep] = useState<"form" | "success">("form");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
@@ -65,20 +58,7 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
 
   if (!isOpen || !profile) return null;
 
-  // Approximate ballpark calculator
   const area = Number(carpetAreaSqft) || 1000;
-  const tierKey = finishTier.toUpperCase();
-  // Prefer the designer's own per-sq.ft pricing (chosen package, then their starting range); generic rates otherwise.
-  const pkgRate = (profile.packages ?? []).find((p) => p.packageName === finishTier && p.pricingUnit === "PER_SQFT")?.priceMin;
-  const profileRate =
-    profile.pricingUnit === "PER_SQFT" && profile.startingRateMin
-      ? profile.startingRateMax && profile.startingRateMax > profile.startingRateMin
-        ? (profile.startingRateMin + profile.startingRateMax) / 2
-        : profile.startingRateMin
-      : 0;
-  const genericRate = tierKey.includes("ESSENTIAL") || tierKey.includes("BASIC") ? 1400 : tierKey.includes("LUX") ? 2800 : 1950;
-  const multiplier = pkgRate || profileRate || genericRate;
-  const estimatedTotal = area * multiplier;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,8 +80,6 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
           carpetAreaSqft: area,
           projectScope,
           finishTier: finishTier || undefined,
-          budgetMin: Math.round(estimatedTotal * 0.9),
-          budgetMax: Math.round(estimatedTotal * 1.15),
           siteVisitRequested,
           notes: notes.trim() || undefined,
         },
@@ -130,17 +108,11 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
               <CheckCircle2 className="h-9 w-9" />
             </div>
-            <h3 className="mt-4 text-xl font-black text-slate-900 dark:text-white">Estimate Request Sent!</h3>
+            <h3 className="mt-4 text-xl font-black text-slate-900 dark:text-white">Quote request sent!</h3>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               <strong className="text-slate-900 dark:text-white">{profile.displayName || profile.businessName || profile.fullName}</strong> has received your project details. They will contact you soon to discuss your project.
             </p>
             <div className="mt-6 rounded-2xl bg-slate-50 p-4 border border-slate-200 dark:border-slate-800 dark:bg-slate-800/60 text-left text-xs space-y-1">
-              <div className="flex justify-between text-slate-500 dark:text-slate-400">
-                <span>Estimated Budget:</span>
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {budgetText(estimatedTotal)}
-                </span>
-              </div>
               <div className="flex justify-between text-slate-500 dark:text-slate-400">
                 <span>Space & Area:</span>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">
@@ -167,35 +139,14 @@ export function InteriorInquiryModal({ profile, isOpen, onClose }: InquiryModalP
             <div>
               <div className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
                 <Sparkles className="h-3 w-3" />
-                <span>Instant Consultation & Estimate</span>
+                <span>Free quote</span>
               </div>
               <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-1">
                 {profile.displayName || profile.businessName || profile.fullName}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Get an accurate price breakdown for your apartment or commercial space.
+                Share a few details and the designer will contact you with a quote.
               </p>
-            </div>
-
-            {/* Price Preview Estimator Card */}
-            <div className="rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50/80 via-white to-rose-50/80 p-3.5 text-slate-900 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-white">
-              <div className="flex items-center justify-between text-xs font-bold text-rose-700 dark:text-rose-400">
-                <span className="inline-flex items-center gap-1.5">
-                  <Calculator className="h-3.5 w-3.5" />
-                  Estimated Turnkey Cost
-                </span>
-                <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-extrabold uppercase dark:bg-rose-900/50">
-                  {finishTier} Tier
-                </span>
-              </div>
-              <div className="mt-1 flex items-baseline justify-between">
-                <p className="text-2xl font-black text-slate-950 dark:text-white tracking-tight">
-                  {budgetText(estimatedTotal)}
-                </p>
-                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                  {getCountry(profile?.countryCode).currencySymbol}{multiplier}/sq.ft. (All Inclusive)
-                </span>
-              </div>
             </div>
 
             {/* Location: Locality Dropdown */}

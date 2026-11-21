@@ -118,11 +118,12 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
         )}
       </div>
 
-      {/* Card Content Body */}
-      <div className="flex flex-1 flex-col p-4">
+      {/* Card Content Body: the name link's ::after stretches over this whole area, so a click anywhere
+          in it opens the profile (the photo is its own link; buttons sit above with z-10). */}
+      <div className="relative flex flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <Link href={profileUrl}>
+            <Link href={profileUrl} className="after:absolute after:inset-0 after:content-['']">
               <h3 className="line-clamp-1 text-base font-bold text-slate-900 transition hover:text-rose-600 dark:text-white dark:hover:text-rose-400">
                 {name}
               </h3>
@@ -190,7 +191,7 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
         </div>
 
         {/* Action Button */}
-        <div className="mt-4 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
+        <div className="relative z-10 mt-4 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
           <Link
             href={profileUrl}
             className="flex-1 rounded-xl border border-slate-200 py-2 text-center text-xs font-bold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
