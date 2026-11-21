@@ -6,8 +6,8 @@ export interface CityLocalitiesMap {
 
 export const INTERIOR_CITIES = [
   "Mumbai",
+  // One Delhi: the search matches "New Delhi" listings too (backend city aliases).
   "Delhi",
-  "New Delhi",
   "Gurugram",
   "Noida",
   "Greater Noida",
