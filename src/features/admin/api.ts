@@ -152,7 +152,7 @@ export const adminApi = {
   async reviewConstruction(id: number, decision: "APPROVE" | "REQUEST_CHANGES" | "REJECT", notes?: string) {
     return unwrap(await apiClient.post<{ outcome: string }>(API_ENDPOINTS.admin.construction.review(id), { decision, notes: notes || null }));
   },
-  async listSignups(params: { days: number; type: string; stage?: string; q?: string }) {
+  async listSignups(params: { days: number; type: string; stage?: string; q?: string; page?: number }) {
     const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== "").map(([k, v]) => [k, String(v)])).toString();
     return unwrap(await apiClient.get<AdminSignupsResponse>(API_ENDPOINTS.admin.signups(qs)));
   },
@@ -409,4 +409,7 @@ export type AdminSignupsResponse = {
   type: string;
   summary: { total: number; byStage: Record<string, number>; bySource: Record<string, number> };
   items: AdminSignup[];
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
 };

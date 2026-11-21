@@ -53,6 +53,8 @@ export default function AdminSignupsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [loadingMore, setLoadingMore] = useState(false);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -64,6 +66,26 @@ export default function AdminSignupsPage() {
       setLoading(false);
     }
   }, [days, type, stage, query]);
+
+  /** Next page of 100: appends accounts and adds their stage / source counts to the loaded totals. */
+  const loadMore = async () => {
+    if (!data || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const next = await adminApi.listSignups({ days, type, stage: stage || undefined, q: query || undefined, page: data.page + 1 });
+      const add = (a: Record<string, number>, b: Record<string, number>) =>
+        Object.entries(b).reduce((acc, [k, n]) => ({ ...acc, [k]: (acc[k] ?? 0) + n }), { ...a });
+      setData({
+        ...next,
+        items: [...data.items, ...next.items],
+        summary: { total: next.summary.total, byStage: add(data.summary.byStage, next.summary.byStage), bySource: add(data.summary.bySource, next.summary.bySource) },
+      });
+    } catch (e) {
+      setError((e as { message?: string })?.message || "Couldn't load more signups");
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch on filter change
@@ -115,7 +137,8 @@ export default function AdminSignupsPage() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
             <p className="text-xs text-slate-500">Signups</p>
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">{summary.total}</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white">{summary.total.toLocaleString("en-IN")}</p>
+            {data && data.hasMore && <p className="text-[11px] text-slate-400">Stage counts: first {data.page * data.pageSize} loaded</p>}
           </div>
           {STAGES.map((s) => (
             <button key={s.id} type="button" onClick={() => setStage(stage === s.id ? "" : s.id)} title={s.hint} className={cn("rounded-xl border p-3 text-left dark:border-slate-800", stage === s.id ? "border-slate-900 dark:border-white" : "border-slate-200 bg-white dark:bg-slate-900")}>
@@ -184,6 +207,16 @@ export default function AdminSignupsPage() {
             );
           })}
         </ul>
+      )}
+      {data && data.items.length > 0 && (
+        <div className="flex flex-col items-center gap-2 pb-4 text-xs text-slate-500">
+          <span>Showing {data.items.length.toLocaleString("en-IN")} of {data.summary.total.toLocaleString("en-IN")}{stage ? " (stage filter applies to loaded accounts)" : ""}</span>
+          {data.hasMore && (
+            <button type="button" onClick={() => void loadMore()} disabled={loadingMore} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700 dark:text-slate-200">
+              {loadingMore && <Loader2 className="h-4 w-4 animate-spin" />} Load 100 more
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
