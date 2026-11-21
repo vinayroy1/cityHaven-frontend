@@ -45,16 +45,18 @@ function CardSkeleton() {
 export default function HomeBuildersSection({ selectedCity }: { selectedCity: string }) {
   const city = selectedCity.trim();
   const scrollerRef = React.useRef<HTMLDivElement>(null);
-  
-  // 1. First fetch for the visitor's selected/detected city
+  const countryCode = useCountryCode();
+
+  // 1. First fetch for the visitor's selected/detected city (the backend ignores countryCode when a city is set)
   const cityQuery = useSearchConstructionQuery(
-    { city: city || undefined, segment: "RESIDENTIAL", limit: 8 }
+    { city: city || undefined, countryCode, segment: "RESIDENTIAL", limit: 8 }
   );
 
-  // 2. If the user's city has < 3 builders (e.g. smaller town), fallback to top regional/Delhi NCR builders
+  // 2. If the user's city has < 3 builders (e.g. smaller town), fall back to the top builders in the same
+  // country. Never another country's builders: a Dubai visitor must not see Indian builders priced in ₹.
   const hasFewCityItems = Boolean(city && cityQuery.data && cityQuery.data.items.length < MIN_ITEMS);
   const fallbackQuery = useSearchConstructionQuery(
-    { segment: "RESIDENTIAL", limit: 8 },
+    { countryCode, segment: "RESIDENTIAL", limit: 8 },
     { skip: !hasFewCityItems }
   );
 
@@ -63,7 +65,7 @@ export default function HomeBuildersSection({ selectedCity }: { selectedCity: st
   const isLoading = cityQuery.isLoading || (hasFewCityItems && fallbackQuery.isLoading);
 
   const items = data?.items ?? [];
-  const countryName = getCountry(useCountryCode()).name;
+  const countryName = getCountry(countryCode).name;
   if (!isLoading && items.length < MIN_ITEMS) return null;
 
   const base = "/construction-companies";
