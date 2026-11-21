@@ -14,9 +14,11 @@ type Ctx = {
   whatsapp: string | null;
   loading: boolean;
   /** Fetches the number (login required). Resolves to the contact, or null if it couldn't be shown. */
-  reveal: () => Promise<{ phone: string | null; whatsapp: string | null } | null>;
+  reveal: () => Promise<Revealed | null>;
   waText: string;
 };
+
+type Revealed = { phone: string | null; whatsapp: string | null; branches: { id: number; phone: string | null }[] };
 
 const ContactCtx = createContext<Ctx | null>(null);
 
@@ -27,7 +29,7 @@ export function InteriorContactProvider({ profile, children }: { profile: Interi
   const [trigger, { isLoading }] = useRevealInteriorContactMutation();
   const publicPhone = profile.isPhonePublic ? profile.primaryPhone || profile.contact?.phone || null : null;
   const publicWa = profile.whatsappPhone || profile.contact?.whatsapp || null;
-  const [revealed, setRevealed] = useState<{ phone: string | null; whatsapp: string | null } | null>(null);
+  const [revealed, setRevealed] = useState<Revealed | null>(null);
 
   const phone = revealed?.phone ?? publicPhone;
   const whatsapp = revealed?.whatsapp ?? publicWa ?? phone;
@@ -42,7 +44,7 @@ export function InteriorContactProvider({ profile, children }: { profile: Interi
     }
     try {
       const data = await trigger(profile.id).unwrap();
-      const next = { phone: data.phone, whatsapp: data.whatsapp || data.phone };
+      const next: Revealed = { phone: data.phone, whatsapp: data.whatsapp || data.phone, branches: data.branches ?? [] };
       setRevealed(next);
       return next;
     } catch (err) {
@@ -127,5 +129,31 @@ export function ContactButtons({ variant }: { variant: Variant }) {
         </button>
       )}
     </div>
+  );
+}
+
+/**
+ * "Call branch": branch numbers aren't in the page. Goes through the same login + reveal as "View contact"
+ * (one gated place to log the lead and, later, charge credits), then dials that branch.
+ */
+export function BranchCallButton({ branchId, className }: { branchId: number; className?: string }) {
+  const { reveal, loading } = useContact();
+  const [shown, setShown] = useState<string | null>(null);
+  const onClick = async () => {
+    const c = await reveal();
+    if (!c) return;
+    const n = c.branches.find((b) => b.id === branchId)?.phone || c.phone;
+    if (!n) return toast.error("This branch hasn't added a number yet.");
+    setShown(n);
+    window.location.href = telHref(n);
+  };
+  return shown ? (
+    <a href={telHref(shown)} className={className}>
+      <Phone className="h-4 w-4" aria-hidden /> {shown}
+    </a>
+  ) : (
+    <button type="button" onClick={onClick} disabled={loading} className={className}>
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Phone className="h-4 w-4" aria-hidden />} Call branch
+    </button>
   );
 }

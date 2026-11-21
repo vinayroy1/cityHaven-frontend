@@ -512,7 +512,14 @@ export const interiorsApi = createApi({
   }),
 });
 
-export type InteriorRevealedContact = { phone: string | null; whatsapp: string | null; email: string | null; contactName: string | null };
+export type InteriorRevealedContact = {
+  phone: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  contactName: string | null;
+  /** Branch numbers: never in the public profile, only returned here (after login). */
+  branches?: { id: number; phone: string | null; email: string | null }[];
+};
 
 export const {
   useRevealInteriorContactMutation,

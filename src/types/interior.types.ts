@@ -52,6 +52,8 @@ export interface InteriorBranch {
   branchManagerName: string;
   contactNumber: string;
   branchEmail?: string | null;
+  /** Public profile only: the branch has a number (revealed via "View contact", not sent in the page). */
+  hasPhone?: boolean;
   address: string;
   city: string;
   locality: string;

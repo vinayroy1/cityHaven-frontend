@@ -1,6 +1,6 @@
 "use client";
 
-import { ContactButtons } from "./ContactReveal";
+import { BranchCallButton, ContactButtons } from "./ContactReveal";
 import Image from "next/image";
 import { isOptimizableImage } from "../../lib/image";
 import React from "react";
@@ -35,7 +35,6 @@ import {
   experienceYearsOf,
   projectsBand,
   profileName,
-  telHref,
 } from "./utils";
 
 /* --------------------------------- About ---------------------------------- */
@@ -172,7 +171,8 @@ export function AreasSection({ profile }: { profile: InteriorProfile }) {
       {branches.length > 0 && (
         <ul className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {branches.map((b) => {
-            const phone = b.phone || b.contactNumber;
+            // Public payload never carries branch numbers (only `hasPhone`); older responses may still have them.
+            const hasPhone = b.hasPhone ?? Boolean(b.phone || b.contactNumber);
             return (
               <li key={b.id} className="rounded-2xl border border-stone-200 p-4 dark:border-slate-800">
                 <p className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
@@ -185,10 +185,11 @@ export function AreasSection({ profile }: { profile: InteriorProfile }) {
                 {(b.managerName || b.branchManagerName) && (
                   <p className="mt-1 text-xs text-slate-500">Manager: {b.managerName || b.branchManagerName}</p>
                 )}
-                {phone && (
-                  <a href={telHref(phone)} className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-rose-700 dark:text-rose-400">
-                    <Phone className="h-4 w-4" aria-hidden /> Call branch
-                  </a>
+                {hasPhone && (
+                  <BranchCallButton
+                    branchId={b.id}
+                    className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-rose-700 disabled:opacity-60 dark:text-rose-400"
+                  />
                 )}
               </li>
             );
