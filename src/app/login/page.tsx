@@ -1381,10 +1381,6 @@ function LoginContent() {
               <Lock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>End-to-end encrypted OTP</span>
             </span>
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
-              <span>DPDP Act & RERA Compliant</span>
-            </span>
           </div>
         </section>
       </main>
