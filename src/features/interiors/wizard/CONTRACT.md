@@ -282,8 +282,8 @@ Step ids == section keys == `InteriorWizardSection` == `:section` in `PATCH /int
 | Section | Kind / component | Badge | Visible when | Fields / requires |
 |---|---|---|---|---|
 | `providerType` | custom `ProviderTypeCards` | SUBMIT |  | requires: `identity.providerType`; props: - |
-| `individualBasics` | config | SUBMIT | {"preset":"isIndividual"} | `identity.fullName` (text, required)<br>`identity.displayName` (text, required)<br>`identity.experienceYears` (number) |
-| `companyBasics` | config | SUBMIT | {"preset":"isCompany"} | `identity.businessName` (text, required)<br>`identity.legalName` (text)<br>`identity.yearEstablished` (number)<br>`identity.teamSizeRange` (chip-radio) |
+| `individualBasics` | config | SUBMIT | {"preset":"isIndividual"} | `identity.fullName` (text, required)<br>`identity.displayName` (text, required)<br>`identity.experienceYears` (number)<br>`identity.projectsCompleted` (number) |
+| `companyBasics` | config | SUBMIT | {"preset":"isCompany"} | `identity.businessName` (text, required)<br>`identity.legalName` (text)<br>`identity.yearEstablished` (number)<br>`identity.projectsCompleted` (number)<br>`identity.teamSizeRange` (chip-radio) |
 | `pitch` | config | PUBLISH | {"preset":"hasProviderType"} | `identity.tagline` (text)<br>`identity.about` (textarea, requiredFor PUBLISH) |
 | `branding` | config | PUBLISH | {"preset":"hasProviderType"} | `identity.logo` (upload, requiredFor PUBLISH)<br>`identity.coverBanner` (upload) |
 | `links` | config |  | {"preset":"hasProviderType"} | `identity.website` (url)<br>`identity.instagram` (url)<br>`identity.facebook` (url)<br>`identity.linkedin` (url)<br>`identity.youtube` (url)<br>`identity.slug` (text) |
@@ -638,6 +638,7 @@ export interface InteriorTeamMemberDraft {
   designation: string;
   qualification: string;
   experienceYears: number | null;
+  projectsCompleted: number | null;
   photo: string;
   branchId: number | null;
   orgMemberId: number | null;
@@ -656,6 +657,7 @@ export interface InteriorWizardValues {
     tagline: string;
     about: string;
     experienceYears: number | null;
+    projectsCompleted: number | null;
     yearEstablished: number | null;
     teamSizeRange: InteriorTeamSizeRange | "";
     logo: string;
@@ -826,7 +828,7 @@ InteriorTeamMember add: `branchId int?, orgMemberId int?, isPublic bool default 
 
 ### Section PATCH payload mapping (data keys per `:section`)
 `formToProfilePayload(section, values)` (Chunk B mapper) sends `InteriorProfile` keys; legacy flat fields are derived client-side and should also be accepted:
-- `identity`: providerType, fullName, displayName, businessName, legalName, tagline, about, experienceYears, yearEstablished, teamSizeRange, logo, coverBanner, slug, website, instagram, facebook, linkedin, youtube
+- `identity`: providerType, fullName, displayName, businessName, legalName, tagline, about, experienceYears, projectsCompleted, yearEstablished, teamSizeRange, logo, coverBanner, slug, website, instagram, facebook, linkedin, youtube
 - `location`: primaryCity, primaryState, primaryLocality, primaryAddress, primaryPincode, primaryLat, primaryLng, serviceCities, serviceLocalities, servesOutstation, siteVisitRadiusKm (branches use own endpoints)
 - `services`: servicesOffered, commercialServices, propertyTypesHandled, budgetSegments, designStyles, executionCapabilities, areaCapacity, minProjectAreaSqft, maxProjectAreaSqft
 - `materials`: materialSpecs + derived boardMaterials, boardBrands, surfaceFinishes, finishBrands, hardwareFittings, hardwareBrands, countertops, flooringAndWalls

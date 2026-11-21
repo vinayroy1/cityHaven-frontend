@@ -64,6 +64,7 @@ export const identitySchema = z.object({
   tagline: optText(120, "Tagline"),
   about: optText(2000, "About"),
   experienceYears: optNum(0, 70, "Experience"),
+  projectsCompleted: optNum(0, 100000, "Projects completed"),
   yearEstablished: optNum(1900, currentYear, "Year established"),
   slug: z.string().refine((s) => !s.trim() || SLUG_REGEX.test(s.trim()), {
     message: "Use lowercase letters, numbers and hyphens only",

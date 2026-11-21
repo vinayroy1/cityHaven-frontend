@@ -123,3 +123,13 @@ export const experienceYearsOf = (p: Pick<InteriorProfile, "providerType" | "exp
   if (p.providerType === "COMPANY" && p.yearEstablished) return Math.max(0, new Date().getFullYear() - p.yearEstablished);
   return p.experienceYears || 0;
 };
+
+/**
+ * Self-reported projects completed, rounded down to a band ("100+"). Bands read as credible and
+ * discourage exact made-up numbers. "" when not given or under 5.
+ */
+const PROJECT_BANDS = [1000, 500, 250, 100, 50, 25, 10, 5];
+export const projectsBand = (n?: number | null): string => {
+  const b = PROJECT_BANDS.find((x) => (n ?? 0) >= x);
+  return b ? `${b}+` : "";
+};

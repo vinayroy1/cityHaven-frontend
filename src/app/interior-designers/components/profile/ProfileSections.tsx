@@ -33,6 +33,7 @@ import {
   nonEmpty,
   priceRange,
   experienceYearsOf,
+  projectsBand,
   profileName,
   telHref,
 } from "./utils";
@@ -42,7 +43,9 @@ import {
 export function AboutSection({ profile }: { profile: InteriorProfile }) {
   const stats = [
     { label: "Experience", value: experienceYearsOf(profile) ? `${experienceYearsOf(profile)}+ yrs` : "" },
-    { label: "Projects", value: profile.projects?.length ? String(profile.projects.length) : "" },
+    // Self-reported track record vs. what's actually uploaded: labelled apart so the numbers don't clash.
+    { label: "Projects completed", value: projectsBand(profile.projectsCompleted) },
+    { label: "In portfolio", value: profile.projects?.length ? String(profile.projects.length) : "" },
     { label: "Team size", value: profile.teamSizeRange || (profile.teamSize ? String(profile.teamSize) : "") },
     { label: "Established", value: profile.yearEstablished ? String(profile.yearEstablished) : "" },
     {

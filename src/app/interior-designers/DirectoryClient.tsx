@@ -9,8 +9,8 @@ import dynamic from "next/dynamic";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
 import { DesignerGridSkeleton } from "@/components/interiors/skeletons";
 import {
-  Search,
   Building2,
+  ChevronDown,
   SlidersHorizontal,
   ShieldCheck,
   X,
@@ -83,7 +83,6 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
   const [selectedStyle, setSelectedStyle] = useState("ALL");
   const [selectedBracket, setSelectedBracket] = useState("ALL");
   const [isVerifiedOnly, setIsVerifiedOnly] = useState(false);
-  const [searchKeyword, setSearchKeyword] = useState("");
   const [viewTab, setViewTab] = useState<"DIRECTORY" | "INSPIRATION">("DIRECTORY");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
@@ -150,9 +149,9 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
   };
   // Infinite scroll; the "Load more designers" button stays as a fallback.
   const sentinelRef = useAutoLoadMore(() => void loadMore(), hasMore, loadingMore, rawDesigners.length);
-  const clientFiltered = selectedStyle !== "ALL" || !!searchKeyword.trim();
+  const clientFiltered = selectedStyle !== "ALL";
 
-  // Client-side filtering for search keyword, specific locality, brand, and design style
+  // Client-side filtering for design style (locality is filtered by the API)
   const filteredDesigners = useMemo(() => {
     return rawDesigners.filter((d) => {
       // Locality is filtered by the API (the URL's area), including designers who serve it.
@@ -164,19 +163,9 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
         }
       }
 
-      // Keyword check (Name, About, Tagline, Locality)
-      if (searchKeyword.trim()) {
-        const q = searchKeyword.toLowerCase();
-        const inName = d.businessName?.toLowerCase().includes(q) || d.displayName?.toLowerCase().includes(q);
-        const inLocality = d.primaryLocality?.toLowerCase().includes(q);
-        const inTagline = d.tagline?.toLowerCase().includes(q);
-        const inServices = d.servicesOffered?.some((s) => s.toLowerCase().includes(q));
-        if (!inName && !inLocality && !inTagline && !inServices) return false;
-      }
-
       return true;
     });
-  }, [rawDesigners, selectedStyle, searchKeyword]);
+  }, [rawDesigners, selectedStyle]);
 
   // Reset filters
   const handleResetFilters = () => {
@@ -186,7 +175,6 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
     setSelectedStyle("ALL");
     setSelectedBracket("ALL");
     setIsVerifiedOnly(false);
-    setSearchKeyword("");
   };
 
 
@@ -226,8 +214,29 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
     ...(isVerifiedOnly ? [{ label: "Verified only", clear: () => setIsVerifiedOnly(false) }] : []),
   ];
 
+  // The area has its own picker in the top bar, so the Filters count covers only what's inside the panel.
+  const panelFilterCount = activeChips.length - (selectedLocality !== "ALL" ? 1 : 0);
+  const filtersButton = (
+    <button
+      type="button"
+      onClick={() => setMobileFilterOpen((o) => !o)}
+      aria-expanded={mobileFilterOpen}
+      className={`inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl border px-3.5 text-sm font-bold transition ${
+        mobileFilterOpen || panelFilterCount > 0
+          ? "border-rose-400 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
+          : "border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+      }`}
+    >
+      <SlidersHorizontal className="h-4 w-4" />
+      Filters{panelFilterCount > 0 ? ` (${panelFilterCount})` : ""}
+    </button>
+  );
+
   const selectCls =
-    "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-800 focus:border-rose-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
+    "h-11 w-full min-w-0 cursor-pointer appearance-none truncate rounded-xl border border-slate-200 bg-white pl-3 pr-9 text-sm font-medium text-slate-800 shadow-2xs transition hover:border-slate-300 focus:border-rose-500 focus:outline-hidden focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-rose-900/40";
+  const chevron = (
+    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
+  );
   const labelCls = "mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400";
 
   return (
@@ -256,52 +265,48 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
             </Link>
           </div>
 
-          {/* Search + city + filters: one row on desktop, two on mobile */}
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <div className="relative min-w-0 flex-1">
-              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                placeholder="Search name, area or service"
-                aria-label="Search interior designers"
-                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 pl-10 pr-9 text-sm text-slate-900 placeholder-slate-400 focus:border-rose-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800/80 dark:text-white"
+          {/* City, area, filters: one row (same pickers as the construction and pandit directories) */}
+          <div className="mt-4 grid grid-cols-[1fr_1fr_auto] gap-2 lg:grid-cols-[1fr_1fr_10rem]">
+            <div className="min-w-0">
+              <PropertyListingCitySelector
+                value={selectedCity}
+                selectedState={selectedState}
+                onChange={(c: CitySelection) => pickCity(c.name, c.state || "")}
+                placeholder="All cities"
               />
-              {searchKeyword && (
-                <button
-                  type="button"
-                  onClick={() => setSearchKeyword("")}
-                  aria-label="Clear search"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+            </div>
+            <div className="relative min-w-0">
+              {selectedCity ? (
+                <>
+                  <PropertyListingLocalitySelector
+                    key={`${selectedCity}|${selectedLocality}`}
+                    value={selectedLocality === "ALL" ? "" : selectedLocality}
+                    cityName={selectedCity}
+                    selectedState={selectedState}
+                    onChange={(l: LocalitySelection) => setSelectedLocality(l.name || "ALL")}
+                    placeholder="Any area"
+                  />
+                  {selectedLocality !== "ALL" && (
+                    <button
+                      type="button"
+                      aria-label="Clear area"
+                      onClick={() => setSelectedLocality("ALL")}
+                      className="absolute right-9 top-1/2 z-10 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </>
+              ) : (
+                <input
+                  disabled
+                  aria-label="Area"
+                  placeholder="Pick a city first"
+                  className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-400 dark:border-slate-700 dark:bg-slate-800/60"
+                />
               )}
             </div>
-            <div className="flex min-w-0 gap-2">
-              <div className="min-w-0 flex-1 sm:w-60 sm:flex-none">
-                <PropertyListingCitySelector
-                  value={selectedCity}
-                  selectedState={selectedState}
-                  onChange={(c: CitySelection) => pickCity(c.name, c.state || "")}
-                  placeholder="All cities"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() => setMobileFilterOpen((o) => !o)}
-                aria-expanded={mobileFilterOpen}
-                className={`inline-flex h-11 shrink-0 items-center gap-2 rounded-xl border px-3.5 text-sm font-bold transition ${
-                  mobileFilterOpen || activeChips.length > 0
-                    ? "border-rose-400 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
-                    : "border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
-                }`}
-              >
-                <SlidersHorizontal className="h-4 w-4" />
-                Filters{activeChips.length > 0 ? ` (${activeChips.length})` : ""}
-              </button>
-            </div>
+            {filtersButton}
           </div>
 
           {/* City quick picks */}
@@ -328,7 +333,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
           {/* All filters in one panel (desktop and mobile) */}
           {mobileFilterOpen && (
             <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-900/60">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_1.2fr_1fr_auto]">
                 <div className="min-w-0">
                   <span className={labelCls}>Designer type</span>
                   <div className="grid h-11 grid-cols-3 rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800">
@@ -343,7 +348,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
                         key={v}
                         type="button"
                         onClick={() => setProviderType(v)}
-                        className={`rounded-lg text-xs font-bold transition ${
+                        className={`truncate rounded-lg px-1 text-xs font-bold transition ${
                           providerType === v
                             ? "bg-white text-slate-900 shadow-2xs dark:bg-slate-900 dark:text-white"
                             : "text-slate-600 dark:text-slate-400"
@@ -354,52 +359,49 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
                     ))}
                   </div>
                 </div>
-                {selectedCity && (
-                  <div className="min-w-0">
-                    <span className={labelCls}>Locality</span>
-                    <PropertyListingLocalitySelector
-                      value={selectedLocality === "ALL" ? "" : selectedLocality}
-                      cityName={selectedCity}
-                      selectedState={selectedState}
-                      onChange={(l: LocalitySelection) => setSelectedLocality(l.name || "ALL")}
-                      placeholder={`Any area in ${selectedCity}`}
-                    />
-                  </div>
-                )}
                 <div className="min-w-0">
                   <label htmlFor="filter-service" className={labelCls}>Service</label>
-                  <select id="filter-service" value={selectedService} onChange={(e) => setSelectedService(e.target.value)} className={selectCls}>
-                    <option value="ALL">Any service</option>
-                    {SERVICES_OFFERED.map((svc) => (
-                      <option key={svc} value={svc}>{svc}</option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select id="filter-service" value={selectedService} onChange={(e) => setSelectedService(e.target.value)} className={selectCls}>
+                      <option value="ALL">Any service</option>
+                      {SERVICES_OFFERED.map((svc) => (
+                        <option key={svc} value={svc}>{svc}</option>
+                      ))}
+                    </select>
+                    {chevron}
+                  </div>
                 </div>
                 <div className="min-w-0">
                   <label htmlFor="filter-budget" className={labelCls}>Budget</label>
-                  <select id="filter-budget" value={selectedBracket} onChange={(e) => setSelectedBracket(e.target.value)} className={selectCls}>
-                    <option value="ALL">Any budget</option>
-                    <option value="ECONOMY">Economy (under {sym}1,400/sq.ft.)</option>
-                    <option value="MID_RANGE">Standard ({sym}1,400–2,200/sq.ft.)</option>
-                    <option value="PREMIUM">Premium ({sym}2,200–3,500/sq.ft.)</option>
-                    <option value="LUXURY">Luxury ({sym}3,500+/sq.ft.)</option>
-                  </select>
+                  <div className="relative">
+                    <select id="filter-budget" value={selectedBracket} onChange={(e) => setSelectedBracket(e.target.value)} className={selectCls}>
+                      <option value="ALL">Any budget</option>
+                      <option value="ECONOMY">Economy (under {sym}1,400/sq.ft.)</option>
+                      <option value="MID_RANGE">Standard ({sym}1,400–2,200/sq.ft.)</option>
+                      <option value="PREMIUM">Premium ({sym}2,200–3,500/sq.ft.)</option>
+                      <option value="LUXURY">Luxury ({sym}3,500+/sq.ft.)</option>
+                    </select>
+                    {chevron}
+                  </div>
                 </div>
                 <div className="min-w-0">
                   <label htmlFor="filter-style" className={labelCls}>Design style</label>
-                  <select id="filter-style" value={selectedStyle} onChange={(e) => setSelectedStyle(e.target.value)} className={selectCls}>
-                    <option value="ALL">Any style</option>
-                    {DESIGN_STYLES.map((st) => (
-                      <option key={st} value={st}>{st}</option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select id="filter-style" value={selectedStyle} onChange={(e) => setSelectedStyle(e.target.value)} className={selectCls}>
+                      <option value="ALL">Any style</option>
+                      {DESIGN_STYLES.map((st) => (
+                        <option key={st} value={st}>{st}</option>
+                      ))}
+                    </select>
+                    {chevron}
+                  </div>
                 </div>
                 <div className="flex min-w-0 items-end">
                   <button
                     type="button"
                     onClick={() => setIsVerifiedOnly(!isVerifiedOnly)}
                     aria-pressed={isVerifiedOnly}
-                    className={`inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border text-sm font-bold transition ${
+                    className={`inline-flex h-11 w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-4 text-sm font-bold transition ${
                       isVerifiedOnly
                         ? "border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
                         : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"

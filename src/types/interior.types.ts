@@ -218,6 +218,8 @@ export interface InteriorProfile {
   about: string;
   yearEstablished?: number | null;
   experienceYears: number;
+  /** Self-reported total projects delivered; show via projectsBand(). */
+  projectsCompleted?: number | null;
   teamSize: number;
   website?: string | null;
   instagram?: string | null;
@@ -685,6 +687,7 @@ export interface InteriorWizardValues {
     tagline: string;
     about: string;
     experienceYears: number | null;
+    projectsCompleted: number | null;
     yearEstablished: number | null;
     teamSizeRange: InteriorTeamSizeRange | "";
     logo: string;

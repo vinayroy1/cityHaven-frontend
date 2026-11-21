@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { ResponseBadge } from "@/components/leads/ResponseBadge";
 import {
   BadgeCheck,
+  Briefcase,
   Building2,
   Calendar,
   CheckCircle2,
@@ -17,7 +18,7 @@ import Image from "next/image";
 import type { InteriorProfile } from "@/types/interior.types";
 import { isOptimizableImage } from "../../lib/image";
 import { ContactButtons } from "./ContactReveal";
-import { experienceYearsOf, humanize, inr, priceRange, profileName, unitLabel } from "./utils";
+import { experienceYearsOf, projectsBand, humanize, inr, priceRange, profileName, unitLabel } from "./utils";
 
 /* ---------------------------------- Shell --------------------------------- */
 
@@ -164,6 +165,12 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
                   <li className="inline-flex items-center gap-1">
                     <Calendar className="h-4 w-4" aria-hidden />
                     {experienceYearsOf(profile)}+ yrs experience
+                  </li>
+                )}
+                {projectsBand(profile.projectsCompleted) && (
+                  <li className="inline-flex items-center gap-1">
+                    <Briefcase className="h-4 w-4" aria-hidden />
+                    {projectsBand(profile.projectsCompleted)} projects completed
                   </li>
                 )}
                 <li className="inline-flex items-center gap-1">

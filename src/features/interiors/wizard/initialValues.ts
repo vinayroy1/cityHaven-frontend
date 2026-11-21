@@ -24,6 +24,7 @@ export const createInteriorInitialValues = (): InteriorWizardValues => ({
     tagline: "",
     about: "",
     experienceYears: null,
+    projectsCompleted: null,
     yearEstablished: null,
     teamSizeRange: "",
     logo: "",

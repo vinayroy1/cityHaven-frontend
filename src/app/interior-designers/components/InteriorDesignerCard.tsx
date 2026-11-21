@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { isOptimizableImage } from "../lib/image";
-import { experienceYearsOf } from "./profile/utils";
+import { experienceYearsOf, projectsBand } from "./profile/utils";
 import React from "react";
 import { InteriorPhotoCarousel, interiorCardPhotos } from "@/components/interiors/InteriorPhotoCarousel";
 import Link from "next/link";
@@ -153,6 +153,14 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
           <div>
             <span className="font-bold text-slate-900 dark:text-white">{experienceYearsOf(profile)}y</span> Exp
           </div>
+          {projectsBand(profile.projectsCompleted) && (
+            <>
+              <div className="h-3 w-px bg-slate-200 dark:bg-slate-700" />
+              <div>
+                <span className="font-bold text-slate-900 dark:text-white">{projectsBand(profile.projectsCompleted)}</span> Projects
+              </div>
+            </>
+          )}
           {isCompany && (profile.branches?.length || 0) > 1 && (
             <>
               <div className="h-3 w-px bg-slate-200 dark:bg-slate-700" />
