@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Mail, Linkedin, Youtube, Instagram, Facebook } from "lucide-react";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { SOCIAL_LINKS } from "@/constants/seo";
+import { LISTING_SEO, LISTING_SEO_ORDER } from "@/constants/listingSeo";
 
 const columns = [
   {
@@ -39,6 +40,10 @@ const columns = [
       { label: "Hotels & stays", href: "/stays" },
       { label: "Find verified agents", href: "/agents" },
     ],
+  },
+  {
+    title: "List on Awasio",
+    links: LISTING_SEO_ORDER.map((k) => ({ label: LISTING_SEO[k].navLabel, href: LISTING_SEO[k].path })),
   },
 ];
 
@@ -126,7 +131,7 @@ export function FooterLinks() {
           </div>
 
           {/* Links: 3 side-by-side columns */}
-          <div className="grid grid-cols-3 gap-4 sm:gap-6 md:col-span-8">
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 md:col-span-8 lg:grid-cols-4">
             {columns.map((col) => (
               <div key={col.title}>
                 <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">

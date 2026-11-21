@@ -4,45 +4,11 @@ import Link from "next/link";
 import { ArrowLeft, Home, Building2, ShieldCheck, Users } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PropertyListingFlow } from "@/components/propertyListing/PropertyListingFlow";
-import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
+import { ListingSeoDetails, ListingSeoHero, listingMetadata } from "@/components/seo/ListingSeoContent";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
-export const metadata: Metadata = {
-  title: { absolute: "Post Property - Get 1,000 Free Credits on Signup | Awasio" },
-  description:
-    "Post your property on Awasio. Get 1,000 free credits on signup to list properties, unlock verified tenant & buyer contacts, and boost your listing. Owners and brokers post free with 0% commission to Awasio.",
-  keywords: [
-    "post property free",
-    "free 1000 credits property",
-    "list property online",
-    "post property for rent",
-    "sell house online",
-    "unlock contact credits",
-    "boost property listing",
-    "owner and broker property listing india",
-  ],
-  alternates: { canonical: buildCanonical("/propertyListing") },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  openGraph: {
-    title: "Post Property Free - Get 1,000 Free Credits on Signup | Awasio",
-    description:
-      "Post your property for free on Awasio. Get 1,000 free credits on signup to list properties, unlock verified contacts, and boost listing visibility.",
-    url: buildCanonical("/propertyListing"),
-    type: "website",
-    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
-  },
-};
+export const metadata: Metadata = listingMetadata("property");
 
 export default function PropertyListingPage() {
   return (
@@ -69,6 +35,8 @@ export default function PropertyListingPage() {
               <span className="sm:hidden">Direct Verified</span>
             </div>
           </div>
+
+          <ListingSeoHero seoKey="property" compact />
 
           {/* Mobile View: Ultra-Compact 2-Column Quick Portal Switcher (~44px height) */}
           <div className="sm:hidden mb-3 grid grid-cols-2 gap-2">
@@ -162,6 +130,9 @@ export default function PropertyListingPage() {
           <Suspense fallback={<div className="py-20 text-center text-sm text-slate-500 dark:text-slate-400">Loading property editor…</div>}>
             <PropertyListingFlow />
           </Suspense>
+        </div>
+        <div className="relative">
+          <ListingSeoDetails seoKey="property" showCta={false} />
         </div>
       </main>
     </div>

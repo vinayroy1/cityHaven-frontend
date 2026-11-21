@@ -349,7 +349,7 @@ export function StaysDirectory({
             <BedDouble className="mx-auto h-10 w-10 text-rose-400" />
             <p className="mt-3 text-base font-bold text-slate-900 dark:text-white">No stays listed here yet</p>
             <p className="mt-1 text-sm text-slate-500">Own a hotel, guest house or dharamshala? List it free and get calls directly.</p>
-            <Link href="/dashboard/stays/new" className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-rose-600 px-4 py-2 text-sm font-bold text-white">
+            <Link href="/list-your-hotel" className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-rose-600 px-4 py-2 text-sm font-bold text-white">
               <Plus className="h-4 w-4" /> List your property
             </Link>
           </div>
@@ -377,7 +377,7 @@ export function StaysDirectory({
               Add your rooms and nightly prices, link your Booking.com / Agoda / website, and get direct calls & WhatsApp enquiries — free.
             </p>
           </div>
-          <Link href="/dashboard/stays/new" className="mt-4 inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-900 sm:mt-0">
+          <Link href="/list-your-hotel" className="mt-4 inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-900 sm:mt-0">
             <Plus className="h-4 w-4" /> List your stay free
           </Link>
         </section>

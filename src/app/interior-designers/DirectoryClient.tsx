@@ -255,7 +255,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
               </p>
             </div>
             <Link
-              href="/dashboard/interior-profile"
+              href="/list-interior-business"
               prefetch={false}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50 sm:bg-slate-900 sm:text-white sm:border-transparent sm:hover:bg-slate-800 dark:border-slate-700 dark:text-slate-200 sm:dark:bg-rose-600"
             >
@@ -507,7 +507,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
                     Show all designers
                   </button>
                   <Link
-                    href="/dashboard/interior-profile"
+                    href="/list-interior-business"
                     prefetch={false}
                     className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-rose-700"
                   >

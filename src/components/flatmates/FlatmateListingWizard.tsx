@@ -3,6 +3,7 @@ import { flatmatePath } from "@/features/flatmates/paths";
 
 import { getAuthToken } from "@/lib/auth/assistedSession";
 import React, { useState } from "react";
+import { useBrowserDraft } from "@/lib/hooks/useBrowserDraft";
 import { useRouter } from "next/navigation";
 import {
   Home,
@@ -78,6 +79,8 @@ const DIET_OPTIONS = ["Any Diet", "Pure Vegetarian", "Vegetarian & Eggetarian", 
 const WORK_MODE_OPTIONS = ["Remote / WFH", "Hybrid", "In-Office"];
 const SLEEP_SCHEDULE_OPTIONS = ["Flexible", "Early Bird", "Night Owl"];
 
+const FLATMATE_DRAFT_KEY = "awasio.flatmateDraft.v1";
+
 export function FlatmateListingWizard({
   onSaved,
 }: {
@@ -85,8 +88,11 @@ export function FlatmateListingWizard({
   onSaved?: (saved: { id?: number; slug: string; title?: string }) => void;
 } = {}) {
   const router = useRouter();
-  const { data: meData } = useMeQuery();
-  const { data: flatmateProfile } = useGetFlatmateProfileQuery();
+  // Logged-out visitors can fill the whole form (saved in the browser); login is asked only to upload
+  // photos or post. Account queries are skipped until then, so they don't bounce the visitor to /login.
+  const [loggedIn] = useState(() => typeof window !== "undefined" && !!getAuthToken());
+  const { data: meData } = useMeQuery(undefined, { skip: !loggedIn });
+  const { data: flatmateProfile } = useGetFlatmateProfileQuery(undefined, { skip: !loggedIn });
   const [createListing, { isLoading: isSubmitting }] = useCreateFlatmateListingMutation();
   const [getPresignedUploadUrl] = useGetPresignedUploadUrlMutation();
 
@@ -216,11 +222,63 @@ export function FlatmateListingWizard({
     }
   }, [meData, flatmateProfile, mode, hideProfilePhoto]);
 
-  React.useEffect(() => {
-    if (!getAuthToken()) {
-      router.replace(`/login?redirect=${encodeURIComponent("/flatmates/post")}`);
-    }
-  }, [router]);
+  // ---- Draft kept in the browser across the login round-trip (same pattern as /propertyListing) ----
+  const draft = { mode, cityName, stateName, countryCode, locality, preferredLocalities, bhk, roomType, furnishing, rent, deposit, budgetMin, budgetMax, maintenance, availableFrom, minimumStayMonths, amenities, preferredGenders, preferredOccupations, preferredDiet, smokingAllowed, drinkingAllowed, petsAllowed, cleanlinessLevel, sleepSchedule, workMode, displayName, phone, email, birthYear, gender, occupation, companyOrCollege, bio, photos, hideProfilePhoto, title, description };
+  const draftSetters: { [K in keyof typeof draft]: (v: (typeof draft)[K]) => void } = {
+      mode: setMode,
+      cityName: setCityName,
+      stateName: setStateName,
+      countryCode: setCountryCode,
+      locality: setLocality,
+      preferredLocalities: setPreferredLocalities,
+      bhk: setBhk,
+      roomType: setRoomType,
+      furnishing: setFurnishing,
+      rent: setRent,
+      deposit: setDeposit,
+      budgetMin: setBudgetMin,
+      budgetMax: setBudgetMax,
+      maintenance: setMaintenance,
+      availableFrom: setAvailableFrom,
+      minimumStayMonths: setMinimumStayMonths,
+      amenities: setAmenities,
+      preferredGenders: setPreferredGenders,
+      preferredOccupations: setPreferredOccupations,
+      preferredDiet: setPreferredDiet,
+      smokingAllowed: setSmokingAllowed,
+      drinkingAllowed: setDrinkingAllowed,
+      petsAllowed: setPetsAllowed,
+      cleanlinessLevel: setCleanlinessLevel,
+      sleepSchedule: setSleepSchedule,
+      workMode: setWorkMode,
+      displayName: setDisplayName,
+      phone: setPhone,
+      email: setEmail,
+      birthYear: setBirthYear,
+      gender: setGender,
+      occupation: setOccupation,
+      companyOrCollege: setCompanyOrCollege,
+      bio: setBio,
+      photos: setPhotos,
+      hideProfilePhoto: setHideProfilePhoto,
+      title: setTitle,
+      description: setDescription,
+  };
+  const { save: saveDraft, clear: clearDraft } = useBrowserDraft(
+    FLATMATE_DRAFT_KEY,
+    { ...draft, step },
+    { ...draftSetters, step: setStep },
+    !onSaved, // staff-assisted mode: no browser draft
+  );
+
+  /** Not logged in: keep the draft and send the visitor to login, coming back to this step. */
+  const redirectToLoginIfNeeded = (why: string) => {
+    if (getAuthToken()) return false;
+    saveDraft();
+    toast.info(`Log in or sign up to ${why}. Your details are saved.`);
+    router.push(`/login?redirect=${encodeURIComponent("/flatmates/post")}`);
+    return true;
+  };
 
   // Toggle helpers
   const toggleAmenity = (item: string) => {
@@ -251,6 +309,7 @@ export function FlatmateListingWizard({
   };
 
   const uploadPhotos = async (files: FileList | null) => {
+    if (files?.length && redirectToLoginIfNeeded("upload photos")) return;
     if (!files?.length) return;
     const maxAllowed = mode === "HAVE_ROOM" ? 8 : 1;
     const remainingSlots = Math.max(0, maxAllowed - photos.length);
@@ -320,6 +379,7 @@ export function FlatmateListingWizard({
   };
 
   const handleSubmit = async () => {
+    if (redirectToLoginIfNeeded("post your listing")) return;
     try {
       const cleanPhone = phone.replace(/\D/g, "").slice(-10);
       if (phone && cleanPhone.length !== 10) {
@@ -397,6 +457,7 @@ export function FlatmateListingWizard({
       };
 
       const res = await createListing(payload).unwrap();
+      clearDraft();
 
       // Update local storage user if phone/email/name changed (not for staff-assisted posts)
       if (!onSaved && typeof window !== "undefined") {

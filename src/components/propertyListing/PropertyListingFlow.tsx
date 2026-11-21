@@ -759,7 +759,7 @@ export function PropertyListingFlow({
                 <span className="text-slate-300 dark:text-slate-700">·</span>
                 <span className="text-slate-500 dark:text-slate-400 normal-case tracking-normal">{step.label}</span>
               </div>
-              <h1 className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{step.title ?? step.label}</h1>
+              <h2 className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{step.title ?? step.label}</h2>
               {step.description && <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{step.description}</p>}
             </div>
 

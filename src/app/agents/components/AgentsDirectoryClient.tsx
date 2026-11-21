@@ -359,7 +359,7 @@ export function AgentsDirectoryClient({ initialCity = "", initialLocality = "", 
             </div>
           </div>
           <Link
-            href="/dashboard/advisor-profile"
+            href="/become-property-advisor"
             className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-slate-800 transition dark:bg-rose-600 dark:hover:bg-rose-700"
           >
             <span>Join Advisor Network</span>
@@ -552,7 +552,7 @@ export function AgentsDirectoryClient({ initialCity = "", initialLocality = "", 
             </div>
           </div>
           <Link
-            href="/dashboard/advisor-profile"
+            href="/become-property-advisor"
             className="inline-flex items-center justify-center gap-1.5 rounded-full bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-slate-800 transition dark:bg-rose-600 dark:hover:bg-rose-700"
           >
             <span>Join Advisor Network</span>

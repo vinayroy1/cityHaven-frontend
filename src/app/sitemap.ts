@@ -175,6 +175,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.85,
     },
+    // Public landing pages for the listing flows behind /dashboard (interiors, stays, construction, pandit, agents).
+    ...(["/list-interior-business", "/list-your-hotel", "/list-construction-company", "/list-pandit-services", "/become-property-advisor"] as const).map(
+      (path) => ({ url: `${SITE_URL}${path}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.85 }),
+    ),
     {
       url: `${SITE_URL}/new-projects`,
       lastModified: now,

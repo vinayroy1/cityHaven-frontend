@@ -4,35 +4,12 @@ import Link from "next/link";
 import { ArrowLeft, Users, ShieldCheck, HeartHandshake, Sparkles } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { FlatmateListingWizard } from "@/components/flatmates/FlatmateListingWizard";
-import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
+import { ListingSeoDetails, listingMetadata } from "@/components/seo/ListingSeoContent";
+import { LISTING_SEO } from "@/constants/listingSeo";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
-export const metadata: Metadata = {
-  title: { absolute: "Post Flatmate Requirement - Get 1,000 Free Credits on Signup | Awasio" },
-  description:
-    "List your available room or search for flatmates with zero brokerage on Awasio. Get 1,000 free credits on signup to unlock verified flatmate contacts and boost your listing.",
-  alternates: { canonical: buildCanonical("/flatmates/post") },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  openGraph: {
-    title: "Post Flatmate Requirement - Get 1,000 Free Credits on Signup | Awasio",
-    description:
-      "List your available room or search for flatmates with zero brokerage on Awasio. Get 1,000 free credits on signup to unlock verified contacts and boost your post.",
-    url: buildCanonical("/flatmates/post"),
-    type: "website",
-    images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
-  },
-};
+export const metadata: Metadata = listingMetadata("flatmate");
 
 export default function PostFlatmatePage() {
   return (
@@ -67,10 +44,10 @@ export default function PostFlatmatePage() {
               </div>
               <div>
                 <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
-                  Find Your Ideal Roommate or Share Your Flat
+                  {LISTING_SEO.flatmate.h1}
                 </h1>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
-                  Whether you have an empty room, need a bed, or want to buddy up to rent together.
+                  {LISTING_SEO.flatmate.intro}
                 </p>
               </div>
             </div>
@@ -87,6 +64,9 @@ export default function PostFlatmatePage() {
 
           {/* Listing Wizard */}
           <FlatmateListingWizard />
+        </div>
+        <div className="relative">
+          <ListingSeoDetails seoKey="flatmate" showCta={false} />
         </div>
       </main>
     </div>

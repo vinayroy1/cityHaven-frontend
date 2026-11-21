@@ -39,8 +39,14 @@ import { CDN_ASSETS } from "@/config/cdn";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 import { registerBackHandler } from "@/lib/navigation/backNavigation";
+import { useBrowserDraft } from "@/lib/hooks/useBrowserDraft";
+import { getAuthToken } from "@/lib/auth/assistedSession";
+import { ListingSeoDetails } from "@/components/seo/ListingSeoContent";
+import { LISTING_SEO } from "@/constants/listingSeo";
 
 
+
+const PROJECT_DRAFT_KEY = "awasio.projectDraft.v1";
 
 const POPULAR_CITY_LOCALITIES: Record<string, string[]> = {
   noida: [
@@ -339,6 +345,45 @@ export default function PostProjectPage() {
   const [salesEmail, setSalesEmail] = useState("");
   const [siteVisitTimings, setSiteVisitTimings] = useState("");
 
+  // Logged-out builders can fill the whole form: it's kept in the browser through login / signup
+  // (also if an upload bounces them there) and restored when they come back. Same as /propertyListing.
+  const { save: saveDraft, clear: clearDraft } = useBrowserDraft(
+    PROJECT_DRAFT_KEY,
+    { currentStep, name, developerName, reraId, countryCode, status, possessionDate, selectedState, city, locality, isCustomLocality, siteAddress, landmark, pincode, latitude, longitude, totalLandArea, totalTowers, totalUnits, priceMin, priceMax, pricePerSqFt, configurations, selectedAmenities, images, brochureUrl, brochureFile, salesPhone, salesEmail, siteVisitTimings },
+    {
+      currentStep: setCurrentStep,
+      name: setName,
+      developerName: setDeveloperName,
+      reraId: setReraId,
+      countryCode: setCountryCode,
+      status: setStatus,
+      possessionDate: setPossessionDate,
+      selectedState: setSelectedState,
+      city: setCity,
+      locality: setLocality,
+      isCustomLocality: setIsCustomLocality,
+      siteAddress: setSiteAddress,
+      landmark: setLandmark,
+      pincode: setPincode,
+      latitude: setLatitude,
+      longitude: setLongitude,
+      totalLandArea: setTotalLandArea,
+      totalTowers: setTotalTowers,
+      totalUnits: setTotalUnits,
+      priceMin: setPriceMin,
+      priceMax: setPriceMax,
+      pricePerSqFt: setPricePerSqFt,
+      configurations: setConfigurations,
+      selectedAmenities: setSelectedAmenities,
+      images: setImages,
+      brochureUrl: setBrochureUrl,
+      brochureFile: setBrochureFile,
+      salesPhone: setSalesPhone,
+      salesEmail: setSalesEmail,
+      siteVisitTimings: setSiteVisitTimings,
+    },
+  );
+
   function addConfiguration() {
     const newCfg: ProjectConfiguration = {
       id: `cfg-${Date.now()}`,
@@ -414,6 +459,12 @@ export default function PostProjectPage() {
 
   async function handleSubmit() {
     if (!salesPhone.trim()) return toast.error("Sales desk phone number is required");
+    if (!getAuthToken()) {
+      saveDraft();
+      toast.info("Log in or sign up to publish your project. Your details are saved.");
+      router.push(`/login?redirect=${encodeURIComponent("/post-project")}`);
+      return;
+    }
 
     // Auto-calculate headline min & max if not explicitly set
     const calculatedMin =
@@ -454,6 +505,7 @@ export default function PostProjectPage() {
 
     try {
       const created = await createProject(newProject).unwrap();
+      clearDraft();
       toast.success("Project submitted successfully.");
       router.push(created.slug ? projectDetailPath(created) : `/new-projects/${created.id}`);
     } catch {
@@ -478,10 +530,10 @@ export default function PostProjectPage() {
                 />
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white">
-                Builder & Developer Project Portal
+                {LISTING_SEO.project.h1}
               </h1>
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                List your entire township, high-rise, or gated community with RERA verification & configuration matrix.
+                {LISTING_SEO.project.intro}
               </p>
             </div>
 
@@ -1219,6 +1271,7 @@ export default function PostProjectPage() {
         </div>
       </main>
 
+      <ListingSeoDetails seoKey="project" showCta={false} />
       <FooterLinks />
     </div>
   );

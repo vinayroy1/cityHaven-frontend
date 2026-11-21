@@ -16,7 +16,7 @@ export function ListYourCompany() {
             <li className="flex items-center gap-2"><BadgeIndianRupee className="h-4 w-4 text-amber-300" /> Show your package rates and completed homes</li>
           </ul>
         </div>
-        <Link href="/dashboard/construction-profile" className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-400 px-6 text-sm font-black text-slate-950 transition hover:bg-amber-300">
+        <Link href="/list-construction-company" className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-400 px-6 text-sm font-black text-slate-950 transition hover:bg-amber-300">
           List your company <ArrowRight className="h-4 w-4" />
         </Link>
       </div>

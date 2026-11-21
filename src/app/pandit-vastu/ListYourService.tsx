@@ -16,7 +16,7 @@ export function ListYourService() {
             <li className="flex items-center gap-2"><Star className="h-4 w-4 text-amber-300" /> Show your pujas, dakshina and reviews in one place</li>
           </ul>
         </div>
-        <Link href="/dashboard/pandit-profile" className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-400 px-6 text-sm font-black text-slate-950 transition hover:bg-amber-300">
+        <Link href="/list-pandit-services" className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-400 px-6 text-sm font-black text-slate-950 transition hover:bg-amber-300">
           List your services <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
