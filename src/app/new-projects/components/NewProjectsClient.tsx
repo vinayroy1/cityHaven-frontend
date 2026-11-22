@@ -1,8 +1,10 @@
 "use client";
 import { formatMoneyShort } from "@/lib/money";
+import { ProjectImagePlaceholder } from "@/components/projects/ProjectImagePlaceholder";
 
 import { CardTitleLink } from "@/components/common/CardTitleLink";
 import { X as XIcon } from "lucide-react";
+import { projectHasContact, useProjectContact } from "@/features/projects/useProjectContact";
 import React, { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,7 +29,7 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
-import { CDN_ASSETS, cdnImageUrl } from "@/config/cdn";
+import { cdnImageUrl } from "@/config/cdn";
 import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 import { CitySelectorDropdown } from "@/components/search/CitySelectorDropdown";
@@ -96,7 +98,7 @@ function ProjectGridCard({
     totalImages: safeImages.length,
   });
 
-  const projectImage = safeImages[activeImage] || safeImages[0] || CDN_ASSETS.placeholderWebp;
+  const projectImage = safeImages[activeImage] || safeImages[0];
   const projectHref = projectDetailPath(project);
 
   const openDetails = () => {
@@ -127,14 +129,18 @@ function ProjectGridCard({
         onClickCapture={handleClickCapture}
         className="relative h-40 w-full overflow-hidden select-none touch-pan-y bg-slate-100 sm:h-44 xl:h-40 dark:bg-slate-800"
       >
-        <img
-          src={projectImage}
-          alt={project.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
-          fetchPriority={idx === 0 || hasInteracted ? "high" : "auto"}
-          loading={idx === 0 || hasInteracted ? "eager" : "lazy"}
-          decoding="async"
-        />
+        {projectImage ? (
+          <img
+            src={projectImage}
+            alt={project.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
+            fetchPriority={idx === 0 || hasInteracted ? "high" : "auto"}
+            loading={idx === 0 || hasInteracted ? "eager" : "lazy"}
+            decoding="async"
+          />
+        ) : (
+          <ProjectImagePlaceholder name={project.name} developerName={project.developerName} />
+        )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/15" />
 
         {/* Desktop Prev / Next Buttons */}
@@ -244,7 +250,7 @@ function ProjectGridCard({
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
-            {project.salesPhone && (
+            {projectHasContact(project) && (
               <button
                 type="button"
                 onClick={(e) => {
@@ -315,6 +321,7 @@ export function NewProjectsClient({
   });
 
   const [contactModalProject, setContactModalProject] = useState<ProjectListing | null>(null);
+  const { reveal: revealContact } = useProjectContact();
   const [copiedCardPhone, setCopiedCardPhone] = useState(false);
 
   // Re-sync the search state when the route (city / localities) changes: adjust during render, not in an effect.
@@ -683,7 +690,10 @@ export function NewProjectsClient({
                 <ProjectGridCard
                   project={project}
                   idx={idx}
-                  onContactClick={(p) => setContactModalProject(p)}
+                  onContactClick={async (p) => {
+                    const contact = await revealContact(p);
+                    if (contact) setContactModalProject({ ...p, ...contact });
+                  }}
                 />
               </React.Fragment>
             ))}

@@ -51,6 +51,9 @@ export interface ProjectListing {
   videoTourUrl?: string;
   salesPhone?: string;
   salesEmail?: string;
+  /** Public responses hide the sales contact; these say whether one exists (reveal needs login). */
+  hasSalesPhone?: boolean;
+  hasSalesEmail?: boolean;
   siteVisitTimings?: string;
   createdAt?: string;
   isVerified?: boolean;

@@ -95,6 +95,7 @@ export const API_ENDPOINTS = {
     archive: (id: string | number) => `${BASE}/projects/${id}`,
     my: `${BASE}/projects/me`,
     inquiry: (id: string | number) => `${BASE}/projects/${id}/inquiries`,
+    contact: (id: string | number) => `${BASE}/projects/${id}/contact`,
     presignMediaUpload: `${BASE}/projects/media/presign-upload`,
     claim: (id: string | number) => `${BASE}/projects/${id}/claim`,
     claimPresign: (id: string | number) => `${BASE}/projects/${id}/claim/presign`,

@@ -1,5 +1,6 @@
 "use client";
 import { cdnImageUrl } from "@/config/cdn";
+import { ProjectImagePlaceholder } from "@/components/projects/ProjectImagePlaceholder";
 import { projectDetailPath } from "@/app/new-projects/lib/projectUrls";
 
 import React from "react";
@@ -633,7 +634,7 @@ function FeaturedProjectCard({ project, priority = false }: { project: any; prio
             decoding={priority ? "sync" : "async"}
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-slate-200 via-slate-100 to-slate-300 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800" />
+          <ProjectImagePlaceholder name={project.name} developerName={project.developerName} />
         )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/10" />
 

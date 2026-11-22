@@ -1,5 +1,6 @@
 "use client";
 import { formatMoney, formatMoneyShort } from "@/lib/money";
+import { projectHasContact, useProjectContact, type ProjectContact } from "@/features/projects/useProjectContact";
 
 import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
 import React, { useEffect, useState } from "react";
@@ -57,6 +58,10 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
   const [inquiryMessage, setInquiryMessage] = useState("");
   const [inquirySubmitted, setInquirySubmitted] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
+  // Sales contact comes from the login-gated reveal endpoint, not the public project payload.
+  const { reveal: revealContact, loading: contactLoading } = useProjectContact();
+  const [revealed, setRevealed] = useState<ProjectContact | null>(null);
+  const shown = { salesPhone: revealed?.salesPhone || "", salesEmail: revealed?.salesEmail || "" };
   const [copiedPhone, setCopiedPhone] = useState(false);
 
   useEffect(() => {
@@ -214,10 +219,16 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               <span>Share</span>
             </button>
 
-            {project.salesPhone && (
+            {projectHasContact(project) && (
               <button
                 type="button"
-                onClick={() => setContactModalOpen(true)}
+                disabled={contactLoading}
+                onClick={async () => {
+                  const contact = revealed ?? (await revealContact(project));
+                  if (!contact) return;
+                  setRevealed(contact);
+                  setContactModalOpen(true);
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-rose-300 bg-rose-50 px-4 py-2 text-xs font-bold text-rose-800 shadow-sm transition hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-950/60 dark:text-rose-300"
               >
                 <PhoneCall className="h-3.5 w-3.5 text-rose-600" />
@@ -587,18 +598,18 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               By {project.developerName}
             </p>
 
-            {project.salesPhone && (
+            {shown.salesPhone && (
             <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 Official Sales Phone
               </span>
               <div className="mt-1 flex items-center justify-between">
                 <span className="text-lg font-black text-slate-950 dark:text-white">
-                  +91 {(project.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "")}
+                  +91 {(shown.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "")}
                 </span>
                 <button
                   onClick={() => {
-                    const raw = (project.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "");
+                    const raw = (shown.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "");
                     navigator.clipboard.writeText(`+91-${raw}`);
                     setCopiedPhone(true);
                     toast.success("Phone number copied!");
@@ -610,7 +621,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
                 </button>
               </div>
               <a
-                href={`tel:+91${(project.salesPhone || "").replace(/\D/g, "")}`}
+                href={`tel:+91${(shown.salesPhone || "").replace(/\D/g, "")}`}
                 className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 active:scale-95 dark:shadow-none"
               >
                 <PhoneCall className="h-4 w-4" />
@@ -619,14 +630,14 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
             </div>
             )}
 
-            {project.salesEmail && (
+            {shown.salesEmail && (
               <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/40">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                   Sales Email
                 </span>
                 <div className="mt-0.5 font-bold text-slate-800 dark:text-slate-200">
-                  <a href={`mailto:${project.salesEmail}`} className="hover:underline">
-                    {project.salesEmail}
+                  <a href={`mailto:${shown.salesEmail}`} className="hover:underline">
+                    {shown.salesEmail}
                   </a>
                 </div>
               </div>

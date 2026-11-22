@@ -107,6 +107,10 @@ export const projectsApi = createApi({
       query: (id) => ({ url: API_ENDPOINTS.projects.archive(id), method: "DELETE" }),
       invalidatesTags: ["ProjectList", "MyProjects"],
     }),
+    revealProjectContact: builder.mutation<{ salesPhone: string | null; salesEmail: string | null }, string | number>({
+      query: (id) => ({ url: API_ENDPOINTS.projects.contact(id), method: "POST" }),
+      transformResponse: (response: ApiEnvelope<{ salesPhone: string | null; salesEmail: string | null }>) => response.data,
+    }),
     createProjectInquiry: builder.mutation<void, { projectId: string; data: ProjectInquiryInput }>({
       query: ({ projectId, data }) => ({ url: API_ENDPOINTS.projects.inquiry(projectId), method: "POST", body: data }),
     }),
@@ -128,5 +132,6 @@ export const {
   useUpdateProjectMutation,
   useArchiveProjectMutation,
   useCreateProjectInquiryMutation,
+  useRevealProjectContactMutation,
   useGetProjectMediaUploadUrlMutation,
 } = projectsApi;
