@@ -70,63 +70,43 @@ export function FooterLinks() {
               </a>
             </div>
 
-            {/* Official Social Media Channels */}
-            <div className="flex items-center gap-2 pt-2">
-              <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500 mr-0.5">Follow us:</span>
-              <a
-                href={SOCIAL_LINKS.linkedin.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Awasio on LinkedIn"
-                title="LinkedIn: awasio-official"
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/90 bg-slate-50 text-slate-600 transition hover:border-[#0A66C2] hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:text-[#0A66C2]"
-              >
-                <Linkedin className="h-3.5 w-3.5" />
-              </a>
-              <a
-                href={SOCIAL_LINKS.x.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Awasio on X"
-                title="X: @awasioofficial"
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/90 bg-slate-50 text-slate-600 transition hover:border-slate-900 hover:bg-slate-200 hover:text-black dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
-              >
-                <svg className="h-3 w-3 fill-current" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-              <a
-                href={SOCIAL_LINKS.youtube.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Awasio on YouTube"
-                title="YouTube: @awasio-official"
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/90 bg-slate-50 text-slate-600 transition hover:border-[#FF0000] hover:bg-[#FF0000]/10 hover:text-[#FF0000] dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:text-[#FF0000]"
-              >
-                <Youtube className="h-3.5 w-3.5" />
-              </a>
-              <a
-                href={SOCIAL_LINKS.instagram.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Awasio on Instagram"
-                title="Instagram: @awas_io"
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/90 bg-slate-50 text-slate-600 transition hover:border-[#E1306C] hover:bg-[#E1306C]/10 hover:text-[#E1306C] dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:text-[#E1306C]"
-              >
-                <Instagram className="h-3.5 w-3.5" />
-              </a>
-              {SOCIAL_LINKS.facebook.url && (
-                <a
-                  href={SOCIAL_LINKS.facebook.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Awasio on Facebook"
-                  title="Facebook: @theawasio"
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/90 bg-slate-50 text-slate-600 transition hover:border-[#1877F2] hover:bg-[#1877F2]/10 hover:text-[#1877F2] dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:text-[#1877F2]"
-                >
-                  <Facebook className="h-3.5 w-3.5" />
-                </a>
-              )}
+            {/* Official Social Media Channels: highlighted so visitors notice and follow */}
+            <div className="mt-3 max-w-md rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-50 via-white to-amber-50 p-3.5 shadow-sm dark:border-rose-900/50 dark:from-rose-950/40 dark:via-slate-900 dark:to-amber-950/20">
+              <p className="text-sm font-extrabold text-slate-900 dark:text-white">Follow Awasio</p>
+              <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">Property tips, new listings and market updates. Join us on social.</p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {[
+                  { href: SOCIAL_LINKS.instagram.url, label: "Instagram", title: "Instagram: @awas_io", bg: "bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF]", icon: <Instagram className="h-4 w-4" /> },
+                  { href: SOCIAL_LINKS.youtube.url, label: "YouTube", title: "YouTube: @awasio-official", bg: "bg-[#FF0000]", icon: <Youtube className="h-4 w-4" /> },
+                  { href: SOCIAL_LINKS.linkedin.url, label: "LinkedIn", title: "LinkedIn: awasio-official", bg: "bg-[#0A66C2]", icon: <Linkedin className="h-4 w-4" /> },
+                  {
+                    href: SOCIAL_LINKS.x.url,
+                    label: "X",
+                    title: "X: @awasioofficial",
+                    bg: "bg-black dark:bg-slate-700",
+                    icon: (
+                      <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24" aria-hidden>
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                    ),
+                  },
+                  { href: SOCIAL_LINKS.facebook.url, label: "Facebook", title: "Facebook: @theawasio", bg: "bg-[#1877F2]", icon: <Facebook className="h-4 w-4" /> },
+                ]
+                  .filter((s) => s.href)
+                  .map((s) => (
+                    <a
+                      key={s.label}
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Follow Awasio on ${s.label}`}
+                      title={s.title}
+                      className={`inline-flex h-9 w-9 items-center justify-center rounded-full text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg ${s.bg}`}
+                    >
+                      {s.icon}
+                    </a>
+                  ))}
+              </div>
             </div>
           </div>
 

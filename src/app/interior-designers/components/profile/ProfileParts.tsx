@@ -18,6 +18,7 @@ import Image from "next/image";
 import type { InteriorProfile } from "@/types/interior.types";
 import { isOptimizableImage } from "../../lib/image";
 import { ContactButtons } from "./ContactReveal";
+import { InteriorPhotoCarousel, interiorCardPhotos } from "@/components/interiors/InteriorPhotoCarousel";
 import { experienceYearsOf, projectsBand, humanize, inr, priceRange, profileName, unitLabel } from "./utils";
 
 /* ---------------------------------- Shell --------------------------------- */
@@ -90,24 +91,34 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
   const location = [profile.primaryLocality, profile.primaryCity]
     .filter((v, i, arr) => v && arr.indexOf(v) === i)
     .join(", ");
+  const coverPhotos = profile.coverBanner
+    ? [profile.coverBanner, ...interiorCardPhotos(profile).filter((u) => u !== profile.coverBanner)]
+    : interiorCardPhotos(profile);
 
   return (
     <header className="bg-white dark:bg-slate-900">
       <div className="mx-auto max-w-6xl sm:px-6 sm:pt-4">
-        <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-stone-800 via-rose-950 to-stone-900 sm:h-60 sm:rounded-3xl lg:h-72">
-          {profile.coverBanner && (
-            <Image
-              src={profile.coverBanner}
-              alt=""
-              fill
-              preload
-              fetchPriority="high"
-              sizes="(min-width: 1152px) 1104px, (min-width: 640px) calc(100vw - 48px), 100vw"
-              unoptimized={!isOptimizableImage(profile.coverBanner)}
-              className="object-cover"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+        <div className="group relative h-44 w-full overflow-hidden bg-gradient-to-br from-stone-800 via-rose-950 to-stone-900 sm:h-60 sm:rounded-3xl lg:h-72">
+          {/* Cover banner first, then gallery / project photos as swipeable slides (same carousel as the cards). */}
+          <InteriorPhotoCarousel
+            photos={coverPhotos}
+            alt={name}
+            autoPlayMs={4000}
+            renderImage={(src, i) => (
+              <Image
+                src={src}
+                alt={i === 0 ? "" : `${name} portfolio photo ${i + 1}`}
+                fill
+                draggable={false}
+                preload={i === 0}
+                fetchPriority={i === 0 ? "high" : "auto"}
+                sizes="(min-width: 1152px) 1104px, (min-width: 640px) calc(100vw - 48px), 100vw"
+                unoptimized={!isOptimizableImage(src)}
+                className="pointer-events-none object-cover"
+              />
+            )}
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
         </div>
       </div>
 

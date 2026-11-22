@@ -5,7 +5,7 @@
  * opens the profile link the card is wrapped in.
  */
 import { Camera, ChevronLeft, ChevronRight } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useCardImageSwipe } from "@/components/common/useCardImageSwipe";
 
 export const MAX_CARD_PHOTOS = 8;
@@ -16,6 +16,7 @@ export function InteriorPhotoCarousel({
   renderImage,
   className = "",
   fallback,
+  autoPlayMs,
 }: {
   photos: string[];
   alt: string;
@@ -23,17 +24,35 @@ export function InteriorPhotoCarousel({
   renderImage: (src: string, index: number) => ReactNode;
   className?: string;
   fallback?: ReactNode;
+  /** Advance on its own every N ms (paused on hover / touch / hidden tab, off for reduced motion). */
+  autoPlayMs?: number;
 }) {
   const list = photos.slice(0, MAX_CARD_PHOTOS);
   const { activeImage, nextImage, prevImage, hasCarousel, handleMouseEnter, containerRef, handleClickCapture } =
     useCardImageSwipe({ images: list });
   const src = list[activeImage] ?? list[0];
+  const [paused, setPaused] = useState(false);
+
+  // Timer restarts on every slide change, so a manual swipe gets a full interval before the next auto step.
+  useEffect(() => {
+    if (!autoPlayMs || !hasCarousel || paused) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const t = window.setTimeout(() => {
+      if (!document.hidden) nextImage();
+    }, autoPlayMs);
+    return () => window.clearTimeout(t);
+  }, [autoPlayMs, hasCarousel, paused, activeImage, nextImage]);
 
   return (
     <div
       ref={containerRef}
       onClickCapture={handleClickCapture}
-      onMouseEnter={handleMouseEnter}
+      onMouseEnter={() => {
+        handleMouseEnter();
+        setPaused(true);
+      }}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
       aria-label={hasCarousel ? `${alt}: photo ${activeImage + 1} of ${list.length}` : undefined}
       className={`relative h-full w-full select-none touch-pan-y ${className}`}
     >

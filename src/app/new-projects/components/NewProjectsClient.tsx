@@ -2,6 +2,7 @@
 import { formatMoneyShort } from "@/lib/money";
 
 import { CardTitleLink } from "@/components/common/CardTitleLink";
+import { X as XIcon } from "lucide-react";
 import React, { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -199,7 +200,7 @@ function ProjectGridCard({
           <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" />
           <span className="truncate">
             {project.locality ? `${project.locality}, ` : ""}
-            {typeof project.city === "string" ? project.city : (project.cityName || (project.city as any)?.name || "")}
+            {typeof project.city === "string" ? project.city : (project.cityName || (project.city as { name?: string } | null | undefined)?.name || "")}
           </span>
         </div>
 
@@ -294,6 +295,13 @@ export function NewProjectsClient({
   const [appliedCity, setAppliedCity] = useState<string>(initialCity);
   const [appliedLocalities, setAppliedLocalities] = useState<string[]>(initialLocalities);
   const [appliedKeyword, setAppliedKeyword] = useState<string>("");
+  // Project / builder name search: narrows the current city + locality results as you type (debounced).
+  const [nameDraft, setNameDraft] = useState<string>("");
+  const [appliedName, setAppliedName] = useState<string>("");
+  useEffect(() => {
+    const t = setTimeout(() => setAppliedName(nameDraft.trim()), 350);
+    return () => clearTimeout(t);
+  }, [nameDraft]);
 
   // Filter drawer state
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -309,13 +317,17 @@ export function NewProjectsClient({
   const [contactModalProject, setContactModalProject] = useState<ProjectListing | null>(null);
   const [copiedCardPhone, setCopiedCardPhone] = useState(false);
 
-  useEffect(() => {
+  // Re-sync the search state when the route (city / localities) changes: adjust during render, not in an effect.
+  const routeKey = `${initialCity}\u001e${initialLocalitiesKey}`;
+  const [syncedRouteKey, setSyncedRouteKey] = useState(routeKey);
+  if (syncedRouteKey !== routeKey) {
     const routeLocalities = initialLocalitiesKey ? initialLocalitiesKey.split("\u001f") : [];
+    setSyncedRouteKey(routeKey);
     setCityDraft(initialCity);
     setAppliedCity(initialCity);
     setLocalityDrafts(routeLocalities);
     setAppliedLocalities(routeLocalities);
-  }, [initialCity, initialLocalitiesKey]);
+  }
 
   // Auto-detect user preferred city on initial mount if available
   useEffect(() => {
@@ -323,6 +335,7 @@ export function NewProjectsClient({
     if (initialCity) return;
     const preferred = getUserPreferredCity();
     if (preferred && preferred.trim()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- saved city lives in localStorage (browser-only)
       setCityDraft(preferred.trim());
       setAppliedCity(preferred.trim());
       router.replace(buildProjectSearchHref(preferred.trim()), { scroll: false });
@@ -367,6 +380,8 @@ export function NewProjectsClient({
     setAppliedCity("");
     setAppliedLocalities([]);
     setAppliedKeyword("");
+    setNameDraft("");
+    setAppliedName("");
     router.push("/new-projects", { scroll: false });
     setFilterState({
       status: "ALL",
@@ -393,7 +408,7 @@ export function NewProjectsClient({
     () => ({
       city: appliedCity && appliedCity !== "All" ? appliedCity : undefined,
       locality: appliedLocalities.length ? appliedLocalities.join(",") : undefined,
-      q: appliedKeyword || undefined,
+      q: appliedName || appliedKeyword || undefined,
       status: filterState.status === "ALL" ? undefined : (filterState.status as ProjectStatus),
       bhk: filterState.bhk === "All" ? undefined : filterState.bhk,
       budgetMin: filterState.budgetMin,
@@ -402,7 +417,7 @@ export function NewProjectsClient({
       sortBy: filterState.sortBy,
       pageSize: PAGE_SIZE,
     }),
-    [appliedCity, appliedLocalities, appliedKeyword, filterState],
+    [appliedCity, appliedLocalities, appliedKeyword, appliedName, filterState],
   );
   // The page number belongs to one filter set; any filter change starts again from page 1.
   const filtersKey = JSON.stringify(searchFilters);
@@ -548,6 +563,30 @@ export function NewProjectsClient({
                   </>
                 )}
               </button>
+            </div>
+
+            {/* Row 2: project / builder name, for cities or localities with many projects */}
+            <div className="relative min-w-0">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
+              <input
+                type="search"
+                value={nameDraft}
+                onChange={(e) => setNameDraft(e.target.value)}
+                maxLength={80}
+                aria-label="Search by project or builder name"
+                placeholder={appliedCity ? `Project or builder name in ${appliedCity}` : "Search by project or builder name"}
+                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-9 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-rose-400 focus:bg-white focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-rose-900/40 sm:h-11 [&::-webkit-search-cancel-button]:hidden"
+              />
+              {nameDraft && (
+                <button
+                  type="button"
+                  aria-label="Clear name search"
+                  onClick={() => setNameDraft("")}
+                  className="absolute right-2 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700"
+                >
+                  <XIcon className="h-3.5 w-3.5" />
+                </button>
+              )}
             </div>
 
             {/* Mobile Actions: Filters & Search side-by-side (matches flatmate & property search) */}

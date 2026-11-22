@@ -23,12 +23,12 @@ import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 export const metadata: Metadata = {
   title: "Terms of Service & Regulatory Compliance",
   description:
-    "Review the corporate terms of service, RERA intermediary disclosures, refund policies, and Grievance Redressal details for Awasio Technologies Private Limited.",
+    "Review the corporate terms of service, RERA intermediary disclosures, refund policies, and Grievance Redressal details for Awasio.",
   alternates: { canonical: buildCanonical("/terms") },
   openGraph: {
     title: "Terms of Service & Regulatory Compliance | Awasio",
     description:
-      "Review the corporate terms of service, RERA intermediary disclosures, refund policies, and Grievance Redressal details for Awasio Technologies Private Limited.",
+      "Review the corporate terms of service, RERA intermediary disclosures, refund policies, and Grievance Redressal details for Awasio.",
     url: buildCanonical("/terms"),
     type: "website",
     images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
@@ -38,11 +38,11 @@ export const metadata: Metadata = {
 const termsSections = [
   {
     id: "entity",
-    title: "1. Corporate Entity & Intermediary Status",
+    title: "1. About Awasio & Intermediary Status",
     content: (
       <div className="space-y-3">
         <p>
-          The website <strong>https://awasio.com</strong> and associated mobile applications (collectively, the &ldquo;Platform&rdquo;) are owned, operated, and maintained by <strong>Awasio Technologies Private Limited</strong> (&ldquo;Company&rdquo;, &ldquo;Awasio&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;), a company incorporated under the Indian Companies Act, 2013 (CIN: U72900HR2024PTC118942).
+          The website <strong>https://awasio.com</strong> and associated mobile applications (collectively, the &ldquo;Platform&rdquo;) are owned, operated, and maintained by <strong>Awasio</strong> (&ldquo;Company&rdquo;, &ldquo;Awasio&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;).
         </p>
         <p>
           Awasio operates strictly as an online marketplace intermediary under Section 79 of the Information Technology Act, 2000, and as a real estate digital advertising platform facilitating introductions between buyers, tenants, verified owners, and authorized real estate promoters/advisors. Awasio does not own, lease, develop, or guarantee properties listed on the platform.
@@ -174,7 +174,7 @@ export default function TermsPage() {
             </p>
             <div className="mt-5 flex flex-wrap gap-2 text-xs font-medium text-slate-700 dark:text-slate-300">
               <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 shadow-inner dark:border-slate-800 dark:bg-slate-800">
-                Entity: Awasio Technologies Pvt Ltd
+                Entity: Awasio
               </span>
               <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 shadow-inner dark:border-slate-800 dark:bg-slate-800">
                 RERA Reg: HRERA &amp; K-RERA Compliant
@@ -192,9 +192,8 @@ export default function TermsPage() {
                 <Building2 className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Registered Entity</h3>
-                <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Awasio Technologies Private Limited</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">CIN: U72900HR2024PTC118942</p>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Operated By</h3>
+                <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Awasio</p>
               </div>
             </div>
 
@@ -205,7 +204,7 @@ export default function TermsPage() {
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Registered Office</h3>
                 <p className="mt-1 text-xs leading-relaxed text-slate-800 dark:text-slate-300 font-medium">
-                  Unit 402, 4th Floor, Magnum Global Park, Sector 58, Golf Course Ext Road, Gurugram, Haryana - 122011, India
+                  B-90/2, Block A1, Chhatarpur Extension, Chhatarpur, New Delhi - 110074, India
                 </p>
               </div>
             </div>
@@ -259,7 +258,7 @@ export default function TermsPage() {
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Grievance Officer Name</p>
                 <p className="text-base font-bold text-slate-900 dark:text-white">Vinay Kumar</p>
                 <p className="text-xs text-slate-600 dark:text-slate-400">Designation: Nodal &amp; Grievance Officer</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">Company: Awasio Technologies Private Limited</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Company: Awasio</p>
               </div>
 
               <div className="space-y-2">
@@ -272,7 +271,7 @@ export default function TermsPage() {
                   (cc: <code>legal@awasio.com</code>)
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                  <strong>Postal Address:</strong> Grievance Redressal Cell, Awasio Technologies Private Limited, Unit 402, 4th Floor, Magnum Global Park, Sector 58, Golf Course Ext Road, Gurugram, Haryana - 122011, India.
+                  <strong>Postal Address:</strong> Grievance Redressal Cell, Awasio, B-90/2, Block A1, Chhatarpur Extension, Chhatarpur, New Delhi - 110074, India.
                 </p>
               </div>
             </div>

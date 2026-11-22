@@ -23,12 +23,12 @@ import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 export const metadata: Metadata = {
   title: "Privacy Policy & Data Protection",
   description:
-    "Learn how Awasio Technologies Private Limited collects, stores, protects, and manages your personal data in full compliance with the Digital Personal Data Protection Act (DPDPA 2023) and Indian IT Rules.",
+    "Learn how Awasio collects, stores, protects, and manages your personal data in full compliance with the Digital Personal Data Protection Act (DPDPA 2023) and Indian IT Rules.",
   alternates: { canonical: buildCanonical("/privacy") },
   openGraph: {
     title: "Privacy Policy & Data Protection | Awasio",
     description:
-      "Learn how Awasio Technologies Private Limited collects, stores, protects, and manages your personal data in full compliance with the Digital Personal Data Protection Act (DPDPA 2023) and Indian IT Rules.",
+      "Learn how Awasio collects, stores, protects, and manages your personal data in full compliance with the Digital Personal Data Protection Act (DPDPA 2023) and Indian IT Rules.",
     url: buildCanonical("/privacy"),
     type: "website",
     images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }],
@@ -107,11 +107,11 @@ export default function PrivacyPage() {
               Privacy Policy &amp; Data Governance
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-              This Privacy Policy explains how <strong>Awasio Technologies Private Limited</strong> collects, utilizes, stores, and protects your personal information when you access our platform, in full accordance with the Information Technology Act, 2000, the SPDI Rules 2011, and the Digital Personal Data Protection Act, 2023 (DPDPA).
+              This Privacy Policy explains how <strong>Awasio</strong> collects, utilizes, stores, and protects your personal information when you access our platform, in full accordance with the Information Technology Act, 2000, the SPDI Rules 2011, and the Digital Personal Data Protection Act, 2023 (DPDPA).
             </p>
             <div className="mt-5 flex flex-wrap gap-2 text-xs font-medium text-slate-700 dark:text-slate-300">
               <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 shadow-inner dark:border-slate-800 dark:bg-slate-800">
-                Data Fiduciary: Awasio Technologies Pvt Ltd
+                Data Fiduciary: Awasio
               </span>
               <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 shadow-inner dark:border-slate-800 dark:bg-slate-800">
                 DPDPA 2023 Compliant
@@ -130,8 +130,7 @@ export default function PrivacyPage() {
               </div>
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Data Fiduciary</h3>
-                <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Awasio Technologies Private Limited</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">CIN: U72900HR2024PTC118942</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Awasio</p>
               </div>
             </div>
 
@@ -142,7 +141,7 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Registered Office</h3>
                 <p className="mt-1 text-xs leading-relaxed text-slate-800 dark:text-slate-300 font-medium">
-                  Unit 402, 4th Floor, Magnum Global Park, Sector 58, Golf Course Ext Road, Gurugram, Haryana - 122011, India
+                  B-90/2, Block A1, Chhatarpur Extension, Chhatarpur, New Delhi - 110074, India
                 </p>
               </div>
             </div>
@@ -245,7 +244,7 @@ export default function PrivacyPage() {
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Designated Officer</p>
                 <p className="text-base font-bold text-slate-900 dark:text-white">Vinay Kumar</p>
                 <p className="text-xs text-slate-600 dark:text-slate-400">Designation: Nodal &amp; Grievance Officer</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">Entity: Awasio Technologies Private Limited</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Entity: Awasio</p>
               </div>
 
               <div className="space-y-2">
@@ -258,7 +257,7 @@ export default function PrivacyPage() {
                   (cc: <code>privacy@awasio.com</code>)
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                  <strong>Postal Address:</strong> Grievance Redressal Cell, Awasio Technologies Private Limited, Unit 402, 4th Floor, Magnum Global Park, Sector 58, Golf Course Ext Road, Gurugram, Haryana - 122011, India.
+                  <strong>Postal Address:</strong> Grievance Redressal Cell, Awasio, B-90/2, Block A1, Chhatarpur Extension, Chhatarpur, New Delhi - 110074, India.
                 </p>
               </div>
             </div>
