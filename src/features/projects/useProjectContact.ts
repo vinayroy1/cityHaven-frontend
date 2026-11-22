@@ -7,7 +7,14 @@ import { APP_CONFIG } from "@/constants/app-config";
 import type { ProjectListing } from "@/types/project.types";
 import { useRevealProjectContactMutation } from "./api";
 
-export type ProjectContact = { salesPhone: string; salesEmail: string };
+/** salesPhone = primary; salesPhones = extra numbers (site office, NRI desk, ...). One email. */
+export type ProjectContact = { salesPhone: string; salesPhones: string[]; salesEmail: string };
+
+/** Primary first, then the extras. */
+export function allSalesPhones(c: { salesPhone?: string | null; salesPhones?: string[] | null } | null | undefined): string[] {
+  if (!c) return [];
+  return [c.salesPhone || "", ...(c.salesPhones || [])].filter(Boolean);
+}
 
 /** True when the project has a sales contact to show (hidden in public responses, so check the flags too). */
 export function projectHasContact(p: Pick<ProjectListing, "salesPhone" | "salesEmail" | "hasSalesPhone" | "hasSalesEmail">) {
@@ -33,7 +40,7 @@ export function useProjectContact() {
       }
       try {
         const data = await trigger(project.id).unwrap();
-        return { salesPhone: data.salesPhone || "", salesEmail: data.salesEmail || "" };
+        return { salesPhone: data.salesPhone || "", salesPhones: data.salesPhones || [], salesEmail: data.salesEmail || "" };
       } catch (err) {
         const status = (err as { status?: number })?.status;
         if (status !== 401) {

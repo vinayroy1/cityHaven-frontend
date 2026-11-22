@@ -1,6 +1,7 @@
 "use client";
 import { formatMoney, formatMoneyShort } from "@/lib/money";
-import { projectHasContact, useProjectContact, type ProjectContact } from "@/features/projects/useProjectContact";
+import { allSalesPhones, projectHasContact, useProjectContact, type ProjectContact } from "@/features/projects/useProjectContact";
+import { SalesPhoneList } from "./SalesPhoneList";
 
 import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
 import React, { useEffect, useState } from "react";
@@ -61,8 +62,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
   // Sales contact comes from the login-gated reveal endpoint, not the public project payload.
   const { reveal: revealContact, loading: contactLoading } = useProjectContact();
   const [revealed, setRevealed] = useState<ProjectContact | null>(null);
-  const shown = { salesPhone: revealed?.salesPhone || "", salesEmail: revealed?.salesEmail || "" };
-  const [copiedPhone, setCopiedPhone] = useState(false);
+  const shown = { salesPhone: revealed?.salesPhone || "", salesPhones: revealed?.salesPhones || [], salesEmail: revealed?.salesEmail || "" };
 
   useEffect(() => {
     if (!inquiryModalOpen) return;
@@ -598,37 +598,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               By {project.developerName}
             </p>
 
-            {shown.salesPhone && (
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Official Sales Phone
-              </span>
-              <div className="mt-1 flex items-center justify-between">
-                <span className="text-lg font-black text-slate-950 dark:text-white">
-                  +91 {(shown.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "")}
-                </span>
-                <button
-                  onClick={() => {
-                    const raw = (shown.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "");
-                    navigator.clipboard.writeText(`+91-${raw}`);
-                    setCopiedPhone(true);
-                    toast.success("Phone number copied!");
-                    setTimeout(() => setCopiedPhone(false), 2000);
-                  }}
-                  className="rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-sm border border-slate-200 transition hover:bg-slate-50 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600"
-                >
-                  {copiedPhone ? "Copied!" : "Copy"}
-                </button>
-              </div>
-              <a
-                href={`tel:+91${(shown.salesPhone || "").replace(/\D/g, "")}`}
-                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 active:scale-95 dark:shadow-none"
-              >
-                <PhoneCall className="h-4 w-4" />
-                <span>Call Sales Desk Now</span>
-              </a>
-            </div>
-            )}
+            <SalesPhoneList phones={allSalesPhones(shown)} />
 
             {shown.salesEmail && (
               <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/40">

@@ -50,6 +50,8 @@ export interface ProjectListing {
   images: string[];
   videoTourUrl?: string;
   salesPhone?: string;
+  /** Extra sales numbers (owner payloads / reveal only; public responses hide all contacts). */
+  salesPhones?: string[];
   salesEmail?: string;
   /** Public responses hide the sales contact; these say whether one exists (reveal needs login). */
   hasSalesPhone?: boolean;

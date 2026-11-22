@@ -4,7 +4,8 @@ import { ProjectImagePlaceholder } from "@/components/projects/ProjectImagePlace
 
 import { CardTitleLink } from "@/components/common/CardTitleLink";
 import { X as XIcon } from "lucide-react";
-import { projectHasContact, useProjectContact } from "@/features/projects/useProjectContact";
+import { allSalesPhones, projectHasContact, useProjectContact } from "@/features/projects/useProjectContact";
+import { SalesPhoneList } from "./SalesPhoneList";
 import React, { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -322,7 +323,6 @@ export function NewProjectsClient({
 
   const [contactModalProject, setContactModalProject] = useState<ProjectListing | null>(null);
   const { reveal: revealContact } = useProjectContact();
-  const [copiedCardPhone, setCopiedCardPhone] = useState(false);
 
   // Re-sync the search state when the route (city / localities) changes: adjust during render, not in an effect.
   const routeKey = `${initialCity}\u001e${initialLocalitiesKey}`;
@@ -793,38 +793,7 @@ export function NewProjectsClient({
               By {contactModalProject.developerName}
             </p>
 
-            {contactModalProject.salesPhone && (
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/60">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Official Sales Desk Phone
-              </span>
-              <div className="mt-1 flex items-center justify-between">
-                <span className="text-lg font-black text-slate-950 dark:text-white">
-                  +91 {(contactModalProject.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "")}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const raw = (contactModalProject.salesPhone || "").replace(/^\+?91\s*[-]?\s*/, "");
-                    navigator.clipboard.writeText(`+91-${raw}`);
-                    setCopiedCardPhone(true);
-                    toast.success("Phone number copied!");
-                    setTimeout(() => setCopiedCardPhone(false), 2000);
-                  }}
-                  className="rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-sm border border-slate-200 transition hover:bg-slate-50 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600"
-                >
-                  {copiedCardPhone ? "Copied!" : "Copy"}
-                </button>
-              </div>
-              <a
-                href={`tel:+91${(contactModalProject.salesPhone || "").replace(/\D/g, "")}`}
-                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 active:scale-95 dark:shadow-none"
-              >
-                <PhoneCall className="h-4 w-4" />
-                <span>Call Sales Desk Now</span>
-              </a>
-            </div>
-            )}
+            <SalesPhoneList phones={allSalesPhones(contactModalProject)} />
 
             {contactModalProject.salesEmail && (
               <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/40">

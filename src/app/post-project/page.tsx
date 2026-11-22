@@ -343,13 +343,14 @@ export default function PostProjectPage() {
   // Step 4: Sales Office & Concierge Contact
   const [salesPhone, setSalesPhone] = useState("");
   const [salesEmail, setSalesEmail] = useState("");
+  const [extraSalesPhones, setExtraSalesPhones] = useState<string[]>([]);
   const [siteVisitTimings, setSiteVisitTimings] = useState("");
 
   // Logged-out builders can fill the whole form: it's kept in the browser through login / signup
   // (also if an upload bounces them there) and restored when they come back. Same as /propertyListing.
   const { save: saveDraft, clear: clearDraft } = useBrowserDraft(
     PROJECT_DRAFT_KEY,
-    { currentStep, name, developerName, reraId, countryCode, status, possessionDate, selectedState, city, locality, isCustomLocality, siteAddress, landmark, pincode, latitude, longitude, totalLandArea, totalTowers, totalUnits, priceMin, priceMax, pricePerSqFt, configurations, selectedAmenities, images, brochureUrl, brochureFile, salesPhone, salesEmail, siteVisitTimings },
+    { currentStep, name, developerName, reraId, countryCode, status, possessionDate, selectedState, city, locality, isCustomLocality, siteAddress, landmark, pincode, latitude, longitude, totalLandArea, totalTowers, totalUnits, priceMin, priceMax, pricePerSqFt, configurations, selectedAmenities, images, brochureUrl, brochureFile, salesPhone, extraSalesPhones, salesEmail, siteVisitTimings },
     {
       currentStep: setCurrentStep,
       name: setName,
@@ -380,6 +381,7 @@ export default function PostProjectPage() {
       brochureFile: setBrochureFile,
       salesPhone: setSalesPhone,
       salesEmail: setSalesEmail,
+      extraSalesPhones: setExtraSalesPhones,
       siteVisitTimings: setSiteVisitTimings,
     },
   );
@@ -459,6 +461,9 @@ export default function PostProjectPage() {
 
   async function handleSubmit() {
     if (!salesPhone.trim()) return toast.error("Sales desk phone number is required");
+    if (extraSalesPhones.some((p) => p.trim() && p.replace(/\D/g, "").length < 8)) {
+      return toast.error("Each extra sales number needs at least 8 digits");
+    }
     if (!getAuthToken()) {
       saveDraft();
       toast.info("Log in or sign up to publish your project. Your details are saved.");
@@ -499,6 +504,7 @@ export default function PostProjectPage() {
       images,
       brochureUrl: brochureFile?.url || brochureUrl,
       salesPhone,
+      salesPhones: extraSalesPhones.map((p) => p.trim()).filter(Boolean),
       salesEmail,
       siteVisitTimings,
     };
@@ -1136,6 +1142,44 @@ export default function PostProjectPage() {
                           placeholder="sales@developer.com"
                           className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:border-rose-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                         />
+                      </div>
+                    </div>
+
+                    {/* Extra sales numbers (site office, NRI desk, channel partner ...): up to 5 */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        More Sales Numbers <span className="font-medium text-slate-400">(optional, up to 5)</span>
+                      </label>
+                      <div className="space-y-2">
+                        {extraSalesPhones.map((p, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            <input
+                              type="tel"
+                              value={p}
+                              onChange={(e) => setExtraSalesPhones((list) => list.map((v, j) => (j === i ? e.target.value : v)))}
+                              placeholder="+91-XXXXXXXXXX"
+                              aria-label={`Extra sales number ${i + 1}`}
+                              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:border-rose-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setExtraSalesPhones((list) => list.filter((_, j) => j !== i))}
+                              aria-label={`Remove extra sales number ${i + 1}`}
+                              className="shrink-0 rounded-xl border border-slate-200 px-3 py-2.5 text-xs font-bold text-slate-600 hover:border-rose-300 hover:text-rose-600 dark:border-slate-700 dark:text-slate-300"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                        {extraSalesPhones.length < 5 && (
+                          <button
+                            type="button"
+                            onClick={() => setExtraSalesPhones((list) => [...list, ""])}
+                            className="text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400"
+                          >
+                            + Add another sales number
+                          </button>
+                        )}
                       </div>
                     </div>
 
