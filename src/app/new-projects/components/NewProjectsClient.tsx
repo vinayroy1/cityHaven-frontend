@@ -183,10 +183,17 @@ function ProjectGridCard({
         </div>
 
         <div className="absolute inset-x-2.5 bottom-2.5 z-10 flex items-end justify-between gap-2 pointer-events-none sm:inset-x-3 sm:bottom-3">
-          <div className="rounded-xl bg-slate-950/85 px-3 py-1.5 text-white shadow-lg backdrop-blur-md">
-            <p className="text-[8px] font-semibold uppercase tracking-wider text-slate-300">Starting from</p>
-            <p className="text-base font-black leading-tight sm:text-lg">{formatPrice(project.priceMin, project.countryCode)}</p>
-          </div>
+          {project.priceMin ? (
+            <div className="rounded-xl bg-slate-950/85 px-3 py-1.5 text-white shadow-lg backdrop-blur-md">
+              <p className="text-[8px] font-semibold uppercase tracking-wider text-slate-300">Starting from</p>
+              <p className="text-base font-black leading-tight sm:text-lg">{formatPrice(project.priceMin, project.countryCode)}</p>
+            </div>
+          ) : (
+            // No price yet: a small pill, not the big price block.
+            <span className="rounded-full bg-slate-950/80 px-2.5 py-1 text-[10px] font-semibold text-white/90 backdrop-blur-md sm:text-[11px]">
+              Price on request
+            </span>
+          )}
           {hasCarousel && (
             <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/80 px-2 py-1 text-[9px] font-bold text-white backdrop-blur-md">
               <Camera className="h-3 w-3" /> {activeImage + 1} of {safeImages.length}
