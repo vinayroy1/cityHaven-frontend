@@ -1,4 +1,5 @@
 "use client";
+import { AgentContactButtons } from "../components/AgentContactButtons";
 import { advisorPhoto } from "@/features/advisors/avatar";
 import { agentPath, agentsListPath } from "@/features/advisors/paths";
 
@@ -244,35 +245,7 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                   <Calendar className="h-3.5 w-3.5" />
                   <span>Book Site Visit</span>
                 </button>
-                <a
-                  href={`tel:${agent.phone.replace(/\s+/g, "")}`}
-                  title={`Call ${agent.phone}`}
-                  className="inline-flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 sm:px-3 text-xs font-bold text-slate-800 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition"
-                >
-                  <PhoneCall className="h-3.5 w-3.5 text-rose-500" />
-                  <span className="hidden xs:inline">Call</span>
-                </a>
-                {agent.email && (
-                  <a
-                    href={`mailto:${agent.email}`}
-                    title={`Email ${agent.email}`}
-                    className="inline-flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 sm:px-3 text-xs font-bold text-slate-800 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition"
-                  >
-                    <Mail className="h-3.5 w-3.5 text-blue-500" />
-                    <span className="hidden xs:inline">Email</span>
-                  </a>
-                )}
-                <a
-                  href={`https://wa.me/${agent.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
-                    `Hi ${agent.name}, I found your verified advisor profile on Awasio and would like to inquire about properties in ${agent.area}.`
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 sm:px-3 text-xs font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 transition"
-                >
-                  <MessageSquare className="h-3.5 w-3.5 text-emerald-600" />
-                  <span className="hidden xs:inline">WhatsApp</span>
-                </a>
+                <AgentContactButtons agent={agent} variant="hero" />
               </div>
 
               {/* Performance Stats Matrix */}
@@ -632,35 +605,7 @@ export function AgentProfileClient({ agent: initialAgent, similarAgents }: Agent
                   Call or WhatsApp {agent.name} directly for on-ground enquiries or immediate property viewings.
                 </p>
                 <div className="pt-2 flex gap-2">
-                  <a
-                    href={`tel:${agent.phone.replace(/\s+/g, "")}`}
-                    title={`Call ${agent.phone}`}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 py-2 text-xs font-bold text-slate-800 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition"
-                  >
-                    <PhoneCall className="h-3.5 w-3.5 text-rose-500" />
-                    Call
-                  </a>
-                  {agent.email && (
-                    <a
-                      href={`mailto:${agent.email}`}
-                      title={`Email ${agent.email}`}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 py-2 text-xs font-bold text-slate-800 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 dark:border-slate-700 dark:bg-slate-800 dark:text-white transition"
-                    >
-                      <Mail className="h-3.5 w-3.5 text-blue-500" />
-                      Email
-                    </a>
-                  )}
-                  <a
-                    href={`https://wa.me/${agent.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
-                      `Hi ${agent.name}, I found your profile on Awasio and would like to inquire about properties in ${agent.area}.`
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 transition"
-                  >
-                    <MessageSquare className="h-3.5 w-3.5 text-emerald-600" />
-                    WhatsApp
-                  </a>
+                  <AgentContactButtons agent={agent} variant="widget" />
                 </div>
               </div>
             </div>

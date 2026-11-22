@@ -59,7 +59,6 @@ export function AgentsDirectoryView({
         name: agent.name,
         url: `https://awasio.com${agentPath(agent)}`,
         image: advisorPhoto(agent.avatar) ?? undefined,
-        telephone: agent.phone,
         address: {
           "@type": "PostalAddress",
           addressLocality: agent.area,

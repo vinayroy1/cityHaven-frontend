@@ -30,6 +30,8 @@ import { stayErrorMessage, trackBookingClick, useStay, useStayEnquiry } from "@/
 import { bedLabel, facilityLabel, platformInfo, stayTypeLabel } from "@/features/stays/options";
 import type { Stay, StayRoom } from "@/features/stays/types";
 import { formatMoney, intlMobile, whatsappNumber } from "@/lib/money";
+import { openContactLink, useGatedContact } from "@/lib/hooks/useGatedContact";
+import { APP_CONFIG } from "@/constants/app-config";
 
 function roomPrice(room: StayRoom, cc: string) {
   if (room.isFree) return { main: "Free", sub: room.donationBased ? "donation welcome" : "" };
@@ -212,6 +214,7 @@ function NearbySection({ stay }: { stay: Stay }) {
 
 export default function StayDetail({ slug }: { slug: string }) {
   const { data: stay, isLoading, error } = useStay(slug);
+  const gated = useGatedContact(stay ? `${APP_CONFIG.API.BASE_URL}/v1/stays/${stay.id}/contact` : null, "the stay's contact number");
   const [lightbox, setLightbox] = useState<number | null>(null);
   const [enquire, setEnquire] = useState<{ room?: StayRoom | null } | null>(null);
 
@@ -246,9 +249,21 @@ export default function StayDetail({ slug }: { slug: string }) {
 
   const price = stayPriceLabel(stay);
   const place = [stay.locality, stay.cityName, stay.stateName].filter(Boolean).join(", ");
-  const phone = stay.phone ? intlMobile(stay.phone) : "";
-  const wa = stay.whatsapp || stay.phone;
+  // Owners get their own number in the payload; everyone else reveals it (login required).
+  const known = gated.contact ?? (stay.phone || stay.whatsapp ? { phone: stay.phone ?? null, whatsapp: stay.whatsapp ?? null } : null);
+  const hasCall = Boolean(known?.phone || stay.hasPhone);
+  const hasWa = Boolean(known?.whatsapp || known?.phone || stay.hasPhone);
   const waText = `Hi, I found ${stay.name} on Awasio. Is a room available?`;
+  const callStay = async () => {
+    const c = known?.phone ? known : await gated.reveal();
+    if (c?.phone) openContactLink(`tel:${intlMobile(c.phone)}`);
+    else if (c) toast.info("This stay has no phone number. Try WhatsApp or send an enquiry.");
+  };
+  const whatsappStay = async () => {
+    const c = known?.whatsapp || known?.phone ? known : await gated.reveal();
+    const n = c?.whatsapp || c?.phone;
+    if (n) openContactLink(`https://wa.me/${whatsappNumber(n)}?text=${encodeURIComponent(waText)}`, true);
+  };
   const rules: Array<{ ok: boolean; label: string; icon: typeof Clock }> = [
     { ok: true, label: `Check-in ${stay.checkInTime || "12:00"} · Check-out ${stay.checkOutTime || "11:00"}`, icon: Clock },
     { ok: stay.idRequired, label: stay.idRequired ? "Valid photo ID required at check-in" : "ID not mandatory", icon: IdCard },
@@ -421,20 +436,20 @@ export default function StayDetail({ slug }: { slug: string }) {
                 Check availability
               </button>
               <div className="grid grid-cols-2 gap-2">
-                {phone && (
-                  <a href={`tel:${phone}`} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-800 dark:border-slate-700 dark:text-white">
+                {hasCall && (
+                  <button type="button" disabled={gated.loading} onClick={callStay} className="inline-flex h-11 items-center justify-center gap-1.5 rounded-2xl border border-slate-200 text-sm font-bold text-slate-800 disabled:opacity-60 dark:border-slate-700 dark:text-white">
                     <Phone className="h-4 w-4" /> Call
-                  </a>
+                  </button>
                 )}
-                {wa && (
-                  <a
-                    href={`https://wa.me/${whatsappNumber(wa)}?text=${encodeURIComponent(waText)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex h-11 items-center justify-center gap-1.5 rounded-2xl bg-emerald-600 text-sm font-bold text-white"
+                {hasWa && (
+                  <button
+                    type="button"
+                    disabled={gated.loading}
+                    onClick={whatsappStay}
+                    className="inline-flex h-11 items-center justify-center gap-1.5 rounded-2xl bg-emerald-600 text-sm font-bold text-white disabled:opacity-60"
                   >
                     <MessageCircle className="h-4 w-4" /> WhatsApp
-                  </a>
+                  </button>
                 )}
               </div>
               <BookingButtons stay={stay} />
@@ -453,10 +468,10 @@ export default function StayDetail({ slug }: { slug: string }) {
               {price.main} <span className="text-[11px] font-medium text-slate-500">{price.sub}</span>
             </p>
           </div>
-          {wa && (
-            <a href={`https://wa.me/${whatsappNumber(wa)}?text=${encodeURIComponent(waText)}`} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-600 text-white">
+          {hasWa && (
+            <button type="button" disabled={gated.loading} onClick={whatsappStay} aria-label="WhatsApp" className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-600 text-white disabled:opacity-60">
               <MessageCircle className="h-5 w-5" />
-            </a>
+            </button>
           )}
           {stay.bookingLinks?.[0] ? (
             <a

@@ -69,6 +69,9 @@ export interface Stay {
   phone?: string | null;
   whatsapp?: string | null;
   email?: string | null;
+  /** Public payloads hide phone / WhatsApp / email; these say whether they exist (reveal needs login). */
+  hasPhone?: boolean;
+  hasEmail?: boolean;
   bookingLinks?: StayBookingLink[] | null;
   minPrice?: number | null;
   viewCount: number;

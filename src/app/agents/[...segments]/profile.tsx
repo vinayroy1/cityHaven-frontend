@@ -64,8 +64,6 @@ export function AgentProfileView({ agent }: { agent: Agent }) {
     name: agent.name,
     jobTitle: agent.role,
     image: advisorPhoto(agent.avatar) ?? undefined,
-    telephone: agent.phone,
-    email: agent.email,
     address: {
       "@type": "PostalAddress",
       addressLocality: agent.area,
