@@ -37,6 +37,7 @@ import {
   PlusCircle,
   Search,
   Users,
+  Phone,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -89,6 +90,12 @@ const NAV_ITEMS = [
     href: "/admin/listings/create",
     icon: PlusCircle,
     allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "CATALOG_SPECIALIST"],
+  },
+  {
+    label: "Project Contacts",
+    href: "/admin/project-contacts",
+    icon: Phone,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SENIOR_QC_LEAD", "QC_REVIEWER", "CATALOG_SPECIALIST"],
   },
   {
     label: "Project Claims",

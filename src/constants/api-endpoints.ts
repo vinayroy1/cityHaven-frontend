@@ -164,6 +164,10 @@ export const API_ENDPOINTS = {
       acceptInvite: (token: string) => `${BASE}/admin/auth/invitations/${token}/accept`,
     },
     overview: `${BASE}/admin/overview`,
+    projectContacts: {
+      list: (qs: string) => `${BASE}/admin/project-contacts?${qs}`,
+      save: (id: number) => `${BASE}/admin/project-contacts/${id}`,
+    },
     projectClaims: {
       list: (status: string) => `${BASE}/admin/project-claims?status=${encodeURIComponent(status)}`,
       proofUrl: (id: number) => `${BASE}/admin/project-claims/${id}/proof-url`,

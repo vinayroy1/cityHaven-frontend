@@ -78,7 +78,38 @@ export type AdminProjectClaim = {
   related: { id: number; slug: string; name: string; cityName: string; locality: string; reraId: string | null }[];
 };
 
+export type AdminProjectContactRow = {
+  id: number;
+  slug: string | null;
+  name: string;
+  developerName: string | null;
+  cityName: string;
+  locality: string;
+  stateName: string | null;
+  reraId: string | null;
+  source: string | null;
+  salesPhone: string | null;
+  salesPhones: string[];
+  salesEmail: string | null;
+};
+
+export type AdminProjectContactList = {
+  items: AdminProjectContactRow[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  stats: { totalProjects: number; missingAny: number; missingPhone: number; missingEmail: number; missingBoth: number };
+  cities: { city: string; count: number }[];
+};
+
 export const adminApi = {
+  async listProjectContacts(qs: string) {
+    return unwrap(await apiClient.get<AdminProjectContactList>(API_ENDPOINTS.admin.projectContacts.list(qs)));
+  },
+  async saveProjectContact(id: number, body: { salesPhones: string[]; salesEmail: string }) {
+    return unwrap(await apiClient.put<AdminProjectContactRow>(API_ENDPOINTS.admin.projectContacts.save(id), body));
+  },
   async listProjectClaims(status: string) {
     return unwrap(await apiClient.get<{ items: AdminProjectClaim[]; counts: Record<string, number> }>(API_ENDPOINTS.admin.projectClaims.list(status)));
   },
