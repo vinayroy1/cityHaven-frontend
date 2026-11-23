@@ -30,7 +30,6 @@ export function ProjectImagePlaceholder({ name, developerName }: { name: string;
         </span>
         <span className="mt-2 line-clamp-2 max-w-[90%] text-sm font-extrabold leading-tight text-white drop-shadow">{name}</span>
         {developerName && <span className="mt-0.5 line-clamp-1 text-[11px] font-medium text-white/75">by {developerName}</span>}
-        <span className="mt-1.5 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold text-white/85">Photos coming soon</span>
       </div>
     </div>
   );

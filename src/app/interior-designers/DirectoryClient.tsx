@@ -285,6 +285,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
                     selectedState={selectedState}
                     onChange={(l: LocalitySelection) => setSelectedLocality(l.name || "ALL")}
                     placeholder="Any area"
+                    menuAlignEnd
                   />
                   {selectedLocality !== "ALL" && (
                     <button
