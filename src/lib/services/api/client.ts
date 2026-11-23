@@ -3,6 +3,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
 import { ApiResponse, ApiError } from "@/types/api.types";
 import { APP_CONFIG } from "@/constants/app-config";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import { revalidatePublic, sectionForUrl } from "@/lib/revalidatePublic";
 
 class ApiClient {
   private client: AxiosInstance;
@@ -42,7 +43,11 @@ class ApiClient {
 
     // Response interceptor
     this.client.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        const method = (response.config?.method || "get").toLowerCase();
+        if (method !== "get") revalidatePublic(sectionForUrl(response.config?.url));
+        return response;
+      },
       async (error: AxiosError<ApiError>) => {
         const originalRequest = error.config;
         const status = error.response?.status;

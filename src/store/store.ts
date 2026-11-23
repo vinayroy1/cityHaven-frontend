@@ -1,6 +1,7 @@
 "use client";
 
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, isFulfilled, type Middleware } from "@reduxjs/toolkit";
+import { revalidatePublic, sectionForReducer } from "@/lib/revalidatePublic";
 import { propertyListingReducer, propertyListingApi } from "@/features/propertyListing";
 import { authApi } from "@/features/auth/api";
 import { contactVerifyApi } from "@/features/contactVerify/api";
@@ -18,6 +19,15 @@ import { messagingApi } from "@/features/messaging/api";
 import { interiorsApi } from "@/features/interiors/api";
 import { constructionApi } from "@/features/construction/api";
 import { panditApi } from "@/features/pandit/api";
+
+// After a successful RTK Query mutation in a public section, expire that section's ISR pages (see lib/revalidatePublic).
+const revalidateOnMutation: Middleware = () => (next) => (action) => {
+  if (isFulfilled(action)) {
+    const a = action as { type: string; meta?: { arg?: { type?: string } } };
+    if (a.meta?.arg?.type === "mutation") revalidatePublic(sectionForReducer(a.type.split("/")[0]));
+  }
+  return next(action);
+};
 
 export const makeStore = () =>
   configureStore({
@@ -58,7 +68,8 @@ export const makeStore = () =>
         leadsApi.middleware,
         documentsApi.middleware,
         notificationsApi.middleware,
-        messagingApi.middleware
+        messagingApi.middleware,
+        revalidateOnMutation
       ),
     devTools: true,
   });
