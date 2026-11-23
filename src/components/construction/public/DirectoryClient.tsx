@@ -43,6 +43,8 @@ export function DirectoryClient({
     typeof window !== "undefined" && new URLSearchParams(window.location.search).get("segment") === "INFRA" ? "INFRA" : "",
   );
   const router = useRouter();
+  // City / area change is a route navigation: show the skeleton until the new page's results arrive.
+  const [navPending, startNav] = React.useTransition();
   const portalCountry = useCountryCode();
   useUrlCountry(country);
   const qs = () => (segment ? `?segment=${segment}` : "");
@@ -50,11 +52,11 @@ export function DirectoryClient({
   const pickCity = (c: CitySelection) => {
     const next = c.name?.trim();
     if (!next || next.toLowerCase() === city.toLowerCase()) return;
-    router.push(`${listingPath(BASE, next, null, getSelectedCountry())}${qs()}`);
+    startNav(() => router.push(`${listingPath(BASE, next, null, getSelectedCountry())}${qs()}`));
   };
   const setLocality = (next: string) => {
     if (next.toLowerCase() === locality.toLowerCase()) return;
-    router.push(`${listingPath(BASE, city, next || null, country)}${qs()}`);
+    startNav(() => router.push(`${listingPath(BASE, city, next || null, country)}${qs()}`));
   };
   const [sector, setSector] = React.useState<InfraSector | "">("");
   const [service, setService] = React.useState<ConstructionService | "">("");
@@ -104,6 +106,8 @@ export function DirectoryClient({
 
   const view = state.key === key ? state : key === baseKey ? { key, page: 1, items: initialItems, total: initialTotal } : null;
   const items = view?.items ?? [];
+  // No results for the current filters yet (request not started or in flight), or a city/area navigation in progress.
+  const loading = !view || navPending;
   const total = view?.total ?? 0;
 
   const loadMore = async () => {
@@ -251,7 +255,7 @@ export function DirectoryClient({
                 </button>
               )}
               <button type="button" onClick={() => setPanelOpen(false)} className="h-10 rounded-xl bg-rose-600 px-5 text-sm font-semibold text-white hover:bg-rose-700">
-                {!view && isFetching ? "Loading…" : `Show ${total} ${total === 1 ? "result" : "results"}`}
+                {loading ? "Loading…" : `Show ${total} ${total === 1 ? "result" : "results"}`}
               </button>
             </div>
           </div>
@@ -261,12 +265,33 @@ export function DirectoryClient({
       <CountryResultsBanner countryCode={city ? country ?? "IN" : null} what="companies" />
 
       <p className="text-sm font-semibold text-slate-700 dark:text-slate-300" aria-live="polite">
-        {!view && isFetching ? "Loading…" : `${total} ${total === 1 ? "company" : "companies"}${city ? ` in ${locality ? `${locality}, ` : ""}${city}` : ""}`}
+        {loading ? "Loading…" : `${total} ${total === 1 ? "company" : "companies"}${city ? ` in ${locality ? `${locality}, ` : ""}${city}` : ""}`}
       </p>
 
-      {!view && isFetching ? (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {[0, 1, 2].map((i) => <div key={i} className="h-80 animate-pulse rounded-3xl bg-white dark:bg-slate-900" />)}
+      {loading ? (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true" aria-label="Loading companies">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+              <div className="aspect-[16/9] animate-pulse bg-slate-200 dark:bg-slate-800" />
+              <div className="space-y-3 p-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-3/4 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
+                    <div className="h-3 w-1/2 animate-pulse rounded bg-slate-100 dark:bg-slate-800/70" />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-6 w-20 animate-pulse rounded-full bg-slate-100 dark:bg-slate-800/70" />
+                  <div className="h-6 w-24 animate-pulse rounded-full bg-slate-100 dark:bg-slate-800/70" />
+                </div>
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="h-10 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800/70" />
+                  <div className="h-10 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : items.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">
