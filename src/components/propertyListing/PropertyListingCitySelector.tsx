@@ -371,7 +371,7 @@ export function PropertyListingCitySelector({
             }`}
           />
           {value ? (
-            <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+            <span className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
               {value}
             </span>
           ) : (

@@ -8,9 +8,9 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
 import { DesignerGridSkeleton } from "@/components/interiors/skeletons";
+import { FilterSelect, type FilterOption } from "@/components/common/FilterSelect";
 import {
   Building2,
-  ChevronDown,
   SlidersHorizontal,
   ShieldCheck,
   X,
@@ -37,8 +37,6 @@ import { getSelectedCountry, useCountry } from "@/lib/country/countryStore";
 import { getCountry } from "@/config/countries";
 import { listingPath } from "@/lib/seo/countryPath";
 import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
-import { useRouter } from "next/navigation";
-import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 
 // The enquiry form only loads once someone asks for a quote.
 const BUDGET_LABELS: Record<string, string> = {
@@ -67,15 +65,24 @@ interface DirectoryClientProps {
 const BASE = "/interior-designers";
 
 export function DirectoryClient({ initialCity, initialState, initialData, initialLocality = "", country = null }: DirectoryClientProps) {
-  const router = useRouter();
-  // City and area live in the URL (same as projects / property search): picking one navigates.
-  const selectedCity = initialCity;
+  // City and area live in the URL, but picking one only swaps the results: the URL is updated with
+  // history.pushState (no route navigation, so the page-level loading skeleton never replaces the page).
+  const [selectedCity, setCityState] = useState(initialCity);
+  const [locality, setLocalityState] = useState(initialLocality);
+  // Back/forward or a link re-renders with new server props: follow them.
+  const [propsKey, setPropsKey] = useState(`${initialCity}|${initialLocality}`);
+  if (propsKey !== `${initialCity}|${initialLocality}`) {
+    setPropsKey(`${initialCity}|${initialLocality}`);
+    setCityState(initialCity);
+    setLocalityState(initialLocality);
+  }
   const [selectedState, setSelectedState] = useState(initialState);
-  const selectedLocality = initialLocality || "ALL";
+  const selectedLocality = locality || "ALL";
   const setSelectedLocality = (next: string) => {
     const loc = next === "ALL" ? "" : next;
-    if (loc.toLowerCase() === initialLocality.toLowerCase()) return;
-    router.push(listingPath(BASE, selectedCity, loc || null, country));
+    if (loc.toLowerCase() === locality.toLowerCase()) return;
+    setLocalityState(loc);
+    window.history.pushState(null, "", listingPath(BASE, selectedCity, loc || null, country));
   };
   useUrlCountry(country);
   const [providerType, setProviderType] = useState<InteriorProviderType | "ALL">("ALL");
@@ -83,7 +90,6 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
   const [selectedStyle, setSelectedStyle] = useState("ALL");
   const [selectedBracket, setSelectedBracket] = useState("ALL");
   const [isVerifiedOnly, setIsVerifiedOnly] = useState(false);
-  const [viewTab, setViewTab] = useState<"DIRECTORY" | "INSPIRATION">("DIRECTORY");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Selected profile for inquiry quote modal
@@ -99,6 +105,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
     (!!selectedCity || portalCountry.code === "IN") &&
     !!initialData &&
     selectedCity === initialCity &&
+    locality === initialLocality &&
     providerType === "ALL" &&
     selectedService === "ALL" &&
     selectedBracket === "ALL" &&
@@ -106,7 +113,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
 
   const searchArgs: InteriorSearchParams = {
       city: selectedCity || undefined,
-      locality: (selectedCity && initialLocality) || undefined,
+      locality: (selectedCity && locality) || undefined,
       countryCode: portalCountry.code,
       providerType: providerType === "ALL" ? undefined : providerType,
       service: selectedService === "ALL" ? undefined : selectedService,
@@ -117,13 +124,14 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
       limit: PAGE_SIZE,
   };
   const query = useSearchInteriorDesignersQuery(searchArgs, { skip: isInitialQuery });
-  const data = isInitialQuery ? initialData : query.data;
-  const isLoading = !isInitialQuery && query.isLoading;
+  // currentData is empty while a new city/area loads, so only the results area shows the skeleton.
+  const data = isInitialQuery ? initialData : query.currentData;
+  const isLoading = !isInitialQuery && !query.currentData && !query.isError;
 
   const crumbs: BreadcrumbTrailItem[] = !selectedCity
     ? [{ label: "Interior designers" }]
-    : initialLocality
-      ? [{ label: "Interior designers", href: BASE }, { label: selectedCity, href: listingPath(BASE, selectedCity, null, country) }, { label: initialLocality }]
+    : locality
+      ? [{ label: "Interior designers", href: BASE }, { label: selectedCity, href: listingPath(BASE, selectedCity, null, country) }, { label: locality }]
       : [{ label: "Interior designers", href: BASE }, { label: selectedCity }];
 
   // "Load more": later pages are appended for the current filters only (key change = fresh list).
@@ -169,7 +177,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
 
   // Reset filters
   const handleResetFilters = () => {
-    if (initialLocality) setSelectedLocality("ALL");
+    if (locality) setSelectedLocality("ALL");
     setProviderType("ALL");
     setSelectedService("ALL");
     setSelectedStyle("ALL");
@@ -178,27 +186,16 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
   };
 
 
-  // Inspiration Gallery feed
-  const allProjects = useMemo(() => {
-    return filteredDesigners.flatMap((d) =>
-      (d.projects || []).map((p) => ({
-        ...p,
-        designerName: d.displayName || d.businessName || d.fullName || "Interior designer",
-        designerSlug: d.slug,
-        designerCity: d.primaryCity,
-        designerLogo: d.logo,
-      }))
-    );
-  }, [filteredDesigners]);
-
   const where = selectedLocality !== "ALL" ? `${selectedLocality}, ${selectedCity}` : selectedCity || portalCountry.name || "India";
 
   const pickCity = (city: string, state = "") => {
     setSelectedState(state);
     setUserPreferredCity(city);
-    if (city.toLowerCase() === selectedCity.toLowerCase() && !initialLocality) return;
+    if (city.toLowerCase() === selectedCity.toLowerCase() && !locality) return;
+    setCityState(city);
+    setLocalityState("");
     // Cities in the picker belong to the site's selected country, so its prefix goes in the URL.
-    router.push(listingPath(BASE, city || null, null, getSelectedCountry()));
+    window.history.pushState(null, "", listingPath(BASE, city || null, null, getSelectedCountry()));
   };
 
   const activeChips: { label: string; clear: () => void }[] = [
@@ -221,7 +218,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
       type="button"
       onClick={() => setMobileFilterOpen((o) => !o)}
       aria-expanded={mobileFilterOpen}
-      className={`inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl border px-3.5 text-sm font-bold transition ${
+      className={`inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl border px-3.5 text-sm font-semibold transition ${
         mobileFilterOpen || panelFilterCount > 0
           ? "border-rose-400 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
           : "border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
@@ -232,12 +229,10 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
     </button>
   );
 
-  const selectCls =
-    "h-11 w-full min-w-0 cursor-pointer appearance-none truncate rounded-xl border border-slate-200 bg-white pl-3 pr-9 text-sm font-medium text-slate-800 shadow-2xs transition hover:border-slate-300 focus:border-rose-500 focus:outline-hidden focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-rose-900/40";
-  const chevron = (
-    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
+  const labelCls = "mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-300";
+  const filterSelect = (id: string, value: string, onChange: (v: string) => void, options: FilterOption[]) => (
+    <FilterSelect id={id} value={value} onChange={onChange} options={options} />
   );
-  const labelCls = "mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400";
 
   return (
     <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950">
@@ -266,8 +261,8 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
           </div>
 
           {/* City, area, filters: one row (same pickers as the construction and pandit directories) */}
-          <div className="mt-4 grid grid-cols-[1fr_1fr_auto] gap-2 lg:grid-cols-[1fr_1fr_10rem]">
-            <div className="min-w-0">
+          <div className="mt-4 grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_1fr_auto] lg:grid-cols-[1fr_1fr_10rem]">
+            <div className="col-span-2 min-w-0 sm:col-span-1">
               <PropertyListingCitySelector
                 value={selectedCity}
                 selectedState={selectedState}
@@ -285,25 +280,14 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
                     selectedState={selectedState}
                     onChange={(l: LocalitySelection) => setSelectedLocality(l.name || "ALL")}
                     placeholder="Any area"
-                    menuAlignEnd
                   />
-                  {selectedLocality !== "ALL" && (
-                    <button
-                      type="button"
-                      aria-label="Clear area"
-                      onClick={() => setSelectedLocality("ALL")}
-                      className="absolute right-9 top-1/2 z-10 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
                 </>
               ) : (
                 <input
                   disabled
                   aria-label="Area"
                   placeholder="Pick a city first"
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-400 dark:border-slate-700 dark:bg-slate-800/60"
+                  className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-500 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-800/60"
                 />
               )}
             </div>
@@ -311,7 +295,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
           </div>
 
           {/* City quick picks */}
-          <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <div className="no-scrollbar mt-3 hidden gap-2 overflow-x-auto sm:flex">
             {[{ label: "All cities", value: "" }, ...INTERIOR_CITIES.slice(0, 10).map((c) => ({ label: c, value: c }))].map((c) => {
               const active = selectedCity.toLowerCase() === c.value.toLowerCase();
               return (
@@ -349,7 +333,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
                         key={v}
                         type="button"
                         onClick={() => setProviderType(v)}
-                        className={`truncate rounded-lg px-1 text-xs font-bold transition ${
+                        className={`truncate rounded-lg px-1 text-[13px] font-medium transition ${
                           providerType === v
                             ? "bg-white text-slate-900 shadow-2xs dark:bg-slate-900 dark:text-white"
                             : "text-slate-600 dark:text-slate-400"
@@ -362,47 +346,34 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
                 </div>
                 <div className="min-w-0">
                   <label htmlFor="filter-service" className={labelCls}>Service</label>
-                  <div className="relative">
-                    <select id="filter-service" value={selectedService} onChange={(e) => setSelectedService(e.target.value)} className={selectCls}>
-                      <option value="ALL">Any service</option>
-                      {SERVICES_OFFERED.map((svc) => (
-                        <option key={svc} value={svc}>{svc}</option>
-                      ))}
-                    </select>
-                    {chevron}
-                  </div>
+                  {filterSelect("filter-service", selectedService, setSelectedService, [
+                    { value: "ALL", label: "Any service" },
+                    ...SERVICES_OFFERED.map((svc) => ({ value: svc, label: svc })),
+                  ])}
                 </div>
                 <div className="min-w-0">
                   <label htmlFor="filter-budget" className={labelCls}>Budget</label>
-                  <div className="relative">
-                    <select id="filter-budget" value={selectedBracket} onChange={(e) => setSelectedBracket(e.target.value)} className={selectCls}>
-                      <option value="ALL">Any budget</option>
-                      <option value="ECONOMY">Economy (under {sym}1,400/sq.ft.)</option>
-                      <option value="MID_RANGE">Standard ({sym}1,400–2,200/sq.ft.)</option>
-                      <option value="PREMIUM">Premium ({sym}2,200–3,500/sq.ft.)</option>
-                      <option value="LUXURY">Luxury ({sym}3,500+/sq.ft.)</option>
-                    </select>
-                    {chevron}
-                  </div>
+                  {filterSelect("filter-budget", selectedBracket, setSelectedBracket, [
+                    { value: "ALL", label: "Any budget" },
+                    { value: "ECONOMY", label: "Economy", hint: `under ${sym}1,400/sq ft` },
+                    { value: "MID_RANGE", label: "Standard", hint: `${sym}1,400–2,200/sq ft` },
+                    { value: "PREMIUM", label: "Premium", hint: `${sym}2,200–3,500/sq ft` },
+                    { value: "LUXURY", label: "Luxury", hint: `${sym}3,500+/sq ft` },
+                  ])}
                 </div>
                 <div className="min-w-0">
                   <label htmlFor="filter-style" className={labelCls}>Design style</label>
-                  <div className="relative">
-                    <select id="filter-style" value={selectedStyle} onChange={(e) => setSelectedStyle(e.target.value)} className={selectCls}>
-                      <option value="ALL">Any style</option>
-                      {DESIGN_STYLES.map((st) => (
-                        <option key={st} value={st}>{st}</option>
-                      ))}
-                    </select>
-                    {chevron}
-                  </div>
+                  {filterSelect("filter-style", selectedStyle, setSelectedStyle, [
+                    { value: "ALL", label: "Any style" },
+                    ...DESIGN_STYLES.map((st) => ({ value: st, label: st })),
+                  ])}
                 </div>
                 <div className="flex min-w-0 items-end">
                   <button
                     type="button"
                     onClick={() => setIsVerifiedOnly(!isVerifiedOnly)}
                     aria-pressed={isVerifiedOnly}
-                    className={`inline-flex h-11 w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-4 text-sm font-bold transition ${
+                    className={`inline-flex h-11 w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-4 text-sm font-medium transition ${
                       isVerifiedOnly
                         ? "border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
                         : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
@@ -419,7 +390,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
                     <RotateCcw className="h-4 w-4" /> Clear all
                   </button>
                 )}
-                <button type="button" onClick={() => setMobileFilterOpen(false)} className="h-10 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white hover:bg-rose-700">
+                <button type="button" onClick={() => setMobileFilterOpen(false)} className="h-10 rounded-xl bg-rose-600 px-5 text-sm font-semibold text-white hover:bg-rose-700">
                   Show {filteredDesigners.length} {filteredDesigners.length === 1 ? "result" : "results"}
                 </button>
               </div>
@@ -450,7 +421,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
           </div>
         )}
 
-        {/* Count + view */}
+        {/* Count */}
         <div className="flex items-center justify-between gap-3">
           <p className="min-w-0 text-sm font-semibold text-slate-700 dark:text-slate-300">
             {isLoading
@@ -461,32 +432,13 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
                   return `${n} ${n === 1 ? "designer" : "designers"}`;
                 })()}
           </p>
-          <div className="inline-flex shrink-0 rounded-xl bg-slate-200/70 p-1 dark:bg-slate-800">
-            {(
-              [
-                ["DIRECTORY", "Designers"],
-                ["INSPIRATION", `Photos (${allProjects.length})`],
-              ] as const
-            ).map(([v, l]) => (
-              <button
-                key={v}
-                type="button"
-                onClick={() => setViewTab(v)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                  viewTab === v ? "bg-white text-slate-900 shadow-2xs dark:bg-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-400"
-                }`}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Content Area */}
         <div className="mt-4">
           {isLoading ? (
             <DesignerGridSkeleton />
-          ) : viewTab === "DIRECTORY" ? (
+          ) : (
             filteredDesigners.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-800 dark:bg-slate-900/50">
                 <Building2 className="mx-auto h-12 w-12 text-slate-400" />
@@ -529,8 +481,8 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
                 ))}
               </div>
             )
-          ) : null}
-          {!isLoading && viewTab === "DIRECTORY" && filteredDesigners.length > 0 && hasMore && (
+          )}
+          {!isLoading && filteredDesigners.length > 0 && hasMore && (
             <div ref={sentinelRef} className="mt-8 flex flex-col items-center gap-2">
               <button
                 type="button"
@@ -542,52 +494,6 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
               </button>
               <p className="text-xs text-slate-500">Showing {rawDesigners.length} of {total}</p>
             </div>
-          )}
-          {isLoading || viewTab === "DIRECTORY" ? null : (
-            /* Inspiration Project Gallery View (Pinterest-style room feed) */
-            allProjects.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-slate-300 p-12 text-center dark:border-slate-800">
-                <p className="text-sm text-slate-500">No project inspiration photos found matching these criteria.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {allProjects.map((project, idx) => (
-                  <div
-                    key={`${project.id}-${idx}`}
-                    className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
-                  >
-                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
-                      <img
-                        src={project.coverImage || project.images?.[0]}
-                        alt={project.title}
-                        className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                      <div className="absolute top-2.5 left-2.5 rounded-full bg-slate-900/80 px-2.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs">
-                        {[project.propertyConfig || project.propertyType, project.designStyle].filter(Boolean).join(" · ")}
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <h4 className="line-clamp-1 text-sm font-bold text-slate-900 dark:text-white">
-                        {project.title}
-                      </h4>
-                      <p className="mt-1 line-clamp-1 text-xs text-slate-500 dark:text-slate-400">
-                        {project.locality ? `${project.locality}, ` : ""}{project.cityName}
-                      </p>
-                      <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-400">
-                        <span className="font-semibold truncate max-w-[150px]">By {project.designerName}</span>
-                        <Link
-                          href={interiorProfilePath({ primaryCity: project.designerCity, slug: project.designerSlug })}
-                          className="font-bold text-rose-600 hover:underline dark:text-rose-400 shrink-0"
-                        >
-                          View Studio &rarr;
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )
           )}
         </div>
       </main>

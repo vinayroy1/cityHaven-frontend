@@ -1,5 +1,6 @@
 "use client";
 
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { useAutoLoadMore } from "@/lib/hooks/useAutoLoadMore";
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
@@ -322,17 +323,13 @@ export function StaysDirectory({
             </h2>
             <p className="hidden text-xs text-slate-500 sm:block">Prices are per night, set by the property. Book directly — no Awasio fee.</p>
           </div>
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as StaySearchParams["sort"])}
-            className="hidden h-9 w-28 shrink-0 rounded-xl border border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 sm:block sm:w-auto dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-            aria-label="Sort stays"
-          >
-            <option value="recommended">Top picks</option>
-            <option value="price_low">Price ↑</option>
-            <option value="price_high">Price ↓</option>
-            <option value="newest">Newest</option>
-          </select>
+          <FilterSelect size="sm" className="hidden w-36 shrink-0 sm:flex" ariaLabel="Sort stays" value={sort ?? "recommended"} onChange={(v) => setSort(v as StaySearchParams["sort"])}
+            options={[
+              { value: "recommended", label: "Top picks" },
+              { value: "price_low", label: "Price: low to high" },
+              { value: "price_high", label: "Price: high to low" },
+              { value: "newest", label: "Newest" },
+            ]} />
         </div>
 
         <div className="mt-3 grid grid-cols-1 gap-4 sm:mt-4 sm:grid-cols-2 lg:grid-cols-3">

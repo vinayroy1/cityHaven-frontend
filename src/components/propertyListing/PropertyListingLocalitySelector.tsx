@@ -406,7 +406,7 @@ export function PropertyListingLocalitySelector({
 
         {!multiple && value && !isOpen ? (
           <div className="flex min-w-0 flex-1 items-center justify-between gap-1">
-            <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+            <span className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
               {value}
             </span>
             <button

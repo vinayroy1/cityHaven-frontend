@@ -1,5 +1,6 @@
 "use client";
 
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { AgentContactButtons } from "./AgentContactButtons";
 import { useAutoLoadMore } from "@/lib/hooks/useAutoLoadMore";
 import { advisorPhoto } from "@/features/advisors/avatar";
@@ -249,28 +250,11 @@ export function AgentsDirectoryClient({ initialCity = "", initialLocality = "", 
 
               {/* Desktop Filters & Dedicated Search Button */}
               <div className="hidden md:flex items-center gap-1.5 shrink-0">
-                <select
-                  value={specialtyDraft}
-                  onChange={(e) => setSpecialtyDraft(e.target.value)}
-                  aria-label="Filter by property type"
-                  className="h-9 sm:h-9.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-[11px] sm:text-xs font-medium text-slate-700 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                >
-                  {SPECIALTIES.map((sp) => (
-                    <option key={sp} value={sp}>
-                      {sp}
-                    </option>
-                  ))}
-                </select>
+                <FilterSelect size="sm" className="w-40" ariaLabel="Filter by property type" value={specialtyDraft} onChange={setSpecialtyDraft}
+                  options={SPECIALTIES.map((sp) => ({ value: sp, label: sp }))} />
 
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  aria-label="Sort advisors"
-                  className="h-9 sm:h-9.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-[11px] sm:text-xs font-medium text-slate-700 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                >
-                  <option value="experience">Most Experienced</option>
-                  <option value="tours">Most Walkthroughs</option>
-                </select>
+                <FilterSelect size="sm" className="w-44" ariaLabel="Sort advisors" value={sortBy} onChange={(v) => setSortBy(v as typeof sortBy)}
+                  options={[{ value: "experience", label: "Most experienced" }, { value: "tours", label: "Most walkthroughs" }]} />
 
                 {/* Dedicated Desktop Search Button */}
                 <button
@@ -286,28 +270,11 @@ export function AgentsDirectoryClient({ initialCity = "", initialLocality = "", 
 
             {/* Row 2 on Mobile: Specialty + Sort Filters + Dedicated Mobile Search Button */}
             <div className="flex md:hidden items-center gap-1.5 pt-0.5">
-              <select
-                value={specialtyDraft}
-                onChange={(e) => setSpecialtyDraft(e.target.value)}
-                aria-label="Filter by property type"
-                className="flex-1 h-8 rounded-xl border border-slate-200 bg-slate-50 px-2 text-[11px] font-medium text-slate-700 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              >
-                {SPECIALTIES.map((sp) => (
-                  <option key={sp} value={sp}>
-                    {sp}
-                  </option>
-                ))}
-              </select>
+              <FilterSelect size="sm" className="h-9 flex-1" ariaLabel="Filter by property type" value={specialtyDraft} onChange={setSpecialtyDraft}
+                options={SPECIALTIES.map((sp) => ({ value: sp, label: sp }))} />
 
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                aria-label="Sort advisors"
-                className="flex-1 h-8 rounded-xl border border-slate-200 bg-slate-50 px-2 text-[11px] font-medium text-slate-700 outline-none transition focus:border-rose-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              >
-                <option value="experience">Most Exp</option>
-                <option value="tours">Most Tours</option>
-              </select>
+              <FilterSelect size="sm" className="h-9 flex-1" ariaLabel="Sort advisors" value={sortBy} onChange={(v) => setSortBy(v as typeof sortBy)}
+                options={[{ value: "experience", label: "Most experienced" }, { value: "tours", label: "Most tours" }]} />
 
               {/* Dedicated Mobile Search Button */}
               <button

@@ -71,6 +71,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // HTML / RSC / API responses: Cloudflare must not cache them. The origin's ISR cache already serves them fast
+        // and is expired on writes (/api/revalidate); an edge copy kept serving stale pages (e.g. a listing built empty
+        // during a deploy, or a new listing) for up to an hour. Cloudflare honours this header over Cache-Control.
+        // Static assets (/_next/static, /_next/image, files with an extension) stay cached at the edge.
+        source: "/((?!_next/static|_next/image|.*\\.[a-zA-Z0-9]{2,5}$).*)",
+        headers: [{ key: "Cloudflare-CDN-Cache-Control", value: "no-store" }],
+      },
+      {
         source: "/:path*",
         headers: [
           {

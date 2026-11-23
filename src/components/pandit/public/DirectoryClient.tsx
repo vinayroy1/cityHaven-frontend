@@ -4,9 +4,10 @@ import { useAutoLoadMore } from "@/lib/hooks/useAutoLoadMore";
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowUpDown, BadgeCheck, MapPin, BookOpen, ChevronDown, Flame, Languages, Loader2, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowUpDown, BadgeCheck, MapPin, BookOpen, Flame, Languages, Loader2, Search, SlidersHorizontal } from "lucide-react";
 import { PropertyListingCitySelector, type CitySelection } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector, type LocalitySelection } from "@/components/propertyListing/PropertyListingLocalitySelector";
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { cn } from "@/components/ui/utils";
 import { useLazySearchPanditsQuery } from "@/features/pandit/api";
 import { ALL_SERVICE_OPTIONS, LANGUAGE_OPTIONS, PANDIT_BASE, SERVICE_GROUPS, TRADITION_OPTIONS } from "@/features/pandit/options";
@@ -24,21 +25,6 @@ const fieldCls = (active: boolean) =>
     "h-11 w-full min-w-0 truncate rounded-xl border border-slate-200 bg-white pl-9 text-sm outline-none transition-colors hover:border-slate-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600",
     active ? "font-semibold text-slate-900 dark:text-slate-100" : "text-slate-400 dark:text-slate-500",
   );
-
-function FilterSelect({
-  icon: Icon,
-  active,
-  className,
-  ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement> & { icon: React.ComponentType<{ className?: string }>; active: boolean }) {
-  return (
-    <div className={cn("relative min-w-0", className)}>
-      <Icon className={cn("pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2", active ? "text-rose-500" : "text-slate-400")} />
-      <select {...props} className={cn(fieldCls(active), "cursor-pointer appearance-none pr-9")} />
-      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-    </div>
-  );
-}
 
 /** Quick picks shown as chips; the full list is in the service select. */
 const QUICK: Record<"" | PanditSegment, string[]> = {
@@ -224,19 +210,16 @@ export function DirectoryClient({
             className="col-span-2 lg:col-span-1"
             icon={Flame}
             active={!!service}
-                        aria-label="Puja or service"
+            ariaLabel="Puja or service"
             value={service}
-            onChange={(e) => setService(e.target.value)}
-          >
-            <option value="">{segment === "VASTU" ? "Which consultation?" : "Which puja or service?"}</option>
-            {serviceGroups.map((g) => (
-              <optgroup key={g.key} label={g.label}>
-                {ALL_SERVICE_OPTIONS.filter((o) => o.group === g.key).map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </optgroup>
-            ))}
-          </FilterSelect>
+            onChange={setService}
+            options={[
+              { value: "", label: segment === "VASTU" ? "Which consultation?" : "Which puja or service?" },
+              ...serviceGroups.flatMap((g) =>
+                ALL_SERVICE_OPTIONS.filter((o) => o.group === g.key).map((o) => ({ value: o.value, label: o.label, group: g.label })),
+              ),
+            ]}
+          />
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2 lg:shrink-0 lg:flex-nowrap">
@@ -300,22 +283,19 @@ export function DirectoryClient({
                 onBlur={() => setQuery(q.trim())}
               />
             </form>
-            <FilterSelect icon={Languages} active={!!language} aria-label="Language" value={language} onChange={(e) => setLanguage(e.target.value)}>
-              <option value="">Any language</option>
-              {LANGUAGE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </FilterSelect>
+            <FilterSelect icon={Languages} active={!!language} ariaLabel="Language" value={language} onChange={setLanguage}
+              options={[{ value: "", label: "Any language" }, ...LANGUAGE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))]} />
             {segment !== "VASTU" && (
-              <FilterSelect icon={BookOpen} active={!!tradition} aria-label="Tradition" value={tradition} onChange={(e) => setTradition(e.target.value)}>
-                <option value="">Any tradition</option>
-                {TRADITION_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </FilterSelect>
+              <FilterSelect icon={BookOpen} active={!!tradition} ariaLabel="Tradition" value={tradition} onChange={setTradition}
+                options={[{ value: "", label: "Any tradition" }, ...TRADITION_OPTIONS.map((o) => ({ value: o.value, label: o.label }))]} />
             )}
-            <FilterSelect icon={ArrowUpDown} active={sort !== "relevance"} aria-label="Sort by" value={sort} onChange={(e) => setSort(e.target.value as PanditSort)}>
-              <option value="relevance">Sort: Recommended</option>
-              <option value="rating">Sort: Highest rated</option>
-              <option value="price">Sort: Lowest fee</option>
-              <option value="experience">Sort: Most experienced</option>
-            </FilterSelect>
+            <FilterSelect icon={ArrowUpDown} active={sort !== "relevance"} ariaLabel="Sort by" value={sort} onChange={(v) => setSort(v as PanditSort)}
+              options={[
+                { value: "relevance", label: "Sort: Recommended" },
+                { value: "rating", label: "Sort: Highest rated" },
+                { value: "price", label: "Sort: Lowest fee" },
+                { value: "experience", label: "Sort: Most experienced" },
+              ]} />
             <div className="flex flex-wrap gap-2 sm:col-span-2">
               <label className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                 <input type="checkbox" className="h-3.5 w-3.5 accent-rose-600" checked={online} onChange={(e) => setOnline(e.target.checked)} /> Online available

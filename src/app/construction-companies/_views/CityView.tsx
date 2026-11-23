@@ -62,7 +62,7 @@ export async function ConstructionCityView({ place, dir }: { place: Construction
       <HeaderNav />
       <main className="flex-1">
         <section className="border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-950">
-          <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-9">
+          <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6 sm:py-9">
             <div className="mb-3 hidden sm:block">
               <PageBreadcrumbs
                 items={[
@@ -72,16 +72,16 @@ export async function ConstructionCityView({ place, dir }: { place: Construction
                 renderJsonLd={true}
               />
             </div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-600">
+            <div className="hidden items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-600 sm:flex">
               <HardHat className="h-4 w-4" /> Build your home in {where}
             </div>
-            <h1 className="mt-1 text-2xl font-black leading-tight tracking-tight text-slate-950 sm:text-4xl dark:text-white">House construction companies in {where}</h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base dark:text-slate-300">
+            <h1 className="text-lg font-extrabold leading-snug tracking-tight sm:mt-1 sm:font-black text-slate-950 sm:text-4xl dark:text-white">House construction companies in {where}</h1>
+            <p className="mt-2 hidden max-w-2xl text-slate-600 sm:block sm:text-base dark:text-slate-300">
               Compare construction rates per sq.ft, completed homes and warranties from builders and contractors in {where}.
             </p>
           </div>
         </section>
-        <div className="mx-auto max-w-6xl space-y-10 px-4 py-6 sm:px-6 sm:py-10">
+        <div className="mx-auto max-w-6xl space-y-10 px-4 py-3 sm:px-6 sm:py-10">
           <DirectoryClient city={city} locality={locality ?? ""} country={country} initialItems={items} initialTotal={dir.data?.pagination.total ?? 0} cities={cities.data ?? []} />
           <ListYourCompany />
         </div>

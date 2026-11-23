@@ -1,5 +1,6 @@
 "use client";
 
+import { FilterSelect } from "@/components/common/FilterSelect";
 import React from "react";
 import { getCountry } from "@/config/countries";
 import { useCountryCode } from "@/lib/country/useCountry";
@@ -102,7 +103,7 @@ function FilterChoice({ label, options, value, onChange, compact = false }: { la
 }
 
 function BudgetSelect({ label, value, options, onChange }: { label: string; value?: number; options: { label: string; value: number | undefined }[]; onChange: (value?: number) => void }) {
-  return <label><span className="mb-1 block text-[10px] font-semibold text-slate-400">{label}</span><select value={value ?? ""} onChange={(event) => onChange(event.target.value ? Number(event.target.value) : undefined)} className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-2 text-xs font-semibold outline-none dark:border-slate-700 dark:bg-slate-800">{options.map((option) => <option key={option.label} value={option.value ?? ""}>{option.label}</option>)}</select></label>;
+  return <div><span className="mb-1 block text-[11px] font-medium text-slate-500">{label}</span><FilterSelect size="sm" ariaLabel={label} value={value !== undefined ? String(value) : ""} onChange={(v) => onChange(v ? Number(v) : undefined)} options={options.map((option) => ({ value: option.value !== undefined ? String(option.value) : "", label: option.label }))} /></div>;
 }
 
 export function ProjectFilterSheet({
@@ -284,42 +285,18 @@ export function ProjectFilterSheet({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <span className="block text-[11px] font-semibold text-slate-400 mb-1">Min Price</span>
-                <select
+                <FilterSelect size="sm" ariaLabel="Min price"
                   value={draft.budgetMin !== undefined ? String(draft.budgetMin) : ""}
-                  onChange={(e) =>
-                    setDraft((d) => ({
-                      ...d,
-                      budgetMin: e.target.value ? Number(e.target.value) : undefined,
-                    }))
-                  }
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 focus:outline-none"
-                >
-                  {budget.min.map((p) => (
-                    <option key={p.label} value={p.value !== undefined ? String(p.value) : ""}>
-                      {p.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => setDraft((d) => ({ ...d, budgetMin: v ? Number(v) : undefined }))}
+                  options={budget.min.map((p) => ({ value: p.value !== undefined ? String(p.value) : "", label: p.label }))} />
               </div>
 
               <div>
                 <span className="block text-[11px] font-semibold text-slate-400 mb-1">Max Price</span>
-                <select
+                <FilterSelect size="sm" ariaLabel="Max price"
                   value={draft.budgetMax !== undefined ? String(draft.budgetMax) : ""}
-                  onChange={(e) =>
-                    setDraft((d) => ({
-                      ...d,
-                      budgetMax: e.target.value ? Number(e.target.value) : undefined,
-                    }))
-                  }
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 focus:outline-none"
-                >
-                  {budget.max.map((p) => (
-                    <option key={p.label} value={p.value !== undefined ? String(p.value) : ""}>
-                      {p.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => setDraft((d) => ({ ...d, budgetMax: v ? Number(v) : undefined }))}
+                  options={budget.max.map((p) => ({ value: p.value !== undefined ? String(p.value) : "", label: p.label }))} />
               </div>
             </div>
           </div>

@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PropertyListingCitySelector, type CitySelection } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector, type LocalitySelection } from "@/components/propertyListing/PropertyListingLocalitySelector";
-import { HardHat, Loader2, Search, X } from "lucide-react";
+import { HardHat, Loader2, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { cn } from "@/components/ui/utils";
 import { useLazySearchConstructionQuery } from "@/features/construction/api";
 import { BUILDING_TYPE_OPTIONS, SECTOR_OPTIONS, SERVICE_OPTIONS } from "@/features/construction/options";
@@ -20,8 +21,6 @@ import type { BuildingType, ConstructionProfile, ConstructionSegment, Constructi
 import { ConstructionCard } from "./ConstructionCard";
 
 const PAGE_SIZE = 24;
-const selCls =
-  "h-9 shrink-0 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200";
 
 export function DirectoryClient({
   city,
@@ -118,97 +117,114 @@ export function DirectoryClient({
   // Infinite scroll; the button stays as a fallback.
   const sentinelRef = useAutoLoadMore(() => void loadMore(), !!view && items.length < total, isFetching, items.length);
 
+  const [panelOpen, setPanelOpen] = React.useState(false);
+  const activeCount = [segment, sector, service, buildingType, query].filter(Boolean).length;
+  const clearAll = () => {
+    setSegment("");
+    setQ("");
+    setQuery("");
+  };
+  const searchBox = (
+    <form
+      className="relative"
+      role="search"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setQuery(q.trim());
+      }}
+    >
+      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+      <input
+        aria-label="Search by company name"
+        className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800"
+        placeholder="Search company name"
+        value={q}
+        onChange={(e) => {
+          setQ(e.target.value);
+          if (!e.target.value) setQuery("");
+        }}
+        onBlur={() => setQuery(q.trim())}
+      />
+    </form>
+  );
+  const segmentTabs = (layout: string) => (
+    <div className={cn(layout, "rounded-lg bg-slate-100 p-0.5 text-[13px] font-medium dark:bg-slate-800")} role="tablist" aria-label="Kind of contractor">
+      {([
+        ["", "All"],
+        ["RESIDENTIAL", "Homes"],
+        ["INFRA", "Infra / Govt"],
+      ] as const).map(([v, l]) => (
+        <button
+          key={v || "all"}
+          type="button"
+          role="tab"
+          aria-selected={segment === v}
+          onClick={() => setSegment(v)}
+          className={cn("whitespace-nowrap rounded-md px-3 py-1.5 transition", segment === v ? "bg-white text-rose-600 shadow-sm dark:bg-slate-900" : "text-slate-600 hover:text-rose-600 dark:text-slate-300")}
+        >
+          {l}
+        </button>
+      ))}
+    </div>
+  );
+  const typeSelects = (cls: string, size: "sm" | "md") =>
+    segment === "INFRA" ? (
+      <FilterSelect size={size} className={cls} ariaLabel="Sector" value={sector} onChange={(v) => setSector(v as InfraSector | "")}
+        options={[{ value: "", label: "All sectors" }, ...SECTOR_OPTIONS.map((o) => ({ value: o.value, label: o.label }))]} />
+    ) : (
+      <>
+        <FilterSelect size={size} className={cls} ariaLabel="Service" value={service} onChange={(v) => setService(v as ConstructionService | "")}
+          options={[{ value: "", label: "All services" }, ...SERVICE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))]} />
+        <FilterSelect size={size} className={cls} ariaLabel="Building type" value={buildingType} onChange={(v) => setBuildingType(v as BuildingType | "")}
+          options={[{ value: "", label: "All building types" }, ...BUILDING_TYPE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))]} />
+      </>
+    );
+
   return (
     <div className="space-y-4">
-      {/* Filters: 2 compact rows on desktop, 3 on mobile */}
+      {/* Filters. Desktop: search/city/area row + type row. Mobile: city, then area + Filters button opening a panel. */}
       <div className="space-y-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="grid grid-cols-2 gap-2 lg:grid-cols-[1.3fr_1fr_1fr]">
-          <form
-            className="relative col-span-2 lg:col-span-1"
-            role="search"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setQuery(q.trim());
-            }}
-          >
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input
-              aria-label="Search by company name"
-              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 pl-9 pr-3 text-sm outline-none focus:border-rose-400 focus:bg-white focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800/60"
-              placeholder="Search company name"
-              value={q}
-              onChange={(e) => {
-                setQ(e.target.value);
-                if (!e.target.value) setQuery("");
-              }}
-              onBlur={() => setQuery(q.trim())}
-            />
-          </form>
-          <div className="min-w-0">
+        <div className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr]">
+          <div className="hidden sm:col-span-2 sm:block lg:col-span-1">{searchBox}</div>
+          <div className="col-span-2 min-w-0 sm:col-span-1">
             <PropertyListingCitySelector value={city} placeholder="All cities" onChange={pickCity} />
           </div>
           <div className="relative min-w-0">
             {city ? (
-              <>
-                <PropertyListingLocalitySelector
-                  key={`${city}|${locality}`}
-                  value={locality}
-                  cityName={city}
-                  placeholder="Any area"
-                  onChange={(l: LocalitySelection) => setLocality(l.name || "")}
-                />
-                {locality && (
-                  <button type="button" aria-label="Clear area" onClick={() => setLocality("")} className="absolute right-9 top-1/2 z-10 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800">
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </>
+              <PropertyListingLocalitySelector
+                key={`${city}|${locality}`}
+                value={locality}
+                cityName={city}
+                placeholder="Any area"
+                onChange={(l: LocalitySelection) => setLocality(l.name || "")}
+              />
             ) : (
-              <input disabled aria-label="Area" placeholder="Pick a city first" className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-400 dark:border-slate-700 dark:bg-slate-800/60" />
+              <input disabled aria-label="Area" placeholder="Pick a city first" className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-500 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-800/60" />
             )}
           </div>
+          <button
+            type="button"
+            onClick={() => setPanelOpen((o) => !o)}
+            aria-expanded={panelOpen}
+            className={cn(
+              "inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border px-3.5 text-sm font-semibold transition sm:hidden",
+              panelOpen || activeCount > 0
+                ? "border-rose-400 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
+                : "border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-300",
+            )}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            Filters{activeCount > 0 ? ` (${activeCount})` : ""}
+          </button>
         </div>
 
-        {/* Segment + type filters: one scrollable row on mobile */}
-        <div className="no-scrollbar -mx-2 flex items-center gap-2 overflow-x-auto px-2">
-          <div className="inline-flex shrink-0 rounded-lg bg-slate-100 p-0.5 text-xs font-semibold dark:bg-slate-800" role="tablist" aria-label="Kind of contractor">
-            {([
-              ["", "All"],
-              ["RESIDENTIAL", "Homes"],
-              ["INFRA", "Infra / Govt"],
-            ] as const).map(([v, l]) => (
-              <button
-                key={v || "all"}
-                type="button"
-                role="tab"
-                aria-selected={segment === v}
-                onClick={() => setSegment(v)}
-                className={cn("whitespace-nowrap rounded-md px-3 py-1.5 transition", segment === v ? "bg-white text-rose-600 shadow-sm dark:bg-slate-900" : "text-slate-600 hover:text-rose-600 dark:text-slate-300")}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
-          {segment === "INFRA" ? (
-            <select aria-label="Sector" className={selCls} value={sector} onChange={(e) => setSector(e.target.value as InfraSector | "")}>
-              <option value="">All sectors</option>
-              {SECTOR_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          ) : (
-            <>
-              <select aria-label="Service" className={selCls} value={service} onChange={(e) => setService(e.target.value as ConstructionService | "")}>
-                <option value="">All services</option>
-                {SERVICE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-              <select aria-label="Building type" className={selCls} value={buildingType} onChange={(e) => setBuildingType(e.target.value as BuildingType | "")}>
-                <option value="">All building types</option>
-                {BUILDING_TYPE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-            </>
-          )}
+        {/* Desktop / tablet: type tabs + dropdowns + city shortcuts in one row */}
+        <div className="no-scrollbar -mx-2 hidden items-center gap-2 overflow-x-auto px-2 sm:flex">
+          {segmentTabs("inline-flex shrink-0")}
+          {typeSelects("w-auto min-w-[9.5rem] shrink-0", "sm")}
           {!city &&
             cities.slice(0, 6).map((c) => (
-              <Link key={c.city} href={listingPath(BASE, c.city)} className="shrink-0 whitespace-nowrap rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:border-rose-300 hover:text-rose-600 dark:border-slate-700 dark:text-slate-300">
+              <Link key={c.city} href={listingPath(BASE, c.city)} className="shrink-0 whitespace-nowrap rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:border-rose-300 hover:text-rose-600 dark:border-slate-700 dark:text-slate-300">
                 {c.city} <span className="opacity-60">{c.count}</span>
               </Link>
             ))}
@@ -218,6 +234,28 @@ export function DirectoryClient({
             </Link>
           )}
         </div>
+
+        {/* Mobile filter panel */}
+        {panelOpen && (
+          <div className="space-y-3 rounded-xl bg-slate-50 p-3 sm:hidden dark:bg-slate-800/50">
+            {searchBox}
+            <div>
+              <span className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-300">Kind of contractor</span>
+              {segmentTabs("grid w-full grid-cols-3")}
+            </div>
+            <div className="grid gap-3">{typeSelects("", "md")}</div>
+            <div className="flex items-center justify-end gap-2 pt-1">
+              {activeCount > 0 && (
+                <button type="button" onClick={clearAll} className="inline-flex h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300">
+                  <RotateCcw className="h-4 w-4" /> Clear all
+                </button>
+              )}
+              <button type="button" onClick={() => setPanelOpen(false)} className="h-10 rounded-xl bg-rose-600 px-5 text-sm font-semibold text-white hover:bg-rose-700">
+                {!view && isFetching ? "Loading…" : `Show ${total} ${total === 1 ? "result" : "results"}`}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <CountryResultsBanner countryCode={city ? country ?? "IN" : null} what="companies" />

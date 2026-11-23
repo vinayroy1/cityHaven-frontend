@@ -39,22 +39,22 @@ export default async function ConstructionDirectoryPage() {
       <main className="flex-1">
         <section className="relative overflow-hidden border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-950">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_10%,rgba(251,191,36,0.16),transparent_30%),radial-gradient(circle_at_10%_90%,rgba(244,63,94,0.10),transparent_30%)]" />
-          <div className="relative mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-10">
+          <div className="relative mx-auto max-w-6xl px-4 py-3 sm:px-6 sm:py-10">
             <div className="mb-3 hidden sm:block">
               <PageBreadcrumbs items={[{ label: "Construction companies" }]} renderJsonLd={true} />
             </div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-600">
+            <div className="hidden items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-600 sm:flex">
               <HardHat className="h-4 w-4" /> Build your home
             </div>
-            <h1 className="mt-1 text-2xl font-black leading-tight tracking-tight text-slate-950 sm:text-4xl dark:text-white">
+            <h1 className="text-lg font-extrabold leading-snug tracking-tight sm:mt-1 sm:font-black text-slate-950 sm:text-4xl dark:text-white">
               House construction companies <span className="bg-gradient-to-r from-amber-500 to-rose-600 bg-clip-text text-transparent">& contractors</span>
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base dark:text-slate-300">
+            <p className="mt-2 hidden max-w-2xl text-slate-600 sm:block sm:text-base dark:text-slate-300">
               Compare rates per sq.ft, completed homes and warranties. Get free quotes from builders who construct on your plot.
             </p>
           </div>
         </section>
-        <div className="mx-auto max-w-6xl space-y-10 px-4 py-6 sm:px-6 sm:py-10">
+        <div className="mx-auto max-w-6xl space-y-10 px-4 py-3 sm:px-6 sm:py-10">
           <DirectoryClient city="" locality="" country={null} initialItems={items} initialTotal={dir.data?.pagination.total ?? 0} cities={cities.data ?? []} />
           <ListYourCompany />
         </div>
