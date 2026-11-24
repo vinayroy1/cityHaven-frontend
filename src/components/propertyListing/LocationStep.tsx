@@ -735,7 +735,8 @@ export function LocationStep() {
           </span>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Two per row (not four): city / locality names and their placeholders need the width. */}
+        <div className="grid gap-4 sm:grid-cols-2">
           {/* 0. Country — same dropdown as State; India by default, changing it resets the address */}
           <Field label="Country" required>
             <SearchableSelect
@@ -780,6 +781,7 @@ export function LocationStep() {
               countryCode={country.code}
               onChange={handleLocalitySelect}
               hasError={Boolean(errors.locality)}
+              menuAlignEnd
             />
           </Field>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { placeDropdown } from "@/lib/ui/placeDropdown";
 import { ChevronDown, MapPin, Search, X, Loader2, Plus, Check } from "lucide-react";
 import {
   fetchAwasioSuggestions,
@@ -406,7 +407,7 @@ export function PropertyListingLocalitySelector({
 
         {!multiple && value && !isOpen ? (
           <div className="flex min-w-0 flex-1 items-center justify-between gap-1">
-            <span className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
+            <span className="truncate text-sm font-medium text-slate-900 dark:text-slate-100" title={value}>
               {value}
             </span>
             <button
@@ -476,7 +477,12 @@ export function PropertyListingLocalitySelector({
       {/* Dropdown Panel */}
       {isOpen && isCitySelected && (
         <div
-          className={`absolute top-[calc(100%+6px)] z-50 ${menuAlignEnd ? "right-0 w-[min(20rem,calc(100vw-2rem))] sm:left-0 sm:w-auto" : "left-0 right-0"} max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl transition-all dark:border-slate-700 dark:bg-slate-900`}
+          // Width and side are set on open from the field's position (works in any layout); the classes
+          // are the pre-measure fallback. `menuAlignEnd` only picks that fallback side.
+          className={`absolute top-[calc(100%+6px)] z-50 ${
+            menuAlignEnd ? "right-0 min-w-full" : "left-0 right-0"
+          } max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-xl transition-all dark:border-slate-700 dark:bg-slate-900`}
+          ref={(el) => placeDropdown(el, containerRef.current)}
           onScroll={(e) => {
             const el = e.currentTarget;
             if (el.scrollHeight - el.scrollTop - el.clientHeight <= 48) {
@@ -539,7 +545,8 @@ export function PropertyListingLocalitySelector({
                     }`}
                   />
                   <div className="min-w-0">
-                    <span className="block truncate text-sm font-medium">
+                    {/* Two lines before cutting: locality names are long ("Sector 45, Golf Course Ext Road"). */}
+                    <span className="line-clamp-2 break-words text-sm font-medium leading-snug" title={title}>
                       {title}
                     </span>
                     <span className="block truncate text-xs text-slate-400 dark:text-slate-500">
