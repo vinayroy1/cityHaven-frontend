@@ -1,4 +1,5 @@
 "use client";
+import { PagingLimitNote, pagingLimitOf } from "@/components/common/PagingLimitNote";
 import { formatMoneyShort } from "@/lib/money";
 import { ProjectImagePlaceholder } from "@/components/projects/ProjectImagePlaceholder";
 
@@ -723,6 +724,11 @@ export function NewProjectsClient({
                 <p className="text-xs text-slate-500">
                   Showing {projects.length} of {totalProjects}
                 </p>
+              </div>
+            )}
+            {projects.length > 0 && (
+              <div className="col-span-full">
+                <PagingLimitNote limit={pagingLimitOf(data)} />
               </div>
             )}
           </div>

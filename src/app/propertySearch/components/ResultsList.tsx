@@ -1,5 +1,6 @@
 "use client";
 
+import { PagingLimitNote } from "@/components/common/PagingLimitNote";
 import React, { useEffect, useRef } from "react";
 import { SearchX } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -39,6 +40,7 @@ export function ResultsList({ results }: { results: SearchResults }) {
     fetchNextPage,
     refetch,
     isFlatmate,
+    pagingLimit,
   } = results;
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
@@ -117,6 +119,7 @@ export function ResultsList({ results }: { results: SearchResults }) {
 
       <div ref={sentinelRef} className="h-1 w-full" />
       {isFetchingNextPage && <SkeletonGrid count={2} />}
+      {!hasNextPage && <PagingLimitNote limit={pagingLimit} />}
     </div>
   );
 }

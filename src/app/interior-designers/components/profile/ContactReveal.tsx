@@ -27,12 +27,12 @@ export function InteriorContactProvider({ profile, children }: { profile: Interi
   const pathname = usePathname();
   const router = useRouter();
   const [trigger, { isLoading }] = useRevealInteriorContactMutation();
-  const publicPhone = profile.isPhonePublic ? profile.primaryPhone || profile.contact?.phone || null : null;
-  const publicWa = profile.whatsappPhone || profile.contact?.whatsapp || null;
   const [revealed, setRevealed] = useState<Revealed | null>(null);
 
-  const phone = revealed?.phone ?? publicPhone;
-  const whatsapp = revealed?.whatsapp ?? publicWa ?? phone;
+  // Like property listings, the number is never shown up front: only after login, via the reveal call
+  // (which logs the lead and is where credits will be charged).
+  const phone = revealed?.phone ?? null;
+  const whatsapp = revealed?.whatsapp ?? phone;
 
   const reveal = useCallback(async () => {
     if (revealed) return revealed;

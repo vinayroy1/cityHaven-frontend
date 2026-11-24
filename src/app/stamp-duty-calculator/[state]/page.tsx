@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const s = STAMP_DUTY_BY_SLUG.get((await params).state);
   if (!s) return {};
   const title = `Stamp Duty in ${s.name} 2026: Rates, Registration Charges & Calculator | Awasio`;
-  const description = `Stamp duty in ${s.name}: ${s.summary.men} for men, ${s.summary.women} for women, ${s.summary.joint} joint. Registration ${s.summary.registration}. Calculate the exact amount for your property.`;
+  const description = `Stamp duty in ${s.name} 2026: ${s.summary.men} for men, ${s.summary.women} for women, joint buyers ${s.summary.joint.toLowerCase()}. Registration fee ${s.summary.registration}. Free calculator for your exact amount.`;
   const url = buildCanonical(`/stamp-duty-calculator/${s.slug}`);
   return {
     title: { absolute: title },

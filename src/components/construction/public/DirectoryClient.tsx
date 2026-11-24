@@ -9,6 +9,7 @@ import { PropertyListingLocalitySelector, type LocalitySelection } from "@/compo
 import { HardHat, Loader2, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 import { FilterSelect } from "@/components/common/FilterSelect";
 import { cn } from "@/components/ui/utils";
+import { PagingLimitNote, pagingLimitOf, type PagingLimit } from "@/components/common/PagingLimitNote";
 import { useLazySearchConstructionQuery } from "@/features/construction/api";
 import { BUILDING_TYPE_OPTIONS, SECTOR_OPTIONS, SERVICE_OPTIONS } from "@/features/construction/options";
 import { listingPath } from "@/lib/seo/countryPath";
@@ -88,7 +89,7 @@ export function DirectoryClient({
     limit: PAGE_SIZE,
   });
   // Results for one filter combination; the unfiltered list starts from the server render.
-  const [state, setState] = React.useState({ key: baseKey, page: 1, items: initialItems, total: initialTotal });
+  const [state, setState] = React.useState<{ key: string; page: number; items: typeof initialItems; total: number; limit?: PagingLimit | null }>({ key: baseKey, page: 1, items: initialItems, total: initialTotal });
 
   // Filters change → load page 1 from the API; no filters → the server-rendered list.
   React.useEffect(() => {
@@ -96,7 +97,7 @@ export function DirectoryClient({
     let cancelled = false;
     void fetchPage(params(1))
       .unwrap()
-      .then((r) => !cancelled && setState({ key, page: 1, items: r.items, total: r.pagination.total }))
+      .then((r) => !cancelled && setState({ key, page: 1, items: r.items, total: r.pagination.total, limit: pagingLimitOf(r) }))
       .catch(() => !cancelled && setState({ key, page: 1, items: [], total: 0 }));
     return () => {
       cancelled = true;
@@ -104,7 +105,7 @@ export function DirectoryClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, filtered, fetchPage]);
 
-  const view = state.key === key ? state : key === baseKey ? { key, page: 1, items: initialItems, total: initialTotal } : null;
+  const view = state.key === key ? state : key === baseKey ? { key, page: 1, items: initialItems, total: initialTotal, limit: null } : null;
   const items = view?.items ?? [];
   // No results for the current filters yet (request not started or in flight), or a city/area navigation in progress.
   const loading = !view || navPending;
@@ -116,7 +117,7 @@ export function DirectoryClient({
     const r = await fetchPage(params(page)).unwrap().catch(() => null);
     if (!r) return;
     const seen = new Set(view.items.map((x) => x.id));
-    setState({ key, page, items: [...view.items, ...r.items.filter((x) => !seen.has(x.id))], total: r.pagination.total });
+    setState({ key, page, items: [...view.items, ...r.items.filter((x) => !seen.has(x.id))], total: r.pagination.total, limit: pagingLimitOf(r) });
   };
   // Infinite scroll; the button stays as a fallback.
   const sentinelRef = useAutoLoadMore(() => void loadMore(), !!view && items.length < total, isFetching, items.length);
@@ -320,6 +321,8 @@ export function DirectoryClient({
           <p className="text-xs text-slate-500">Showing {items.length} of {total}</p>
         </div>
       )}
+      {/* Server-rendered no-city list is the capped first page; later pages say why they stopped. */}
+      {view && items.length > 0 && <PagingLimitNote limit={view.limit ?? (!city && items.length >= total ? "CITY_REQUIRED" : null)} />}
     </div>
   );
 }

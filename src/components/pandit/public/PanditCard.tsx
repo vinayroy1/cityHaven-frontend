@@ -48,7 +48,7 @@ export function PanditCard({
       <span aria-hidden className="absolute inset-x-6 top-0 h-1 rounded-b-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500" />
 
       <div className="flex items-start gap-3.5">
-        <Link href={href} className="relative shrink-0" aria-label={name}>
+        <Link href={href} className="relative z-10 shrink-0" aria-label={name}>
           <CompanyAvatar
             name={p.displayName}
             logo={p.photo}
@@ -70,7 +70,7 @@ export function PanditCard({
             {badge ?? <RatingPill avg={p.ratingAvg} count={p.ratingCount} className="shrink-0" />}
           </div>
           <h3 className="mt-0.5 line-clamp-2 text-base font-bold leading-snug text-slate-900 dark:text-white">
-            <Link href={href} className="hover:text-rose-600">{name}</Link>
+            <Link href={href} className="hover:text-rose-600 after:absolute after:inset-0 after:rounded-[inherit] after:content-['']">{name}</Link>
           </h3>
           <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-slate-500">
             <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-500" /> {[p.locality, p.city].filter(Boolean).join(", ")}
@@ -118,7 +118,7 @@ export function PanditCard({
           </div>
           {badge && <RatingPill avg={p.ratingAvg} count={p.ratingCount} />}
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-2">
+        <div className="relative z-10 mt-3 grid grid-cols-2 gap-2">
           {actions ?? (
             <>
               <Link href={href} className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">

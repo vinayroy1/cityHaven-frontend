@@ -1,5 +1,6 @@
 "use client";
 
+import { PagingLimitNote, pagingLimitOf } from "@/components/common/PagingLimitNote";
 import { FilterSelect } from "@/components/common/FilterSelect";
 import { useAutoLoadMore } from "@/lib/hooks/useAutoLoadMore";
 import React, { useMemo, useState } from "react";
@@ -84,6 +85,7 @@ export function StaysDirectory({
   const q = useStaySearch(params, true, initialPage);
   const items = useMemo(() => q.data?.pages.flatMap((p) => p.items) ?? [], [q.data]);
   const total = q.data?.pages[0]?.total ?? 0;
+  const pagingLimit = pagingLimitOf(q.data?.pages.at(-1));
   // Infinite scroll; the "Show more stays" button stays as a fallback.
   const sentinelRef = useAutoLoadMore(() => void q.fetchNextPage(), !!q.hasNextPage, q.isFetchingNextPage, items.length);
   const hotspots = STAY_HOTSPOTS[country.code] ?? country.popularCities;
@@ -364,6 +366,7 @@ export function StaysDirectory({
             </button>
           </div>
         )}
+        {items.length > 0 && <PagingLimitNote limit={pagingLimit} />}
 
         {/* Owner CTA */}
         <section className="mt-10 overflow-hidden rounded-3xl bg-slate-900 p-6 text-white sm:flex sm:items-center sm:justify-between sm:p-8">

@@ -1,3 +1,4 @@
+import { internalHeaders } from "@/components/nearby/guideData";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 
@@ -33,6 +34,7 @@ export async function getAllProjectsForSitemap(): Promise<SitemapProject[]> {
   for (let page = 1; page <= MAX_PAGES; page++) {
     try {
       const res = await fetch(toInternalApiUrl(`${API_ENDPOINTS.projects.search}?sortBy=newest&page=${page}&pageSize=${PAGE_SIZE}`), {
+        headers: internalHeaders(),
         next: { revalidate: 86400 },
       });
       if (!res.ok) break;

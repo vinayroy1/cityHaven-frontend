@@ -56,10 +56,10 @@ export function ConstructionCard({
         : { k: "Infrastructure", v: "Govt & private works" }
     : { k: p.quoteOnly ? "Pricing" : "Starting from", v: p.quoteOnly || !p.startingRate ? "Price on request" : formatRate(p.startingRate, p.countryCode) };
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
       <Link
         href={href}
-        className="relative block aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-800 to-slate-950"
+        className="relative z-10 block aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-800 to-slate-950"
         aria-label={p.businessName}
       >
         <InteriorPhotoCarousel
@@ -108,7 +108,7 @@ export function ConstructionCard({
         <div className="flex items-start gap-3">
           <div className="min-w-0 flex-1">
             <h3 className="truncate text-base font-bold text-slate-900 dark:text-white">
-              <Link href={href} className="hover:text-rose-600">
+              <Link href={href} className="hover:text-rose-600 after:absolute after:inset-0 after:rounded-[inherit] after:content-['']">
                 {p.businessName}
               </Link>
             </h3>
@@ -170,7 +170,7 @@ export function ConstructionCard({
             </div>
           </div>
         )}
-        <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
+        <div className="relative z-10 mt-auto grid grid-cols-2 gap-2 pt-4">
           {actions ?? (
             <>
               <Link

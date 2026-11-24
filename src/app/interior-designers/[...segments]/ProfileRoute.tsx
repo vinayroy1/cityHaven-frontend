@@ -51,7 +51,6 @@ function businessJsonLd(p: InteriorProfile, url: string) {
     description: p.tagline || p.about || undefined,
     image: p.coverBanner || p.logo || undefined,
     logo: p.logo || undefined,
-    telephone: p.isPhonePublic && p.primaryPhone ? p.primaryPhone : undefined,
     address: {
       "@type": "PostalAddress",
       addressLocality: p.primaryLocality || p.primaryCity,

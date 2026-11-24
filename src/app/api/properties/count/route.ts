@@ -1,3 +1,4 @@
+import { internalHeaders } from "@/components/nearby/guideData";
 import { NextResponse } from "next/server";
 import { toInternalApiUrl } from "@/lib/api/internalApi";
 
@@ -23,6 +24,7 @@ export async function GET(request: Request) {
     }
 
     const res = await fetch(backendUrl.toString(), {
+      headers: internalHeaders(), // count only: keep the real total without a city
       next: { revalidate: 86400 }, // Cache the backend response for 24 hours
     });
 

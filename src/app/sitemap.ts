@@ -8,6 +8,7 @@ import {
   SEO_SEARCH_INTENTS,
   ALL_59_CITIES,
 } from "@/constants/seo";
+import { internalHeaders } from "@/components/nearby/guideData";
 import { toSearchSlug } from "@/components/search/searchQuery";
 import { getAllAgentIds } from "@/data/agents";
 import { agentPath, agentsListPath } from "@/features/advisors/paths";
@@ -60,7 +61,7 @@ async function getInventoryData(): Promise<{
 async function getFallbackProperties(): Promise<Array<{ id: number; slug?: string | null; updatedAt?: string | null }>> {
   try {
     const endpoint = toInternalApiUrl(`${API_ENDPOINTS.propertyListing.search}?pageSize=200`);
-    const res = await fetch(endpoint, { next: { revalidate: 3600 } });
+    const res = await fetch(endpoint, { headers: internalHeaders(), next: { revalidate: 3600 } });
     if (!res.ok) return [];
     const json = (await res.json()) as {
       data?: {
@@ -84,7 +85,7 @@ async function fetchAllAdvisors(): Promise<Array<{ city?: string | null; country
   const out: Array<{ city?: string | null; countryCode?: string | null }> = [];
   for (let offset = 0; offset < 5000; offset += 50) {
     try {
-      const res = await fetch(toInternalApiUrl(`${API_ENDPOINTS.advisors.list}?limit=50&offset=${offset}`), { next: { revalidate: 3600 } });
+      const res = await fetch(toInternalApiUrl(`${API_ENDPOINTS.advisors.list}?limit=50&offset=${offset}`), { headers: internalHeaders(), next: { revalidate: 3600 } });
       if (!res.ok) break;
       const rows = ((await res.json())?.data ?? []) as Array<{ city?: string | null; countryCode?: string | null }>;
       out.push(...rows);
@@ -103,6 +104,7 @@ async function fetchAllPages(path: string, pageSize: number, sizeParam: "pageSiz
     try {
       const sep = path.includes("?") ? "&" : "?";
       const res = await fetch(toInternalApiUrl(`${path}${sep}page=${page}&${sizeParam}=${pageSize}`), {
+        headers: internalHeaders(),
         next: { revalidate: 3600 },
       });
       if (!res.ok) break;

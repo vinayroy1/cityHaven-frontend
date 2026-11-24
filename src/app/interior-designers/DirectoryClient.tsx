@@ -17,6 +17,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { setUserPreferredCity } from "@/lib/geo/geoService";
+import { PagingLimitNote, pagingLimitOf, type PagingLimit } from "@/components/common/PagingLimitNote";
 import { useLazySearchInteriorDesignersQuery, useSearchInteriorDesignersQuery } from "@/features/interiors/api";
 import { InteriorDesignerCard } from "./components/InteriorDesignerCard";
 import type { InteriorProfile, InteriorProviderType, InteriorSearchParams, InteriorSearchResponse } from "@/types/interior.types";
@@ -136,8 +137,10 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
 
   // "Load more": later pages are appended for the current filters only (key change = fresh list).
   const filterKey = JSON.stringify(searchArgs);
-  const [more, setMore] = useState<{ key: string; page: number; items: InteriorProfile[] }>({ key: "", page: 1, items: [] });
-  const extra = more.key === filterKey ? more : { key: filterKey, page: 1, items: [] as InteriorProfile[] };
+  const [more, setMore] = useState<{ key: string; page: number; items: InteriorProfile[]; limit?: PagingLimit | null }>({ key: "", page: 1, items: [] });
+  const extra = more.key === filterKey ? more : { key: filterKey, page: 1, items: [] as InteriorProfile[], limit: null };
+  // Backend stopped paging (no city, or a logged-out visitor's page limit).
+  const pagingLimit = extra.limit ?? pagingLimitOf(data);
   const [fetchPage, { isFetching: loadingMore }] = useLazySearchInteriorDesignersQuery();
   const total = data?.pagination?.total ?? 0;
   const rawDesigners = useMemo(() => {
@@ -145,12 +148,12 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
     const seen = new Set(first.map((d) => d.id));
     return [...first, ...extra.items.filter((d) => !seen.has(d.id) && (seen.add(d.id), true))];
   }, [data, extra.items]);
-  const hasMore = rawDesigners.length < total;
+  const hasMore = !pagingLimit && rawDesigners.length < total;
   const loadMore = async () => {
     const page = extra.page + 1;
     try {
       const res = await fetchPage({ ...searchArgs, page }).unwrap();
-      setMore({ key: filterKey, page, items: [...extra.items, ...(res?.items ?? [])] });
+      setMore({ key: filterKey, page, items: [...extra.items, ...(res?.items ?? [])], limit: pagingLimitOf(res) });
     } catch {
       // Keep what is shown; the button stays so the visitor can retry.
     }
@@ -495,6 +498,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
               <p className="text-xs text-slate-500">Showing {rawDesigners.length} of {total}</p>
             </div>
           )}
+          {!isLoading && filteredDesigners.length > 0 && <PagingLimitNote limit={pagingLimit} className="mt-8" />}
         </div>
       </main>
 

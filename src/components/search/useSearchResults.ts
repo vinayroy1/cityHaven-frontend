@@ -16,6 +16,7 @@ import {
 } from "./searchQuery";
 import { subTypeSlugToId } from "./searchConfig";
 import { useCountryCode } from "@/lib/country/countryStore";
+import { pagingLimitOf, type PagingLimit } from "@/components/common/PagingLimitNote";
 
 const BASE_PAGE_SIZE = 12;
 const REFINE_PAGE_SIZE = 30;
@@ -35,6 +36,8 @@ export type SearchResults = {
   fetchNextPage: () => void;
   refetch: () => void;
   isFlatmate: boolean;
+  /** Backend stopped paging on purpose (no city, or a logged-out visitor's page limit). */
+  pagingLimit: PagingLimit | null;
 };
 
 export function useSearchResults(
@@ -140,5 +143,6 @@ export function useSearchResults(
     fetchNextPage: activeQuery.fetchNextPage,
     refetch: activeQuery.refetch,
     isFlatmate,
+    pagingLimit: pagingLimitOf((activeQuery.data?.pages as unknown[] | undefined)?.at(-1)),
   };
 }

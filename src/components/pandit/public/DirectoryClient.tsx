@@ -9,6 +9,7 @@ import { PropertyListingCitySelector, type CitySelection } from "@/components/pr
 import { PropertyListingLocalitySelector, type LocalitySelection } from "@/components/propertyListing/PropertyListingLocalitySelector";
 import { FilterSelect } from "@/components/common/FilterSelect";
 import { cn } from "@/components/ui/utils";
+import { PagingLimitNote, pagingLimitOf, type PagingLimit } from "@/components/common/PagingLimitNote";
 import { useLazySearchPanditsQuery } from "@/features/pandit/api";
 import { ALL_SERVICE_OPTIONS, LANGUAGE_OPTIONS, PANDIT_BASE, SERVICE_GROUPS, TRADITION_OPTIONS } from "@/features/pandit/options";
 import { listingPath } from "@/lib/seo/countryPath";
@@ -133,14 +134,14 @@ export function DirectoryClient({
     page,
     limit: PAGE_SIZE,
   });
-  const [state, setState] = React.useState({ key: baseKey, page: 1, items: initialItems, total: initialTotal });
+  const [state, setState] = React.useState<{ key: string; page: number; items: typeof initialItems; total: number; limit?: PagingLimit | null }>({ key: baseKey, page: 1, items: initialItems, total: initialTotal });
 
   React.useEffect(() => {
     if (!filtered) return;
     let cancelled = false;
     void fetchPage(params(1))
       .unwrap()
-      .then((r) => !cancelled && setState({ key, page: 1, items: r.items, total: r.pagination.total }))
+      .then((r) => !cancelled && setState({ key, page: 1, items: r.items, total: r.pagination.total, limit: pagingLimitOf(r) }))
       .catch(() => !cancelled && setState({ key, page: 1, items: [], total: 0 }));
     return () => {
       cancelled = true;
@@ -148,7 +149,7 @@ export function DirectoryClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, filtered, fetchPage]);
 
-  const view = state.key === key ? state : key === baseKey ? { key, page: 1, items: initialItems, total: initialTotal } : null;
+  const view = state.key === key ? state : key === baseKey ? { key, page: 1, items: initialItems, total: initialTotal, limit: null } : null;
   const items = view?.items ?? [];
   const total = view?.total ?? 0;
 
@@ -161,7 +162,7 @@ export function DirectoryClient({
     loadingMore.current = false;
     if (!r) return;
     const seen = new Set(view.items.map((x) => x.id));
-    setState({ key, page, items: [...view.items, ...r.items.filter((x) => !seen.has(x.id))], total: r.pagination.total });
+    setState({ key, page, items: [...view.items, ...r.items.filter((x) => !seen.has(x.id))], total: r.pagination.total, limit: pagingLimitOf(r) });
   };
 
   // Infinite scroll (shared with every directory); the button below stays as a fallback.
@@ -390,6 +391,8 @@ export function DirectoryClient({
           <p className="text-xs text-slate-500">Showing {items.length} of {total}</p>
         </div>
       )}
+      {/* Server-rendered no-city list is the capped first page; later pages say why they stopped. */}
+      {view && items.length > 0 && <PagingLimitNote limit={view.limit ?? (!city && items.length >= total ? "CITY_REQUIRED" : null)} />}
     </div>
   );
 }

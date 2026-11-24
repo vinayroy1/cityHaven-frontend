@@ -28,6 +28,7 @@ import {
   type SearchState,
 } from "@/components/search/searchQuery";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";
+import { PagingLimitNote, pagingLimitOf } from "@/components/common/PagingLimitNote";
 import { useSearchFlatmatesQuery } from "@/features/flatmates/api";
 import type { FlatmateListing, FlatmateListingMode } from "@/types/flatmate.types";
 import { detectUserLocation, getUserPreferredCity } from "@/lib/geo/geoService";
@@ -467,6 +468,9 @@ export default function FlatmatesDiscoveryPage({
               {listings.map((item, idx) => (
                 <FlatmateCard key={item.id} listing={item} priority={idx < 2} />
               ))}
+              <div className="col-span-full">
+                <PagingLimitNote limit={pagingLimitOf(data)} />
+              </div>
             </div>
           ) : (
             <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900 space-y-4 my-8">

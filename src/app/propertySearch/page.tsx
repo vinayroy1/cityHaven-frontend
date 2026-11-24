@@ -1,3 +1,4 @@
+import { internalHeaders } from "@/components/nearby/guideData";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
@@ -42,6 +43,7 @@ export async function generateMetadata({ searchParams }: SearchProps): Promise<M
     if (locality) backendUrl.searchParams.set("locality", locality);
 
     const res = await fetch(backendUrl.toString(), {
+      headers: internalHeaders(), // count only: keep the real total without a city
       next: { revalidate: 86400 }, // Cache for 24 hours
     });
 

@@ -1,3 +1,4 @@
+import { internalHeaders } from "@/components/nearby/guideData";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { SearchPageClient } from "@/app/propertySearch/SearchPageClient";
@@ -85,7 +86,8 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
       if (location.state) url.searchParams.set("q", location.state);
       for (const locality of location.localities) url.searchParams.append("locality", locality);
     }
-    const response = await fetch(url, { next: { revalidate: 3600 } });
+    // Count only (pageSize=1): the internal key keeps the real total for no-city / state pages.
+    const response = await fetch(url, { headers: internalHeaders(), next: { revalidate: 3600 } });
     if (response.ok) {
       const payload = await response.json();
       const total = Number(payload?.data?.total ?? payload?.total ?? 0);
