@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
+import { STAMP_DUTY_STATES } from "@/features/stampDuty/data";
 import {
   SITE_URL,
   SEO_SEARCH_INTENTS,
@@ -216,6 +217,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     { url: `${SITE_URL}/rental-agreement`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${SITE_URL}/stamp-duty-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    ...STAMP_DUTY_STATES.map((st) => ({
+      url: `${SITE_URL}/stamp-duty-calculator/${st.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     { url: `${SITE_URL}/rent-receipt`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE_URL}/area-converter`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     ...ALL_PAIRS.map(([a, b]) => ({

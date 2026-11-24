@@ -71,7 +71,8 @@ export function FilterSelect({
         {Icon && (
           <Icon className={cn("pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2", active ? "text-rose-500" : "text-slate-400")} />
         )}
-        <SelectValue placeholder={placeholder} />
+        {/* Explicit label so the chosen option shows in server HTML and before the menu has mounted. */}
+        <SelectValue placeholder={placeholder}>{options.find((o) => o.value === value)?.label}</SelectValue>
       </SelectTrigger>
       <SelectContent position="popper" className="max-h-72 rounded-xl border-slate-200 p-1 dark:border-slate-700">
         {runs.map((r, i) =>

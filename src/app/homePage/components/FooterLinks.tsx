@@ -21,6 +21,7 @@ const columns = [
     links: [
       { label: "Locality guide: metro, hospitals & schools", href: "/nearby" },
       { label: "EMI Calculator", href: "/emi-calculator" },
+      { label: "Stamp Duty Calculator", href: "/stamp-duty-calculator" },
       { label: "Free rental agreement (PDF)", href: "/rental-agreement" },
       { label: "Rent receipt generator (HRA)", href: "/rent-receipt" },
       { label: "Home Loans", href: "/home-loans" },
