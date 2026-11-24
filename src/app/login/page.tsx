@@ -577,7 +577,25 @@ function LoginContent() {
         }).unwrap();
         handleAuthSuccess(tokens);
       } catch (err: any) {
-        setErrorMessage(getApiErrorMessage(err, "Invalid credentials. Please verify and try again."));
+        const message = getApiErrorMessage(err, "Invalid credentials. Please verify and try again.");
+        // Unknown email / mobile: they meant to sign up (e.g. "List your hotel" → login). Move them to
+        // sign-up with what they typed already filled in, instead of leaving them at a dead end.
+        if (/no account found/i.test(message)) {
+          if (isEmail) {
+            setEmail(cleanLoginId);
+          } else {
+            let digits = cleanLoginId.replace(/\D/g, "");
+            if (mobileCountry === "IN" && digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
+            setMobile(digits);
+          }
+          setSignupStep("details");
+          setIsSignup(true);
+          setSuccessMessage(
+            `No account found with this ${isEmail ? "email" : "mobile number"}. Create one now — just add the remaining details below.`,
+          );
+          return;
+        }
+        setErrorMessage(message);
       }
     }
 
