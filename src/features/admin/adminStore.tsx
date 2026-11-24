@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { serverLogout } from "@/lib/auth/serverLogout";
 import { APP_CONFIG } from "@/constants/app-config";
 import { adminApi } from "./api";
 import type {
@@ -305,6 +306,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logoutStaff = () => {
+    void serverLogout();
     clearAdminStorage();
     clearAssistedSession();
     setCurrentStaff(null);
