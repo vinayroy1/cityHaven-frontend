@@ -19,7 +19,7 @@ import { CountryResultsBanner, useUrlCountry } from "@/components/country/Countr
 import type { PanditProfile, PanditSegment, PanditSort } from "@/features/pandit/types";
 import { PanditCard } from "./PanditCard";
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 12;
 /** Shared look for every search/filter box: same height, font, left icon and chevron as the city picker. */
 const fieldCls = (active: boolean) =>
   cn(

@@ -51,7 +51,7 @@ import { CountryResultsBanner, useUrlCountry } from "@/components/country/Countr
 import { getCountry } from "@/config/countries";
 import type { ProjectListing, ProjectStatus } from "@/types/project.types";
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 12;
 
 // Cities in the picker belong to the site's selected country, so its prefix goes in the URL.
 const buildProjectSearchHref = (city: string, localities: string[] = []) =>

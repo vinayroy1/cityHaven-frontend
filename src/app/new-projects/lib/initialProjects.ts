@@ -16,7 +16,7 @@ export const getInitialProjects = cache(async (city?: string, localities: string
     if (localities.length) url.searchParams.set("locality", localities.join(","));
     if (countryCode) url.searchParams.set("countryCode", countryCode);
     url.searchParams.set("page", "1");
-    url.searchParams.set("pageSize", "24");
+    url.searchParams.set("pageSize", "12");
     url.searchParams.set("sortBy", "featured");
     const response = await fetch(url, { next: { revalidate: 60 }, headers: { Accept: "application/json" } });
     if (!response.ok) return { items: [], total: 0, ok: false };

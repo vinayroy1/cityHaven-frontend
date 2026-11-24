@@ -5,7 +5,7 @@ import { citySlug } from "@/features/construction/options";
 import type { ConstructionProfile, ConstructionSearchResponse } from "@/features/construction/types";
 
 export const CONSTRUCTION_REVALIDATE_SECONDS = 120;
-export const PAGE_SIZE = 24;
+export const PAGE_SIZE = 12;
 
 /** `{ ok:false }` = API unreachable (pages throw so ISR keeps the last good copy instead of caching an error). */
 async function getJson<T>(endpoint: string): Promise<{ ok: boolean; status: number; data: T | null }> {

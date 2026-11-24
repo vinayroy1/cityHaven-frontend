@@ -29,7 +29,7 @@ const normalizeR2Url = (url?: string | null): string => {
 const getInitialFlatmates = cache(async (city?: string, locality?: string) => {
   try {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://awasio.com/api";
-    let query = "pageSize=18";
+    let query = "pageSize=12";
     if (city && city !== "India") query += `&city=${encodeURIComponent(city)}`;
     if (locality) query += `&locality=${encodeURIComponent(locality)}`;
     const endpoint = toInternalApiUrl(`${apiBase}/v1/flatmates?${query}`);

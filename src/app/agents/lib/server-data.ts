@@ -7,7 +7,7 @@ import type { Agent } from "@/data/agents";
 /** First page of advisors for a directory page (no fallback to other cities). Never throws. */
 export const fetchAdvisors = cache(
   async ({ city, locality, countryCode }: { city?: string; locality?: string; countryCode?: string }): Promise<Agent[]> => {
-    const qs = new URLSearchParams({ limit: "24", strict: "1" });
+    const qs = new URLSearchParams({ limit: "12", strict: "1" });
     if (city) qs.set("city", city);
     if (city && locality) qs.set("locality", locality);
     if (!city && countryCode) qs.set("countryCode", countryCode);

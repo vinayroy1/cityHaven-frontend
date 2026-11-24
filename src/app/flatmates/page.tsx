@@ -207,7 +207,7 @@ export default function FlatmatesDiscoveryPage({
     petsAllowed: lifestyle.includes("PET_FRIENDLY") ? true : undefined,
     preferredDiet: preferredDiet || undefined,
     page,
-    pageSize: 18,
+    pageSize: 12,
   });
 
   const navigateToLocation = (nextCity: string, nextLocalities: string[], nextFilters: SearchState) => {

@@ -5,7 +5,7 @@ import { citySlug } from "@/features/pandit/options";
 import type { PanditProfile, PanditSearchResponse } from "@/features/pandit/types";
 
 export const PANDIT_REVALIDATE_SECONDS = 120;
-export const PAGE_SIZE = 24;
+export const PAGE_SIZE = 12;
 
 /** `{ ok:false }` = API unreachable (pages throw so ISR keeps the last good copy instead of caching an error). */
 async function getJson<T>(endpoint: string): Promise<{ ok: boolean; status: number; data: T | null }> {

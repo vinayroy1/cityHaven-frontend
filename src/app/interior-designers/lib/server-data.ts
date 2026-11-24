@@ -29,7 +29,7 @@ export const fetchInteriorProfile = cache((slug: string) =>
 
 /** First page of the directory for a city, or all of India when city is "" (the default view). */
 export const fetchInteriorDirectory = cache((city: string, locality?: string | null) => {
-  const qs = new URLSearchParams({ limit: "30" });
+  const qs = new URLSearchParams({ limit: "12" });
   if (city) qs.set("city", city);
   else qs.set("countryCode", "IN");
   if (city && locality) qs.set("locality", locality);

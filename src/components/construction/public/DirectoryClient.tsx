@@ -21,7 +21,7 @@ const BASE = "/construction-companies";
 import type { BuildingType, ConstructionProfile, ConstructionSegment, ConstructionService, InfraSector } from "@/features/construction/types";
 import { ConstructionCard } from "./ConstructionCard";
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 12;
 
 export function DirectoryClient({
   city,

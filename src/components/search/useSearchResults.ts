@@ -19,7 +19,7 @@ import { useCountryCode } from "@/lib/country/countryStore";
 import { pagingLimitOf, type PagingLimit } from "@/components/common/PagingLimitNote";
 
 const BASE_PAGE_SIZE = 12;
-const REFINE_PAGE_SIZE = 30;
+const REFINE_PAGE_SIZE = 12; // API max per request
 const MAX_AUTO_PAGES = 5;
 const MIN_VISIBLE_TARGET = 6;
 
@@ -60,7 +60,7 @@ export function useSearchResults(
   const flatmateApiParams = React.useMemo(() => {
     if (!isFlatmate) return undefined;
     const params: Record<string, any> = {
-      pageSize: 30,
+      pageSize: 12,
     };
     if (state.cityName) params.city = state.cityName;
     if (state.localities.length > 0) params.locality = state.localities[0].label;

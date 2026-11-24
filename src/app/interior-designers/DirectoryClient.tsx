@@ -3,7 +3,7 @@
 import { useAutoLoadMore } from "@/lib/hooks/useAutoLoadMore";
 import React, { useState, useMemo } from "react";
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 12;
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { PageBreadcrumbs, type BreadcrumbTrailItem } from "@/components/common/PageBreadcrumbs";

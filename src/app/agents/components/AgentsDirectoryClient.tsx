@@ -64,7 +64,7 @@ const toCount = (value: unknown): number => {
 const experienceYears = (agent: Agent): number =>
   toCount((agent as Agent & { experienceYears?: number }).experienceYears ?? agent.experience);
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 12; // the API serves at most 12 per request
 
 export function AgentsDirectoryClient({ initialCity = "", initialLocality = "", country = null }: AgentsDirectoryClientProps) {
   const router = useRouter();
