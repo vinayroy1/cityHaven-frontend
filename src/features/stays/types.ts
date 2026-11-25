@@ -27,6 +27,8 @@ export interface StayRoom {
   monthlyPrice?: number | null;
   isFree: boolean;
   donationBased: boolean;
+  /** Editor-only: rate varies, guests ask for it. Not stored; inferred from no price + not free/donation. */
+  priceOnRequest?: boolean;
   ac: boolean;
   attachedBath: boolean;
   features: string[];

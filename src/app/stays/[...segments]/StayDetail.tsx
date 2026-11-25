@@ -37,7 +37,7 @@ import { APP_CONFIG } from "@/constants/app-config";
 
 function roomPrice(room: StayRoom, cc: string) {
   if (room.isFree) return { main: "Free", sub: room.donationBased ? "donation welcome" : "" };
-  if (room.pricePerNight == null) return { main: room.donationBased ? "Donation" : "On request", sub: "" };
+  if (room.pricePerNight == null) return room.donationBased ? { main: "Donation", sub: "" } : { main: "Price on request", sub: "call or WhatsApp for rate" };
   return { main: formatMoney(room.pricePerNight, cc), sub: "per night" };
 }
 

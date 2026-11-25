@@ -4,7 +4,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { TimePicker } from "@/components/common/TimePicker";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Bath, BedDouble, Copy, ExternalLink, HeartHandshake, ImagePlus, Link2, Loader2, Plus, ShieldCheck, Snowflake, Sparkles, Star, Trash2, Wind, X } from "lucide-react";
+import { ArrowLeft, Bath, BedDouble, Copy, ExternalLink, HeartHandshake, ImagePlus, PhoneCall, Link2, Loader2, Plus, ShieldCheck, Snowflake, Sparkles, Star, Trash2, Wind, X } from "lucide-react";
 import { toast } from "sonner";
 import { PropertyListingCitySelector } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector } from "@/components/propertyListing/PropertyListingLocalitySelector";
@@ -65,7 +65,9 @@ const fromStay = (s?: Stay | null): StayInput => ({
   whatsapp: s?.whatsapp ?? "",
   email: s?.email ?? "",
   bookingLinks: (s?.bookingLinks as StayInput["bookingLinks"])?.length ? (s!.bookingLinks as StayInput["bookingLinks"]) : [{ platform: "WEBSITE", url: "" }],
-  rooms: s?.rooms?.length ? s.rooms : [{ ...emptyRoom(), name: "Standard Room" }],
+  rooms: s?.rooms?.length
+    ? s.rooms.map((r) => ({ ...r, priceOnRequest: !r.isFree && !r.donationBased && r.pricePerNight == null }))
+    : [{ ...emptyRoom(), name: "Standard Room" }],
 });
 
 /** Strip empty strings to null and drop client-only fields before sending. */
@@ -87,7 +89,7 @@ function toPayload(v: StayInput, publish?: boolean): Partial<StayInput> {
     whatsapp: blank(v.whatsapp),
     email: blank(v.email) ?? "",
     bookingLinks: v.bookingLinks.filter((l) => l.url.trim()),
-    rooms: v.rooms.map((r) => ({ ...r, bookUrl: blank(r.bookUrl), bedType: blank(r.bedType) })),
+    rooms: v.rooms.map(({ priceOnRequest: _por, ...r }) => ({ ...r, bookUrl: blank(r.bookUrl), bedType: blank(r.bedType) })),
     ...(publish !== undefined ? { publish } : {}),
   };
 }
@@ -214,16 +216,16 @@ function RoomEditor({ room, index, cc, onChange, onRemove, onDuplicate }: { room
           Room name *
           <input className={`${input} mt-1`} value={room.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Deluxe AC Double" />
         </label>
-        <label className={label}>
+        <div className={label}>
           Bed
-          <select className={`${input} mt-1`} value={room.bedType ?? ""} onChange={(e) => set("bedType", e.target.value)}>
-            {BED_TYPES.map((b) => (
-              <option key={b.value} value={b.value}>
-                {b.label}
-              </option>
-            ))}
-          </select>
-        </label>
+          <SearchableSelect
+            className="mt-1"
+            value={room.bedType ?? ""}
+            onChange={(b) => b && set("bedType", b)}
+            options={BED_TYPES.map((b) => ({ value: b.value, label: b.label }))}
+            placeholder="Bed type"
+          />
+        </div>
         <div className="grid grid-cols-3 gap-2">
           <label className={label}>
             Adults
@@ -263,13 +265,13 @@ function RoomEditor({ room, index, cc, onChange, onRemove, onDuplicate }: { room
             <p className="text-[11px] text-slate-500">Choose how guests pay for this room type</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {/* Option 1: Standard Nightly Tariff */}
             <button
               type="button"
-              onClick={() => onChange({ ...room, isFree: false, donationBased: false })}
+              onClick={() => onChange({ ...room, isFree: false, donationBased: false, priceOnRequest: false })}
               className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition ${
-                !room.isFree && !room.donationBased
+                !room.isFree && !room.donationBased && !room.priceOnRequest
                   ? "border-rose-500 bg-rose-50/60 ring-2 ring-rose-500/20 dark:border-rose-500 dark:bg-rose-950/30"
                   : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950"
               }`}
@@ -280,10 +282,27 @@ function RoomEditor({ room, index, cc, onChange, onRemove, onDuplicate }: { room
               <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">Regular hotel / room tariff (e.g. ₹1,200/night)</p>
             </button>
 
+            {/* Option: Price on request (rate varies by season / guests / booking) */}
+            <button
+              type="button"
+              onClick={() => onChange({ ...room, isFree: false, donationBased: false, priceOnRequest: true })}
+              className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition ${
+                room.priceOnRequest && !room.isFree && !room.donationBased
+                  ? "border-sky-500 bg-sky-50/60 ring-2 ring-sky-500/20 dark:border-sky-500 dark:bg-sky-950/30"
+                  : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950"
+              }`}
+            >
+              <div className="flex items-center gap-1.5">
+                <PhoneCall className="h-3.5 w-3.5 text-sky-600" />
+                <span className="text-xs font-bold text-slate-900 dark:text-white">Price on Request</span>
+              </div>
+              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">Rate varies by season, guests or booking; guests call for today&apos;s rate</p>
+            </button>
+
             {/* Option 2: Donation Based */}
             <button
               type="button"
-              onClick={() => onChange({ ...room, isFree: false, donationBased: true })}
+              onClick={() => onChange({ ...room, isFree: false, donationBased: true, priceOnRequest: false })}
               className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition ${
                 room.donationBased && !room.isFree
                   ? "border-rose-500 bg-rose-50/60 ring-2 ring-rose-500/20 dark:border-rose-500 dark:bg-rose-950/30"
@@ -300,7 +319,7 @@ function RoomEditor({ room, index, cc, onChange, onRemove, onDuplicate }: { room
             {/* Option 3: Completely Free Stay */}
             <button
               type="button"
-              onClick={() => onChange({ ...room, isFree: true, donationBased: false, pricePerNight: null })}
+              onClick={() => onChange({ ...room, isFree: true, donationBased: false, priceOnRequest: false, pricePerNight: null })}
               className={`flex flex-col items-start rounded-xl border p-2.5 text-left transition ${
                 room.isFree
                   ? "border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/20 dark:border-emerald-500 dark:bg-emerald-950/30"
@@ -319,7 +338,7 @@ function RoomEditor({ room, index, cc, onChange, onRemove, onDuplicate }: { room
           {!room.isFree && (
             <div className="mt-2 grid grid-cols-1 gap-2 pt-1 min-[400px]:grid-cols-3">
               <label className={label}>
-                {room.donationBased ? `Suggested donation (${sym})` : `Per night rate (${sym}) *`}
+                {room.donationBased ? `Suggested donation (${sym})` : room.priceOnRequest ? `Starting from (${sym})` : `Per night rate (${sym}) *`}
                 <input
                   type="number"
                   min={0}
@@ -327,8 +346,9 @@ function RoomEditor({ room, index, cc, onChange, onRemove, onDuplicate }: { room
                   className={`${input} mt-1`}
                   value={room.pricePerNight ?? ""}
                   onChange={(e) => set("pricePerNight", num(e.target.value))}
-                  placeholder={room.donationBased ? "Optional (e.g. 500)" : "1200"}
+                  placeholder={room.donationBased ? "Optional (e.g. 500)" : room.priceOnRequest ? "Optional (e.g. 800)" : "1200"}
                 />
+                {room.priceOnRequest && <span className="mt-1 block text-[10px] font-normal text-slate-500">Optional. Shows as &quot;From {sym}X&quot; and keeps you in price filters.</span>}
               </label>
               <label className={label}>
                 Weekend rate ({sym})
@@ -408,7 +428,7 @@ export function StayEditor({
     if (!v.rooms.length) p.push("Add at least one room type");
     v.rooms.forEach((r, i) => {
       if (r.name.trim().length < 2) p.push(`Name room type ${i + 1}`);
-      if (!r.isFree && !r.donationBased && r.pricePerNight == null) p.push(`Set a nightly price for "${r.name || `room ${i + 1}`}"`);
+      if (!r.isFree && !r.donationBased && !r.priceOnRequest && r.pricePerNight == null) p.push(`Set a nightly price for "${r.name || `room ${i + 1}`}"`);
       if (r.bookUrl && bookingUrlError("WEBSITE", r.bookUrl)) p.push(`Fix the booking link of "${r.name || `room ${i + 1}`}"`);
     });
     if (!v.phone && !v.whatsapp) p.push("Add a phone or WhatsApp number");
@@ -628,17 +648,13 @@ export function StayEditor({
             return (
               <div key={i} className="rounded-2xl border border-slate-200 p-2 dark:border-slate-700">
                 <div className="grid grid-cols-[1fr_auto] gap-2 sm:flex">
-                  <select
-                    className={`${input} sm:w-44 sm:shrink-0`}
+                  <SearchableSelect
+                    className="min-w-0 sm:w-48 sm:shrink-0"
                     value={l.platform}
-                    onChange={(e) => set("bookingLinks", v.bookingLinks.map((x, j) => (j === i ? { ...x, platform: e.target.value } : x)))}
-                  >
-                    {BOOKING_PLATFORMS.map((p) => (
-                      <option key={p.value} value={p.value}>
-                        {p.label}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(pf) => pf && set("bookingLinks", v.bookingLinks.map((x, j) => (j === i ? { ...x, platform: pf } : x)))}
+                    options={BOOKING_PLATFORMS.map((p) => ({ value: p.value, label: p.label }))}
+                    placeholder="Platform"
+                  />
                   <input
                     type="url"
                     inputMode="url"
