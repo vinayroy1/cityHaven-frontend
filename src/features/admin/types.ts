@@ -259,6 +259,10 @@ export interface AdminGovernanceSettings {
   rateAnomalyThresholdPercent: number;
   autoDisputeLeadRefundLimitHours: number;
   requireTwoPersonRefundApproval: boolean;
+  /** true = admin must approve a submitted listing; false = Submit publishes it. */
+  interiorReviewRequired: boolean;
+  constructionReviewRequired: boolean;
+  panditReviewRequired: boolean;
   updatedAt: string;
   updatedByStaffName: string;
 }

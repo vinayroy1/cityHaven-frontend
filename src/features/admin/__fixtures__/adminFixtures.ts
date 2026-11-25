@@ -23,6 +23,9 @@ export const DEFAULT_GOVERNANCE_SETTINGS: AdminGovernanceSettings = {
   rateAnomalyThresholdPercent: 35,
   autoDisputeLeadRefundLimitHours: 24,
   requireTwoPersonRefundApproval: true,
+  interiorReviewRequired: true,
+  constructionReviewRequired: true,
+  panditReviewRequired: true,
   updatedAt: "2026-09-30T10:00:00Z",
   updatedByStaffName: "Vinay Kumar (Super Admin)",
 };

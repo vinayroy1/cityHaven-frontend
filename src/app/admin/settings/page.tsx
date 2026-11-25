@@ -45,6 +45,11 @@ export default function AdminSettingsPage() {
   const [anomalyThreshold, setAnomalyThreshold] = useState<number>(governanceSettings.rateAnomalyThresholdPercent);
   const [refundLimitHours, setRefundLimitHours] = useState<number>(governanceSettings.autoDisputeLeadRefundLimitHours);
   const [requireDualRefund, setRequireDualRefund] = useState<boolean>(governanceSettings.requireTwoPersonRefundApproval);
+  const [reviewSwitches, setReviewSwitches] = useState({
+    interiorReviewRequired: governanceSettings.interiorReviewRequired ?? true,
+    constructionReviewRequired: governanceSettings.constructionReviewRequired ?? true,
+    panditReviewRequired: governanceSettings.panditReviewRequired ?? true,
+  });
   const [justificationReason, setJustificationReason] = useState<string>("");
 
   useEffect(() => {
@@ -57,6 +62,11 @@ export default function AdminSettingsPage() {
     setAnomalyThreshold(governanceSettings.rateAnomalyThresholdPercent);
     setRefundLimitHours(governanceSettings.autoDisputeLeadRefundLimitHours);
     setRequireDualRefund(governanceSettings.requireTwoPersonRefundApproval);
+    setReviewSwitches({
+      interiorReviewRequired: governanceSettings.interiorReviewRequired ?? true,
+      constructionReviewRequired: governanceSettings.constructionReviewRequired ?? true,
+      panditReviewRequired: governanceSettings.panditReviewRequired ?? true,
+    });
   }, [governanceSettings]);
 
   const handleSavePolicy = (e: React.FormEvent) => {
@@ -74,6 +84,7 @@ export default function AdminSettingsPage() {
         rateAnomalyThresholdPercent: anomalyThreshold,
         autoDisputeLeadRefundLimitHours: refundLimitHours,
         requireTwoPersonRefundApproval: requireDualRefund,
+        ...reviewSwitches,
       },
       justificationReason || "Governance policies updated by Super Admin"
     );
@@ -255,6 +266,60 @@ export default function AdminSettingsPage() {
                 Instant Velocity / Low Friction
               </div>
             </label>
+          </div>
+        </div>
+
+        {/* 1b. Per-listing review switches (service listings) */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800">
+            <ShieldCheck className="w-5 h-5 text-violet-500" />
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">Listing Review Switches</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                On: an admin must approve each submitted listing before it goes live. Off: Submit publishes it at once (monthly fee still applies, and no Verified badge is given without a human check).
+              </p>
+            </div>
+          </div>
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            {(
+              [
+                ["interiorReviewRequired", "Interior designers", "Admin → Interior review queue"],
+                ["constructionReviewRequired", "Construction companies", "Admin → Construction review queue"],
+                ["panditReviewRequired", "Pandit / Vastu", "Admin → Pandit review queue"],
+              ] as const
+            ).map(([key, label, hint]) => {
+              const on = reviewSwitches[key];
+              return (
+                <div key={key} className="flex items-center justify-between gap-4 py-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{label}</p>
+                    <p className="text-[11px] text-slate-500">{on ? `Review required · ${hint}` : "Auto-publish on submit"}</p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={on}
+                    aria-label={`${label}: admin review required`}
+                    disabled={!isSuperAdmin}
+                    onClick={() => setReviewSwitches((s) => ({ ...s, [key]: !s[key] }))}
+                    className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition disabled:opacity-50 ${on ? "bg-violet-600" : "bg-slate-300 dark:bg-slate-700"}`}
+                  >
+                    <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transition ${on ? "translate-x-5" : "translate-x-0.5"}`} />
+                  </button>
+                </div>
+              );
+            })}
+            {[
+              ["Property listings", "Controlled by the Property Listing Review Switch above"],
+              ["Hotels & stays, Flatmates, New projects", "Always publish instantly (no review queue for these yet)"],
+            ].map(([label, hint]) => (
+              <div key={label} className="flex items-center justify-between gap-4 py-3 opacity-70">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{label}</p>
+                  <p className="text-[11px] text-slate-500">{hint}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
