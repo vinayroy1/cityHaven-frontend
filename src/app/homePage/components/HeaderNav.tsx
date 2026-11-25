@@ -1,5 +1,6 @@
 "use client";
 
+import { ListOnAwasioSheet } from "@/components/common/ListOnAwasioSheet";
 import { serverLogout } from "@/lib/auth/serverLogout";
 import { clearListingDrafts } from "@/lib/auth/listingDrafts";
 import React from "react";
@@ -129,6 +130,7 @@ interface HeaderNavProps {
 export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: HeaderNavProps = {}) {
   const pathname = usePathname();
   const router = useRouter();
+  const [listSheetOpen, setListSheetOpen] = React.useState(false);
   const [isAuthed, setIsAuthed] = React.useState(false);
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
   const [accountOpen, setAccountOpen] = React.useState(false);
@@ -575,26 +577,22 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
         <div className="flex items-center gap-1.5 sm:gap-2.5" ref={accountRef}>
           <CountrySwitcher compact className="hidden lg:inline-flex" />
           <Link
-            href={isAuthed ? "/post-property-free" : "/login?redirect=/post-property-free"}
+            href="/post-property-free"
             prefetch={false}
+            aria-haspopup="dialog"
             onClick={(e) => {
-              if (!isAuthed) {
-                e.preventDefault();
-                window.dispatchEvent(
-                  new CustomEvent("awasio:open-welcome-credits", {
-                    detail: { returnUrl: "/post-property-free" },
-                  })
-                );
-              }
+              // Opens the chooser of every listing type; the link is the no-JS fallback.
+              e.preventDefault();
+              setListSheetOpen(true);
             }}
             className="group relative inline-flex items-center gap-1.5 sm:gap-2 overflow-hidden rounded-full bg-gradient-to-r from-rose-600 via-pink-600 to-rose-600 bg-[length:200%_auto] px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white shadow-md shadow-rose-600/20 transition-all duration-300 hover:bg-right hover:shadow-lg hover:shadow-rose-600/30 hover:-translate-y-0.5 active:translate-y-0"
           >
             <PlusCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-200 group-hover:rotate-90 shrink-0" />
             <span className="whitespace-nowrap">
-              <span className="hidden xs:inline">Post Property Free</span>
-              <span className="xs:hidden">Post Free</span>
+              List Free
             </span>
           </Link>
+          <ListOnAwasioSheet open={listSheetOpen} onOpenChange={setListSheetOpen} />
 
 
           {/* Saved Properties Heart Icon (Visible on sm+ screens, available in mobile drawer) */}

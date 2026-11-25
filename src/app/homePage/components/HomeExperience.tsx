@@ -368,7 +368,6 @@ export function HomeExperience({
               onSubmit={submit}
             />
           </div>
-          <HomeListOnAwasio />
           <HomeServicesRow />
         </div>
       </section>
@@ -383,6 +382,7 @@ export function HomeExperience({
         )}
 
         <HomeBannerCarousel />
+        <HomeListOnAwasio />
 
         <NearbySpotlight byCountry={nearbySpotlight} />
 

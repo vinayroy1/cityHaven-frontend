@@ -4,6 +4,7 @@
  * mobile, auto-advances every 5s, pauses on hover/touch. Slides are a static list for now; move
  * them to the backend later (image, href, city, start/end dates, priority).
  */
+import { ListOnAwasioSheet } from "@/components/common/ListOnAwasioSheet";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, BadgePercent, Building2, ChevronLeft, ChevronRight, Flame, Hotel, Paintbrush, PlusCircle, Zap, type LucideIcon } from "lucide-react";
@@ -23,21 +24,24 @@ type Slide = {
   sponsored?: boolean;
   /** Opens the sign-up / welcome-credits dialog instead of navigating. */
   opensCredits?: boolean;
+  /** Opens the "What would you like to list?" chooser instead of navigating. */
+  opensChooser?: boolean;
 };
 
 const SLIDES: Slide[] = [
   {
     id: "post-free",
-    eyebrow: "For owners & brokers",
-    title: "Post your property FREE",
+    eyebrow: "For owners & businesses",
+    title: "List anything FREE",
     highlight: "· 0% commission",
-    body: "Owners and brokers post free with 0% commission to Awasio. Live in 2 minutes, reach verified buyers & tenants.",
-    cta: "Post property free",
+    body: "Property, hotel, PG, interiors, construction, pandit services and more. Live in minutes, enquiries come straight to you.",
+    cta: "List free",
     href: "/post-property-free",
+    opensChooser: true,
     icon: PlusCircle,
     bg: "from-slate-950 via-slate-900 to-rose-800",
     accent: "text-amber-300",
-    chips: ["0% commission", "Set your own brokerage", "Live in 2 min", "Verified leads", "WhatsApp alerts"],
+    chips: ["Property", "Hotel / Homestay", "PG / Flatmate", "Interiors", "Construction", "+ more"],
   },  {
     id: "free-credits",
     eyebrow: "Welcome bonus",
@@ -114,6 +118,7 @@ export function HomeBannerCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [chooserOpen, setChooserOpen] = useState(false);
 
   const goTo = useCallback((i: number) => {
     const track = trackRef.current;
@@ -171,7 +176,10 @@ export function HomeBannerCarousel() {
               data-i={i}
               onClick={(e) => {
                 track(s.id);
-                if (s.opensCredits) {
+                if (s.opensChooser) {
+                  e.preventDefault();
+                  setChooserOpen(true);
+                } else if (s.opensCredits) {
                   e.preventDefault();
                   window.dispatchEvent(new CustomEvent("awasio:open-welcome-credits", { detail: { returnUrl: window.location.pathname } }));
                 }
@@ -249,6 +257,7 @@ export function HomeBannerCarousel() {
           />
         ))}
       </div>
+      <ListOnAwasioSheet open={chooserOpen} onOpenChange={setChooserOpen} />
     </section>
   );
 }
