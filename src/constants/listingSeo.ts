@@ -406,6 +406,31 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
       "architect registration online", "list naksha business free", "map approval drawings leads", "home planning business listing",
       "ghar ka naksha leads", "naksha banane ka kaam", "naksha business free listing", "architect ke liye leads kaise paye",
       "नक्शा बनाने वाले", "घर का नक्शा", "आर्किटेक्ट लिस्टिंग फ्री", "नक्शा डिज़ाइनर",
+      // Both word orders of every core phrase.
+      "architect listing free", "free listing for architects", "architects free listing", "list architect business free",
+      "list architecture firm free", "architecture firm listing", "architecture firm listing free", "free architecture firm listing",
+      "architect directory listing", "free architect directory listing", "architect listing site", "architect listing site india",
+      "architect registration free", "free architect registration", "register architect business online", "register as architect online free",
+      "naksha listing", "free naksha listing", "naksha listing free", "naksha designer listing free", "free naksha designer listing",
+      "naksha business listing", "list naksha business", "naksha maker listing", "free listing for naksha designers",
+      "house plan designer listing", "free house plan designer listing", "house plan designer listing free", "home planner listing",
+      "home planning listing free", "free home planning listing", "house design business listing", "free house design listing",
+      "civil engineer listing free", "free civil engineer listing", "civil engineer registration free", "structural engineer listing",
+      "free structural engineer listing", "structural engineer listing free", "list civil engineering business", "civil engineer directory listing",
+      "draftsman listing", "free draftsman listing", "autocad draftsman listing", "elevation designer listing", "3d elevation designer listing free",
+      // Lead phrases, both ways.
+      "leads for architects", "architect leads free", "free architect leads", "architecture leads", "architecture client leads",
+      "naksha leads", "free naksha leads", "leads for naksha designers", "house plan leads", "leads for house plan designers",
+      "civil engineer leads", "leads for civil engineers", "structural design leads", "3d elevation leads", "elevation design leads",
+      "map approval leads", "building plan approval leads", "how to get clients for architects", "how to get architecture clients",
+      "how to get naksha clients", "get clients for civil engineer", "plot owner leads", "house design enquiries",
+      // Hinglish.
+      "naksha listing free me", "naksha banane wale ki listing", "naksha designer free listing kaise kare", "architect free listing kaise kare",
+      "ghar ka naksha banane wala", "naksha banwana hai", "makan ka naksha", "naksha pass karwana", "naksha ke liye clients",
+      "civil engineer ke liye leads", "engineer listing free me", "naksha ka kaam chahiye", "naksha business kaise badhaye",
+      // Hindi.
+      "नक्शा लिस्टिंग फ्री", "फ्री नक्शा लिस्टिंग", "नक्शा डिज़ाइनर लिस्टिंग", "आर्किटेक्ट फ्री लिस्टिंग", "फ्री आर्किटेक्ट लिस्टिंग",
+      "सिविल इंजीनियर लिस्टिंग", "मकान का नक्शा बनाने वाले", "नक्शा पास कराने वाले", "घर का नक्शा लीड", "आर्किटेक्ट के लिए ग्राहक",
     ],
     h1: "List Your Architecture or Naksha Practice Free and Get Plot Owner Leads",
     intro:
@@ -428,6 +453,35 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
       { q: "How are architects verified?", a: "We check your COA registration number on the Council of Architecture register before your profile goes live, and show a 'COA verified' badge." },
       { q: "Can I get clients from other cities?", a: "Yes. Turn on 'deliver drawings online' and you appear when people search any city." },
       { q: "नक्शा बनाने वाले Awasio पर लिस्टिंग कैसे करें?", a: "प्रोफ़ाइल बनाएं, अपनी सेवाएं (2D नक्शा, 3D एलिवेशन, नक्शा पास), दाम और प्लॉट साइज़ के हिसाब से डिज़ाइन जोड़ें। लिस्टिंग फ्री है और ग्राहक सीधे संपर्क करते हैं।" },
+      { q: "Where can I get a free architect listing?", a: "On Awasio. Architects, architecture firms, civil and structural engineers and naksha designers get a free listing with packages, a portfolio of house plans and city pages." },
+      { q: "Is naksha designer listing free?", a: "Yes. Free naksha listing is open to naksha designers, draftsmen and home planners. There is no fee to list or publish." },
+      { q: "Can civil engineers get a free listing?", a: "Yes. Civil engineer listing is free. Add your qualification, services such as structural drawings or estimates, and whether you can sign drawings for map approval." },
+      { q: "How do architects get leads for house plans?", a: "List free, add your naksha and 3D elevation prices and designs with plot size and facing. Plot owners searching your city, or any city if you work online, send enquiries directly." },
+      { q: "Naksha designer free listing kaise kare?", a: "Awasio par free profile banayein, services (2D naksha, 3D elevation, naksha pass) aur rate daalein, plot size ke hisaab se designs jodein. Grahak seedhe call ya enquiry karte hain." },
+    ],
+    guides: [
+      {
+        heading: "Free architect listing and naksha designer listing",
+        paragraphs: [
+          "Looking for a free architect listing site? Awasio gives architects, architecture firms, civil engineers, structural engineers and naksha designers a free listing with no fee to list and no commission on projects. Whether you want an architect listing, a naksha listing or a house plan designer listing, it takes about five minutes.",
+          "Your free listing shows naksha and 3D elevation packages per sq.ft or at a fixed price, house plans by plot size such as 30×40 or 40×60, facing (east, west, north, south), floors and vastu. Plot owners searching for a house naksha, building plan or map approval drawings find you and send leads directly.",
+        ],
+      },
+      {
+        heading: "Architect leads, naksha leads and civil engineer leads",
+        paragraphs: [
+          "The hardest part of running a design practice is finding clients. Awasio sends leads for architects, naksha leads for designers and civil engineer leads from people who have just bought a plot and want to build. Each enquiry includes the plot size, facing, floors, BHK and the services they need.",
+          "Turn on online delivery and you appear in every city, so a naksha designer in one town can get house plan leads from across India.",
+        ],
+      },
+      {
+        heading: "नक्शा डिज़ाइनर और आर्किटेक्ट फ्री लिस्टिंग",
+        lang: "hi",
+        paragraphs: [
+          "Awasio पर घर का नक्शा बनाने वाले, आर्किटेक्ट, सिविल इंजीनियर और नक्शा डिज़ाइनर फ्री में लिस्टिंग कर सकते हैं। 2D नक्शा, 3D एलिवेशन, स्ट्रक्चरल ड्रॉइंग और नक्शा पास कराने की सेवाएं और दाम जोड़ें।",
+          "प्लॉट खरीदने वाले लोग अपने प्लॉट साइज़ और दिशा के हिसाब से नक्शा ढूंढते हैं और सीधे आपसे संपर्क करते हैं।",
+        ],
+      },
     ],
     cityHeading: "Architects & naksha designers by city",
     cityPath: (c) => `/architects/${c}`,
