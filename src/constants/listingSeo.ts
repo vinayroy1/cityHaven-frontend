@@ -187,6 +187,14 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
     keywords: [
       "list real estate project", "post new project", "builder project listing", "list project online free",
       "real estate project marketing", "new launch project listing", "developer listing portal", "rera project listing",
+      "project listing free", "free project listing", "real estate project listing", "free real estate project listing", "list my project",
+      "builder project listing free", "free builder listing", "builder listing site", "developer project listing", "list new project online",
+      "new project listing", "new launch listing free", "under construction project listing", "ready to move project listing",
+      "township listing", "plotted development listing", "plot project listing", "commercial project listing", "residential project listing",
+      "real estate project promotion", "promote real estate project online", "builder leads", "real estate project leads", "home buyer leads",
+      "leads for builders", "free builder leads", "how to sell flats in project", "how to get buyers for project", "how to market new project",
+      "project ko online kaise dale", "builder ke liye leads", "naye project ki marketing", "project listing free me",
+      "प्रोजेक्ट लिस्टिंग फ्री", "बिल्डर प्रोजेक्ट लिस्टिंग", "नया प्रोजेक्ट लिस्ट करें", "बिल्डर लीड", "रेरा प्रोजेक्ट",
     ],
     h1: "List Your New Real Estate Project for Free",
     intro:
@@ -208,6 +216,25 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
       { q: "What details do I need to list a project?", a: "Project name, location, status, configurations with sizes and prices, photos, and ideally the RERA number and brochure." },
       { q: "Can I list under-construction and new launch projects?", a: "Yes. New launch, under-construction and ready-to-move projects can all be listed." },
       { q: "Who receives the buyer enquiries?", a: "Enquiries go directly to the contact you add on the project, usually your sales team." },
+      { q: "Can I list a plotted development or township?", a: "Yes. Residential and commercial projects, plotted developments, townships and villa projects can all be listed." },
+      { q: "How do builders get home buyer leads?", a: "List the project with prices, floor plans, RERA number and photos. Buyers searching new projects in your city send enquiries to your sales team directly." },
+      { q: "Naye project ki free listing kaise kare?", a: "Awasio par project ka naam, location, RERA number, BHK, price aur brochure daalein. Buyer seedhe aapki sales team ko enquiry bhejte hain." },
+    ],
+    guides: [
+      {
+        heading: "Free real estate project listing for builders",
+        paragraphs: [
+          "Builders and developers can list new launch, under-construction and ready-to-move projects free on Awasio: apartments, villas, townships, plotted developments and commercial projects. Add towers, configurations, price ranges, floor plans, amenities, RERA number, possession date and brochure.",
+          "Every project gets its own page that home buyers find when they search new projects in your city and locality, and enquiries go straight to your sales team as builder leads.",
+        ],
+      },
+      {
+        heading: "नया प्रोजेक्ट फ्री में लिस्ट करें",
+        lang: "hi",
+        paragraphs: [
+          "बिल्डर और डेवलपर Awasio पर अपने नए और निर्माणाधीन प्रोजेक्ट फ्री में लिस्ट कर सकते हैं। फ्लोर प्लान, कीमत, रेरा नंबर और ब्रोशर जोड़ें और खरीदारों से सीधे लीड पाएं।",
+        ],
+      },
     ],
     cityHeading: "New projects by city",
     cityPath: (c) => `/new-projects/${c}`,
@@ -225,6 +252,14 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
     keywords: [
       "find flatmate", "flatmate finder", "room for rent", "post room for rent free", "roommate finder",
       "flat sharing", "shared accommodation", "need flatmate", "room on sharing basis", "flatmates without brokerage",
+      "flatmate finder free", "free flatmate finder", "find flatmate free", "flatmate search", "flatmates near me", "find roommate",
+      "roommate finder free", "free roommate finder", "roommate search", "roommates near me", "room partner", "room partner chahiye",
+      "room for rent free listing", "free room listing", "room listing free", "post room free", "room on rent", "single room for rent",
+      "sharing room for rent", "room sharing", "shared flat", "flat share", "flat sharing app", "flatmate wanted", "roommate wanted",
+      "female flatmate", "male flatmate", "girls flatmate", "boys flatmate", "working professional flatmate", "flatmate for 2bhk",
+      "replacement flatmate", "need room on sharing", "looking for room", "looking for flatmate", "occupancy available",
+      "flatmate chahiye", "roommate chahiye", "room sharing ke liye", "kamra kiraye par",
+      "रूममेट चाहिए", "फ्लैटमेट चाहिए", "कमरा किराये पर", "रूम शेयरिंग", "रूम पार्टनर चाहिए",
     ],
     h1: "Find a Flatmate or Post a Room for Rent: Free",
     intro:
@@ -246,6 +281,25 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
       { q: "How do I find a flatmate near my office?", a: "Post your requirement with your preferred area and budget, or browse flatmate listings for your city and filter by locality." },
       { q: "Is there any brokerage?", a: "No. You contact flatmates directly and there is no brokerage." },
       { q: "Can I list a single room in my flat?", a: "Yes. You can list one room or a bed in a shared room with the rent share and move-in date." },
+      { q: "How do I find a replacement flatmate?", a: "Post your room free with the rent share, deposit, move-in date and preferences. People looking for a room in your area contact you directly." },
+      { q: "Can I look for female-only or male-only flatmates?", a: "Yes. Set a gender preference on your post, and filter flatmate listings by gender when you search." },
+      { q: "Room partner kaise dhundhe?", a: "Awasio par free post karein: room hai ya room chahiye, budget, area aur move-in date daalein. Flatmate seedhe aapko contact karte hain, koi brokerage nahi." },
+    ],
+    guides: [
+      {
+        heading: "Free flatmate finder and room sharing",
+        paragraphs: [
+          "Awasio is a free flatmate finder for working professionals and students. Post a room for rent or a flatmate wanted requirement, set your budget, locality, move-in date and lifestyle preferences, and connect with roommates directly with zero brokerage.",
+          "Whether you need a replacement flatmate, a room on sharing basis or a female or male flatmate for a 2 BHK or 3 BHK, every member is phone-verified for safer flat sharing.",
+        ],
+      },
+      {
+        heading: "रूममेट और फ्लैटमेट फ्री में खोजें",
+        lang: "hi",
+        paragraphs: [
+          "Awasio पर कमरा किराये पर देने या रूम पार्टनर ढूंढने के लिए फ्री पोस्ट करें। बजट, इलाका और शिफ्ट होने की तारीख डालें और बिना ब्रोकरेज के सीधे फ्लैटमेट से बात करें।",
+        ],
+      },
     ],
     cityHeading: "Flatmates by city",
     cityPath: (c) => `/flatmate/${c}`,
@@ -329,6 +383,19 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
     keywords: [
       "list my hotel", "list hotel online free", "list homestay", "list guest house", "hotel listing site",
       "homestay registration", "get direct hotel bookings", "list resort online", "service apartment listing", "zero commission hotel listing",
+      "hotel listing free", "free hotel listing", "hotel listing", "list hotel free", "list my hotel free", "free hotel listing site",
+      "hotel listing site free", "hotel listing website", "free hotel listing website india", "hotel registration online free", "free hotel registration",
+      "homestay listing", "homestay listing free", "free homestay listing", "list homestay free", "homestay registration free", "list my homestay",
+      "guest house listing", "guest house listing free", "free guest house listing", "list guest house free", "guest house registration online",
+      "resort listing", "resort listing free", "free resort listing", "list resort free", "villa listing for stays", "farm stay listing",
+      "lodge listing", "lodge listing free", "dharamshala listing", "dharamshala listing free", "hostel listing free", "backpacker hostel listing",
+      "service apartment listing free", "free service apartment listing", "paying guest house listing", "bnb listing", "free bnb listing",
+      "hotel without commission", "commission free hotel listing", "no commission hotel booking site", "direct booking hotel listing",
+      "how to list my hotel online", "how to list homestay online", "how to get more hotel bookings", "how to get direct bookings for guest house",
+      "hotel ko online kaise dale", "hotel register kaise kare", "homestay register kaise kare", "guest house online listing kaise kare",
+      "hotel listing free me", "hotel ki booking kaise badhaye", "lodge online kaise dale",
+      "होटल लिस्टिंग फ्री", "फ्री होटल लिस्टिंग", "होटल रजिस्ट्रेशन", "होमस्टे लिस्टिंग", "गेस्ट हाउस लिस्टिंग", "लॉज लिस्टिंग",
+      "धर्मशाला लिस्टिंग", "होटल ऑनलाइन कैसे डालें", "होटल की बुकिंग कैसे बढ़ाएं",
     ],
     h1: "List Your Hotel, Homestay or Guest House for Free",
     intro:
@@ -350,6 +417,33 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
       { q: "Does Awasio charge commission on bookings?", a: "No. Guests contact you directly and Awasio takes no booking commission." },
       { q: "Can I list a homestay or a single room?", a: "Yes. Homestays, guest houses and small properties can be listed, including single rooms." },
       { q: "How do guests contact me?", a: "Guests call, WhatsApp or send an enquiry from your listing, and it reaches you directly." },
+      { q: "Where can I get a free hotel listing?", a: "On Awasio. Hotels, homestays, guest houses, lodges, resorts, dharamshalas, hostels and service apartments get a free listing with rooms, prices and photos." },
+      { q: "My room price is not fixed. Can I still list?", a: "Yes. Set a room to 'Price on request' and guests ask you for a quote instead of seeing a fixed rate." },
+      { q: "Is guest house and homestay listing free?", a: "Yes. Free guest house listing and free homestay listing are open to every host, with no listing fee and no booking commission." },
+      { q: "Hotel ko online free me kaise list kare?", a: "Awasio par free account banayein, hotel ki details, rooms, rate aur photos daalein aur submit karein. Guest seedhe aapko call ya WhatsApp karte hain, koi commission nahi." },
+      { q: "होटल या होमस्टे फ्री में कैसे लिस्ट करें?", a: "Awasio पर प्रॉपर्टी की जानकारी, कमरे, किराया और फोटो डालें। लिस्टिंग फ्री है और मेहमान सीधे आपसे संपर्क करते हैं, कोई कमीशन नहीं।" },
+    ],
+    guides: [
+      {
+        heading: "Free hotel listing with zero commission",
+        paragraphs: [
+          "Looking for a free hotel listing site? Awasio lets hotels, lodges, resorts and service apartments list free, with no listing fee and no commission on bookings. Guests contact you directly by call, WhatsApp or enquiry, so you keep the full room rate.",
+          "Add room types, prices (or price on request), amenities, check-in rules and photos of rooms and common areas. Your hotel appears when travellers search stays in your city, locality or near a landmark.",
+        ],
+      },
+      {
+        heading: "Homestay listing, guest house listing and dharamshala listing",
+        paragraphs: [
+          "Small hosts get the same free listing. List a homestay, guest house, farm stay, dharamshala, hostel or a single room, and reach families, pilgrims and travellers who prefer a direct booking.",
+        ],
+      },
+      {
+        heading: "होटल, होमस्टे और गेस्ट हाउस फ्री लिस्टिंग",
+        lang: "hi",
+        paragraphs: [
+          "Awasio पर होटल, लॉज, होमस्टे, गेस्ट हाउस, धर्मशाला और रिसॉर्ट बिल्कुल फ्री में लिस्ट करें। कोई लिस्टिंग फीस नहीं और बुकिंग पर कोई कमीशन नहीं। मेहमान सीधे आपको कॉल या WhatsApp करते हैं।",
+        ],
+      },
     ],
     cityHeading: "Hotels and stays by city",
     cityPath: (c) => `/stays/${c}`,
@@ -366,6 +460,19 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
     keywords: [
       "list construction company", "construction business listing", "house construction leads", "contractor listing",
       "get construction projects", "builder registration", "civil contractor listing", "turnkey construction leads",
+      "construction company listing free", "free construction company listing", "list construction company free", "construction company registration free",
+      "construction business listing free", "free construction business listing", "construction listing site", "construction company directory listing",
+      "contractor listing free", "free contractor listing", "contractor registration online free", "free contractor registration", "list contractor business",
+      "civil contractor listing free", "free civil contractor listing", "building contractor listing", "house construction contractor listing",
+      "labour contractor listing", "labour contractor listing free", "thekedar listing", "thekedar registration online", "builder listing free",
+      "free builder listing", "home builder listing", "infrastructure contractor listing", "government contractor listing", "road contractor listing",
+      "construction leads", "free construction leads", "construction leads free", "house construction leads free", "leads for contractors",
+      "contractor leads", "free contractor leads", "leads for construction companies", "building construction leads", "plot owner leads construction",
+      "how to get construction work", "how to get house construction orders", "how to get clients for construction business", "how to get contractor work",
+      "ghar banane ka theka", "makan banane ka theka", "theka kaise milega", "construction ka kaam kaise milega", "thekedar ke liye kaam",
+      "contractor listing free me", "construction company register kaise kare", "ghar banane wale contractor",
+      "कंस्ट्रक्शन कंपनी लिस्टिंग फ्री", "ठेकेदार लिस्टिंग", "ठेकेदार रजिस्ट्रेशन", "मकान बनाने का ठेका", "कंस्ट्रक्शन का काम कैसे मिलेगा",
+      "बिल्डिंग कॉन्ट्रैक्टर", "घर बनाने वाले ठेकेदार",
     ],
     h1: "List Your Construction Company and Get Project Leads",
     intro:
@@ -387,6 +494,33 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
       { q: "How do I get house construction leads?", a: "List your company with your rate per sq.ft, cities served and completed homes. Plot owners searching your city request quotes directly." },
       { q: "Can civil and labour contractors list?", a: "Yes. Turnkey builders, civil contractors and labour contractors can all list." },
       { q: "Can infrastructure contractors list?", a: "Yes. Infrastructure and government contractors have a separate category." },
+      { q: "Where can I get a free construction company listing?", a: "On Awasio. Construction companies, builders, civil contractors, labour contractors (thekedar) and turnkey firms get a free listing with rates, completed homes and city pages." },
+      { q: "How do contractors get house construction leads?", a: "List free with your rate per sq.ft, the cities you serve and photos of homes you've built. Plot owners planning to build send quote requests directly." },
+      { q: "Is contractor registration free?", a: "Yes. Contractor registration and listing on Awasio are free, with 1,000 free credits to boost your profile." },
+      { q: "Thekedar ko ghar banane ka kaam kaise milega?", a: "Awasio par free listing banayein, per sq.ft rate, sheher aur banaye hue gharon ki photos daalein. Plot owner seedhe quote ke liye contact karte hain." },
+      { q: "ठेकेदार को मकान बनाने का काम कैसे मिलेगा?", a: "Awasio पर फ्री लिस्टिंग बनाएं, प्रति वर्ग फुट रेट, शहर और बनाए हुए घरों की फोटो डालें। प्लॉट मालिक सीधे आपसे कोटेशन मांगते हैं।" },
+    ],
+    guides: [
+      {
+        heading: "Free construction company and contractor listing",
+        paragraphs: [
+          "Looking for a free construction company listing? Awasio gives builders, civil contractors, labour contractors and turnkey house construction firms a free listing with no commission on projects. Show your rate per sq.ft, materials and brands, warranty, experience and the homes you've built.",
+          "Infrastructure and government contractors can list road, building and civil works under a separate category.",
+        ],
+      },
+      {
+        heading: "House construction leads from plot owners",
+        paragraphs: [
+          "People who buy plots on Awasio are ready to build. They compare contractors by rate per sq.ft, past work and reviews, and request quotes directly, giving you house construction leads with the plot size, floors and budget.",
+        ],
+      },
+      {
+        heading: "ठेकेदार और कंस्ट्रक्शन कंपनी फ्री लिस्टिंग",
+        lang: "hi",
+        paragraphs: [
+          "Awasio पर कंस्ट्रक्शन कंपनी, बिल्डर, सिविल ठेकेदार और लेबर ठेकेदार फ्री में लिस्टिंग कर सकते हैं। अपना प्रति वर्ग फुट रेट और बनाए हुए घरों की फोटो डालें और मकान बनाने का काम सीधे प्लॉट मालिकों से पाएं।",
+        ],
+      },
     ],
     cityHeading: "Construction companies by city",
     cityPath: (c) => `/construction-companies/${c}`,
@@ -498,6 +632,17 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
     keywords: [
       "list pandit services", "pandit registration", "pandit for griha pravesh", "get puja bookings",
       "vastu consultant listing", "purohit listing", "online pandit booking register", "vastu consultant registration",
+      "pandit listing", "pandit listing free", "free pandit listing", "pandit registration free", "free pandit registration", "pandit registration online",
+      "list pandit services free", "register as pandit online", "pandit ji registration", "purohit registration", "purohit listing free",
+      "priest listing", "priest registration online", "astrologer and pandit listing", "jyotish listing", "karmkand pandit listing",
+      "vastu consultant listing free", "free vastu consultant listing", "vastu expert registration", "vastu consultant registration free",
+      "puja booking leads", "pandit booking leads", "leads for pandit", "pandit ke liye booking", "how to get puja bookings",
+      "how to get more puja bookings", "online pandit booking platform register", "how to get vastu clients",
+      "griha pravesh pandit listing", "bhoomi pujan pandit", "satyanarayan katha pandit", "havan pandit", "shadi pandit listing",
+      "pandit ji online booking", "pandit ji ko online kaise dale", "pandit registration kaise kare", "puja ki booking kaise milegi",
+      "vastu consultant online kaise bane", "pandit listing free me",
+      "पंडित लिस्टिंग फ्री", "फ्री पंडित लिस्टिंग", "पंडित रजिस्ट्रेशन", "पंडित रजिस्ट्रेशन फ्री", "पुरोहित रजिस्ट्रेशन",
+      "पूजा बुकिंग", "पंडित जी ऑनलाइन बुकिंग", "वास्तु सलाहकार लिस्टिंग", "गृह प्रवेश पंडित", "भूमि पूजन पंडित",
     ],
     h1: "List Your Pandit or Vastu Services and Get Bookings",
     intro:
@@ -519,6 +664,26 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
       { q: "Which pujas can I list?", a: "Griha pravesh, bhoomi pujan, house warming, Satyanarayan katha, vastu shanti and other ceremonies you perform." },
       { q: "Can vastu consultants list?", a: "Yes. Vastu consultants can list home, office and plot consultations." },
       { q: "How do families contact me?", a: "They call, WhatsApp or send an enquiry from your profile, and it reaches you directly." },
+      { q: "Where can I get a free pandit listing?", a: "On Awasio. Pandits, purohits, priests and vastu consultants get a free listing with their pujas, dakshina, languages and the cities they serve." },
+      { q: "Is pandit registration free?", a: "Yes. Pandit registration and vastu consultant registration on Awasio are free, with no commission on bookings." },
+      { q: "Pandit ji online booking kaise paayein?", a: "Awasio par free profile banayein, pujaon ki list, dakshina, bhasha aur sheher daalein. Pariwar seedhe call ya WhatsApp karke booking karte hain." },
+      { q: "पंडित जी फ्री रजिस्ट्रेशन कैसे करें?", a: "Awasio पर प्रोफ़ाइल बनाएं, गृह प्रवेश, भूमि पूजन, सत्यनारायण कथा जैसी पूजाएं, दक्षिणा और शहर जोड़ें। रजिस्ट्रेशन फ्री है और परिवार सीधे बुकिंग करते हैं।" },
+    ],
+    guides: [
+      {
+        heading: "Free pandit listing and puja bookings",
+        paragraphs: [
+          "Looking for free pandit registration? Awasio lets pandits, purohits and priests list free and get puja bookings directly from families: griha pravesh, bhoomi pujan, house warming, Satyanarayan katha, havan, vastu shanti and more. There is no commission on your dakshina.",
+          "Vastu consultants can list home, office and plot consultations, online or on site, and get vastu clients from people buying or building a home.",
+        ],
+      },
+      {
+        heading: "पंडित जी और वास्तु सलाहकार फ्री रजिस्ट्रेशन",
+        lang: "hi",
+        paragraphs: [
+          "Awasio पर पंडित, पुरोहित और वास्तु सलाहकार फ्री में लिस्टिंग कर सकते हैं। अपनी पूजाएं, दक्षिणा, भाषा और शहर जोड़ें। नए घर में जाने वाले परिवार गृह प्रवेश और अन्य पूजा के लिए सीधे आपसे बुकिंग करते हैं।",
+        ],
+      },
     ],
     cityHeading: "Pandits and vastu consultants by city",
     cityPath: (c) => `/pandit-vastu/${c}`,
@@ -535,6 +700,14 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
     keywords: [
       "real estate agent registration", "property agent listing", "broker registration", "get real estate leads",
       "property dealer listing", "list as property consultant", "real estate agent profile", "free leads for brokers",
+      "real estate agent registration free", "free real estate agent registration", "agent listing free", "free agent listing", "broker listing",
+      "broker listing free", "free broker listing", "property dealer registration", "property dealer registration free", "property dealer listing free",
+      "list as real estate agent", "become real estate agent online", "become property advisor", "property consultant registration",
+      "real estate broker profile free", "property agent directory listing", "channel partner registration", "real estate channel partner listing",
+      "real estate leads", "free real estate leads", "real estate leads free", "property leads for agents", "leads for property dealers",
+      "buyer leads", "tenant leads", "seller leads real estate", "how to get real estate leads", "how to get property clients",
+      "property dealer kaise bane", "property dealer ko leads kaise milegi", "broker registration kaise kare", "property dealer listing free me",
+      "प्रॉपर्टी डीलर रजिस्ट्रेशन", "प्रॉपर्टी डीलर लिस्टिंग फ्री", "ब्रोकर रजिस्ट्रेशन", "रियल एस्टेट एजेंट रजिस्ट्रेशन", "प्रॉपर्टी लीड",
     ],
     h1: "Join Awasio as a Property Agent or Advisor",
     intro:
@@ -556,6 +729,25 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
       { q: "How do I get real estate leads?", a: "Create your profile with your areas and specialities and list your properties. Buyers and tenants searching your area contact you directly." },
       { q: "Can I list properties as an agent?", a: "Yes. Agents can post properties for rent or sale and manage them from one dashboard." },
       { q: "Do I need RERA registration?", a: "Adding your RERA agent number is recommended and builds trust with clients." },
+      { q: "Where can property dealers register free?", a: "On Awasio. Real estate agents, brokers, property dealers and channel partners create a free profile and list properties at no cost." },
+      { q: "Property dealer ko leads kaise milegi?", a: "Awasio par free profile banayein, apne area aur properties daalein. Us area mein dhundhne wale buyer aur tenant seedhe aapko contact karte hain." },
+      { q: "प्रॉपर्टी डीलर फ्री रजिस्ट्रेशन कैसे करें?", a: "Awasio पर फ्री प्रोफ़ाइल बनाएं, अपने इलाके, अनुभव और प्रॉपर्टी जोड़ें। खरीदार और किरायेदार सीधे आपसे संपर्क करते हैं।" },
+    ],
+    guides: [
+      {
+        heading: "Free real estate agent and broker registration",
+        paragraphs: [
+          "Awasio offers free real estate agent registration for brokers, property dealers, consultants and channel partners. Create a profile with the localities you cover, your experience and RERA number, and list rent, resale, new project and commercial properties from one dashboard.",
+          "Buyers, sellers and tenants searching your area find your profile and send real estate leads directly, with no fee per lead to start.",
+        ],
+      },
+      {
+        heading: "प्रॉपर्टी डीलर और ब्रोकर फ्री रजिस्ट्रेशन",
+        lang: "hi",
+        paragraphs: [
+          "Awasio पर प्रॉपर्टी डीलर, ब्रोकर और रियल एस्टेट एजेंट फ्री में रजिस्टर करें। अपने इलाके की प्रॉपर्टी डालें और खरीदार, विक्रेता और किरायेदारों से सीधे लीड पाएं।",
+        ],
+      },
     ],
     cityHeading: "Property agents by city",
     cityPath: (c) => `/agents/${c}`,
