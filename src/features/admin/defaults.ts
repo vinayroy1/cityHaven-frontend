@@ -14,6 +14,7 @@ export const DEFAULT_GOVERNANCE_SETTINGS: AdminGovernanceSettings = {
   interiorReviewRequired: true,
   constructionReviewRequired: true,
   panditReviewRequired: true,
+  architectReviewRequired: true,
   updatedAt: "",
   updatedByStaffName: "",
 };

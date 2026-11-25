@@ -12,6 +12,7 @@ import {
   Hotel,
   MessageCircle,
   Paintbrush,
+  PencilRuler,
   Phone,
   ShieldCheck,
   Sparkles,
@@ -40,6 +41,12 @@ const THEME: Partial<Record<ListingSeoKey, { icon: Icon; eyebrow: string; cover:
     eyebrow: "For builders & contractors",
     cover: "from-amber-500 via-orange-500 to-rose-500",
     preview: { name: "Your Construction Co.", sub: "House construction · Renovation", chips: ["Turnkey", "10-yr warranty", "On time"], price: "From ₹1,800/sq ft" },
+  },
+  architect: {
+    icon: PencilRuler,
+    eyebrow: "For architects & naksha designers",
+    cover: "from-sky-500 via-indigo-500 to-violet-500",
+    preview: { name: "Your Design Studio", sub: "2D naksha · 3D elevation · Map approval", chips: ["30×40 east facing", "Vastu", "COA verified"], price: "From ₹8/sq ft" },
   },
   pandit: {
     icon: Flame,

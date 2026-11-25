@@ -40,6 +40,7 @@ import { Ruler, Paintbrush,
   Hotel,
   Receipt,
   HardHat,
+  PencilRuler,
   Flame,
 } from "lucide-react";
 import { SOCIAL_LINKS } from "@/constants/seo";
@@ -87,6 +88,7 @@ const categoryLinks: CategoryLink[] = [
   { label: "Hotels & Stays", href: "/stays", icon: Hotel },
   { label: "Interior Designers", href: "/interior-designers", icon: Paintbrush },
   { label: "Construction Companies", href: "/construction-companies", icon: HardHat },
+  { label: "Architects & Naksha", href: "/architects", icon: PencilRuler },
   { label: "Pandit & Vastu", href: "/pandit-vastu", icon: Flame },
   { label: "Commercial", href: "/commercial", icon: Building2 },
   { label: "Plots & Land", href: "/plot", icon: MapPin },

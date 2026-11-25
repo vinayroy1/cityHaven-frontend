@@ -274,12 +274,18 @@ function LoadError({ onRetry, spinning }: { onRetry: () => void; spinning: boole
 function ListingDashboard({ listingId }: { listingId: ListingId }) {
   const router = useRouter();
   const params = useSearchParams();
-  const { data, isLoading, isError, refetch, isFetching } = useMyConstructionQuery(listingId);
+  const { data: fresh, isLoading: loadingFresh, isError, refetch, isFetching } = useMyConstructionQuery(listingId);
   const { data: all } = useMyConstructionListQuery();
   const tab = (params.get("tab") as Tab) || "overview";
   // A listing being created stays in the wizard until it's submitted or the owner leaves it (saving
   // each step must not flip the page to the overview half-way through).
   const [inSetup, setInSetup] = React.useState(listingId === "new" || params.get("setup") === "1");
+  // While moving from "new" to the created id, keep the last data so the wizard isn't unmounted
+  // by a loading skeleton (that would send the owner back to the first step).
+  const [lastData, setLastData] = React.useState(fresh);
+  if (fresh && fresh !== lastData) setLastData(fresh);
+  const data = fresh ?? (inSetup ? lastData : undefined);
+  const isLoading = loadingFresh && !data;
   const goTab = (t: Tab) => {
     setInSetup(false);
     const id = data?.profile?.id ?? listingId;

@@ -49,6 +49,7 @@ export default function AdminSettingsPage() {
     interiorReviewRequired: governanceSettings.interiorReviewRequired ?? true,
     constructionReviewRequired: governanceSettings.constructionReviewRequired ?? true,
     panditReviewRequired: governanceSettings.panditReviewRequired ?? true,
+    architectReviewRequired: governanceSettings.architectReviewRequired ?? true,
   });
   const [justificationReason, setJustificationReason] = useState<string>("");
 
@@ -66,6 +67,7 @@ export default function AdminSettingsPage() {
       interiorReviewRequired: governanceSettings.interiorReviewRequired ?? true,
       constructionReviewRequired: governanceSettings.constructionReviewRequired ?? true,
       panditReviewRequired: governanceSettings.panditReviewRequired ?? true,
+      architectReviewRequired: governanceSettings.architectReviewRequired ?? true,
     });
   }, [governanceSettings]);
 
@@ -286,6 +288,7 @@ export default function AdminSettingsPage() {
                 ["interiorReviewRequired", "Interior designers", "Admin → Interior review queue"],
                 ["constructionReviewRequired", "Construction companies", "Admin → Construction review queue"],
                 ["panditReviewRequired", "Pandit / Vastu", "Admin → Pandit review queue"],
+                ["architectReviewRequired", "Engineers & naksha designers", "Admin → Architects & Naksha (COA architects are always reviewed)"],
               ] as const
             ).map(([key, label, hint]) => {
               const on = reviewSwitches[key];

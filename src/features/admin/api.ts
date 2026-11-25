@@ -20,6 +20,11 @@ import type {
 } from "./types";
 
 /** Interior profile as returned by GET /admin/interiors (full profile + owner + readiness). */
+export type AdminArchitectItem = import("@/features/architect/types").ArchitectProfile & {
+  owner?: { id: number; name?: string | null; email?: string | null; mobileNumber?: string | null };
+  readiness?: { canSubmit: boolean; pct: number; items: { id: string; label: string; required: boolean; done: boolean }[] };
+};
+
 export type AdminConstructionItem = import("@/features/construction/types").ConstructionProfile & {
   owner?: { id: number; name?: string | null; email?: string | null; mobileNumber?: string | null };
   readiness?: { canSubmit: boolean; pct: number; items: { id: string; label: string; required: boolean; done: boolean }[] };
@@ -182,6 +187,12 @@ export const adminApi = {
   },
   async reviewConstruction(id: number, decision: "APPROVE" | "REQUEST_CHANGES" | "REJECT", notes?: string) {
     return unwrap(await apiClient.post<{ outcome: string }>(API_ENDPOINTS.admin.construction.review(id), { decision, notes: notes || null }));
+  },
+  async listArchitectQueue(queue: string) {
+    return unwrap(await apiClient.get<{ items: AdminArchitectItem[]; counts: Record<string, number> }>(API_ENDPOINTS.admin.architects.queue(queue)));
+  },
+  async reviewArchitect(id: number, decision: "APPROVE" | "REQUEST_CHANGES" | "REJECT", notes?: string, coaVerified?: boolean) {
+    return unwrap(await apiClient.post<{ outcome: string }>(API_ENDPOINTS.admin.architects.review(id), { decision, notes: notes || null, ...(coaVerified !== undefined ? { coaVerified } : {}) }));
   },
   async listSignups(params: { days: number; type: string; stage?: string; q?: string; page?: number }) {
     const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== "").map(([k, v]) => [k, String(v)])).toString();

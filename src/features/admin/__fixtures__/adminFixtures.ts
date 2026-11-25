@@ -26,6 +26,7 @@ export const DEFAULT_GOVERNANCE_SETTINGS: AdminGovernanceSettings = {
   interiorReviewRequired: true,
   constructionReviewRequired: true,
   panditReviewRequired: true,
+  architectReviewRequired: true,
   updatedAt: "2026-09-30T10:00:00Z",
   updatedByStaffName: "Vinay Kumar (Super Admin)",
 };

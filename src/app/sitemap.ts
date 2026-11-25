@@ -20,6 +20,7 @@ import { DEFAULT_POSTS } from "@/constants/defaultBlogs";
 import { SITEMAP_CLUSTERS, type SitemapCluster } from "@/constants/sitemapClusters";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
 import { constructionProfilePath } from "@/features/construction/options";
+import { architectProfilePath } from "@/features/architect/options";
 import { countrySegment, listingPath } from "@/lib/seo/countryPath";
 import { stayPath } from "@/features/stays/options";
 import { flatmatePath } from "@/features/flatmates/paths";
@@ -187,7 +188,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     },
     // Public landing pages for the listing flows behind /dashboard (interiors, stays, construction, pandit, agents).
-    ...(["/list-interior-business", "/list-your-hotel", "/list-construction-company", "/list-pandit-services", "/become-property-advisor"] as const).map(
+    ...(["/list-interior-business", "/list-your-hotel", "/list-construction-company", "/list-architect-naksha-business", "/list-pandit-services", "/become-property-advisor"] as const).map(
       (path) => ({ url: `${SITE_URL}${path}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.85 }),
     ),
     {
@@ -395,12 +396,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // 8b. Hotels & stays, interior designer profiles and flatmate listings
-  const [stays, interiors, flatmates, construction, pandits] = await Promise.all([
+  const [stays, interiors, flatmates, construction, pandits, architects] = await Promise.all([
     fetchAllPages("/v1/stays", 48),
     fetchAllPages(API_ENDPOINTS.interiors.search.replace(/^.*\/api/, ""), 50, "limit"),
     fetchAllPages("/v1/flatmates", 50),
     fetchAllPages("/v1/construction", 50, "limit"),
     fetchAllPages("/v1/pandits", 50, "limit"),
+    fetchAllPages("/v1/architects", 50, "limit"),
   ]);
   const lastMod = (r: SlugRow) => (r.updatedAt ? new Date(r.updatedAt) : now);
   const stayRoutes: MetadataRoute.Sitemap = [
@@ -422,6 +424,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...constructionCities.map((path) => ({ url: `${SITE_URL}${path}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.75 })),
     ...construction.filter((r) => r.slug && r.city).map((r) => ({
       url: `${SITE_URL}${constructionProfilePath({ slug: r.slug!, city: r.city!, countryCode: r.countryCode })}`,
+      lastModified: lastMod(r),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
+  ];
+  // Architects & naksha designers: directory, city pages and profiles.
+  const architectCities = cityPages(architects, "/architects");
+  const architectRoutes: MetadataRoute.Sitemap = [
+    { url: `${SITE_URL}/architects`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    ...architectCities.map((path) => ({ url: `${SITE_URL}${path}`, lastModified: now, changeFrequency: "daily" as const, priority: 0.75 })),
+    ...architects.filter((r) => r.slug && r.city).map((r) => ({
+      url: `${SITE_URL}${architectProfilePath({ slug: r.slug!, city: r.city!, countryCode: r.countryCode })}`,
       lastModified: lastMod(r),
       changeFrequency: "weekly" as const,
       priority: 0.7,
@@ -477,6 +491,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...stayRoutes,
     ...interiorRoutes,
     ...constructionRoutes,
+    ...architectRoutes,
     ...panditRoutes,
     ...flatmateDetailRoutes,
   ];

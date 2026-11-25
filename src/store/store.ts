@@ -18,6 +18,7 @@ import { notificationsApi } from "@/features/notifications/api";
 import { messagingApi } from "@/features/messaging/api";
 import { interiorsApi } from "@/features/interiors/api";
 import { constructionApi } from "@/features/construction/api";
+import { architectApi } from "@/features/architect/api";
 import { panditApi } from "@/features/pandit/api";
 
 // After a successful RTK Query mutation in a public section, expire that section's ISR pages (see lib/revalidatePublic).
@@ -43,6 +44,7 @@ export const makeStore = () =>
       [projectsApi.reducerPath]: projectsApi.reducer,
       [interiorsApi.reducerPath]: interiorsApi.reducer,
       [constructionApi.reducerPath]: constructionApi.reducer,
+      [architectApi.reducerPath]: architectApi.reducer,
       [panditApi.reducerPath]: panditApi.reducer,
       [blogApi.reducerPath]: blogApi.reducer,
       [locationsApi.reducerPath]: locationsApi.reducer,
@@ -62,6 +64,7 @@ export const makeStore = () =>
         projectsApi.middleware,
         interiorsApi.middleware,
         constructionApi.middleware,
+        architectApi.middleware,
         panditApi.middleware,
         blogApi.middleware,
         locationsApi.middleware,

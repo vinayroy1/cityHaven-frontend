@@ -263,6 +263,7 @@ export interface AdminGovernanceSettings {
   interiorReviewRequired: boolean;
   constructionReviewRequired: boolean;
   panditReviewRequired: boolean;
+  architectReviewRequired: boolean;
   updatedAt: string;
   updatedByStaffName: string;
 }

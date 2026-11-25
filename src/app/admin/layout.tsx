@@ -34,6 +34,7 @@ import {
   BookOpen,
   Paintbrush,
   HardHat,
+  PencilRuler,
   PlusCircle,
   Search,
   Users,
@@ -113,6 +114,12 @@ const NAV_ITEMS = [
     label: "Construction Companies",
     href: "/admin/construction",
     icon: HardHat,
+    allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SENIOR_QC_LEAD", "QC_REVIEWER", "CATALOG_SPECIALIST", "ANALYST_AUDITOR"],
+  },
+  {
+    label: "Architects & Naksha",
+    href: "/admin/architects",
+    icon: PencilRuler,
     allowedRoles: ["SUPER_ADMIN", "OPERATIONS_MANAGER", "SENIOR_QC_LEAD", "QC_REVIEWER", "CATALOG_SPECIALIST", "ANALYST_AUDITOR"],
   },
   {

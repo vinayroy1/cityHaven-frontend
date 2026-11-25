@@ -5,7 +5,7 @@ import Link from "next/link";
 import { BellRing, Check, FileSearch, Mail, MessageCircle, Rocket, ScanSearch, Send, ShieldCheck, Sparkles } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 
-export type ReviewAccent = "violet" | "amber" | "orange";
+export type ReviewAccent = "violet" | "amber" | "orange" | "sky";
 
 /** One accent per vertical. Full class strings so Tailwind keeps them. */
 const ACCENT: Record<ReviewAccent, { glow: string; ring: string; chip: string; bar: string; text: string; soft: string; sweep: string }> = {
@@ -26,6 +26,15 @@ const ACCENT: Record<ReviewAccent, { glow: string; ring: string; chip: string; b
     text: "text-amber-300",
     soft: "bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300",
     sweep: "rgba(251,191,36,0.55)",
+  },
+  sky: {
+    glow: "from-sky-500/30 via-indigo-500/20 to-cyan-400/20",
+    ring: "border-sky-300/40",
+    chip: "bg-sky-500/15 text-sky-100 ring-sky-300/30",
+    bar: "from-sky-300 via-indigo-300 to-cyan-300",
+    text: "text-sky-300",
+    soft: "bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300",
+    sweep: "rgba(56,189,248,0.55)",
   },
   orange: {
     glow: "from-orange-500/30 via-rose-500/20 to-amber-400/20",

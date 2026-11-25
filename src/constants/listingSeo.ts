@@ -20,6 +20,7 @@ export type ListingSeoKey =
   | "interior"
   | "stay"
   | "construction"
+  | "architect"
   | "pandit"
   | "advisor";
 
@@ -390,6 +391,47 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
     cityHeading: "Construction companies by city",
     cityPath: (c) => `/construction-companies/${c}`,
   },
+  architect: {
+    key: "architect",
+    path: "/list-architect-naksha-business",
+    ctaHref: "/dashboard/architect-profile",
+    ctaLabel: "List your practice free",
+    navLabel: "List as architect / naksha designer",
+    title: "Architect & Naksha Listing Free: Get House Plan Leads",
+    description:
+      "Architects, civil engineers and naksha designers: list free on Awasio. Show naksha prices, 3D elevations and plans by plot size and get leads from plot owners.",
+    keywords: [
+      "architect listing", "free architect listing", "list architect business", "architect leads", "naksha designer listing",
+      "house naksha leads", "house plan design leads", "civil engineer listing", "3d elevation design leads", "get architecture clients",
+      "architect registration online", "list naksha business free", "map approval drawings leads", "home planning business listing",
+      "ghar ka naksha leads", "naksha banane ka kaam", "naksha business free listing", "architect ke liye leads kaise paye",
+      "नक्शा बनाने वाले", "घर का नक्शा", "आर्किटेक्ट लिस्टिंग फ्री", "नक्शा डिज़ाइनर",
+    ],
+    h1: "List Your Architecture or Naksha Practice Free and Get Plot Owner Leads",
+    intro:
+      "People who just bought a plot on Awasio need a naksha first. List free as a COA-registered architect, a civil or structural engineer, or a naksha designer, show your packages and plans by plot size and facing, and receive enquiries directly.",
+    steps: [
+      { title: "Create your profile", text: "Choose architect, engineer or naksha designer, then add services, prices and cities." },
+      { title: "Add your designs", text: "Plans and 3D elevations with plot size (e.g. 30×40), facing and floors." },
+      { title: "Get verified and receive leads", text: "Architects are checked on the COA register. Plot owners then request quotes directly." },
+    ],
+    benefits: [
+      { title: "Free listing", text: "List free and boost your profile with 1,000 free credits." },
+      { title: "Plot owners ready to build", text: "Reach people who need a naksha, elevation or map approval now." },
+      { title: "Searched by plot size & facing", text: "People find plans like '30×40 east facing'; your portfolio shows up for them." },
+      { title: "Work from anywhere", text: "Deliver drawings online and appear in every city, not just your own." },
+    ],
+    audience: "COA-registered architects and firms, civil and structural engineers, naksha designers, draftsmen and home planning studios.",
+    faqs: [
+      { q: "Is listing an architecture or naksha business free?", a: "Yes. Creating and publishing your listing on Awasio is free." },
+      { q: "Can I list if I am not a registered architect?", a: "Yes. Civil engineers and naksha designers can list. Only COA-registered architects are shown with the title 'Architect', as required by the Architects Act, 1972." },
+      { q: "How are architects verified?", a: "We check your COA registration number on the Council of Architecture register before your profile goes live, and show a 'COA verified' badge." },
+      { q: "Can I get clients from other cities?", a: "Yes. Turn on 'deliver drawings online' and you appear when people search any city." },
+      { q: "नक्शा बनाने वाले Awasio पर लिस्टिंग कैसे करें?", a: "प्रोफ़ाइल बनाएं, अपनी सेवाएं (2D नक्शा, 3D एलिवेशन, नक्शा पास), दाम और प्लॉट साइज़ के हिसाब से डिज़ाइन जोड़ें। लिस्टिंग फ्री है और ग्राहक सीधे संपर्क करते हैं।" },
+    ],
+    cityHeading: "Architects & naksha designers by city",
+    cityPath: (c) => `/architects/${c}`,
+  },
   pandit: {
     key: "pandit",
     path: "/list-pandit-services",
@@ -467,5 +509,5 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
 };
 
 export const LISTING_SEO_ORDER: ListingSeoKey[] = [
-  "property", "project", "flatmate", "interior", "stay", "construction", "pandit", "advisor",
+  "property", "project", "flatmate", "interior", "stay", "construction", "architect", "pandit", "advisor",
 ];

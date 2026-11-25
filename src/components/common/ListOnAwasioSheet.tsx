@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, BedDouble, Building, Building2, ChevronRight, Flame, HardHat, Home, IndianRupee, MessageCircle, Paintbrush, Sparkles, UserCheck, Users, type LucideIcon } from "lucide-react";
+import { ArrowRight, BadgeCheck, BedDouble, Building2, ChevronRight, PencilRuler, Flame, HardHat, Home, IndianRupee, MessageCircle, Paintbrush, Sparkles, UserCheck, Users, type LucideIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/components/ui/utils";
 
@@ -15,9 +15,9 @@ export const LISTING_TYPES: ListingType[] = [
   { label: "PG / Flatmate", short: "Flatmate", hint: "Fill a room or find a flatmate", href: "/flatmates/post", icon: Users, gradient: "from-teal-500 to-emerald-500", popular: true },
   { label: "Interior business", chip: "Interiors", short: "Interiors", hint: "Get homeowner leads", href: "/list-interior-business", icon: Paintbrush, gradient: "from-violet-500 to-fuchsia-500" },
   { label: "Construction company", chip: "Construction", short: "Construction", hint: "Win building projects", href: "/list-construction-company", icon: HardHat, gradient: "from-amber-500 to-orange-500" },
+  { label: "Architect / Naksha", chip: "Architect", short: "Architect", hint: "House plans & 3D elevation", href: "/list-architect-naksha-business", icon: PencilRuler, gradient: "from-sky-500 to-indigo-500" },
   { label: "Pandit & Vastu", short: "Pandit", hint: "Puja and vastu enquiries", href: "/list-pandit-services", icon: Flame, gradient: "from-orange-500 to-red-500" },
   { label: "New project", short: "Project", hint: "For builders and developers", href: "/post-project", icon: Building2, gradient: "from-indigo-500 to-purple-500" },
-  { label: "Commercial space", chip: "Commercial", short: "Commercial", hint: "Office, shop or warehouse", href: "/list-commercial-property", icon: Building, gradient: "from-slate-600 to-slate-800" },
   { label: "Property advisor", chip: "Advisor", short: "Advisor", hint: "Get clients as an agent", href: "/become-property-advisor", icon: UserCheck, gradient: "from-emerald-500 to-green-600" },
 ];
 

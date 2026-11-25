@@ -177,6 +177,10 @@ export const API_ENDPOINTS = {
       queue: (queue: string) => `${BASE}/admin/construction?queue=${encodeURIComponent(queue)}`,
       review: (id: number) => `${BASE}/admin/construction/${id}/review`,
     },
+    architects: {
+      queue: (queue: string) => `${BASE}/admin/architects?queue=${encodeURIComponent(queue)}`,
+      review: (id: number) => `${BASE}/admin/architects/${id}/review`,
+    },
     signups: (qs: string) => `${BASE}/admin/signups${qs ? `?${qs}` : ""}`,
     pandits: {
       queue: (queue: string) => `${BASE}/admin/pandits?queue=${encodeURIComponent(queue)}`,
@@ -295,6 +299,22 @@ export const API_ENDPOINTS = {
     leads: `${BASE}/construction/me/leads`,
     lead: (id: number) => `${BASE}/construction/me/leads/${id}`,
     unlockLead: (id: number) => `${BASE}/construction/me/leads/${id}/unlock`,
+  },
+  architect: {
+    search: `${BASE}/architects`,
+    cities: `${BASE}/architects/cities`,
+    detail: (slug: string) => `${BASE}/architects/detail/${encodeURIComponent(slug)}`,
+    inquiry: (id: number) => `${BASE}/architects/${id}/inquiries`,
+    contact: (id: number) => `${BASE}/architects/${id}/contact`,
+    me: `${BASE}/architects/me`,
+    myList: `${BASE}/architects/me/list`,
+    submit: `${BASE}/architects/me/submit`,
+    status: `${BASE}/architects/me/status`,
+    projects: `${BASE}/architects/me/projects`,
+    project: (id: number) => `${BASE}/architects/me/projects/${id}`,
+    leads: `${BASE}/architects/me/leads`,
+    lead: (id: number) => `${BASE}/architects/me/leads/${id}`,
+    unlockLead: (id: number) => `${BASE}/architects/me/leads/${id}/unlock`,
   },
   pandits: {
     search: `${BASE}/pandits`,

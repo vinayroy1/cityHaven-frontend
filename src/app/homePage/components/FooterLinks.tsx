@@ -36,6 +36,7 @@ const columns = [
       { label: "Interior designers", href: "/interior-designers" },
       { label: "House construction companies", href: "/construction-companies" },
       { label: "Infrastructure contractors", href: "/construction-companies?segment=INFRA" },
+      { label: "Architects & house naksha", href: "/architects" },
       { label: "Pandit for griha pravesh & puja", href: "/pandit-vastu" },
       { label: "Vastu consultants", href: "/pandit-vastu?segment=VASTU" },
       { label: "Hotels & stays", href: "/stays" },

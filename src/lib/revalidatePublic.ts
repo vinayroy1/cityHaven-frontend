@@ -3,7 +3,7 @@
  * a new listing / edit / approval gets the old copy (often "no data") and only a refresh shows it. After any successful
  * write we ask /api/revalidate to expire the section so the next visit renders fresh.
  */
-export const PUBLIC_SECTIONS = ["pandits", "interiors", "construction", "projects", "agents", "flatmates"] as const;
+export const PUBLIC_SECTIONS = ["pandits", "interiors", "construction", "architects", "projects", "agents", "flatmates"] as const;
 export type PublicSection = (typeof PUBLIC_SECTIONS)[number];
 
 // RTK Query api slice -> section
@@ -11,6 +11,7 @@ const BY_REDUCER: Record<string, PublicSection> = {
   panditApi: "pandits",
   interiorsApi: "interiors",
   constructionApi: "construction",
+  architectApi: "architects",
   projectsApi: "projects",
   advisorsApi: "agents",
   flatmatesApi: "flatmates",
@@ -21,6 +22,7 @@ const BY_URL: [RegExp, PublicSection][] = [
   [/\/(admin\/)?pandits\b/, "pandits"],
   [/\/(admin\/)?interiors\b/, "interiors"],
   [/\/(admin\/)?construction\b/, "construction"],
+  [/\/(admin\/)?architects\b/, "architects"],
   [/\/(admin\/)?(projects|project-claims|project-contacts)\b/, "projects"],
   [/\/(admin\/)?advisors\b/, "agents"],
   [/\/(admin\/)?flatmates\b/, "flatmates"],

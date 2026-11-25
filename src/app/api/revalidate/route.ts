@@ -8,6 +8,7 @@ const TARGETS: Record<PublicSection, { tag?: string; path: string }> = {
   pandits: { tag: "pandits", path: "/pandit-vastu" },
   interiors: { tag: "interiors", path: "/interior-designers" },
   construction: { tag: "construction", path: "/construction-companies" },
+  architects: { tag: "architects", path: "/architects" },
   projects: { path: "/new-projects" },
   agents: { path: "/agents" },
   flatmates: { path: "/flatmate" },

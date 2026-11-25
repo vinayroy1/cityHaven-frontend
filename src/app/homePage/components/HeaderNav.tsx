@@ -36,6 +36,7 @@ import { Ruler,
   BedDouble,
   Zap,
   HardHat,
+  PencilRuler,
   Flame,
 } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
@@ -104,6 +105,7 @@ const propertyExploreLinks = [
 const homeServiceLinks = [
   { label: "Interior Designers", href: "/interior-designers", icon: Paintbrush, desc: "Architects, modular experts & decor firms" },
   { label: "Construction Companies", href: "/construction-companies", icon: HardHat, desc: "Builders & contractors to build your house" },
+  { label: "Architects & Naksha", href: "/architects", icon: PencilRuler, desc: "House plans, 3D elevation & map approval" },
   { label: "Pandit & Vastu", href: "/pandit-vastu", icon: Flame, desc: "Griha pravesh, puja & vastu consultants" },
   { label: "Hotels & Stays", href: "/stays", icon: Hotel, desc: "Hotels, guest houses, homestays & dharamshalas" },
   { label: "Locality Guide", href: "/nearby", icon: MapPin, desc: "Metro, hospitals & schools near any locality" },
@@ -279,6 +281,7 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
     { label: "My Profile", href: "/dashboard/profile", icon: User, badge: null, onClick: undefined },
     { label: "Interior Designer Profile", href: "/dashboard/interior-profile", icon: Paintbrush, badge: null, onClick: undefined },
     { label: "Construction Business", href: "/dashboard/construction-profile", icon: HardHat, badge: null, onClick: undefined },
+    { label: "Architect & Naksha Listing", href: "/dashboard/architect-profile", icon: PencilRuler, badge: null, onClick: undefined },
     { label: "Pandit & Vastu Listing", href: "/dashboard/pandit-profile", icon: Flame, badge: null, onClick: undefined },
     { label: "My Hotels & Stays", href: "/dashboard/stays", icon: Hotel, badge: null, onClick: undefined },
     { label: "My Properties", href: "/dashboard/properties", icon: Building2, badge: null, onClick: undefined },
