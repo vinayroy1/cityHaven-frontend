@@ -6,6 +6,7 @@ import { ArrowRight, BadgeCheck, ChevronDown, Gift, Images, MapPin, ShieldCheck,
 import { ListingCtaLink } from "./ListingCtaLink";
 import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { LISTING_SEO, LISTING_SEO_ORDER, listingCities, type ListingSeo, type ListingSeoKey } from "@/constants/listingSeo";
+import { PROPERTY_CATEGORY_ORDER } from "@/constants/propertyListingPages";
 
 export function listingMetadata(key: ListingSeoKey): Metadata {
   const s = LISTING_SEO[key];
@@ -167,6 +168,21 @@ export function ListingSeoDetails({ seoKey, showCta = true }: { seoKey: ListingS
         </div>
       </div>
 
+      {s.guides?.length ? (
+        <div className="space-y-8">
+          {s.guides.map((g) => (
+            <article key={g.heading} lang={g.lang} className="max-w-4xl">
+              <h2 className={h2}>{g.heading}</h2>
+              {g.paragraphs.map((p) => (
+                <p key={p.slice(0, 40)} className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base dark:text-slate-400">
+                  {p}
+                </p>
+              ))}
+            </article>
+          ))}
+        </div>
+      ) : null}
+
       <div>
         <h2 className={h2}>{s.cityHeading}</h2>
         <ul className="mt-4 flex flex-wrap gap-2">
@@ -182,6 +198,26 @@ export function ListingSeoDetails({ seoKey, showCta = true }: { seoKey: ListingS
           ))}
         </ul>
       </div>
+
+      {(seoKey === "property" || (PROPERTY_CATEGORY_ORDER as ListingSeoKey[]).includes(seoKey)) && (
+        <nav aria-label="List by property type">
+          <h2 className={h2}>List by property type</h2>
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {[...(seoKey === "property" ? [] : (["property"] as ListingSeoKey[])), ...PROPERTY_CATEGORY_ORDER]
+              .filter((k) => k !== seoKey)
+              .map((k) => (
+                <li key={k}>
+                  <Link
+                    href={LISTING_SEO[k].path}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 transition hover:border-rose-300 hover:text-rose-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                  >
+                    {k === "property" ? "All property types" : LISTING_SEO[k].navLabel}
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        </nav>
+      )}
 
       <nav aria-label="More ways to list on Awasio">
         <h2 className={h2}>More ways to list on Awasio</h2>

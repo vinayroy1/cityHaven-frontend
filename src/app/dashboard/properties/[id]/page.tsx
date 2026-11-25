@@ -36,7 +36,7 @@ export default function ManagePropertyPage() {
           <BackButton fallbackHref="/dashboard/properties" label="Back" variant="pill" />
           <div className="flex gap-2">
             <Link
-              href={`/propertyListing?id=${propertyId}`}
+              href={`/post-property-free?id=${propertyId}`}
               className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm"
             >
               <Edit3 className="h-4 w-4" /> Edit

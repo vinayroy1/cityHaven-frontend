@@ -1,4 +1,5 @@
 import { COUNTRY_PREFIXES } from "@/app/nearby/_views/prefix";
+import { PROPERTY_CATEGORY_ORDER, PROPERTY_CATEGORY_PAGES } from "@/constants/propertyListingPages";
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/constants/seo";
 
@@ -38,7 +39,8 @@ export default function robots(): MetadataRoute.Robots {
           "/privacy",
           "/terms",
           "/community",
-          "/propertyListing",
+          "/post-property-free",
+          ...PROPERTY_CATEGORY_ORDER.map((k) => PROPERTY_CATEGORY_PAGES[k].path),
           "/list-interior-business",
           "/list-your-hotel",
           "/list-construction-company",

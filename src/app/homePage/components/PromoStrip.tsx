@@ -17,7 +17,7 @@ const PROMOS: Promo[] = [
     text: "Post your property FREE · 0% commission to Awasio · Live in 2 min",
     short: "0% commission",
     cta: "Post Free",
-    href: "/propertyListing",
+    href: "/post-property-free",
     icon: PlusCircle,
   },
   /* Temporarily disabled:

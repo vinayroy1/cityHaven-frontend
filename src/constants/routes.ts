@@ -2,7 +2,7 @@ export const ROUTES = {
   HOME: '/',
   ABOUT: '/about',
   CONTACT: '/contact',
-  PROPERTY_LISTING: '/propertyListing',
+  PROPERTY_LISTING: '/post-property-free',
   PROPERTY_DETAIL: '/properties/[id]',
   
   // Auth routes

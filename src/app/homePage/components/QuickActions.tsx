@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 const actions = [
   { icon: <Home className="h-5 w-5 text-rose-600" />, title: "Buy / Rent", description: "Browse flats, villas, plots, and commercial spaces.", href: "/propertySearch" },
-  { icon: <Megaphone className="h-5 w-5 text-rose-600" />, title: "List Property", description: "Post your property and reach verified buyers.", href: "/propertyListing", type: "list" as const },
+  { icon: <Megaphone className="h-5 w-5 text-rose-600" />, title: "List Property", description: "Post your property and reach verified buyers.", href: "/post-property-free", type: "list" as const },
   { icon: <Banknote className="h-5 w-5 text-rose-600" />, title: "Home Loans", description: "Compare offers and get instant eligibility checks.", href: "/home-loans" },
   { icon: <ShieldCheck className="h-5 w-5 text-rose-600" />, title: "Price Trends", description: "Check city-wise rates and transaction insights.", href: "/price-trends" },
   { icon: <Building2 className="h-5 w-5 text-rose-600" />, title: "New Projects", description: "Discover RERA approved projects and builders.", href: "/new-projects" },
@@ -24,7 +24,7 @@ export function QuickActions() {
   const handleListClick = () => {
     const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
     if (!token) {
-      router.push("/login?redirect=/propertyListing");
+      router.push("/login?redirect=/post-property-free");
       return;
     }
     const persisted = loadPersistedDraft();
@@ -32,19 +32,19 @@ export function QuickActions() {
       setHasDraft(true);
       setShowPrompt(true);
     } else {
-      router.push("/propertyListing");
+      router.push("/post-property-free");
     }
   };
 
   const handleStartFresh = () => {
     clearPersistedDraft();
     setShowPrompt(false);
-    router.push("/propertyListing");
+    router.push("/post-property-free");
   };
 
   const handleResume = () => {
     setShowPrompt(false);
-    router.push("/propertyListing");
+    router.push("/post-property-free");
   };
 
   return (

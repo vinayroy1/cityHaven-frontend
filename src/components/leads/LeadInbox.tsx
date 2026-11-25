@@ -602,7 +602,7 @@ function EmptyState({ bucket, hasAny, searching }: { bucket: LeadBucket; hasAny:
       <p className="mt-3 max-w-sm text-sm text-slate-600 dark:text-slate-400">{text}</p>
       {!hasAny && !searching && (
         <div className="mt-4 flex flex-wrap justify-center gap-2">
-          <Link href="/propertyListing" className="rounded-full bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-700">
+          <Link href="/post-property-free" className="rounded-full bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-700">
             Post a property
           </Link>
           <Link href="/flatmates/post" className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200">

@@ -187,7 +187,7 @@ export function DashboardClient() {
               <span>Post Flatmate</span>
             </Link>
             <Link
-              href="/propertyListing"
+              href="/post-property-free"
               className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-[0_12px_30px_-15px_rgba(15,23,42,0.8)] transition hover:bg-slate-800 hover:-translate-y-0.5 dark:bg-rose-600 dark:hover:bg-rose-700"
             >
               <Plus className="h-3.5 w-3.5" />

@@ -34,7 +34,7 @@ export function CitySparseCard({ city, searchHref }: { city: string; searchHref:
         <div className="mt-4 grid gap-2.5 sm:grid-cols-[1.2fr_1fr_1fr]">
           {/* Primary: post property */}
           <Link
-            href="/propertyListing"
+            href="/post-property-free"
             prefetch={false}
             className="group relative flex items-center gap-3 overflow-hidden rounded-xl bg-gradient-to-br from-rose-600 to-rose-500 p-3.5 text-white shadow-md shadow-rose-600/20 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-rose-600/30"
           >

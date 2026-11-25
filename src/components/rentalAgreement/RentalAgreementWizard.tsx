@@ -729,7 +729,7 @@ export function RentalAgreementWizard() {
               <CheckCircle2 className="h-4 w-4" /> Your agreement is downloaded
             </p>
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              <Link href="/propertyListing" className="flex items-center gap-2 rounded-xl bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-800 shadow-sm hover:text-rose-600 dark:bg-slate-900 dark:text-slate-200">
+              <Link href="/post-property-free" className="flex items-center gap-2 rounded-xl bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-800 shadow-sm hover:text-rose-600 dark:bg-slate-900 dark:text-slate-200">
                 <Home className="h-4 w-4 text-rose-500" /> Owner? List your next property free
               </Link>
               <Link href={`/rent${input.city ? `/${input.city.trim().toLowerCase().replace(/\s+/g, "-")}` : ""}`} className="flex items-center gap-2 rounded-xl bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-800 shadow-sm hover:text-rose-600 dark:bg-slate-900 dark:text-slate-200">

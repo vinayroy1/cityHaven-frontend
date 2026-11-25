@@ -2,7 +2,18 @@
 // and the landing pages for flows that live behind /dashboard (interiors, stays, construction, pandit,
 // advisors), which Google can't index. Rendered by <ListingSeoContent /> as real server HTML.
 
+import { PROPERTY_CATEGORY_PAGES, type PropertyCategoryKey } from "./propertyListingPages";
+
+/** Classification a property category page pre-selects in the listing form (form context values). */
+export type ListingPreset = {
+  listingType?: "RENT" | "SELL" | "PG";
+  resCom?: "RESIDENTIAL" | "COMMERCIAL";
+  propertySubTypeSlug?: string;
+  propertySubCategorySlug?: string;
+};
+
 export type ListingSeoKey =
+  | PropertyCategoryKey
   | "property"
   | "project"
   | "flatmate"
@@ -19,6 +30,8 @@ export interface ListingSeo {
   /** Where "Start listing" goes (the actual flow). Same as `path` when the flow is on the page. */
   ctaHref: string;
   ctaLabel: string;
+  /** Property category pages: the listing form opens pre-set to this. */
+  preset?: ListingPreset;
   /** Short name used in the cross-links ("List your hotel"). */
   navLabel: string;
   title: string;
@@ -30,6 +43,8 @@ export interface ListingSeo {
   benefits: { title: string; text: string }[];
   audience: string;
   faqs: { q: string; a: string }[];
+  /** Extra long-form sections (real visible copy for search terms; `lang: "hi"` for Hindi). */
+  guides?: { heading: string; lang?: string; paragraphs: string[] }[];
   /** City links: label + URL of that city's public listings for this category. */
   cityHeading: string;
   cityPath: (slug: string) => string;
@@ -48,23 +63,37 @@ const DIRECTORY_CITIES = [
 export const listingCities = (s: ListingSeo) => (s.citySlugs === "property" ? PROPERTY_CITIES : DIRECTORY_CITIES);
 
 export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
+  ...PROPERTY_CATEGORY_PAGES,
   property: {
     key: "property",
-    path: "/propertyListing",
-    ctaHref: "/propertyListing",
+    path: "/post-property-free",
+    ctaHref: "/post-property-free",
     ctaLabel: "Post property free",
     navLabel: "Post property free",
-    title: "Free Property Listing: Post Property for Rent or Sale Online",
+    title: "Free Property Listing: Post Flat, House & Apartment for Rent or Sale",
     description:
-      "List your property for free on Awasio. Post a flat, house, PG, plot or office for rent or sale in minutes, with no brokerage and 0% commission. Owners and brokers get verified tenant and buyer enquiries.",
+      "Free property listing: post your flat, house, plot, shop, office or PG for rent or sale in minutes. No brokerage, 0% commission. मुफ्त प्रॉपर्टी लिस्टिंग।",
     keywords: [
       "free property listing", "property listing", "post property free", "list property online", "list property for rent",
       "list property for sale", "post property for rent free", "sell property online", "rent out flat online",
       "property listing site india", "post property without broker", "free classifieds property",
+      "flat listing", "free flat listing", "apartment listing", "apartment listing free", "rental listing", "free rental listing",
+      "sell listing", "property sell listing", "house listing", "house for rent listing", "post flat for rent", "post apartment for sale",
+      "rent my flat", "sell my house online", "list my property", "free property ad", "property listing website free",
+      "plot listing", "free plot listing", "land listing", "sell plot online", "residential plot for sale listing", "farmhouse listing",
+      "commercial property listing", "commercial space listing", "free commercial property listing", "office space listing",
+      "office space for rent listing", "coworking space listing", "list coworking space", "co-working space for rent",
+      "shop listing", "shop for rent listing", "showroom for rent", "warehouse listing", "godown for rent listing",
+      "industrial property listing", "pg listing", "free pg listing", "hostel listing", "1 rk for rent", "studio apartment listing",
+      "builder floor listing", "villa listing", "independent house for sale listing",
+      "प्लॉट बेचें", "जमीन बेचनी है", "दुकान किराये पर दें", "ऑफिस किराये पर दें", "गोदाम किराये पर", "पीजी लिस्टिंग",
+      "plot bechna hai", "dukan kiraye par deni hai",
+      "प्रॉपर्टी लिस्टिंग", "फ्री प्रॉपर्टी लिस्टिंग", "मकान किराये पर दें", "फ्लैट किराये पर दें", "प्रॉपर्टी बेचें",
+      "मकान बेचना है", "किराये के लिए मकान पोस्ट करें", "बिना ब्रोकर के प्रॉपर्टी", "makan kiraye par dena hai", "property bechni hai",
     ],
-    h1: "Free Property Listing: Post Your Property for Rent or Sale",
+    h1: "Free Property Listing: Post Your Flat, Apartment or House for Rent or Sale",
     intro:
-      "Awasio is a free property listing site for owners and brokers. Post a flat, independent house, villa, PG, plot, shop or office for rent or sale and reach verified tenants and buyers directly, with no listing fee and 0% commission to Awasio.",
+      "Awasio is a free property listing site for owners and brokers. Post a flat listing, apartment listing, house, villa, PG, plot, shop or office as a rental listing or a sell listing, and reach verified tenants and buyers directly, with no listing fee and 0% commission to Awasio.",
     steps: [
       { title: "Add property details", text: "Pick rent or sale, the property type, location, size, price and amenities." },
       { title: "Upload photos", text: "Add clear photos of every room. Listings with photos get far more enquiries." },
@@ -74,16 +103,72 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
       { title: "100% free listing", text: "Posting a property costs nothing, and every new account gets 1,000 free credits." },
       { title: "No brokerage, 0% commission", text: "Deal directly with tenants and buyers. Awasio takes no cut of your rent or sale." },
       { title: "Verified enquiries", text: "Every enquiry comes from a phone-verified user, so fewer time-wasters." },
-      { title: "All property types", text: "Apartments, builder floors, villas, PG / co-living, plots, shops, offices and warehouses." },
+      { title: "All property types", text: "Flats, houses, villas, builder floors, PG, plots and land, shops, offices, co-working spaces and warehouses." },
     ],
     audience: "Property owners, landlords, brokers and agents listing residential or commercial property anywhere in India.",
     faqs: [
       { q: "Is property listing free on Awasio?", a: "Yes. Posting a property for rent or sale on Awasio is free, and Awasio charges 0% commission on the deal." },
       { q: "How do I list my property online?", a: "Open Post Property, choose rent or sale, fill in the location, price and details, upload photos and submit. Most listings go live after a short quality check." },
       { q: "Can I post my property without a broker?", a: "Yes. Owners list directly and tenants or buyers contact them directly, so there is no brokerage." },
-      { q: "Which properties can I list?", a: "Flats and apartments, independent houses, builder floors, villas, PG and co-living rooms, plots and land, and commercial spaces such as shops, offices and warehouses." },
+      { q: "Which properties can I list?", a: "Residential: flats and apartments, 1 RK and studio flats, serviced flats, independent houses and villas (kothi), builder floors, farmhouses, and residential plots. PG / hostel: private rooms, shared rooms and beds. Commercial: office space (ready to move, bare shell and co-working), shops and showrooms, commercial plots and land, warehouses and godowns, industrial property and hospitality property." },
+      { q: "Can I list a plot or land for sale for free?", a: "Yes. Choose Sell, pick Plot / Land (residential or commercial), enter the plot area, dimensions, facing and expected price, and add photos. Plot listing on Awasio is free." },
+      { q: "Can I list a co-working space or office for rent?", a: "Yes. Under Commercial → Office you can list a ready-to-move office, a bare-shell office or a co-working space, with seats, cabins, meeting rooms and the monthly rent." },
       { q: "How long does it take for my listing to go live?", a: "Usually within a few hours. Listings are checked for accurate details and genuine photos before they are published." },
       { q: "Can brokers and agents list properties too?", a: "Yes. Brokers and agents can post properties and manage all their listings from one dashboard." },
+      { q: "How do I post a free flat or apartment listing for rent?", a: "Choose Rent, pick Flat / Apartment, enter the society or locality, BHK, rent, deposit and furnishing, add photos and submit. Your rental listing is free and tenants contact you directly." },
+      { q: "How do I create a sell listing for my house or flat?", a: "Choose Sell, enter the property type, location, area and expected price, add photos and submit. Buyers see your sell listing and call or message you directly, with no brokerage." },
+      { q: "क्या Awasio पर प्रॉपर्टी लिस्ट करना फ्री है?", a: "हाँ। Awasio पर मकान, फ्लैट या दुकान किराये पर देने या बेचने के लिए लिस्टिंग पूरी तरह फ्री है, और कोई कमीशन या ब्रोकरेज नहीं लगता।" },
+      { q: "मकान या फ्लैट किराये पर कैसे दें?", a: "Post Property खोलें, Rent चुनें, लोकेशन, किराया, BHK और फोटो डालें और सबमिट करें। किरायेदार सीधे आपसे संपर्क करेंगे।" },
+    ],
+    guides: [
+      {
+        heading: "Flat listing, apartment listing and house listing",
+        paragraphs: [
+          "Whether you own a 1 BHK flat, a 3 BHK apartment in a gated society, a builder floor or an independent house, you can post it on Awasio for free. Add the society or locality, carpet area, floor, facing, furnishing and parking so tenants and buyers can filter to your listing.",
+          "Flat and apartment listings with clear photos of every room, the kitchen, bathrooms and the view get many more enquiries than listings without photos. You can edit price and details anytime from your dashboard.",
+        ],
+      },
+      {
+        heading: "Free rental listing: rent out your property without a broker",
+        paragraphs: [
+          "A rental listing on Awasio lets you set the monthly rent, security deposit, maintenance, available-from date and preferred tenants (family, bachelors or company lease). Verified tenants contact you directly, so there is no brokerage for you or your tenant.",
+          "Once you find a tenant, you can make a rental agreement and rent receipts with Awasio's free tools.",
+        ],
+      },
+      {
+        heading: "Sell listing: sell your flat, house or plot online",
+        paragraphs: [
+          "Create a sell listing with the expected price, area, age of property, ownership and approvals. Buyers searching your city and locality find your property and reach you directly, with 0% commission to Awasio.",
+          "Plots, land, shops, offices and warehouses can be listed for sale or rent the same way.",
+        ],
+      },
+      {
+        heading: "Plot listing: sell or lease residential and commercial land",
+        paragraphs: [
+          "List a residential plot, commercial plot, farmhouse or agricultural land with the plot area, length and breadth, facing, road width, boundary wall and approvals. Buyers looking for plots in your city find your plot listing and contact you directly.",
+        ],
+      },
+      {
+        heading: "Commercial space, office and co-working space listing",
+        paragraphs: [
+          "Post a free commercial property listing for an office space, co-working space, shop, showroom, warehouse, godown or industrial shed, for rent, lease or sale. Add the carpet area, floor, washrooms, parking, power backup and fire safety details that businesses check first.",
+          "Co-working operators and landlords can list ready-to-move offices, bare-shell offices and co-working spaces with seats, cabins and meeting rooms, and get enquiries from startups and companies directly.",
+        ],
+      },
+      {
+        heading: "PG, hostel and 1 RK listing",
+        paragraphs: [
+          "PG owners can list private rooms, shared rooms or single beds with food, electricity, curfew and gender preference. Studio, 1 RK and serviced flats can be listed for rent the same way.",
+        ],
+      },
+      {
+        heading: "मुफ्त में प्रॉपर्टी लिस्ट करें: मकान, फ्लैट किराये पर दें या बेचें",
+        lang: "hi",
+        paragraphs: [
+          "Awasio पर आप अपना मकान, फ्लैट, अपार्टमेंट, कोठी, बिल्डर फ्लोर, PG, प्लॉट या जमीन, दुकान, शोरूम, ऑफिस, को-वर्किंग स्पेस या गोदाम बिल्कुल फ्री में किराये पर देने या बेचने के लिए लिस्ट कर सकते हैं। कोई लिस्टिंग फीस नहीं, कोई ब्रोकरेज नहीं, और Awasio कोई कमीशन नहीं लेता।",
+          "किराये के लिए किराया, सिक्योरिटी डिपॉजिट और किरायेदार की पसंद (फैमिली, बैचलर) डालें। बेचने के लिए कीमत, एरिया और फोटो डालें। वेरिफाइड किरायेदार और खरीदार सीधे आपको कॉल या मैसेज करेंगे।",
+        ],
+      },
     ],
     cityHeading: "Browse property listings by city",
     cityPath: (c) => `/rent/${c}`,

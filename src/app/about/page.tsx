@@ -308,7 +308,7 @@ export default function AboutPage() {
                   <ArrowRight className="h-4 w-4 text-rose-600" />
                 </Link>
                 <Link
-                  href="/propertyListing"
+                  href="/post-property-free"
                   className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-5 py-3 text-xs font-bold text-white backdrop-blur transition hover:bg-white/20"
                 >
                   <span>Post a Property</span>

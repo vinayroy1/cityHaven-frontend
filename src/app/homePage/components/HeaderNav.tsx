@@ -575,14 +575,14 @@ export function HeaderNav({ isMobileHidden = false, hideOnPhone = false }: Heade
         <div className="flex items-center gap-1.5 sm:gap-2.5" ref={accountRef}>
           <CountrySwitcher compact className="hidden lg:inline-flex" />
           <Link
-            href={isAuthed ? "/propertyListing" : "/login?redirect=/propertyListing"}
+            href={isAuthed ? "/post-property-free" : "/login?redirect=/post-property-free"}
             prefetch={false}
             onClick={(e) => {
               if (!isAuthed) {
                 e.preventDefault();
                 window.dispatchEvent(
                   new CustomEvent("awasio:open-welcome-credits", {
-                    detail: { returnUrl: "/propertyListing" },
+                    detail: { returnUrl: "/post-property-free" },
                   })
                 );
               }

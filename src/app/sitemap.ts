@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { PROPERTY_CATEGORY_ORDER, PROPERTY_CATEGORY_PAGES } from "@/constants/propertyListingPages";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
@@ -161,11 +162,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     },
     {
-      url: `${SITE_URL}/propertyListing`,
+      url: `${SITE_URL}/post-property-free`,
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.95,
     },
+    // Post-property category pages (/rent-out-flat, /list-plot-for-sale, …).
+    ...PROPERTY_CATEGORY_ORDER.map((k) => ({
+      url: `${SITE_URL}${PROPERTY_CATEGORY_PAGES[k].path}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.85,
+    })),
     {
       url: `${SITE_URL}/post-project`,
       lastModified: now,

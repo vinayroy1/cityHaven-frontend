@@ -49,6 +49,22 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        // Post-property page moved to a keyword URL. Query (?id=, ?duplicateOf=, ?orgId=) is passed through.
+        source: "/propertyListing",
+        destination: "/post-property-free",
+        permanent: true,
+      },
+      {
+        source: "/propertylisting",
+        destination: "/post-property-free",
+        permanent: true,
+      },
+      {
+        source: "/post-property",
+        destination: "/post-property-free",
+        permanent: true,
+      },
+      {
         source: "/homePage",
         destination: "/",
         permanent: true,

@@ -1,16 +1,23 @@
 import React, { Suspense } from "react";
-import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Home, Building2, ShieldCheck, Users } from "lucide-react";
+import { Building2, ShieldCheck, Users } from "lucide-react";
 import { HeaderNav } from "@/app/homePage/components/HeaderNav";
 import { PropertyListingFlow } from "@/components/propertyListing/PropertyListingFlow";
-import { ListingSeoDetails, ListingSeoHero, listingMetadata } from "@/components/seo/ListingSeoContent";
+import { ListingSeoDetails, ListingSeoHero } from "@/components/seo/ListingSeoContent";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
+import { LISTING_SEO, type ListingSeoKey } from "@/constants/listingSeo";
 
-export const metadata: Metadata = listingMetadata("property");
-
-export default function PropertyListingPage() {
+/**
+ * "Post property" page: the main hub (/post-property-free) and every category page (/rent-out-flat,
+ * /list-plot-for-sale, …). Same listing form, opened pre-set to the page's category; own H1, copy and FAQ.
+ */
+export function PropertyListingLanding({ seoKey = "property" }: { seoKey?: ListingSeoKey }) {
+  const s = LISTING_SEO[seoKey];
+  const crumbs =
+    seoKey === "property"
+      ? [{ label: "Post Property" }]
+      : [{ label: "Post Property", href: LISTING_SEO.property.path }, { label: s.navLabel }];
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col transition-colors duration-150">
       {/* Global Navigation Header */}
@@ -26,7 +33,7 @@ export default function PropertyListingPage() {
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <BackButton fallbackHref="/dashboard/properties" label="Back" variant="pill" />
 
-              <PageBreadcrumbs items={[{ label: "Post Property" }]} renderJsonLd={true} />
+              <PageBreadcrumbs items={crumbs} renderJsonLd={true} />
             </div>
 
             <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 px-2.5 sm:px-3 py-1 rounded-full shrink-0">
@@ -36,7 +43,7 @@ export default function PropertyListingPage() {
             </div>
           </div>
 
-          <ListingSeoHero seoKey="property" compact />
+          <ListingSeoHero seoKey={seoKey} compact />
 
           {/* Mobile View: Ultra-Compact 2-Column Quick Portal Switcher (~44px height) */}
           <div className="sm:hidden mb-3 grid grid-cols-2 gap-2">
@@ -128,11 +135,11 @@ export default function PropertyListingPage() {
 
           {/* Form Wizard Flow */}
           <Suspense fallback={<div className="py-20 text-center text-sm text-slate-500 dark:text-slate-400">Loading property editor…</div>}>
-            <PropertyListingFlow />
+            <PropertyListingFlow preset={s.preset} />
           </Suspense>
         </div>
         <div className="relative">
-          <ListingSeoDetails seoKey="property" showCta={false} />
+          <ListingSeoDetails seoKey={seoKey} showCta={false} />
         </div>
       </main>
     </div>

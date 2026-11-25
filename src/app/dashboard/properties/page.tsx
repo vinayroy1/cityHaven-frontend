@@ -391,7 +391,7 @@ function PropertiesContent() {
                 </button>
 
                 <Link
-                  href={scope === "org" ? `/propertyListing?scope=org${orgId ? `&orgId=${orgId}` : ""}` : "/propertyListing"}
+                  href={scope === "org" ? `/post-property-free?scope=org${orgId ? `&orgId=${orgId}` : ""}` : "/post-property-free"}
                   className="inline-flex items-center gap-1.5 rounded-full bg-rose-600 px-3 sm:px-4 py-1.5 sm:py-2 text-xs font-bold text-white shadow-sm shadow-rose-200 transition hover:bg-rose-700 hover:shadow-md active:scale-95 dark:shadow-none whitespace-nowrap shrink-0"
                 >
                   <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -618,7 +618,7 @@ function PropertiesContent() {
                   </button>
                 ) : (
                   <Link
-                    href={scope === "org" ? `/propertyListing?scope=org${orgId ? `&orgId=${orgId}` : ""}` : "/propertyListing"}
+                    href={scope === "org" ? `/post-property-free?scope=org${orgId ? `&orgId=${orgId}` : ""}` : "/post-property-free"}
                     className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 hover:shadow-lg dark:shadow-none"
                   >
                     <Plus className="h-4 w-4" />
@@ -782,14 +782,14 @@ function PropertiesContent() {
                           </Link>
 
                           <Link
-                            href={`/propertyListing?id=${item.id}`}
+                            href={`/post-property-free?id=${item.id}`}
                             className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-rose-400"
                           >
                             <Edit3 className="h-3.5 w-3.5" />
                             <span>Edit</span>
                           </Link>
                           <Link
-                            href={`/propertyListing?duplicateOf=${item.id}${scope === "org" && effectiveOrgId ? `&orgId=${effectiveOrgId}` : ""}`}
+                            href={`/post-property-free?duplicateOf=${item.id}${scope === "org" && effectiveOrgId ? `&orgId=${effectiveOrgId}` : ""}`}
                             title="Duplicate: copy this listing to add another unit"
                             className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-rose-400"
                           >
@@ -923,14 +923,14 @@ function PropertiesContent() {
                                 <Eye className="h-4 w-4" />
                               </Link>
                               <Link
-                                href={`/propertyListing?id=${item.id}`}
+                                href={`/post-property-free?id=${item.id}`}
                                 className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-rose-400"
                               >
                                 <Edit3 className="h-3.5 w-3.5" />
                                 <span>Edit</span>
                               </Link>
                               <Link
-                                href={`/propertyListing?duplicateOf=${item.id}${scope === "org" && effectiveOrgId ? `&orgId=${effectiveOrgId}` : ""}`}
+                                href={`/post-property-free?duplicateOf=${item.id}${scope === "org" && effectiveOrgId ? `&orgId=${effectiveOrgId}` : ""}`}
                                 title="Duplicate: copy this listing to add another unit"
                                 className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 hover:text-rose-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-rose-400"
                               >

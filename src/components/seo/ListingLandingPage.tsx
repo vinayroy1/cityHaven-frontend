@@ -28,7 +28,7 @@ import { ListingCtaLink } from "./ListingCtaLink";
 type Icon = ComponentType<{ className?: string }>;
 
 /** Per-page look: icon, accent and an illustrative profile card (clearly labelled "Preview", no real data). */
-const THEME: Record<ListingSeoKey, { icon: Icon; eyebrow: string; cover: string; preview: { name: string; sub: string; chips: string[]; price: string } }> = {
+const THEME: Partial<Record<ListingSeoKey, { icon: Icon; eyebrow: string; cover: string; preview: { name: string; sub: string; chips: string[]; price: string } }>> = {
   interior: {
     icon: Paintbrush,
     eyebrow: "For interior designers & studios",
@@ -86,7 +86,7 @@ const TRUST = [
 ];
 
 function PreviewCard({ seoKey }: { seoKey: ListingSeoKey }) {
-  const t = THEME[seoKey];
+  const t = THEME[seoKey] ?? THEME.interior!;
   const I = t.icon;
   return (
     <div className="relative mx-auto w-full max-w-sm" aria-hidden>
@@ -150,7 +150,7 @@ function PreviewCard({ seoKey }: { seoKey: ListingSeoKey }) {
 
 export function ListingLandingPage({ seoKey }: { seoKey: ListingSeoKey }) {
   const s = LISTING_SEO[seoKey];
-  const t = THEME[seoKey];
+  const t = THEME[seoKey] ?? THEME.interior!;
   const I = t.icon;
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">

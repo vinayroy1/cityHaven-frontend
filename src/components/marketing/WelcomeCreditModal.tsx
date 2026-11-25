@@ -135,7 +135,7 @@ export function WelcomeCreditModal() {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/admin") ||
     // Don't interrupt someone filling in a listing form.
-    pathname.startsWith("/propertyListing") ||
+    pathname.startsWith("/post-property-free") ||
     pathname.startsWith("/post-project") ||
     pathname.startsWith("/flatmates/post");
 

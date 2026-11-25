@@ -66,7 +66,7 @@ interface UserProfile {
 
 // Routes where the bottom bar should be hidden (form steppers, auth flows)
 const HIDDEN_ROUTES = [
-  "/propertyListing",
+  "/post-property-free",
   "/login",
   "/auth",
 ];
@@ -230,11 +230,11 @@ export function MobileBottomNav() {
   const handlePostClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isAuthed) {
-      router.push("/propertyListing");
+      router.push("/post-property-free");
     } else {
       window.dispatchEvent(
         new CustomEvent("awasio:open-welcome-credits", {
-          detail: { returnUrl: "/propertyListing" },
+          detail: { returnUrl: "/post-property-free" },
         })
       );
     }

@@ -1,5 +1,7 @@
 "use client";
 
+import type { ListingPreset } from "@/constants/listingSeo";
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
@@ -64,6 +66,7 @@ export function PropertyListingFlow({
   onSuccessRedirect,
   assistedOwner,
   onAssistedSaved,
+  preset,
 }: {
   propertyId?: string;
   adminMode?: boolean;
@@ -71,6 +74,8 @@ export function PropertyListingFlow({
   /** Staff-assisted mode: the owner is fixed (API calls carry the owner's assisted token). */
   assistedOwner?: { id: number; name: string | null; mobileNumber: string };
   onAssistedSaved?: (created: { id?: number; slug?: string | null; title?: string | null }) => void;
+  /** Category landing pages (/list-plot-for-sale…): start a NEW listing at this classification. A saved draft wins. */
+  preset?: ListingPreset;
 }) {
   const isAssisted = Boolean(assistedOwner);
   const router = useRouter();
@@ -99,7 +104,7 @@ export function PropertyListingFlow({
         // before photos/publish. Editing an existing listing still needs a session.
         const token = localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY);
         if (!token && (propertyId || duplicateOf)) {
-          const redirectUrl = propertyId ? `/propertyListing?id=${propertyId}` : `/propertyListing?duplicateOf=${duplicateOf}`;
+          const redirectUrl = propertyId ? `/post-property-free?id=${propertyId}` : `/post-property-free?duplicateOf=${duplicateOf}`;
           router.replace(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
         }
       }
@@ -123,6 +128,8 @@ export function PropertyListingFlow({
   const [maxVisited, setMaxVisited] = useState(adminMode ? listingSteps.length - 1 : 0);
   const [published, setPublished] = useState<PublishedListing | null>(null);
   const [resume, setResume] = useState<{ form: PropertyListingFormValues; step?: number } | null>(null);
+  // Category page + a saved draft of another category: the page's category is shown; the draft is only offered.
+  const [draftOffer, setDraftOffer] = useState<{ form: PropertyListingFormValues; step?: number } | null>(null);
   const hydratedRef = useRef(false);
   // Set after a successful submit/update so the autosave watcher can't write the finished listing back.
   const doneRef = useRef(false);
@@ -233,7 +240,17 @@ export function PropertyListingFlow({
     if (hydratedRef.current) return;
     hydratedRef.current = true;
     const persisted = loadPersistedDraft(storageKey);
-    if (persisted?.form) {
+    const draftMatchesPreset =
+      !preset ||
+      (Object.keys(preset) as (keyof ListingPreset)[]).every(
+        (k) => (persisted?.form?.context?.[k] ?? "") === (preset[k] ?? ""),
+      );
+    if (persisted?.form && !draftMatchesPreset) {
+      // Opened /list-pg-hostel with a "flat for rent" draft saved: start this page's category at step 1
+      // and offer the old draft instead of jumping into it.
+      setDraftOffer(persisted);
+    }
+    if (persisted?.form && draftMatchesPreset) {
       prevClassificationRef.current = {
         listingType: persisted.form.context?.listingType,
         resCom: persisted.form.context?.resCom,
@@ -249,10 +266,22 @@ export function PropertyListingFlow({
       form.reset(persisted.form);
       dispatch(hydrateDraft(persisted.form));
       const s = persisted.step && persisted.step > 0 ? persisted.step : 0;
-      setStepIndex(s);
+      // Category pages always open on step 1 (category shown, pre-selected); filled steps stay reachable.
+      setStepIndex(preset ? 0 : s);
       setMaxVisited(adminMode ? listingSteps.length - 1 : s);
       setResume(persisted);
+    } else if (preset) {
+      const current = form.getValues();
+      const next = { ...current, context: { ...current.context, ...preset } };
+      prevClassificationRef.current = {
+        listingType: next.context.listingType,
+        resCom: next.context.resCom,
+        subType: next.context.propertySubTypeSlug,
+      };
+      pendingHydrationRef.current = prevClassificationRef.current;
+      form.reset(next);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propertyId, duplicateOf, form, dispatch, storageKey, adminMode]);
 
   useEffect(() => {
@@ -331,7 +360,17 @@ export function PropertyListingFlow({
     }
 
     // When property category changes (e.g. from RESIDENTIAL to COMMERCIAL or vice versa), always clear subtype and dependents
-    if (resComChanged) {
+    // Residential ⇄ commercial keeps a plot a plot (plot-land-res ⇄ plot-land-com) instead of clearing the type.
+    const plotSwap =
+      resComChanged && subType?.includes("plot-land")
+        ? resCom === "COMMERCIAL" ? "plot-land-com" : "plot-land-res"
+        : null;
+    if (plotSwap) {
+      prevClassificationRef.current = { listingType, resCom, subType: plotSwap };
+      form.setValue("context.propertySubTypeSlug", plotSwap, { shouldDirty: true });
+      form.setValue("context.propertySubCategorySlug", "", { shouldDirty: true });
+      form.setValue("context.locatedInsideSlug", "", { shouldDirty: true });
+    } else if (resComChanged) {
       form.setValue("context.propertySubTypeSlug", "", { shouldDirty: true });
       form.setValue("context.propertySubCategorySlug", "", { shouldDirty: true });
       form.setValue("context.locatedInsideSlug", "", { shouldDirty: true });
@@ -446,7 +485,8 @@ export function PropertyListingFlow({
     if (adminMode || typeof window === "undefined" || localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY)) return false;
     persistDraft({ form: form.getValues(), step: resumeStep }, storageKey);
     toast.info("Log in or sign up to add photos and publish. Your details are saved.");
-    router.push(`/login?redirect=${encodeURIComponent("/propertyListing")}`);
+    // Back to the same page (hub or category page); the saved draft restores there.
+    router.push(`/login?redirect=${encodeURIComponent(window.location.pathname || "/post-property-free")}`);
     return true;
   };
 
@@ -648,6 +688,23 @@ export function PropertyListingFlow({
     }
   };
 
+  const continueOfferedDraft = () => {
+    if (!draftOffer?.form) return;
+    const d = draftOffer;
+    prevClassificationRef.current = {
+      listingType: d.form.context?.listingType,
+      resCom: d.form.context?.resCom,
+      subType: d.form.context?.propertySubTypeSlug,
+    };
+    pendingHydrationRef.current = prevClassificationRef.current;
+    form.reset(d.form);
+    dispatch(hydrateDraft(d.form));
+    const s = d.step && d.step > 0 ? d.step : 0;
+    setStepIndex(s);
+    setMaxVisited(adminMode ? listingSteps.length - 1 : s);
+    setDraftOffer(null);
+  };
+
   const applyResume = () => {
     if (resume?.form) {
       dispatch(hydrateDraft(resume.form));
@@ -673,6 +730,7 @@ export function PropertyListingFlow({
         isAssistedListing: adminMode,
         source: "GOOGLE_SOURCED",
         sendOwnerNotification: true,
+        ...preset,
       },
       publishOptions: {
         status: adminMode ? "ACTIVE" : "DRAFT",
@@ -682,9 +740,9 @@ export function PropertyListingFlow({
     dispatch(hydrateDraft(initialPropertyListingFormValues));
     clearPersistedDraft(storageKey);
     prevClassificationRef.current = {
-      listingType: initialPropertyListingFormValues.context?.listingType,
-      resCom: initialPropertyListingFormValues.context?.resCom,
-      subType: initialPropertyListingFormValues.context?.propertySubTypeSlug,
+      listingType: preset?.listingType ?? initialPropertyListingFormValues.context?.listingType,
+      resCom: preset?.resCom ?? initialPropertyListingFormValues.context?.resCom,
+      subType: preset?.propertySubTypeSlug ?? initialPropertyListingFormValues.context?.propertySubTypeSlug,
     };
     setStepIndex(0);
     setMaxVisited(adminMode ? listingSteps.length - 1 : 0);
@@ -734,6 +792,22 @@ export function PropertyListingFlow({
                 Location, amenities, details and photos are filled in. Add what&apos;s different for this unit:{" "}
                 <b>flat / house no., floor, price</b> and <b>available from</b>. Replace photos if this unit looks different.
               </p>
+            </div>
+          )}
+
+          {draftOffer && !resume && (
+            <div className="flex flex-col gap-2 rounded-2xl border border-amber-200 bg-amber-50/80 p-3.5 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+              <span>
+                You have an unfinished draft{draftOffer.form.meta?.title ? <>: <b>{draftOffer.form.meta.title}</b></> : ""}. Continue it, or carry on with this new listing.
+              </span>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={continueOfferedDraft}>
+                  Continue draft
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setDraftOffer(null)}>
+                  Dismiss
+                </Button>
+              </div>
             </div>
           )}
 

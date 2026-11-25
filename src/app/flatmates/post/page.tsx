@@ -54,7 +54,7 @@ export default function PostFlatmatePage() {
 
             <div className="flex items-center gap-2 shrink-0">
               <Link
-                href="/propertyListing"
+                href="/post-property-free"
                 className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white underline underline-offset-4"
               >
                 Looking to list entire property?
