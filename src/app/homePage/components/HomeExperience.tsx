@@ -43,6 +43,7 @@ import { getCountry } from "@/config/countries";
 const portalCountryName = () => getCountry(typeof document !== "undefined" ? getSelectedCountry() : "IN").name;
 import { formatMoney, formatMoneyShort } from "@/lib/money";
 import { SignupBonusLine } from "./SignupBonusLine";
+import { HomeListOnAwasio } from "./HomeListOnAwasio";
 import { HomeServicesRow } from "./HomeServicesRow";
 
 const normalizeR2Url = (url?: string | null): string => {
@@ -367,6 +368,7 @@ export function HomeExperience({
               onSubmit={submit}
             />
           </div>
+          <HomeListOnAwasio />
           <HomeServicesRow />
         </div>
       </section>

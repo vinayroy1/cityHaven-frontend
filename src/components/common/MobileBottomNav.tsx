@@ -1,5 +1,6 @@
 "use client";
 
+import { ListOnAwasioSheet } from "@/app/homePage/components/HomeListOnAwasio";
 import { serverLogout } from "@/lib/auth/serverLogout";
 import { clearListingDrafts } from "@/lib/auth/listingDrafts";
 import React from "react";
@@ -117,6 +118,7 @@ const companyAndSupportLinks = [
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const [postSheetOpen, setPostSheetOpen] = React.useState(false);
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [creditModalOpen, setCreditModalOpen] = React.useState(false);
@@ -227,17 +229,11 @@ export function MobileBottomNav() {
   const isSearchActive = pathname?.startsWith("/propertySearch") || pathname?.startsWith("/search/") || ["/buy", "/rent", "/pg", "/flatmate", "/commercial", "/plot"].some((route) => pathname === route || pathname?.startsWith(`${route}/`));
   const isSavedActive = pathname === "/favorites";
 
+  // Post opens a chooser of every listing type (property, hotel, flatmate, interiors, …).
+  // Each landing page handles sign-in itself.
   const handlePostClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (isAuthed) {
-      router.push("/post-property-free");
-    } else {
-      window.dispatchEvent(
-        new CustomEvent("awasio:open-welcome-credits", {
-          detail: { returnUrl: "/post-property-free" },
-        })
-      );
-    }
+    setPostSheetOpen(true);
   };
 
   const logout = () => {
@@ -327,7 +323,8 @@ export function MobileBottomNav() {
             <button
               type="button"
               onClick={handlePostClick}
-              aria-label="Post Property"
+              aria-label="Post a listing"
+              aria-haspopup="dialog"
               className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-tr from-rose-600 via-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/35 ring-4 ring-white dark:ring-slate-950 transition-all duration-200 active:scale-90 hover:scale-105 hover:shadow-rose-500/50"
             >
               <Plus className="h-6 w-6 stroke-[2.6]" />
@@ -336,6 +333,8 @@ export function MobileBottomNav() {
               Post
             </span>
           </div>
+
+          <ListOnAwasioSheet open={postSheetOpen} onOpenChange={setPostSheetOpen} />
 
           {/* TAB 4: SAVED / FAVORITES */}
           <Link
