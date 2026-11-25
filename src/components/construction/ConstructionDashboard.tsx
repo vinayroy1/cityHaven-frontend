@@ -1,5 +1,6 @@
 "use client";
 
+import { submitCopy, toastSubmitOutcome } from "@/lib/listingReview";
 import { UnderReviewHero } from "@/components/common/UnderReviewHero";
 import React from "react";
 import Link from "next/link";
@@ -39,10 +40,12 @@ function StatusCard({ data }: { data: MyConstruction }) {
       tone: "border-slate-200 bg-white",
       icon: <CircleDot className="h-5 w-5 text-slate-500" />,
       title: "Draft: not submitted yet",
-      body: data.readiness.canSubmit ? "Everything required is filled in. Submit for approval to go live." : "Finish the required details, then submit for approval.",
+      body: data.readiness.canSubmit
+        ? data.reviewRequired === false ? "Everything required is filled in. Publish to go live." : "Everything required is filled in. Submit for approval to go live."
+        : data.reviewRequired === false ? "Finish the required details, then publish." : "Finish the required details, then submit for approval.",
       action: data.readiness.canSubmit ? (
-        <button type="button" className={primaryBtn} disabled={submitting} onClick={() => void submit(p.id).unwrap().then(() => toast.success("Submitted for approval")).catch((e) => err(e, "Couldn't submit"))}>
-          {submitting && <Loader2 className="h-4 w-4 animate-spin" />} Submit for approval
+        <button type="button" className={primaryBtn} disabled={submitting} onClick={() => void submit(p.id).unwrap().then(toastSubmitOutcome).catch((e) => err(e, "Couldn't submit"))}>
+          {submitting && <Loader2 className="h-4 w-4 animate-spin" />} {submitCopy(data.reviewRequired).button}
         </button>
       ) : undefined,
     },

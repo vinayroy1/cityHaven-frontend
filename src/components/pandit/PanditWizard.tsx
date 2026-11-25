@@ -1,5 +1,6 @@
 "use client";
 
+import { submitCopy, toastSubmitOutcome } from "@/lib/listingReview";
 import React from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, CircleAlert, CircleDot, Compass, Flame, Loader2, Send, User, Users, X } from "lucide-react";
 import { toast } from "sonner";
@@ -173,8 +174,7 @@ export function PanditWizard({ data, onDone, onCreated, mode = "setup" }: { data
       return;
     }
     try {
-      await submit(saved.profile!.id).unwrap();
-      toast.success("Submitted! We'll review your listing shortly.");
+      toastSubmitOutcome(await submit(saved.profile!.id).unwrap());
       onDone?.();
     } catch (err) {
       toast.error((err as { data?: { message?: string } })?.data?.message || "Couldn't submit. Please try again.");
@@ -195,6 +195,7 @@ export function PanditWizard({ data, onDone, onCreated, mode = "setup" }: { data
 
   const groups = SERVICE_GROUPS.filter((g) => (vastu ? g.key === "vastu" || g.key === "other" : g.key !== "vastu"));
   const readiness = data?.readiness;
+  const copy = submitCopy(data?.reviewRequired);
   const busy = saving || submitting;
 
   return (
@@ -213,7 +214,7 @@ export function PanditWizard({ data, onDone, onCreated, mode = "setup" }: { data
       <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
         <p className="text-xs font-semibold uppercase tracking-wider text-rose-600">Step {stepIdx + 1} of {STEPS.length}</p>
         <h2 className="mt-1 text-xl font-black tracking-tight text-slate-950 sm:text-2xl dark:text-white">{step.title}</h2>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{step.sub}</p>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{step.id === "contact" ? copy.sub : step.sub}</p>
 
         <div className="mt-6 space-y-5">
           {step.id === "basics" && (
@@ -538,12 +539,12 @@ export function PanditWizard({ data, onDone, onCreated, mode = "setup" }: { data
           </button>
         ) : (
           <button type="button" className={cn(primaryBtn, "flex-1 sm:flex-none")} onClick={() => void finish()} disabled={busy}>
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} {mode === "edit" ? "Save changes" : "Submit for approval"}
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} {mode === "edit" ? "Save changes" : copy.button}
           </button>
         )}
       </div>
       <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-slate-500">
-        <Flame className="h-3.5 w-3.5" /> Our team reviews every listing before it goes live.
+        <Flame className="h-3.5 w-3.5" /> {copy.note}
       </p>
     </div>
   );

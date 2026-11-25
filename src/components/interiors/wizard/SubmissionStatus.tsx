@@ -20,6 +20,19 @@ const stageOf = (s?: InteriorListingStatus | null) =>
 export function SubmissionStatus({ status, submittedAt, reviewNotes, name }: { status?: InteriorListingStatus | null; submittedAt?: string | null; reviewNotes?: string | null; name?: string | null }) {
   const stage = stageOf(status);
   const changes = status === InteriorListingStatus.CHANGES_REQUESTED || status === InteriorListingStatus.REJECTED;
+  // Review switched off: the listing was approved on submit but the first month couldn't be charged.
+  if (status === InteriorListingStatus.PAUSED) {
+    return (
+      <div className="mx-auto max-w-xl space-y-4 rounded-3xl border border-emerald-200 bg-emerald-50/60 p-6 text-center sm:p-8 dark:border-emerald-900 dark:bg-emerald-950/30">
+        <h2 className="text-2xl font-semibold tracking-tight">Approved! One step to go live</h2>
+        <p className="text-sm text-slate-600 dark:text-slate-300">Add credits for the monthly listing fee, then press Publish in your dashboard.</p>
+        <div className="flex flex-wrap justify-center gap-2">
+          <Link href="/pricing" className="inline-flex h-11 items-center rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white dark:bg-white dark:text-slate-900">Buy credits</Link>
+          <Link href="/dashboard/interior-profile/manage" className="inline-flex h-11 items-center rounded-xl border border-slate-300 px-5 text-sm font-semibold dark:border-slate-700">Go to my dashboard</Link>
+        </div>
+      </div>
+    );
+  }
   if (!changes && stage !== 2) {
     return (
       <div className="mx-auto max-w-5xl">

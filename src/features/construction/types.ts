@@ -167,6 +167,8 @@ export interface MyConstruction {
   profile: ConstructionProfile | null;
   readiness: { canSubmit: boolean; pct: number; items: ReadinessItem[] };
   billing: { monthlyCredits: number; periodDays: number; paidUntil: string | null; isPaid: boolean; pausedForPayment: boolean } | null;
+  /** Admin switch: false = submitting publishes straight away. */
+  reviewRequired?: boolean;
 }
 
 export type ConstructionSave = Partial<

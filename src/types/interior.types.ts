@@ -355,6 +355,8 @@ export interface InteriorProfile {
   pausedUntil?: string | null;
   statusReason?: string | null;
   lastSubmittedAt?: string | null;
+  /** Admin switch: false = submitting publishes straight away. */
+  reviewRequired?: boolean;
   reviewNotes?: string | null;
   completenessPct?: number | null;
 }

@@ -85,8 +85,8 @@ export function InteriorWizard() {
       heading={profile?.id ? `Set up ${listingName}` : "List your interior studio on Awasio"}
       subheading="About 3 minutes. Saved as you go — add more details later from your dashboard."
       exitHref={exitHref}
-      submitLabel="Submit for review"
-      publishLabel="Submit & publish"
+      submitLabel={profile?.reviewRequired === false ? "Publish listing" : "Submit for review"}
+      publishLabel={profile?.reviewRequired === false ? "Publish listing" : "Submit & publish"}
       onSubmitted={() => setDone("submitted")}
       onPublished={() => setDone("published")}
     />

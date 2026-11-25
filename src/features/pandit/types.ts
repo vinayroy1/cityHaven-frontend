@@ -101,6 +101,8 @@ export interface MyPandit {
   profile: PanditProfile | null;
   readiness: Readiness;
   billing: { monthlyCredits: number; periodDays: number; paidUntil: string | null; isPaid: boolean; pausedForPayment: boolean } | null;
+  /** Admin switch: false = submitting publishes straight away. */
+  reviewRequired?: boolean;
 }
 
 export type PanditSave = Partial<

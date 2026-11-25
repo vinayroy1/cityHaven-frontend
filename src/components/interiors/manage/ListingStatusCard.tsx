@@ -74,8 +74,10 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
 
   const doSubmit = async () => {
     try {
-      await submit().unwrap();
-      toast.success("Submitted for review.");
+      const res = (await submit().unwrap()) as { status?: string } | undefined;
+      if (res?.status === S.PUBLISHED) toast.success("🎉 You're live! Homeowners can now find you.");
+      else if (profile.reviewRequired === false) toast.success("Approved! Check the next step below to go live.");
+      else toast.success("Submitted for review.");
     } catch (e) {
       toast.error(errorMessage(e, "Could not submit. Check the next steps below."));
     }
@@ -140,7 +142,7 @@ export function ListingStatusCard({ profile, readiness }: { profile: InteriorPro
           <button type="button" className={primary} disabled={busy || !readiness.canSubmit} onClick={doSubmit}
             title={readiness.canSubmit ? undefined : "Finish the steps marked 'Needed to go live' first"}>
             {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-            {status === S.DRAFT ? "Submit for review" : "Re-submit for review"}
+            {profile.reviewRequired === false ? "Publish listing" : status === S.DRAFT ? "Submit for review" : "Re-submit for review"}
           </button>
         )}
         {publishReady && (
