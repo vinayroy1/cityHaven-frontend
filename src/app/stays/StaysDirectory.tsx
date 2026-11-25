@@ -249,7 +249,8 @@ export function StaysDirectory({
         </div>
       </div>
 
-      <main className="relative mx-auto max-w-6xl px-4 sm:-mt-8">
+      {/* No negative top margin: the hero sits above (z-20, for its dropdowns) and would cover the type tiles. */}
+      <main className="relative mx-auto max-w-6xl px-4 sm:mt-6">
         {/* Type tiles */}
         <div className="hidden gap-2 overflow-x-auto rounded-3xl border border-slate-200/80 bg-white p-2 shadow-md shadow-slate-900/5 no-scrollbar sm:flex sm:justify-center dark:border-slate-800 dark:bg-slate-900">
           <button
