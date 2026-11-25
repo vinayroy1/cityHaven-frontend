@@ -1,7 +1,8 @@
 "use client";
 
+import { UnderReviewHero } from "@/components/common/UnderReviewHero";
 import Link from "next/link";
-import { Check, Clock, Rocket, Send } from "lucide-react";
+import { Check, Clock, ImagePlus, LayoutDashboard, Rocket, Send } from "lucide-react";
 import { InteriorListingStatus } from "@/types/interior.types";
 import { cn } from "@/lib/utils";
 import { isAssistedActive } from "@/lib/auth/assistedSession";
@@ -16,9 +17,29 @@ const stageOf = (s?: InteriorListingStatus | null) =>
   s === InteriorListingStatus.PUBLISHED ? 2 : 1;
 
 /** Post-submit status timeline: Submitted → In review (24–48h) → Live. */
-export function SubmissionStatus({ status, submittedAt, reviewNotes }: { status?: InteriorListingStatus | null; submittedAt?: string | null; reviewNotes?: string | null }) {
+export function SubmissionStatus({ status, submittedAt, reviewNotes, name }: { status?: InteriorListingStatus | null; submittedAt?: string | null; reviewNotes?: string | null; name?: string | null }) {
   const stage = stageOf(status);
   const changes = status === InteriorListingStatus.CHANGES_REQUESTED || status === InteriorListingStatus.REJECTED;
+  if (!changes && stage !== 2) {
+    return (
+      <div className="mx-auto max-w-5xl">
+        <UnderReviewHero
+          accent="violet"
+          noun="interior studio"
+          name={name}
+          submittedAt={submittedAt}
+          slaHours={48}
+          checks={["Business & contact details", "Portfolio photos", "Pricing & packages", "Identity / business documents"]}
+          actions={[
+            ...(!isAssistedActive()
+              ? [{ label: "Add recent projects", hint: "Studios with 3+ projects get up to 4x more enquiries.", href: "/dashboard/interior-profile/manage/portfolio", icon: ImagePlus }]
+              : []),
+            { label: "Open your dashboard", hint: "Track status, edit details and see enquiries in one place.", href: "/dashboard/interior-profile/manage", icon: LayoutDashboard },
+          ]}
+        />
+      </div>
+    );
+  }
   return (
     <div className="mx-auto max-w-xl space-y-6 rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-8 dark:border-slate-800 dark:bg-slate-900">
       <div>

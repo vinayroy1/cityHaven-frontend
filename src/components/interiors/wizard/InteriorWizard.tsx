@@ -44,6 +44,7 @@ export function InteriorWizard() {
           status={done === "published" ? InteriorListingStatus.PUBLISHED : profile?.status ?? InteriorListingStatus.SUBMITTED}
           submittedAt={profile?.lastSubmittedAt}
           reviewNotes={profile?.reviewNotes}
+          name={profile?.displayName || profile?.businessName}
         />
       </div>
     );

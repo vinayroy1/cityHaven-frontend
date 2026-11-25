@@ -1,9 +1,10 @@
 "use client";
 
+import { UnderReviewHero } from "@/components/common/UnderReviewHero";
 import React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertTriangle, ArrowLeft, CheckCircle2, CircleDot, Clock, ExternalLink, Flame, Loader2, Pause, Play, Plus, RefreshCw } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2, CircleDot, Clock, ExternalLink, Flame, Inbox, Loader2, PenLine, Pause, Play, Plus, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/components/ui/utils";
 import { ConstructionSkeleton } from "@/components/construction/ConstructionSkeleton";
@@ -105,13 +106,26 @@ function Overview({ data, goTab }: { data: MyPandit; goTab: (t: Tab) => void }) 
   const todo = data.readiness.items.filter((i) => !i.done);
   return (
     <div className="space-y-4">
+      {p.status === "SUBMITTED" && (
+        <UnderReviewHero
+          accent="orange"
+          noun="pandit profile"
+          name={p.displayName}
+          submittedAt={p.submittedAt}
+          checks={["Name, photo & contact", "Pujas & services offered", "Languages & areas served", "Experience & dakshina"]}
+          actions={[
+            { label: "Polish your profile", hint: "Add more pujas, languages and a warm introduction.", onClick: () => goTab("edit"), icon: PenLine },
+            { label: "Prepare for enquiries", hint: "Families will call or WhatsApp you directly once you're live.", onClick: () => goTab("leads"), icon: Inbox },
+          ]}
+        />
+      )}
       <div className="grid gap-4 md:grid-cols-[300px_1fr] md:items-start">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Your listing</p>
           <PanditCard p={p} completeness={data.readiness.pct} />
         </div>
         <div className="space-y-4">
-          <StatusCard data={data} />
+          {p.status !== "SUBMITTED" && <StatusCard data={data} />}
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {[
               ["Profile views", p.viewCount ?? 0],

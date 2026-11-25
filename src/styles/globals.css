@@ -232,3 +232,9 @@ h1, h2, h3 { font-weight: 600; }
     font-size: 16px !important;
   }
 }
+
+/* Under-review hero: light sweep across the ETA bar */
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}

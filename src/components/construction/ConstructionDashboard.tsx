@@ -1,9 +1,10 @@
 "use client";
 
+import { UnderReviewHero } from "@/components/common/UnderReviewHero";
 import React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Plus, AlertTriangle, CheckCircle2, CircleDot, Clock, ExternalLink, HardHat, Loader2, Pause, Play, RefreshCw } from "lucide-react";
+import { ArrowLeft, Building2, PenLine, Plus, AlertTriangle, CheckCircle2, CircleDot, Clock, ExternalLink, HardHat, Loader2, Pause, Play, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/components/ui/utils";
 import { type ListingId, useMyConstructionListQuery, useMyConstructionQuery, useSetMyConstructionStatusMutation, useSubmitMyConstructionMutation } from "@/features/construction/api";
@@ -117,12 +118,25 @@ function Overview({ data, goTab }: { data: MyConstruction; goTab: (t: Tab) => vo
   const stepTab = (step: string): Tab => (step === "projects" ? "projects" : "edit");
   return (
     <div className="space-y-4">
+      {p.status === "SUBMITTED" && (
+        <UnderReviewHero
+          accent="amber"
+          noun="construction company"
+          name={p.businessName}
+          submittedAt={p.submittedAt}
+          checks={["Company & licence details", "Completed projects", "Services & cities", "Contact verification"]}
+          actions={[
+            { label: "Add more projects", hint: "Builders with photos of finished work win more site visits.", onClick: () => goTab("projects"), icon: Building2 },
+            { label: "Polish your listing", hint: "Sharpen your services, specialisations and about section.", onClick: () => goTab("edit"), icon: PenLine },
+          ]}
+        />
+      )}
       <div className="grid gap-4 md:grid-cols-[300px_1fr] md:items-start">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Your listing</p>
           <ConstructionCard p={p} completeness={data.readiness.pct} />
         </div>
-        <StatusCard data={data} />
+        {p.status !== "SUBMITTED" && <StatusCard data={data} />}
       </div>
       <section className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center justify-between gap-3">
