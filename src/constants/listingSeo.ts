@@ -256,14 +256,23 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
     ctaHref: "/dashboard/interior-profile",
     ctaLabel: "List your interior business free",
     navLabel: "List your interior business",
-    title: "List Your Interior Design Business Free: Get Client Leads",
+    title: "Free Interior Listing: List Your Interior Design Business Free",
     description:
-      "Interior designers, modular kitchen and wardrobe makers and turnkey studios: list your business free on Awasio. Show your portfolio, packages and prices and get leads from homeowners in your city.",
+      "Free interior designer listing on Awasio. List your interior business free, show portfolio, packages and prices, and get interior design leads from homeowners.",
     keywords: [
       "list interior design business", "interior designer listing", "get interior design leads", "interior designer registration",
       "list modular kitchen business", "interior design clients", "free business listing interior designer", "home interior leads",
+      "free interior listing", "interior listing free", "interior listing", "free interior designer listing",
+      "interior designer listing free", "list interior business free", "list interior business for free",
+      "free listing for interior designers", "interior designer free listing", "interior design business listing free",
+      "free interior design listing site", "interior listing site", "interior designer listing site india",
+      "register interior design business free", "free interior designer registration", "post interior business free",
+      "add interior business free", "interior company listing free", "interior decorator listing free",
+      "modular kitchen listing free", "free leads for interior designers", "interior designer directory free listing",
+      "interior designer free listing kaise kare", "interior business free me list kare", "interior designer listing free mein",
+      "इंटीरियर डिज़ाइनर फ्री लिस्टिंग", "इंटीरियर बिज़नेस फ्री लिस्ट करें", "फ्री इंटीरियर लिस्टिंग",
     ],
-    h1: "List Your Interior Design Business and Get Client Leads",
+    h1: "List Your Interior Design Business Free and Get Client Leads",
     intro:
       "Homeowners on Awasio are looking for interior designers right after they buy or rent a home. List your studio or freelance practice free, show your portfolio and starting prices, and receive enquiries directly from clients in your city.",
     steps: [
@@ -283,6 +292,26 @@ export const LISTING_SEO: Record<ListingSeoKey, ListingSeo> = {
       { q: "How do I get interior design leads?", a: "List your business with portfolio photos, packages and the cities you serve. Clients searching your city can call, WhatsApp or request a quote directly." },
       { q: "Can freelance interior designers list?", a: "Yes. Both individual designers and studios or companies can list." },
       { q: "What do I need to get verified?", a: "Basic business or identity documents. Verified listings get a badge and rank better in search." },
+      { q: "Where can I get a free interior listing?", a: "On Awasio. Interior designers, decorators, modular kitchen makers and interior companies get a free interior listing with portfolio, packages and city pages." },
+      { q: "Is interior designer listing free for interior companies too?", a: "Yes. Free interior designer listing is open to freelancers, studios and interior companies alike, with no listing fee." },
+      { q: "इंटीरियर बिज़नेस फ्री में कैसे लिस्ट करें?", a: "Awasio पर प्रोफ़ाइल बनाएं, अपनी सेवाएं, शहर, पोर्टफोलियो और पैकेज जोड़ें। लिस्टिंग पूरी तरह फ्री है और ग्राहक सीधे कॉल या WhatsApp करते हैं।" },
+    ],
+    guides: [
+      {
+        heading: "Free interior listing for designers, decorators and interior companies",
+        paragraphs: [
+          "Looking for a free interior listing site? Awasio gives interior designers a free listing with no fee to list, no fee to publish and no commission on projects. List your interior business free, whether you are a freelance interior designer, an interior decorator, a modular kitchen and wardrobe maker or a turnkey interior company.",
+          "Your free interior designer listing includes a portfolio of completed projects, 1 BHK, 2 BHK and 3 BHK packages, starting prices, design styles and the cities you serve. Homeowners who just bought or rented a home find your listing and send interior design leads directly by call, WhatsApp or quote request.",
+        ],
+      },
+      {
+        heading: "इंटीरियर डिज़ाइनर फ्री लिस्टिंग",
+        lang: "hi",
+        paragraphs: [
+          "Awasio पर इंटीरियर बिज़नेस फ्री में लिस्ट करें। इंटीरियर डिज़ाइनर, डेकोरेटर, मॉड्यूलर किचन और इंटीरियर कंपनियां बिना किसी फीस के अपनी लिस्टिंग बना सकती हैं।",
+          "अपना पोर्टफोलियो, पैकेज और रेट जोड़ें और अपने शहर के ग्राहकों से सीधे इंटीरियर डिज़ाइन लीड पाएं।",
+        ],
+      },
     ],
     cityHeading: "Interior designers by city",
     cityPath: (c) => `/interior-designers/${c}`,
