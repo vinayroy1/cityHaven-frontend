@@ -1266,13 +1266,17 @@ export function FlatmateListingWizard({
 
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Your Gender</label>
-                <select value={gender} onChange={(e) => setGender(e.target.value)} className="h-10 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm dark:border-slate-800 dark:bg-slate-900">
-                  <option value="">Prefer not to say</option>
-                  <option value="Female">Female</option>
-                  <option value="Male">Male</option>
-                  <option value="Non-binary">Non-binary</option>
-                  <option value="Other">Self-described / Other</option>
-                </select>
+                <SearchableSelect
+                  value={gender}
+                  onChange={setGender}
+                  placeholder="Prefer not to say"
+                  options={[
+                    { value: "Female", label: "Female" },
+                    { value: "Male", label: "Male" },
+                    { value: "Non-binary", label: "Non-binary" },
+                    { value: "Other", label: "Self-described / Other" },
+                  ]}
+                />
               </div>
 
               <div className="space-y-1.5">

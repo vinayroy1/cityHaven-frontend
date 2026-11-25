@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import React from "react";
 import { Loader2, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
@@ -50,16 +51,10 @@ function ProjectEditor({ initial, profileId, infra, onClose }: { initial: Draft;
           {infra ? (
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Sector" htmlFor="pj-sector">
-              <select id="pj-sector" className={inputCls} value={p.sector ?? ""} onChange={(e) => set("sector", (e.target.value || null) as InfraSector | null)}>
-                <option value="">Select</option>
-                {SECTOR_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+              <SearchableSelect id="pj-sector" value={p.sector ?? ""} onChange={(v) => set("sector", (v || null) as InfraSector | null)} options={SECTOR_OPTIONS.map((o) => ({ value: o.value, label: o.label }))} placeholder="Select" />
             </Field>
             <Field label="Status" htmlFor="pj-status">
-              <select id="pj-status" className={inputCls} value={p.projectStatus ?? ""} onChange={(e) => set("projectStatus", (e.target.value || null) as ProjectStatus | null)}>
-                <option value="">Select</option>
-                {PROJECT_STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+              <SearchableSelect id="pj-status" value={p.projectStatus ?? ""} onChange={(v) => set("projectStatus", (v || null) as ProjectStatus | null)} options={PROJECT_STATUS_OPTIONS.map((o) => ({ value: o.value, label: o.label }))} placeholder="Select" />
             </Field>
             <Field label="Client / department" htmlFor="pj-client">
               <input id="pj-client" className={inputCls} maxLength={120} placeholder="e.g. NHAI, Bihar PWD" value={p.clientAuthority ?? ""} onChange={(e) => set("clientAuthority", e.target.value)} />
@@ -80,16 +75,10 @@ function ProjectEditor({ initial, profileId, infra, onClose }: { initial: Draft;
           ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Building type" htmlFor="pj-type">
-              <select id="pj-type" className={inputCls} value={p.buildingType ?? ""} onChange={(e) => set("buildingType", (e.target.value || null) as BuildingType | null)}>
-                <option value="">Select</option>
-                {BUILDING_TYPE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+              <SearchableSelect id="pj-type" value={p.buildingType ?? ""} onChange={(v) => set("buildingType", (v || null) as BuildingType | null)} options={BUILDING_TYPE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))} placeholder="Select" />
             </Field>
             <Field label="Floors" htmlFor="pj-floors">
-              <select id="pj-floors" className={inputCls} value={p.floors ?? ""} onChange={(e) => set("floors", (e.target.value || null) as Floors | null)}>
-                <option value="">Select</option>
-                {FLOOR_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+              <SearchableSelect id="pj-floors" value={p.floors ?? ""} onChange={(v) => set("floors", (v || null) as Floors | null)} options={FLOOR_OPTIONS.map((o) => ({ value: o.value, label: o.label }))} placeholder="Select" />
             </Field>
             <Field label="Plot size (sq.ft)" htmlFor="pj-plot">
               <input id="pj-plot" inputMode="numeric" className={inputCls} value={p.plotSizeSqft ?? ""} onChange={(e) => set("plotSizeSqft", toInt(e.target.value))} />

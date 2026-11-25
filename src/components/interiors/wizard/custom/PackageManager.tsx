@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import { useState } from "react";
 import { Copy, Crown, Gem, Loader2, Lock, Pencil, Plus, Sparkles, Trash2, Wand2 } from "lucide-react";
 import { toast } from "sonner";
@@ -338,9 +339,7 @@ function PackageEditor({
           </Field>
           <Field label="Covers">
             {(id) => (
-              <select id={id} className={inputCls} value={category} onChange={(e) => setCategory(e.target.value)}>
-                {["Full Home", "Modular Kitchen", "Wardrobes", "Living Room", "Bedroom", "Renovation", "Commercial"].map((c) => <option key={c}>{c}</option>)}
-              </select>
+              <SearchableSelect id={id} value={category} onChange={(v) => v && setCategory(v)} options={["Full Home", "Modular Kitchen", "Wardrobes", "Living Room", "Bedroom", "Renovation", "Commercial"]} clearable={false} />
             )}
           </Field>
         </div>

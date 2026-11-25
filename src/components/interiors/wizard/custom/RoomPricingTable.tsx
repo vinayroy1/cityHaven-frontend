@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ChevronDown } from "lucide-react";
 import type { CustomStepProps } from "@/lib/listingEngine/types";
 import type { InteriorPricingUnit, InteriorWizardValues, RoomPricingRow, RoomType } from "@/types/interior.types";
 import { ROOM_TYPES } from "@/features/interiors/wizard/options";
@@ -59,9 +59,12 @@ export default function RoomPricingTable({ values, form, props }: CustomStepProp
                       <input aria-label={`${label} max price`} inputMode="numeric" className={inputCls} value={r.priceMax ?? ""} onChange={(e) => update(r.id, { priceMax: toNum(e.target.value) })} />
                     </td>
                     <td className="px-3 py-2">
-                      <select aria-label={`${label} unit`} className={inputCls} value={r.unit} onChange={(e) => update(r.id, { unit: e.target.value as InteriorPricingUnit })}>
-                        {UNITS.map((u) => <option key={u.value} value={u.value}>{u.label}</option>)}
-                      </select>
+                      <div className="relative">
+                        <select aria-label={`${label} unit`} className={`${inputCls} cursor-pointer appearance-none pr-9`} value={r.unit} onChange={(e) => update(r.id, { unit: e.target.value as InteriorPricingUnit })}>
+                          {UNITS.map((u) => <option key={u.value} value={u.value}>{u.label}</option>)}
+                        </select>
+                        <ChevronDown aria-hidden className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                      </div>
                     </td>
                     <td className="px-3 py-2 text-right">
                       <button type="button" aria-label={`Remove ${label}`} className={ghostIconBtn} onClick={() => write(rows.filter((x) => x.id !== r.id))}>

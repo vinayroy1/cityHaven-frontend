@@ -26,6 +26,16 @@ interface SearchableSelectProps {
   className?: string;
   hasError?: boolean;
   maxDisplayResults?: number;
+  /** Show the search box. Default: when custom entry is allowed or there are more than 6 options. */
+  searchable?: boolean;
+  /** Show the × clear button. Turn off for required fields. Default true. */
+  clearable?: boolean;
+  /** Extra classes for the trigger button (e.g. a compact height). */
+  triggerClassName?: string;
+  /** Extra classes for the menu panel (e.g. "min-w-40 left-auto" for a narrow trigger). */
+  menuClassName?: string;
+  id?: string;
+  "aria-label"?: string;
 }
 
 function damerauLevenshtein(a: string, b: string): number {
@@ -69,6 +79,12 @@ export function SearchableSelect({
   className = "",
   hasError = false,
   maxDisplayResults = 100,
+  searchable,
+  clearable = true,
+  triggerClassName,
+  menuClassName,
+  id,
+  "aria-label": ariaLabel,
 }: SearchableSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -87,6 +103,8 @@ export function SearchableSelect({
       return opt;
     });
   }, [options]);
+
+  const showSearch = searchable ?? (allowCustom || normalizedOptions.length > 6);
 
   // Find currently selected label
   const selectedLabel = useMemo(() => {
@@ -176,7 +194,8 @@ export function SearchableSelect({
       setHighlightedIndex(-1);
       // Auto-focus search input with small delay for animation / render
       setTimeout(() => {
-        searchInputRef.current?.focus();
+        if (searchInputRef.current) searchInputRef.current.focus();
+        else listRef.current?.focus();
       }, 50);
     }
   }, [isOpen]);
@@ -266,6 +285,8 @@ export function SearchableSelect({
       {/* Trigger Button */}
       <button
         type="button"
+        id={id}
+        aria-label={ariaLabel}
         disabled={disabled}
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(
@@ -275,6 +296,7 @@ export function SearchableSelect({
             : "border-slate-200 hover:border-slate-300 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 dark:border-slate-700 dark:hover:border-slate-600 dark:focus:ring-slate-800",
           disabled && "cursor-not-allowed opacity-50 bg-slate-50 dark:bg-slate-800",
           isOpen && "border-slate-400 ring-2 ring-slate-200 dark:border-slate-600 dark:ring-slate-800",
+          triggerClassName,
         )}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -288,7 +310,7 @@ export function SearchableSelect({
           {selectedLabel || placeholder}
         </span>
         <div className="flex items-center gap-1 shrink-0 text-slate-400">
-          {value && !disabled && (
+          {clearable && value && !disabled && (
             <span
               role="button"
               tabIndex={-1}
@@ -310,8 +332,9 @@ export function SearchableSelect({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-950 animate-in fade-in-0 zoom-in-95 duration-150">
+        <div className={cn("absolute left-0 right-0 top-full z-50 mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-950 animate-in fade-in-0 zoom-in-95 duration-150", menuClassName)}>
           {/* Sticky Search Header */}
+          {showSearch && (
           <div className="border-b border-slate-100 p-2 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50">
             <div className="relative flex items-center">
               <Search className="pointer-events-none absolute left-2.5 h-3.5 w-3.5 text-slate-400" />
@@ -351,11 +374,13 @@ export function SearchableSelect({
               )}
             </div>
           </div>
+          )}
 
           {/* Options List */}
           <div
             ref={listRef}
-            className="max-h-60 overflow-y-auto p-1.5 space-y-0.5 text-xs"
+            tabIndex={-1}
+            className="max-h-60 outline-none overflow-y-auto p-1.5 space-y-0.5 text-xs"
             role="listbox"
           >
             {displayedOptions.length > 0 ? (

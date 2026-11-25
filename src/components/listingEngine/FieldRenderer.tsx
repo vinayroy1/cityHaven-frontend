@@ -350,26 +350,19 @@ function ControlledField({
     case "select":
       return (
         <FieldShell {...shell}>
-          <select
+          <SearchableSelect
             id={id}
-            ref={f.ref}
-            disabled={disabled}
             value={str}
-            onBlur={f.onBlur}
-            onChange={(e) => {
-              const opt = options.find((o) => String(o.value) === e.target.value);
+            disabled={disabled}
+            hasError={Boolean(err)}
+            placeholder={field.placeholder ?? "Select…"}
+            options={options.map((o) => ({ value: String(o.value), label: o.label }))}
+            onChange={(v) => {
+              const opt = options.find((o) => String(o.value) === v);
               f.onChange(opt ? opt.value : options.some((x) => typeof x.value === "boolean" || typeof x.value === "number") ? null : "");
+              f.onBlur();
             }}
-            className={inputCls}
-            {...aria}
-          >
-            <option value="">{field.placeholder ?? "Select…"}</option>
-            {options.map((o) => (
-              <option key={String(o.value)} value={String(o.value)}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+          />
         </FieldShell>
       );
     case "searchable-select":

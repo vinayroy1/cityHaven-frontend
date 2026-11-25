@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import React from "react";
 import { Check, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -508,7 +509,7 @@ export function FieldRenderer({ field: rawField, values }: Props) {
       const unitOptions = field.unitOptions ?? areaUnitOptions;
       return (
         <Labelled label={field.label} required={required} error={error} helpText={field.helpText}>
-          <div className="flex h-11 overflow-hidden rounded-xl border border-slate-200 transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200">
+          <div className="flex h-11 rounded-xl border border-slate-200 transition focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-200 dark:border-slate-700">
             <Controller
               name={field.id}
               control={form.control}
@@ -530,18 +531,17 @@ export function FieldRenderer({ field: rawField, values }: Props) {
               name={unitField}
               control={form.control}
               render={({ field: rhf }) => (
-                <select
+                <SearchableSelect
+                  aria-label={`${field.label} unit`}
                   disabled={disabled}
-                  className="border-l border-slate-200 bg-slate-50 px-2 text-sm text-slate-700 outline-none"
                   value={rhf.value ? String(rhf.value) : String(unitOptions[0]?.value ?? "")}
-                  onChange={(e) => rhf.onChange(e.target.value)}
-                >
-                  {unitOptions.map((o) => (
-                    <option key={String(o.value)} value={String(o.value)}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => v && rhf.onChange(v)}
+                  options={unitOptions.map((o) => ({ value: String(o.value), label: o.label }))}
+                  clearable={false}
+                  className="w-auto shrink-0"
+                  triggerClassName="h-full gap-2 rounded-none rounded-r-xl border-0 border-l border-slate-200 bg-slate-50 focus:ring-0 dark:border-slate-700 dark:bg-slate-800"
+                  menuClassName="left-auto min-w-40"
+                />
               )}
             />
           </div>

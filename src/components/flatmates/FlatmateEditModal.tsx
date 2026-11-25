@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import React, { useState, useEffect } from "react";
 import {
   X,
@@ -307,31 +308,11 @@ export function FlatmateEditModal({ listing, isOpen, onClose, onSuccess }: Flatm
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Room Type</label>
-              <select
-                value={roomType}
-                onChange={(e) => setRoomType(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-800 dark:bg-slate-900"
-              >
-                {ROOM_TYPES.map((rt) => (
-                  <option key={rt} value={rt}>
-                    {rt}
-                  </option>
-                ))}
-              </select>
+              <SearchableSelect value={roomType} onChange={(v) => v && setRoomType(v)} options={ROOM_TYPES} clearable={false} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Furnishing</label>
-              <select
-                value={furnishing}
-                onChange={(e) => setFurnishing(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium dark:border-slate-800 dark:bg-slate-900"
-              >
-                {FURNISHING_OPTIONS.map((fo) => (
-                  <option key={fo} value={fo}>
-                    {fo}
-                  </option>
-                ))}
-              </select>
+              <SearchableSelect value={furnishing} onChange={(v) => v && setFurnishing(v)} options={FURNISHING_OPTIONS} clearable={false} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
@@ -477,17 +458,7 @@ export function FlatmateEditModal({ listing, isOpen, onClose, onSuccess }: Flatm
                 <span>{petsAllowed ? "Pet Friendly" : "No Pets"}</span>
               </button>
 
-              <select
-                value={preferredDiet}
-                onChange={(e) => setPreferredDiet(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-white px-2 py-2 text-xs font-bold text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-              >
-                {DIET_OPTIONS.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
+              <SearchableSelect value={preferredDiet} onChange={(v) => v && setPreferredDiet(v)} options={DIET_OPTIONS} clearable={false} />
             </div>
           </div>
 

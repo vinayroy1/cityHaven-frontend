@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import React from "react";
 import { useController, useFormContext } from "react-hook-form";
 import { cn } from "@/components/ui/utils";
@@ -71,19 +72,17 @@ function UnitSelect({ name, field, disabled }: { name: string; field: FieldConfi
   const { control } = useFormContext();
   const { field: f } = useController({ name, control });
   return (
-    <select
+    <SearchableSelect
       aria-label={`${field.label} unit`}
       disabled={disabled}
       value={f.value ?? ""}
-      onChange={(e) => f.onChange(e.target.value)}
-      className={cn(inputBase, "w-auto max-w-[45%] shrink-0")}
-    >
-      <option value="">Unit</option>
-      {field.unitOptions!.map((o) => (
-        <option key={String(o.value)} value={String(o.value)}>
-          {o.label}
-        </option>
-      ))}
-    </select>
+      onChange={(v) => f.onChange(v)}
+      options={field.unitOptions!.map((o) => ({ value: String(o.value), label: o.label }))}
+      placeholder="Unit"
+      clearable={false}
+      className="w-auto max-w-[45%] shrink-0"
+      triggerClassName={cn("h-auto min-h-10 gap-2", inputBase)}
+      menuClassName="left-auto min-w-40"
+    />
   );
 }

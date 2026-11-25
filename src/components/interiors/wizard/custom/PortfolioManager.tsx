@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import { useRef, useState } from "react";
 import { Crop, ImagePlus, Images, Loader2, Pencil, Plus, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -374,30 +375,19 @@ function ProjectEditor({
         {commercial ? (
           <Field label="Space type" required>
             {(id) => (
-              <select id={id} className={inputCls} value={p.propertyType} onChange={(e) => set("propertyType", e.target.value)}>
-                <option value="">Select</option>
-                {COMMERCIAL_PROJECT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <SearchableSelect id={id} value={p.propertyType} onChange={(v) => set("propertyType", v)} options={COMMERCIAL_PROJECT_TYPES} placeholder="Select" />
             )}
           </Field>
         ) : (
           <>
             <Field label="BHK" required>
               {(id) => (
-                <select id={id} className={inputCls} value={p.bhk} onChange={(e) => set("bhk", e.target.value)}>
-                  <option value="">Select</option>
-                  {strOpts(BHK_OPTIONS).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
+                <SearchableSelect id={id} value={p.bhk} onChange={(v) => set("bhk", v)} options={strOpts(BHK_OPTIONS)} placeholder="Select" />
               )}
             </Field>
             <Field label="Property type">
               {(id) => (
-                <select id={id} className={inputCls} value={p.propertyType} onChange={(e) => set("propertyType", e.target.value)}>
-                  <option value="">Select</option>
-                  {[...RESIDENTIAL_PROJECT_TYPES, ...(p.propertyType && !RESIDENTIAL_PROJECT_TYPES.includes(p.propertyType) ? [p.propertyType] : [])].map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
+                <SearchableSelect id={id} value={p.propertyType} onChange={(v) => set("propertyType", v)} options={[...RESIDENTIAL_PROJECT_TYPES, ...(p.propertyType && !RESIDENTIAL_PROJECT_TYPES.includes(p.propertyType) ? [p.propertyType] : [])]} placeholder="Select" />
               )}
             </Field>
           </>

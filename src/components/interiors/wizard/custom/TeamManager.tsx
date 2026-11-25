@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import { useState } from "react";
 import { Loader2, Pencil, Plus, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
@@ -169,10 +170,7 @@ function MemberEditor({
       {branches.length > 0 && (
         <Field label="Works from">
           {(id) => (
-            <select id={id} className={inputCls} value={m.branchId ?? ""} onChange={(e) => set("branchId", e.target.value ? Number(e.target.value) : null)}>
-              <option value="">All locations</option>
-              {branches.map((b) => <option key={b.id} value={b.serverId!}>{b.branchName || b.city}</option>)}
-            </select>
+            <SearchableSelect id={id} value={m.branchId != null ? String(m.branchId) : ""} onChange={(v) => set("branchId", v ? Number(v) : null)} options={branches.map((b) => ({ value: String(b.serverId!), label: b.branchName || b.city }))} placeholder="All locations" />
           )}
         </Field>
       )}

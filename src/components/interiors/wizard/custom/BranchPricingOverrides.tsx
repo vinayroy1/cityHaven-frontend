@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import type { CustomStepProps } from "@/lib/listingEngine/types";
 import type { BranchPricingOverride, InteriorBranchDraft, InteriorWizardValues } from "@/types/interior.types";
 import { Field, getAt, inputCls, propPath, setPath, toNum, wizardSymbol } from "./ui";
@@ -31,12 +32,19 @@ export default function BranchPricingOverrides({ values, form, props }: CustomSt
             </Field>
             <Field label="Unit">
               {(id) => (
-                <select id={id} className={inputCls} value={r.pricingUnit ?? values.pricing.pricingUnit ?? ""} onChange={(e) => update(b.serverId!, { pricingUnit: e.target.value as BranchPricingOverride["pricingUnit"] })}>
-                  <option value="PER_SQFT">per sq.ft</option>
-                  <option value="PER_ROOM">per room</option>
-                  <option value="PER_PROJECT">per project</option>
-                  <option value="FIXED_PRICE">fixed</option>
-                </select>
+                <SearchableSelect
+                  id={id}
+                  value={r.pricingUnit ?? values.pricing.pricingUnit ?? ""}
+                  onChange={(v) => v && update(b.serverId!, { pricingUnit: v as BranchPricingOverride["pricingUnit"] })}
+                  options={[
+                    { value: "PER_SQFT", label: "per sq.ft" },
+                    { value: "PER_ROOM", label: "per room" },
+                    { value: "PER_PROJECT", label: "per project" },
+                    { value: "FIXED_PRICE", label: "fixed" },
+                  ]}
+                  placeholder="Unit"
+                  clearable={false}
+                />
               )}
             </Field>
           </li>

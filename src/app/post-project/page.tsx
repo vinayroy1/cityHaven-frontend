@@ -664,15 +664,17 @@ export default function PostProjectPage() {
                         <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                           Construction Status *
                         </label>
-                        <select
+                        <SearchableSelect
                           value={status}
-                          onChange={(e) => setStatus(e.target.value as ProjectStatus)}
-                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:border-rose-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                        >
-                          <option value="NEW_LAUNCH">Newly Launched / Pre-Launch</option>
-                          <option value="UNDER_CONSTRUCTION">Under Construction</option>
-                          <option value="READY_TO_MOVE">Ready to Move (OC Received)</option>
-                        </select>
+                          onChange={(v) => v && setStatus(v as ProjectStatus)}
+                          clearable={false}
+                          triggerClassName="h-11"
+                          options={[
+                            { value: "NEW_LAUNCH", label: "Newly Launched / Pre-Launch" },
+                            { value: "UNDER_CONSTRUCTION", label: "Under Construction" },
+                            { value: "READY_TO_MOVE", label: "Ready to Move (OC Received)" },
+                          ]}
+                        />
                       </div>
                     </div>
 
@@ -970,17 +972,12 @@ export default function PostProjectPage() {
                                 <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
                                   Unit Type
                                 </label>
-                                <select
+                                <SearchableSelect
                                   value={cfg.bhkType}
-                                  onChange={(e) => updateConfig(cfg.id, "bhkType", e.target.value)}
-                                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold dark:border-slate-700 dark:bg-slate-800"
-                                >
-                                  {BHK_OPTIONS.map((opt) => (
-                                    <option key={opt} value={opt}>
-                                      {opt}
-                                    </option>
-                                  ))}
-                                </select>
+                                  onChange={(v) => v && updateConfig(cfg.id, "bhkType", v)}
+                                  options={BHK_OPTIONS}
+                                  clearable={false}
+                                />
                               </div>
 
                               <div>

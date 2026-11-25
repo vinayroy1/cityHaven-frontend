@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchableSelect } from "@/components/propertyListing/SearchableSelect";
 import React from "react";
 import { ArrowLeft, ArrowRight, Building2, Home, Landmark, CheckCircle2, CircleAlert, CircleDot, HardHat, Loader2, Plus, Send, Trash2, User, X } from "lucide-react";
 import { toast } from "sonner";
@@ -501,10 +502,7 @@ export function ConstructionWizard({ data, onDone, onCreated, mode = "setup" }: 
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Annual turnover" htmlFor="c-turn">
-                  <select id="c-turn" className={inputCls} value={form.turnoverBand ?? ""} onChange={(e) => set("turnoverBand", (e.target.value || null) as TurnoverBand | null)}>
-                    <option value="">Prefer not to say</option>
-                    {TURNOVER_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                  </select>
+                  <SearchableSelect id="c-turn" value={form.turnoverBand ?? ""} onChange={(v) => set("turnoverBand", (v || null) as TurnoverBand | null)} options={TURNOVER_OPTIONS.map((o) => ({ value: o.value, label: o.label }))} placeholder="Prefer not to say" />
                 </Field>
                 <Field label="Largest single contract (₹ crore)" htmlFor="c-maxcr">
                   <input
