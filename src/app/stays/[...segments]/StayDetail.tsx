@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -9,6 +9,8 @@ import {
   BedDouble,
   CalendarCheck,
   Check,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   ExternalLink,
   IdCard,
@@ -73,23 +75,65 @@ function Gallery({ stay, onOpen }: { stay: Stay; onOpen: (i: number) => void }) 
 
 function Lightbox({ photos, index, onClose }: { photos: string[]; index: number; onClose: () => void }) {
   const [i, setI] = useState(index);
+  const n = photos.length;
+  const go = (d: number) => setI((prev) => (prev + d + n) % n);
+  const touchX = useRef<number | null>(null);
+  const thumbs = useRef<HTMLDivElement>(null);
+
+  // Arrow keys move, Escape closes.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") setI((p) => (p + 1) % n);
+      else if (e.key === "ArrowLeft") setI((p) => (p - 1 + n) % n);
+      else if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [n, onClose]);
+
+  // Keep the active thumbnail in view (the strip has no visible scrollbar).
+  useEffect(() => {
+    const el = thumbs.current?.children[i] as HTMLElement | undefined;
+    el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [i]);
+
+  const arrow = "absolute top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/15 p-2.5 text-white backdrop-blur transition hover:bg-white/30 sm:p-3";
   return (
     <div className="fixed inset-0 z-[80] flex flex-col bg-black/95" role="dialog" aria-modal="true">
       <div className="flex items-center justify-between p-4 text-white">
         <span className="text-sm font-semibold">
-          {i + 1} / {photos.length}
+          {i + 1} / {n}
         </span>
         <button type="button" onClick={onClose} aria-label="Close photos" className="rounded-full bg-white/10 p-2">
           <X className="h-5 w-5" />
         </button>
       </div>
-      <div className="flex min-h-0 flex-1 items-center justify-center px-2">
+      <div
+        className="relative flex min-h-0 flex-1 items-center justify-center px-2"
+        onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
+        onTouchEnd={(e) => {
+          if (touchX.current == null) return;
+          const dx = e.changedTouches[0].clientX - touchX.current;
+          touchX.current = null;
+          if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+        }}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={photos[i]} alt="" className="max-h-full max-w-full rounded-xl object-contain" />
+        {n > 1 && (
+          <>
+            <button type="button" onClick={() => go(-1)} aria-label="Previous photo" className={`${arrow} left-2 sm:left-4`}>
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+            <button type="button" onClick={() => go(1)} aria-label="Next photo" className={`${arrow} right-2 sm:right-4`}>
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          </>
+        )}
       </div>
-      <div className="flex gap-2 overflow-x-auto p-3 no-scrollbar">
+      <div ref={thumbs} className="flex gap-2 overflow-x-auto p-3 no-scrollbar">
         {photos.map((p, j) => (
-          <button key={p} type="button" onClick={() => setI(j)} className={`h-14 w-20 shrink-0 overflow-hidden rounded-lg ${j === i ? "ring-2 ring-white" : "opacity-60"}`}>
+          <button key={p} type="button" onClick={() => setI(j)} aria-label={`Photo ${j + 1}`} className={`h-14 w-20 shrink-0 overflow-hidden rounded-lg ${j === i ? "ring-2 ring-white" : "opacity-60"}`}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={p} alt="" className="h-full w-full object-cover" />
           </button>
