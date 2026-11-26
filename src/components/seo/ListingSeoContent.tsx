@@ -149,23 +149,36 @@ export function ListingSeoDetails({ seoKey, showCta = true }: { seoKey: ListingS
         </div>
       )}
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_1.6fr] lg:gap-12">
-        <div>
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-12">
+        <div className="lg:sticky lg:top-24 lg:self-start">
           <p className={eyebrow}>FAQ</p>
           <h2 className={`mt-1 ${h2}`}>Frequently asked questions</h2>
-          <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">Can&apos;t find an answer? Write to us from the contact page and we&apos;ll help you get listed.</p>
+          <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+            Quick answers about listing on Awasio. {s.faqs.length} questions answered.
+          </p>
+          <div className="mt-6 hidden rounded-2xl border border-rose-100 bg-rose-50/70 p-5 lg:block dark:border-rose-900/40 dark:bg-rose-950/20">
+            <p className="font-semibold text-slate-900 dark:text-white">Still have a question?</p>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Write to us and we&apos;ll help you get listed.</p>
+            <Link href="/contact" className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-rose-700 hover:text-rose-800 dark:text-rose-400">
+              Contact us <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
-        <div className="space-y-3">
+        <div className="divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-900">
           {s.faqs.map((f, i) => (
-            <details key={f.q} className="group rounded-2xl border border-slate-200 bg-white p-4 shadow-2xs open:shadow-md dark:border-slate-800 dark:bg-slate-900" open={i === 0}>
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold text-slate-900 dark:text-white [&::-webkit-details-marker]:hidden">
-                {f.q}
-                <ChevronDown className="h-4 w-4 shrink-0 text-slate-400 transition group-open:rotate-180" aria-hidden />
+            <details key={f.q} className="group" open={i === 0}>
+              <summary className="flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 text-[15px] font-semibold text-slate-900 transition hover:bg-slate-50 group-open:text-rose-700 dark:text-white dark:hover:bg-slate-800/60 dark:group-open:text-rose-400 [&::-webkit-details-marker]:hidden">
+                <span>{f.q}</span>
+                <ChevronDown className="mt-0.5 h-5 w-5 shrink-0 text-slate-400 transition-transform group-open:rotate-180 group-open:text-rose-600" aria-hidden />
               </summary>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{f.a}</p>
+              <p lang={/[\u0900-\u097F]/.test(f.q) ? "hi" : undefined} className="-mt-1 px-5 pb-5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{f.a}</p>
             </details>
           ))}
         </div>
+        <p className="text-sm text-slate-600 lg:hidden dark:text-slate-400">
+          Can&apos;t find an answer?{" "}
+          <Link href="/contact" className="font-semibold text-rose-700 dark:text-rose-400">Contact us</Link>
+        </p>
       </div>
 
       {s.guides?.length ? (
