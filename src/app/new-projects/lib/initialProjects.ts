@@ -7,7 +7,7 @@ import type { ProjectListing } from "@/types/project.types";
  * First page of projects, fetched on the server so the grid (and its LCP image) is in the HTML.
  * `ok: false` means the API failed: "0 projects" must not be read as "no such city" then.
  */
-export const getInitialProjects = cache(async (city?: string, localities: string[] = [], countryCode?: string): Promise<{ items: ProjectListing[]; total: number; ok: boolean }> => {
+export const getInitialProjects = cache(async (city?: string, localities: string[] = [], countryCode?: string, status?: string | null): Promise<{ items: ProjectListing[]; total: number; ok: boolean }> => {
   try {
     const rawEndpoint = API_ENDPOINTS.projects.search;
     const endpoint = toInternalApiUrl(rawEndpoint);
@@ -15,6 +15,7 @@ export const getInitialProjects = cache(async (city?: string, localities: string
     if (city && city !== "All") url.searchParams.set("city", city);
     if (localities.length) url.searchParams.set("locality", localities.join(","));
     if (countryCode) url.searchParams.set("countryCode", countryCode);
+    if (status) url.searchParams.set("status", status);
     url.searchParams.set("page", "1");
     url.searchParams.set("pageSize", "12");
     url.searchParams.set("sortBy", "featured");

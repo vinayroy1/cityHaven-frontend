@@ -16,7 +16,7 @@ import { FooterLinks } from "@/app/homePage/components/FooterLinks";
 import type { ProjectListing } from "@/types/project.types";
 import { ProjectDetailInteractive } from "../components/ProjectDetailInteractive";
 import { getInitialProjects } from "../lib/initialProjects";
-import { projectDetailPath, projectSearchPath, splitCountry } from "../lib/projectUrls";
+import { PROJECT_STATUS_LABEL, projectDetailPath, projectSearchPath, projectStatusPath, splitCountry, statusFromSlug, type ProjectStatusValue } from "../lib/projectUrls";
 import { NewProjectsClient } from "../components/NewProjectsClient";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
@@ -101,18 +101,65 @@ function parseLocation(segments: string[]) {
  * Projects for a city/locality page. Unprefixed URLs are India; if India has none there but another
  * country does (e.g. /new-projects/dubai), `moveTo` is that country's prefixed URL.
  */
-async function loadLocation(country: string | null, city: string, localities: string[]) {
-  const result = await getInitialProjects(city, localities, country ?? "IN");
-  if (country || !result.ok || result.total > 0) return { ...result, moveTo: null as string | null };
+async function loadLocation(country: string | null, city: string, localities: string[], status: ProjectStatusValue | null = null) {
+  const result = await getInitialProjects(city, localities, country ?? "IN", status);
+  if (status || country || !result.ok || result.total > 0) return { ...result, moveTo: null as string | null };
   const anywhere = await getInitialProjects(city, localities);
   const other = anywhere.items.find((p) => p.countryCode && p.countryCode !== "IN")?.countryCode;
   return { ...result, moveTo: other ? projectSearchPath(city, localities, other) : null };
 }
 
+/** A trailing status slug (/new-projects/patna/ready-to-move) narrows a city or locality page. */
+function splitStatus(segments: string[]): { status: ProjectStatusValue | null; rest: string[] } {
+  const status = segments.length >= 2 ? statusFromSlug(segments[segments.length - 1]) : null;
+  return status ? { status, rest: segments.slice(0, -1) } : { status: null, rest: segments };
+}
+
+/** Thin status pages stay out of the index until they have a handful of projects. */
+const MIN_INDEXABLE_STATUS = 5;
+
+function statusCopy(status: ProjectStatusValue, label: string, count: number) {
+  const n = count > 0 ? `${count} ` : "";
+  switch (status) {
+    case "NEW_LAUNCH":
+      return {
+        title: `${n}New Launch & Upcoming Projects in ${label} | Awasio`,
+        description: `Explore ${n || ""}new launch and upcoming residential projects in ${label}. Pre-launch prices, RERA details, floor plans and possession timelines from builders.`,
+      };
+    case "UNDER_CONSTRUCTION":
+      return {
+        title: `${n}Under Construction Projects in ${label} | Price & Possession | Awasio`,
+        description: `Browse ${n || ""}under construction residential projects in ${label}. Compare RERA IDs, possession dates, price per sqft, floor plans and builder track record.`,
+      };
+    default:
+      return {
+        title: `${n}Ready to Move Flats & Projects in ${label} | Awasio`,
+        description: `Find ${n || ""}ready to move flats and completed residential projects in ${label}. Move in now: compare prices, RERA details, amenities and builder information.`,
+      };
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { segments: rawSegments = [] } = await params;
-  const { country, rest: segments } = splitCountry(rawSegments);
+  const { country, rest: withStatus } = splitCountry(rawSegments);
+  const { status, rest: segments } = splitStatus(withStatus);
   if (!segments.length) return {};
+
+  if (status) {
+    const location = parseLocation(segments);
+    if (!location) return {};
+    const label = [...location.localities, location.city].join(", ");
+    const { total: count } = await loadLocation(country, location.city, location.localities, status);
+    const { title, description } = statusCopy(status, label, count);
+    const canonical = buildCanonical(projectStatusPath(location.city, location.localities, country, status));
+    return {
+      title: { absolute: title },
+      description,
+      alternates: { canonical },
+      robots: { index: count >= MIN_INDEXABLE_STATUS, follow: true },
+      openGraph: { title, description, url: canonical, type: "website", images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: "Awasio" }] },
+    };
+  }
 
   // Case 1: Single segment could be a project slug OR a city slug
   if (segments.length === 1) {
@@ -185,13 +232,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NewProjectsDynamicPage({ params }: Props) {
   const { segments: rawSegments = [] } = await params;
-  const { country, rest: segments } = splitCountry(rawSegments);
+  const { country, rest: withStatus } = splitCountry(rawSegments);
+  const { status, rest: segments } = splitStatus(withStatus);
   if (!segments.length || segments.length > 3) {
     notFound();
   }
 
   // If 1 segment: Check if it's an existing project first
-  if (segments.length === 1) {
+  if (segments.length === 1 && !status) {
     const project = await getProject(segments[0]);
     if (project) {
       // One URL per project: India unprefixed, other countries under their code.
@@ -268,11 +316,11 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
 
   // Redirect alias or non-canonical casing/slug if canonical location is recognized
   if (location) {
-    const canonicalPath = projectSearchPath(location.city, location.localities, country);
+    const canonicalPath = projectStatusPath(location.city, location.localities, country, status);
     if (canonicalPath !== `/new-projects/${rawSegments.join("/")}`) permanentRedirect(canonicalPath);
   }
 
-  const { items: initialProjects, total: initialTotal, ok, moveTo } = await loadLocation(country, city, localities);
+  const { items: initialProjects, total: initialTotal, ok, moveTo } = await loadLocation(country, city, localities, status);
   if (moveTo) permanentRedirect(moveTo);
   // If the API failed, throw so a backend blip is never cached as an empty page (the last good page stays).
   // An empty city / area still renders (empty state, noindex), same as every other directory.
@@ -313,6 +361,16 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
             },
           ]
         : []),
+      ...(status
+        ? [
+            {
+              "@type": "ListItem",
+              position: localities[0] ? 5 : 4,
+              name: PROJECT_STATUS_LABEL[status],
+              item: `${SITE_URL}${projectStatusPath(city, localities, country, status)}`,
+            },
+          ]
+        : []),
     ],
   };
 
@@ -335,6 +393,7 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
           initialCountry={country}
           initialProjects={initialProjects}
           initialTotal={initialTotal}
+          initialStatus={status}
         />
       </main>
       <FooterLinks />

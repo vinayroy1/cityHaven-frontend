@@ -44,7 +44,7 @@ import {
 } from "./ProjectFilterSheet";
 import { getUserPreferredCity, detectUserLocation, setUserPreferredCity } from "@/lib/geo/geoService";
 import { useSearchProjectsQuery } from "@/features/projects/api";
-import { projectDetailPath, projectSearchPath } from "../lib/projectUrls";
+import { PROJECT_STATUS_LABEL, PROJECT_STATUS_SLUGS, projectDetailPath, projectSearchPath, projectStatusPath, type ProjectStatusValue } from "../lib/projectUrls";
 import { useCountryCode } from "@/lib/country/useCountry";
 import { getSelectedCountry } from "@/lib/country/countryStore";
 import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
@@ -290,6 +290,8 @@ type NewProjectsClientProps = {
   initialLocalities?: string[];
   initialProjects?: ProjectListing[];
   initialTotal?: number;
+  /** Status from the URL (/new-projects/patna/ready-to-move). */
+  initialStatus?: ProjectStatusValue | null;
 };
 
 export function NewProjectsClient({
@@ -298,6 +300,7 @@ export function NewProjectsClient({
   initialLocalities = [],
   initialProjects = [],
   initialTotal,
+  initialStatus = null,
 }: NewProjectsClientProps = {}) {
   const router = useRouter();
   const initialLocalitiesKey = initialLocalities.join("\u001f");
@@ -321,7 +324,7 @@ export function NewProjectsClient({
   // Filter drawer state
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterState, setFilterState] = useState<ProjectFilterState>({
-    status: "ALL",
+    status: initialStatus ?? "ALL",
     bhk: "All",
     budgetMin: undefined,
     budgetMax: undefined,
@@ -333,9 +336,10 @@ export function NewProjectsClient({
   const { reveal: revealContact } = useProjectContact();
 
   // Re-sync the search state when the route (city / localities) changes: adjust during render, not in an effect.
-  const routeKey = `${initialCity}\u001e${initialLocalitiesKey}`;
+  const routeKey = `${initialCity}\u001e${initialLocalitiesKey}\u001e${initialStatus ?? ""}`;
   const [syncedRouteKey, setSyncedRouteKey] = useState(routeKey);
   if (syncedRouteKey !== routeKey) {
+    setFilterState((prev) => ({ ...prev, status: initialStatus ?? "ALL" }));
     const routeLocalities = initialLocalitiesKey ? initialLocalitiesKey.split("\u001f") : [];
     setSyncedRouteKey(routeKey);
     setCityDraft(initialCity);
@@ -409,7 +413,7 @@ export function NewProjectsClient({
   };
 
   const resetProjectFilters = () => {
-    setFilterState({
+    applyFilters({
       status: "ALL",
       bhk: "All",
       budgetMin: undefined,
@@ -418,6 +422,25 @@ export function NewProjectsClient({
       verifiedOnly: false,
     });
   };
+
+  // With a city chosen, the status filter is a real page (/new-projects/patna/ready-to-move): keep the URL in step.
+  const statusHref = (status: string) =>
+    projectStatusPath(appliedCity, appliedLocalities, initialCountry, status === "ALL" ? null : status);
+  const applyFilters = (next: ProjectFilterState) => {
+    setFilterState(next);
+    if (appliedCity && next.status !== filterState.status) router.push(statusHref(next.status), { scroll: false });
+  };
+  const activeStatus = filterState.status !== "ALL" ? (filterState.status as ProjectStatusValue) : null;
+  const placeLabel = [appliedLocalities[0], appliedCity].filter(Boolean).join(", ");
+  const heading = activeStatus && placeLabel
+    ? activeStatus === "READY_TO_MOVE"
+      ? `Ready to Move Flats in ${placeLabel}`
+      : activeStatus === "NEW_LAUNCH"
+        ? `New Launch & Upcoming Projects in ${placeLabel}`
+        : `Under Construction Projects in ${placeLabel}`
+    : placeLabel
+      ? `New Projects in ${placeLabel}`
+      : "New Projects & Townships";
 
   const searchFilters = useMemo(
     () => ({
@@ -482,17 +505,22 @@ export function NewProjectsClient({
           label: `Projects in ${appliedCity}`,
           href: projectSearchPath(appliedCity, [], initialCountry),
         });
-        items.push({
-          label: locality,
-        });
+        items.push(
+          activeStatus
+            ? { label: locality, href: projectSearchPath(appliedCity, appliedLocalities, initialCountry) }
+            : { label: locality },
+        );
       } else {
-        items.push({
-          label: `Projects in ${appliedCity}`,
-        });
+        items.push(
+          activeStatus
+            ? { label: `Projects in ${appliedCity}`, href: projectSearchPath(appliedCity, [], initialCountry) }
+            : { label: `Projects in ${appliedCity}` },
+        );
       }
+      if (activeStatus) items.push({ label: PROJECT_STATUS_LABEL[activeStatus] });
     }
     return items;
-  }, [appliedCity, appliedLocalities, initialCountry]);
+  }, [appliedCity, appliedLocalities, initialCountry, activeStatus]);
 
   return (
     <div className="pb-16 min-w-0">
@@ -509,7 +537,7 @@ export function NewProjectsClient({
                 <span>Verified Real Estate Developments</span>
               </div>
               <h1 className="text-xl font-black tracking-tight text-slate-950 dark:text-white sm:mt-1.5 sm:text-4xl">
-                New Projects & Townships
+                {heading}
               </h1>
               <p className="mt-1.5 hidden text-sm text-slate-600 dark:text-slate-300 sm:block">
                 {portal.hasRera
@@ -650,13 +678,35 @@ export function NewProjectsClient({
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
         state={filterState}
-        onApply={(next) => setFilterState(next)}
+        onApply={applyFilters}
         totalResultsCount={totalProjects}
       />
 
       {/* Results Section */}
       <div className="mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-6 lg:px-8">
         <CountryResultsBanner countryCode={resultsCountry} what="projects" className="mb-3" />
+        {appliedCity && (
+          <nav aria-label="Projects by status" className="no-scrollbar -mx-3 mb-3 flex gap-2 overflow-x-auto px-3 sm:mx-0 sm:mb-4 sm:flex-wrap sm:px-0">
+            {[["ALL", "All projects"], ...Object.values(PROJECT_STATUS_SLUGS).map((v) => [v, PROJECT_STATUS_LABEL[v]])].map(([value, label]) => {
+              const active = (activeStatus ?? "ALL") === value;
+              return (
+                <Link
+                  key={value}
+                  href={statusHref(value)}
+                  scroll={false}
+                  aria-current={active ? "page" : undefined}
+                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+                    active
+                      ? "bg-rose-600 text-white shadow-xs"
+                      : "border border-slate-200 bg-white text-slate-700 hover:border-rose-300 hover:text-rose-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 sm:mb-4 sm:gap-3">
           <div className="flex items-center gap-2">
             <p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
@@ -750,7 +800,7 @@ export function NewProjectsClient({
           </div>
         )}
           </div>
-          <ProjectFilterRail state={filterState} onChange={setFilterState} onReset={resetProjectFilters} />
+          <ProjectFilterRail state={filterState} onChange={applyFilters} onReset={resetProjectFilters} />
         </div>
 
         {/* Builder Promotion Callout */}

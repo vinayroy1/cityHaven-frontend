@@ -23,12 +23,12 @@ export const PROJECT_SITEMAP_STATES: Record<string, string> = {
 
 export const PROJECT_SITEMAP_FILES = [...Object.keys(PROJECT_SITEMAP_STATES), "other"].map((k) => `projects-${k}.xml`);
 
-export type SitemapProject = { slug: string; cityName?: string | null; stateName?: string | null; countryCode?: string | null; updatedAt?: string | null };
+export type SitemapProject = { slug: string; cityName?: string | null; stateName?: string | null; countryCode?: string | null; updatedAt?: string | null; status?: string | null };
 
 const PAGE_SIZE = 100; // the search API's maximum
-const MAX_PAGES = 200;
+const MAX_PAGES = 400; // 40k projects (production has ~26k; 200 pages cut the list at 20k)
 
-/** Every live project (slug, city, state, updatedAt). Cached for a day; never throws. */
+/** Every live project (slug, city, state, status, updatedAt). Cached for a day; never throws. */
 export async function getAllProjectsForSitemap(): Promise<SitemapProject[]> {
   const out: SitemapProject[] = [];
   for (let page = 1; page <= MAX_PAGES; page++) {
@@ -40,7 +40,7 @@ export async function getAllProjectsForSitemap(): Promise<SitemapProject[]> {
       if (!res.ok) break;
       const data = (await res.json())?.data;
       const items: SitemapProject[] = data?.items ?? [];
-      for (const p of items) if (p?.slug) out.push({ slug: p.slug, cityName: p.cityName, stateName: p.stateName, countryCode: p.countryCode, updatedAt: p.updatedAt });
+      for (const p of items) if (p?.slug) out.push({ slug: p.slug, cityName: p.cityName, stateName: p.stateName, countryCode: p.countryCode, updatedAt: p.updatedAt, status: p.status });
       if (items.length < PAGE_SIZE || out.length >= Number(data?.total ?? 0)) break;
     } catch {
       break;

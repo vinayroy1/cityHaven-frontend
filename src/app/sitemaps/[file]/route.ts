@@ -1,4 +1,4 @@
-import { projectDetailPath, projectSearchPath } from "@/app/new-projects/lib/projectUrls";
+import { projectDetailPath, projectSearchPath, projectStatusPath, PROJECT_STATUS_SLUGS } from "@/app/new-projects/lib/projectUrls";
 /**
  * /sitemaps/{file}.xml -> Direct top-level access for Google Search Console
  * e.g. /sitemaps/uk.xml, /sitemaps/my.xml, etc.
@@ -50,7 +50,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ file: s
   });
 }
 
-/** /sitemaps/projects-<state>.xml: the state's project city pages and every project page. */
+/** /sitemaps/projects-<state>.xml: the state's project city pages, their status pages, and every project page. */
 async function projectSitemap(key: string): Promise<Response> {
   const all = await getAllProjectsForSitemap();
   if (!all.length) return new Response("Unavailable", { status: 503, headers: { "Retry-After": "3600" } });
@@ -59,8 +59,21 @@ async function projectSitemap(key: string): Promise<Response> {
 
   const now = new Date().toISOString();
   const cityPaths = [...new Set(projects.filter((p) => p.cityName).map((p) => projectSearchPath(p.cityName ?? "", [], p.countryCode)))];
+  // City status pages (/new-projects/patna/ready-to-move) with enough projects to be indexed
+  // (same 5-project bar as the page's robots tag).
+  const statusCounts = new Map<string, { city: string; cc: string | null | undefined; status: string; n: number }>();
+  const statuses = new Set<string>(Object.values(PROJECT_STATUS_SLUGS));
+  for (const p of projects) {
+    if (!p.cityName || !p.status || !statuses.has(p.status)) continue;
+    const key = `${p.countryCode ?? ""}|${p.cityName.toLowerCase()}|${p.status}`;
+    const row = statusCounts.get(key) ?? { city: p.cityName, cc: p.countryCode, status: p.status, n: 0 };
+    row.n++;
+    statusCounts.set(key, row);
+  }
+  const statusPaths = [...new Set([...statusCounts.values()].filter((r) => r.n >= 5).map((r) => projectStatusPath(r.city, [], r.cc, r.status)))];
   const rows = [
     ...cityPaths.map((path) => ({ loc: `${SITE_URL}${path}`, lastmod: now, freq: "daily", priority: "0.8" })),
+    ...statusPaths.map((path) => ({ loc: `${SITE_URL}${path}`, lastmod: now, freq: "daily", priority: "0.75" })),
     ...projects.map((p) => ({ loc: `${SITE_URL}${projectDetailPath(p)}`, lastmod: p.updatedAt || now, freq: "weekly", priority: "0.7" })),
   ];
   const body =
