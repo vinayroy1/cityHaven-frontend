@@ -29,7 +29,7 @@ export function HomeServicesRow() {
             href={href}
             prefetch={false}
             aria-label={label}
-            className={`group flex flex-col items-center gap-1.5 rounded-xl px-1 py-0.5 text-center transition active:scale-95 sm:flex-row sm:gap-3 sm:border sm:border-slate-200 sm:bg-white sm:p-3 sm:text-left sm:shadow-xs sm:hover:-translate-y-0.5 sm:hover:border-transparent sm:hover:shadow-lg sm:dark:border-slate-800 sm:dark:bg-slate-900 ${glow}`}
+            className={`group flex flex-col items-center gap-1.5 rounded-xl px-1 py-0.5 text-center transition active:scale-95 sm:flex-row sm:gap-3 lg:flex-col lg:items-center lg:gap-2 lg:px-2 lg:py-3.5 lg:text-center sm:border sm:border-slate-200 sm:bg-white sm:p-3 sm:text-left sm:shadow-xs sm:hover:-translate-y-0.5 sm:hover:border-transparent sm:hover:shadow-lg sm:dark:border-slate-800 sm:dark:bg-slate-900 ${glow}`}
           >
             {/* Phones: soft tinted icon. Tablet / desktop: bold gradient icon. */}
             <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ring-1 sm:hidden ${soft}`}>
@@ -41,9 +41,9 @@ export function HomeServicesRow() {
             {/* Phones: short label under the icon (wraps to two lines if needed). */}
             <span className="text-[11.5px] font-semibold leading-tight text-slate-800 sm:hidden dark:text-slate-100">{short}</span>
             {/* Tablet / desktop: title + one-line description. */}
-            <span className="hidden min-w-0 flex-1 sm:block">
-              <span className="block truncate text-sm font-bold text-slate-900 dark:text-white">{label}</span>
-              <span className="block truncate text-xs text-slate-500 dark:text-slate-400">{hint}</span>
+            <span className="hidden min-w-0 flex-1 sm:block lg:w-full lg:flex-none">
+              <span className="block truncate text-sm font-bold text-slate-900 lg:whitespace-normal lg:leading-snug dark:text-white">{label}</span>
+              <span className="block truncate text-xs text-slate-500 lg:mt-0.5 lg:whitespace-normal dark:text-slate-400">{hint}</span>
             </span>
             <ArrowRight className="hidden h-4 w-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-rose-500 sm:block lg:hidden" />
           </Link>
