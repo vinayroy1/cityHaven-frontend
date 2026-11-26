@@ -621,23 +621,10 @@ export function hasWarranty(p: InteriorProfile) {
 /* --------------------------------- Reviews -------------------------------- */
 
 export function ReviewsSection({ profile, onQuote }: { profile: InteriorProfile; onQuote: () => void }) {
-  const rating = Number(profile.rating);
-  const has = (profile.reviewCount ?? 0) > 0 && rating > 0;
+  // Imported (Google) ratings aren't shown; Awasio reviews open after a verified project.
   return (
     <Section id="reviews" title="Reviews">
-      {has ? (
-        <div className="flex items-center gap-4">
-          <p className="text-4xl font-extrabold text-slate-900 dark:text-white">{rating.toFixed(1)}</p>
-          <div>
-            <div className="flex" role="img" aria-label={`${rating.toFixed(1)} out of 5 stars`}>
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star key={i} className={`h-5 w-5 ${i <= Math.round(rating) ? "fill-amber-400 text-amber-400" : "text-stone-300"}`} aria-hidden />
-              ))}
-            </div>
-            <p className="text-sm text-slate-500">Based on {profile.reviewCount} reviews</p>
-          </div>
-        </div>
-      ) : (
+      {(
         <div className="rounded-2xl border border-dashed border-stone-300 p-6 text-center dark:border-slate-700">
           <Star className="mx-auto h-8 w-8 text-stone-300" aria-hidden />
           <p className="mt-2 font-semibold text-slate-900 dark:text-white">No reviews yet</p>

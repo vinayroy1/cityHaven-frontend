@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { sizedImageUrl } from "../lib/homeImage";
-import { ArrowRight, BadgeCheck, MapPin, Palette, Star } from "lucide-react";
+import { ArrowRight, BadgeCheck, MapPin, Palette } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
 import { InteriorPhotoCarousel, interiorCardPhotos, MAX_CARD_PHOTOS } from "@/components/interiors/InteriorPhotoCarousel";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
@@ -27,7 +27,6 @@ export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorPro
   // Thumbnails show what comes after the swipeable photos, so nothing is repeated.
   const thumbs = photos.slice(MAX_CARD_PHOTOS, MAX_CARD_PHOTOS + 3);
   const extraCount = Math.max(0, (profile._count?.projects ?? 0) - 1 - thumbs.length);
-  const rating = Number(profile.rating || 0);
   const styles = (profile.designStyles?.length ? profile.designStyles : profile.servicesOffered || []).slice(0, 3);
   const price = profile.isCustomQuotationOnly || !profile.startingRateMin
     ? null
@@ -72,14 +71,6 @@ export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorPro
             </span>
           )}
         </div>
-
-        {rating > 0 && (
-          <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-slate-950/70 px-2 py-0.5 text-[11px] font-bold text-white backdrop-blur">
-            <Star className="h-3 w-3 fill-amber-400 text-amber-400" aria-hidden />
-            {rating.toFixed(1)}
-            {profile.reviewCount ? <span className="font-medium text-white/70">({profile.reviewCount})</span> : null}
-          </span>
-        )}
 
         <div className="absolute bottom-3 right-3 text-right text-white drop-shadow">
           {price ? (

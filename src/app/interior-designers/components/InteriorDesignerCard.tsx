@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Building2,
   User,
-  Star,
   MapPin,
   Sparkles,
 } from "lucide-react";
@@ -109,14 +108,6 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
           </p>
         </div>
 
-        {/* Rating on bottom right of Image */}
-        {profile.reviewCount > 0 && Number(profile.rating) > 0 && (
-          <div className="absolute bottom-2.5 right-3 flex items-center gap-1 rounded-md bg-slate-950/80 px-2 py-0.5 text-xs font-bold text-amber-400 backdrop-blur-xs">
-            <Star className="h-3.5 w-3.5 fill-current" />
-            <span>{Number(profile.rating).toFixed(1)}</span>
-            <span className="text-slate-400 text-[10px]">({profile.reviewCount})</span>
-          </div>
-        )}
       </div>
 
       {/* Card Content Body: the name link's ::after stretches over this whole area, so a click anywhere

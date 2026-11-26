@@ -11,7 +11,6 @@ import {
   Clock,
   MapPin,
   ShieldCheck,
-  Star,
   User,
 } from "lucide-react";
 import Image from "next/image";
@@ -85,8 +84,6 @@ export function startingPriceLabel(p: InteriorProfile) {
 export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; onQuote: () => void }) {
   const name = profileName(profile);
   const isCompany = profile.providerType === "COMPANY";
-  const rating = Number(profile.rating);
-  const hasReviews = (profile.reviewCount ?? 0) > 0 && rating > 0;
   const price = startingPriceLabel(profile);
   const location = [profile.primaryLocality, profile.primaryCity]
     .filter((v, i, arr) => v && arr.indexOf(v) === i)
@@ -184,17 +181,6 @@ export function ProfileHero({ profile, onQuote }: { profile: InteriorProfile; on
                     {projectsBand(profile.projectsCompleted)} projects completed
                   </li>
                 )}
-                <li className="inline-flex items-center gap-1">
-                  <Star className={`h-4 w-4 ${hasReviews ? "fill-amber-400 text-amber-400" : ""}`} aria-hidden />
-                  {hasReviews ? (
-                    <span>
-                      <strong className="text-slate-900 dark:text-white">{rating.toFixed(1)}</strong> ({profile.reviewCount}{" "}
-                      reviews)
-                    </span>
-                  ) : (
-                    "New on Awasio"
-                  )}
-                </li>
               </ul>
             </div>
 

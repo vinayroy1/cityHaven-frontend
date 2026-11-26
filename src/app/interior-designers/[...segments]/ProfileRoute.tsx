@@ -41,7 +41,6 @@ export function profileMetadata(profile: InteriorProfile, city: string): Metadat
 }
 
 function businessJsonLd(p: InteriorProfile, url: string) {
-  const rating = Number(p.rating);
   return {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
@@ -58,9 +57,6 @@ function businessJsonLd(p: InteriorProfile, url: string) {
       addressCountry: p.countryCode || "IN",
     },
     areaServed: (p.serviceCities?.length ? p.serviceCities : [p.primaryCity]).filter(Boolean),
-    ...(p.reviewCount > 0 && rating > 0
-      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: rating.toFixed(1), reviewCount: p.reviewCount } }
-      : {}),
   };
 }
 
