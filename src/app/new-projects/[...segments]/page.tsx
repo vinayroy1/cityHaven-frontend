@@ -18,6 +18,7 @@ import { ProjectDetailInteractive } from "../components/ProjectDetailInteractive
 import { getInitialProjects } from "../lib/initialProjects";
 import { PROJECT_STATUS_LABEL, projectDetailPath, projectSearchPath, projectStatusPath, splitCountry, statusFromSlug, type ProjectStatusValue } from "../lib/projectUrls";
 import { NewProjectsClient } from "../components/NewProjectsClient";
+import { ProjectStatusSeo } from "../components/ProjectStatusSeo";
 import { BackButton } from "@/components/common/BackButton";
 import { PageBreadcrumbs } from "@/components/common/PageBreadcrumbs";
 
@@ -134,7 +135,7 @@ function statusCopy(status: ProjectStatusValue, label: string, count: number) {
     default:
       return {
         title: `${n}Ready to Move Flats & Projects in ${label} | Awasio`,
-        description: `Find ${n || ""}ready to move flats and completed residential projects in ${label}. Move in now: compare prices, RERA details, amenities and builder information.`,
+        description: `Find ${n || ""}ready to move flats and residential projects in ${label}. Move in now with no construction risk: compare prices, RERA details, amenities and builders.`,
       };
   }
 }
@@ -374,6 +375,20 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
     ],
   };
 
+  // The projects on this page, so Google ties the city / status page to them.
+  const itemListJsonLd = initialProjects.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        itemListElement: initialProjects.map((p, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          url: `${SITE_URL}${projectDetailPath(p)}`,
+          name: p.name,
+        })),
+      }
+    : null;
+
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       {lcpImage && (
@@ -385,6 +400,9 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
         />
       )}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJsonLd) }} />
+      {itemListJsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd).replace(/</g, "\\u003c") }} />
+      )}
       <HeaderNav />
       <main className="flex-1">
         <NewProjectsClient
@@ -395,6 +413,16 @@ export default async function NewProjectsDynamicPage({ params }: Props) {
           initialTotal={initialTotal}
           initialStatus={status}
         />
+        {status && (
+          <ProjectStatusSeo
+            status={status}
+            city={city}
+            localities={localities}
+            countryCode={country}
+            total={initialTotal}
+            projects={initialProjects}
+          />
+        )}
       </main>
       <FooterLinks />
     </div>
