@@ -1,7 +1,7 @@
 "use client";
 
 import { ResponseBadge } from "@/components/leads/ResponseBadge";
-import React from "react";
+import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { Calendar as CalendarIcon, LockKeyhole, Phone, Sparkles } from "lucide-react";
 import { ContactAccessFlow } from "./ContactAccessFlow";
@@ -143,7 +143,9 @@ export function OwnerContactCard({
                   </p>
                 </div>
               </div>
-              <ContactAccessFlow key={propertyId} propertyId={propertyId} onContact={setPhone} />
+              <Suspense fallback={null}>
+                <ContactAccessFlow key={propertyId} propertyId={propertyId} onContact={setPhone} />
+              </Suspense>
             </>
           )}
         </div>

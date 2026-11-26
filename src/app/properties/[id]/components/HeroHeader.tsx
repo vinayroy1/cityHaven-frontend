@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Calendar as CalendarIcon, MapPin, Phone, Share2, Sparkles } from "lucide-react";
 import { ContactAccessFlow } from "./ContactAccessFlow";
@@ -178,12 +178,14 @@ export function HeroHeader({
                 </a>
               ) : (
                 <div className="w-full sm:w-auto shrink-0">
-                  <ContactAccessFlow
-                    propertyId={propertyId}
-                    onContact={setPhone}
-                    triggerLabel="View Owner Contact"
-                    triggerClassName="inline-flex h-10 sm:h-11 w-full sm:w-44 items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-emerald-700 px-1.5 sm:px-4 text-[11px] sm:text-xs font-bold text-white shadow-sm transition hover:bg-emerald-800 active:scale-[0.98] whitespace-nowrap"
-                  />
+                  <Suspense fallback={null}>
+                    <ContactAccessFlow
+                      propertyId={propertyId}
+                      onContact={setPhone}
+                      triggerLabel="View Owner Contact"
+                      triggerClassName="inline-flex h-10 sm:h-11 w-full sm:w-44 items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-emerald-700 px-1.5 sm:px-4 text-[11px] sm:text-xs font-bold text-white shadow-sm transition hover:bg-emerald-800 active:scale-[0.98] whitespace-nowrap"
+                    />
+                  </Suspense>
                 </div>
               )}
             </div>

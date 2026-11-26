@@ -55,8 +55,8 @@ type SearchPageClientProps = {
 
 /** Page heading per search tab (matches the page title wording). */
 const H1_LABEL: Record<string, string> = {
-  BUY: "Properties for Sale",
-  RENT: "Properties for Rent",
+  BUY: "Flats, Houses & Builder Floors for Sale",
+  RENT: "Flats & Houses for Rent",
   PG: "PG & Co-Living Spaces",
   FLATMATE: "Flatmates & Shared Homes",
   COMMERCIAL: "Commercial Properties",

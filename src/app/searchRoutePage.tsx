@@ -40,6 +40,12 @@ function parseLocation(segments: string[] = []): RouteLocation | null {
   };
 }
 
+/** Search-intent wording for titles/H1 (what buyers actually type), kept short for the SERP. */
+const SEO_TITLE_LABEL: Partial<Record<IntentKey, string>> = {
+  BUY: "Flats, Houses & Builder Floors for Sale",
+  RENT: "Flats & Houses for Rent",
+};
+
 function intentCopy(intent: IntentKey) {
   switch (intent) {
     case "RENT": return { listingType: "RENT", label: "Properties for Rent" } as const;
@@ -101,7 +107,7 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
     // Static metadata remains useful when the count service is unavailable.
   }
 
-  const pageTitle = `${countLabel}${copy.label} in ${locationLabel}`;
+  const pageTitle = `${countLabel}${SEO_TITLE_LABEL[intent] ?? copy.label} in ${locationLabel}`;
   const description =
     intent === "FLATMATE"
       ? `Find rooms, flatmates and shared homes in ${locationLabel}. Compare rent, move-in dates and preferences, and contact people directly on Awasio.`
@@ -256,6 +262,24 @@ export async function IntentSearchRoute({ params }: IntentSearchRouteProps) {
     if (actual !== (country ?? "IN")) redirectTo(segments, actual);
   }
 
+  // Lists the server-rendered results so Google can tie this page to the listings on it.
+  const listed =
+    intent === "FLATMATE"
+      ? []
+      : (initialItems as PropertySearchItem[]).filter((p) => p && (p.slug || p.id));
+  const itemListJsonLd = listed.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        itemListElement: listed.map((p, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          url: `${siteUrl}/properties/${p.slug || p.id}`,
+          ...(p.title ? { name: p.title } : {}),
+        })),
+      }
+    : null;
+
   return (
     <>
       {lcpImage && (
@@ -270,6 +294,12 @@ export async function IntentSearchRoute({ params }: IntentSearchRouteProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      {itemListJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd).replace(/</g, "\\u003c") }}
+        />
+      )}
       <SearchPageClient
         routeIntent={intent}
         routeCity={location.city}
