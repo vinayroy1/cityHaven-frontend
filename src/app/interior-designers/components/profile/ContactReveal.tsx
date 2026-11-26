@@ -132,6 +132,28 @@ export function ContactButtons({ variant }: { variant: Variant }) {
   );
 }
 
+/** Single "View contact" button for directory cards: same login + reveal flow, then shows / dials the number. */
+export function ViewContactButton({ profile, className }: { profile: InteriorProfile; className?: string }) {
+  return (
+    <InteriorContactProvider profile={profile}>
+      <ViewContactInner className={className} />
+    </InteriorContactProvider>
+  );
+}
+
+function ViewContactInner({ className }: { className?: string }) {
+  const { phone, loading, reveal } = useContact();
+  return phone ? (
+    <a href={telHref(phone)} className={className} aria-label={`Call ${phone}`}>
+      <Phone className="h-3.5 w-3.5" aria-hidden /> {phone}
+    </a>
+  ) : (
+    <button type="button" onClick={() => void reveal()} disabled={loading} className={className}>
+      {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <Phone className="h-3.5 w-3.5" aria-hidden />} View Contact
+    </button>
+  );
+}
+
 /**
  * "Call branch": branch numbers aren't in the page. Goes through the same login + reveal as "View contact"
  * (one gated place to log the lead and, later, charge credits), then dials that branch.

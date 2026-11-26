@@ -17,6 +17,7 @@ import {
 import type { InteriorProfile } from "@/types/interior.types";
 import { formatMoney } from "@/lib/money";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
+import { ViewContactButton } from "./profile/ContactReveal";
 
 interface InteriorCardProps {
   profile: InteriorProfile;
@@ -192,12 +193,10 @@ export function InteriorDesignerCard({ profile, onOpenInquiry, priority = false 
 
         {/* Action Button */}
         <div className="relative z-10 mt-4 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
-          <Link
-            href={profileUrl}
-            className="flex-1 rounded-xl border border-slate-200 py-2 text-center text-xs font-bold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-          >
-            View Portfolio
-          </Link>
+          <ViewContactButton
+            profile={profile}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-2 text-center text-xs font-bold text-slate-800 transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+          />
           <button
             type="button"
             onClick={() => onOpenInquiry?.(profile)}
