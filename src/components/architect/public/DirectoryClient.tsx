@@ -6,8 +6,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PropertyListingCitySelector, type CitySelection } from "@/components/propertyListing/PropertyListingCitySelector";
 import { PropertyListingLocalitySelector, type LocalitySelection } from "@/components/propertyListing/PropertyListingLocalitySelector";
-import { Loader2, PencilRuler, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
+import { Loader2, PencilRuler, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { FilterSelect } from "@/components/common/FilterSelect";
+import { NameSearchInput } from "@/components/common/NameSearchInput";
 import { cn } from "@/components/ui/utils";
 import { PagingLimitNote, pagingLimitOf, type PagingLimit } from "@/components/common/PagingLimitNote";
 import { useLazySearchArchitectQuery } from "@/features/architect/api";
@@ -63,7 +64,6 @@ export function DirectoryClient({
   const [sector, setSector] = React.useState<Facing | "">("");
   const [service, setService] = React.useState<ArchitectService | "">("");
   const buildingType = "";
-  const [q, setQ] = React.useState("");
   const [query, setQuery] = React.useState("");
   const [fetchPage, { isFetching }] = useLazySearchArchitectQuery();
   const setSegment = (v: ProviderType | "") => setSegmentState(v);
@@ -123,32 +123,9 @@ export function DirectoryClient({
     setSegment("");
     setSector("");
     setService("");
-    setQ("");
     setQuery("");
   };
-  const searchBox = (
-    <form
-      className="relative"
-      role="search"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setQuery(q.trim());
-      }}
-    >
-      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-      <input
-        aria-label="Search by name"
-        className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800"
-        placeholder="Search architect or designer name"
-        value={q}
-        onChange={(e) => {
-          setQ(e.target.value);
-          if (!e.target.value) setQuery("");
-        }}
-        onBlur={() => setQuery(q.trim())}
-      />
-    </form>
-  );
+  const searchBox = <NameSearchInput value={query} onSearch={setQuery} placeholder="Search architect or designer name" ariaLabel="Search by name" />;
   const segmentTabs = (layout: string) => (
     <div className={cn(layout, "rounded-lg bg-slate-100 p-0.5 text-[13px] font-medium dark:bg-slate-800")} role="tablist" aria-label="Kind of professional">
       {([
@@ -184,7 +161,7 @@ export function DirectoryClient({
       {/* Filters. Desktop: search/city/area row + type row. Mobile: city, then area + Filters button opening a panel. */}
       <div className="space-y-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr]">
-          <div className="hidden sm:col-span-2 sm:block lg:col-span-1">{searchBox}</div>
+          <div className="col-span-2 lg:col-span-1">{searchBox}</div>
           <div className="col-span-2 min-w-0 sm:col-span-1">
             <PropertyListingCitySelector value={city} placeholder="All cities" onChange={pickCity} />
           </div>
@@ -237,7 +214,6 @@ export function DirectoryClient({
         {/* Mobile filter panel */}
         {panelOpen && (
           <div className="space-y-3 rounded-xl bg-slate-50 p-3 sm:hidden dark:bg-slate-800/50">
-            {searchBox}
             <div>
               <span className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-300">Kind of professional</span>
               {segmentTabs("grid w-full grid-cols-4")}

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { CardContactButton } from "@/components/common/CardContactButton";
 import { BadgeCheck, Compass, Flame, Languages, MapPin, PackageCheck, Star, Video } from "lucide-react";
 import { CompanyAvatar } from "@/components/construction/public/CompanyAvatar";
 import { LANGUAGE_OPTIONS, SEGMENT_LABEL, formatInr, label, panditName, panditProfilePath, serviceLabel } from "@/features/pandit/options";
@@ -121,9 +122,7 @@ export function PanditCard({
         <div className="relative z-10 mt-3 grid grid-cols-2 gap-2">
           {actions ?? (
             <>
-              <Link href={href} className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
-                View profile
-              </Link>
+              <CardContactButton kind="pandit" profileId={p.id} className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800" />
               <Link href={`${href}${service ? `?service=${service}` : ""}#enquire`} className="inline-flex h-10 items-center justify-center rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 text-sm font-bold text-white hover:brightness-110">
                 {vastu ? "Book consult" : "Check dates"}
               </Link>

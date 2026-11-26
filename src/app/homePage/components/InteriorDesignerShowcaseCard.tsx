@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
+import { ViewContactButton } from "@/app/interior-designers/components/profile/ContactReveal";
 import { sizedImageUrl } from "../lib/homeImage";
-import { ArrowRight, BadgeCheck, MapPin, Palette } from "lucide-react";
+import { BadgeCheck, MapPin, Palette } from "lucide-react";
 import type { InteriorProfile } from "@/types/interior.types";
 import { InteriorPhotoCarousel, interiorCardPhotos, MAX_CARD_PHOTOS } from "@/components/interiors/InteriorPhotoCarousel";
 import { interiorProfilePath } from "@/lib/interiors/profileUrl";
@@ -34,11 +35,12 @@ export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorPro
   const unit = profile.pricingUnit === "PER_SQFT" ? "/sq.ft" : "";
 
   return (
+    <div className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 md:hover:-translate-y-1 md:hover:shadow-xl md:hover:shadow-rose-900/10 dark:border-slate-800 dark:bg-slate-900 dark:md:hover:shadow-black/40">
     <Link
       href={href}
       prefetch={false}
       aria-label={`${name}, interior designer in ${profile.primaryCity}`}
-      className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm ring-rose-500/0 transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 md:hover:-translate-y-1 md:hover:shadow-xl md:hover:shadow-rose-900/10 dark:border-slate-800 dark:bg-slate-900 dark:md:hover:shadow-black/40"
+      className="flex flex-1 flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-rose-500"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
         <InteriorPhotoCarousel
@@ -132,13 +134,16 @@ export function InteriorDesignerShowcaseCard({ profile }: { profile: InteriorPro
                 </div>
               ))}
             </div>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 dark:text-rose-400">
-              View portfolio <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-            </span>
-          )}
+          ) : null}
         </div>
       </div>
     </Link>
+      <div className="px-4 pb-4">
+        <ViewContactButton
+          profile={profile}
+          className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+        />
+      </div>
+    </div>
   );
 }

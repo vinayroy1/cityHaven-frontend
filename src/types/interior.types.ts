@@ -362,6 +362,8 @@ export interface InteriorProfile {
 }
 
 export interface InteriorSearchParams {
+  /** Business / display name search. */
+  q?: string;
   city?: string;
   /** Portal country; the backend ignores it when a city is given. */
   countryCode?: string;

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { CardContactButton } from "@/components/common/CardContactButton";
 import { BadgeCheck, Globe2, MapPin, PencilRuler, ShieldCheck, Stamp } from "lucide-react";
 import { SERVICE_OPTIONS, architectProfilePath, formatPrice, label, providerBadge } from "@/features/architect/options";
 import type { ArchitectProfile } from "@/features/architect/types";
@@ -154,12 +155,7 @@ export function ArchitectCard({
         <div className="relative z-10 mt-auto grid grid-cols-2 gap-2 pt-4">
           {actions ?? (
             <>
-              <Link
-                href={href}
-                className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-              >
-                View profile
-              </Link>
+              <CardContactButton kind="architect" profileId={p.id} className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800" />
               <Link
                 href={`${href}#quote`}
                 className="inline-flex h-10 items-center justify-center rounded-xl bg-rose-600 text-sm font-bold text-white hover:bg-rose-700"

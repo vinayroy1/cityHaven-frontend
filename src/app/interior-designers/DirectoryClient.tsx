@@ -38,6 +38,7 @@ import { getSelectedCountry, useCountry } from "@/lib/country/countryStore";
 import { getCountry } from "@/config/countries";
 import { listingPath } from "@/lib/seo/countryPath";
 import { CountryResultsBanner, useUrlCountry } from "@/components/country/CountryResultsBanner";
+import { NameSearchInput } from "@/components/common/NameSearchInput";
 
 // The enquiry form only loads once someone asks for a quote.
 const BUDGET_LABELS: Record<string, string> = {
@@ -91,6 +92,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
   const [selectedStyle, setSelectedStyle] = useState("ALL");
   const [selectedBracket, setSelectedBracket] = useState("ALL");
   const [isVerifiedOnly, setIsVerifiedOnly] = useState(false);
+  const [nameQuery, setNameQuery] = useState("");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Selected profile for inquiry quote modal
@@ -110,7 +112,8 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
     providerType === "ALL" &&
     selectedService === "ALL" &&
     selectedBracket === "ALL" &&
-    !isVerifiedOnly;
+    !isVerifiedOnly &&
+    !nameQuery;
 
   const searchArgs: InteriorSearchParams = {
       city: selectedCity || undefined,
@@ -122,6 +125,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
       // `budgetSegment` filters on the tiers designers pick in their profile.
       budgetSegment: selectedBracket === "ALL" ? undefined : (selectedBracket as InteriorSearchParams["budgetSegment"]),
       isVerified: isVerifiedOnly ? true : undefined,
+      q: nameQuery || undefined,
       limit: PAGE_SIZE,
   };
   const query = useSearchInteriorDesignersQuery(searchArgs, { skip: isInitialQuery });
@@ -186,6 +190,7 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
     setSelectedStyle("ALL");
     setSelectedBracket("ALL");
     setIsVerifiedOnly(false);
+    setNameQuery("");
   };
 
 
@@ -264,7 +269,14 @@ export function DirectoryClient({ initialCity, initialState, initialData, initia
           </div>
 
           {/* City, area, filters: one row (same pickers as the construction and pandit directories) */}
-          <div className="mt-4 grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_1fr_auto] lg:grid-cols-[1fr_1fr_10rem]">
+          <div className="mt-4 grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_1fr_auto] lg:grid-cols-[1.3fr_1fr_1fr_10rem]">
+            <NameSearchInput
+              value={nameQuery}
+              onSearch={setNameQuery}
+              placeholder="Search designer or studio name"
+              ariaLabel="Search interior designers by name"
+              className="col-span-2 min-w-0 sm:col-span-3 lg:col-span-1"
+            />
             <div className="col-span-2 min-w-0 sm:col-span-1">
               <PropertyListingCitySelector
                 value={selectedCity}
