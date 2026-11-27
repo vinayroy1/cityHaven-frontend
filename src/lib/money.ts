@@ -112,6 +112,12 @@ export function splitStoredMobile(stored: string | null | undefined): { countryC
     const match = COUNTRY_LIST.filter((c) => v.startsWith(c.phoneCode)).sort((a, b) => b.phoneCode.length - a.phoneCode.length)[0];
     if (match) return { countryCode: match.code, local: v.slice(match.phoneCode.length) };
   }
+  for (const c of COUNTRY_LIST) {
+    const code = c.phoneCode.replace("+", "");
+    if (c.code !== "IN" && v.startsWith(code) && v.length > 10) {
+      return { countryCode: c.code, local: v.slice(code.length) };
+    }
+  }
   return { countryCode: "IN", local: v.replace(/^\+?91(?=\d{10}$)/, "") };
 }
 
@@ -127,6 +133,12 @@ export function intlMobile(stored: string | null | undefined): string {
   const v = String(stored || "").replace(/[^\d+]/g, "");
   if (!v) return "";
   if (v.startsWith("+")) return v;
+  for (const c of COUNTRY_LIST) {
+    const code = c.phoneCode.replace("+", "");
+    if (c.code !== "IN" && v.startsWith(code) && v.length > 10) {
+      return `+${v}`;
+    }
+  }
   const ten = v.slice(-10);
   return v.length >= 10 ? `+91${ten}` : v;
 }
