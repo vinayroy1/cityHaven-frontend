@@ -82,10 +82,10 @@ pipeline {
                             --read-only \
                             --tmpfs /tmp:rw,noexec,nosuid,size=64m \
                             --tmpfs /app/.next/cache:rw,noexec,nosuid,size=128m,uid=1001,gid=1001,mode=0770 \
-                            --tmpfs /app/.next/server/route-cache:rw,noexec,nosuid,size=256m,uid=1001,gid=1001,mode=0770 \
+                            --tmpfs /app/.next/server/route-cache:rw,noexec,nosuid,size=768m,uid=1001,gid=1001,mode=0770 \
                             --cap-drop ALL \
                             --security-opt no-new-privileges:true \
-                            --memory 1g \
+                            --memory 2g \
                             --cpus 1.5 \
                             -p 127.0.0.1:"$2":3000 \
                             --network ${NETWORK_NAME} \
