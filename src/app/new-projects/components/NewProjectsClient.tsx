@@ -856,7 +856,7 @@ export function NewProjectsClient({
               By {contactModalProject.developerName}
             </p>
 
-            <SalesPhoneList phones={allSalesPhones(contactModalProject)} />
+            <SalesPhoneList phones={allSalesPhones(contactModalProject)} countryCode={contactModalProject.countryCode} />
 
             {contactModalProject.salesEmail && (
               <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/40">

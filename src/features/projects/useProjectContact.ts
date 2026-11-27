@@ -44,7 +44,7 @@ export function useProjectContact() {
       } catch (err) {
         const status = (err as { status?: number })?.status;
         if (status !== 401) {
-          toast.error((err as { data?: { message?: string } })?.data?.message || "Couldn't load the contact. Please send an enquiry instead.");
+          toast.error((err as { data?: { message?: string } })?.data?.message || "Couldn't load the contact. Please try again.");
         }
         return null;
       }

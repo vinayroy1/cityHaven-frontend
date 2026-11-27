@@ -46,6 +46,12 @@ const normalizeR2Url = (url?: string | null): string => {
   return cdnImageUrl(url);
 };
 
+
+/**
+ * Enquiry form on project pages is switched off for now: most projects have no builder on Awasio to answer,
+ * so enquiries went unanswered. Visitors call the sales desk directly instead. Set to true to bring it back.
+ */
+const PROJECT_ENQUIRY_ENABLED = false;
 export function ProjectDetailInteractive({ project }: { project: ProjectListing }) {
   const [createInquiry, { isLoading: isSubmittingInquiry }] = useCreateProjectInquiryMutation();
   const [selectedBhkTab, setSelectedBhkTab] = useState<string>("ALL");
@@ -236,6 +242,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               </button>
             )}
 
+            {PROJECT_ENQUIRY_ENABLED && (
             <button
               onClick={() => handleOpenInquiry()}
               className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 active:scale-95 dark:shadow-none"
@@ -243,6 +250,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               <PhoneCall className="h-3.5 w-3.5" />
               <span>Book Site Visit / Inquire</span>
             </button>
+            )}
           </div>
         </div>
       </div>
@@ -382,12 +390,14 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
                 </div>
               </div>
 
+              {PROJECT_ENQUIRY_ENABLED && (
               <button
                 onClick={() => handleOpenInquiry(cfg)}
                 className="mt-4 w-full rounded-xl bg-slate-900 py-2.5 text-center text-xs font-bold text-white transition hover:bg-rose-600 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-rose-600 dark:hover:text-white"
               >
                 Inquire for {cfg.bhkType}
               </button>
+              )}
             </div>
           ))}
         </div>
@@ -460,7 +470,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
       )}
 
       {/* Inquiry Dialog Modal */}
-      {inquiryModalOpen && (
+      {PROJECT_ENQUIRY_ENABLED && inquiryModalOpen && (
         <div role="dialog" aria-modal="true" aria-label={`Inquire about ${project.name}`} className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4">
           <div className="relative flex max-h-[calc(100dvh-0.5rem)] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl dark:border dark:border-slate-800 dark:bg-slate-900 sm:max-h-[min(90dvh,720px)] sm:rounded-3xl">
             <button
@@ -598,7 +608,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               By {project.developerName}
             </p>
 
-            <SalesPhoneList phones={allSalesPhones(shown)} />
+            <SalesPhoneList phones={allSalesPhones(shown)} countryCode={project.countryCode} />
 
             {shown.salesEmail && (
               <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs dark:border-slate-800 dark:bg-slate-800/40">
@@ -620,6 +630,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               )}
             </div>
 
+            {PROJECT_ENQUIRY_ENABLED && (
             <button
               onClick={() => {
                 setContactModalOpen(false);
@@ -629,6 +640,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
             >
               Or Leave Callback Request / Site Visit
             </button>
+            )}
           </div>
         </div>
       )}
