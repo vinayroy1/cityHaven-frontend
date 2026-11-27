@@ -8,6 +8,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Loader2, Mail, MessageCircle, Monitor, Phone, RefreshCw, Search, Smartphone } from "lucide-react";
 import { adminApi, type AdminSignup, type AdminSignupsResponse, type SignupStage } from "@/features/admin/api";
 import { cn } from "@/lib/utils";
+import { PendingSignups } from "./PendingSignups";
 
 const STAGES: { id: SignupStage; label: string; hint: string; tone: string }[] = [
   { id: "SIGNED_UP_ONLY", label: "Signed up only", hint: "Did nothing after signup", tone: "bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-200" },
@@ -131,6 +132,8 @@ export default function AdminSignupsPage() {
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, email or phone" className="h-9 w-56 rounded-lg border border-slate-200 bg-white pl-8 pr-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
         </form>
       </div>
+
+      <PendingSignups days={days} query={query} />
 
       {/* Summary */}
       {summary && (

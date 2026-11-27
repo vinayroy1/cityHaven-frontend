@@ -198,6 +198,10 @@ export const adminApi = {
     const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== "").map(([k, v]) => [k, String(v)])).toString();
     return unwrap(await apiClient.get<AdminSignupsResponse>(API_ENDPOINTS.admin.signups(qs)));
   },
+  async listPendingSignups(params: { days: number; status?: string; q?: string; page?: number }) {
+    const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== "").map(([k, v]) => [k, String(v)])).toString();
+    return unwrap(await apiClient.get<AdminPendingSignupsResponse>(API_ENDPOINTS.admin.pendingSignups(qs)));
+  },
   async listPanditQueue(queue: string) {
     return unwrap(await apiClient.get<{ items: AdminPanditItem[]; counts: Record<string, number> }>(API_ENDPOINTS.admin.pandits.queue(queue)));
   },
@@ -446,6 +450,24 @@ export type AdminSignup = {
   activity: { unlocks: number; visits: number };
   stage: SignupStage;
 };
+/** Someone who requested a signup OTP; completedAt is null when they never finished. */
+export type AdminPendingSignup = {
+  id: number;
+  email: string;
+  name: string;
+  mobileNumber: string;
+  otpRequestCount: number;
+  lastUniqueId: string | null;
+  lastSendError: string | null;
+  lastRequestedAt: string;
+  completedAt: string | null;
+  userId: number | null;
+  createdAt: string;
+  emailsTriedWithMobile: number;
+  accountIdForMobile: number | null;
+};
+export type AdminPendingSignupsResponse = { matched: number; page: number; pageSize: number; items: AdminPendingSignup[] };
+
 export type AdminSignupsResponse = {
   days: number;
   type: string;
