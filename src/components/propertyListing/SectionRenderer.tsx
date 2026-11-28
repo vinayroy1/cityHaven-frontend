@@ -67,7 +67,7 @@ export function SectionRenderer({
                 )}
               </div>
               {section.requiredHint &&
-                (section.requireAny === undefined || section.requireAny === true || evaluateCondition(values, section.requireAny)) && (
+                (typeof section.requireAny !== "object" || evaluateCondition(values, section.requireAny)) && (
                 <p className="mt-0.5 text-xs font-medium text-rose-500">{section.requiredHint}</p>
               )}
               {section.description && (
