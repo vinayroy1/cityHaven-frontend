@@ -111,7 +111,12 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     owner: postedAsLabel(item.postedAs),
     bedrooms: item.bedrooms,
     bathrooms: item.bathrooms,
-    type: item.propertySubType?.name || item.propertySubTypeName || item.propertyType?.name || item.propertyTypeName,
+    // Most specific first: "Commercial Shops" beats "Retail".
+    type:
+      item.propertySubCategory?.name ||
+      item.propertySubCategoryName ||
+      item.propertySubType?.name ||
+      item.propertySubTypeName || item.propertyType?.name || item.propertyTypeName,
     listingType: item.listingType,
     resCom: item.resCom,
     decisionDetails: decisionDetails(item),

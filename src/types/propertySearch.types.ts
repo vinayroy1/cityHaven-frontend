@@ -86,6 +86,9 @@ export type PropertySearchItem = {
   thumbnailUrl?: string | null;
   propertyType?: { name?: string | null; slug?: string | null } | null;
   propertySubType?: { name?: string | null; slug?: string | null } | null;
+  propertySubCategoryName?: string | null;
+  propertySubCategorySlug?: string | null;
+  propertySubCategory?: { name?: string | null; slug?: string | null } | null;
   media?: PropertySearchMedia[];
   createdAt?: string;
   isBoosted?: boolean;
