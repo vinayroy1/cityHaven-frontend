@@ -47,3 +47,9 @@ describe("area is mandatory", () => {
     expect(unmetAnySections(step, v)).toHaveLength(0);
   });
 });
+
+test("co-working can continue without an area", () => {
+  const { unmetAnySections } = jest.requireActual("@/features/propertyListing/formConfig/validation");
+  const step = listingSteps.find((s) => (s.sections ?? []).some((sec) => sec.id === "area"))!;
+  expect(unmetAnySections(step, formFor(PROPERTY_CATEGORY_PAGES.coworking.preset ?? {}))).toHaveLength(0);
+});

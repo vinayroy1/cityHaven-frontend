@@ -96,8 +96,8 @@ export type SectionConfig = {
   mobileColumns?: 2;
   /** small red hint under the title, e.g. "At least one area is mandatory". */
   requiredHint?: string;
-  /** At least one of the section's visible fields must be filled (e.g. any one area). */
-  requireAny?: boolean;
+  /** At least one of the section's visible fields must be filled (e.g. any one area); a condition limits when. */
+  requireAny?: boolean | Condition;
   visibleWhen?: Condition;
   collapsible?: boolean;
   defaultCollapsed?: boolean;

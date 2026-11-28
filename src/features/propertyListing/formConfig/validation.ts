@@ -29,6 +29,7 @@ export function unmetAnySections(step: StepConfig, values: FormValues): Required
   const result: RequiredFieldMeta[] = [];
   for (const section of step.sections ?? []) {
     if (!section.requireAny || !evaluateCondition(values, section.visibleWhen)) continue;
+    if (section.requireAny !== true && !evaluateCondition(values, section.requireAny)) continue;
     const visible = section.fields.filter((f) => evaluateCondition(values, f.visibleWhen));
     if (visible.length && !visible.some((f) => isFieldFilled(values, f.id))) {
       result.push({ id: visible[0].id, label: section.requiredHint ?? `Fill one of: ${section.title ?? section.id}`, sectionTitle: section.title });

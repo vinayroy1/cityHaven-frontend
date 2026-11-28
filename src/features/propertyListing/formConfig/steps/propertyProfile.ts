@@ -127,7 +127,8 @@ const allProfileSections: StepConfig["sections"] = [
       id: "area",
       title: "Area details",
       requiredHint: "Enter at least one area",
-      requireAny: true,
+      // Co-working centres describe themselves by seats and plans, so area stays optional there.
+      requireAny: { not: preset("isCoworking") },
       visibleWhen: preset("showAreaSection"),
       fields: [
         measure("details.carpetArea", "Carpet area", { visibleWhen: preset("showCarpetArea") }),
