@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { signupRedirectPath } from "@/lib/signupRedirect";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/app-config";
@@ -21,18 +22,20 @@ function errorText(e: unknown): { message: string; unauthorized: boolean } {
 /**
  * Contact details behind login, same rule as property / flatmate / interior / project contacts.
  * Public APIs only say whether a contact exists; `reveal()` POSTs to the listing's login-only reveal endpoint.
- * Logged-out (or expired) visitors are sent to /login?redirect=<this page>.
+ * Logged-out (or expired) visitors are sent to signup (signupRedirectPath), which links to login.
  */
-export function useGatedContact(revealUrl: string | null, what = "the contact number") {
+/** `returnTo`: where to come back after signup (the listing itself); defaults to the current page. */
+export function useGatedContact(revealUrl: string | null, what = "the contact number", returnTo?: string) {
   const router = useRouter();
   const pathname = usePathname();
   const [contact, setContact] = useState<GatedContact | null>(null);
   const [loading, setLoading] = useState(false);
 
   const toLogin = useCallback(() => {
-    toast.info(`Log in to view ${what}`);
-    router.push(`/login?redirect=${encodeURIComponent(pathname || "/")}`);
-  }, [router, pathname, what]);
+    toast.info(`Sign up free to view ${what}`);
+    // A given returnTo is the listing's own page: it opens the contact by itself on return.
+    router.push(returnTo ? signupRedirectPath(returnTo, { autoReveal: true }) : signupRedirectPath(pathname || "/"));
+  }, [router, pathname, what, returnTo]);
 
   const reveal = useCallback(async (): Promise<GatedContact | null> => {
     if (contact) return contact;

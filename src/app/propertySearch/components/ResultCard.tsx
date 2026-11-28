@@ -1,4 +1,5 @@
 import { useRouter } from "next/navigation";
+import { signupRedirectPath } from "@/lib/signupRedirect";
 import React from "react";
 import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/app-config";
@@ -324,8 +325,7 @@ export function ResultCard({
       if (err?.status === 401 || err?.originalStatus === 401) {
         setContactOpen(false);
         const targetUrl = `/properties/${slug || id}`;
-        const returnUrl = encodeURIComponent(`${targetUrl}?autoUnlock=true`);
-        router.push(`/login?redirect=${returnUrl}`);
+        router.push(signupRedirectPath(`${targetUrl}?autoUnlock=true`));
         return false;
       } else if (err?.status === 402 || err?.data?.message?.includes("credits") || err?.data?.message?.includes("allowance")) {
         setContactStep("plans");
@@ -353,14 +353,8 @@ export function ResultCard({
 
     const activeToken = getToken();
     if (!activeToken) {
-      // Unauthenticated user -> trigger high-converting 1,000 Credit Welcome Gift popup with return URL!
-      const targetUrl = `/properties/${slug || id}`;
-      const returnUrl = `${targetUrl}?autoUnlock=true`;
-      window.dispatchEvent(
-        new CustomEvent("awasio:open-welcome-credits", {
-          detail: { returnUrl },
-        })
-      );
+      // Signed out: straight to signup (most are new visitors), then back here to unlock.
+      router.push(signupRedirectPath(`/properties/${slug || id}?autoUnlock=true`));
       contactCheckInFlight.current = false;
       return;
     }

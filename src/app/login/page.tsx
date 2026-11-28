@@ -22,6 +22,8 @@ import {
   Mail,
   Smartphone,
   MapPin,
+  LogIn,
+  UserPlus,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -935,8 +937,8 @@ function LoginContent() {
                       )}
                     </div>
 
-                    <div className="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
-                      Already have an account?{" "}
+                    <div className="mt-4 space-y-2 text-center">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Already have an account?</p>
                       <button
                         type="button"
                         onClick={() => {
@@ -944,8 +946,9 @@ function LoginContent() {
                           setSignupStep("details");
                           setSignupOtp("");
                         }}
-                        className="font-bold text-rose-600 hover:underline dark:text-rose-400"
+                        className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-800 shadow-xs transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-rose-700 dark:hover:bg-rose-950/40 dark:hover:text-rose-300"
                       >
+                        <LogIn className="h-4 w-4" />
                         Sign In
                       </button>
                     </div>
@@ -1151,8 +1154,8 @@ function LoginContent() {
                         )}
                       </button>
 
-                      <div className="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
-                        {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
+                      <div className="mt-4 space-y-2 text-center">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{isSignup ? "Already have an account?" : "New to Awasio?"}</p>
                         <button
                           type="button"
                           onClick={() => {
@@ -1160,9 +1163,10 @@ function LoginContent() {
                             setSignupStep("details");
                             setSignupOtp("");
                           }}
-                          className="font-bold text-rose-600 hover:underline dark:text-rose-400"
+                          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-800 shadow-xs transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-rose-700 dark:hover:bg-rose-950/40 dark:hover:text-rose-300"
                         >
-                          {isSignup ? "Sign In" : "Sign Up"}
+                          {isSignup ? <LogIn className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+                          {isSignup ? "Sign In" : "Create a free account"}
                         </button>
                       </div>
                     </form>

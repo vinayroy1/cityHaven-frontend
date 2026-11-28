@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback } from "react";
+import { signupRedirectPath } from "@/lib/signupRedirect";
+import { projectDetailPath } from "@/app/new-projects/lib/projectUrls";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { APP_CONFIG } from "@/constants/app-config";
@@ -23,7 +25,7 @@ export function projectHasContact(p: Pick<ProjectListing, "salesPhone" | "salesE
 
 /**
  * Sales desk contact behind login, like interiors and property owner contacts: logged-out visitors go to
- * /login?redirect=<this page>; logged-in ones get the number from POST /projects/:id/contact.
+ * signup (signupRedirectPath, which links to login); logged-in ones get the number from POST /projects/:id/contact.
  */
 export function useProjectContact() {
   const router = useRouter();
@@ -31,11 +33,16 @@ export function useProjectContact() {
   const [trigger, { isLoading }] = useRevealProjectContactMutation();
 
   const reveal = useCallback(
-    async (project: Pick<ProjectListing, "id">): Promise<ProjectContact | null> => {
+    async (project: Pick<ProjectListing, "id" | "slug" | "countryCode">): Promise<ProjectContact | null> => {
       const token = typeof window !== "undefined" ? window.localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
       if (!token) {
-        toast.info("Log in to view the builder's contact number");
-        router.push(`/login?redirect=${encodeURIComponent(pathname || "/new-projects")}`);
+        toast.info("Sign up free to view the builder's contact number");
+        // Back to this project, not the list it was opened from.
+        router.push(
+          project.slug
+            ? signupRedirectPath(projectDetailPath(project), { autoReveal: true })
+            : signupRedirectPath(pathname || "/new-projects"),
+        );
         return null;
       }
       try {

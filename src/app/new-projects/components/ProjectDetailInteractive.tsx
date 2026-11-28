@@ -1,6 +1,7 @@
 "use client";
 import { formatMoney, formatMoneyShort } from "@/lib/money";
 import { allSalesPhones, projectHasContact, useProjectContact, type ProjectContact } from "@/features/projects/useProjectContact";
+import { useAutoRevealOnReturn } from "@/lib/signupRedirect";
 import { SalesPhoneList } from "./SalesPhoneList";
 
 import { sizedImageUrl } from "@/app/homePage/lib/homeImage";
@@ -68,6 +69,14 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
   // Sales contact comes from the login-gated reveal endpoint, not the public project payload.
   const { reveal: revealContact, loading: contactLoading } = useProjectContact();
   const [revealed, setRevealed] = useState<ProjectContact | null>(null);
+  const showContact = async () => {
+    const contact = revealed ?? (await revealContact(project));
+    if (!contact) return;
+    setRevealed(contact);
+    setContactModalOpen(true);
+  };
+  // Back from signup / login: open the sales contact without another tap.
+  useAutoRevealOnReturn(showContact, { enabled: projectHasContact(project) });
   const shown = { salesPhone: revealed?.salesPhone || "", salesPhones: revealed?.salesPhones || [], salesEmail: revealed?.salesEmail || "" };
 
   useEffect(() => {
@@ -229,12 +238,7 @@ export function ProjectDetailInteractive({ project }: { project: ProjectListing 
               <button
                 type="button"
                 disabled={contactLoading}
-                onClick={async () => {
-                  const contact = revealed ?? (await revealContact(project));
-                  if (!contact) return;
-                  setRevealed(contact);
-                  setContactModalOpen(true);
-                }}
+                onClick={showContact}
                 className="inline-flex items-center gap-1.5 rounded-full border border-rose-300 bg-rose-50 px-4 py-2 text-xs font-bold text-rose-800 shadow-sm transition hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-950/60 dark:text-rose-300"
               >
                 <PhoneCall className="h-3.5 w-3.5 text-rose-600" />

@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { signupRedirectPath, useAutoRevealOnReturn } from "@/lib/signupRedirect";
+import { interiorProfilePath } from "@/lib/interiors/profileUrl";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2, MessageCircle, Phone } from "lucide-react";
 import { useRevealInteriorContactMutation } from "@/features/interiors/api";
@@ -24,7 +26,6 @@ const ContactCtx = createContext<Ctx | null>(null);
 
 /** Shares one "view contact" state across the hero, sidebar, contact section and mobile bar. */
 export function InteriorContactProvider({ profile, children }: { profile: InteriorProfile; children: ReactNode }) {
-  const pathname = usePathname();
   const router = useRouter();
   const [trigger, { isLoading }] = useRevealInteriorContactMutation();
   const [revealed, setRevealed] = useState<Revealed | null>(null);
@@ -38,8 +39,9 @@ export function InteriorContactProvider({ profile, children }: { profile: Interi
     if (revealed) return revealed;
     const token = typeof window !== "undefined" ? window.localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
     if (!token) {
-      toast.info("Log in to view the contact number");
-      router.push(`/login?redirect=${encodeURIComponent(pathname || "/interior-designers")}`);
+      toast.info("Sign up free to view the contact number");
+      // Back to this designer's profile, not the list it was opened from (e.g. the homepage).
+      router.push(signupRedirectPath(interiorProfilePath(profile), { autoReveal: true }));
       return null;
     }
     try {
@@ -51,7 +53,10 @@ export function InteriorContactProvider({ profile, children }: { profile: Interi
       toast.error((err as { data?: { message?: string } })?.data?.message || "Couldn't load the contact. Please send a quote request instead.");
       return null;
     }
-  }, [revealed, pathname, router, trigger, profile.id]);
+  }, [revealed, router, trigger, profile]);
+
+  // Back from signup / login: show the number without another tap (profile page only, not list cards).
+  useAutoRevealOnReturn(reveal, { onlyOnPath: interiorProfilePath(profile) });
 
   const value = useMemo<Ctx>(
     () => ({

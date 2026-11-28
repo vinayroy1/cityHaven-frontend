@@ -1,6 +1,8 @@
 "use client";
 
 import { Mail, MessageSquare, Phone, PhoneCall } from "lucide-react";
+import { agentPath } from "@/features/advisors/paths";
+import { useAutoRevealOnReturn } from "@/lib/signupRedirect";
 import { toast } from "sonner";
 import type { Agent } from "@/data/agents";
 import { APP_CONFIG } from "@/constants/app-config";
@@ -34,10 +36,18 @@ type AgentWithFlags = Agent & { hasPhone?: boolean; hasEmail?: boolean };
 /** Call / Email / WhatsApp for an advisor. The number comes from the login-only reveal endpoint. */
 export function AgentContactButtons({ agent, variant, showWhatsapp = variant !== "card" }: { agent: AgentWithFlags; variant: Variant; showWhatsapp?: boolean }) {
   const key = agent.slug || agent.id;
-  const { reveal, loading } = useGatedContact(`${APP_CONFIG.API.BASE_URL}/v1/advisors/${encodeURIComponent(String(key))}/reveal-contact`, "the advisor's contact");
+  const { reveal, loading, contact } = useGatedContact(`${APP_CONFIG.API.BASE_URL}/v1/advisors/${encodeURIComponent(String(key))}/reveal-contact`, "the advisor's contact", agentPath(agent));
   const hasPhone = Boolean(agent.hasPhone || agent.phone);
   const hasEmail = Boolean(agent.hasEmail || agent.email);
   const c = CLS[variant];
+  // Back from signup / login on the advisor's own page: show the number on the Call button without another tap.
+  useAutoRevealOnReturn(
+    async () => {
+      const r = await reveal();
+      if (r?.phone) toast.success(`${agent.name}: ${r.phone}`);
+    },
+    { onlyOnPath: agentPath(agent), enabled: variant === "hero" },
+  );
   const waText = `Hi ${agent.name}, I found your profile on Awasio and would like to inquire about properties in ${agent.area}.`;
 
   const call = async () => {
@@ -61,13 +71,13 @@ export function AgentContactButtons({ agent, variant, showWhatsapp = variant !==
       {hasPhone && (
         <button type="button" onClick={call} disabled={loading} aria-label={`Call ${agent.name}`} title="Call (login required)" className={c.call}>
           {c.label ? <PhoneCall className="h-3.5 w-3.5 text-rose-500" /> : <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5" />}
-          {c.label && <span className={variant === "hero" ? "hidden xs:inline" : undefined}>Call</span>}
+          {c.label && <span className={variant === "hero" && !contact?.phone ? "hidden xs:inline" : undefined}>{contact?.phone || "Call"}</span>}
         </button>
       )}
       {hasEmail && (
         <button type="button" onClick={mail} disabled={loading} aria-label={`Email ${agent.name}`} title="Email (login required)" className={c.mail}>
           {c.label ? <Mail className="h-3.5 w-3.5 text-blue-500" /> : <Mail className="h-3 w-3 sm:h-3.5 sm:w-3.5" />}
-          {c.label && <span className={variant === "hero" ? "hidden xs:inline" : undefined}>Email</span>}
+          {c.label && <span className={variant === "hero" && !contact?.email ? "hidden xs:inline" : undefined}>{contact?.email || "Email"}</span>}
         </button>
       )}
       {showWhatsapp && hasPhone && (

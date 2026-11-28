@@ -160,6 +160,7 @@ export function WelcomeCreditModal() {
   const currentRedirect =
     returnUrl || (typeof window !== "undefined" ? window.location.pathname + window.location.search : "/");
   const loginHref = `/login?mode=signup&redirect=${encodeURIComponent(currentRedirect)}`;
+  const signInHref = `/login?mode=login&redirect=${encodeURIComponent(currentRedirect)}`;
 
   const modalPortal = isOpen ? (
     <div
@@ -279,7 +280,7 @@ export function WelcomeCreditModal() {
           {/* Secondary Sign In Link */}
           <div className="text-center">
             <Link
-              href={loginHref}
+              href={signInHref}
               onClick={() => setIsOpen(false)}
               className="text-[11px] sm:text-xs text-slate-400 hover:text-white transition-colors"
             >

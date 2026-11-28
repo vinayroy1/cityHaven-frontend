@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { signupRedirectPath } from "@/lib/signupRedirect";
 import { LockKeyhole, Loader2, Building2, User, AlertCircle, ShieldCheck } from "lucide-react";
 import { APP_CONFIG } from "@/constants/app-config";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -245,8 +246,7 @@ export function ContactAccessFlow({
       if (err?.status === 401 || err?.originalStatus === 401) {
         localStorage.removeItem(APP_CONFIG.AUTH.TOKEN_KEY);
         setOpen(false);
-        const returnUrl = encodeURIComponent(`${window.location.pathname}?autoUnlock=true`);
-        router.push(`/login?redirect=${returnUrl}`);
+        router.push(signupRedirectPath(`${window.location.pathname}?autoUnlock=true`));
       } else if (err?.status === 402 || err?.data?.message?.includes("credits") || err?.data?.message?.includes("allowance")) {
         setStep("plans");
         setOpen(true);
@@ -277,12 +277,8 @@ export function ContactAccessFlow({
     setError(null);
     const token = typeof window !== "undefined" ? localStorage.getItem(APP_CONFIG.AUTH.TOKEN_KEY) : null;
     if (!token) {
-      const returnUrl = `${window.location.pathname}?autoUnlock=true`;
-      window.dispatchEvent(
-        new CustomEvent("awasio:open-welcome-credits", {
-          detail: { returnUrl },
-        })
-      );
+      // Signed out: straight to signup (most are new visitors), then back here to unlock.
+      router.push(signupRedirectPath(`${window.location.pathname}?autoUnlock=true`));
       return;
     }
     void run(checkAndUnlock);

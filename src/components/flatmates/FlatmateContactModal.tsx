@@ -1,7 +1,8 @@
 "use client";
 import { flatmatePath } from "@/features/flatmates/paths";
+import { signupRedirectPath } from "@/lib/signupRedirect";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -44,6 +45,8 @@ interface FlatmateContactModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: (contact: { name: string; mobileNumber?: string | null; email?: string | null }) => void;
+  /** Back from signup / login: unlock straight away (when the wallet covers it) instead of waiting for a tap. */
+  autoUnlock?: boolean;
 }
 
 const CONTACT_UNLOCK_CREDIT_COST = 5;
@@ -58,6 +61,7 @@ function FlatmateContactModalContent({
   isOpen,
   onClose,
   onSuccess,
+  autoUnlock = false,
 }: FlatmateContactModalProps & { listing: FlatmateListing }) {
   const router = useRouter();
   const [hasToken, setHasToken] = useState(() => {
@@ -128,7 +132,7 @@ function FlatmateContactModalContent({
   const handleUnlock = async () => {
     if (!hasToken) {
       const returnTo = flatmatePath(listing);
-      router.push(`/login?redirect=${encodeURIComponent(returnTo)}`);
+      router.push(signupRedirectPath(returnTo, { autoReveal: true }));
       return;
     }
 
@@ -176,6 +180,19 @@ function FlatmateContactModalContent({
 
   // Full international number ("+919876543210" / "+9779801234567").
   const cleanPhone = (phone?: string | null) => intlMobile(phone);
+
+  // One automatic unlock per open, once the wallet and "already unlocked" checks have loaded.
+  const autoUnlockTried = useRef(false);
+  useEffect(() => {
+    if (!autoUnlock || autoUnlockTried.current || !isOpen || !hasToken) return;
+    if (!billingData || isCheckingUnlocked || unlockedContact || unlockedQueryData?.data?.unlocked) return;
+    const t = setTimeout(() => {
+      autoUnlockTried.current = true;
+      if (userCredits >= CONTACT_UNLOCK_CREDIT_COST) void handleUnlock();
+    }, 0);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- handleUnlock is recreated each render; the ref keeps this to one run
+  }, [autoUnlock, isOpen, hasToken, billingData, isCheckingUnlocked, unlockedContact, unlockedQueryData, userCredits]);
 
   const phoneForCall = cleanPhone(unlockedContact?.mobileNumber);
 
@@ -388,11 +405,11 @@ function FlatmateContactModalContent({
                   Cancel
                 </Button>
                 <Link
-                  href={`/login?redirect=${encodeURIComponent(flatmatePath(listing))}`}
+                  href={signupRedirectPath(flatmatePath(listing), { autoReveal: true })}
                   className="flex-1 h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md shadow-rose-200 dark:shadow-none flex items-center justify-center gap-1.5"
                 >
                   <LogIn className="w-4 h-4" />
-                  <span>Sign In to View</span>
+                  <span>Sign Up Free to View</span>
                 </Link>
               </div>
             </div>

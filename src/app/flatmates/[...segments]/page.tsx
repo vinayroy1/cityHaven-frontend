@@ -50,6 +50,7 @@ import { isRealUserPhoto } from "@/components/flatmates/FlatmateCard";
 import { NearbyLandmarksCompact } from "@/components/nearby/NearbyLandmarksCompact";
 import { ResponseBadge } from "@/components/leads/ResponseBadge";
 import { formatMoney as fm } from "@/lib/money";
+import { useAutoRevealOnReturn } from "@/lib/signupRedirect";
 
 const FlatmateContactModal = dynamic(
   () => import("@/components/flatmates/FlatmateContactModal").then((mod) => mod.FlatmateContactModal),
@@ -70,6 +71,15 @@ export default function FlatmateDetailPage() {
   });
 
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [autoUnlock, setAutoUnlock] = useState(false);
+  // Back from signup / login: open the contact and unlock it without another tap.
+  useAutoRevealOnReturn(
+    () => {
+      setAutoUnlock(true);
+      setIsContactModalOpen(true);
+    },
+    { enabled: Boolean(listing) },
+  );
 
   const handleShare = async () => {
     if (typeof window === "undefined") return;
@@ -918,6 +928,7 @@ export default function FlatmateDetailPage() {
           listing={listing}
           isOpen={isContactModalOpen}
           onClose={() => setIsContactModalOpen(false)}
+          autoUnlock={autoUnlock}
         />
       )}
     </div>
