@@ -44,6 +44,7 @@ const Labelled = ({
   required,
   error,
   helpText,
+  hideOptionalTag,
   children,
 }: {
   label: string;
@@ -51,6 +52,7 @@ const Labelled = ({
   required?: boolean;
   error?: string;
   helpText?: string;
+  hideOptionalTag?: boolean;
   children: React.ReactNode;
 }) => (
   <div className="space-y-1.5">
@@ -61,7 +63,7 @@ const Labelled = ({
           <span className="ml-1.5 inline-flex items-center rounded-md border border-rose-200/90 bg-rose-50 px-1.5 py-0.5 text-[10px] font-bold tracking-tight text-rose-600 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-400">
             Mandatory
           </span>
-        ) : (
+        ) : hideOptionalTag ? null : (
           <span className="ml-1.5 text-[11px] font-normal text-slate-400 dark:text-slate-500">
             (Optional)
           </span>
@@ -388,7 +390,7 @@ export function FieldRenderer({ field: rawField, values }: Props) {
           render={({ field: rhf }) => {
             const arr: (string | number)[] = Array.isArray(rhf.value) ? rhf.value : [];
             return (
-              <Labelled label={field.label} required={required} error={error} helpText={field.helpText}>
+              <Labelled label={field.label} required={required} error={error} helpText={field.helpText} hideOptionalTag={field.hideOptionalTag}>
                 <div className={compactChipGrid}>
                   {options.map((o) => {
                     const active = arr.includes(o.value as string | number);
@@ -397,13 +399,14 @@ export function FieldRenderer({ field: rawField, values }: Props) {
                         key={String(o.value)}
                         active={active}
                         disabled={disabled || optDisabled(o)}
-                        onClick={() =>
-                          rhf.onChange(
-                            active
-                              ? arr.filter((v) => v !== o.value)
-                              : [...arr, o.value as string | number],
-                          )
-                        }
+                        onClick={() => {
+                          if (active) return rhf.onChange(arr.filter((v) => v !== o.value));
+                          // Several groups can share one array (amenities): an exclusive group
+                          // replaces only its own earlier pick.
+                          const own = new Set(options.map((x) => x.value));
+                          const kept = field.exclusive ? arr.filter((v) => !own.has(v)) : arr;
+                          rhf.onChange([...kept, o.value as string | number]);
+                        }}
                         className={compactChip}
                       >
                         {o.label}

@@ -23,14 +23,78 @@ const money = (id: string, label: string, extra?: Partial<FieldConfig>): FieldCo
   };
 };
 
-// Categories whose option names are only meaningful with the category
-// attached (e.g. "Pool" under Overlooking, "None" under Power Back up).
-const QUALIFIED_AMENITY_CATEGORIES = new Set(["Water Source", "Overlooking", "Power Back up", "Property Facing", "Type of Flooring"]);
-// Facing has its own single-choice field ("Property facing"), so it is not offered here too.
-const amenityChoices: Option[] = amenityOptions.filter((a) => a.category !== "Property Facing").map((a) => ({
-  value: a.slug,
-  label: QUALIFIED_AMENITY_CATEGORIES.has(a.category) ? `${a.label} (${a.category})` : a.label,
-}));
+// Amenities, grouped the way posters think about them (society, home, power, water, floor, view).
+// Every group writes into the one amenities.amenityIds list, so saved listings are unchanged.
+// Not offered: facing (own "Property facing" field), location advantages (found from the map),
+// "Others" chips, and rarely used floor types (earlier picks of those are kept, just not shown).
+const bySlug = new Map(amenityOptions.map((a) => [a.slug, a.label]));
+const pick = (slugs: string[], labels: Record<string, string> = {}): Option[] =>
+  slugs.filter((s) => bySlug.has(s)).map((s) => ({ value: s, label: labels[s] ?? bySlug.get(s)! }));
+const AMENITY_ID = "amenities.amenityIds";
+
+const amenityGroups: FieldConfig[] = [
+  {
+    id: AMENITY_ID,
+    hideOptionalTag: true,
+    label: "Society & building",
+    type: "chip-multi",
+    options: pick([
+      "security-personnel", "visitor-parking", "park", "fitness-centre-gym", "swimming-pool",
+      "club-house-community-center", "maintenance-staff", "water-storage", "rain-water-harvesting",
+      "waste-disposal", "low-density-society",
+    ], { "fitness-centre-gym": "Gym", "club-house-community-center": "Club house" }),
+  },
+  {
+    id: AMENITY_ID,
+    hideOptionalTag: true,
+    label: "Inside the home",
+    type: "chip-multi",
+    options: pick([
+      "centrally-air-conditioned", "internet-wifi-connectivity", "water-purifier", "security-fire-alarm",
+      "private-garden-terrace", "false-ceiling-lighting", "high-ceiling-height", "recently-renovated",
+      "natural-light", "spacious-interiors", "airy-rooms",
+    ], { "centrally-air-conditioned": "Central AC", "internet-wifi-connectivity": "Wi-Fi ready", "security-fire-alarm": "Fire alarm" }),
+  },
+  {
+    id: AMENITY_ID,
+    hideOptionalTag: true,
+    label: "Power backup",
+    type: "chip-multi",
+    exclusive: true,
+    options: pick(["full-power-backup", "partial-power-backup", "no-power-backup"]),
+  },
+  {
+    id: AMENITY_ID,
+    hideOptionalTag: true,
+    label: "Water supply",
+    type: "chip-multi",
+    options: pick(["24x7-water", "municipal-corporation", "borewell-tank"], { "municipal-corporation": "Municipal" }),
+  },
+  {
+    id: AMENITY_ID,
+    hideOptionalTag: true,
+    label: "Flooring",
+    type: "chip-multi",
+    options: pick(["vitrified-flooring", "marble-flooring", "granite-flooring", "wood-flooring", "ceramic-flooring", "mosaic-flooring"]),
+  },
+  {
+    id: AMENITY_ID,
+    hideOptionalTag: true,
+    label: "Overlooking",
+    type: "chip-multi",
+    options: pick(["park-garden-overlooking", "pool-overlooking", "club-overlooking", "main-road-overlooking"]),
+  },
+  {
+    id: AMENITY_ID,
+    hideOptionalTag: true,
+    label: "Other features",
+    type: "chip-multi",
+    options: pick([
+      "in-gated-society", "corner-property", "pet-friendly", "wheelchair-friendly",
+      "feng-shui-vaastu-compliant", "separate-entry-servant-room", "no-open-drainage-around", "bank-attached-property",
+    ], { "feng-shui-vaastu-compliant": "Vaastu compliant" }),
+  },
+];
 
 const pricingAmenitiesBase: StepConfig = {
   id: "pricing",
@@ -152,8 +216,8 @@ const pricingAmenitiesBase: StepConfig = {
     {
       id: "amenities",
       title: "Amenities & features",
-      description: "Pick everything the property or society offers.",
-      fields: [{ id: "amenities.amenityIds", label: "Amenities", type: "chip-multi", options: amenityChoices }],
+      description: "Tap what applies. All optional.",
+      fields: amenityGroups,
     },
   ],
 };

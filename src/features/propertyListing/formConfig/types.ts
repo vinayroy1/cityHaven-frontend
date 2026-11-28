@@ -67,6 +67,10 @@ export type FieldConfig = {
   visibleWhen?: Condition;
   disabledIf?: Condition;
   options?: Option[];
+  /** chip-multi: pick at most one of this field's options (others in the shared array are kept). */
+  exclusive?: boolean;
+  /** Don't print "(Optional)" next to the label (the section already says it is optional). */
+  hideOptionalTag?: boolean;
   min?: number;
   max?: number;
   step?: number;
