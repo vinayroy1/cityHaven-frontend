@@ -30,6 +30,7 @@ const buyCity = (c: string) => `/buy/${c}`;
 const commercialCity = (c: string) => `/commercial/${c}`;
 const plotCity = (c: string) => `/plot/${c}`;
 const pgCity = (c: string) => `/pg/${c}`;
+const coworkingCity = (c: string) => `/coworking-space/${c}`;
 
 const FREE_BENEFIT = { title: "Free to list", text: "No listing fee, 0% commission to Awasio, and 1,000 free credits on signup." };
 const DIRECT_BENEFIT = { title: "Direct enquiries, no broker", text: "Phone-verified people contact you directly on call, WhatsApp or chat." };
@@ -294,10 +295,10 @@ export const PROPERTY_CATEGORY_PAGES: Record<PropertyCategoryKey, ListingSeo> = 
     ],
     h1: "List Your Coworking Space Free: Desks, Cabins & Meeting Rooms",
     intro:
-      "Coworking operators and office owners can list a coworking space on Awasio for free. Show your seats, private cabins, meeting rooms, amenities and monthly price per seat, and startups, freelancers and growing teams contact you directly.",
+      "Coworking operators and office owners can list a coworking space on Awasio for free. Add each plan (hot desk, dedicated desk, private cabin, day pass, meeting room) with its own price, plus seats, hours and what's included, and startups, freelancers and growing teams contact you directly.",
     steps: [
-      { title: "Add the centre", text: "Building, locality, floor, total seats, cabins and meeting rooms." },
-      { title: "Add amenities and pricing", text: "Wi-Fi, power backup, pantry, parking, access hours, and price per seat or cabin per month." },
+      { title: "Add the centre", text: "Building, locality, operator, total seats, seats free now and opening hours." },
+      { title: "Add your plans", text: "Hot desks, dedicated desks, cabins, day passes and meeting rooms, each with its own price, capacity and availability, plus what's included." },
       { title: "Publish and get teams", text: "Teams searching for office space in your city contact you directly." },
     ],
     benefits: [
@@ -309,7 +310,7 @@ export const PROPERTY_CATEGORY_PAGES: Record<PropertyCategoryKey, ListingSeo> = 
     audience: "Coworking operators, managed-office providers and office owners offering shared or flexible workspace.",
     faqs: [
       { q: "Is listing a coworking space free?", a: "Yes. Listing a coworking or managed office space on Awasio is free, with 0% commission." },
-      { q: "Can I list desks and private cabins separately?", a: "List the centre once with total seats, cabins and meeting rooms, and mention per-seat and per-cabin pricing in the details." },
+      { q: "Can I list desks and private cabins separately?", a: "Yes. List the centre once and add each plan (hot desk, dedicated desk, private cabin, day pass, meeting room) with its own price per seat, day or hour. Your listing shows the lowest seat price, and every plan on the detail page." },
       { q: "What do teams look for in a coworking listing?", a: "Location and metro access, price per seat, private cabins, meeting rooms, internet speed, power backup, access hours, parking and a GST invoice." },
       { q: "Can I list a managed or ready-to-move office too?", a: "Yes. Choose Commercial → Office and pick ready-to-move, bare shell or co-working." },
     ],
@@ -328,8 +329,8 @@ export const PROPERTY_CATEGORY_PAGES: Record<PropertyCategoryKey, ListingSeo> = 
         ],
       },
     ],
-    cityHeading: "Office and commercial space by city",
-    cityPath: commercialCity,
+    cityHeading: "Co-working spaces by city",
+    cityPath: coworkingCity,
     citySlugs: "property",
   },
 

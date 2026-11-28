@@ -52,6 +52,7 @@ import { useMeQuery } from "@/features/auth/api";
 import { formatCredits, useSignupBonus } from "@/features/contactVerify/useSignupBonus";
 import { useGetLeadInboxSummaryQuery } from "@/features/leads/api";
 import dynamic from "next/dynamic";
+import { LISTING_FORM_ROUTES } from "@/constants/listingFormRoutes";
 
 const CreditWalletModal = dynamic(
   () => import("@/components/billing/CreditWalletModal").then((m) => m.CreditWalletModal),
@@ -67,11 +68,7 @@ interface UserProfile {
 }
 
 // Routes where the bottom bar should be hidden (form steppers, auth flows)
-const HIDDEN_ROUTES = [
-  "/post-property-free",
-  "/login",
-  "/auth",
-];
+const HIDDEN_ROUTES = [...LISTING_FORM_ROUTES, "/login", "/auth"];
 
 interface CategoryLink {
   label: string;
