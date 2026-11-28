@@ -40,7 +40,11 @@ export function TransactionCard({ transactionType, ownershipType, listingType, d
           </p>
           <p className="text-base font-semibold text-slate-900 dark:text-white">{heading}</p>
           <p className="text-xs text-slate-600 dark:text-slate-400">
-            {depositText ? `Security Deposit ${depositText}` : "Confirm rent and deposit terms with owner"}
+            {depositText
+              ? `Security Deposit ${depositText}`
+              : listingType?.toUpperCase() === "SELL"
+              ? "Confirm the final price, registration and transfer charges with the owner"
+              : "Confirm rent and deposit terms with owner"}
           </p>
         </div>
         <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">

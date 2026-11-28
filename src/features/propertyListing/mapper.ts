@@ -228,7 +228,8 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
 
     // pricing
     price: pricing.price ?? undefined,
-    priceType: pricing.priceType || undefined,
+    // "Monthly" etc. only applies to rent; the form defaults it, so don't send it with a sale.
+    priceType: context.listingType === "RENT" ? pricing.priceType || undefined : undefined,
     pricePerSqFt: pricing.pricePerSqFt ?? undefined,
     pricePerUnitArea: pricing.pricePerUnitArea ?? undefined,
     pricePerUnitAreaUnit: pricing.pricePerUnitAreaUnit || undefined,

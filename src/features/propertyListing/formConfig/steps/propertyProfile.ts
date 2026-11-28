@@ -127,6 +127,7 @@ const allProfileSections: StepConfig["sections"] = [
       id: "area",
       title: "Area details",
       requiredHint: "Enter at least one area",
+      requireAny: true,
       visibleWhen: preset("showAreaSection"),
       fields: [
         measure("details.carpetArea", "Carpet area", { visibleWhen: preset("showCarpetArea") }),

@@ -210,6 +210,32 @@ function compact(items: Array<string | null | undefined>) {
   return items.filter(Boolean).join(", ");
 }
 
+// Groups whose items mean nothing without their category ("North", "Marble", "Full"): one chip each,
+// e.g. "Flooring: Marble, Wood".
+const QUALIFIED_AMENITY_GROUPS: Record<string, string> = {
+  "property facing": "Facing",
+  "type of flooring": "Flooring",
+  "power back up": "Power backup",
+  "overlooking": "Overlooking",
+  "water source": "Water source",
+};
+
+function amenityChips(groups?: AmenityGroup[]): string[] | undefined {
+  if (!groups) return undefined;
+  const chips: string[] = [];
+  for (const group of groups) {
+    const key = String(group.categoryName ?? "").trim().toLowerCase();
+    const names = (group.amenities ?? [])
+      .map((item) => String(item.name ?? "").trim())
+      .filter((name) => name && !/^others?$/i.test(name));
+    if (!names.length) continue;
+    const prefix = QUALIFIED_AMENITY_GROUPS[key];
+    if (prefix) chips.push(`${prefix}: ${names.join(", ")}`);
+    else chips.push(...names);
+  }
+  return chips;
+}
+
 function getArea(property: PropertyDetails) {
   if (property.carpetArea) return { label: "Carpet area", value: `${property.carpetArea.toLocaleString("en-IN")} ${formatEnum(property.carpetAreaUnit ?? property.areaUnit) || "sqft"}` };
   if (property.builtUpArea) return { label: "Built-up area", value: `${property.builtUpArea.toLocaleString("en-IN")} ${formatEnum(property.builtUpAreaUnit ?? property.areaUnit) || "sqft"}` };
@@ -734,9 +760,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         property.project?.name,
       ].filter(Boolean) as string[];
 
-  const amenities = property.amenitiesByCategory
-    ?.flatMap((group) => group.amenities?.map((item) => item.name).filter(Boolean) ?? [])
-    .filter((name) => !/^others?$/i.test(String(name).trim())) as string[] | undefined;
+  const amenities = amenityChips(property.amenitiesByCategory);
 
   // Schema.org: a RealEstateListing (the page) whose `about` is the place itself, typed by property kind.
   const subTypeName = `${property.propertySubType?.name ?? ""} ${property.propertyType?.name ?? ""}`.toLowerCase();
@@ -861,7 +885,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 ? unitLabel(property.priceUnit)
                 : isPg
                 ? (roomWise ? "per room / month" : "per bed / month")
-                : (property.priceType ? formatEnum(property.priceType) : area.value)
+                : (property.priceType && property.listingType?.toUpperCase() === "RENT" ? formatEnum(property.priceType) : area.value !== "Ask owner" ? area.value : "")
             }
             category={property.propertySubCategory?.name ?? property.propertySubType?.name ?? property.propertyType?.name ?? "Property details"}
             tags={tags}

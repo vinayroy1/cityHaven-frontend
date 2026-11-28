@@ -33,6 +33,7 @@ import { predicates } from "@/features/propertyListing/formConfig/conditions";
 import { computeListingScore } from "@/features/propertyListing/formConfig/scoring";
 import {
   requiredPathsForStep,
+  unmetAnySections,
   getRequiredFieldsForStep,
   isFieldFilled,
   type RequiredFieldMeta,
@@ -542,6 +543,12 @@ export function PropertyListingFlow({
       }
       return;
     }
+    const anyMissing = unmetAnySections(step, form.getValues());
+    if (anyMissing.length > 0) {
+      scrollToField(anyMissing[0].id);
+      toast.error(anyMissing[0].label);
+      return;
+    }
     dispatch(saveDraft(form.getValues()));
     goToStep(Math.min(listingSteps.length - 1, stepIndex + 1));
   };
@@ -573,6 +580,12 @@ export function PropertyListingFlow({
     if (!triggered || unfilledStepIndex !== -1) {
       toast.error("Some required details are missing.");
       if (unfilledStepIndex !== -1 && unfilledStepIndex !== stepIndex) goToStep(unfilledStepIndex);
+      return;
+    }
+    const anyStepIndex = listingSteps.findIndex((s) => unmetAnySections(s, form.getValues()).length > 0);
+    if (anyStepIndex !== -1) {
+      toast.error(unmetAnySections(listingSteps[anyStepIndex], form.getValues())[0].label);
+      if (anyStepIndex !== stepIndex) goToStep(anyStepIndex);
       return;
     }
     const payload = form.getValues();

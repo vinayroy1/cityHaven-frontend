@@ -23,6 +23,20 @@ export function requiredPathsForStep(step: StepConfig, values: FormValues): stri
   return paths;
 }
 
+/** Visible `requireAny` sections with none of their visible fields filled; returns their first field (to focus). */
+export function unmetAnySections(step: StepConfig, values: FormValues): RequiredFieldMeta[] {
+  if (step.kind === "custom") return [];
+  const result: RequiredFieldMeta[] = [];
+  for (const section of step.sections ?? []) {
+    if (!section.requireAny || !evaluateCondition(values, section.visibleWhen)) continue;
+    const visible = section.fields.filter((f) => evaluateCondition(values, f.visibleWhen));
+    if (visible.length && !visible.some((f) => isFieldFilled(values, f.id))) {
+      result.push({ id: visible[0].id, label: section.requiredHint ?? `Fill one of: ${section.title ?? section.id}`, sectionTitle: section.title });
+    }
+  }
+  return result;
+}
+
 export function allRequiredPaths(steps: StepConfig[], values: FormValues): string[] {
   return steps.flatMap((s) => requiredPathsForStep(s, values));
 }

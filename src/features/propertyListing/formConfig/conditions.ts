@@ -123,7 +123,8 @@ export const predicates: Record<string, Predicate> = {
   showCarpetArea: (v) => (anyDwelling(v) || isOffice(v) || isRetail(v)) && !isPlot(v),
   // super built-up is a building-unit concept (loading/common area) — not for villas/farmhouses
   showSuperBuiltUpArea: (v) => (isApartmentOrBuilder(v) || isStudio(v) || isServiced(v) || isOffice(v) || isRetail(v)),
-  showPlotArea: (v) => isPlot(v) || isWarehouse(v),
+  // Houses and farmhouses are sold by their land too.
+  showPlotArea: (v) => isPlot(v) || isWarehouse(v) || isStandaloneHome(v),
 
   // ---- Rooms & layout ----
   showBedrooms: hasBhkConfig, // BHK selector — hidden for studio/plot

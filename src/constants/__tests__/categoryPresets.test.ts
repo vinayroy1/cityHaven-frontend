@@ -32,3 +32,18 @@ describe.each(Object.entries(PROPERTY_CATEGORY_PAGES))("%s category page", (_key
     expect(predicates.isCoworking(v)).toBe(page.path === "/list-coworking-space");
   });
 });
+
+describe("area is mandatory", () => {
+  const { unmetAnySections } = jest.requireActual("@/features/propertyListing/formConfig/validation");
+  const step = listingSteps.find((s) => (s.sections ?? []).some((sec) => sec.id === "area"))!;
+  const farm = formFor(PROPERTY_CATEGORY_PAGES.farmhouse.preset ?? {});
+
+  test("a farmhouse with no area cannot continue", () => {
+    expect(unmetAnySections(step, farm)).toHaveLength(1);
+  });
+
+  test("a farmhouse can give just its land (plot) area", () => {
+    const v = { ...farm, details: { ...farm.details, plotArea: 2, plotAreaUnit: "ACRE" } } as PropertyListingFormValues;
+    expect(unmetAnySections(step, v)).toHaveLength(0);
+  });
+});

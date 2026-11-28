@@ -26,7 +26,8 @@ const money = (id: string, label: string, extra?: Partial<FieldConfig>): FieldCo
 // Categories whose option names are only meaningful with the category
 // attached (e.g. "Pool" under Overlooking, "None" under Power Back up).
 const QUALIFIED_AMENITY_CATEGORIES = new Set(["Water Source", "Overlooking", "Power Back up", "Property Facing", "Type of Flooring"]);
-const amenityChoices: Option[] = amenityOptions.map((a) => ({
+// Facing has its own single-choice field ("Property facing"), so it is not offered here too.
+const amenityChoices: Option[] = amenityOptions.filter((a) => a.category !== "Property Facing").map((a) => ({
   value: a.slug,
   label: QUALIFIED_AMENITY_CATEGORIES.has(a.category) ? `${a.label} (${a.category})` : a.label,
 }));
