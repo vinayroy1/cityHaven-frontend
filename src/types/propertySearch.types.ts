@@ -89,6 +89,12 @@ export type PropertySearchItem = {
   propertySubCategoryName?: string | null;
   propertySubCategorySlug?: string | null;
   propertySubCategory?: { name?: string | null; slug?: string | null } | null;
+  // Co-working centre: price is the cheapest plan, in `priceUnit` (e.g. PER_SEAT_MONTH).
+  priceUnit?: string | null;
+  seatsAvailable?: number | null;
+  open24x7?: boolean | null;
+  workspaceOperator?: string | null;
+  coworkingPlans?: import("@/features/coworking/model").CoworkingPlan[] | null;
   media?: PropertySearchMedia[];
   createdAt?: string;
   isBoosted?: boolean;

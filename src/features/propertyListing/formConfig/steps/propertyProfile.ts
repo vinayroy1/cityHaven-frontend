@@ -3,6 +3,8 @@
 // selection (listing type + category + sub-type); nothing generic is asked.
 
 import { preset } from "../conditions";
+import { hideForCoworking } from "../coworkingScope";
+import { OPEN_DAYS, WORKSPACE_INCLUSIONS } from "@/features/coworking/model";
 import {
   accommodationTypeOptions,
   ageOfPropertyOptions,
@@ -362,13 +364,41 @@ const allProfileSections: StepConfig["sections"] = [
     },
 
     {
+      id: "workspaceCentre",
+      title: "Co-working centre",
+      visibleWhen: preset("isCoworking"),
+      fields: [
+        { id: "details.workspaceOperator", label: "Operator / brand", type: "text", placeholder: "e.g. Awfis, WeWork, or your centre's name" },
+        num("details.maxNoOfSeats", "Total seats", { resetOnHide: false, required: true, placeholder: "e.g. 150" }),
+        num("details.seatsAvailable", "Seats available now", { placeholder: "e.g. 40" }),
+        { id: "details.open24x7", label: "Open 24×7", type: "toggle" },
+        {
+          id: "details.openDays",
+          label: "Open on",
+          type: "chip-multi",
+          options: OPEN_DAYS.map((d) => ({ value: d.value, label: d.label })),
+          visibleWhen: { not: { field: "details.open24x7", equals: true } },
+        },
+        { id: "details.openingTime", label: "Opens at", type: "text", placeholder: "09:00", visibleWhen: { not: { field: "details.open24x7", equals: true } } },
+        { id: "details.closingTime", label: "Closes at", type: "text", placeholder: "20:00", visibleWhen: { not: { field: "details.open24x7", equals: true } } },
+        {
+          id: "details.workspaceInclusions",
+          label: "Included in the price",
+          type: "chip-multi",
+          options: WORKSPACE_INCLUSIONS.map((i) => ({ value: i.value, label: i.label })),
+          weight: 2,
+        },
+      ],
+    },
+    {
       id: "commercial",
       title: "Commercial details",
       visibleWhen: preset("isCommercial"),
       fields: [
-        { id: "details.officeType", label: "Office type", type: "select", options: officeTypeOptions, visibleWhen: preset("isOffice") },
-        num("details.minNoOfSeats", "Min. seats", { visibleWhen: preset("isOffice") }),
-        num("details.maxNoOfSeats", "Max. seats", { visibleWhen: preset("isOffice") }),
+        // Co-working centres get their own seat / hours fields in the "workspaceCentre" section below.
+        { id: "details.officeType", label: "Office type", type: "select", options: officeTypeOptions, visibleWhen: preset("isOfficeNotCoworking") },
+        num("details.minNoOfSeats", "Min. seats", { visibleWhen: preset("isOfficeNotCoworking"), resetOnHide: false }),
+        num("details.maxNoOfSeats", "Max. seats", { visibleWhen: preset("isOfficeNotCoworking"), resetOnHide: false }),
         counter("details.meetingRooms", "Meeting rooms", { visibleWhen: preset("isOffice") }),
         counter("details.cabins", "Cabins", { visibleWhen: preset("isOffice") }),
         num("details.workstations", "Workstations", { visibleWhen: preset("isOffice") }),
@@ -580,11 +610,13 @@ const allProfileSections: StepConfig["sections"] = [
 ];
 
 const pick = (ids: string[]) =>
-  ids.map((id) => {
-    const sec = (allProfileSections ?? []).find((x) => x.id === id);
-    if (!sec) throw new Error(`profile section ${id} missing`);
-    return sec;
-  });
+  hideForCoworking(
+    ids.map((id) => {
+      const sec = (allProfileSections ?? []).find((x) => x.id === id);
+      if (!sec) throw new Error(`profile section ${id} missing`);
+      return sec;
+    }),
+  );
 
 /** Title & description are auto-generated, so they're shown on the final review step. */
 export const titleDescSection = pick(["titleDesc"])[0];
@@ -596,7 +628,7 @@ export const propertyProfileStep: StepConfig = {
   title: "Tell us about your property",
   caption: "Rooms, area & floor",
   kind: "config",
-  sections: pick(["config", "area", "layout", "otherRooms", "pg", "commercial"]),
+  sections: pick(["config", "area", "layout", "otherRooms", "pg", "workspaceCentre", "commercial"]),
 };
 
 export const propertyFeaturesStep: StepConfig = {

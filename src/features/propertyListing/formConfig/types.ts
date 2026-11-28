@@ -44,7 +44,8 @@ export type FieldType =
   | "dimension"
   | "price"
   | "media"
-  | "brokerage";
+  | "brokerage"
+  | "coworking-plans";
 
 export type Option = {
   value: string | number | boolean;

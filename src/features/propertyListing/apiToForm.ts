@@ -2,6 +2,7 @@
 // listing object returned by GET /propertyListing/{id}, for the edit flow.
 
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
+import type { CoworkingPlan } from "@/features/coworking/model";
 import { initialPropertyListingFormValues } from "./slice";
 
 type Flat = Record<string, unknown>;
@@ -232,6 +233,32 @@ export function mapApiToForm(flat: Flat): PropertyListingFormValues {
       qualityRating: s(g("qualityRating")),
       totalRooms: n(g("totalRooms")),
       officeType: s(g("officeType")),
+      // Co-working centre
+      coworkingPlans: Array.isArray(flat.coworkingPlans)
+        ? (flat.coworkingPlans as CoworkingPlan[]).map((p) => ({
+            type: p.type,
+            name: p.name ?? "",
+            price: p.price ?? null,
+            priceUnit: p.priceUnit ?? null,
+            capacity: p.capacity ?? null,
+            unitsAvailable: p.unitsAvailable ?? null,
+            minSeats: p.minSeats ?? null,
+            daysIncluded: p.daysIncluded ?? null,
+            lockInMonths: p.lockInMonths ?? null,
+            depositMonths: p.depositMonths ?? null,
+            isAvailable: p.isAvailable !== false,
+          }))
+        : undefined,
+      workspaceOperator: s(g("workspaceOperator")),
+      seatsAvailable: n(g("seatsAvailable")),
+      open24x7: b(g("open24x7")),
+      openingTime: s(g("openingTime")),
+      closingTime: s(g("closingTime")),
+      openDays: (g("openDays") as string[]) ?? undefined,
+      workspaceInclusions: (g("workspaceInclusions") as string[]) ?? undefined,
+      lockInMonths: n(g("lockInMonths")),
+      noticePeriodDays: n(g("noticePeriodDays")),
+      depositMonths: n(g("depositMonths")),
       washroomType: s(g("washroomType")),
       suitableForBussinessType: (g("suitableForBussinessType") as string[]) ?? undefined,
       locatedNear: (g("locatedNear") as string[]) ?? undefined,

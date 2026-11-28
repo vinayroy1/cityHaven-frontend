@@ -5,7 +5,8 @@ import {
   propertySubTypes,
   commercialPropertyCategories,
 } from "@/app/propertySearch/data";
-import type { IntentKey, SearchState } from "./searchQuery";
+import type { IntentKey, RefineState, SearchState } from "./searchQuery";
+import { COWORKING_SUBCATEGORY_SLUG, PLAN_TYPES } from "@/features/coworking/model";
 import { PLOT_SUBTYPE_SLUGS } from "./searchQuery";
 import { getCountry } from "@/config/countries";
 import { getSelectedCountry } from "@/lib/country/countryStore";
@@ -188,7 +189,23 @@ const RESIDENTIAL_SUBTYPES = subTypesByPropertySlug(["residential"]).filter(
 // Commercial listings carry these backend sub-type slugs (office, retail, …).
 // The finer catalog entries (ready-to-move-office-space, …) are sub-categories
 // that search results do not expose, so they could never match.
-const COMMERCIAL_SUBTYPES: SubTypeOption[] = commercialPropertyCategories.map((c) => ({ slug: c.slug, label: c.name }));
+// "Co-working space" is a sub-category; results carry its slug, and picking it switches the budget to
+// per seat / month and adds the co-working filters below.
+const COMMERCIAL_SUBTYPES: SubTypeOption[] = [
+  ...commercialPropertyCategories.map((c) => ({ slug: c.slug, label: c.name })),
+  { slug: COWORKING_SUBCATEGORY_SLUG, label: "Co-working space" },
+];
+
+const WORKSPACE_PLAN_OPTIONS = PLAN_TYPES.map((p) => ({ value: p.value, label: p.label }));
+const TEAM_SIZE_OPTIONS = [
+  { value: "1", label: "Just me" },
+  { value: "2", label: "2–5" },
+  { value: "6", label: "6–10" },
+  { value: "11", label: "11–25" },
+  { value: "26", label: "26–50" },
+  { value: "51", label: "50+" },
+];
+const OPEN_24X7_OPTIONS = [{ value: "YES", label: "Open 24×7" }];
 
 const PLOT_SUBTYPES: SubTypeOption[] = [
   { slug: "plot-land-res", label: "Residential Plot" },
@@ -239,7 +256,10 @@ export type FilterSection =
         | "roomType"
         | "gender"
         | "diet"
-        | "lifestyle";
+        | "lifestyle"
+        | "workspacePlan"
+        | "teamSize"
+        | "open24x7";
       title: string;
       kind: "multi-chips";
       server: false;
@@ -247,7 +267,8 @@ export type FilterSection =
       options: { value: string; label: string }[];
     };
 
-export function filterSectionsFor(intent: IntentKey): FilterSection[] {
+export function filterSectionsFor(intent: IntentKey, refine?: Pick<RefineState, "subType">): FilterSection[] {
+  const coworking = intent === "COMMERCIAL" && Boolean(refine?.subType.includes(COWORKING_SUBCATEGORY_SLUG));
   // Flatmate has specialized roommate & shared living filters
   if (intent === "FLATMATE") {
     return [
@@ -263,7 +284,7 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
   }
 
   const sections: FilterSection[] = [
-    { key: "budget", title: "Budget", kind: "range", server: true, stateKeys: ["priceMin", "priceMax"] },
+    { key: "budget", title: coworking ? "Budget (per seat / month)" : "Budget", kind: "range", server: true, stateKeys: ["priceMin", "priceMax"] },
     {
       key: "area",
       title: intent === "PLOT" ? "Plot Area / Size (sq.ft)" : "Size / Area (sq.ft)",
@@ -286,6 +307,15 @@ export function filterSectionsFor(intent: IntentKey): FilterSection[] {
       server: false,
       options: opts.map((o) => ({ value: o.slug, label: o.label })),
     });
+  }
+
+  // Co-working centres: what they sell, team size and hours (filtered on the server)
+  if (coworking) {
+    sections.push(
+      { key: "workspacePlan", title: "Workspace type", kind: "multi-chips", server: false, options: WORKSPACE_PLAN_OPTIONS },
+      { key: "teamSize", title: "Team size", kind: "multi-chips", server: false, options: TEAM_SIZE_OPTIONS },
+      { key: "open24x7", title: "Access hours", kind: "multi-chips", server: false, options: OPEN_24X7_OPTIONS },
+    );
   }
 
   // Food & Mess Policy (PG / Co-living only)

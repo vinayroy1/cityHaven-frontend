@@ -44,6 +44,12 @@ function summarise(state: SearchState, key: string): string | null {
       return state.refine.diet?.length ? `Diet · ${state.refine.diet.length}` : null;
     case "lifestyle":
       return state.refine.lifestyle?.length ? `Lifestyle · ${state.refine.lifestyle.length}` : null;
+    case "workspacePlan":
+      return state.refine.workspacePlan?.length ? `Workspace · ${state.refine.workspacePlan.length}` : null;
+    case "teamSize":
+      return state.refine.teamSize?.length ? "Team size" : null;
+    case "open24x7":
+      return state.refine.open24x7?.length ? "24×7" : null;
     case "bhkTypes":
       return state.refine.bhkTypes?.length ? `BHK · ${state.refine.bhkTypes.length}` : null;
     case "saleType":
@@ -85,7 +91,7 @@ const DEFAULT_LABELS: Record<string, string> = {
 };
 
 export function QuickFilterChips({ state, onOpenFilters }: Props) {
-  const sections = filterSectionsFor(state.intent);
+  const sections = filterSectionsFor(state.intent, state.refine);
   const count = countActiveFilters(state);
 
   return (

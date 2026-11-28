@@ -28,6 +28,8 @@ import {
 } from "@/features/propertyListing/storage";
 import { mapApiToForm } from "@/features/propertyListing/apiToForm";
 import { listingSteps } from "@/features/propertyListing/formConfig/steps";
+import { withCoworkingText } from "@/features/propertyListing/formConfig/coworkingScope";
+import { predicates } from "@/features/propertyListing/formConfig/conditions";
 import { computeListingScore } from "@/features/propertyListing/formConfig/scoring";
 import {
   requiredPathsForStep,
@@ -457,7 +459,10 @@ export function PropertyListingFlow({
     form,
   ]);
 
-  const step = listingSteps[stepIndex];
+  // Co-working listings get their own step / section wording (same steps and fields).
+  const isCoworking = predicates.isCoworking(values ?? {});
+  const displaySteps = useMemo(() => (isCoworking ? withCoworkingText(listingSteps) : listingSteps), [isCoworking]);
+  const step = displaySteps[stepIndex];
   const isLast = stepIndex === listingSteps.length - 1;
   const busy = submitState.isLoading || updateState.isLoading;
 
@@ -764,7 +769,7 @@ export function PropertyListingFlow({
   return (
     <FormProvider {...form}>
       <MobileStepBar
-        steps={listingSteps}
+        steps={displaySteps}
         current={stepIndex}
         maxVisited={maxVisited}
         score={score.pct}
@@ -775,7 +780,7 @@ export function PropertyListingFlow({
         <aside className="hidden space-y-4 lg:block lg:sticky lg:top-6 lg:self-start">
           <div className={cn(panel, "p-3")}>
             <Stepper
-              steps={listingSteps}
+              steps={displaySteps}
               current={stepIndex}
               maxVisited={maxVisited}
               onNavigate={goToStep}

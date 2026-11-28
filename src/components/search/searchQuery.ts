@@ -11,6 +11,7 @@
  */
 
 import type { FlatmateListing } from "@/types/flatmate.types";
+import { COWORKING_SUBCATEGORY_SLUG, planTypeMeta } from "@/features/coworking/model";
 import { countrySegment } from "@/lib/seo/countryPath";
 import { getSelectedCountry } from "@/lib/country/countryStore";
 
@@ -43,6 +44,10 @@ export type RefineState = {
   gender?: string[]; // Female Only | Male Only | Any Gender
   diet?: string[]; // Pure Vegetarian | Vegetarian & Eggetarian | Non-Vegetarian | Vegan | Any Diet
   lifestyle?: string[]; // PET_FRIENDLY | NON_SMOKER | SMOKING_ALLOWED | DRINKING_ALLOWED
+  // Co-working (server-side; only when the "Co-working space" type is picked)
+  workspacePlan?: string[]; // HOT_DESK | DEDICATED_DESK | PRIVATE_CABIN | ...
+  teamSize?: string[]; // lower bound of the team-size band, e.g. "6" for 6–10
+  open24x7?: string[]; // YES
 };
 
 export type SearchState = {
@@ -106,6 +111,9 @@ const emptyRefine = (): RefineState => ({
   gender: [],
   diet: [],
   lifestyle: [],
+  workspacePlan: [],
+  teamSize: [],
+  open24x7: [],
 });
 
 export const initialSearchState = (cityName = "Delhi"): SearchState => ({
@@ -204,6 +212,9 @@ export function parseSearchParams(sp: URLSearchParams): SearchState {
     gender: splitList(sp.get("r.gender")),
     diet: splitList(sp.get("r.diet")),
     lifestyle: splitList(sp.get("r.lifestyle")),
+    workspacePlan: splitList(sp.get("r.wsPlan")).map((s) => s.toUpperCase()),
+    teamSize: splitList(sp.get("r.team")),
+    open24x7: splitList(sp.get("r.24x7")),
   };
 
   // Auto-sync UI chip for BHK if not set but bedroomsMin is provided
@@ -252,6 +263,9 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
   if (r.gender && r.gender.length) sp.set("r.gender", r.gender.join(","));
   if (r.diet && r.diet.length) sp.set("r.diet", r.diet.join(","));
   if (r.lifestyle && r.lifestyle.length) sp.set("r.lifestyle", r.lifestyle.join(","));
+  if (r.workspacePlan && r.workspacePlan.length) sp.set("r.wsPlan", r.workspacePlan.join(","));
+  if (r.teamSize && r.teamSize.length) sp.set("r.team", r.teamSize.join(","));
+  if (r.open24x7 && r.open24x7.length) sp.set("r.24x7", r.open24x7.join(","));
 
   return sp;
 }
@@ -337,6 +351,10 @@ export type ApiSearchParams = {
   pageSize: number;
   postedAs?: string;
   saleType?: string;
+  propertySubCategorySlug?: string;
+  workspacePlanType?: string;
+  seatsNeeded?: number;
+  open24x7?: "true";
 };
 
 export function toApiParams(state: SearchState, pageSize: number): ApiSearchParams {
@@ -381,6 +399,15 @@ export function toApiParams(state: SearchState, pageSize: number): ApiSearchPara
   if (state.refine.postedAs.length === 1) out.postedAs = state.refine.postedAs[0];
   // Resale / New booking is filtered on the server (both values allowed together).
   if (state.refine.saleType?.length) out.saleType = state.refine.saleType.join(",");
+  // Co-working: the server filters plans, team size and hours, and reads the budget as per seat / month.
+  if (isCoworkingSearch(state)) {
+    out.propertySubCategorySlug = COWORKING_SUBCATEGORY_SLUG;
+    const r = state.refine;
+    if (r.workspacePlan?.length) out.workspacePlanType = r.workspacePlan.join(",");
+    const sizes = (r.teamSize ?? []).map(Number).filter((n) => Number.isFinite(n) && n > 0);
+    if (sizes.length) out.seatsNeeded = Math.min(...sizes);
+    if (r.open24x7?.length) out.open24x7 = "true";
+  }
   return out;
 }
 
@@ -438,6 +465,8 @@ export type RefinableItem = {
   propertySubTypeSlug?: string | null;
   propertySubTypeName?: string | null;
   propertySubType?: { slug?: string | null } | null;
+  propertySubCategorySlug?: string | null;
+  propertySubCategory?: { slug?: string | null } | null;
   cityName?: string | null;
   locality?: string | null;
   subLocality?: string | null;
@@ -489,8 +518,11 @@ export function applyClientRefinements<T extends RefinableItem>(
       const slug = item.propertySubType?.slug ?? item.propertySubTypeSlug ?? undefined;
       const byId = item.propertySubTypeId != null && wantedSubTypeIds.has(item.propertySubTypeId);
       const bySlug = slug != null && wantedSubTypeSlugs.has(slug);
+      // Finer picks such as "Co-working space" are sub-categories, not sub-types.
+      const subCategory = item.propertySubCategory?.slug ?? item.propertySubCategorySlug ?? undefined;
+      const bySubCategory = subCategory != null && wantedSubTypeSlugs.has(subCategory);
       let byKeyword = false;
-      if (!byId && !bySlug) {
+      if (!byId && !bySlug && !bySubCategory) {
         const textCorpus = [item.title, item.propertySubTypeName, slug].filter(Boolean).join(" ").toLowerCase();
         for (const wanted of wantedSubTypeSlugs) {
           if (wanted === "office" && (textCorpus.includes("office") || textCorpus.includes("coworking"))) {
@@ -506,7 +538,7 @@ export function applyClientRefinements<T extends RefinableItem>(
           }
         }
       }
-      if (!byId && !bySlug && !byKeyword) return false;
+      if (!byId && !bySlug && !bySubCategory && !byKeyword) return false;
     }
 
     if (refine.furnishing.length) {
@@ -875,6 +907,27 @@ export function describeFilters(
       remove: (s) => ({ ...s, refine: { ...s.refine, subType: s.refine.subType.filter((x) => x !== slug) } }),
     });
   });
+  (state.refine.workspacePlan || []).forEach((v) => {
+    chips.push({
+      id: `wsPlan:${v}`,
+      label: planTypeMeta(v).label,
+      remove: (s) => ({ ...s, refine: { ...s.refine, workspacePlan: (s.refine.workspacePlan || []).filter((x) => x !== v) } }),
+    });
+  });
+  (state.refine.teamSize || []).forEach((v) => {
+    chips.push({
+      id: `team:${v}`,
+      label: `Team of ${v}+`,
+      remove: (s) => ({ ...s, refine: { ...s.refine, teamSize: (s.refine.teamSize || []).filter((x) => x !== v) } }),
+    });
+  });
+  if (state.refine.open24x7?.length) {
+    chips.push({
+      id: "open24x7",
+      label: "Open 24×7",
+      remove: (s) => ({ ...s, refine: { ...s.refine, open24x7: [] } }),
+    });
+  }
   state.refine.furnishing.forEach((v) => {
     chips.push({
       id: `furnishing:${v}`,
@@ -1090,3 +1143,7 @@ export function locationSummary(state: SearchState): string {
   if (parts.length <= 2) return parts.join(" · ");
   return `${parts[0]} +${parts.length - 1} more`;
 }
+
+/** A commercial search narrowed to co-working centres (the "Co-working space" type chip). */
+export const isCoworkingSearch = (state: Pick<SearchState, "intent" | "refine">) =>
+  state.intent === "COMMERCIAL" && state.refine.subType.includes(COWORKING_SUBCATEGORY_SLUG);

@@ -1,5 +1,6 @@
 import { amenityOptions } from "../../constants";
 import { preset } from "../conditions";
+import { hideForCoworking } from "../coworkingScope";
 import { paymentFrequencyOptions } from "../options";
 import type { FieldConfig, Option, StepConfig } from "../types";
 
@@ -30,13 +31,31 @@ const amenityChoices: Option[] = amenityOptions.map((a) => ({
   label: QUALIFIED_AMENITY_CATEGORIES.has(a.category) ? `${a.label} (${a.category})` : a.label,
 }));
 
-export const pricingAmenitiesStep: StepConfig = {
+const pricingAmenitiesBase: StepConfig = {
   id: "pricing",
   label: "Pricing & Amenities",
   title: "Pricing & other details",
   caption: "Commercials, brokerage & features",
   kind: "config",
   sections: [
+    {
+      id: "workspacePlans",
+      title: "Workspace plans",
+      requiredHint: "Add at least one plan",
+      visibleWhen: preset("isCoworking"),
+      fields: [{ id: "details.coworkingPlans", label: "Plans", type: "coworking-plans", required: true, weight: 4 }],
+    },
+    {
+      id: "workspaceTerms",
+      title: "Contract terms",
+      mobileColumns: 2,
+      visibleWhen: preset("isCoworking"),
+      fields: [
+        { id: "details.lockInMonths", label: "Minimum lock-in (months)", type: "number", min: 0, max: 120, placeholder: "e.g. 3" },
+        { id: "details.noticePeriodDays", label: "Notice period (days)", type: "number", min: 0, max: 365, placeholder: "e.g. 30" },
+        { id: "details.depositMonths", label: "Security deposit (months of rent)", type: "number", min: 0, max: 24, step: 0.5, placeholder: "e.g. 2" },
+      ],
+    },
     {
       id: "price",
       title: "Price details",
@@ -79,9 +98,9 @@ export const pricingAmenitiesStep: StepConfig = {
         { id: "pricing.allInclusivePrice", label: "All-inclusive price", type: "checkbox", visibleWhen: preset("isSell") },
         {
           id: "pricing.taxAndGovtExcluded",
-          label: "Tax & govt charges excluded",
+          label: "Tax & govt charges excluded (e.g. GST added on top)",
           type: "checkbox",
-          visibleWhen: preset("isSell"),
+          visibleWhen: { or: [preset("isSell"), preset("isCoworking")] },
         },
       ],
     },
@@ -136,4 +155,9 @@ export const pricingAmenitiesStep: StepConfig = {
       fields: [{ id: "amenities.amenityIds", label: "Amenities", type: "chip-multi", options: amenityChoices }],
     },
   ],
+};
+
+export const pricingAmenitiesStep: StepConfig = {
+  ...pricingAmenitiesBase,
+  sections: hideForCoworking(pricingAmenitiesBase.sections ?? []),
 };

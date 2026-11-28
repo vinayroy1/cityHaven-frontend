@@ -1,4 +1,6 @@
 import React, { cache } from "react";
+import { CoworkingPlansCard } from "./components/CoworkingPlansCard";
+import { unitLabel, type CoworkingPlan } from "@/features/coworking/model";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -28,6 +30,20 @@ type AmenityGroup = {
 };
 type PropertyDetails = {
   id: number;
+  // Co-working centre: price is the cheapest plan in `priceUnit`; plans carry their own prices.
+  priceUnit?: string | null;
+  coworkingPlans?: CoworkingPlan[] | null;
+  workspaceOperator?: string | null;
+  seatsAvailable?: number | null;
+  maxNoOfSeats?: number | null;
+  open24x7?: boolean | null;
+  openingTime?: string | null;
+  closingTime?: string | null;
+  openDays?: string[] | null;
+  workspaceInclusions?: string[] | null;
+  lockInMonths?: number | null;
+  noticePeriodDays?: number | null;
+  depositMonths?: number | null;
   countryCode?: string | null;
   currencyCode?: string | null;
   slug?: string | null;
@@ -631,7 +647,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const rawTitle = property.title || fallbackTitle;
   const title = isPg ? rawTitle.replace(/^1\s*BHK\s*[-–·,]?\s*/i, "") : rawTitle;
   const location = compact([property.subLocality, property.localityRef?.name ?? property.locality, property.city?.name ?? property.cityName]);
-  const price = formatMoney(property.price, property.currencyCode);
+  const price = headlinePrice(property);
   const area = getArea(property);
   // Lead with the facts (intent, place, price, size), then a cleaned-up slice of the owner's text.
   const intentWord = isPg ? "PG" : property.listingType?.toLowerCase().includes("rent") ? "for rent" : "for sale";
@@ -700,8 +716,9 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const rawTitle = property.title || fallbackTitle;
   const title = isPg ? rawTitle.replace(/^1\s*BHK\s*[-–·,]?\s*/i, "") : rawTitle;
 
-  const price = formatMoney(property.price, property.currencyCode);
+  const price = headlinePrice(property);
   const area = getArea(property);
+  const isCoworking = Boolean(property.priceUnit) || (property.coworkingPlans?.length ?? 0) > 0;
   const tags = isPg
     ? [
         "PG / Lodge",
@@ -747,6 +764,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       "@type": "Offer",
       ...(property.price ? { price: property.price } : {}),
       priceCurrency: property.currencyCode || "INR",
+      // Per-unit prices (seat / day) say so, so search engines don't read a seat price as the rent.
+      ...(property.priceUnit
+        ? { priceSpecification: { "@type": "UnitPriceSpecification", price: property.price, priceCurrency: property.currencyCode || "INR", unitText: unitLabel(property.priceUnit) } }
+        : {}),
       availability: "https://schema.org/InStock",
       businessFunction: property.listingType?.toLowerCase().includes("rent") || isPg ? "https://schema.org/LeaseOut" : "https://schema.org/Sell",
       url: listingUrl,
@@ -836,7 +857,9 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             subtitle={location || property.address || "Location available on request"}
             price={price}
             priceHint={
-              isPg
+              property.priceUnit
+                ? unitLabel(property.priceUnit)
+                : isPg
                 ? (roomWise ? "per room / month" : "per bed / month")
                 : (property.priceType ? formatEnum(property.priceType) : area.value)
             }
@@ -889,8 +912,26 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             )}
 
             <nav aria-label="Property sections" className="flex gap-6 overflow-x-auto border-b border-zinc-200 dark:border-slate-800 text-sm font-semibold">
-              {[['overview', 'Overview'], ['details', 'Property details'], ['location', 'Location'], ['nearby', 'Nearby']].map(([anchor, label]) => <a key={anchor} href={`#${anchor}`} className="shrink-0 border-b-2 border-transparent pb-3 text-zinc-600 dark:text-slate-400 transition hover:border-emerald-600 hover:text-emerald-700 dark:hover:text-emerald-400">{label}</a>)}
+              {[...(isCoworking ? [['plans', 'Plans']] : []), ['overview', 'Overview'], ['details', 'Property details'], ['location', 'Location'], ['nearby', 'Nearby']].map(([anchor, label]) => <a key={anchor} href={`#${anchor}`} className="shrink-0 border-b-2 border-transparent pb-3 text-zinc-600 dark:text-slate-400 transition hover:border-emerald-600 hover:text-emerald-700 dark:hover:text-emerald-400">{label}</a>)}
             </nav>
+            {isCoworking && (
+              <CoworkingPlansCard
+                plans={property.coworkingPlans ?? []}
+                currencyCode={property.currencyCode}
+                operator={property.workspaceOperator}
+                totalSeats={property.maxNoOfSeats}
+                seatsAvailable={property.seatsAvailable}
+                open24x7={property.open24x7}
+                openingTime={property.openingTime}
+                closingTime={property.closingTime}
+                openDays={property.openDays}
+                inclusions={property.workspaceInclusions}
+                lockInMonths={property.lockInMonths}
+                noticePeriodDays={property.noticePeriodDays}
+                depositMonths={property.depositMonths}
+                taxExtra={property.taxAndGovtExcluded}
+              />
+            )}
             <AboutHighlights aboutCopy={property.description || "This property is listed on Awasio with key pricing, location, media, and owner information. Contact the owner to confirm visit slots, documents, and negotiation details."} highlights={buildHighlights(property)} amenities={amenities} />
             <PropertyDetailsGrid groups={buildDetailGroups(property)} />
             <LocationCard
@@ -931,4 +972,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       </div>
     </main>
   );
+}
+
+/** "₹20,000", or "From ₹9,000" for a co-working centre whose price is its cheapest plan. */
+function headlinePrice(property: PropertyDetails) {
+  const amount = formatMoney(property.price, property.currencyCode);
+  return property.priceUnit && property.price ? `From ${amount}` : amount;
 }

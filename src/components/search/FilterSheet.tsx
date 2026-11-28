@@ -262,7 +262,7 @@ export function FilterSectionsEditor({
   setDraft: (s: SearchState) => void;
   singleSelectKeys?: ReadonlySet<string>;
 }) {
-  const sections = filterSectionsFor(draft.intent);
+  const sections = filterSectionsFor(draft.intent, draft.refine);
   return (
     <div>
       {sections.map((section) => (

@@ -56,6 +56,9 @@ const isWarehouse: Predicate = (v) => subType(v) === "storage";
 const isIndustry: Predicate = (v) => subType(v) === "industry";
 const isHospitality: Predicate = (v) => subType(v) === "hospitality";
 const isShopCategory: Predicate = (v) => isRetail(v) && subCategory(v) === "commercial-shops";
+// Co-working centre: priced per plan (seat / cabin / day), not one rent. See features/coworking/model.ts.
+const isCoworking: Predicate = (v) =>
+  isOffice(v) && (subCategory(v) === "co-working-office-space" || str(getValue(v, "details.officeType")) === "CO_WORKING");
 const insideComplex: Predicate = (v) => Boolean(str(getValue(v, "context.locatedInsideSlug")));
 
 // A unit physically inside a multi-storey building (has a floor, a lift, a society).
@@ -105,6 +108,8 @@ export const predicates: Record<string, Predicate> = {
   isIndustry,
   isHospitality,
   isShopCategory,
+  isCoworking,
+  isOfficeNotCoworking: (v) => isOffice(v) && !isCoworking(v),
   insideComplex,
   isSell,
   isRent,
@@ -168,13 +173,14 @@ export const predicates: Record<string, Predicate> = {
 
   // ---- Pricing (listing-type aware) ----
   priceIsSell: isSell,
-  priceIsRent: isRent,
+  // Co-working rent lives on its plans (per seat / day / hour), so the single rent field is hidden.
+  priceIsRent: (v) => isRent(v) && !isCoworking(v),
   priceIsPg: isPG,
   priceIsPgBed: (v) => isPG(v) && str(getValue(v, "details.pricingBasis")) !== "PER_ROOM",
   priceIsPgRoom: (v) => isPG(v) && str(getValue(v, "details.pricingBasis")) === "PER_ROOM",
   showPricePerSqFt: (v) => isSell(v) && !isPG(v),
-  showDeposit: (v) => isRent(v) || isPG(v),
-  showMaintenance: (v) => (isSell(v) || isRent(v)) && (isBuildingUnit(v) || insideComplex(v)),
+  showDeposit: (v) => (isRent(v) || isPG(v)) && !isCoworking(v),
+  showMaintenance: (v) => (isSell(v) || isRent(v)) && (isBuildingUnit(v) || insideComplex(v)) && !isCoworking(v),
   showSocietyCharges: (v) => isSell(v) && isBuildingUnit(v),
   showBookingAmount: (v) => isSell(v),
   showBrokerage: (v) => postedAsAgent(v) && !isPG(v),

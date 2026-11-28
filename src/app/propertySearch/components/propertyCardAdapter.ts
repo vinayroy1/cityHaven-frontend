@@ -1,11 +1,14 @@
 import { cdnImageUrl } from "@/config/cdn";
+import { isCoworkingListing, summarizePlans, unitLabel } from "@/features/coworking/model";
 import type { PropertySearchItem } from "@/types/propertySearch.types";
 import type { ResultCardProps } from "./resultCardTypes";
 import { formatMoney, formatMoneyShort } from "@/lib/money";
 
 /** Sale prices in lakh/crore (₹28.2 L, ₹3.8 Cr) like project cards; rents in full (₹20,000/month). */
-const money = (value?: number | null, listingType?: string | null, currency?: string | null) => {
+const money = (value?: number | null, listingType?: string | null, currency?: string | null, priceUnit?: string | null) => {
   if (value == null) return "Price on request";
+  // Per-unit prices (co-working seat, day pass) read "From ₹9,000/seat/mo", never as a whole rent.
+  if (priceUnit) return `From ${formatMoney(value, currency || "INR")}${unitLabel(priceUnit, true)}`;
   if (listingType === "RENT" || listingType === "PG") return `${formatMoney(value, currency || "INR")}/month`;
   return shortMoney(value, currency) || formatMoney(value, currency || "INR");
 };
@@ -64,6 +67,15 @@ const decisionDetails = (item: PropertySearchItem): string[] => {
       item.propertyFacing && `${readable(item.propertyFacing)} facing`,
       item.openSides ? `${item.openSides} open sides` : null,
     );
+  } else if (isCoworkingItem(item)) {
+    // Co-working: what it sells, how many seats are free, and hours, as renters compare them.
+    const seats = item.seatsAvailable ?? null;
+    details.push(
+      summarizePlans(item.coworkingPlans) || "Co-working",
+      seats ? `${seats} seats available` : item.maxNoOfSeats ? `${item.maxNoOfSeats} seats` : null,
+      item.open24x7 ? "Open 24×7" : null,
+      area(item),
+    );
   } else if (item.resCom === "COMMERCIAL") {
     details.push(
       area(item),
@@ -106,7 +118,7 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     slug: item.slug,
     title: item.title,
     subtitle: [item.locality, item.subLocality, item.cityName].filter(Boolean).join(" · "),
-    price: money(item.price, item.listingType, item.currencyCode),
+    price: money(item.price, item.listingType, item.currencyCode, item.priceUnit),
     area: area(item),
     owner: postedAsLabel(item.postedAs),
     bedrooms: item.bedrooms,
@@ -137,3 +149,11 @@ export function toResultCardProps(item: PropertySearchItem): ResultCardProps {
     ),
   };
 }
+
+const isCoworkingItem = (item: PropertySearchItem) =>
+  Boolean(item.priceUnit) ||
+  isCoworkingListing({
+    propertySubCategorySlug: item.propertySubCategorySlug,
+    propertySubCategory: item.propertySubCategory,
+    officeType: item.officeType,
+  });

@@ -56,6 +56,8 @@ export const basicDetailsStep: StepConfig = {
             { value: "OWNER", label: "Property Owner" },
             { value: "AGENT", label: "Broker / Agent" },
             { value: "BUILDER", label: "Builder / Developer" },
+            // Co-working centres are usually listed by the operator who runs them, not the building owner.
+            { value: "OPERATOR", label: "Co-working operator", visibleWhen: preset("isCoworking") },
           ],
         },
         {

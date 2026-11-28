@@ -1,3 +1,4 @@
+import type { CoworkingPlan } from "@/features/coworking/model";
 export interface PropertyListingData {
   /**
    * @deprecated Legacy scaffold from the first pass of the wizard.
@@ -178,6 +179,18 @@ export interface PropertyDetailsBlock {
   washroomType?: string;
   officeType?: string;
   cabinCount?: number | null;
+  // Co-working centre (features/coworking/model.ts)
+  coworkingPlans?: CoworkingPlan[];
+  workspaceOperator?: string;
+  seatsAvailable?: number | null;
+  open24x7?: boolean;
+  openingTime?: string;
+  closingTime?: string;
+  openDays?: string[];
+  workspaceInclusions?: string[];
+  lockInMonths?: number | null;
+  noticePeriodDays?: number | null;
+  depositMonths?: number | null;
   workstations?: number | null;
   multiFloorSelect?: boolean;
   multiFloorNum?: number | null;

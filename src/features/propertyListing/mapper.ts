@@ -1,4 +1,5 @@
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
+import { COWORKING_SUBCATEGORY_SLUG } from "@/features/coworking/model";
 import { propertyTypes, propertySubTypeCatalog } from "./constants";
 import { toIsoStringOrNull } from "@/lib/date";
 
@@ -391,5 +392,58 @@ export const mapFormToApiPayload = (form: PropertyListingFormValues) => {
     ...stripEmpty(base),
     ...amenityPayload,
     ...mediaPayload,
+    ...coworkingPayload(form, resolvedSubTypeSlug, resolvedSubCategorySlug),
   };
 };
+
+const HHMM = /^(\d{1,2}):(\d{2})$/;
+/** "9:00" -> "09:00"; anything else unparseable is dropped (the API only accepts HH:MM). */
+const toHHMM = (v?: string | null) => {
+  const m = (v ?? "").trim().match(HHMM);
+  if (!m) return null;
+  const h = Number(m[1]);
+  const min = Number(m[2]);
+  return h < 24 && min < 60 ? `${String(h).padStart(2, "0")}:${m[2]}` : null;
+};
+
+/**
+ * Co-working centres send their plans and centre details; the API derives the listing's starting
+ * price from the plans. A listing that stops being co-working clears any plans it had.
+ */
+function coworkingPayload(form: PropertyListingFormValues, subTypeSlug?: string, subCategorySlug?: string) {
+  const d = form.details;
+  const isCoworking =
+    subTypeSlug === "office" && (subCategorySlug === COWORKING_SUBCATEGORY_SLUG || d.officeType === "CO_WORKING");
+  if (!isCoworking) return d.coworkingPlans?.length ? { coworkingPlans: [] } : {};
+
+  const plans = (d.coworkingPlans ?? [])
+    .filter((p) => p && p.type)
+    .map((p) => ({
+      type: p.type,
+      name: p.name?.trim() || null,
+      price: typeof p.price === "number" && p.price > 0 ? p.price : null,
+      priceUnit: p.priceUnit || null,
+      capacity: p.capacity ?? null,
+      unitsAvailable: p.unitsAvailable ?? null,
+      minSeats: p.minSeats ?? null,
+      daysIncluded: p.type === "FLEXI_PASS" ? p.daysIncluded ?? null : null,
+      lockInMonths: p.lockInMonths ?? null,
+      depositMonths: p.depositMonths ?? null,
+      isAvailable: p.isAvailable !== false,
+    }));
+  const open24x7 = Boolean(d.open24x7);
+  return {
+    officeType: "CO_WORKING",
+    coworkingPlans: plans,
+    workspaceOperator: d.workspaceOperator?.trim() || null,
+    seatsAvailable: d.seatsAvailable ?? null,
+    open24x7,
+    openDays: open24x7 ? [] : d.openDays ?? [],
+    openingTime: open24x7 ? null : toHHMM(d.openingTime),
+    closingTime: open24x7 ? null : toHHMM(d.closingTime),
+    workspaceInclusions: d.workspaceInclusions ?? [],
+    lockInMonths: d.lockInMonths ?? null,
+    noticePeriodDays: d.noticePeriodDays ?? null,
+    depositMonths: d.depositMonths ?? null,
+  };
+}

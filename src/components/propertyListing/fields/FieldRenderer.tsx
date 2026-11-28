@@ -28,6 +28,7 @@ import { getCountry } from "@/config/countries";
 import { formatMoney } from "@/lib/money";
 import { MediaField } from "./MediaField";
 import { BrokerageField } from "./BrokerageField";
+import { CoworkingPlansField } from "./CoworkingPlansField";
 
 type Props = { field: FieldConfig; values: FormValues };
 
@@ -642,6 +643,9 @@ export function FieldRenderer({ field: rawField, values }: Props) {
 
     case "brokerage":
       return <BrokerageField field={field} disabled={disabled} />;
+
+    case "coworking-plans":
+      return <CoworkingPlansField field={field} disabled={disabled} error={error} />;
 
     default:
       return null;
