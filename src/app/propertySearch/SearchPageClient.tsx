@@ -29,6 +29,9 @@ import {
   buildSearchHref,
   countActiveFilters,
   parseSearchParams,
+  applyVertical,
+  verticalFromSlug,
+  verticalOf,
   toSearchSlug,
   type IntentKey,
   type SearchState,
@@ -46,6 +49,8 @@ type SearchPageClientProps = {
   routeCity?: string;
   routeLocalities?: string[];
   routeIntent?: IntentKey;
+  /** A vertical slug from the URL (/coworking-space/…): the page opens already narrowed to it. */
+  routeVertical?: string;
   routeState?: string;
   /** Country from the URL prefix (/buy/ae/dubai); null = India / no prefix. */
   routeCountry?: string | null;
@@ -86,6 +91,7 @@ function SearchPageView({
   routeCity,
   routeLocalities = [],
   routeIntent,
+  routeVertical,
   routeState,
   routeCountry = null,
   initialItems,
@@ -96,8 +102,10 @@ function SearchPageView({
   const routeLocalitiesKey = routeLocalities.join("\u001f");
 
   const state = React.useMemo(() => {
-    const parsed = parseSearchParams(new URLSearchParams(query));
+    let parsed = parseSearchParams(new URLSearchParams(query));
     if (routeIntent) parsed.intent = routeIntent;
+    const vertical = routeVertical ? verticalFromSlug(routeVertical) : undefined;
+    if (vertical) parsed = applyVertical(parsed, vertical);
     if (routeState && !parsed.q) parsed.q = routeState;
     if (routeCity) parsed.cityName = routeCity;
     const pathLocalities = routeLocalitiesKey ? routeLocalitiesKey.split("\u001f") : [];
@@ -105,7 +113,7 @@ function SearchPageView({
       parsed.localities = pathLocalities.slice(0, 2).map((label) => ({ label, city: routeCity }));
     }
     return parsed;
-  }, [query, routeCity, routeLocalitiesKey, routeIntent, routeState]);
+  }, [query, routeCity, routeLocalitiesKey, routeIntent, routeVertical, routeState]);
 
   React.useEffect(() => {
     // Restore browser-only city preferences after hydration. Keeping storage
@@ -214,6 +222,7 @@ function SearchPageView({
   );
 
   const results = useSearchResults(state, initialItems, initialTotal);
+  const h1Label = verticalOf(state)?.label ?? H1_LABEL[state.intent as string] ?? "Properties for Sale";
   const portalCountry = useCountry();
   const resultsCountry = React.useMemo(() => {
     if (!state.cityName) return null;
@@ -399,8 +408,8 @@ function SearchPageView({
           <div>
             <h1 className="text-base sm:text-xl font-bold tracking-tight text-slate-950 dark:text-white">
               {state.cityName || state.localities?.[0]?.label
-                ? `${H1_LABEL[state.intent as string] ?? "Properties for Sale"} in ${[state.localities?.[0]?.label, state.cityName].filter(Boolean).join(", ")}`
-                : `${H1_LABEL[state.intent as string] ?? "Properties for Sale"} in ${portalCountry.name}`}
+                ? `${h1Label} in ${[state.localities?.[0]?.label, state.cityName].filter(Boolean).join(", ")}`
+                : `${h1Label} in ${portalCountry.name}`}
               <span className="ml-1.5 font-normal text-slate-500 text-xs sm:text-sm dark:text-slate-400 capitalize">
                 • {state.intent === "RENT" ? "Rent" : state.intent === "PG" ? "PG & Co-Living" : state.intent === "FLATMATE" ? "Flatmate" : state.intent === "COMMERCIAL" ? "Commercial" : "Buy & Rent"}
               </span>

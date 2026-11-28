@@ -58,7 +58,6 @@ const SECTION_TITLE: Record<string, string> = {
 const FIELD_LABEL: Record<string, string> = {
   "location.societyOrProjectName": "Building / tech park name",
   "pricing.taxAndGovtExcluded": "Prices exclude GST / taxes",
-  "context.postedAs": "Who is listing this centre?",
 };
 
 /** Co-working copies of the steps with their own wording (ids and logic unchanged). */

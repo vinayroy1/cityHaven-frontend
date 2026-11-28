@@ -113,6 +113,21 @@ export function FieldRenderer({ field: rawField, values }: Props) {
       ? rawField
       : { ...rawField, label: rawField.label.replace(/₹/g, country.currencySymbol) };
 
+  // A single-choice answer whose option is no longer offered (e.g. "Co-working operator" after
+  // switching to a shop) is cleared, so the form never saves a choice the poster can't see.
+  const chosen = field.type === "chip-radio" ? get(values, field.id) : undefined;
+  const chosenIsOffered =
+    chosen === undefined ||
+    chosen === null ||
+    chosen === "" ||
+    !evaluateCondition(values, field.visibleWhen) ||
+    (field.options ?? []).some(
+      (o) => evaluateCondition(values, o.visibleWhen) && String(o.value).toUpperCase() === String(chosen).toUpperCase(),
+    );
+  React.useEffect(() => {
+    if (!chosenIsOffered) form.setValue(field.id, "", { shouldDirty: true });
+  }, [chosenIsOffered, field.id, form]);
+
   if (!evaluateCondition(values, field.visibleWhen)) return null;
 
   const options = (field.options ?? []).filter((o) => evaluateCondition(values, o.visibleWhen));

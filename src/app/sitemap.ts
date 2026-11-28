@@ -335,6 +335,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
+  // D. Co-working city pages (/coworking-space/city), only where centres are listed. Their locality
+  // pages come from the clusters below like every other intent.
+  const coworkingCityUrls = new Set<string>();
+  for (const cluster of clusters) {
+    if (cluster.intent !== "coworking-space" || !cluster.city || cluster.count <= 0) continue;
+    let citySlug = toSearchSlug(cluster.city);
+    if (CITY_CANONICAL_MAP[citySlug]) citySlug = CITY_CANONICAL_MAP[citySlug];
+    const cc = countrySegment(cluster.countryCode);
+    if (citySlug) coworkingCityUrls.add(`${SITE_URL}/coworking-space/${cc ? `${cc}/` : ""}${citySlug}`);
+  }
+  const coworkingCityRoutes: MetadataRoute.Sitemap = [...coworkingCityUrls].map((url) => ({
+    url,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.85,
+  }));
+
   // 5. Populated Locality Landing Pages (STRICT: ONLY pairs with active listings!)
   const localitySearchRoutes: MetadataRoute.Sitemap = [];
   const visitedLocalityUrls = new Set<string>();
@@ -482,6 +499,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...citySearchRoutes,
     ...pgCityRoutes,
     ...flatmateCityRoutes,
+    ...coworkingCityRoutes,
     ...localitySearchRoutes,
     ...agentRoutes,
     ...agentCityRoutes,

@@ -301,6 +301,53 @@ export const intentFromSearchSlug = (value: string): IntentKey | undefined => {
   return INTENT_KEYS.find((intent) => SEARCH_INTENT_SLUGS[intent] === normalized);
 };
 
+/**
+ * Search verticals: a URL of their own for a slice of an intent that people search for by name
+ * ("coworking space in Koramangala"). /coworking-space/bengaluru/koramangala is the commercial
+ * rent search narrowed to co-working centres; links built from that state come back to it.
+ */
+export type SearchVertical = {
+  slug: string;
+  intent: IntentKey;
+  transaction: "SELL" | "RENT";
+  subType: string;
+  /** Page heading, e.g. "Coworking Spaces in Koramangala, Bengaluru". */
+  label: string;
+  /** Same, for a count of one ("1 Coworking Space in Pune"). */
+  singular: string;
+  description: (where: string, count: string) => string;
+};
+
+export const SEARCH_VERTICALS: SearchVertical[] = [
+  {
+    slug: "coworking-space",
+    intent: "COMMERCIAL",
+    transaction: "RENT",
+    subType: COWORKING_SUBCATEGORY_SLUG,
+    label: "Coworking Spaces",
+    singular: "Coworking Space",
+    description: (where, count) =>
+      `${count ? `Compare ${count}` : "Compare "}coworking spaces in ${where}: hot desks, dedicated desks, private cabins, day passes and meeting rooms. See per-seat prices, hours and what's included, then contact the operator directly on Awasio.`,
+  },
+];
+
+export const verticalFromSlug = (value: string) => SEARCH_VERTICALS.find((v) => v.slug === value.trim().toLowerCase());
+
+/** The vertical a search state belongs to (only when it is exactly that slice). */
+export const verticalOf = (state: Pick<SearchState, "intent" | "transaction" | "refine">) =>
+  SEARCH_VERTICALS.find(
+    (v) =>
+      state.intent === v.intent &&
+      (state.transaction ?? "SELL") === v.transaction &&
+      state.refine.subType.length === 1 &&
+      state.refine.subType[0] === v.subType,
+  );
+
+/** Puts a vertical's slice onto a search state (used when a page is opened at its URL). */
+export function applyVertical(state: SearchState, vertical: SearchVertical): SearchState {
+  return { ...state, intent: vertical.intent, transaction: vertical.transaction, refine: { ...state.refine, subType: [vertical.subType] } };
+}
+
 /** Build the canonical SEO route while keeping non-location filters in query params. */
 /**
  * /buy[/cc]/city[/locality…]?filters. India has no country segment; other countries use their ISO code
@@ -316,6 +363,12 @@ export function buildSearchHref(state: SearchState, countryCode?: string | null)
   params.delete("loc");
 
   params.delete("intent");
+  // A vertical carries its slice in the path (/coworking-space/…), not in the query.
+  const vertical = verticalOf(state);
+  if (vertical) {
+    params.delete("r.subType");
+    params.delete("transaction");
+  }
 
   const city = state.cityName?.trim();
   const pathSegments = city ? [toSearchSlug(city)] : [];
@@ -327,7 +380,7 @@ export function buildSearchHref(state: SearchState, countryCode?: string | null)
   const query = params.toString();
   const cc = city ? countrySegment(countryCode === undefined ? getSelectedCountry() : countryCode) : null;
   if (cc) pathSegments.unshift(cc);
-  const base = `/${SEARCH_INTENT_SLUGS[state.intent]}`;
+  const base = `/${vertical ? vertical.slug : SEARCH_INTENT_SLUGS[state.intent]}`;
   return `${base}${pathSegments.length ? `/${pathSegments.join("/")}` : ""}${query ? `?${query}` : ""}`;
 }
 

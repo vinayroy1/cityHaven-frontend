@@ -2,6 +2,7 @@
 // and a suggested listing title.
 
 import { PROPERTY_SUBTYPES } from "@/constants/backend-schema";
+import { COWORKING_SUBCATEGORY_SLUG, hoursLine, inclusionLabel, monthlySeatPrice, summarizePlans } from "@/features/coworking/model";
 import type { PropertyListingFormValues } from "@/types/propertyListing.types";
 import { getCountry } from "@/config/countries";
 import { formatMoney, formatMoneyShort } from "@/lib/money";
@@ -38,8 +39,8 @@ const listingVerb: Record<string, string> = { SELL: "for Sale", RENT: "for Rent"
 
 /** e.g. "3 BHK Apartment for Rent in Whitefield, Bengaluru". */
 export function suggestTitle(v: PropertyListingFormValues): string {
-  const config = deriveConfiguration(v);
-  const name = subTypeName(v.context.propertySubTypeSlug);
+  const config = isCoworkingForm(v) ? "" : deriveConfiguration(v);
+  const name = isCoworkingForm(v) ? "Co-working Space" : subTypeName(v.context.propertySubTypeSlug);
   const verb = listingVerb[v.context.listingType] ?? "";
   const sectorStr = v.location?.sectorNumber
     ? v.location.sectorNumber.toLowerCase().startsWith("sector")
@@ -99,6 +100,9 @@ export function suggestDescription(v: PropertyListingFormValues): string {
   ]
     .filter(Boolean)
     .join(", ");
+
+  // Co-working: describe the centre (plans, seats, hours, inclusions), not an office lease.
+  if (isCoworkingForm(v)) return coworkingDescription(v, fullAddressStr, country.code);
 
   const parts: string[] = [];
 
@@ -245,5 +249,32 @@ export function suggestDescription(v: PropertyListingFormValues): string {
   // 5. Closing Location Advantages
   parts.push("Conveniently situated with seamless connectivity to main roads, commercial hubs, and essential facilities.");
 
+  return parts.join(" ");
+}
+
+const isCoworkingForm = (v: PropertyListingFormValues) =>
+  v.context.propertySubTypeSlug === "office" &&
+  (v.context.propertySubCategorySlug === COWORKING_SUBCATEGORY_SLUG || v.details?.officeType === "CO_WORKING");
+
+/** e.g. "Co-working space at Prestige Cube, Koramangala, Bengaluru, run by Awfis, with 420 seats (65 available now). ..." */
+function coworkingDescription(v: PropertyListingFormValues, where: string, currency: string): string {
+  const d = v.details ?? {};
+  const plans = (d.coworkingPlans ?? []).filter((p) => p && p.isAvailable !== false);
+  const seats = d.maxNoOfSeats
+    ? ` with ${d.maxNoOfSeats} seats${d.seatsAvailable ? ` (${d.seatsAvailable} available now)` : ""}`
+    : "";
+  const parts = [`Co-working space${where ? ` at ${where}` : ""}${d.workspaceOperator ? `, run by ${d.workspaceOperator}` : ""}${seats}.`];
+
+  const offered = summarizePlans(plans);
+  if (offered) parts.push(`Plans: ${offered}.`);
+  const seatPrices = plans.map(monthlySeatPrice).filter((n): n is number => n != null);
+  if (seatPrices.length) parts.push(`Seats from ${formatMoney(Math.round(Math.min(...seatPrices)), currency)} per seat a month.`);
+
+  const hours = hoursLine(d);
+  if (hours) parts.push(`${hours}.`);
+  const inclusions = (d.workspaceInclusions ?? []).slice(0, 6).map((i) => inclusionLabel(i).toLowerCase());
+  if (inclusions.length) parts.push(`Includes ${inclusions.join(", ")}.`);
+  if (d.lockInMonths) parts.push(`Minimum lock-in ${d.lockInMonths} month${d.lockInMonths === 1 ? "" : "s"}.`);
+  parts.push("Book a visit to see the space.");
   return parts.join(" ");
 }

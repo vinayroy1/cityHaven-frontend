@@ -48,19 +48,6 @@ export const basicDetailsStep: StepConfig = {
           ],
         },
         {
-          id: "context.postedAs",
-          label: "What is your relationship to this property?",
-          type: "chip-radio",
-          required: true,
-          options: [
-            { value: "OWNER", label: "Property Owner" },
-            { value: "AGENT", label: "Broker / Agent" },
-            { value: "BUILDER", label: "Builder / Developer" },
-            // Co-working centres are usually listed by the operator who runs them, not the building owner.
-            { value: "OPERATOR", label: "Co-working operator", visibleWhen: preset("isCoworking") },
-          ],
-        },
-        {
           // Buyers filter on this first: it changes taxes (GST on new bookings) and
           // charges (society transfer on resale), and what documents to check.
           id: "context.saleType",
@@ -130,6 +117,28 @@ export const basicDetailsStep: StepConfig = {
           type: "chip-radio",
           visibleWhen: { field: "context.propertySubTypeSlug", in: ["office", "retail"] },
           options: locatedInsideOptions,
+        },
+      ],
+    },
+    {
+      // Asked after the property type so the right options (e.g. Co-working operator) are already shown.
+      // It records whose behalf the listing is on: it sets the card badge, the "Posted by" filter and
+      // whether brokerage terms are asked, so staff pick the business they work for, not "agent".
+      id: "listedBy",
+      fields: [
+        {
+          id: "context.postedAs",
+          label: "Who are you listing for?",
+          helpText: "Listing as an employee or family member? Choose who you're listing for.",
+          type: "chip-radio",
+          required: true,
+          options: [
+            { value: "OWNER", label: "Owner (or owner's family / staff)" },
+            { value: "AGENT", label: "Broker / Agent" },
+            { value: "BUILDER", label: "Builder / Developer (or sales team)" },
+            // Co-working centres are usually listed by the operator who runs them, not the building owner.
+            { value: "OPERATOR", label: "Co-working operator (or centre staff)", visibleWhen: preset("isCoworking") },
+          ],
         },
       ],
     },

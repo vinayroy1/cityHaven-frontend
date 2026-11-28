@@ -6,7 +6,9 @@ import {
   SEARCH_INTENT_SLUGS,
   fromSearchSlug,
   intentFromSearchSlug,
+  verticalFromSlug,
   type IntentKey,
+  type SearchVertical,
 } from "@/components/search/searchQuery";
 import { buildCanonical, OG_IMAGE_URL } from "@/constants/seo";
 import { countrySegment, splitCountry } from "@/lib/seo/countryPath";
@@ -61,10 +63,42 @@ function intentCopy(intent: IntentKey) {
 const locationPath = (segments: string[], country: string | null) =>
   [countrySegment(country), ...segments].filter(Boolean).join("/");
 
+/** "/rent" is an intent; "/coworking-space" is a vertical (a preset slice of an intent). */
+function resolveRoute(slug: string): { intent?: IntentKey; vertical?: SearchVertical; base: string } {
+  const vertical = verticalFromSlug(slug);
+  if (vertical) return { intent: vertical.intent, vertical, base: vertical.slug };
+  const intent = intentFromSearchSlug(slug);
+  return { intent, base: intent ? SEARCH_INTENT_SLUGS[intent] : slug };
+}
+
+/** The API filters for one search page (count in metadata, first results in the page). */
+function applyApiFilters(url: URL, intent: IntentKey, vertical: SearchVertical | undefined, location: RouteLocation) {
+  const copy = intentCopy(intent);
+  if (intent === "FLATMATE") {
+    if (location.city) url.searchParams.set("city", location.city);
+    if (location.localities[0]) url.searchParams.set("locality", location.localities[0]);
+    return;
+  }
+  if (intent === "COMMERCIAL") {
+    url.searchParams.set("resCom", "COMMERCIAL");
+  } else if (copy.listingType) {
+    url.searchParams.set("listingType", copy.listingType);
+    // Buy / Rent tabs are residential only; commercial has its own tab.
+    if (intent === "BUY" || intent === "RENT") url.searchParams.set("resCom", "RESIDENTIAL");
+  }
+  if (vertical) {
+    url.searchParams.set("listingType", vertical.transaction);
+    url.searchParams.set("propertySubCategorySlug", vertical.subType);
+  }
+  if (location.city) url.searchParams.set("cityName", location.city);
+  if (location.state) url.searchParams.set("q", location.state);
+  for (const locality of location.localities) url.searchParams.append("locality", locality);
+}
+
 export async function metadataForIntentSearch({ params }: IntentSearchRouteProps): Promise<Metadata> {
   const { intent: intentSlug, segments: rawSegments = [] } = await params;
   const { country, rest: segments } = splitCountry(rawSegments);
-  const intent = intentFromSearchSlug(intentSlug);
+  const { intent, vertical, base } = resolveRoute(intentSlug);
   const location = parseLocation(segments);
   if (!intent || !location) return {};
 
@@ -77,21 +111,7 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
     const endpoint = toInternalApiUrl(isFlatmate ? `${API_BASE}/api/v1/flatmates` : `${API_BASE}/api/v1/propertyListing/search`);
     const url = new URL(endpoint);
     url.searchParams.set("pageSize", "1");
-    if (isFlatmate) {
-      if (location.city) url.searchParams.set("city", location.city);
-      if (location.localities[0]) url.searchParams.set("locality", location.localities[0]);
-    } else {
-      if (intent === "COMMERCIAL") {
-        url.searchParams.set("resCom", "COMMERCIAL");
-      } else if (copy.listingType) {
-        url.searchParams.set("listingType", copy.listingType);
-        // Buy / Rent tabs are residential only; commercial has its own tab.
-        if (intent === "BUY" || intent === "RENT") url.searchParams.set("resCom", "RESIDENTIAL");
-      }
-      if (location.city) url.searchParams.set("cityName", location.city);
-      if (location.state) url.searchParams.set("q", location.state);
-      for (const locality of location.localities) url.searchParams.append("locality", locality);
-    }
+    applyApiFilters(url, intent, vertical, location);
     // Count only (pageSize=1): the internal key keeps the real total for no-city / state pages.
     const response = await fetch(url, { headers: internalHeaders(), next: { revalidate: 3600 } });
     if (response.ok) {
@@ -107,12 +127,14 @@ export async function metadataForIntentSearch({ params }: IntentSearchRouteProps
     // Static metadata remains useful when the count service is unavailable.
   }
 
-  const pageTitle = `${countLabel}${SEO_TITLE_LABEL[intent] ?? copy.label} in ${locationLabel}`;
-  const description =
-    intent === "FLATMATE"
+  const verticalLabel = vertical ? (countLabel.trim() === "1" ? vertical.singular : vertical.label) : undefined;
+  const pageTitle = `${countLabel}${verticalLabel ?? SEO_TITLE_LABEL[intent] ?? copy.label} in ${locationLabel}`;
+  const description = vertical
+    ? vertical.description(locationLabel, countLabel)
+    : intent === "FLATMATE"
       ? `Find rooms, flatmates and shared homes in ${locationLabel}. Compare rent, move-in dates and preferences, and contact people directly on Awasio.`
       : `${countLabel ? `Browse ${countLabel}` : "Browse "}${copy.label.toLowerCase()} in ${locationLabel}. Compare prices, photos, area and amenities, and contact owners, agents and builders directly on Awasio.`;
-  const canonicalPath = `/${SEARCH_INTENT_SLUGS[intent]}${segments.length ? `/${locationPath(segments, country)}` : ""}`;
+  const canonicalPath = `/${base}${segments.length ? `/${locationPath(segments, country)}` : ""}`;
   const canonicalUrl = buildCanonical(canonicalPath);
   const socialImage = OG_IMAGE_URL;
 
@@ -152,11 +174,10 @@ export async function IntentSearchRoute({ params }: IntentSearchRouteProps) {
   const { intent: intentSlug, segments: rawSegments = [] } = await params;
   // India has no country segment; other countries use their ISO code (/buy/ae/dubai/jvc).
   const { country, rest: segments } = splitCountry(rawSegments);
-  const intent = intentFromSearchSlug(intentSlug);
+  const { intent, vertical, base: canonicalIntent } = resolveRoute(intentSlug);
   const location = parseLocation(segments);
   if (!intent || !location) notFound();
 
-  const canonicalIntent = SEARCH_INTENT_SLUGS[intent];
   // Old ?city= links and filtered URLs are normalised by src/proxy.ts (it sees the query string);
   // here only the path is checked, so the page never reads searchParams and stays cacheable.
   const moveTo = searchRedirect(intentSlug, rawSegments, new URLSearchParams());
@@ -168,7 +189,7 @@ export async function IntentSearchRoute({ params }: IntentSearchRouteProps) {
   const copy = intentCopy(intent);
   const breadcrumbElements: Array<{ "@type": string; position: number; name: string; item: string }> = [
     { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-    { "@type": "ListItem", position: 2, name: copy.label, item: buildCanonical(`/${canonicalIntent}`) },
+    { "@type": "ListItem", position: 2, name: vertical?.label ?? copy.label, item: buildCanonical(`/${canonicalIntent}`) },
   ];
   if (location.city && segments[0]) {
     breadcrumbElements.push({
@@ -204,21 +225,7 @@ export async function IntentSearchRoute({ params }: IntentSearchRouteProps) {
     );
     const url = new URL(endpoint);
     url.searchParams.set("pageSize", "12");
-    if (isFlatmate) {
-      if (location.city) url.searchParams.set("city", location.city);
-      if (location.localities[0]) url.searchParams.set("locality", location.localities[0]);
-    } else {
-      if (intent === "COMMERCIAL") {
-        url.searchParams.set("resCom", "COMMERCIAL");
-      } else if (copy.listingType) {
-        url.searchParams.set("listingType", copy.listingType);
-        // Buy / Rent tabs are residential only; commercial has its own tab.
-        if (intent === "BUY" || intent === "RENT") url.searchParams.set("resCom", "RESIDENTIAL");
-      }
-      if (location.city) url.searchParams.set("cityName", location.city);
-      if (location.state) url.searchParams.set("q", location.state);
-      for (const locality of location.localities) url.searchParams.append("locality", locality);
-    }
+    applyApiFilters(url, intent, vertical, location);
   const cacheKey = url.toString();
   const cached = searchSsrCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < 60_000) {
@@ -302,6 +309,7 @@ export async function IntentSearchRoute({ params }: IntentSearchRouteProps) {
       )}
       <SearchPageClient
         routeIntent={intent}
+        routeVertical={vertical?.slug}
         routeCity={location.city}
         routeLocalities={location.localities}
         routeState={location.state}

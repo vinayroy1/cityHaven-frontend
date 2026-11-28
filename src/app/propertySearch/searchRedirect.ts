@@ -2,8 +2,11 @@ import {
   SEARCH_INTENT_SLUGS,
   buildSearchHref,
   fromSearchSlug,
+  applyVertical,
   intentFromSearchSlug,
   parseSearchParams,
+  verticalFromSlug,
+  verticalOf,
 } from "@/components/search/searchQuery";
 import { countrySegment, splitCountry } from "@/lib/seo/countryPath";
 
@@ -20,9 +23,11 @@ const locationPath = (segments: string[], country: string | null) =>
 
 export function searchRedirect(intentSlug: string, rawSegments: string[], query: URLSearchParams): string | null {
   const { country, rest: segments } = splitCountry(rawSegments);
-  const intent = intentFromSearchSlug(intentSlug);
+  // /coworking-space is a vertical (a preset slice of /commercial); everything else is an intent.
+  const vertical = verticalFromSlug(intentSlug);
+  const intent = vertical?.intent ?? intentFromSearchSlug(intentSlug);
   if (!intent) return null;
-  const canonicalIntent = SEARCH_INTENT_SLUGS[intent];
+  const canonicalIntent = vertical?.slug ?? SEARCH_INTENT_SLUGS[intent];
   const citySlug = segments[0]?.toLowerCase();
   const canonicalCity = citySlug && CITY_ALIASES[citySlug];
   const carried = query.toString();
@@ -33,14 +38,18 @@ export function searchRedirect(intentSlug: string, rawSegments: string[], query:
     return withQuery(`/${canonicalIntent}${segs.length ? `/${locationPath(segs, country)}` : ""}`, carried);
   }
 
-  if (!LEGACY_LOCATION_KEYS.some((key) => query.has(key))) return null;
+  // A filtered intent URL that is exactly a vertical's slice (/commercial/x?transaction=RENT&r.subType=
+  // co-working-office-space) moves to the vertical's own page, so there is one URL for it.
+  const becomesVertical = !vertical && verticalOf({ ...parseSearchParams(query), intent }) !== undefined;
+  if (!becomesVertical && !LEGACY_LOCATION_KEYS.some((key) => query.has(key))) return null;
   const urlParams = new URLSearchParams(query);
   if (segments[0] === "state" && segments[1]) {
     for (const key of LEGACY_LOCATION_KEYS) urlParams.delete(key);
     return withQuery(`/${canonicalIntent}/${locationPath(["state", segments[1]], country)}`, urlParams.toString());
   }
-  const normalized = parseSearchParams(urlParams);
+  let normalized = parseSearchParams(urlParams);
   normalized.intent = intent;
+  if (vertical) normalized = applyVertical(normalized, vertical);
   const city = segments[0] ? fromSearchSlug(segments[0]) : undefined;
   const localities = segments.slice(1).map(fromSearchSlug).filter(Boolean).slice(0, 2);
   if (city) normalized.cityName = city;

@@ -13,7 +13,7 @@ import { searchRedirect } from "@/app/propertySearch/searchRedirect";
  *    the path (/buy/gurgaon?priceMax=…) moves to the canonical URL with its filters kept.
  */
 const SECTIONS = new Set(["/interior-designers", "/stays", "/agents"]);
-const SEARCH_INTENTS = new Set(["buy", "rent", "pg", "commercial", "plot"]);
+const SEARCH_INTENTS = new Set(["buy", "rent", "pg", "commercial", "plot", "coworking-space"]);
 
 const clean = (v: string | null) => {
   const t = v?.trim().slice(0, 80) ?? "";
@@ -54,7 +54,7 @@ export const config = {
     "/interior-designers",
     "/stays",
     "/agents",
-    "/(buy|rent|pg|commercial|plot)",
-    "/(buy|rent|pg|commercial|plot)/:path*",
+    "/(buy|rent|pg|commercial|plot|coworking-space)",
+    "/(buy|rent|pg|commercial|plot|coworking-space)/:path*",
   ],
 };

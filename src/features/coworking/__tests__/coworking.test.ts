@@ -204,9 +204,59 @@ describe("co-working wording", () => {
     const fields = steps.flatMap((s) => s.sections ?? []).flatMap((sec) => sec.fields);
     expect(fields.find((f) => f.id === "location.societyOrProjectName")?.label).toBe("Building / tech park name");
     const postedAs = fields.find((f) => f.id === "context.postedAs");
+    expect(postedAs?.label).toBe("Who are you listing for?");
     const v = coworkingForm();
     expect(postedAs?.options?.filter((o) => evaluateCondition(v, o.visibleWhen)).map((o) => o.value)).toContain("OPERATOR");
     // other listing types keep the original text
     expect(listingSteps.find((s) => s.id === "profile")?.title).toBe("Tell us about your property");
+  });
+});
+
+describe("co-working title and description", () => {
+  it("names the centre and describes plans, seats and hours", async () => {
+    const { suggestTitle, suggestDescription } = await import("@/features/propertyListing/formConfig/derive");
+    const v = coworkingForm({
+      maxNoOfSeats: 150,
+      seatsAvailable: 40,
+      workspaceOperator: "WorkNest",
+      open24x7: true,
+      workspaceInclusions: ["WIFI", "TEA_COFFEE"],
+      coworkingPlans: [
+        { type: "DEDICATED_DESK", price: 9000, priceUnit: "PER_SEAT_MONTH" },
+        { type: "DAY_PASS", price: 499, priceUnit: "PER_DAY" },
+      ],
+    });
+    v.location = { ...v.location, locality: "JP Nagar", cityName: "Bengaluru" };
+    expect(suggestTitle(v)).toBe("Co-working Space for Rent in JP Nagar, Bengaluru");
+    const desc = suggestDescription(v);
+    expect(desc).toContain("run by WorkNest with 150 seats (40 available now)");
+    expect(desc).toContain("Plans: Dedicated desk · Day pass.");
+    expect(desc).toContain("Seats from ₹9,000 per seat a month.");
+    expect(desc).toContain("Open 24×7.");
+    expect(desc).not.toMatch(/furnished/i);
+  });
+});
+
+describe("co-working search pages", () => {
+  it("builds /coworking-space URLs for the co-working slice and redirects the old filter URL", async () => {
+    const { buildSearchHref } = await import("@/components/search/searchQuery");
+    const { searchRedirect } = await import("@/app/propertySearch/searchRedirect");
+    const s = initialSearchState("Bengaluru");
+    s.intent = "COMMERCIAL";
+    s.transaction = "RENT";
+    s.refine.subType = ["co-working-office-space"];
+    s.localities = [{ label: "Koramangala", city: "Bengaluru" }];
+    expect(buildSearchHref(s, "IN")).toBe("/coworking-space/bengaluru/koramangala");
+    s.refine.workspacePlan = ["PRIVATE_CABIN"];
+    expect(buildSearchHref(s, "IN")).toBe("/coworking-space/bengaluru/koramangala?r.wsPlan=PRIVATE_CABIN");
+
+    // other commercial searches keep /commercial
+    const shop = { ...s, refine: { ...s.refine, subType: ["retail"], workspacePlan: [] } };
+    expect(buildSearchHref(shop, "IN").startsWith("/commercial/bengaluru")).toBe(true);
+
+    const old = new URLSearchParams("transaction=RENT&r.subType=co-working-office-space");
+    expect(searchRedirect("commercial", ["bengaluru"], old)).toBe("/coworking-space/bengaluru");
+    expect(searchRedirect("coworking-space", ["bangalore"], new URLSearchParams())).toBe("/coworking-space/bengaluru");
+    expect(searchRedirect("coworking-space", ["bengaluru"], new URLSearchParams("r.wsPlan=DAY_PASS"))).toBeNull();
   });
 });
